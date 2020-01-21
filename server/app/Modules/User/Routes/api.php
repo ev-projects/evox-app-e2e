@@ -21,7 +21,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('login', 'AuthController@login');
 
     # API Call for Logout (Checks as well if there's a valid token before logging out.)
-    Route::post('logout', 'AuthController@logout');
+    Route::post('logout', 'AuthController@logout')->middleware('jwtauth');
 
     # API Call for Refreshing of Token (Checks as well if there's a valid token before logging out.)
     Route::post('refresh', 'AuthController@refresh')->middleware('jwtauth');
