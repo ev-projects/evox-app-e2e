@@ -17,10 +17,15 @@ class API  {
     // If the current instance is already Authenticated and the URL is VALID, Proceed on the call.
     if (Validator.isValid(config) && Validator.isValid(config.url)) {
 
-      // Declare the Headers that will be used on the API Call.
-      var headers = {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("access_token")
+      // Declare the Default Headers that will be used on the API Call.
+      var default_headers = {
+        "Content-Type"    : "application/json",
+
+        // Pass the JWT Token given on Login for Secured User Authentication 
+        "Authorization"   : "Bearer " + localStorage.getItem("access_token"),
+
+        // Pass the API KEY Given by the Backend for Secured Request Authentication
+        'X-Authorization' : process.env.REACT_APP_API_KEY
       };
       
       // Tracks the AXIOS call (Automatically outputs the Loader)
@@ -30,10 +35,10 @@ class API  {
           method: Validator.isValid(config.method) ? config.method : "get",
   
           // Renders the URL on the AXIOS Call
-          url: global.api_base_url + config.url,
+          url: process.env.REACT_APP_API_BASE_URL + config.url,
   
           // Renders the Headers on the AXIOS Call
-          headers: Formatter.merge_json(headers, config.headers),
+          headers: Formatter.merge_json(default_headers, config.headers),
   
           // Renders the Data on the AXIOS Call
           data: Validator.isValid(config.data) ? config.data : {},

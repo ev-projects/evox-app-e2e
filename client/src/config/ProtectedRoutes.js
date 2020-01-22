@@ -13,7 +13,6 @@ import { connect } from 'react-redux';
 
 const  ProtectedRoute = (props) => {
 
-  
   return (
     <Route {...props.routeProps}  render={() => {
 
@@ -45,7 +44,7 @@ const  ProtectedRoute = (props) => {
 const mapStateToProps = (state) => {
   return {
       user : state.user,
-      page: state.page
+      page : state.page
   }
 }
 

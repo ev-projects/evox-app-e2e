@@ -27,20 +27,20 @@ class JWTAuthentication
     {
         try {
             if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['error' => 'user_not_found'], Config::get('constants.HTTP_STATUS_CODE.400.NOT_FOUND'));
+                return response()->json(['errors' => ['message' =>'user_not_found']], Config::get('constants.HTTP_STATUS_CODE.400.NOT_FOUND'));
             }
 
             # If the token is expired, this exception will handle it.
         } catch (TokenExpiredException $e) {
-            return response()->json(['error' => 'token_expired'], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
+            return response()->json(['errors' => ['message' =>'token_expired']], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
 
             # If the token is invalid, this exception will handle it.
         } catch (TokenInvalidException $e) {
-            return response()->json(['error' => 'token_invalid'], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
+            return response()->json(['errors' => ['message' =>'token_invalid']], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
 
             # If first 2 exceptions are not met, this exception will handle it by default.
         } catch (JWTException $e) {
-            return response()->json(['error' => 'token_absent'], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
+            return response()->json(['errors' => ['message' =>'token_absent']], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
         }
 
         return $next($request);

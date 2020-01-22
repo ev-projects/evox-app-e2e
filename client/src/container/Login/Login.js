@@ -14,13 +14,12 @@ class Login extends Component {
 
   onSubmitHandler = (e) => {
     e.preventDefault();
-    this.props.logIn(this.state, this.props)
+    this.props.logIn(this.state)
   }
 
   render = () => {
     
     const { user } = this.props
-    const { page } = this.props
 
     // Checks if there's an Existing Access Token and an Employee Number property from Users. Redirects to Dashboard if True
     if( Validator.isValid( localStorage.getItem("access_token") ) && 
@@ -62,7 +61,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      logIn: (credentials) => dispatch(logIn(credentials))
+      logIn: ( credentials ) => dispatch( logIn(credentials) )
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

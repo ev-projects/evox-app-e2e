@@ -37,6 +37,7 @@ return [
             'X-Auth-Token',
             'Origin',
             'Authorization',
+            'X-Authorization'   # For the API Key
         ],
 
         'expose_headers' => [

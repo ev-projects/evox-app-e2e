@@ -18,18 +18,21 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'auth'], function () {
 
     # API Call for Login
-    Route::post('login', 'AuthController@login');
+    Route::post('login', 'AuthController@login')->middleware('auth.apikey');
 
     # API Call for Logout (Checks as well if there's a valid token before logging out.)
-    Route::post('logout', 'AuthController@logout')->middleware('jwtauth');
+    Route::post('logout', 'AuthController@logout')->middleware('jwtauth', 'auth.apikey');
 
     # API Call for Refreshing of Token (Checks as well if there's a valid token before logging out.)
-    Route::post('refresh', 'AuthController@refresh')->middleware('jwtauth');
-    Route::post('me', 'AuthController@me')->middleware('jwtauth');
-    Route::post('payload', 'AuthController@payload')->middleware('jwtauth');
+    Route::post('refresh', 'AuthController@refresh')->middleware('jwtauth', 'auth.apikey');
+
+    # API Call for Fetching the Payload that contains the User Data and Token Credentials
+    Route::post('payload', 'AuthController@payload')->middleware('jwtauth', 'auth.apikey');
 
 
 });
 
 
-Route::resource('user', 'UserController');
+Route::group(['middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+});

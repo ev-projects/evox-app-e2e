@@ -7,12 +7,15 @@ import API from "../../services/API";
 
 // Actions for the Login
 export const logIn = (credentials) => {
-    
+
     return (dispatch, getState) => {
         axios({
             method: "post",
-            url: global.api_base_url + "/auth/login",
-            headers: { "Content-Type": "application/json" },
+            url: process.env.REACT_APP_API_BASE_URL + "/auth/login",
+            headers: { 
+                "Content-Type": "application/json",
+                'X-Authorization' : process.env.REACT_APP_API_KEY 
+            },
             data: credentials
         })
         .then(result => {

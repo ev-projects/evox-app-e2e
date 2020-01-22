@@ -8,7 +8,7 @@ import Header from "../components/Template/Header";
 import Sidebar from "../components/Template/Sidebar";
 import Footer from "../components/Template/Footer";
 
-// Components
+// Containers
 import Login from "../container/Login";
 import Dashboard from "../container/Dashboard";
 import PageNotFound from "../container/PageNotFound";
@@ -43,8 +43,7 @@ const RoutesList = () => {
     <div>
       <Switch>
         <Route exact path={["/", "/login"]} component={LoginContainer} />
-        
-            <Route component={DefaultContainer} />
+        <Route component={DefaultContainer} />
       </Switch>
     </div>
   );
