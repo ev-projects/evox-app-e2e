@@ -5,11 +5,13 @@ namespace App\Modules\User\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Traits\HasPermissions;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable;
+    use Notifiable, HasRoles, HasPermissions;
     
     public $primaryKey = 'emp_num';
     public $incrementing = false;
@@ -28,6 +30,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
+        'password'
     ];
 
     /**
@@ -76,14 +79,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_emp_num', 'emp_num');
     }
 
-    # Gets the specific Roles of the User
-    public function roles(){
-        return $this->belongsToMany(Role::class, 'users_roles', 'emp_num', 'role_id',  'emp_num', 'id');
-    }
-    # Gets the specific Roles of the User
-    public function permissions(){
-        return $this->belongsToMany(Permission::class, 'users_permissions', 'emp_num', 'permission_code',  'emp_num', 'permission_code');
-    }
+    // # Gets the specific Roles of the User
+    // public function roles(){
+    //     return $this->belongsToMany(Role::class, 'users_roles', 'emp_num', 'role_id',  'emp_num', 'id');
+    // }
+    // # Gets the specific Roles of the User
+    // public function permissions(){
+    //     return $this->belongsToMany(Permission::class, 'users_permissions', 'emp_num', 'permission_code',  'emp_num', 'permission_code');
+    // }
 
     
 

@@ -21,22 +21,19 @@ return [
     */
 
     'HTTP_STATUS_CODE' => [
-        '100' => [],
-        '200' => [
-            'SUCCESS' => 200,
-        ],
-        '300' => [],
-        '400' => [
-            'BAD_REQUEST' => 400,
-            'UNAUTHORIZED' => 401,
-            'FORBIDDEN' => 403,
-            'NOT_FOUND' => 404,
-        ],
-        '500' => [
-            'INTERNAL_ERROR' => 500,
-            'BAD_GATEWAY' => 502,
-            'SERVICE_UNAVAILABLE' => 503,
-        ],
+        // 200s
+        'SUCCESS' => 200,
+
+        // 400s
+        'BAD_REQUEST' => 400,
+        'UNAUTHORIZED' => 401,
+        'FORBIDDEN' => 403,
+        'NOT_FOUND' => 404,
+
+        // 500s
+        'INTERNAL_ERROR' => 500,
+        'BAD_GATEWAY' => 502,
+        'SERVICE_UNAVAILABLE' => 503,
     ],
 
 

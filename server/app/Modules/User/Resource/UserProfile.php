@@ -14,16 +14,16 @@ class UserProfile extends JsonResource
      */
     public function toArray($request)
     {       
-        // Create Resource for User Permissions
-        $user_permissions = [];
-        foreach( $this->resource->permissions()->get()  as $permission){
-            array_push( $user_permissions, $permission->permission_code );
+        
+        // Create Resource for Permissions
+        $permissions = [];
+        foreach( $this->resource->getDirectPermissions() as $permission){
+            array_push( $permissions, $permission->name );
         }
-
-        // Create Resource for User Roles
-        $user_roles = [];
+        // Create Resource for Roles
+        $roles = [];
         foreach( $this->resource->roles()->get()  as $role){
-            array_push( $user_roles, $role->role );
+            array_push( $roles, $role->name );
         }
 
         $user = parent::toArray($request);
@@ -41,8 +41,8 @@ class UserProfile extends JsonResource
                 'is_active' => $user['is_active'],
                 'force_change_password' => $user['force_change_password']
             ), 
-            array('user_permission' => $user_permissions),
-            array('user_roles' => $user_roles),
+            array('permissions' => $permissions),
+            array('roles' => $roles),
         );
     }
 }

@@ -15,68 +15,21 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->string('emp_num')->unique()->primary();
-            $table->unsignedBigInteger('bhr_num')->unique();
-            $table->unsignedBigInteger('department_id')->foreign('department_id')->references('id')->on('department');
+            $table->unsignedInteger('bhr_num')->unique();
+            $table->unsignedInteger('department_id')->nullable();
             $table->string('email');
             $table->string('username');
             $table->string('password');
-            $table->string('first_name');
-            $table->string('middle_name');
-            $table->string('last_name');
+            $table->string('first_name')->nullable();
+            $table->string('middle_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->string('employment_status');
             $table->boolean('is_active')->default(false);
             $table->boolean('force_change_password')->default(false);
-            $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade')->onUpdate('cascade')->onDelete('set null');
         });
-
-        // Insert Default Values
-        $insert = array(
-            array('emp_num' => '2065',
-                  'bhr_num' => '2065',
-                  'department_id' => 1,
-                  'email' => "aaron.colina@eastvantage.com",
-                  'username' => "acolina2065",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Aaron Andrew',
-                  'middle_name' => 'Magsino',
-                  'last_name' => 'Colina',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array('emp_num' => '012',
-                  'bhr_num' => '012',
-                  'department_id' => 1,
-                  'email' => "carmela.garcia@eastvantage.com",
-                  'username' => "cgarcia012",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Carmela',
-                  'middle_name' => 'G',
-                  'last_name' => 'Garcia',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array('emp_num' => '1479',
-                  'bhr_num' => '1479',
-                  'department_id' => 1,
-                  'email' => "mel.uggadan@eastvantage.com",
-                  'username' => "muggadan1479",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Meljohn',
-                  'middle_name' => 'O',
-                  'last_name' => 'Uggadan',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            )
-        );
-        DB::table('users')->insert($insert);
-
     }
 
     /**

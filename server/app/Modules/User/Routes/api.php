@@ -33,6 +33,6 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 
-Route::group(['middleware' => ['jwtauth', 'auth.apikey']], function () {
+// Route::group(['middleware' => ['jwtauth', 'auth.apikey']], function () {
     
-});
+// });

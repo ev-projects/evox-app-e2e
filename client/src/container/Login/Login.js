@@ -12,14 +12,16 @@ class Login extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  onSubmitHandler = (e) => {
+  onSubmitHandler = async(e) => {
     e.preventDefault();
-    this.props.logIn(this.state)
+    console.log(this.state)
+    await this.props.logIn(this.state)
   }
 
   render = () => {
     
     const { user } = this.props
+    const { page } = this.props
 
     // Checks if there's an Existing Access Token and an Employee Number property from Users. Redirects to Dashboard if True
     if( Validator.isValid( localStorage.getItem("access_token") ) && 
@@ -46,7 +48,7 @@ class Login extends Component {
             onChange={this.onChangeHandler}
           ></Input>
         </FormGroup>
-        <Button type="submit" className="btn-lg btn-dark btn-block">
+        <Button type="submit" className="btn-lg btn-dark btn-block" disabled={page.isRequesting} >
           Log-in
         </Button>
       </Form>
@@ -56,7 +58,8 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    user : state.user
+    user : state.user,
+    page : state.page
   }
 }
 const mapDispatchToProps = (dispatch) => {

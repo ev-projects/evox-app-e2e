@@ -16,10 +16,6 @@ class AuthController extends Controller
      *
      * @return void
      */
-    // public function __construct()
-    // {
-    //     $this->middleware('auth:api', ['except' => ['login']]);
-    // }
 
     /**
      * Get a JWT via given credentials.
@@ -41,42 +37,25 @@ class AuthController extends Controller
 
         // Attempt to check the Credentials. If credentials not found, return User Not Found.
         if (!$token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'user_not_found'], Config::get('constants.HTTP_STATUS_CODE.400.NOT_FOUND'));
+            return response()->json( error_response('user_not_found'), get_http_code('NOT_FOUND'));
         }
 
         // Set the User that was fetched into Session
         return $this->respondWithToken($token);
     }
 
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function me(){
-
-        return response()->json($this->formattedUserData());
-    }
 
     /**
-     * Log the user out (Invalidate the token).
+     * Log the user out (Invalidates the token).
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function logout(){
 
         auth()->logout();
-        return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh(){
-
-        return $this->respondWithToken(auth()->refresh());
+        return response()->json([
+            'message' => 'logout_success'
+        ]);
     }
 
 
@@ -88,6 +67,7 @@ class AuthController extends Controller
     public function payload(Request $request){   
         
         return response()->json([
+            'message' => 'payload_success',
             'user' => $this->formattedUserData(),
             'payload' => auth()->payload(),
         ]);
@@ -102,17 +82,15 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token){   
 
-        return response()->json(
-            [
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 60,
+        return response()->json([
+            'message' => 'login_success',
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => $this->formattedUserData(),
+            'payload' => auth()->payload(),
                 
-                'user' => $this->formattedUserData(),
-                'payload' => auth()->payload(),
-                
-            ]
-        );
+        ]);
     }
 
     /**
@@ -122,3 +100,25 @@ class AuthController extends Controller
         return new UserProfile(auth()->user());
     }
 }
+
+
+
+
+    // /**
+    //  * Refresh a token.
+    //  *
+    //  * @return \Illuminate\Http\JsonResponse
+    //  */
+    // public function refresh(){
+    //     return $this->respondWithToken(auth()->refresh());
+    // }
+    
+
+    // /**
+    //  * Get the authenticated User.
+    //  *
+    //  * @return \Illuminate\Http\JsonResponse
+    //  */
+    // public function me(){
+    //     return response()->json($this->formattedUserData());
+    // }

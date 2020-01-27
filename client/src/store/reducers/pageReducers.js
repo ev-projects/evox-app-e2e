@@ -3,7 +3,8 @@
  */
 
 const initState = {
-    isReloading : false
+    isReloading : false,
+    isRequesting : false
 }
 
 const pageReducer = (state = initState, action) => {
@@ -24,6 +25,23 @@ const pageReducer = (state = initState, action) => {
             message = "Reload End"
             return  {
                 isReloading : false,
+            }
+            break;
+        /**  */
+
+        /**
+         *  Login Actions
+         */
+        case "REQUEST_START":
+            message = "Request Start"
+            return {
+                isRequesting : true,
+            }
+            break;
+        case "REQUEST_END":
+            message = "Request End"
+            return  {
+                isRequesting : false,
             }
             break;
         /**  */

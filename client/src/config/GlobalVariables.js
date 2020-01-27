@@ -3,9 +3,6 @@
  *  All the static data that are not too often to change should be stored here.
  */
 
-global.base_url = "http://localhost:3000";
-global.api_base_url = "http://127.0.0.1:8000/api";
-
 global.login_url = "/login";
 global.dashboard_url = "/app/Dashboard";
 

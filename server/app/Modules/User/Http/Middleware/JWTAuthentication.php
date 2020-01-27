@@ -3,7 +3,6 @@
 namespace App\Modules\User\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -27,20 +26,20 @@ class JWTAuthentication
     {
         try {
             if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['errors' => ['message' =>'user_not_found']], Config::get('constants.HTTP_STATUS_CODE.400.NOT_FOUND'));
+                return response()->json( error_response('user_not_found'), get_http_code('NOT_FOUND') );
             }
 
             # If the token is expired, this exception will handle it.
         } catch (TokenExpiredException $e) {
-            return response()->json(['errors' => ['message' =>'token_expired']], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
+            return response()->json( error_response('token_expired'), get_http_code('UNAUTHORIZED') );
 
             # If the token is invalid, this exception will handle it.
         } catch (TokenInvalidException $e) {
-            return response()->json(['errors' => ['message' =>'token_invalid']], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
+            return response()->json( error_response('token_invalid'), get_http_code('UNAUTHORIZED') );
 
             # If first 2 exceptions are not met, this exception will handle it by default.
         } catch (JWTException $e) {
-            return response()->json(['errors' => ['message' =>'token_absent']], Config::get('constants.HTTP_STATUS_CODE.400.UNAUTHORIZED'));
+            return response()->json( error_response('token_absent'), get_http_code('UNAUTHORIZED') );
         }
 
         return $next($request);

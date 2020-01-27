@@ -1,0 +1,6 @@
+{
+    "name": "Department",
+    "slug": "department",
+    "version": "1",
+    "description": "A dedicated module on handling all Transactions related on the Department Model"
+}

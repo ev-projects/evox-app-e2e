@@ -9,6 +9,9 @@ import API from "../../services/API";
 export const logIn = (credentials) => {
 
     return (dispatch, getState) => {
+
+        dispatch({'type': 'REQUEST_START'});
+        
         axios({
             method: "post",
             url: process.env.REACT_APP_API_BASE_URL + "/auth/login",
@@ -19,6 +22,8 @@ export const logIn = (credentials) => {
             data: credentials
         })
         .then(result => {
+            
+            dispatch({'type': 'REQUEST_END'});
 
             // Set the Returned token on localStorage
             localStorage.setItem("access_token", result.data.access_token);
@@ -31,6 +36,7 @@ export const logIn = (credentials) => {
             })
         })
         .catch(e => {
+            dispatch({'type': 'REQUEST_END'});
             dispatch({
                 'type'      : 'LOGIN_FAILED', 
                 'error'     : API.format(e.response)
@@ -47,7 +53,10 @@ export const logOut = () => {
             url: "/auth/logout"
         })
         .then(result => {
-            // localStorage.removeItem("access_token");
+
+            // Remove the Token from the localStorage
+            localStorage.removeItem("access_token");
+            
             dispatch({'type': 'LOGOUT_SUCCESS'})
         })
         .catch(e => {

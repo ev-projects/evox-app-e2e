@@ -58,9 +58,11 @@ class API  {
 
   // Checks the error for Invalid Token Responses. Returns the default Error Format by default.
   check_error(e) {
-
+    
     //If the Error Response has Invalid Token Responses, it means that the Token being passed is invalid, hence, removing the Token and redirecting the Page to the Login screen.
-    if(  Validator.isValid( e.response.data.error ) && global.invalid_token_response.includes( e.response.data.error )){
+    if(  Validator.isValid( e.response.data.error ) 
+        && Validator.isValid( e.response.data.error.message ) 
+        && global.invalid_token_response.includes( e.response.data.error.message )){
       localStorage.removeItem("access_token");
       history.push(global.login_url)
       window.location.reload(true);
