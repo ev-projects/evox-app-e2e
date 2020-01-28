@@ -5,8 +5,9 @@ namespace App\Modules\User\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
-use App\Modules\User\Resource\UserProfile;
+use App\Modules\User\Resources\UserProfileResource;
 use App\Modules\User\Models\Permission;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Config;
 
 class AuthController extends Controller
@@ -37,7 +38,7 @@ class AuthController extends Controller
 
         // Attempt to check the Credentials. If credentials not found, return User Not Found.
         if (!$token = auth()->attempt($credentials)) {
-            return response()->json( error_response('user_not_found'), get_http_code('NOT_FOUND'));
+            return response()->json( error_response('user_not_found'), JsonResponse::HTTP_CREATED);
         }
 
         // Set the User that was fetched into Session
@@ -97,7 +98,7 @@ class AuthController extends Controller
      *  Returns the Formatted User and Permission Resource
      */
     protected function formattedUserData(){
-        return new UserProfile(auth()->user());
+        return new UserProfileResource(auth()->user());
     }
 }
 

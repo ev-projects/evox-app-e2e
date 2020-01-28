@@ -19,8 +19,19 @@ use Illuminate\Http\Request;
 
 
 # API calls for Authentication
-Route::group(['prefix' => 'schedule', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+Route::group(['prefix' => 'schedule'/*, 'middleware' => ['jwtauth', 'auth.apikey']*/], function () {
 
-    # API Call for Login
-    Route::post('add', 'ScheduleController@add');
+    # API Call for Schedules
+    
+    # Insert new Schedule
+    Route::post('/',     'ScheduleController@store');
+
+    # Show existing Schedule
+    Route::get('/{id}', 'ScheduleController@show');
+
+    // # Update existing Schedule
+    // Route::put('/{id}', 'ScheduleController@update');
+
+    // # Delete Schedule
+    // Route::delete('/{id}', 'ScheduleController@destroy');
 });

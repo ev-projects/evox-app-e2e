@@ -20,7 +20,7 @@ class CreateSchedulesTable extends Migration
             $table->enum('schedule_type', array('standard', 'flexible', 'customize'))->index();
             $table->dateTime('valid_from')->nullable();
             $table->dateTime('valid_to')->nullable();
-            $table->json('rest_days');
+            $table->json('rest_days')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

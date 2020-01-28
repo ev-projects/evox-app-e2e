@@ -2,8 +2,11 @@
 
 namespace App\Modules\User\Models;
 
+use App\Modules\Department\Models\Department;
+use App\Modules\Schedule\Models\Schedule;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Traits\HasPermissions;
@@ -11,11 +14,11 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, HasRoles, HasPermissions;
+    use Notifiable, HasRoles, HasPermissions, SoftDeletes;
     
     public $primaryKey = 'emp_num';
     public $incrementing = false;
-    // Rest omitted for brevity
+
     /**
      * The attributes that are mass assignable.
      *
@@ -41,13 +44,13 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    # Gets the specific Department of the User
-    // public function department(){
-    //     return $this->hasOne(Department::class, 'id', 'department_id');
-    // }
-
     
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -69,25 +72,52 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
     
-    public function managers()
+
+    ########################################################################
+    ############################ Custom Helpers ############################
+    ########################################################################
+
+    /**
+     *  Eloquent Query Helpers
+     */
+
+     # Sets the Query to get all Active only
+    public function isActive($query){
+        return $query->where('active', 1);
+    }
+
+    # Sets the Query to get all Inactive only
+    public function isInactive($query){
+        return $query->where('active', 0);
+    }
+
+    ########################################################################
+
+    /**
+     *  Relationships
+     */
+    
+    # Fetch the User's Supervisors
+    public function supervisors()
     {
         return $this->belongsToMany(User::class, 'users_supervisors', 'emp_num', 'supervisor_emp_num');
     }
 
-    public function managees()
+    # Fetch the User's Supervisee 
+    public function supervisee()
     {
         return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_emp_num', 'emp_num');
     }
 
-    // # Gets the specific Roles of the User
-    // public function roles(){
-    //     return $this->belongsToMany(Role::class, 'users_roles', 'emp_num', 'role_id',  'emp_num', 'id');
-    // }
-    // # Gets the specific Roles of the User
-    // public function permissions(){
-    //     return $this->belongsToMany(Permission::class, 'users_permissions', 'emp_num', 'permission_code',  'emp_num', 'permission_code');
-    // }
+    # Fetch the User's Department
+    public function department(){
+        return $this->hasOne(Department::class, 'id', 'department_id');
+    }
 
-    
+    # Fetch the User's Schedule (Source type is Default)
+    public function schedule(){
+        return $this->hasOne(Schedule::class, 'id', 'schedule_id')->where('source_type', 'default');
+    }
 
+    ########################################################################
 }

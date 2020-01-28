@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class ScheduleSettings extends Model
 {
     //
+    protected $guarded = [];
 }

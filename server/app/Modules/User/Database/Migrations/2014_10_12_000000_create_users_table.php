@@ -16,7 +16,6 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->string('emp_num')->unique()->primary();
             $table->unsignedInteger('bhr_num')->unique();
-            $table->unsignedInteger('department_id')->nullable();
             $table->string('email');
             $table->string('username');
             $table->string('password');
@@ -24,11 +23,15 @@ class CreateUsersTable extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('employment_status');
+            $table->unsignedInteger('department_id')->nullable();
+            $table->unsignedInteger('schedule_id')->nullable();
             $table->boolean('is_active')->default(false);
             $table->boolean('force_change_password')->default(false);
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade')->onUpdate('cascade')->onDelete('set null');
+            $table->foreign('schedule_id')->references('id')->on('schedules')->onDelete('cascade')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

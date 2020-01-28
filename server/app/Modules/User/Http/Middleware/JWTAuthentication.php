@@ -3,6 +3,7 @@
 namespace App\Modules\User\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -26,20 +27,20 @@ class JWTAuthentication
     {
         try {
             if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json( error_response('user_not_found'), get_http_code('NOT_FOUND') );
+                return response()->json( error_response('user_not_found'), JsonResponse::HTTP_NOT_FOUND );
             }
 
             # If the token is expired, this exception will handle it.
         } catch (TokenExpiredException $e) {
-            return response()->json( error_response('token_expired'), get_http_code('UNAUTHORIZED') );
+            return response()->json( error_response('token_expired'), JsonResponse::HTTP_UNAUTHORIZED );
 
             # If the token is invalid, this exception will handle it.
         } catch (TokenInvalidException $e) {
-            return response()->json( error_response('token_invalid'), get_http_code('UNAUTHORIZED') );
+            return response()->json( error_response('token_invalid'), JsonResponse::HTTP_UNAUTHORIZED );
 
             # If first 2 exceptions are not met, this exception will handle it by default.
         } catch (JWTException $e) {
-            return response()->json( error_response('token_absent'), get_http_code('UNAUTHORIZED') );
+            return response()->json( error_response('token_absent'), JsonResponse::HTTP_UNAUTHORIZED );
         }
 
         return $next($request);

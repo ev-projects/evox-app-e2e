@@ -17,7 +17,7 @@ class CreateScheduleSettingsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('schedule_id')->index();
             $table->string('item')->index();
-            $table->string('value');
+            $table->string('value')->nullable();
 
             $table->index(['schedule_id', 'item']);
 

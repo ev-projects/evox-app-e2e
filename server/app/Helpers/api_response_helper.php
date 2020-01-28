@@ -17,7 +17,7 @@ if (! function_exists('error_response')) {
     /**
      * This function formats the Error Response being sent by the API
      *
-     * @param  String message
+     * @param  string|array message
      * @return Array formatted_message;
      */
     function error_response($message) {

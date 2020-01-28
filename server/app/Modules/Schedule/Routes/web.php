@@ -11,8 +11,8 @@
 |
 */
 
-Route::group(['prefix' => 'schedule'], function () {
-    Route::get('/', function () {
-        dd('This is the Schedule module index page. Build something great!');
-    });
-});
+// Route::group(['prefix' => 'schedule'], function () {
+//     Route::get('/', function () {
+//         dd('This is the Schedule module index page. Build something great!');
+//     });
+// });
