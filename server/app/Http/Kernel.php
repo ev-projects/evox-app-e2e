@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
          * Add the Custom Middlewares below
          */
         'jwtauth' => \App\Modules\User\Http\Middleware\JWTAuthentication::class,
+        'permission' => \App\Http\Middleware\PermissionMiddleware::class,
 
         /**
      * 

@@ -37,7 +37,8 @@
         "files": [
             "app/Helpers/api_response_helper.php",
             "app/Helpers/constants_helper.php",
-            "app/Helpers/schedule_helper.php"
+            "app/Helpers/schedule_helper.php",
+            "app/Helpers/log_helper.php"
         ]
     },
     "autoload-dev": {

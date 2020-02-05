@@ -1,4 +1,5 @@
 <?php
+use App\Rules\ValidBreakTime;
 
 if (! function_exists('create_work_day_rule')) {   
     /**
@@ -13,7 +14,7 @@ if (! function_exists('create_work_day_rule')) {
             'schedule_details.'.$work_day.'.end_time'           => 'required|date_format:H:i',
             'schedule_details.'.$work_day.'.start_flexy_time'   => 'required_if:schedule_type,flexible|required_if:schedule_type,customize|date_format:H:i',
             'schedule_details.'.$work_day.'.end_flexy_time'     => 'required_if:schedule_type,flexible|required_if:schedule_type,customize|date_format:H:i',
-            'schedule_details.'.$work_day.'.break_time'         => 'required|date_format:H:i',
+            'schedule_details.'.$work_day.'.break_time'         => ['required', 'date_format:H:i', new ValidBreakTime],
         ];
     }
 }

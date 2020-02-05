@@ -98,10 +98,12 @@ class InsertInitialValuesTable extends Migration
             Permission::create(['name' => 'view_my_team_request']),
             Permission::create(['name' => 'allow_my_team_request_approval']),
 
-            Permission::create(['name' => 'view_template_schedule']),
-            Permission::create(['name' => 'add_template_schedule']),
-            Permission::create(['name' => 'edit_template_schedule']),
-            Permission::create(['name' => 'delete_template_schedule']),
+            Permission::create(['name' => 'view_schedule']),
+            Permission::create(['name' => 'add_schedule']),
+            Permission::create(['name' => 'edit_schedule']),
+            Permission::create(['name' => 'delete_schedule']),
+            
+            Permission::create(['name' => 'edit_employee_schedule']),
 
             Permission::create(['name' => 'assign_schedule_per_department']),
         ];
