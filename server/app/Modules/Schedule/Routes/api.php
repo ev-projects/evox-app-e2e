@@ -13,13 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::get('/schedule', function (Request $request) {
-//     // return $request->schedule();
-// })->middleware('auth:api');
-
-
 # API calls for Authentication
-Route::group(['prefix' => 'schedule'/*, 'middleware' => ['jwtauth', 'auth.apikey']*/], function () {
+Route::group(['prefix' => 'schedule', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
     # API Call for Schedules
     
