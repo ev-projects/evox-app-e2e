@@ -12,7 +12,7 @@ import "./Login.css";
 
 class Login extends Component {
 
-  onSubmitHandler = async(values) => {
+  onSubmitHandler = (values) => {
     this.props.logIn(values)
   }
 
@@ -79,9 +79,6 @@ class Login extends Component {
   }
 }
 
-function renderTooltip(props) {
-  return <Tooltip {...props}>Simple tooltip</Tooltip>;
-}
 
 // Object for Data Validation
 const validationSchema = yup.object().shape({
