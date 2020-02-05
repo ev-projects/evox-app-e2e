@@ -19,14 +19,14 @@ Route::group(['prefix' => 'schedule', 'middleware' => ['jwtauth', 'auth.apikey']
     # API Call for Schedules
     
     # Insert new Schedule
-    Route::post('/',     'ScheduleController@store');
+    Route::post('/',     'ScheduleController@store'); //->middleware('permission:add_schedule');
 
     # Show existing Schedule
     Route::get('/{id}', 'ScheduleController@show');
 
     # Update existing Schedule
-    Route::put('/{id}', 'ScheduleController@update');
+    Route::put('/{id}', 'ScheduleController@update'); //->middleware('permission:update_schedule')
 
     # Delete Schedule
-    Route::delete('/{id}', 'ScheduleController@destroy');
+    Route::delete('/{id}', 'ScheduleController@destroy'); //->middleware('permission:delete_schedule');
 });

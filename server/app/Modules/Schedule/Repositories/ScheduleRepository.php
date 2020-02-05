@@ -10,6 +10,7 @@ use App\Modules\User\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ScheduleRepository implements ScheduleRepositoryInterface{
     
@@ -35,10 +36,12 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
             
             DB::commit();
+            log_to_file('info', 'Success', [$schedule]);
             return $schedule;
 
         } catch (Exception $e) {
             DB::rollback();
+            log_to_file('critical', 'Error', [$e]);
             throw $e;
         }
     }
@@ -65,10 +68,12 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
 
             DB::commit();
+            log_to_file('info', 'Success', [$schedule]);
             return $schedule;
-            
+
         } catch (Exception $e) {
             DB::rollback();
+            log_to_file('critical', 'Error', [$e]);
             throw $e;
         }
     }
@@ -86,10 +91,12 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule->delete();
 
             DB::commit();
+            log_to_file('info', 'Success', [$schedule]);
             return true;
 
         } catch (Exception $e) {
             DB::rollback();
+            log_to_file('critical', 'Error', [$e]);
             throw $e;
         }
     }
@@ -132,10 +139,12 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule->schedule_details()->saveMany( $schedule_details_array );
             
             DB::commit();
+            log_to_file('info', 'Success', [$schedule]);
             return true;
 
         } catch (Exception $e) {
             DB::rollback();
+            log_to_file('critical', 'Error', [$e]);
             throw $e;
         }
     }
@@ -157,10 +166,12 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule->schedule_policies()->saveMany( $schedule_policies_array );
             
             DB::commit();
+            log_to_file('info', 'Success', [$schedule]);
             return true;
 
         } catch (Exception $e) {
             DB::rollback();
+            log_to_file('critical', 'Error', [$e]);
             throw $e;
         }
     }
