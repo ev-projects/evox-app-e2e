@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateScheduleSettingsTable extends Migration
+class CreateSchedulePoliciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreateScheduleSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('schedule_settings', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('schedule_policies', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->unsignedInteger('schedule_id')->index();
-            $table->string('item')->index();
+            $table->string('policy')->index();
             $table->string('value')->nullable();
 
-            $table->index(['schedule_id', 'item']);
+            $table->index(['schedule_id', 'policy']);
 
-            // FK for Schedule Settings
+            // FK for Schedule Policies
             $table->foreign('schedule_id')->references('id')->on('schedules')->onUpdate('cascade')->onDelete('cascade');
         });
     }
@@ -33,6 +33,6 @@ class CreateScheduleSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('schedule_settings');
+        Schema::dropIfExists('schedule_policies');
     }
 }

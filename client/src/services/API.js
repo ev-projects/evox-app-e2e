@@ -19,7 +19,7 @@ class API  {
 
       // Declare the Default Headers that will be used on the API Call.
       var default_headers = {
-        "Content-Type"    : "application/json",
+        "Content-Type"    : Validator.isValid(config.method) && config.method == 'put' ? "application/x-www-form-urlencoded" : "application/json" ,
 
         // Pass the JWT Token given on Login for Secured User Authentication 
         "Authorization"   : "Bearer " + localStorage.getItem("access_token"),
@@ -41,7 +41,7 @@ class API  {
           headers: Formatter.merge_json(default_headers, config.headers),
   
           // Renders the Data on the AXIOS Call
-          data: Validator.isValid(config.data) ? config.data : {},
+          data: Validator.isValid(config.data) ? (Validator.isValid(config.method) && config.method == 'put' ? qs.stringify(config.data) : config.data ) : {},
         
         })
       ).then(response => {

@@ -29,9 +29,9 @@ Route::group(['prefix' => 'schedule'/*, 'middleware' => ['jwtauth', 'auth.apikey
     # Show existing Schedule
     Route::get('/{id}', 'ScheduleController@show');
 
-    // # Update existing Schedule
-    // Route::put('/{id}', 'ScheduleController@update');
+    # Update existing Schedule
+    Route::put('/{id}', 'ScheduleController@update');
 
-    // # Delete Schedule
-    // Route::delete('/{id}', 'ScheduleController@destroy');
+    # Delete Schedule
+    Route::delete('/{id}', 'ScheduleController@destroy');
 });

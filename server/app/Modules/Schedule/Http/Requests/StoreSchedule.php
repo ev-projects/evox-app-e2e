@@ -28,12 +28,16 @@ class StoreSchedule extends FormRequest
     public function rules(Request $request)
     {   
         $rules = [
-            'name'          => 'required | string | max:255',
-            'source_type'   => 'required | string | in:template,default,temporary,change_schedule',
-            'schedule_type' => 'required | string | in:standard,flexible,customize',
-            'valid_from'    => 'required_if:source_type,temporary | required_if:source_type,change_schedule | required_if:source_type,default',
-            'valid_to'      => 'required_if:source_type,temporary | required_if:source_type,change_schedule',
-            'work_days'     => 'required | array'
+            'name'                                  => 'required | string | max:255',
+            'source_type'                           => 'required | string | in:template,default,temporary,change_schedule',
+            'schedule_type'                         => 'required | string | in:standard,flexible,customize',
+            'valid_from'                            => 'required_if:source_type,temporary | required_if:source_type,change_schedule | required_if:source_type,default',
+            'valid_to'                              => 'required_if:source_type,temporary | required_if:source_type,change_schedule',
+            'work_days'                             => 'required | array',            
+            'schedule_policies.*'                   => 'in: allow_undertime,allow_late,allow_night_diff',
+            'schedule_policies.allow_undertime'     => 'bool',
+            'schedule_policies.allow_late'          => 'bool',
+            'schedule_policies.allow_night_diff'    => 'bool',
         ];
 
         // If Schedule Type is Customized, manually iterate the per Work Day rules
@@ -46,13 +50,13 @@ class StoreSchedule extends FormRequest
         } elseif( isset( $request->schedule_type ) && in_array($request->schedule_type, array('standard', 'flexible')) ) {
             $rules = array_merge($rules, create_work_day_rule("all"));
         }
-
+        
         return $rules;
     }
 
     protected function failedValidation(Validator $validator) { 
-        throw new HttpResponseException(
-            response()->json( error_response($validator->errors()->all()), JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
+        throw new HttpResponseException( 
+            error_response( $validator->errors()->all(), [], JsonResponse::HTTP_UNPROCESSABLE_ENTITY) 
         ); 
     }
 

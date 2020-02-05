@@ -5,8 +5,8 @@ namespace App\Modules\Schedule\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Schedule extends Model
-{
+class Schedule extends Model{
+    
     use SoftDeletes;
 
     protected $guarded = [];
@@ -24,7 +24,7 @@ class Schedule extends Model
         return $this->hasMany(ScheduleDetail::class);
     }
 
-    public function schedule_settings(){
-        return $this->hasMany(ScheduleSettings::class);
+    public function schedule_policies(){
+        return $this->hasMany(SchedulePolicy::class);
     }
 }

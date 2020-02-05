@@ -20,15 +20,29 @@ if (! function_exists('create_work_day_rule')) {
 
 
 
-if (! function_exists('get_restdays')) {   
+if (! function_exists('get_rest_days')) {   
     /**
      * This function returns an Array that is consisted of the Rest Days
      *
      * @param  Array work_days
      * @return array|null;
      */
-    function get_restdays($work_days) {
-        return array_diff( get_constant('WORK_DAYS'), $work_days);
+    function get_rest_days($work_days) {
+        return array_values(array_diff( get_constant('WORK_DAYS'), $work_days));
+    }
+}
+
+
+
+if (! function_exists('get_work_days')) {   
+    /**
+     * This function returns an Array that is consisted of the Work Days
+     *
+     * @param  Array work_days
+     * @return array|null;
+     */
+    function get_work_days($rest_days) {
+        return array_values(array_diff( get_constant('WORK_DAYS'), $rest_days));
     }
 }
 

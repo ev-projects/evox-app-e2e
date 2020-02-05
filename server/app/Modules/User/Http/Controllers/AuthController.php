@@ -38,11 +38,20 @@ class AuthController extends Controller
 
         // Attempt to check the Credentials. If credentials not found, return User Not Found.
         if (!$token = auth()->attempt($credentials)) {
-            return response()->json( error_response('user_not_found'), JsonResponse::HTTP_CREATED);
+            return error_response('user_not_found', [], JsonResponse::HTTP_NOT_FOUND);
         }
 
         // Set the User that was fetched into Session
-        return $this->respondWithToken($token);
+        return success_response(
+            'login_success', 
+            [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60,
+                'user' => $this->formattedUserData(),
+                'payload' => auth()->payload(),
+            ]
+        );
     }
 
 
@@ -54,9 +63,7 @@ class AuthController extends Controller
     public function logout(){
 
         auth()->logout();
-        return response()->json([
-            'message' => 'logout_success'
-        ]);
+        return success_response('logout_success');
     }
 
 
@@ -67,31 +74,14 @@ class AuthController extends Controller
      */
     public function payload(Request $request){   
         
-        return response()->json([
-            'message' => 'payload_success',
-            'user' => $this->formattedUserData(),
-            'payload' => auth()->payload(),
-        ]);
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token){   
-
-        return response()->json([
-            'message' => 'login_success',
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => $this->formattedUserData(),
-            'payload' => auth()->payload(),
-                
-        ]);
+        return success_response(
+            'payload_success', 
+            [
+                'message' => 'payload_success',
+                'user' => $this->formattedUserData(),
+                'payload' => auth()->payload(),
+            ]
+        );
     }
 
     /**
@@ -101,25 +91,3 @@ class AuthController extends Controller
         return new UserProfileResource(auth()->user());
     }
 }
-
-
-
-
-    // /**
-    //  * Refresh a token.
-    //  *
-    //  * @return \Illuminate\Http\JsonResponse
-    //  */
-    // public function refresh(){
-    //     return $this->respondWithToken(auth()->refresh());
-    // }
-    
-
-    // /**
-    //  * Get the authenticated User.
-    //  *
-    //  * @return \Illuminate\Http\JsonResponse
-    //  */
-    // public function me(){
-    //     return response()->json($this->formattedUserData());
-    // }

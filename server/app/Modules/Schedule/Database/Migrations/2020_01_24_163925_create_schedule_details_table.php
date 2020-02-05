@@ -14,7 +14,7 @@ class CreateScheduleDetailsTable extends Migration
     public function up()
     {
         Schema::create('schedule_details', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->unsignedInteger('schedule_id')->index();
             $table->enum('day', array('all', 'mon', 'tue', 'wed', 'thur', 'fri', 'sat', 'sun'))->index();
             $table->integer('start_time')->nullable();

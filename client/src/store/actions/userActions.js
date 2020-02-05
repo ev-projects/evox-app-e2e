@@ -26,13 +26,13 @@ export const logIn = (credentials) => {
             dispatch({'type': 'REQUEST_END'});
 
             // Set the Returned token on localStorage
-            localStorage.setItem("access_token", result.data.access_token);
+            localStorage.setItem("access_token", result.data.content.access_token);
 
             // Dispatch Login Success
             dispatch({
                 'type'      : 'LOGIN_SUCCESS', 
-                'payload'   : result.data.payload,
-                'user'      : result.data.user
+                'payload'   : result.data.content.payload,
+                'user'      : result.data.content.user
             })
         })
         .catch(e => {
@@ -85,8 +85,8 @@ export const fetchUser = () => {
             // Dispatch Login Success
             dispatch({
                 'type'      : 'FETCH_USER_SUCCESS', 
-                'payload'   : result.data.payload,
-                'user'      : result.data.user
+                'payload'   : result.data.content.payload,
+                'user'      : result.data.content.user
             })
 
             // Sets the Reloading to False
