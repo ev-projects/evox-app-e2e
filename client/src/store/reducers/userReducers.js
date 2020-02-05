@@ -2,7 +2,9 @@
  *  A dedicated Reducer for User State
  */
 
-const initState = {}
+const initState = {
+    error_message : ""
+}
 
 const userReducer = (state = initState, action) => {
     let message = "";
@@ -20,9 +22,13 @@ const userReducer = (state = initState, action) => {
             }
             break;
         case "LOGIN_FAILED":
-            message = "Login Failed!"
+            if(action.error.data.error.message=='user_not_found'){
+                message = "Sorry, Unrecognized Username or Password"
+            }else{
+                message = "Something went wrong"
+            }
             return {
-                ...action.error,
+                error_message : message,
             }
             break;
         /**  */

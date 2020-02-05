@@ -1,7 +1,80 @@
-.login-form {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: auto;
-  height: 100%;
+.card-body {
+    padding: 0px !important; 
+}
+
+.card-title{
+	background-color: #3a3a3a;
+	color: white;
+	padding: 10px;
+	text-align: center;
+
+}
+
+.card-text{
+	padding: 20px 25px !important;
+    }
+
+.card-body{
+    box-shadow: 0 8px 15px 3px rgba(0,0,0,0.25) !important;
+    border-bottom: 5px solid #82af13 !important;
+    border-top: 5px solid #82af13 !important;
+}
+
+.btn-primary {
+	border-color: #82af13 !important;
+    background-color: #82af13 !important;
+}
+ 
+button:focus {
+ 	outline: #82af13 !important;
+  	box-shadow: #82af13 !important;
+}
+
+.login_btn {
+	width: 100%;
+}
+
+.col-md-5{
+	max-width: 600px !important;
+	margin: 100px auto !important;
+
+}
+
+.invalid-feedback{
+	display : block !important;
+}
+
+.image_header{
+	padding: 30px 0px;
+    display: block;
+    margin: 0px auto !important;
+}
+
+body{
+	background-color: #f4f4f4 !important;
+	background-image: url(https://evox.eastvantage.com/sites/all/themes/evox_style/img/bg.jpg);
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-attachment: fixed;
+}
+
+.invalid_credentials{
+	text-align: center;
+    margin-bottom: 10px;
+}
+
+.mb-3{
+	margin-bottom: 0.5rem!important;
+}
+
+input:focus
+{
+	box-shadow: 0 8px 15px 3px rgba(130, 175, 19, 0.10) !important;
+    border-color : #82af13 !important;
+}
+
+.powered_by{
+	position: absolute;
+	top: 400px;
+	font-size: 14px;
 }
