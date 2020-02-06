@@ -1,65 +1,104 @@
 import React, { Component } from "react";
-import "./Login.css";
-import { Form, FormGroup, Input, Button } from "reactstrap";
-import Validator from "../../services/Validator";
 import { connect } from 'react-redux';
 import { logIn } from '../../store/actions/userActions'
 import { Redirect } from "react-router-dom";
+import Validator from "../../services/Validator";
+import { Form,Button,Container,Col,Card,InputGroup,FormControl,Image,OverlayTrigger,Tooltip } from 'react-bootstrap';
+import { Spring } from 'react-spring/renderprops';
+import { Formik } from 'formik';
+import * as yup from "yup";
+
+import "./Login.css";
 
 class Login extends Component {
 
-  onChangeHandler = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+  onSubmitHandler = (values) => {
+    this.props.logIn(values)
   }
 
-  onSubmitHandler = async(e) => {
-    e.preventDefault();
-    console.log(this.state)
-    await this.props.logIn(this.state)
-  }
-
-  render = () => {
-    
+  render = () => {  
     const { user } = this.props
-    const { page } = this.props
-
-    // Checks if there's an Existing Access Token and an Employee Number property from Users. Redirects to Dashboard if True
-    if( Validator.isValid( localStorage.getItem("access_token") ) && 
-        Validator.isValid(user.emp_num) ) {
+    if( Validator.isValid( localStorage.getItem("access_token") ) && Validator.isValid(user.emp_num) ) {
       return <Redirect to={global.dashboard_url} />
-    }
+    } 
 
     return (
-      <Form className="login-form" onSubmit={this.onSubmitHandler}>
-        <h1 className="text-center">
-          <span className="font-weight-bold">EVOX</span>
-        </h1>
+    <Spring 
+    from={{ opacity: 0 }} 
+    to={{ opacity: 1 }} 
+    config={{ delay: 400, duration: 400 }}
+    >
+      {props => (
+      <Container style={props} className="min-vh-100 d-flex flex-column justify-content-center">
+          <Col md={5}>
+              <Card>
+                  <Card.Body>
+                      <Image src="https://evox.eastvantage.com/sites/all/themes/evox_style/logo.png" className="image_header" fluid />
+                      <div className="powered_by">Powered By : &nbsp;
+                      <Image src="https://evox.eastvantage.com/sites/all/themes/evox_style/img/eastvantage_logo.png" fluid />
+                      </div>
+                      <Card.Text>
+                          <Formik validationSchema={validationSchema} onSubmit={this.onSubmitHandler}
+                          initialValues={{ username: '', password: '' }}>
+                          {({ values, handleChange, handleSubmit, touched, errors}) => (
+                              <form onSubmit={handleSubmit}>
+                                  <InputGroup className="mb-3">
+                                      <InputGroup.Prepend>
+                                          <InputGroup.Text id="basic-addon1">&nbsp;<i class="fa fa-user"></i>&nbsp;</InputGroup.Text>
+                                      </InputGroup.Prepend>
+                                      <FormControl isInvalid={touched.username && errors.username} variant="primary" placeholder="Email or Username" name="username" onChange={handleChange} value={values.username} />
+                                      <Form.Control.Feedback type="invalid">
+                                          &nbsp;{errors.username && touched.username && errors.username}
+                                      </Form.Control.Feedback>
+                                  </InputGroup> 
+                                  <InputGroup className="mb-3">
+                                      <InputGroup.Prepend>
+                                          <InputGroup.Text id="basic-addon1">&nbsp;<i class="fa fa-key"></i></InputGroup.Text>
+                                      </InputGroup.Prepend>
+                                      <FormControl type="password" isInvalid={touched.password && errors.password} placeholder="Password" type="password" name="password" onChange={handleChange} value={values.password} />
+                                      <Form.Control.Feedback type="invalid">
+                                          &nbsp;{errors.password && touched.password && errors.password}
+                                      </Form.Control.Feedback>
+                                  </InputGroup>
 
-        <h2 className="text-center"> Welcome </h2>
-        <FormGroup className="username-form-group">
-          <label>Username or E-mail</label>
-          <Input name="username" type="username" onChange={this.onChangeHandler}></Input>
-        </FormGroup>
-        <FormGroup className="password-form-group">
-          <label>Password</label>
-          <Input
-            name="password"
-            type="password"
-            onChange={this.onChangeHandler}
-          ></Input>
-        </FormGroup>
-        <Button type="submit" className="btn-lg btn-dark btn-block" disabled={page.isRequesting} >
-          Log-in
-        </Button>
-      </Form>
-    );
+                                  <Form.Control.Feedback type="invalid" className="invalid_credentials">{user.error_message} &nbsp;</Form.Control.Feedback>
+                                  <Button className="login_btn" variant="primary" type="submit">
+                                      Submit
+                                  </Button>
+                              </form>
+                              )}
+                          </Formik>
+                      </Card.Text>
+                  </Card.Body>
+              </Card>
+          </Col>
+      </Container>
+      )}
+    </Spring>
+  );
   }
 }
+
+
+// Object for Data Validation
+const validationSchema = yup.object().shape({
+  username: yup
+    .string()
+    .min(3)
+    .max(255)
+    .required(),
+  password: yup
+    .string()
+    .min(3)
+    .max(255)
+    .required()
+});
+
 
 const mapStateToProps = (state) => {
   return {
     user : state.user,
-    page : state.page
+    page : state.page,
   }
 }
 const mapDispatchToProps = (dispatch) => {
