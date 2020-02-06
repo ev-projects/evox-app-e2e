@@ -59,7 +59,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule->schedule_type = $data['schedule_type'];
             $schedule->rest_days = get_rest_days( $data['work_days'] );
             $schedule->save();
-
+            
             # Deleting the Details and Policies before inserting the new one.
             $schedule->schedule_details()->delete();
             $schedule->schedule_policies()->delete();
@@ -124,9 +124,9 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         DB::beginTransaction();
         try{
             $schedule_details_array = [];
-
-            # Saving of Schedule Details
-            foreach( $schedule_details as $day => $details ){
+            
+            # Saving of the Filtered Schedule Details
+            foreach( $this->filter_schedule_details($schedule, $schedule_details) as $day => $details ){
                 $schedule_details_array[ $day ] = new ScheduleDetail();
                 $schedule_details_array[ $day ]->day               = $day;
                 $schedule_details_array[ $day ]->start_time        = time_to_seconds($details['start_time']);
@@ -139,7 +139,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule->schedule_details()->saveMany( $schedule_details_array );
             
             DB::commit();
-            log_to_file('info', 'Success', [$schedule]);
+            log_to_file('info', 'Success', [$schedule_details_array]);
             return true;
 
         } catch (Exception $e) {
@@ -147,6 +147,25 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             log_to_file('critical', 'Error', [$e]);
             throw $e;
         }
+    }
+
+    /**
+     *  Filters the valid Schedule Details base on the Schedule Type. 
+     */
+    protected function filter_schedule_details(Schedule $schedule, $schedule_details){
+        $result = [];
+        /*
+        *   If the Schedule Type is Customize and the Day is within the Work days array, include the Schedule Details on the result array.
+        *   If the Schedule Type is Standard/Flexible and the Day is 'all', include the Schedule Details on the result array.
+        */
+        foreach( $schedule_details as $day => $details ){
+            if( ( $schedule->schedule_type == "customize" && in_array( $day, get_work_days( $schedule->rest_days ) ) ) 
+                ||  
+                ( in_array( $schedule->schedule_type, array( 'standard', 'flexible' ) ) && $day == 'all') ){
+                    $result[ $day ] = $details;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -166,7 +185,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule->schedule_policies()->saveMany( $schedule_policies_array );
             
             DB::commit();
-            log_to_file('info', 'Success', [$schedule]);
+            log_to_file('info', 'Success', [$schedule_policies_array]);
             return true;
 
         } catch (Exception $e) {

@@ -37,6 +37,6 @@ class ValidBreakTime implements Rule
      */
     public function message()
     {
-        return 'The break time must not exceed more than 1 hour.';
+        return 'The :attribute must not exceed more than 1 hour.';
     }
 }
