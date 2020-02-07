@@ -18,17 +18,7 @@ const userReducer = (state = initState, action) => {
             message = "Login Success!"
             return {
                 ...action.user,
-                payload : action.payload,
-            }
-            break;
-        case "LOGIN_FAILED":
-            if(action.error.data.error.message=='user_not_found'){
-                message = "Sorry, Unrecognized Username or Password"
-            }else{
-                message = "Something went wrong"
-            }
-            return {
-                error_message : message,
+                payload : action.payload
             }
             break;
         /**  */

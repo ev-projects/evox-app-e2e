@@ -1,5 +1,7 @@
 import axios from "axios";
 import API from "../../services/API";
+import { trackPromise } from "react-promise-tracker";
+import Formatter from "../../services/Formatter";
 
 /**
  *  A dedicated repository of Actions for Users
@@ -11,8 +13,8 @@ export const logIn = (credentials) => {
     return (dispatch, getState) => {
 
         dispatch({'type': 'REQUEST_START'});
-        
-        axios({
+
+        trackPromise(axios({
             method: "post",
             url: process.env.REACT_APP_API_BASE_URL + "/auth/login",
             headers: { 
@@ -20,10 +22,8 @@ export const logIn = (credentials) => {
                 'X-Authorization' : process.env.REACT_APP_API_KEY 
             },
             data: credentials
-        })
+        }))
         .then(result => {
-            
-            dispatch({'type': 'REQUEST_END'});
 
             // Set the Returned token on localStorage
             localStorage.setItem("access_token", result.data.content.access_token);
@@ -34,13 +34,12 @@ export const logIn = (credentials) => {
                 'payload'   : result.data.content.payload,
                 'user'      : result.data.content.user
             })
+
+            // Dispatch Alert of Login Success
+            dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
-            dispatch({'type': 'REQUEST_END'});
-            dispatch({
-                'type'      : 'LOGIN_FAILED', 
-                'error'     : API.format(e.response)
-            })
+            dispatch( Formatter.alert_error( e ) ) 
         });
     }
 }
@@ -58,12 +57,12 @@ export const logOut = () => {
             localStorage.removeItem("access_token");
             
             dispatch({'type': 'LOGOUT_SUCCESS'})
+
+            // Dispatch Alert of Login Success
+            dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
-            dispatch({
-                'type'      : 'LOGOUT_FAILED', 
-                'error'     : API.format(e.response)
-            })
+            dispatch( Formatter.alert_error( e ) ) 
         });
     }
 }
@@ -89,14 +88,13 @@ export const fetchUser = () => {
                 'user'      : result.data.content.user
             })
 
+            dispatch( Formatter.alert_success( result, 3000 )  );
+
             // Sets the Reloading to False
             dispatch({'type': 'RELOAD_END'});
         })
         .catch(e => {
-            dispatch({
-                'type'      : 'FETCH_USER_FAILED', 
-                'error'     : API.format(e.response)
-            })
+            dispatch( Formatter.alert_error( e ) ) 
         });
     }
 }

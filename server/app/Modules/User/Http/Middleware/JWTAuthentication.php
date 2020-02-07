@@ -27,20 +27,20 @@ class JWTAuthentication
     {
         try {
             if (!$user = JWTAuth::parseToken()->authenticate()) {
-                return error_response('user_not_found', [], JsonResponse::HTTP_NOT_FOUND);
+                return error_response( trans('messages.user_not_found') , [], JsonResponse::HTTP_NOT_FOUND);
             }
 
             # If the token is expired, this exception will handle it.
         } catch (TokenExpiredException $e) {
-            return error_response('token_expired', [], JsonResponse::HTTP_UNAUTHORIZED);
+            return error_response( trans('messages.token_expired') , [], JsonResponse::HTTP_UNAUTHORIZED);
 
             # If the token is invalid, this exception will handle it.
         } catch (TokenInvalidException $e) {
-            return error_response('token_invalid', [], JsonResponse::HTTP_UNAUTHORIZED);
+            return error_response( trans('messages.token_invalid') , [], JsonResponse::HTTP_UNAUTHORIZED);
 
             # If first 2 exceptions are not met, this exception will handle it by default.
         } catch (JWTException $e) {
-            return error_response('token_absent', [], JsonResponse::HTTP_UNAUTHORIZED);
+            return error_response( trans('messages.token_absent') , [], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         return $next($request);

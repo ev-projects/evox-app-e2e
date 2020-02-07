@@ -11,7 +11,7 @@
 }
 
 .card-text{
-	padding: 20px 25px !important;
+	padding: 0px 20px 20px 25px !important;
     }
 
 .card-body{
@@ -42,6 +42,7 @@ button:focus {
 
 .invalid-feedback{
 	display : block !important;
+	margin-bottom: .25rem;
 }
 
 .image_header{
@@ -60,11 +61,11 @@ body{
 
 .invalid_credentials{
 	text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
 }
 
 .mb-3{
-	margin-bottom: 0.5rem!important;
+	margin-bottom: 0px!important;
 }
 
 input:focus
@@ -74,7 +75,12 @@ input:focus
 }
 
 .powered_by{
-	position: absolute;
-	top: 400px;
 	font-size: 14px;
+	margin-top: 5px; 
+	margin-right: 2.5px; 
+	float: right;
+}
+
+.min-vh-80{
+	min-height: 80vh!important;
 }

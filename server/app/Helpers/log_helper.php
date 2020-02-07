@@ -10,7 +10,7 @@ if (! function_exists('log_to_file')) {
      * @param  string type (emergency|alert|critical|error|warning|notice|info|debug)
      * @param  string message
      * @param  array|object|string data
-     * @return time time
+     * @return void
      */
     function log_to_file( $type, $message, $data=array()) {
         try{
@@ -24,3 +24,21 @@ if (! function_exists('log_to_file')) {
         }
     }
 }
+
+
+if (! function_exists('log_error')) {   
+    /**
+     * Logs the error into laravel.log File
+     *
+     * @param  Exception error 
+     * @return void
+     */
+    function log_error( $error ) {
+        try{
+            log_to_file('critical', 'Error', [$error]);
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+

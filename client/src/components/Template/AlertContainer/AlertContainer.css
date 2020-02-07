@@ -1,0 +1,27 @@
+/*
+ * AlertContainer css File
+*/
+
+.alert-pop-up {
+    position:absolute !important;
+    top: 3%;
+    width: 30%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display:block;
+    max-height: 300px;
+    z-index: 1;
+}
+
+.alert-container{
+    position: relative !important;
+}
+
+.alert-heading {
+    font-size: 1.2rem !important;
+    /* text-align: center; */
+}
+.alert-body {
+    font-size: .8rem !important;
+}
