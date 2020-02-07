@@ -141,10 +141,10 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                     $schedule_details_array[ $day ]->start_flexy_time  = time_to_seconds($details['start_flexy_time']);
                     $schedule_details_array[ $day ]->end_flexy_time    = time_to_seconds($details['end_flexy_time']);
                 }elseif($schedule['schedule_type']=="customize"){
-                    # Check if the start flexy and end flexy is existing since it's optional 
-                    if(isset($schedule_details_array[ $day ]->start_flexy_time)&&isset($schedule_details_array[ $day ]->end_flexy_time)){
+                    # Check if the start flexy and end flexy is existing since it's optional
+                    if( isset( $details['start_flexy_time'] ) && isset( $details['end_flexy_time'] ) ){
                         $schedule_details_array[ $day ]->start_flexy_time  = time_to_seconds($details['start_flexy_time']);
-                        $schedule_details_array[ $day ]->end_flexy_time  = time_to_seconds($details['start_flexy_time']);
+                        $schedule_details_array[ $day ]->end_flexy_time  = time_to_seconds($details['end_flexy_time']);
                     }
                 }
             }
