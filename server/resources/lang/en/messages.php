@@ -15,9 +15,9 @@ return [
      *  General Terms
      */
     'error_default' => 'Sorry, something went wrong.',
-    'token_expired'  => 'Token expired. Please re-login.',
-    'token_invalid'  => 'Token invalid! Please login properly.',
-    'token_absent'  => 'Token absent! Please login properly.',
+    'token_expired'  => 'Session time-out. Please re-login.',
+    'token_invalid'  => 'Session time-out. Please re-login.',
+    'token_absent'  => 'Session time-out. Please re-login.',
 
     /**
      *  User Authentication

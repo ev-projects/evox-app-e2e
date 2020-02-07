@@ -8,10 +8,10 @@ import "./LoaderContainer.css";
 const LoaderContainer = () => {
   
   const { promiseInProgress } = usePromiseTracker();
-
+    
     return (
       promiseInProgress &&
-      <div className="overlay">
+      <div className={promiseInProgress?'fadeInLoader overlay':'fadeOutLoader overlay'}>
         <div className="spanner">
           <Loader
             type="ThreeDots"

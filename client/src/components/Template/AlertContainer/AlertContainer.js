@@ -41,9 +41,7 @@ const AlertContainer = (props) => {
 
 
     return (
-      alert.onShow &&
-      <Fade in={alert.onShow}>
-        <div className="alert-pop-up">
+        <div className={alert.onShow?'fadeIn alert-pop-up':'fadeOut alert-pop-up'}>
           <Alert className="alert-container"  variant={alert.variant} onClose={props.hideAlert} dismissible>
             {header}
             <div className="alert-body">
@@ -51,7 +49,6 @@ const AlertContainer = (props) => {
             </div>
           </Alert>
         </div>
-      </Fade>
     );
 }
 

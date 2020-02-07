@@ -14,7 +14,7 @@ export const logIn = (credentials) => {
 
         dispatch({'type': 'REQUEST_START'});
 
-        trackPromise(axios({
+        trackPromise( axios({
             method: "post",
             url: process.env.REACT_APP_API_BASE_URL + "/auth/login",
             headers: { 
@@ -22,7 +22,7 @@ export const logIn = (credentials) => {
                 'X-Authorization' : process.env.REACT_APP_API_KEY 
             },
             data: credentials
-        }))
+        }) )
         .then(result => {
 
             // Set the Returned token on localStorage
@@ -39,7 +39,9 @@ export const logIn = (credentials) => {
             dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
+            // Please take note that I used e.response here since I am not using the API.call function. That function already handles the 'e' to get it's response.
+            // I'm doing it manually for the manual AXIOS calls only.
+            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
         });
     }
 }

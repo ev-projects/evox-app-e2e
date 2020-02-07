@@ -39,7 +39,7 @@ class Formatter {
     time_out = time_out || 0;
     return {
       'type'      : 'SHOW_ALERT',
-      'error'     : API.format(error_result.response),
+      'error'     : error_result,
       'timeOut'   : time_out
     }
   }
