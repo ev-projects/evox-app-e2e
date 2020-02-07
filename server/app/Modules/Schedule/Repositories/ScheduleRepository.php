@@ -131,9 +131,19 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 $schedule_details_array[ $day ]->day               = $day;
                 $schedule_details_array[ $day ]->start_time        = time_to_seconds($details['start_time']);
                 $schedule_details_array[ $day ]->end_time          = time_to_seconds($details['end_time']);
-                $schedule_details_array[ $day ]->start_flexy_time  = time_to_seconds($details['start_flexy_time']);
-                $schedule_details_array[ $day ]->end_flexy_time    = time_to_seconds($details['end_flexy_time']);
                 $schedule_details_array[ $day ]->break_time        = time_to_seconds($details['break_time']);
+
+                # For Flexible Schedule
+                if($schedule['schedule_type']=="flexible"){
+                    $schedule_details_array[ $day ]->start_flexy_time  = time_to_seconds($details['start_flexy_time']);
+                    $schedule_details_array[ $day ]->end_flexy_time    = time_to_seconds($details['end_flexy_time']);
+                }elseif($schedule['schedule_type']=="customize"){
+                    # Check if the start flexy and end flexy is existing since it's optional 
+                    if(isset($schedule_details_array[ $day ]->start_flexy_time)&&isset($schedule_details_array[ $day ]->end_flexy_time)){
+                        $schedule_details_array[ $day ]->start_flexy_time  = time_to_seconds($details['start_flexy_time']);
+                        $schedule_details_array[ $day ]->end_flexy_time  = time_to_seconds($details['start_flexy_time']);
+                    }
+                }
             }
 
             $schedule->schedule_details()->saveMany( $schedule_details_array );
