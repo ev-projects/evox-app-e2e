@@ -41,7 +41,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
         } catch (Exception $e) {
             DB::rollback();
-            log_to_file('critical', 'Error', [$e]);
+            log_error($e);
             throw $e;
         }
     }
@@ -73,7 +73,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
         } catch (Exception $e) {
             DB::rollback();
-            log_to_file('critical', 'Error', [$e]);
+            log_error($e);
             throw $e;
         }
     }
@@ -96,7 +96,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
         } catch (Exception $e) {
             DB::rollback();
-            log_to_file('critical', 'Error', [$e]);
+            log_error($e);
             throw $e;
         }
     }
@@ -106,8 +106,11 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
      */
     public function show($id){
         try {
-            return Schedule::findOrFail($id);
+            $schedule = Schedule::findOrFail($id);
+            log_to_file('info', 'Success', [$schedule]);
+            return $schedule;
         } catch (Exception $e) {
+            log_error($e);
             throw $e;
         }
     }
@@ -154,7 +157,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
         } catch (Exception $e) {
             DB::rollback();
-            log_to_file('critical', 'Error', [$e]);
+            log_error($e);
             throw $e;
         }
     }
@@ -200,7 +203,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
         } catch (Exception $e) {
             DB::rollback();
-            log_to_file('critical', 'Error', [$e]);
+            log_error($e);
             throw $e;
         }
     }

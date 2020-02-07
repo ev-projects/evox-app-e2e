@@ -1,8 +1,9 @@
 // Generic React Imports
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
 
+// Import the AlertContainer Component
+import AlertContainer from "./components/Template/AlertContainer";
 
 // Import the LoaderContainer Component.
 import LoaderContainer from "./components/Template/LoaderContainer";
@@ -25,8 +26,9 @@ class App extends Component {
 
     return (
       <div className="App">
-        <RouteList />
         <LoaderContainer />
+        <AlertContainer />
+        <RouteList />
       </div>
     );
   }
