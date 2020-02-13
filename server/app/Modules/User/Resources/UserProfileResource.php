@@ -29,7 +29,7 @@ class UserProfileResource extends JsonResource
             array(
                 'emp_num' => $this->emp_num,
                 'bhr_num' => $this->bhr_num,
-                'department_id' => $this->department_id,
+                'department' => $this->department(),
                 'email' => $this->email,
                 'first_name' => $this->first_name,
                 'middle_name' => $this->middle_name,

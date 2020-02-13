@@ -1,55 +1,33 @@
 <?php 
 
-namespace App\Modules\Schedule\Repositories;
-
-use App\Modules\Schedule\Models\Schedule;
-use App\Modules\Schedule\Models\ScheduleDetail;
-use App\Modules\Schedule\Models\SchedulePolicy;
+namespace App\Modules\User\Repositories;
 
 use App\Modules\User\Models\User;
+use DebugBar\DebugBar;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ScheduleRepository implements ScheduleRepositoryInterface{
+class UserRepository implements UserRepositoryInterface{
     
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
 
     /**
-     *  Responsible for Storing the Schedule and it's Details and Policies. 
-     * @param array (schedule Post Variables) $data
-     * @return Schedule $schedule
+     *  Responsible for Storing the User. 
+     * @param array (Post Variables) $data
+     * @return User $user
      */
     public function store(array $data){
         DB::beginTransaction();
         try {
 
-            $schedule = new Schedule;
-
-            /**  Check if there's a data for Name. If it's not valid, generate a Schedule Name base from the Data. */
-                $schedule->name         = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : generate_schedule_name( $data );
-            /** */
-
-            $schedule->emp_num          = ( isset( $data['emp_num'] ) && is_valid( $data['emp_num'] ) ) ? $data['emp_num'] : null;
-            $schedule->source_type      = ( isset( $data['source_type'] ) && is_valid( $data['source_type'] ) ) ? $data['source_type'] : null;
-            $schedule->schedule_type    = ( isset( $data['schedule_type'] ) && is_valid( $data['schedule_type'] ) ) ? $data['schedule_type'] : null;
-            $schedule->valid_from       = ( isset( $data['valid_from'] ) && is_valid( $data['valid_from'] ) ) ? $data['valid_from'] : null;
-            $schedule->valid_to         = ( isset( $data['valid_to'] ) && is_valid( $data['valid_to'] ) ) ? $data['valid_to'] : null;
-            $schedule->rest_days        = get_rest_days( $data['work_days'] );
-            $schedule->updated_by       = auth()->user()->emp_num;
-            $schedule->created_by       = auth()->user()->emp_num;
-            $schedule                   = $this->set_schedule_valid_date($schedule, $data);
-            $schedule->save();
-
-            $this->save_schedule_details( $schedule, $data['schedule_details'] );
-            $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
-            
+            // Write Code
             DB::commit();
-            log_to_file('info', 'Success', [$schedule]);
-            return $schedule;
+            log_to_file('info', 'Success', [ /**  Variable */]);
+            return null;  /**  Variable */;
 
         } catch (Exception $e) {
             DB::rollback();
@@ -59,35 +37,19 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     }
 
     /**
-     *  Responsible for Updating the Schedule and it's Details and Policies. 
-     * @param array (schedule Post Variables) $data
-     * @param $id
-     * @return Schedule $schedule
+     *  Responsible for Updating the User 
+     * @param array (Post Variables) $data
+     * @param $emp_num
+     * @return User $user
      */
-    public function update(array $data, $id){
+    public function update(array $data, $emp_num){
         DB::beginTransaction();
         try {
 
-            $schedule = Schedule::findOrFail($id);
-            $schedule->name             = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : $schedule->name;    # Reuse the Schedule Name if no new input was found.
-            $schedule->emp_num          = ( isset( $data['emp_num'] ) && is_valid( $data['emp_num'] ) ) ? $data['emp_num'] : null;
-            $schedule->source_type      = ( isset( $data['source_type'] ) && is_valid( $data['source_type'] ) ) ? $data['source_type'] : null;
-            $schedule->schedule_type    = ( isset( $data['schedule_type'] ) && is_valid( $data['schedule_type'] ) ) ? $data['schedule_type'] : null;
-            $schedule->rest_days        = get_rest_days( $data['work_days'] );
-            $schedule->updated_by       = auth()->user()->emp_num;
-            $schedule                   = $this->set_schedule_valid_date($schedule, $data);
-            $schedule->update();
-            
-            # Deleting the Details and Policies before inserting the new one.
-            $schedule->schedule_details()->delete();
-            $schedule->schedule_policies()->delete();
-
-            $this->save_schedule_details( $schedule, $data['schedule_details'] );
-            $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
-
+            // Write Code
             DB::commit();
-            log_to_file('info', 'Success', [$schedule]);
-            return $schedule;
+            log_to_file('info', 'Success', [ /**  Variable */]);
+            return null;  /**  Variable */;
 
         } catch (Exception $e) {
             DB::rollback();
@@ -97,7 +59,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     }
 
     /**
-     *  Responsible for Soft-Deleting the Schedule and removing the rows of Schedule Details & Policies from Database
+     *  Responsible for Soft-Deleting the User
      * @param $id
      * @return bool
      */
@@ -105,17 +67,10 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         DB::beginTransaction();
         try {
 
-            $schedule = Schedule::findOrFail($id);
-            $schedule->updated_by = auth()->user()->emp_num;
-            $schedule->update();
-
-            $schedule->schedule_details()->delete();
-            $schedule->schedule_policies()->delete();
-            $schedule->delete();
-
+            // Write Code
             DB::commit();
-            log_to_file('info', 'Success', [$schedule]);
-            return true;
+            log_to_file('info', 'Success', [ /**  Variable */]);
+            return null;  /**  Variable */;
 
         } catch (Exception $e) {
             DB::rollback();
@@ -125,15 +80,15 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     }
 
     /**
-     *  Responsible for fetching the Schedule with the ID given.
-     * @param $id
-     * @return Schedule $schedule
+     *  Responsible for fetching the User with the Employee Number given.
+     * @param $emp_num
+     * @return User $user
      */
-    public function show($id){
+    public function show($emp_num){
         try {
-            $schedule = Schedule::findOrFail($id);
-            log_to_file('info', 'Success', [$schedule]);
-            return $schedule;
+            $user = User::findOrFail($emp_num);
+            log_to_file('info', 'Success', [$user]);
+            return $user;
         } catch (Exception $e) {
             log_error($e);
             throw $e;

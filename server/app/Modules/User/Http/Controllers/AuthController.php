@@ -6,10 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use App\Modules\User\Resources\UserProfileResource;
-use App\Modules\User\Models\Permission;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Config;
 
 class AuthController extends Controller
 {
@@ -26,6 +24,7 @@ class AuthController extends Controller
      */
     public function login(Request $request){   
         try {
+
             // Get the Credentials inputted by the User.
             $credentials = request(['username', 'password']);
 
@@ -42,19 +41,21 @@ class AuthController extends Controller
                 return error_response( trans('messages.user_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
             }
 
+            log_activity( trans('messages.login') );
+
             // Set the User that was fetched into Session
-            return success_response(
-                trans('messages.login_success'), 
-                [
-                    'access_token' => $token,
-                    'token_type' => 'bearer',
-                    'expires_in' => auth()->factory()->getTTL() * 60,
-                    'user' => $this->formattedUserData(),
-                    'payload' => auth()->payload(),
-                ]
-            );
+            $result = [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60,
+                'user' => new UserProfileResource( auth()->user() ),
+                'payload' => auth()->payload(),
+            ];
+
+            log_to_file('info', 'Success', $result);
+            return success_response( trans('messages.login_success'), $result );
         } catch(Exception $e){
-            return error_response( trans('messages.error_default'), [], JsonResponse::HTTP_BAD_REQUEST);
+            return error_response( trans('messages.error_default'), $e );
         }
     }
 
@@ -66,10 +67,15 @@ class AuthController extends Controller
      */
     public function logout(){
         try {
+            log_activity( trans('messages.logout') );
+
+            log_to_file('info', 'Success', true);
+
             auth()->logout();
+
             return success_response( trans('messages.logout_success') );
         } catch(Exception $e){
-            return error_response( trans('messages.error_default'), [], JsonResponse::HTTP_BAD_REQUEST);
+            return error_response( trans('messages.error_default'), $e );
         }
     }
 
@@ -81,22 +87,19 @@ class AuthController extends Controller
      */
     public function payload(Request $request){   
         try {
-            return success_response(
-                trans('messages.payload_success'), 
-                [
-                    'user' => $this->formattedUserData(),
-                    'payload' => auth()->payload(),
-                ]
-            );
+            log_activity( trans('messages.payload') );
+
+            $result = [
+                'user' => new UserProfileResource( auth()->user() ),
+                'payload' => auth()->payload(),
+            ];
+
+            log_to_file('info', 'Success', $result);
+            
+            return success_response( trans('messages.payload_success'), $result );
         } catch(Exception $e){
-            return error_response( trans('messages.error_default'), [], JsonResponse::HTTP_BAD_REQUEST);
+            return error_response( trans('messages.error_default'), $e );
         }
     }
-
-    /**
-     *  Returns the Formatted User and Permission Resource
-     */
-    protected function formattedUserData(){
-        return new UserProfileResource(auth()->user());
-    }
+    
 }

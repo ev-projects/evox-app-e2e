@@ -24,14 +24,12 @@ class CreateUsersTable extends Migration
             $table->string('last_name')->nullable();
             $table->string('employment_status');
             $table->unsignedInteger('department_id')->nullable();
-            $table->unsignedInteger('schedule_id')->nullable();
             $table->boolean('is_active')->default(false);
             $table->boolean('force_change_password')->default(false);
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade')->onUpdate('cascade')->onDelete('set null');
-            $table->foreign('schedule_id')->references('id')->on('schedules')->onDelete('cascade')->onUpdate('cascade')->onDelete('set null');
+            $table->foreign('department_id')->references('id')->on('departments')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

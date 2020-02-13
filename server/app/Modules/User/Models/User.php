@@ -8,48 +8,27 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Traits\HasPermissions;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, HasRoles, HasPermissions, SoftDeletes;
+    use Notifiable, HasRoles, HasPermissions, SoftDeletes, LogsActivity;
     
     public $primaryKey = 'emp_num';
     public $incrementing = false;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-    ];
+    protected $fillable = [];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'password'
     ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
+
     protected $dates = ['deleted_at'];
 
     /**
@@ -71,24 +50,49 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-    
 
     ########################################################################
     ############################ Custom Helpers ############################
     ########################################################################
 
     /**
+     * 
+     *  gets the Full Name of the User 
+     *  - Can have additional format depending on the $format_type variable.
+     *  -   1  -> {first_name} {middle_name} {last_name}
+     *  -   2  -> {last_name}, {first_name} {middle_name} 
+     * 
+     */
+    public function getFullName( $format_type = 1  )
+    {
+        $result = '';
+        switch($format_type) {
+            case 1:
+                $result = $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
+                break;
+            case 2:
+                $result = $this->last_name . ', '. $this->first_name . ' ' . $this->middle_name;
+                break;
+            default:
+                $result = $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
+                break;
+        }
+        return $result;
+    }
+    
+
+    /**
      *  Eloquent Query Helpers
      */
 
      # Sets the Query to get all Active only
-    public function isActive($query){
-        return $query->where('active', 1);
+    public function isActive(){
+        return $this->where('is_active', 1);
     }
 
     # Sets the Query to get all Inactive only
-    public function isInactive($query){
-        return $query->where('active', 0);
+    public function isInactive(){
+        return $this->where('is_active', 0);
     }
 
     ########################################################################
@@ -115,8 +119,18 @@ class User extends Authenticatable implements JWTSubject
     }
 
     # Fetch the User's Schedule (Source type is Default)
-    public function schedule(){
-        return $this->hasOne(Schedule::class, 'id', 'schedule_id')->where('source_type', 'default');
+    public function defaultSchedule(){
+        return $this->hasOne(Schedule::class, 'emp_num', 'emp_num')->where('source_type', 'default');
+    }
+
+    # Fetch the User's Schedule (Source type is Temporary)
+    public function temporarySchedules(){
+        return $this->hasMany(Schedule::class, 'emp_num', 'emp_num')->where('source_type', 'temporary');
+    }
+
+    # Fetch the User's Schedule (Source type is Change Schedule)
+    public function changeSchedule(){
+        return $this->hasMany(Schedule::class, 'emp_num', 'emp_num')->where('source_type', 'change_schedule');
     }
 
     ########################################################################

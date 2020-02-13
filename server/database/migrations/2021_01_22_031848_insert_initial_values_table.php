@@ -103,7 +103,7 @@ class InsertInitialValuesTable extends Migration
             Permission::create(['name' => 'edit_schedule']),
             Permission::create(['name' => 'delete_schedule']),
             
-            Permission::create(['name' => 'edit_employee_schedule']),
+            Permission::create(['name' => 'assign_schedule']),
 
             Permission::create(['name' => 'assign_schedule_per_department']),
         ];
@@ -179,13 +179,13 @@ class InsertInitialValuesTable extends Migration
 
 
         // Add Users for their distinct permissions
-        User::where('emp_num', '2065')->first()
+        User::find('2065')
             ->assignRole($employee_role)
             ->syncPermissions(array_merge($employee_permissions));
-        User::where('emp_num', '1479')->first()
+        User::find('1479')
             ->assignRole($employee_role)
             ->syncPermissions(array_merge($employee_permissions));
-        User::where('emp_num', '012')->first()
+        User::find('012')
             ->assignRole([$employee_role, $supervisor_role])
             ->syncPermissions(array_merge($employee_permissions, $supervisor_permissions));
 

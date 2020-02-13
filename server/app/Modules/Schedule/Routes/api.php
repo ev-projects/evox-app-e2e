@@ -13,20 +13,27 @@ use Illuminate\Http\Request;
 |
 */
 
-# API calls for Authentication
+# API Call for Schedules
 Route::group(['prefix' => 'schedule', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-
-    # API Call for Schedules
     
     # Insert new Schedule
     Route::post('/',     'ScheduleController@store'); //->middleware('permission:add_schedule');
 
     # Show existing Schedule
-    Route::get('/{id}', 'ScheduleController@show');
+    Route::get('/{id}', 'ScheduleController@show'); //->middleware('permission:view_schedule')
 
     # Update existing Schedule
     Route::put('/{id}', 'ScheduleController@update'); //->middleware('permission:update_schedule')
 
     # Delete Schedule
     Route::delete('/{id}', 'ScheduleController@destroy'); //->middleware('permission:delete_schedule');
+
+
+    #####################################################################################################
+
+    # API Call for Assigning of Schedule
+    
+    # Insert new Schedule
+    Route::post('/assign/{emp_num}',     'ScheduleController@assign'); //->middleware('permission:assign_schedule');
+
 });

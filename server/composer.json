@@ -14,6 +14,7 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.7.28",
         "laravel/tinker": "^1.0",
+        "spatie/laravel-activitylog": "1.0.0",
         "spatie/laravel-cors": "^1.6",
         "spatie/laravel-permission": "^1.3",
         "tymon/jwt-auth": "^1.0.0-beta.3@dev"
@@ -37,8 +38,10 @@
         "files": [
             "app/Helpers/api_response_helper.php",
             "app/Helpers/constants_helper.php",
+            "app/Helpers/log_helper.php",
+            "app/Helpers/rule_helper.php",
             "app/Helpers/schedule_helper.php",
-            "app/Helpers/log_helper.php"
+            "app/Helpers/validator_helper.php"
         ]
     },
     "autoload-dev": {

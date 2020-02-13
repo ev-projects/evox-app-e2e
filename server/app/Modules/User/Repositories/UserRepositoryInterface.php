@@ -1,8 +1,8 @@
 <?php 
 
-namespace App\Modules\Schedule\Repositories;
+namespace App\Modules\User\Repositories;
 
-interface ScheduleRepositoryInterface
+interface UserRepositoryInterface
 {
     public function store( array $data );
 
@@ -11,6 +11,4 @@ interface ScheduleRepositoryInterface
     public function destroy( $id );
 
     public function show( $id );
-
-    public function assign( array $data );
 }

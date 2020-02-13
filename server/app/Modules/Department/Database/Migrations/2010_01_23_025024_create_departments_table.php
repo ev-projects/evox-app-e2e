@@ -20,8 +20,6 @@ class CreateDepartmentsTable extends Migration
             $table->text('description')->nullable();
             $table->unsignedInteger('schedule_id')->nullable();
             $table->timestamps();
-
-            $table->foreign('schedule_id')->references('id')->on('schedules')->onUpdate('cascade')->onDelete('set null');
         });
     }
 
