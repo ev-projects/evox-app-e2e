@@ -34,10 +34,13 @@ Route::group(['prefix' => 'auth'], function () {
 
 #####################################################################################################
 
-# API Calls for user/{emp_num}
-Route::group(['prefix' => 'user/{emp_num}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+# API Calls for user/{id}
+Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
     # Gets the Default Schedule of the User indicated.
     Route::get('default_schedule', 'UserController@default_schedule');//->middleware('auth.apikey');
+    
+    # Gets the Temporary Schedules of the User indicated.
+    Route::get('temporary_schedules', 'UserController@temporary_schedules');//->middleware('auth.apikey');
 
 });

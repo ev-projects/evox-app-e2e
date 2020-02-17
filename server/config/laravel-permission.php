@@ -83,7 +83,7 @@ return [
         /*
          * The name of the foreign key to the users table.
          */
-        'users' => 'user_emp_num',
+        'users' => 'user_id',
     ],
 
     'foreign_table_primary_key' => [
@@ -91,6 +91,6 @@ return [
         /*
          * The name of the foreign key to the users table.
          */
-        'users' => 'emp_num',
+        'users' => 'id',
     ],
 ];

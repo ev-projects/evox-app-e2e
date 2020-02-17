@@ -36,9 +36,8 @@ class UpdateScheduleRequest extends FormRequest
         $rules = array_merge(
             inhert_validation_rules( $form_requests, $request ), 
             [
-                'name'    => 'required|string|max:255',
-                'source_type'    => 'required|string|in:template,default,temporary,change_schedule',
-                'schedule_type'    => 'required|string|in:standard,flexible,customize',
+                'name'              => 'required|string|max:255',
+                'source_type'       => 'required|string|in:template',
             ]
         );
         return $rules;

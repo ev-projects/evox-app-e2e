@@ -33,14 +33,16 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 $schedule->name         = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : generate_schedule_name( $data );
             /** */
 
-            $schedule->emp_num          = ( isset( $data['emp_num'] ) && is_valid( $data['emp_num'] ) ) ? $data['emp_num'] : null;
+            $schedule->bind_to          = ( isset( $data['bind_to'] ) && is_valid( $data['bind_to'] ) ) ? $data['bind_to'] : null;
+            $schedule->bind_id          = ( isset( $data['bind_id'] ) && is_valid( $data['bind_id'] ) ) ? $data['bind_id'] : null;
+
             $schedule->source_type      = ( isset( $data['source_type'] ) && is_valid( $data['source_type'] ) ) ? $data['source_type'] : null;
             $schedule->schedule_type    = ( isset( $data['schedule_type'] ) && is_valid( $data['schedule_type'] ) ) ? $data['schedule_type'] : null;
             $schedule->valid_from       = ( isset( $data['valid_from'] ) && is_valid( $data['valid_from'] ) ) ? $data['valid_from'] : null;
             $schedule->valid_to         = ( isset( $data['valid_to'] ) && is_valid( $data['valid_to'] ) ) ? $data['valid_to'] : null;
             $schedule->rest_days        = get_rest_days( $data['work_days'] );
-            $schedule->updated_by       = auth()->user()->emp_num;
-            $schedule->created_by       = auth()->user()->emp_num;
+            $schedule->updated_by       = auth()->user()->id;
+            $schedule->created_by       = auth()->user()->id;
             $schedule                   = $this->set_schedule_valid_date($schedule, $data);
             $schedule->save();
 
@@ -70,11 +72,14 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             $schedule = Schedule::findOrFail($id);
             $schedule->name             = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : $schedule->name;    # Reuse the Schedule Name if no new input was found.
-            $schedule->emp_num          = ( isset( $data['emp_num'] ) && is_valid( $data['emp_num'] ) ) ? $data['emp_num'] : null;
+
+            $schedule->bind_to          = ( isset( $data['bind_to'] ) && is_valid( $data['bind_to'] ) ) ? $data['bind_to'] : null;
+            $schedule->bind_id          = ( isset( $data['bind_id'] ) && is_valid( $data['bind_id'] ) ) ? $data['bind_id'] : null;
+
             $schedule->source_type      = ( isset( $data['source_type'] ) && is_valid( $data['source_type'] ) ) ? $data['source_type'] : null;
             $schedule->schedule_type    = ( isset( $data['schedule_type'] ) && is_valid( $data['schedule_type'] ) ) ? $data['schedule_type'] : null;
             $schedule->rest_days        = get_rest_days( $data['work_days'] );
-            $schedule->updated_by       = auth()->user()->emp_num;
+            $schedule->updated_by       = auth()->user()->id;
             $schedule                   = $this->set_schedule_valid_date($schedule, $data);
             $schedule->update();
             
@@ -104,9 +109,9 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     public function destroy($id){
         DB::beginTransaction();
         try {
-
             $schedule = Schedule::findOrFail($id);
-            $schedule->updated_by = auth()->user()->emp_num;
+
+            $schedule->updated_by = auth()->user()->id;
             $schedule->update();
 
             $schedule->schedule_details()->delete();
@@ -115,6 +120,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             DB::commit();
             log_to_file('info', 'Success', [$schedule]);
+
             return true;
 
         } catch (Exception $e) {
@@ -148,40 +154,19 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
      */
     public function assign( array $data ){
         try {
-            /** If there's a logged-in User */
-            if( auth()->user() ) {
 
-                # Gets the Employee from the Logged-in User's Supervisee.
-                $employee = auth()->user()->supervisee()->findOrFail( $data['emp_num'] );
+            $schedule = null;
 
-                # If Source Type is 'default' and the User has an existing Default Schedule, update the Schedule
-                if ( $data['source_type'] == 'default' && $employee->defaultSchedule()->count() > 0 ) {
-                    
-                    $schedule_id = $employee->defaultSchedule()->first()->id;
-                    $schedule = $this->update( $data , $schedule_id );
+            # If the Bind To is pointed for User.
+            if( $data['bind_to'] == 'user' ) {
 
-                # If Source Type is 'temporary' and the User has an existing From & To Temporary Schedule, retrieve it and Update that Schedule
-                } else if ( $data['source_type'] == 'temporary' 
-                    &&  $employee->temporarySchedules()->where([
-                            ['valid_from', $data['valid_from']],
-                            ['valid_to', $data['valid_to']]
-                        ])->count() > 0) {
-
-                    $schedule_id =  $employee->temporarySchedules()->where([
-                                        ['valid_from', $data['valid_from']],
-                                        ['valid_to', $data['valid_to']]
-                                    ])->first()->id;
-
-                    $schedule = $this->update( $data , $schedule_id );
-        
-                # If not existing, Insert the new Schedule
-                } else {
-                    $schedule = $this->store( $data );
-                }
-
-                log_to_file('info', 'Success', [$schedule]);
-                return $schedule;
+                # Gets the Employee from the Logged-in User's Supervisee by Employee Number.
+                $employee = auth()->user()->supervisee()->findOrFail( $data['bind_id'] );
+                
+                $schedule = $this->assign_to_employee( $data, $employee );
             }
+
+            return $schedule;
         } catch (Exception $e) {
             log_error($e);
             throw $e;
@@ -252,10 +237,15 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             # Saving of Schedule Policy
             foreach( $schedule_policies as $policy => $value ){
-                $schedule_policies_array[ $policy ]             = new SchedulePolicy();
-                $schedule_policies_array[ $policy ]->policy     = $policy;
-                $schedule_policies_array[ $policy ]->value      = $value;
+
+                // Don't save if the value of the policy is 0.
+                if( $value != 0 ) {
+                    $schedule_policies_array[ $policy ]             = new SchedulePolicy();
+                    $schedule_policies_array[ $policy ]->policy     = $policy;
+                    $schedule_policies_array[ $policy ]->value      = $value;
+                }
             }
+
             $schedule->schedule_policies()->saveMany( $schedule_policies_array );
             
             DB::commit();
@@ -269,7 +259,47 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         }
     }
 
+    /**
+     *  Responsible for Assigning the Schedule for a User.
+     * @param array (schedule Post Variables) $data
+     * @param Employee $employee
+     * @return Schedule $schedule
+     */
+    protected function assign_to_employee( array $data, User $employee){
+        try{
 
+            # If Source Type is 'default' and the User has an existing Default Schedule, update the Schedule
+            if ( $data['source_type'] == 'default' && $employee->defaultSchedule()->count() > 0 ) {
+                
+                $schedule_id = $employee->defaultSchedule()->first()->id;
+                $schedule = $this->update( $data , $schedule_id );
+
+            # If Source Type is 'temporary' and the User has an existing From & To Temporary Schedule, retrieve it and Update that Schedule
+            } else if ( $data['source_type'] == 'temporary' 
+                &&  $employee->temporarySchedules()->where([
+                        ['valid_from', $data['valid_from']],
+                        ['valid_to', $data['valid_to']]
+                    ])->count() > 0) {
+
+                $schedule_id =  $employee->temporarySchedules()->where([
+                                    ['valid_from', $data['valid_from']],
+                                    ['valid_to', $data['valid_to']]
+                                ])->first()->id;
+
+                $schedule = $this->update( $data , $schedule_id );
+    
+            # If not existing, Insert the new Schedule
+            } else {
+                $schedule = $this->store( $data );
+            }
+            
+            log_to_file('info', 'Success', [$schedule]);
+            return $schedule;
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
     ###############################################################################################
     ##################################### Validation functions #####################################
     ###############################################################################################

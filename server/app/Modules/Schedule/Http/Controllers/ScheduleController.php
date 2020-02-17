@@ -21,7 +21,7 @@ class ScheduleController extends Controller
 
     public function store(StoreScheduleRequest $request){
         try {
-            log_activity( trans('messages.create_schedule') );
+            log_activity( trans('messages.create_schedule_attempt') );
 
             return success_response(
                 trans('messages.create_schedule_success'), 
@@ -36,12 +36,24 @@ class ScheduleController extends Controller
 
     public function update(UpdateScheduleRequest $request, $id){
         try {
-            log_activity( trans('messages.update_schedule') );
+            log_activity( trans('messages.update_schedule_attempt') );
 
-            return success_response(
-                trans('messages.update_schedule_success'), 
-                new ScheduleResource( $this->schedule->update( $request->all(), $id ) ) 
-            );
+            $schedule = $this->schedule->show( $id );
+
+            // Schedule can be updated only if it's only a TEMPLATE.
+            if( $schedule->isTemplate() ) {
+
+                $result = $this->schedule->update( $request->all(), $id );
+
+                return success_response(
+                    trans('messages.update_schedule_success'), 
+                    new ScheduleResource( $result ) 
+                );
+            }
+            
+            // Return not Authorized for Update by default.
+            return success_response( trans('messages.update_schedule_not_auth') );
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -49,12 +61,18 @@ class ScheduleController extends Controller
 
     public function destroy($id){
         try {
-            log_activity( trans('messages.delete_schedule') );
+            log_activity( trans('messages.delete_schedule_attempt') );
 
-            return success_response(
-                trans('messages.delete_schedule_success'), 
-                $this->schedule->destroy( $id )
-            );
+            $schedule = $this->schedule->show( $id );
+
+            // Schedule can be deleted if it's only a TEMPLATE.
+            if(  $schedule->isTemplate()  ) {
+                return success_response( trans('messages.delete_schedule_success'), $this->schedule->destroy( $id ) );
+            }
+
+            // Return not Authorized for deletion by default.
+            return success_response( trans('messages.delete_schedule_not_auth') );
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -62,7 +80,7 @@ class ScheduleController extends Controller
 
     public function show($id){
         try {
-            log_activity( trans('messages.show_schedule') );
+            log_activity( trans('messages.show_schedule_attempt') );
 
             return success_response(
                 trans('messages.show_schedule_success'), 
@@ -73,24 +91,13 @@ class ScheduleController extends Controller
         }
     }
 
-    public function assign(AssignScheduleRequest $request, $emp_num ) {
+    public function assign(AssignScheduleRequest $request ) {
         try {
-            log_activity( trans('messages.assign_schedule') );
-            
-            # Merge all the Data needed for the Repository.
-            $data = array_merge(
-                $request->all(),
-                [
-                    'emp_num' => $emp_num
-                ]
-            );
-            
-            $schedule = $this->schedule->assign( $data );
-            
+            log_activity( trans('messages.assign_schedule_attempt') );
 
             return success_response(
                 trans('messages.assign_schedule_success'), 
-                new ScheduleResource( $schedule ) 
+                new ScheduleResource( $this->schedule->assign( $request->all() )) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

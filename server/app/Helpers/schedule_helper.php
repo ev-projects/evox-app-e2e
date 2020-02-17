@@ -184,10 +184,25 @@ if (! function_exists('generate_schedule_name')) {
                 // Default format is {source_type} - {schedule_type}
                 $schedule_name = '['.strtoupper($data['source_type']) . '] - ' . strtoupper($data['schedule_type']);
 
-                // If the Source Type is 'default'/'template' and there's an 'emp_num' from the Data:
-                // Generate a Default Format: {source_type} Schedule for {emp_full_name} ({emp_num})
-                if( in_array( $data['source_type'], array('default', 'temporary') ) && isset( $data['emp_num'] ) ) {
-                    $schedule_name = '['.strtoupper($data['source_type']) . '] - '. User::findOrFail( $data['emp_num'] )->getFullName() . ' ('. $data['emp_num'] .')';
+                if( $data['bind_to'] == 'user' ) {
+
+                    // If the Source Type is 'default'/'template' and it's binded to the 'user' :
+                    if( in_array( $data['source_type'], array('default', 'temporary') ) ) {
+
+                        $employee = User::findOrFail( $data['bind_id'] );
+
+                        // Generate a Default Format: [{source_type}]  - {Full Name} ({id})
+                        $schedule_name = '['.strtoupper($data['source_type']) . '] - '. $employee->getFullName() . ' ('. $employee->id .')';
+                    }
+                    
+                } else if( $data['bind_to'] == 'department' ) {
+
+                    // If the Source Type is 'default' and it's binded to the 'department':
+                    if( in_array( $data['source_type'], array('default') ) ) {
+                        
+                        // Generate a Default Format: [{source_type}]  - {Full Name} ({id})
+                        // Enter code here......
+                    }
                 }
             }
             return $schedule_name;

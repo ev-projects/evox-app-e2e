@@ -13,7 +13,7 @@ class Schedule extends Model{
 
     protected $guarded = [];
 
-    protected static $logAttributes = ['name', 'emp_num', 'source_type', 'schedule_type', 'valid_from', 'valid_to', 'rest_days', 'updated_by'];
+    protected static $logAttributes = ['name', 'bind_to', 'bind_id', 'source_type', 'schedule_type', 'valid_from', 'valid_to', 'rest_days', 'updated_by'];
 
     protected $dates = [
         'deleted_at'
@@ -120,23 +120,16 @@ class Schedule extends Model{
     }
 
     /**
-     * belongsTo Relationship for User model
-     */
-    public function user(){
-        return $this->hasMany(User::class, 'emp_num', 'emp_num');
-    }
-
-    /**
      * belongsTo Relationship for User model through updatedBy
      */
     public function updatedBy(){
-        return $this->hasOne(User::class, 'emp_num', 'updated_by');
+        return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
     /**
      * belongsTo Relationship for User model through createdBy
      */
     public function createdBy(){
-        return $this->hasOne(User::class, 'emp_num', 'created_by');
+        return $this->hasOne(User::class, 'id', 'created_by');
     }
 }

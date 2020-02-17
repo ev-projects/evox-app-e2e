@@ -17,9 +17,6 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, HasRoles, HasPermissions, SoftDeletes, LogsActivity;
     
-    public $primaryKey = 'emp_num';
-    public $incrementing = false;
-
     protected $fillable = [];
 
     protected $hidden = [
@@ -104,13 +101,13 @@ class User extends Authenticatable implements JWTSubject
     # Fetch the User's Supervisors
     public function supervisors()
     {
-        return $this->belongsToMany(User::class, 'users_supervisors', 'emp_num', 'supervisor_emp_num');
+        return $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id');
     }
 
     # Fetch the User's Supervisee 
     public function supervisee()
     {
-        return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_emp_num', 'emp_num');
+        return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
     }
 
     # Fetch the User's Department
@@ -120,17 +117,26 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the User's Schedule (Source type is Default)
     public function defaultSchedule(){
-        return $this->hasOne(Schedule::class, 'emp_num', 'emp_num')->where('source_type', 'default');
+        return $this->hasOne(Schedule::class, 'bind_id', 'id')->where([
+            'bind_to' => 'user',
+            'source_type' => 'default'
+        ]);
     }
 
     # Fetch the User's Schedule (Source type is Temporary)
     public function temporarySchedules(){
-        return $this->hasMany(Schedule::class, 'emp_num', 'emp_num')->where('source_type', 'temporary');
+        return $this->hasMany(Schedule::class, 'bind_id', 'id')->where([
+            'bind_to' => 'user',
+            'source_type' => 'temporary'
+        ]);
     }
 
     # Fetch the User's Schedule (Source type is Change Schedule)
     public function changeSchedule(){
-        return $this->hasMany(Schedule::class, 'emp_num', 'emp_num')->where('source_type', 'change_schedule');
+        return $this->hasMany(Schedule::class, 'bind_id', 'id')->where([
+            'bind_to' => 'user',
+            'source_type' => 'change_schedule'
+        ]);
     }
 
     ########################################################################

@@ -167,25 +167,24 @@ class InsertInitialValuesTable extends Migration
         // Insert users_supervisors Values
         $insert = array(
             array(
-                'emp_num' => '2065',
-                'supervisor_emp_num' => '012'
+                'user_id' => '1',
+                'supervisor_id' => '2'
             ),
             array(
-                'emp_num' => '1479',
-                'supervisor_emp_num' => '012'
+                'user_id' => '3',
+                'supervisor_id' => '2'
             ),
         );
         DB::table('users_supervisors')->insert($insert);
 
-
         // Add Users for their distinct permissions
-        User::find('2065')
+        User::find(1)
             ->assignRole($employee_role)
             ->syncPermissions(array_merge($employee_permissions));
-        User::find('1479')
+        User::find(3)
             ->assignRole($employee_role)
             ->syncPermissions(array_merge($employee_permissions));
-        User::find('012')
+        User::find(2)
             ->assignRole([$employee_role, $supervisor_role])
             ->syncPermissions(array_merge($employee_permissions, $supervisor_permissions));
 

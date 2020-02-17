@@ -37,19 +37,21 @@ return [
     /**
      *  Schedule 
      */
-    'create_schedule' => 'Create Schedule',
+    'create_schedule|_attempt' => 'Create Schedule Attempt',
     'create_schedule_success' => 'A new schedule is now created!',
 
-    'update_schedule' => 'Update Schedule',
+    'update_schedule_attempt' => 'Update Schedule Attempt',
     'update_schedule_success' => 'The schedule is now updated!',
+    'update_schedule_not_auth' => 'The schedule is not authorized to be updated!',
 
-    'delete_schedule' => 'Delete Schedule',
+    'delete_schedule_attempt' => 'Delete Schedule Attempt',
     'delete_schedule_success' => 'The schedule is now deleted!',
+    'delete_schedule_not_auth' => 'The schedule is not authorized to be deleted!',
 
-    'show_schedule' => 'Show Schedule',
+    'show_schedule_attempt' => 'Show Schedule Attempt',
     'show_schedule_success' => 'The schedule is now shown!',
 
-    'assign_schedule' => 'Assign Schedule',
+    'assign_schedule_attempt' => 'Assign Schedule Attempt',
     'assign_schedule_success' => 'Schedule successfully updated!',
 
 

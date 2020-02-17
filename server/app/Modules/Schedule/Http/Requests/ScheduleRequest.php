@@ -33,6 +33,9 @@ class ScheduleRequest extends FormRequest
     public function rules(Request $request)
     {   
         $rules = [
+            'bind_to'                               => 'string|in:user,department',
+            'bind_id'                               => 'string',
+            'schedule_type'                         => 'required|string|in:standard,flexible,customize',
             'valid_from'                            => 'required_if:source_type,temporary|required_if:source_type,change_schedule|required_if:source_type,default|date_format:Y-m-d',
             'valid_to'                              => 'required_if:source_type,temporary|required_if:source_type,change_schedule|date_format:Y-m-d',
             'work_days'                             => 'required|array',            

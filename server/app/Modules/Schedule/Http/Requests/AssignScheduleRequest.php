@@ -36,8 +36,7 @@ class AssignScheduleRequest extends FormRequest
         $rules = array_merge(
             inhert_validation_rules( $form_requests, $request ), 
             [
-                'source_type'    => 'required|string|in:default,temporary,change_schedule',
-                'schedule_type'    => 'required|string|in:standard,flexible,customize',
+                'source_type'           => 'required|string|in:default,temporary,change_schedule',
             ]
         );
 

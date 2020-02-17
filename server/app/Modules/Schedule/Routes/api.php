@@ -34,6 +34,6 @@ Route::group(['prefix' => 'schedule', 'middleware' => ['jwtauth', 'auth.apikey']
     # API Call for Assigning of Schedule
     
     # Insert new Schedule
-    Route::post('/assign/{emp_num}',     'ScheduleController@assign'); //->middleware('permission:assign_schedule');
+    Route::post('/assign/',     'ScheduleController@assign'); //->middleware('permission:assign_schedule');
 
 });

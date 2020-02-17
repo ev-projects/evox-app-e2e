@@ -18,7 +18,6 @@ class CreateDepartmentsTable extends Migration
             $table->string('department_name')->unique();
             $table->string('department_code');
             $table->text('description')->nullable();
-            $table->unsignedInteger('schedule_id')->nullable();
             $table->timestamps();
         });
     }

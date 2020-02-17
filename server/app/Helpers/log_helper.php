@@ -50,10 +50,10 @@ if (! function_exists('log_to_file')) {
                 $log_header = array_pop($last_word) . ' -> ' . debug_backtrace()[ $log_stack_index ]['function'];
             }
             
-            $emp_num = ( auth()->user() != null )? '[Employee #: '.auth()->user()->emp_num.']' : "";
+            $user_id = ( auth()->user() != null )? '[UserID #: '.auth()->user()->id.']' : "";
 
             if( in_array( $type, array( 'emergency', 'alert','critical','error','warning','notice','info','debug') ) ) {
-                Log::$type($emp_num.'['. $log_header .']['.$message.']', (array) $data);
+                Log::$type($user_id.'['. $log_header .']['.$message.']', (array) $data);
 
                 // activity()->useLog($type)
                 //             ->withProperties(['status' => $message])
