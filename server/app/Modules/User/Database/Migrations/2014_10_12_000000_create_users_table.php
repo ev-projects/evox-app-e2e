@@ -14,8 +14,9 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->string('emp_num')->unique()->primary();
-            $table->unsignedInteger('bhr_num')->unique();
+            $table->increments('id');
+            $table->string('emp_num')->unique();
+            $table->string('bhr_num')->unique();
             $table->string('email');
             $table->string('username');
             $table->string('password');
@@ -24,14 +25,11 @@ class CreateUsersTable extends Migration
             $table->string('last_name')->nullable();
             $table->string('employment_status');
             $table->unsignedInteger('department_id')->nullable();
-            $table->unsignedInteger('schedule_id')->nullable();
+            // $table->unsignedInteger('schedule_id')->nullable();
             $table->boolean('is_active')->default(false);
             $table->boolean('force_change_password')->default(false);
             $table->softDeletes();
             $table->timestamps();
-
-            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade')->onUpdate('cascade')->onDelete('set null');
-            $table->foreign('schedule_id')->references('id')->on('schedules')->onDelete('cascade')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

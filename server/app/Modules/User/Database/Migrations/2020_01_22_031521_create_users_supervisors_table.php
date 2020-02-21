@@ -15,15 +15,15 @@ class CreateUsersSupervisorsTable extends Migration
     {
 
         Schema::create('users_supervisors', function (Blueprint $table) {
-            $table->string('emp_num')->index();
-            $table->string('supervisor_emp_num')->index();
+            $table->integer('user_id')->unsigned()->index();
+            $table->integer('supervisor_id')->unsigned()->index();
 
-            $table->unique(['emp_num', 'supervisor_emp_num']);
+            $table->unique(['user_id', 'supervisor_id']);
 
-            $table->index(['emp_num', 'supervisor_emp_num']);
+            $table->index(['user_id', 'supervisor_id']);
 
-            $table->foreign('emp_num')->references('emp_num')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('supervisor_emp_num')->references('emp_num')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('supervisor_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

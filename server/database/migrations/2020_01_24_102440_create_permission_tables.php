@@ -29,7 +29,7 @@ class CreatePermissionTables extends Migration
         });
 
         Schema::create($tableNames['user_has_permissions'], function (Blueprint $table) use ($tableNames, $foreignKeys, $foreignTablePrimaryKey) {
-            $table->string($foreignKeys['users']);
+            $table->integer($foreignKeys['users'])->unsigned();
             $table->unsignedInteger('permission_id');
 
             $table->foreign($foreignKeys['users'])
@@ -49,7 +49,7 @@ class CreatePermissionTables extends Migration
 
         Schema::create($tableNames['user_has_roles'], function (Blueprint $table) use ($tableNames, $foreignKeys, $foreignTablePrimaryKey) {
             $table->unsignedInteger('role_id');
-            $table->string($foreignKeys['users']);
+            $table->integer($foreignKeys['users'])->unsigned();
 
             $table->foreign('role_id')
                 ->references('id')

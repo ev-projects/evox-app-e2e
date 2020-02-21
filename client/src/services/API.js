@@ -65,6 +65,7 @@ class API  {
         && Validator.isValid( e.response.data.error.content.code ) 
         && global.invalid_token_response.includes( e.response.data.error.content.code )){
       localStorage.removeItem("access_token");
+      alert( e.response.data.error.message )
       history.push(global.login_url)
       window.location.reload(true);
 

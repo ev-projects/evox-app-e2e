@@ -17,22 +17,30 @@ use Illuminate\Support\Facades\Route;
 # API calls for Authentication
 Route::group(['prefix' => 'auth'], function () {
 
-    # API Call for Login
+    # Login
     Route::post('login', 'AuthController@login')->middleware('auth.apikey');
 
-    # API Call for Logout (Checks as well if there's a valid token before logging out.)
+    # Logout (Checks as well if there's a valid token before logging out.)
     Route::post('logout', 'AuthController@logout')->middleware('jwtauth', 'auth.apikey');
 
     # API Call for Refreshing of Token (Checks as well if there's a valid token before logging out.)
-    Route::post('refresh', 'AuthController@refresh')->middleware('jwtauth', 'auth.apikey');
+    // Route::post('refresh', 'AuthController@refresh')->middleware('jwtauth', 'auth.apikey');
 
-    # API Call for Fetching the Payload that contains the User Data and Token Credentials
+    # Fetching the Payload that contains the User Data and Token Credentials
     Route::post('payload', 'AuthController@payload')->middleware('jwtauth', 'auth.apikey');
 
 
 });
 
+#####################################################################################################
 
-// Route::group(['middleware' => ['jwtauth', 'auth.apikey']], function () {
+# API Calls for user/{id}
+Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+
+    # Gets the Default Schedule of the User indicated.
+    Route::get('default_schedule', 'UserController@default_schedule');//->middleware('auth.apikey');
     
-// });
+    # Gets the Temporary Schedules of the User indicated.
+    Route::get('temporary_schedules', 'UserController@temporary_schedules');//->middleware('auth.apikey');
+
+});

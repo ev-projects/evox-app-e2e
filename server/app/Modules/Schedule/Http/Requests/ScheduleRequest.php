@@ -8,7 +8,12 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class StoreSchedule extends FormRequest
+
+/**
+ *  This serves as the parent FormRequest for Schedule
+ */
+
+class ScheduleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,12 +33,12 @@ class StoreSchedule extends FormRequest
     public function rules(Request $request)
     {   
         $rules = [
-            'name'                                  => 'required | string | max:255',
-            'source_type'                           => 'required | string | in:template,default,temporary,change_schedule',
-            'schedule_type'                         => 'required | string | in:standard,flexible,customize',
-            'valid_from'                            => 'required_if:source_type,temporary | required_if:source_type,change_schedule | required_if:source_type,default',
-            'valid_to'                              => 'required_if:source_type,temporary | required_if:source_type,change_schedule',
-            'work_days'                             => 'required | array',            
+            'bind_to'                               => 'string|in:user,department',
+            'bind_id'                               => 'string',
+            'schedule_type'                         => 'required|string|in:standard,flexible,customize',
+            'valid_from'                            => 'required_if:source_type,temporary|required_if:source_type,change_schedule|required_if:source_type,default|date_format:Y-m-d',
+            'valid_to'                              => 'required_if:source_type,temporary|required_if:source_type,change_schedule|date_format:Y-m-d',
+            'work_days'                             => 'required|array',            
             'schedule_policies.*'                   => 'in: allow_undertime,allow_late,allow_night_diff',
             'schedule_policies.allow_undertime'     => 'bool',
             'schedule_policies.allow_late'          => 'bool',
@@ -54,6 +59,20 @@ class StoreSchedule extends FormRequest
         return $rules;
     }
 
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+          ];
+    }
+
+    /**
+     *  Manually throws the Validation error using our Templated Format
+     */
     protected function failedValidation(Validator $validator) { 
         throw new HttpResponseException( 
             error_response( $validator->errors()->all(), [], JsonResponse::HTTP_UNPROCESSABLE_ENTITY) 

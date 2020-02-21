@@ -16,19 +16,25 @@ class CreateSchedulesTable extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->index();
+            $table->string('bind_to')->nullable()->index();
+            $table->integer('bind_id')->nullable()->index();
             $table->enum('source_type', array('template', 'default', 'temporary', 'change_schedule'))->index();
             $table->enum('schedule_type', array('standard', 'flexible', 'customize'))->index();
-            $table->dateTime('valid_from')->nullable();
-            $table->dateTime('valid_to')->nullable();
+            $table->date('valid_from')->nullable();
+            $table->date('valid_to')->nullable();
             $table->json('rest_days')->nullable();
+            $table->integer('updated_by')->unsigned()->nullable()->index();
+            $table->integer('created_by')->unsigned()->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
 
             $table->index(['name', 'source_type', 'schedule_type']);
             $table->index(['source_type', 'schedule_type']);
 
-            // FK for Schedule Details
-            // FK for Schedule Payroll Items
+            $table->index(['name', 'bind_to', 'bind_id', 'source_type', 'schedule_type']);
+            $table->index(['bind_to', 'bind_id','source_type', 'schedule_type']);
+            $table->index(['bind_to', 'bind_id','schedule_type']);
+            $table->index(['bind_to', 'bind_id','source_type']);
         });
     }
 

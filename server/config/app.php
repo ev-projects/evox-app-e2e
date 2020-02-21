@@ -148,6 +148,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Ejarnutowski\LaravelApiKey\Providers\ApiKeyServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
+        Spatie\Activitylog\ActivitylogServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -162,6 +163,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Modules\Schedule\Providers\ScheduleServiceProvider::class,
+        App\Modules\User\Providers\UserServiceProvider::class,
 
     ],
 
