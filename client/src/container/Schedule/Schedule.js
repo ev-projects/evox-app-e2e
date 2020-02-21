@@ -9,8 +9,6 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./Schedule.css";
-import * as yup from "yup";
-import { mapValues } from 'lodash/mapValues'
 
 
 class Schedule extends Component {    
@@ -50,7 +48,7 @@ class Schedule extends Component {
     return <Formik 
     onSubmit={this.onSubmitHandler} 
     validationSchema={validationSchema} 
-    initialValues={{wd:{mon:{ischeck:false,index:null},tue:{ischeck:false,index:null},wed:{ischeck:false,index:null},thu:{ischeck:false,index:null},fri:{ischeck:false,index:null},sat:{ischeck:false,index:null},sun:{ischeck:false,index:null},}
+    initialValues={{wd_index:[{ischeck:false,index:null,day:"mon"},{ischeck:false,index:null,day:"tue"}],wd:{mon:{ischeck:false,index:null},tue:{ischeck:false,index:null},wed:{ischeck:false,index:null},thu:{ischeck:false,index:null},fri:{ischeck:false,index:null},sat:{ischeck:false,index:null},sun:{ischeck:false,index:null},}
     ,cst_field: [],cst_start_time: [],cst_end_time: [], cst_start_flexy_time: [], cst_end_flexy_time: [], flx_break: '',flx_start_time: '',flx_end_time: '' ,flx_start_flexy_time: '',flx_end_flexy_time: '' ,std_break: '',std_start_time: '',std_end_time: '' , name : '',temp_schedule_details: [], source_type: 'template',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0}, schedule_type : '', work_days: [], duty : [], schedule_details : { all : {start_time:null,end_time:null,break_time:null}, mon:[],tue:[],wed:[],thur: [],fri:[],sat:[],sun:[] } }}>{({values,errors,setFieldValue,touched,handleSubmit,handleChange}) => (
       <form onSubmit={handleSubmit}> 
     <Container> 
@@ -321,7 +319,7 @@ class Schedule extends Component {
     <Col sm={7} >
         <div className="header">
             <h1>
-              Standard
+              Standard Form
             </h1>
         </div>
         <Form.Row>
@@ -489,15 +487,21 @@ class Schedule extends Component {
     </Col>
     ): values.schedule_type === 'customize' ? (
         <Col sm={7} >
-            {values.work_days.map((day, index) => (   
+            {values.work_days.map((day, index) => (  
+
             <div>    
               <Scheduledetails day={day} index={index} />
             </div>  
             ))}
-    </Col>
+            {values.wd_index.map((object, index) => (               
+              <div>    
+              {object.day}
+              </div>  
+            ))}
+        </Col>
      ) : null}
     <Button variant="primary" type="submit">
-      Submit
+      Create
     </Button>
   </Container>
   </form>
@@ -703,13 +707,16 @@ function Checkbox(props) {
 
 // Object for Data Validation
 const required_field = "This field is required"
-const validationSchema = yup.object().shape({
-  name: yup
+
+const validation_var = Yup.string().required(required_field).nullable();
+
+const validationSchema = Yup.object().shape({
+  name: Yup
     .string()
     .min(3)
     .max(255)
     .required(required_field),
-  schedule_type: yup
+  schedule_type: Yup
     .string()
     .min(3)
     .max(255)
@@ -758,12 +765,12 @@ const validationSchema = yup.object().shape({
         is: 'customize',
         then:   Yup.array().of(
         Yup.object().shape({
-          start_time: Yup.string().required(required_field),
-          end_time: Yup.string().required(required_field),
-          start_flexy_time: Yup.string().required(required_field),
-          end_flexy_time: Yup.string().required(required_field),
-          break_time: Yup.string().required(required_field),
-        }, ['start_flexy_time', 'end_flexy_time'])) 
+          start_time: validation_var,
+          end_time: validation_var,
+          start_flexy_time: validation_var,
+          end_flexy_time: validation_var,
+          break_time: validation_var,
+        }, ['start_flexy_time', 'end_flexy_time']))
         }),
         otherwise: Yup.string()
   });
