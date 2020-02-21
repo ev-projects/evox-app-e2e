@@ -11,17 +11,19 @@ import Footer from "../components/Template/Footer";
 // Containers
 import Login from "../container/Login";
 import Dashboard from "../container/Dashboard";
+import Schedule from "../container/Schedule";
 import PageNotFound from "../container/PageNotFound";
 
 const RoutesList = () => {
 
   // Register all the Routes that will be used in the Application (excluding the Login)
   const DefaultContainer = () => (
-    <div className="container">
+    <div>
       <Header />
       <Sidebar />
       <Switch>
-        <ProtectedRoute exact path="/app/Dashboard" ><Dashboard /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/schedule" ><Schedule /></ProtectedRoute>
         <ProtectedRoute exact path="/app/Test" ><Dashboard /></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>

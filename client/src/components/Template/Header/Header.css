@@ -1,7 +1,29 @@
-/*
- * Header css File
-*/
+.navbar {
+    background-color: #222 !important;
+  }
+  a, .navbar-brand, .navbar-nav .nav-link {
+    color: #bbb !important;
+  }
 
-.Header {
-    /* propertys here */
-}
+  .nav-link:hover{
+    color: white !important;
+  }
+
+  .navbar{
+	border-bottom: 5px solid #82af13 !important;
+    }
+
+    .header{
+        background: #82af13;
+        color: #fff;
+    }
+    
+    .header h1{
+        padding: 12px;
+        font-size: 16px;
+    }
+    
+    .loader {
+      left: 50%;
+      margin-left: -4em;
+    }

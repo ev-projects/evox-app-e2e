@@ -38,7 +38,7 @@ class Login extends Component {
                       <Image src={process.env.PUBLIC_URL +"/images/logo.png"} className="image_header" fluid />
                       <Card.Text>
                           <Formik validationSchema={validationSchema} onSubmit={this.onSubmitHandler}
-                          initialValues={{ username: '', password: '' }}>
+                          initialValues={{ username:'', password:''}}>
                           {({ values, handleChange, handleSubmit, touched, errors}) => (
                               <form onSubmit={handleSubmit}>
                                   <InputGroup>
@@ -60,7 +60,7 @@ class Login extends Component {
                                           &nbsp;{errors.password && touched.password && errors.password}
                                       </Form.Control.Feedback>
                                   </InputGroup>
-                                  <Button className="login_btn" variant="primary" type="submit">
+                                  <Button className="login_btn btn-success" variant="primary" type="submit">
                                       Submit
                                   </Button>
                               </form>
