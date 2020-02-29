@@ -57,10 +57,10 @@ class DtrController extends Controller
      */
     public function sync_realtime_biometrics(){   
         try {
-            // $start_datetime = Carbon::now()->subMinutes(30)->format('Y-m-d H:i:s');
-            // $end_datetime = Carbon::now()->format('Y-m-d H:i:s'); 
-            $start_datetime = "2020-02-15 00:00:00";
-            $end_datetime = "2020-02-29 18:20:00"; 
+            $start_datetime = Carbon::now()->subMinutes(30)->format('Y-m-d H:i:s');
+            $end_datetime = Carbon::now()->format('Y-m-d H:i:s'); 
+            // $start_datetime = "2020-02-15 00:00:00";
+            // $end_datetime = "2020-02-29 18:20:00"; 
             // $user_collection = User::get();
 
             return success_response(
