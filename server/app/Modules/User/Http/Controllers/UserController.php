@@ -5,6 +5,7 @@ namespace App\Modules\User\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Dtr\Resources\DtrResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\Schedule\Resources\ScheduleResource;
 use App\Modules\User\Repositories\UserRepositoryInterface;
@@ -28,6 +29,12 @@ class UserController extends Controller
     public function default_schedule( $id ){   
         try {
             // log_activity( trans('messages.payload') );
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
 
             $user = $this->user->show( $id );
 
@@ -48,6 +55,12 @@ class UserController extends Controller
     public function temporary_schedules( $id ){   
         try {
             // log_activity( trans('messages.payload') );
+
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
 
             $user = $this->user->show( $id );
             

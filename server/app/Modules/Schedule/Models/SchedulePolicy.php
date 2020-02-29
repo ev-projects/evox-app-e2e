@@ -14,4 +14,19 @@ class SchedulePolicy extends Model{
     protected static $logAttributes = ['name', 'start_time', 'end_time', 'start_flexy_time', 'end_flexy_time', 'break_time'];
 
     public $timestamps = false;
+
+    
+    ########################################################################
+
+    /**
+     *  Relationships
+     */
+
+    /**
+     * belongsTo Relationship for Schedule model
+     */
+    public function schedule(){
+        return $this->belongsTo(Schedule::class);
+    }
+
 }

@@ -44,3 +44,4 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::get('temporary_schedules', 'UserController@temporary_schedules');//->middleware('auth.apikey');
 
 });
+

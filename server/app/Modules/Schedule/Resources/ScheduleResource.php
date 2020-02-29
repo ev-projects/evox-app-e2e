@@ -21,13 +21,7 @@ class ScheduleResource extends JsonResource
             # Create Resource for Schedule Details
             $schedule_details = [];
             foreach( $this->schedule_details()->get() as $schedule_detail){
-                $schedule_details[ $schedule_detail->day ] = [
-                    'start_time'        => seconds_to_time($schedule_detail->start_time),
-                    'end_time'          => seconds_to_time($schedule_detail->end_time),
-                    'start_flexy_time'  => seconds_to_time($schedule_detail->start_flexy_time),
-                    'end_flexy_time'    => seconds_to_time($schedule_detail->end_flexy_time),
-                    'break_time'        => seconds_to_time($schedule_detail->break_time),
-                ];
+                $schedule_details[ $schedule_detail->day ] = $schedule_detail->getFormattedDetail();
             }
             
             # Create Resource for Schedule Policies

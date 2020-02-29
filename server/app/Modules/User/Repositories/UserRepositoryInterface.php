@@ -11,4 +11,6 @@ interface UserRepositoryInterface
     public function destroy( $id );
 
     public function show( $id );
+
+    public function getAllActiveUsers();
 }

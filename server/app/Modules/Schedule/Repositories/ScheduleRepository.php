@@ -293,10 +293,8 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 $schedule = $this->store( $data );
             }
             
-            log_to_file('info', 'Success', [$schedule]);
             return $schedule;
         } catch (Exception $e) {
-            log_error($e);
             throw $e;
         }
     }

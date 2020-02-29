@@ -67,15 +67,17 @@ return [
             'sslmode' => 'prefer',
         ],
 
-        'sqlsrv' => [
+
+        'biometrix' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', '1433'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
+            'host' => env('BIO_DB_HOST', '10.8.2.13\EVOXDB'),
+            'port' => env('BIO_DB_PORT', '49491'),
+            'database' => env('BIO_DB_DATABASE', 'biometrics_new'),
+            'username' => env('BIO_DB_USERNAME', 'anviz'),
+            'password' => env('BIO_DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
+            'prefix_indexes' => true,
         ],
 
     ],

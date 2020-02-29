@@ -23,14 +23,13 @@ class CreateSchedulesTable extends Migration
             $table->date('valid_from')->nullable();
             $table->date('valid_to')->nullable();
             $table->json('rest_days')->nullable();
-            $table->integer('updated_by')->unsigned()->nullable()->index();
-            $table->integer('created_by')->unsigned()->nullable()->index();
+            $table->unsignedInteger('updated_by')->nullable()->index();
+            $table->unsignedInteger('created_by')->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
 
             $table->index(['name', 'source_type', 'schedule_type']);
             $table->index(['source_type', 'schedule_type']);
-
             $table->index(['name', 'bind_to', 'bind_id', 'source_type', 'schedule_type']);
             $table->index(['bind_to', 'bind_id','source_type', 'schedule_type']);
             $table->index(['bind_to', 'bind_id','schedule_type']);

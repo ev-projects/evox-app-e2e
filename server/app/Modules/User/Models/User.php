@@ -3,6 +3,7 @@
 namespace App\Modules\User\Models;
 
 use App\Modules\Department\Models\Department;
+use App\Modules\Dtr\Models\Dtr;
 use App\Modules\Schedule\Models\Schedule;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -54,7 +55,7 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * 
-     *  gets the Full Name of the User 
+     *  Gets the Full Name of the User 
      *  - Can have additional format depending on the $format_type variable.
      *  -   1  -> {first_name} {middle_name} {last_name}
      *  -   2  -> {last_name}, {first_name} {middle_name} 
@@ -76,27 +77,19 @@ class User extends Authenticatable implements JWTSubject
         }
         return $result;
     }
-    
 
     /**
-     *  Eloquent Query Helpers
+     *  Gets the parsed Employee Number that would be used for Biometrics fetching
      */
-
-     # Sets the Query to get all Active only
-    public function isActive(){
-        return $this->where('is_active', 1);
-    }
-
-    # Sets the Query to get all Inactive only
-    public function isInactive(){
-        return $this->where('is_active', 0);
+    public function getBiometricsId()
+    {
+        return "20".$this->emp_num;
     }
 
     ########################################################################
+    ############################ Relationships #############################
+    ########################################################################
 
-    /**
-     *  Relationships
-     */
     
     # Fetch the User's Supervisors
     public function supervisors()
@@ -124,11 +117,27 @@ class User extends Authenticatable implements JWTSubject
     }
 
     # Fetch the User's Schedule (Source type is Temporary)
-    public function temporarySchedules(){
-        return $this->hasMany(Schedule::class, 'bind_id', 'id')->where([
+    public function temporarySchedules($start_date = null, $end_date = null){
+
+        $temporary_schedule_condition = [
             'bind_to' => 'user',
             'source_type' => 'temporary'
-        ]);
+        ];
+
+        # If the Start and End Date is valid, fetch the Temporary Schedule that exists between the Date Range.
+        if( is_valid( $start_date ) && is_valid( $end_date ) ){
+            return $this->hasMany(Schedule::class, 'bind_id', 'id')->where($temporary_schedule_condition)
+                                                                   ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')");
+
+        # If the Start Date is valid and End Date is NOT Valid, fetch the Temporary Schedule that scopes the Start Date
+        } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
+            return $this->hasMany(Schedule::class, 'bind_id', 'id')->where($temporary_schedule_condition)
+                                                                   ->whereRaw("( valid_from >= '".$start_date."' AND  valid_to <= '".$start_date."')");
+
+        # If the Start and End Date is NOT valid, fetch the all other Temporary Schedules.
+        } else {
+            return $this->hasMany(Schedule::class, 'bind_id', 'id')->where($temporary_schedule_condition);
+        }                                             
     }
 
     # Fetch the User's Schedule (Source type is Change Schedule)
@@ -138,6 +147,24 @@ class User extends Authenticatable implements JWTSubject
             'source_type' => 'change_schedule'
         ]);
     }
+
+    # Fetch the User's DTR
+    public function dtr($start_date = null, $end_date = null){
+
+        # If the Start and End Date is valid, fetch the DTR between the Date Range.
+        if( is_valid( $start_date ) && is_valid( $end_date ) ){
+            return $this->hasMany(Dtr::class)->whereBetween('date', [$start_date, $end_date]);
+
+        # If the Start is valid AND End Date is NOT valid, fetch the DTR Date Range from Start Date Onwards.
+        } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
+            return $this->hasMany(Dtr::class)->where('date', '>=', $start_date);
+
+        # If the Start and End date is NOT valid, fetch the DTR as a whole
+        }elseif( !is_valid( $start_date ) && !is_valid( $end_date ) ){
+            return $this->hasMany(Dtr::class);
+        }
+    }
+
 
     ########################################################################
 }

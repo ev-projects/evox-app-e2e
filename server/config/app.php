@@ -162,6 +162,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Modules\Dtr\Providers\DtrServiceProvider::class,
         App\Modules\Schedule\Providers\ScheduleServiceProvider::class,
         App\Modules\User\Providers\UserServiceProvider::class,
 

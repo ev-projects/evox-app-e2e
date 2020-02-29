@@ -96,6 +96,20 @@ class UserRepository implements UserRepositoryInterface{
     }
 
 
+
+    /**
+     *  Responsible for fetching all the Active Users
+     * @param $id
+     * @return User $user
+     */
+    public function getAllActiveUsers(){
+        try {
+            $users = User::where('is_active', 1)->get();
+            return $users;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
     ###############################################################################################
     ##################################### Protected functions #####################################
     ###############################################################################################

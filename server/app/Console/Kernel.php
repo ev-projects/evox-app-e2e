@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+       //..
     ];
 
     /**
@@ -23,9 +23,9 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {
-        // $schedule->command('inspire')
-        //          ->hourly();
+    {   
+        # Run Generate Weekly DTR every Saturday @ 5PM.
+        $schedule->call('App\Modules\Dtr\Http\Controllers\DtrController@generate_weekly_dtr')->cron('0 19 * * SAT'); 
     }
 
     /**

@@ -20,7 +20,7 @@ return [
     |
     */
 
-    'WORK_DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+    'DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 
 ];

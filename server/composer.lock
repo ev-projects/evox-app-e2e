@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4d4de9848c4ea817eb9c1da6af25d5bb",
+    "content-hash": "f5d81590717cfe8d791ac1935deebf15",
     "packages": [
         {
             "name": "anahkiasen/underscore-php",
@@ -1325,6 +1325,51 @@
                 "storage"
             ],
             "time": "2020-02-05T18:14:17+00:00"
+        },
+        {
+            "name": "michaelachrisco/readonly",
+            "version": "0.33",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/michaelachrisco/ReadOnlyTraitLaravel.git",
+                "reference": "4a48ae9fba8dfc096f73e451f05d984faac8ace8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/michaelachrisco/ReadOnlyTraitLaravel/zipball/4a48ae9fba8dfc096f73e451f05d984faac8ace8",
+                "reference": "4a48ae9fba8dfc096f73e451f05d984faac8ace8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0"
+            },
+            "require-dev": {
+                "illuminate/database": ">=5.2.0",
+                "kahlan/kahlan": "^2.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MichaelAChrisco\\ReadOnly\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Chrisco",
+                    "email": "michaelachrisco@gmail.com"
+                }
+            ],
+            "description": "Readonly Models for Laravel 5",
+            "keywords": [
+                "Read-Only",
+                "eloquent",
+                "laravel"
+            ],
+            "time": "2018-12-18T05:27:22+00:00"
         },
         {
             "name": "monolog/monolog",

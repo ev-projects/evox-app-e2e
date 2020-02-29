@@ -99,6 +99,53 @@ class Schedule extends Model{
         return ( $this->schedule_type == 'customize' ) ? true : false;
     }
 
+    /**
+     * 
+     *  Returns a Collection that contains the Schedule per Day. Value is null if the day is a Rest Day.
+     *  - Accepts an Optional parameter $day_chosen if you want the single Detail for the chosen day to return only.
+     * @param string $day_chosen (optional)
+     * @return Collection $days 
+     */
+    public function getPerDay( $day_chosen = null )
+    {
+        $days = [];
+
+        # Get the 'all' Detail for Standard and Flexible Schedule. (day = all)
+        if( $this->isStandard() || $this->isFlexible() ) {
+            $all_schedule_detail = $this->schedule_details()->where('day', 'all')->firstOrFail();
+
+        # Get the Detail Collection for Customize Schedule. (day = mon, tue, wed, etc...)
+        } else if( $this->isCustomize() ) {
+            $per_day_schedule_details_collection = $this->schedule_details()->get();
+        }
+        
+        # Loop the Days 
+        foreach( get_constant('DAYS') as $day )
+        {   
+            # Null will be the default value per day ( If the day is a Rest Day, it would stay as null.)
+            $days[ $day ] = null;
+
+            # If the current $day is not in the $rest_days, set a Schedule for that specific day.
+            if( ! in_array( $day, $this->rest_days ) ) {
+
+                # If Standard/Flexible, set the Schedule Detail with the day 'all' as default.
+                if( $this->isStandard() || $this->isFlexible() ) {
+                    $days[ $day ] = $all_schedule_detail;
+
+                # If Customized, set the Schedule Detail using the $day of the current iteration.
+                } else if( $this->isCustomize() ) {
+                    $days[ $day ] = $per_day_schedule_details_collection->firstWhere('day', $day);
+                }
+            }
+
+            # Returns the Chosen Day 
+            if( is_valid( $day_chosen ) && in_array( $day_chosen, get_constant('DAYS') ) && $day == $day_chosen ) {
+                return $days[ $day ];
+            }
+        }
+        return collect($days);
+    }
+
     ########################################################################
 
     /**

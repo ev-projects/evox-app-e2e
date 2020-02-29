@@ -15,8 +15,8 @@ class CreateUsersSupervisorsTable extends Migration
     {
 
         Schema::create('users_supervisors', function (Blueprint $table) {
-            $table->integer('user_id')->unsigned()->index();
-            $table->integer('supervisor_id')->unsigned()->index();
+            $table->unsignedInteger('user_id')->index();
+            $table->unsignedInteger('supervisor_id')->index();
 
             $table->unique(['user_id', 'supervisor_id']);
 

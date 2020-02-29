@@ -3,6 +3,7 @@
 namespace App\Modules\Schedule\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Dtr\Repositories\DtrRepositoryInterface;
 use App\Modules\Schedule\Http\Requests\AssignScheduleRequest;
 use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
 use App\Modules\Schedule\Http\Requests\UpdateScheduleRequest;
@@ -14,11 +15,17 @@ use Illuminate\Http\JsonResponse;
 class ScheduleController extends Controller
 {
     protected $schedule;
+    protected $dtr;
 
-    public function __construct(ScheduleRepositoryInterface $schedule){
+    public function __construct(ScheduleRepositoryInterface $schedule, DtrRepositoryInterface $dtr){
         $this->schedule = $schedule;
+        $this->dtr = $dtr;
     }
 
+    /**
+     * Creates a Schedule
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(StoreScheduleRequest $request){
         try {
             log_activity( trans('messages.create_schedule_attempt') );
@@ -34,6 +41,10 @@ class ScheduleController extends Controller
         }
     }
 
+    /**
+     * Updates an existing Schedule. Proceeding on update only if it's a Template
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(UpdateScheduleRequest $request, $id){
         try {
             log_activity( trans('messages.update_schedule_attempt') );
@@ -59,6 +70,10 @@ class ScheduleController extends Controller
         }
     }
 
+    /**
+     * Deletes an existing Schedule. Proceeding on delete only if it's a Template
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id){
         try {
             log_activity( trans('messages.delete_schedule_attempt') );
@@ -78,6 +93,10 @@ class ScheduleController extends Controller
         }
     }
 
+    /**
+     * Shows an existing Schedule.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id){
         try {
             log_activity( trans('messages.show_schedule_attempt') );
@@ -91,14 +110,25 @@ class ScheduleController extends Controller
         }
     }
 
+    /**
+     * Assigns a Schedule to a Specific Module (User or Department).
+     *  - Automatically Applies the Schedule to the DTR within the Valid From & Valid To Scope.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function assign(AssignScheduleRequest $request ) {
         try {
             log_activity( trans('messages.assign_schedule_attempt') );
 
+            $schedule = $this->schedule->assign( $request->all() );
+
+            if( $request->bind_to == 'user' ) {
+                $dtr_collection = $this->dtr->apply_schedule_to_dtr( $request->bind_id, $schedule );
+            }
+
             return success_response(
                 trans('messages.assign_schedule_success'), 
-                new ScheduleResource( $this->schedule->assign( $request->all() )) 
-            );
+                new ScheduleResource( $schedule ) 
+            ); 
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
