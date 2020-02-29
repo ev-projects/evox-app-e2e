@@ -35,7 +35,7 @@ class DtrController extends Controller
             $user_collection = $this->user->getAllActiveUsers();
             
             # Generates the Date Range that would be generated as DTR for each Active Employees
-            $date_array = generate_date_array( Carbon::tomorrow(), 30 );
+            $date_array = generate_date_array( Carbon::tomorrow(), 7 );
             
             return success_response(
                 trans('messages.create_schedule_success'), 
