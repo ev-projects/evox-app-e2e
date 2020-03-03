@@ -190,11 +190,11 @@ class DtrRepository implements DtrRepositoryInterface{
                         $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
         
                         # Update the DTR properties
-                        $dtr->start_datetime        =  ( is_valid($parsed_schedule_detail) ) ? $parsed_schedule_detail['start_datetime'] :  $dtr->start_datetime;
-                        $dtr->end_datetime          =  ( is_valid($parsed_schedule_detail) ) ? $parsed_schedule_detail['end_datetime'] : $dtr->end_datetime;
-                        $dtr->start_flexy_datetime  =  ( is_valid($parsed_schedule_detail) ) ? $parsed_schedule_detail['start_flexy_datetime'] : $dtr->start_flexy_datetime;
-                        $dtr->end_flexy_datetime    =  ( is_valid($parsed_schedule_detail) ) ? $parsed_schedule_detail['end_flexy_datetime'] : $dtr->end_flexy_datetime;
-                        $dtr->break_time            =  ( is_valid($parsed_schedule_detail) ) ? $parsed_schedule_detail['break_time'] : $dtr->break_time;
+                        $dtr->start_datetime        =  ( is_valid($parsed_schedule_detail['start_datetime']) ) ? $parsed_schedule_detail['start_datetime'] :  $dtr->start_datetime;
+                        $dtr->end_datetime          =  ( is_valid($parsed_schedule_detail['end_datetime']) ) ? $parsed_schedule_detail['end_datetime'] : $dtr->end_datetime;
+                        $dtr->start_flexy_datetime  =  ( is_valid($parsed_schedule_detail['start_flexy_datetime']) ) ? $parsed_schedule_detail['start_flexy_datetime'] : $dtr->start_flexy_datetime;
+                        $dtr->end_flexy_datetime    =  ( is_valid($parsed_schedule_detail['end_flexy_datetime']) ) ? $parsed_schedule_detail['end_flexy_datetime'] : $dtr->end_flexy_datetime;
+                        $dtr->break_time            =  ( is_valid($parsed_schedule_detail['break_time']) ) ? $parsed_schedule_detail['break_time'] : $dtr->break_time;
                         $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : $dtr->is_rest_day;
                         $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
                         $dtr->update();
