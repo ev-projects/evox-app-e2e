@@ -9,6 +9,7 @@ use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
 use App\Modules\Schedule\Http\Requests\UpdateScheduleRequest;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
 use App\Modules\Schedule\Resources\ScheduleResource;
+use App\Modules\Schedule\Resources\TemplateScheduleResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -128,6 +129,27 @@ class ScheduleController extends Controller
             return success_response(
                 trans('messages.assign_schedule_success'), 
                 new ScheduleResource( $schedule ) 
+            ); 
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    
+
+    /**
+     * Fetches all the Template Schedule that exists
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function templates() {
+        try {
+            log_activity( trans('messages.fetch_templates_schedule_attempt') );
+
+            $schedule_collection = $this->schedule->get_template_schedules();
+
+            return success_response(
+                trans('messages.fetch_templates_schedule_success'), 
+                TemplateScheduleResource::collection( $schedule_collection )
             ); 
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

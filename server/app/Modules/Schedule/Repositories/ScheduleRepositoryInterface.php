@@ -13,4 +13,6 @@ interface ScheduleRepositoryInterface
     public function show( $id );
 
     public function assign( array $data );
+    
+    public function get_template_schedules();
 }

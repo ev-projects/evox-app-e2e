@@ -174,6 +174,25 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     }
 
 
+    /**
+     *  Responsible for Fetching Template Schedules
+     * @return Collection $schedule_collection (Schedule)
+     * 
+     */
+    public function get_template_schedules(){
+        try {
+            $schedule_collection = Schedule::select('id', 'name', 'schedule_type')
+                                            ->where('source_type', 'template')
+                                            ->orderBy('name', 'asc')
+                                            ->get();
+            return $schedule_collection;
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
     ###############################################################################################
     ##################################### Protected functions #####################################
     ###############################################################################################

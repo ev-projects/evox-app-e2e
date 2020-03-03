@@ -15,6 +15,16 @@ use Illuminate\Http\Request;
 
 # API Call for Schedules
 Route::group(['prefix' => 'schedule', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+
+    # API Call for Assigning of Schedule
+    
+    # List all Template Schedules
+    Route::get('/templates/',     'ScheduleController@templates'); //->middleware('permission:assign_schedule');
+    
+    # Assign a Schedule to a User
+    Route::post('/assign/',     'ScheduleController@assign'); //->middleware('permission:assign_schedule');
+
+    #####################################################################################################
     
     # Insert new Schedule
     Route::post('/',     'ScheduleController@store'); //->middleware('permission:add_schedule');
@@ -27,13 +37,5 @@ Route::group(['prefix' => 'schedule', 'middleware' => ['jwtauth', 'auth.apikey']
 
     # Delete Schedule
     Route::delete('/{id}', 'ScheduleController@destroy'); //->middleware('permission:delete_schedule');
-
-
-    #####################################################################################################
-
-    # API Call for Assigning of Schedule
-    
-    # Insert new Schedule
-    Route::post('/assign/',     'ScheduleController@assign'); //->middleware('permission:assign_schedule');
 
 });
