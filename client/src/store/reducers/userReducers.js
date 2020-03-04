@@ -45,7 +45,7 @@ const userReducer = (state = initState, action) => {
             message = "Reload User Success!"
             return {
                 ...action.user,
-                payload : action.payload,
+                payload : action.test,
             }
             break;
 
@@ -56,6 +56,7 @@ const userReducer = (state = initState, action) => {
             }
             break;
         /**  */
+        
         
         
         default:

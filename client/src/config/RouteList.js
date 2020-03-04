@@ -12,6 +12,7 @@ import Footer from "../components/Template/Footer";
 import Login from "../container/Login";
 import Dashboard from "../container/Dashboard";
 import Schedule from "../container/Schedule";
+import AssignDefault from "../container/AssignDefault";
 import PageNotFound from "../container/PageNotFound";
 
 const RoutesList = () => {
@@ -24,6 +25,7 @@ const RoutesList = () => {
       <Switch>
         <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
         <ProtectedRoute exact path="/app/schedule" ><Schedule /></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/assign/:userId" ><AssignDefault/></ProtectedRoute>
         <ProtectedRoute exact path="/app/Test" ><Dashboard /></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>

@@ -1,0 +1,35 @@
+/**
+ *  A dedicated Reducer for User State
+ */
+
+const initState = {}
+
+const scheduleReducer = (state = initState, action) => {
+    let message = "";
+    let result = {...state};
+    switch(action.type) {
+        /**
+         *  Logout Actions
+         */
+        case "FETCH_DEFAULT_SCHEDULE_SUCCESS":
+            message = "Default Schedule"
+            return {
+                ...action.schedule
+            };
+            break;
+        case "FETCH_DEFAULT_SCHEDULE_FAILED":
+            message = "Login Failed!"
+            return {
+                ...action.error,
+            }
+            break;
+
+        
+        
+        default:
+            result = state;
+    }
+    return result;
+}
+
+export default scheduleReducer;
