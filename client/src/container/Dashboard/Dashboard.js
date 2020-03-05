@@ -5,18 +5,14 @@ import { connect } from 'react-redux'
 import { fetchUser } from '../../store/actions/userActions'
 
 class Dashboard extends Component {
-
     constructor(props){
       super(props)
     }
     
-
-
     render(){
       const { user } = this.props;
       const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
-      
         return (
       <Container>
         <Row>

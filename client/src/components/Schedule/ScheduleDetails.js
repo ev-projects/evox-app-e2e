@@ -1,0 +1,293 @@
+import React, { Component } from "react";
+import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
+import { Form,Button,Container,Col,InputGroup,FormControl  } from 'react-bootstrap';
+import DatePicker from "react-datepicker";
+
+var day = {mon:"Monday", tue:"Tuesday", wed : "Wednesday" , thu: "Thursday", fri: "Friday", sat : "Saturday", sun : "Sunday"};
+
+const ScheduleType = (props) => {
+    return (<Field>
+        {({ field, form }) => (
+    <div>
+        <Form.Group>
+        <label>
+        <input 
+          type="checkbox"
+          checked={field.value.schedule_policies.allow_undertime}
+          onChange={() => form.setFieldValue('schedule_policies.allow_undertime', !field.value.schedule_policies.allow_undertime)}
+        />
+        Undertime &nbsp;</label>
+        <label>
+        <input 
+          type="checkbox"
+          checked={field.value.schedule_policies.allow_late}
+          onChange={() => form.setFieldValue('schedule_policies.allow_late', !field.value.schedule_policies.allow_late)}
+        />
+        Tardiness &nbsp;</label>
+        <label>
+        <input 
+          type="checkbox"
+          checked={field.value.schedule_policies.allow_night_diff}
+          onChange={()  => {
+           form.setFieldValue('schedule_policies.allow_night_diff', !field.value.schedule_policies.allow_night_diff)}}
+        />
+        Night Differential &nbsp;</label>
+        </Form.Group>
+        </div>
+        )}
+      </Field>);
+}
+
+const Workdays = (props) => {
+    return (<Field>
+        {({ field, form }) => (
+        <FieldArray
+        name="cst_schedule_details"
+        render={arrayHelpers => (
+          <label>
+            <input
+              type="checkbox"
+              checked={field.value.work_days.includes(props.day)}
+              onChange={() => {
+                  if(field.value.work_days.includes(props.day)){
+                    // REMOVE
+                    const nextValue = field.value.work_days.filter(value => value !== props.day);
+                    form.setFieldValue('work_days', nextValue);
+                    
+                    arrayHelpers.remove(eval('field.value.wd.'+props.day+'.index'));
+                  }else{
+                    // ADD
+                    const index = field.value.work_days.length;
+                    form.setFieldValue('wd.'+props.day+'.index',index);
+
+                    const nextValue = field.value.work_days.concat(props.day);
+                    form.setFieldValue('work_days', nextValue);
+
+              
+                      arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" });
+
+                  }
+              }}
+            />
+            {eval('day.'+props.day)} &nbsp;
+            </label>
+            )}
+    />
+        )}
+      </Field>);
+}
+
+
+const Scheduledetails = (props) => {
+    return (<Field>
+        {({ field, form }) => (
+          <div>
+        <div className="header">
+            <h1>
+              {eval('day.'+props.day)} Customize Schedule
+            </h1>
+        </div>
+        <Form.Row>
+            <Form.Group as={Col} sm={4}>
+                <Form.Label>On Duty :</Form.Label>
+                <DatePicker 
+                  className="form-control"
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={60}
+                  timeCaption="Time"
+                  dateFormat="HH:mm"
+                  timeFormat="HH:mm"
+                  placeholder="On Duty"
+                  selected={field.value.cst_schedule_details[props.index].start_time}              
+                  onChange={(date) => onSelectTimeHandlerStd(date,props.index,form.setFieldValue,'cst_')}
+                />
+              <Form.Control.Feedback type="invalid">
+                <Field name={`cst_schedule_details.${props.index}.start_time`}>
+                    {({
+                          meta
+                      }) => (
+                        <div>
+                            {meta.touched && meta.error && (
+                                <div className="error">{meta.error}</div>
+                            )}
+                        </div>
+                    )}
+                </Field>
+              </Form.Control.Feedback>
+            </Form.Group>
+   
+
+
+            <Form.Group as={Col} sm={4} >
+                <Form.Label>Off Duty :</Form.Label>
+                <DatePicker 
+                  className="form-control"
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={60}
+                  timeCaption="Time"
+                  dateFormat="HH:mm"
+                  timeFormat="HH:mm"
+                  placeholder="On Duty"
+                  selected={field.value.cst_schedule_details[props.index].end_time}              
+                  onChange={date => form.setFieldValue('cst_schedule_details['+props.index+'].end_time', date)}
+                />
+              <Form.Control.Feedback type="invalid">
+                <Field name={`cst_schedule_details.${props.index}.end_time`}>
+                    {({
+                          meta
+                      }) => (
+                        <div>
+                            {meta.touched && meta.error && (
+                                <div className="error">{meta.error}</div>
+                            )}
+                        </div>
+                    )}
+                </Field>
+              </Form.Control.Feedback>
+            </Form.Group>
+        </Form.Row>
+        <Form.Row>
+            <Form.Group as={Col} sm={4} >
+            <Form.Label>Flexi Start :</Form.Label>
+                <DatePicker 
+                  className="form-control"
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={60}
+                  timeCaption="Time"
+                  dateFormat="HH:mm"
+                  timeFormat="HH:mm"
+                  placeholder="On Duty"
+                  selected={field.value.cst_schedule_details[props.index].start_flexy_time}              
+                  onChange={(date) => onSelectTimeHandlerFlexi(date,props.index,form.setFieldValue,'cst_')}
+                />
+                <Form.Control.Feedback type="invalid">
+                  <Field name={`cst_schedule_details.${props.index}.start_flexy_time`}>
+                      {({
+                            meta
+                        }) => (
+                          <div>
+                              {meta.touched && meta.error && (
+                                  <div className="error">{meta.error}</div>
+                              )}
+                          </div>
+                      )}
+                  </Field>
+                </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group as={Col} sm={4}>
+            <Form.Label>Flexi End :</Form.Label>
+                <DatePicker 
+                  className="form-control"
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={60}
+                  timeCaption="Time"
+                  dateFormat="HH:mm"
+                  timeFormat="HH:mm"
+                  placeholder="On Duty"
+                  selected={field.value.cst_schedule_details[props.index].end_flexy_time}              
+                  onChange={date => form.setFieldValue('cst_schedule_details['+props.index+'].end_flexy_time', date)}
+                />
+              <Form.Control.Feedback type="invalid">
+                <Field name={`cst_schedule_details.${props.index}.end_flexy_time`}>
+                    {({
+                          meta
+                      }) => (
+                        <div>
+                            {meta.touched && meta.error && (
+                                <div className="error">{meta.error}</div>
+                            )}
+                        </div>
+                    )}
+                </Field>
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group as={Col} sm={4} controlId="formGridPassword">
+            <Form.Label>Break :</Form.Label>
+                <DatePicker 
+                  className="form-control"
+                  showTimeSelect
+                  showTimeSelectOnly
+                  timeIntervals={60}
+                  timeCaption="Time"
+                  dateFormat="HH:mm"
+                  timeFormat="HH:mm"
+                  placeholder="On Duty"
+                  selected={field.value.cst_schedule_details[props.index].break_time}              
+                  onChange={date => form.setFieldValue('cst_schedule_details['+props.index+'].break_time', date)}
+                />
+              <Form.Control.Feedback type="invalid">
+                <Field name={`cst_schedule_details.${props.index}.break_time`}>
+                    {({
+                          meta
+                      }) => (
+                        <div>
+                            {meta.touched && meta.error && (
+                                <div className="error">{meta.error}</div>
+                            )}
+                        </div>
+                    )}
+                </Field>
+              </Form.Control.Feedback>
+        </Form.Group>
+        </Form.Row>
+        </div>
+        )}
+      </Field>);
+}
+
+  const onSelectTimeHandlerStd = (data, index,setFieldValue,sched_type) => {
+    
+    if(data!==null){
+      var onDuty = data;
+      var offDuty = new Date(); 
+      var breakTime = new Date(); 
+
+      breakTime.setMinutes(0); 
+      breakTime.setHours(1)
+
+      offDuty.setMinutes(onDuty.getMinutes()); 
+      offDuty.setHours( onDuty.getHours() + 9 ); 
+
+      setFieldValue(sched_type + 'schedule_details['+index+'].start_time', onDuty); 
+      setFieldValue(sched_type + 'schedule_details['+index+'].end_time',offDuty); 
+      setFieldValue(sched_type + 'schedule_details['+index+'].start_flexy_time', onDuty); 
+      setFieldValue(sched_type + 'schedule_details['+index+'].end_flexy_time',offDuty); 
+      setFieldValue(sched_type + 'schedule_details['+index+'].break_time',breakTime); 
+    }else{
+      setFieldValue(sched_type + 'schedule_details['+index+'].start_time', null); 
+    }
+
+  };
+
+   const onSelectTimeHandlerFlexi = (data, index,setFieldValue,sched_type) => {
+    if(data!==null){
+      var onDuty = data;
+      var offDuty = new Date(); 
+
+      offDuty.setMinutes(onDuty.getMinutes()); 
+      offDuty.setHours( onDuty.getHours() + 9 ); 
+
+      setFieldValue(sched_type + 'schedule_details['+index+']start_flexy_time', onDuty); 
+      setFieldValue(sched_type +  'schedule_details['+index+']end_flexy_time',offDuty); 
+    }else{
+      setFieldValue(sched_type + 'schedule_details['+index+'].start_flexy_time', null); 
+    }
+
+  };
+
+
+
+
+export {
+  Scheduledetails,
+  onSelectTimeHandlerStd,
+  onSelectTimeHandlerFlexi,
+  ScheduleType,
+  Workdays
+}
