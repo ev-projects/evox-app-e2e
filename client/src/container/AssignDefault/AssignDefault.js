@@ -44,8 +44,8 @@ class AssignDefault extends Component {
           this.setState((state, props) => ({ [day] : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}  }));
         })
     }
- 
-    values.valid_from = "2019-03-01";
+    values.schedule_details = this.state;
+    values.valid_from = values.from.toISOString().substring(0, 10);
     this.props.scheduleAssign(values)
   }
 
