@@ -14,14 +14,19 @@ import { connect } from 'react-redux';
 const  ProtectedRoute = (props) => {
 
   return (
-    <Route {...props.routeProps}  render={() => {
+    <Route {...props.routeProps} render={() => {
 
           const { user } = props;
           const { page } = props;
 
           // If User has Emp Num (Which means Auth is Successful), show the Actual Component.
           if ( Validator.isValid(user.emp_num) ) {
-            return <div>{props.children}</div>;
+            const childrenWithProps = React.Children.map(props.children, child =>
+              // Add the parameter for the 
+              React.cloneElement(child, { params: props.computedMatch.params })
+            );
+
+            return <div>{childrenWithProps}</div>;
 
           // If NOT Authenticated, Redirect to Login
           } else {

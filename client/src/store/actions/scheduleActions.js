@@ -27,19 +27,26 @@ export const addTemplateSchedule = ( post_data ) => {
 }
 
 
-export const getDefaultSchedule = () => {
+export const getDefaultSchedule = (employee_id) => {
     
     return (dispatch, getState) => {
+
+        // Sets the isReloading to True to current state while reloading the page.
+        dispatch({'type': 'RELOAD_START'});
+        
         API.call({
             method: "get",
-            url: "/user/1/default_schedule/",
+            url: "/user/"+employee_id+"/default_schedule/",
         })
         .then(result => {
+
             dispatch({
                 'type'      : 'FETCH_DEFAULT_SCHEDULE_SUCCESS', 
-                'schedule'   : result.data.content,
+                'schedule'   : result.data.content
             })
 
+            // Sets the Reloading to False
+            dispatch({'type': 'RELOAD_END'});
         })
         .catch(e => {
             dispatch( Formatter.alert_error( API.format( e.response ) ) ) 

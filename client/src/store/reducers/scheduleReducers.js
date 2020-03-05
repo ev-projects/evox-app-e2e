@@ -2,7 +2,9 @@
  *  A dedicated Reducer for User State
  */
 
-const initState = {}
+const initState = {
+    isScheduleLoaded : false
+}
 
 const scheduleReducer = (state = initState, action) => {
     let message = "";
@@ -14,7 +16,8 @@ const scheduleReducer = (state = initState, action) => {
         case "FETCH_DEFAULT_SCHEDULE_SUCCESS":
             message = "Default Schedule"
             return {
-                ...action.schedule
+                ...action.schedule,
+                isScheduleLoaded : true
             };
             break;
         case "FETCH_DEFAULT_SCHEDULE_FAILED":

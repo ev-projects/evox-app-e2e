@@ -19,6 +19,7 @@ class AssignDefault extends Component {
     }
 
   state = {}
+  sched_type = false
 
   onSubmitHandler = (values) => {
     if(values.schedule_type=='standard'){
@@ -43,25 +44,67 @@ class AssignDefault extends Component {
           this.setState((state, props) => ({ [day] : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}  }));
         })
     }
-    values.schedule_details = this.state;
+ 
     values.valid_from = "2019-03-01";
     this.props.scheduleAssign(values)
   }
 
  
-  componentDidMount () {
+  componentWillMount(){
+    this.props.getDefaultSchedule(this.props.params.userId);
   }
 
   render = () => {
-    const { match } = this.props 
-    console.log(this.props);
-    
 
+  if( this.props.schedule.isScheduleLoaded ){
+
+    const from_date = this.props.schedule.valid_from!==undefined?new Date(this.props.schedule.valid_from):null;
+    const work_day = this.props.schedule.work_days!==undefined?this.props.schedule.work_days:[];
+
+    var allow_late = (this.props.schedule.schedule_policies?.allow_late!==undefined)?this.props.schedule.schedule_policies.allow_late:0;
+    var allow_undertime = (this.props.schedule.schedule_policies?.allow_undertime!==undefined)?this.props.schedule.schedule_policies.allow_undertime:0;
+    var allow_night_diff = (this.props.schedule.schedule_policies?.allow_night_diff!==undefined)?this.props.schedule.schedule_policies.allow_night_diff:0;
+
+    const schedule_policies = {schedule_policies: {allow_late : allow_late , allow_undertime : allow_undertime, allow_night_diff: allow_night_diff }};
+    const sched_type = this.props.schedule.schedule_type;
+    
+    var std_schedule_details = [];
+    var flx_schedule_details = [];
+    var cst_schedule_details = [];
+
+    if(sched_type=='standard'){
+      std_schedule_details = [{start_time: new Date("2020-01-01 " + this.props.schedule.schedule_details.all.start_time), end_time : new Date("2020-01-01 " + this.props.schedule.schedule_details.all.end_time), break_time:new Date("2020-01-01 " +this.props.schedule.schedule_details.all.break_time)}];
+    }else if(sched_type=='flexible'){
+      flx_schedule_details = [{start_time: new Date("2020-01-01 " + this.props.schedule.schedule_details.all.start_time), end_time : new Date("2020-01-01 " + this.props.schedule.schedule_details.all.end_time), start_flexy_time: new Date("2020-01-01 " + this.props.schedule.schedule_details.all.start_flexy_time), end_flexy_time : new Date("2020-01-01 " + this.props.schedule.schedule_details.all.end_flexy_time), break_time:new Date("2020-01-01 " +this.props.schedule.schedule_details.all.break_time)}];
+    }else if(sched_type=='customize'){
+      var index = 0;
+      for (var key in this.props.schedule.schedule_details) {
+        var start_time =  new Date("2020-01-01 " + eval('this.props.schedule.schedule_details.' +key+'.start_time'));
+        var end_time = new Date("2020-01-01 " + eval('this.props.schedule.schedule_details.' +key+'.end_time'));
+        var start_flexy_time = new Date("2020-01-01 " + eval('this.props.schedule.schedule_details.' +key+'.start_flexy_time'));
+        var end_flexy_time = new Date("2020-01-01 " + eval('this.props.schedule.schedule_details.' +key+'.end_flexy_time'));
+        var break_time = new Date("2020-01-01 " +  eval('this.props.schedule.schedule_details.' +key+'.break_time'));
+        cst_schedule_details[index] = {start_time: start_time, end_time : end_time, start_flexy_time: start_flexy_time, end_flexy_time : end_flexy_time, break_time: break_time }; 
+        index++;
+      }
+    }
     return <Formik 
     onSubmit={this.onSubmitHandler} 
     validationSchema={validationSchema} 
-    initialValues={{bind_to:'user',bind_id:'1',sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}}
-    ,from : null,std_schedule_details: [],flx_schedule_details: [],cst_schedule_details: [], source_type: 'default',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0}, schedule_type : '', work_days: [] }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+    initialValues={{
+      bind_to:'user', 
+      bind_id: this.props.params.userId,
+      sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
+      wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}},
+      from : from_date,
+      std_schedule_details: std_schedule_details,
+      flx_schedule_details: flx_schedule_details,
+      cst_schedule_details: cst_schedule_details, 
+      source_type: 'default',
+      schedule_policies : schedule_policies.schedule_policies,
+      schedule_type : sched_type,
+      work_days:work_day 
+    }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}> 
     <Container> 
     <Col sm={7} >
@@ -105,6 +148,7 @@ class AssignDefault extends Component {
           <input 
             type="radio"
             name="schedule_type"
+            checked={values.schedule_type === "standard"}
             onChange={() => {
               arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
               setFieldValue('schedule_type', 'standard')
@@ -118,6 +162,7 @@ class AssignDefault extends Component {
           <input 
             type="radio"
             name="schedule_type"
+            checked={values.schedule_type === "flexible"}
             onChange={() => { 
               arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
               setFieldValue('schedule_type', 'flexible');
@@ -131,6 +176,7 @@ class AssignDefault extends Component {
           <input 
             type="radio"
             name="schedule_type"
+            checked={values.schedule_type === "customize"}
             onChange={() => {
               setFieldValue('cst_schedule_details', []);
               for (var i = 0; i < values.work_days.length; i++) {
@@ -351,6 +397,9 @@ class AssignDefault extends Component {
   )}
  
   </Formik>;
+    }
+    return <div>no page found</div>
+   
   }
 }
 
@@ -413,7 +462,7 @@ const mapStateToProps = (state) => {
   const mapDispatchToProps = (dispatch) => {
     return {
       scheduleAssign : (post_data) => dispatch( scheduleAssign(post_data) ),
-      getDefaultSchedule : () => dispatch( getDefaultSchedule() )
+      getDefaultSchedule : (employee_id) => dispatch( getDefaultSchedule(employee_id) )
     }
   }
 

@@ -25,7 +25,7 @@ const RoutesList = () => {
       <Switch>
         <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
         <ProtectedRoute exact path="/app/schedule" ><Schedule /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/assign/:userId" ><AssignDefault/></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/assign/:userId" ><AssignDefault /></ProtectedRoute>
         <ProtectedRoute exact path="/app/Test" ><Dashboard /></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>
