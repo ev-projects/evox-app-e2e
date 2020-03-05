@@ -258,11 +258,11 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             foreach( $schedule_policies as $policy => $value ){
 
                 // Don't save if the value of the policy is 0.
-                if( $value != 0 ) {
+                // if( $value != 0 ) {
                     $schedule_policies_array[ $policy ]             = new SchedulePolicy();
                     $schedule_policies_array[ $policy ]->policy     = $policy;
                     $schedule_policies_array[ $policy ]->value      = $value;
-                }
+                // }
             }
 
             $schedule->schedule_policies()->saveMany( $schedule_policies_array );
