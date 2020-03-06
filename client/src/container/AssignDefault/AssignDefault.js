@@ -19,7 +19,6 @@ class AssignDefault extends Component {
     }
 
   state = {}
-  sched_type = false
 
   onSubmitHandler = (values) => {
     if(values.schedule_type=='standard'){
@@ -131,7 +130,7 @@ class AssignDefault extends Component {
     <Col sm={7}>
         <div className="header">
             <h1>
-                Valid From
+                Schedule Policy
             </h1>
         </div>
     <Form.Row></Form.Row>
@@ -150,6 +149,9 @@ class AssignDefault extends Component {
             name="schedule_type"
             checked={values.schedule_type === "standard"}
             onChange={() => {
+              setFieldValue('std_schedule_details', []);
+  
+
               arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
               setFieldValue('schedule_type', 'standard')
             }}
@@ -164,6 +166,8 @@ class AssignDefault extends Component {
             name="schedule_type"
             checked={values.schedule_type === "flexible"}
             onChange={() => { 
+              setFieldValue('flx_schedule_details', []);
+
               arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
               setFieldValue('schedule_type', 'flexible');
             }}
@@ -179,6 +183,7 @@ class AssignDefault extends Component {
             checked={values.schedule_type === "customize"}
             onChange={() => {
               setFieldValue('cst_schedule_details', []);
+
               for (var i = 0; i < values.work_days.length; i++) {
                 arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
               }
@@ -316,7 +321,7 @@ class AssignDefault extends Component {
                       onChange={date => setFieldValue('flx_schedule_details[0].end_time', date)}
                     />
                 <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="flx_schedule_details[0].end_flexy_time" className="input-feedback" />
+                  <ErrorMessage component="div" name="flx_schedule_details[0].end_time" className="input-feedback" />
                 </Form.Control.Feedback>
             </Form.Group>
         </Form.Row>
