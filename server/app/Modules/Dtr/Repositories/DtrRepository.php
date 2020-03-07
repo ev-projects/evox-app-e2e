@@ -251,7 +251,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 # Appends the condition of User Emp_num on the Biometrics Query
                 $biometrics_collection_query->whereIn('Userid',  $user_emp_num_collection );
             }
-
+            
             # Fetchs the Biometrics Collection.
             $biometrics_collection = $biometrics_collection_query->get();
             $result['biometrics_collection'] = $biometrics_collection;
@@ -317,7 +317,6 @@ class DtrRepository implements DtrRepositoryInterface{
             }
 
             DB::commit();
-            log_to_file('info', 'Success', $dtr);
             return $result;
         } catch (Exception $e) {
             DB::rollback();

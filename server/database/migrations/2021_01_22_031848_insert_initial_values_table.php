@@ -156,6 +156,62 @@ class InsertInitialValuesTable extends Migration
                   'is_active' => true,
                   'created_at' =>         date('Y-m-d H:i:s'),
                   'updated_at' =>         date('Y-m-d H:i:s')
+            ),
+            array('emp_num' => '1742',
+                  'bhr_num' => '1742',
+                  'department_id' => 1,
+                  'email' => "juan.norico@eastvantage.com",
+                  'username' => "jnorico1742",
+                  'password' => Hash::make("ABC123"),
+                  'first_name' => 'Juan Rodrigo',
+                  'middle_name' => 'ITT',
+                  'last_name' => 'Norico - NIGHT SHIFT',
+                  'employment_status' => "Full-Time",
+                  'is_active' => true,
+                  'created_at' =>         date('Y-m-d H:i:s'),
+                  'updated_at' =>         date('Y-m-d H:i:s')
+            ),
+            array('emp_num' => '273',
+                  'bhr_num' => '273',
+                  'department_id' => 1,
+                  'email' => "kier.soriano@eastvantage.com",
+                  'username' => "ksoriano273",
+                  'password' => Hash::make("ABC123"),
+                  'first_name' => 'Kier',
+                  'middle_name' => 'HKI',
+                  'last_name' => 'Norico - NIGHT SHIFT',
+                  'employment_status' => "Full-Time",
+                  'is_active' => true,
+                  'created_at' =>         date('Y-m-d H:i:s'),
+                  'updated_at' =>         date('Y-m-d H:i:s')
+            ),
+            array('emp_num' => '2042',
+                  'bhr_num' => '2042',
+                  'department_id' => 1,
+                  'email' => "allan.rimando@eastvantage.com",
+                  'username' => "arimando2042",
+                  'password' => Hash::make("ABC123"),
+                  'first_name' => 'Allan Paul',
+                  'middle_name' => 'OPT',
+                  'last_name' => 'Rimando - MID SHIFT',
+                  'employment_status' => "Full-Time",
+                  'is_active' => true,
+                  'created_at' =>         date('Y-m-d H:i:s'),
+                  'updated_at' =>         date('Y-m-d H:i:s')
+            ),
+            array('emp_num' => '114',
+                  'bhr_num' => '114',
+                  'department_id' => 1,
+                  'email' => "analyn.condat@eastvantage.com",
+                  'username' => "acondat114",
+                  'password' => Hash::make("ABC123"),
+                  'first_name' => 'Analyn',
+                  'middle_name' => 'VID',
+                  'last_name' => 'Condat - MID SHIFT',
+                  'employment_status' => "Full-Time",
+                  'is_active' => true,
+                  'created_at' =>         date('Y-m-d H:i:s'),
+                  'updated_at' =>         date('Y-m-d H:i:s')
             )
         );
         DB::table('users')->insert($insert);
@@ -174,6 +230,22 @@ class InsertInitialValuesTable extends Migration
                 'user_id' => '3',
                 'supervisor_id' => '2'
             ),
+            array(
+                'user_id' => '4',
+                'supervisor_id' => '2'
+            ),
+            array(
+                'user_id' => '5',
+                'supervisor_id' => '2'
+            ),
+            array(
+                'user_id' => '6',
+                'supervisor_id' => '2'
+            ),
+            array(
+                'user_id' => '7',
+                'supervisor_id' => '2'
+            ),
         );
         DB::table('users_supervisors')->insert($insert);
 
@@ -184,6 +256,19 @@ class InsertInitialValuesTable extends Migration
         User::find(3)
             ->assignRole($employee_role)
             ->syncPermissions(array_merge($employee_permissions));
+        User::find(4)
+            ->assignRole($employee_role)
+            ->syncPermissions(array_merge($employee_permissions));
+        User::find(5)
+            ->assignRole($employee_role)
+            ->syncPermissions(array_merge($employee_permissions));
+        User::find(6)
+            ->assignRole($employee_role)
+            ->syncPermissions(array_merge($employee_permissions));
+        User::find(7)
+            ->assignRole($employee_role)
+            ->syncPermissions(array_merge($employee_permissions));
+            
         User::find(2)
             ->assignRole([$employee_role, $supervisor_role])
             ->syncPermissions(array_merge($employee_permissions, $supervisor_permissions));
