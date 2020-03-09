@@ -3,7 +3,7 @@
 namespace App\Modules\User\Models;
 
 use App\Modules\Department\Models\Department;
-use App\Modules\Dtr\Models\Dtr;
+use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Schedule\Models\Schedule;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;

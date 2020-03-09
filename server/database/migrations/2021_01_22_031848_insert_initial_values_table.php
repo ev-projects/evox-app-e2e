@@ -43,6 +43,193 @@ class InsertInitialValuesTable extends Migration
 
 
 
+        // Insert Predefined holidays values
+        $insert = array(
+            // Legal Holidays
+            array(
+                'name' => "New Year's Day",
+                'date' => "2020-01-01",
+                'type' => "lh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Araw ng Kagitingan",
+                'date' => "2020-04-09",
+                'type' => "lh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Labor Day",
+                'date' => "2020-05-01",
+                'type' => "lh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Independence Day",
+                'date' => "2020-06-12",
+                'type' => "lh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "National Heroes' Day",
+                'date' => "2020-08-26",
+                'type' => "lh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Bonifacio Day",
+                'date' => "2020-11-30",
+                'type' => "lh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Christmas Day",
+                'date' => "2020-12-25",
+                'type' => "lh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Rizal Day",
+                'date' => "2020-12-30",
+                'type' => "lh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+
+            // Special Holidays
+            array(
+                'name' => "EDSA Revolution Anniversary",
+                'date' => "2020-02-25",
+                'type' => "sh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Ninoy Aquino Day",
+                'date' => "2020-08-21",
+                'type' => "sh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "All Saints' Day",
+                'date' => "2020-11-01",
+                'type' => "sh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "All Souls' Day",
+                'date' => "2020-11-02",
+                'type' => "sh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Feast of the Immaculate Conception of Mary",
+                'date' => "2020-12-08",
+                'type' => "sh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Taguig Day",
+                'date' => "2020-12-08",
+                'type' => "sh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Christmas Eve",
+                'date' => "2020-12-24",
+                'type' => "sh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "Last Day of the Year",
+                'date' => "2020-12-31",
+                'type' => "sh",
+                'is_predefined' =>  true,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+        );
+        
+        DB::table('holidays')->insert($insert);
+
+        // Insert Payroll Cutoffs
+        $insert = array(
+            array(
+                'start_date' => "2020-01-19",
+                'end_date' => "2020-02-18",
+                'description' => "For January",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'start_date' => "2020-02-19",
+                'end_date' => "2020-03-18",
+                'description' => "For February",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'start_date' => "2020-03-19",
+                'end_date' => "2020-04-18",
+                'description' => "For March",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'start_date' => "2020-04-19",
+                'end_date' => "2020-05-18",
+                'description' => "For April",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'start_date' => "2020-05-19",
+                'end_date' => "2020-06-18",
+                'description' => "For May",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'start_date' => "2020-06-19",
+                'end_date' => "2020-07-18",
+                'description' => "For June",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+        );
+        
+        DB::table('payroll_cutoffs')->insert($insert);
+
+
+
         // Insert departments Values
         $insert = array(
             array(

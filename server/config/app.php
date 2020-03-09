@@ -149,6 +149,7 @@ return [
         Ejarnutowski\LaravelApiKey\Providers\ApiKeyServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         Spatie\Activitylog\ActivitylogServiceProvider::class,
+        Ixudra\Curl\CurlServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -162,7 +163,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Modules\Dtr\Providers\DtrServiceProvider::class,
+        App\Modules\Bhr\Providers\BhrServiceProvider::class,
+        App\Modules\Payroll\Providers\PayrollServiceProvider::class,
         App\Modules\Schedule\Providers\ScheduleServiceProvider::class,
         App\Modules\User\Providers\UserServiceProvider::class,
 
@@ -190,6 +192,7 @@ return [
         'Cache' => Illuminate\Support\Facades\Cache::class,
         'Config' => Illuminate\Support\Facades\Config::class,
         'Cookie' => Illuminate\Support\Facades\Cookie::class,
+        'Curl'  => Ixudra\Curl\Facades\Curl::class,
         'Crypt' => Illuminate\Support\Facades\Crypt::class,
         'DB' => Illuminate\Support\Facades\DB::class,
         'Eloquent' => Illuminate\Database\Eloquent\Model::class,

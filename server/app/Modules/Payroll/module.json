@@ -1,0 +1,6 @@
+{
+    "name": "Payroll",
+    "slug": "payroll",
+    "version": "1",
+    "description": "This module is responsible for all Payroll related transactions."
+}

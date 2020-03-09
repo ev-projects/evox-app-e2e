@@ -3,7 +3,7 @@
 namespace App\Modules\Schedule\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Dtr\Repositories\DtrRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Schedule\Http\Requests\AssignScheduleRequest;
 use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
 use App\Modules\Schedule\Http\Requests\UpdateScheduleRequest;
