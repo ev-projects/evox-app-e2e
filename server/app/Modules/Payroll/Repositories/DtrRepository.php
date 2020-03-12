@@ -4,6 +4,7 @@ namespace App\Modules\Payroll\Repositories;
 
 use App\Modules\Payroll\Models\Biometrics;
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Payroll\Models\Holiday;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\User\Models\User;
 use Carbon\Carbon;
@@ -28,6 +29,8 @@ class DtrRepository implements DtrRepositoryInterface{
         try {
             $start_date = reset($date_array);
             $end_date = end($date_array);
+            
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date], "dtr");
 
             $dtr_array = [];
             
@@ -119,18 +122,23 @@ class DtrRepository implements DtrRepositoryInterface{
             ];
 
             DB::commit();
-            log_to_file('info', 'Success', $result);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             return $result;
 
         } catch (Exception $e) {
             DB::rollback();
+            
+            log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "dtr");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             log_error($e);
             throw $e;
         }
     }
 
     /**
-     *  Responsible for Applying of Schedule
+     *  Responsible for Applying of Schedule to DTR.
      * @param User|user_id $user_or_user_id
      * @param Schedule $schedule
      * @return array $result
@@ -139,6 +147,8 @@ class DtrRepository implements DtrRepositoryInterface{
     {
         DB::beginTransaction();
         try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user'=>$user_or_user_id, 'schedule'=>$schedule ], "dtr");
 
             $result = [
                 'updated' => [],
@@ -206,11 +216,111 @@ class DtrRepository implements DtrRepositoryInterface{
             }
 
             DB::commit();
-            log_to_file('info', 'Success', [$result]);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             return $result;
 
         } catch (Exception $e) {
             DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+
+    
+    /**
+     *  Responsible for Binding the Holiday that was fetched between the Date Range to the DTR Related by Date.
+     * @param string $start_date
+     * @param string $end_date
+     * @return Collection $result
+     */
+    public function bind_holidays_to_dtr( string $start_date, string $end_date )
+    {
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date], "dtr");
+
+        DB::beginTransaction();
+        try {
+
+            $result = new Collection;
+            
+            /** This Holiday date range query and wildcard is created for the following scenarios:
+             *  1. Incase the Date Range is overlapping to next year like "2019" to "2020", we cannot query the Month-Date Range (ex. DATE BETWEEN 12-01 AND 01-01 ) 
+             *  2. This fetches all the Months between the Date Range and iterates manually the Start and End date of those months that will be converted as Query.
+             */
+                $holiday_date_range['query_array'] = [];
+                $holiday_date_range['wildcard_array']  = [];
+
+                foreach( get_month_date_range( $start_date, $end_date ) as $row ){
+                    $holiday_date_range['query_array'][] = "( DATE_FORMAT(date, '%m-%d') BETWEEN DATE_FORMAT(?,'%m-%d') AND DATE_FORMAT(?,'%m-%d') )";
+                    array_push($holiday_date_range['wildcard_array'], $row->start_date, $row->end_date);
+                }
+            /** */
+            
+            // Fetch all the Holidays within the Start and End date as Parameter.
+            $holiday_collection = Holiday::whereRaw("
+                                                ( is_predefined = 1 
+                                                  AND (". implode( " OR ", $holiday_date_range['query_array'] ) ."))
+                                            OR
+                                                ( is_predefined = 0 
+                                                  AND date BETWEEN ? AND ? )
+                                            ", array_merge( 
+                                                    $holiday_date_range['wildcard_array'],
+                                                    array(
+                                                        $start_date,
+                                                        $end_date
+                                                    )  
+                                                ) 
+                                            )
+                                            ->orderBy('date', 'asc')
+                                            ->get();
+
+            // Iterate the Fetched Holidays.
+            foreach( $holiday_collection as $holiday ){
+
+                // Parses the Proper Date of the Holiday ( To automate the condition for Pre-defined and non Pre-defined Holiday Dates. )
+                $date = $holiday->getProperDate( $start_date, $end_date );
+
+                // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration.
+                $dtr_collection = Dtr::select('dtrs.*')
+                                        ->whereRaw(
+                                            "dtrs.date = ?
+                                                AND 
+                                                NOT EXISTS (
+                                                    SELECT * 
+                                                    FROM dtr_holidays
+                                                    WHERE dtrs.id = dtr_holidays.dtr_id 
+                                                        AND dtr_holidays.holiday_id = ?
+                                                )
+                                            ",
+                                            array(
+                                                $date,
+                                                $holiday->id
+                                            )
+                                        )
+                                        ->get();
+                
+                // Iterates the Fetched DTRs. 
+                foreach( $dtr_collection as $dtr ) {
+
+                    $dtr->holidays()->save( $holiday );
+                    $result->push( $dtr );
+                    log_to_file( 'info', 'Holiday Inserted on this DTR.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
+                }
+            }
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            DB::commit();
+            return $result;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             log_error($e);
             throw $e;
         }
@@ -219,43 +329,17 @@ class DtrRepository implements DtrRepositoryInterface{
 
     /**
      *  Responsible for Syncing Biometrics Logs to the existing DTR.
-     * @param string $start_datetime
-     * @param string $end_datetime
-     * @param Collection $user_collection (Optional)
-     * @return bool
+     * @param Collection $biometrics_collection
+     * @return Collection $result
      */
-    public function sync_biometrics_to_dtr( string $start_datetime, string $end_datetime, Collection $user_collection = null )
+    public function sync_biometrics_to_dtr( Collection $biometrics_collection )
     {
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "biometrics");
+
         try {
 
-            $result = [
-                'biometrics_collection' => new Collection,
-                'dtr_collection' => new Collection,
-            ];
-
-            # Creates the Query on fetching the Biometrics data between the Start and End Date time.
-            $biometrics_collection_query = Biometrics::select('CheckTime','CheckType','Userid')
-                                                        ->whereIn('CheckType', ['I','O'])
-                                                        ->whereBetween('CheckTime', [$start_datetime, $end_datetime])
-                                                        ->orderBy('CheckTime', 'asc');
-
-            # If User Collection is valid, Adds the Users in the condition on fetching the Biometrics
-            if( is_valid( $user_collection ) ){
-
-                # Plucks the 'emp_num' field from the Collection and appends the "20" on the emp_num to match the data on Biometrics. 
-                $user_emp_num_collection = $user_collection->pluck('emp_num')
-                                                            ->map(function ($emp_num) {
-                                                                return parse_emp_num_for_biometrics( $emp_num );
-                                                            });
-
-                # Appends the condition of User Emp_num on the Biometrics Query
-                $biometrics_collection_query->whereIn('Userid',  $user_emp_num_collection );
-            }
-
-            # Fetchs the Biometrics Collection.
-            $biometrics_collection = $biometrics_collection_query->get();
-            $result['biometrics_collection'] = $biometrics_collection;
-
+            $result = new Collection;
+            
             # If the Biometrics has value, proceed on the Iteration.
             if( $biometrics_collection->count() > 0 ) {
                 
@@ -263,17 +347,19 @@ class DtrRepository implements DtrRepositoryInterface{
                     $dtr = $this->apply_biometrics_to_dtr( $biometrics );
                     
                     if( is_valid( $dtr ) ){
-                        $result['dtr_collection'][] = $dtr;
+                        $result->push( $dtr );
                     }
-                }
-                
+                } 
             }
-            
-            log_to_file('info', 'Success', $result);
-            return $result['dtr_collection'];
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "biometrics");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "biometrics");
+            return $result;
 
         } catch (Exception $e) {
             log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "biometrics");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "biometrics");
             throw $e;
         }
     }
@@ -314,14 +400,20 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
                 $dtr->update();
                 $result = $dtr;
+
+                DB::commit();
+                log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
+            } else {
+                log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
             }
 
             DB::commit();
-            log_to_file('info', 'Success', $dtr);
             return $result;
         } catch (Exception $e) {
             DB::rollback();
-            log_error($e);
+            
+            log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "biometrics");
+            log_error($e, 'biometrics');
             throw $e;
         }
     }

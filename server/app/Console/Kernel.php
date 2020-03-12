@@ -25,10 +25,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {   
         # Run Generate Weekly DTR every Saturday @ 5PM.
-        $schedule->call('App\Modules\Payroll\Http\Controllers\DtrController@generate_weekly_dtr')->cron('0 19 * * SAT'); 
+        $schedule->call('App\Modules\Cron\Http\Controllers\CronController@generate_weekly_dtr')->cron('0 19 * * SAT'); 
 
         # Run Sync Realtime Biometrics every 3 minutes.
-        $schedule->call('App\Modules\Payroll\Http\Controllers\DtrController@sync_realtime_biometrics')->cron('*/3 * * * *'); 
+        $schedule->call('App\Modules\Cron\Http\Controllers\CronController@sync_realtime_biometrics')->cron('*/3 * * * *'); 
     }
 
     /**

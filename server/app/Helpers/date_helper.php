@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Database\Eloquent\Collection;
 
 if (! function_exists('generate_date_array')) {   
     /**
@@ -197,6 +198,52 @@ if (! function_exists('subtract_time_from_timestamp')) {
             return ( ( !is_int($timestamp)      ? strtotime($timestamp) : $timestamp ) - 
                      ( !is_int($time)           ? time_to_seconds($time) : $time )
                     );
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+
+if (! function_exists('get_month_date_range')) {   
+    /**
+     * This function gets the Month Date range with their specific Start Day and End Day of the Month (Considering the Start and End date parameter in the condition.)
+     *
+     * @param  date $start_date
+     * @param  date $end_date
+     * @return Collection $date_range
+     */
+    function get_month_date_range( $start_date, $end_date ) 
+    {
+        try {
+            $date_range = new Collection;
+
+            # Gets all the Month between the Date Range.
+            foreach ( CarbonPeriod::create($start_date, '1 month', $end_date)->toArray() as $month){
+
+                # Sets the First and Last Day of the Iteration Month
+                $first_day = Carbon::parse($month)->startOfMonth();
+                $last_day = Carbon::parse($month)->endOfMonth();
+
+                # If the Iteration Month is the same as the Date Range's Start Date, replace First Day's Data with Start Date
+                if( $first_day->format('m') == Carbon::parse($start_date)->format('m') ) {
+                    $first_day = Carbon::parse($start_date);
+
+                # If the Iteration Month is the same as the Date Range's End Date, replace Last Day's Data with End Date
+                } else if( $last_day->format('m') == Carbon::parse($end_date)->format('m') ) {
+                    $last_day = Carbon::parse($end_date);
+                }  
+
+                # Push to Collection
+                $date_range->push( (object) [
+                    'year' => Carbon::parse($month)->format('Y'),
+                    'month' => Carbon::parse($month)->format('m'),
+                    'start_date' => $first_day->format('Y-m-d'),
+                    'end_date' => $last_day->format('Y-m-d'),
+                ]);
+            }
+
+            return $date_range;
         }catch(Exception $e){
             throw $e;
         }

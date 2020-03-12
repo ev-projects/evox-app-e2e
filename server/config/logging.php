@@ -76,6 +76,26 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+
+        // Custom Logging Channels
+
+        'bhrlog' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/bhr.log'),
+            'level' => 'debug',
+        ],
+
+        'biometrics' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/biometrics.log'),
+            'level' => 'debug',
+        ],
+
+        'dtr' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/dtr.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

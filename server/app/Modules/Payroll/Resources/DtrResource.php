@@ -15,14 +15,17 @@ class DtrResource extends JsonResource
     public function toArray($request)
     {
         $result = null;
-
+        
         if( ! is_null( $this->resource ) ) {
 
             # Create Resource for Dtr Payroll Items
-            // $dtr_payroll_items = [];
-            // foreach( $this->dtr_payroll_items()->get() as $dtr_payroll_item){
-            //     $dtr_payroll_items[  ] = ;
-            // }
+            $holidays = [];
+            foreach( $this->holidays()->get() as $holiday){
+                $holidays[ $holiday->id ] = [
+                    'name'  => $holiday->name,
+                    'type'  => $holiday->type
+                ];
+            }
 
             $result =  array_merge( 
                 array(
@@ -40,7 +43,7 @@ class DtrResource extends JsonResource
                     'is_rest_day' => $this->is_rest_day,
                     'source_type_tagging' => $this->source_type_tagging
                 ), 
-                // array('dtr_payroll_items' => $dtr_payroll_items),
+                array('holidays' => $holidays),
             );
         }
         return $result;

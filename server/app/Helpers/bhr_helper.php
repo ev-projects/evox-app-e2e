@@ -1,16 +1,70 @@
 <?php
 
+use Illuminate\Http\JsonResponse;
+use Ixudra\Curl\Facades\Curl;
 
 if (! function_exists('bhr_api_call')) {  
     /**
-     * This function conducts a cURL on Bamboo HR with specific 
+     * This function conducts a cURL on Bamboo HR with specific API End Point.
      *
      * @param  string method
-     * @param  string end_point
-     * @param  array data
-     * @return Symfony\Component\HttpFoundation\Response;
+     * @param  string api_endpoint
+     * @param  array data (Optional)
+     * @return \Illuminate\Support\Collection;
      */
-    function bhr_api_call($method = 'get', $end_point,  $data = array()) {
-        
+    function bhr_api_call($method = 'GET', $api_endpoint,  $data = array()) {
+        try{
+            $result = null;
+
+            log_to_file( 'info', 'Starting API call to this End Point: ' . $api_endpoint . ' ('.$method.')', [], "bhrlog");
+
+            # Create the Response variable that handles the Curl Request
+            $response = Curl::to( env('BHR_API_LINK') . $api_endpoint )
+                            ->withHeader('Accept: application/json')
+                            ->returnResponseObject();
+            
+            # If there's a Data that needs to be sent, adds the Data on the Curl request.
+            if( count( $data ) > 0 ) {
+                $response->withData( $data );
+                log_to_file( 'info', 'Has data parameter passed.', $data, "bhrlog");
+            }
+            
+            // Executes the given Method.
+            switch( $method ) {
+                case 'GET':
+                    $result = $response->get();
+                    break;
+                case 'POST':
+                    $result = $response->post();
+                    break;
+                case 'PUT':
+                    $result = $response->put();
+                    break;
+                case 'PATCH':
+                    $result = $response->patch();
+                    break;
+                case 'DELETE':
+                    $result = $response->delete();
+                    break;
+                default:
+                    $result = $response->get();
+                    break;
+            }
+
+            // If the Curl is a success, Decode the returned Content as a JSON
+            if( $result->status == JsonResponse::HTTP_OK ) {
+                log_to_file( 'info', 'API Call Success!', ['count' => count( json_decode($result->content) )], "bhrlog");
+                return collect(json_decode($result->content));
+
+            // If not successful, manually throw exception.
+            } else {
+                throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
+            }
+
+        } catch(Exception $e) {
+            
+            log_to_file( 'critical', 'API Call Failed!', $e->getMessage(), "bhrlog");
+            throw $e;
+        }
     }
 }

@@ -20,7 +20,10 @@ return [
     |
     */
 
-    'DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-
-
+    'DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+    
+    'LOG_START' => ' [ CALL START ] ',
+    'LOG_END' => ' [ CALL END ] ',
+    'LOG_ROLLBACK' => ' Rolling back all the Previous Transactions... ',
+    'LOG_GAP' => '##################################################################################',
 ];

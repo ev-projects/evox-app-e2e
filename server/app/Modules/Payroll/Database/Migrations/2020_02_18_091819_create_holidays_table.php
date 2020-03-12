@@ -17,7 +17,7 @@ class CreateHolidaysTable extends Migration
             $table->increments('id');
             $table->string('name')->index();
             $table->date('date')->index();
-            $table->enum('type', array('sh', 'lh', 'slh', 'dsh', 'dlh'))->index();
+            $table->enum('type', array('sh', 'lh'))->index();
             $table->boolean('is_predefined')->default(false);
             $table->softDeletes();
             $table->timestamps();

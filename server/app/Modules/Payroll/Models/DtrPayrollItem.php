@@ -5,7 +5,7 @@ namespace App\Modules\Payroll\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class DtrPayrollItems extends Model
+class DtrPayrollItem extends Model
 {
     use LogsActivity;
 

@@ -1,0 +1,6 @@
+{
+    "name": "Cron",
+    "slug": "cron",
+    "version": "1.0",
+    "description": "Responsible for All Cron Jobs that would be registered in the EVOX App."
+}

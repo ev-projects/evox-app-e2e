@@ -13,10 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::get('/bhr', function (Request $request) {
+    // return $request->sync();
+})->middleware('auth:api');
 
-# API Call for Payroll
-Route::group(['prefix' => 'bhr', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-    
-    Route::get('/sync_holidays',     'BhrController@sync_holidays'); //->middleware('permission:add_schedule');
-
-});

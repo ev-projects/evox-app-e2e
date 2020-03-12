@@ -35,10 +35,11 @@ if (! function_exists('log_to_file')) {
      *
      * @param  string type (emergency|alert|critical|error|warning|notice|info|debug)
      * @param  string message
-     * @param  array|object|string data
+     * @param  array|object|string data (Optional)
+     * @param  string channel (Optional)
      * @return void
      */
-    function log_to_file( $type, $message, $data=array()) {
+    function log_to_file( $type, $message, $data=array(), $channel="") {
         try{    
             // If the previous caller is the log_error, get the higher stack for logging.
             $log_stack_index = ( debug_backtrace()[1]['function'] == 'log_error' ) ? 2 : 1;
@@ -53,7 +54,12 @@ if (! function_exists('log_to_file')) {
             $user_id = ( auth()->user() != null )? '[UserID #: '.auth()->user()->id.']' : "";
 
             if( in_array( $type, array( 'emergency', 'alert','critical','error','warning','notice','info','debug') ) ) {
-                Log::$type($user_id.'['. $log_header .']['.$message.']', (array) $data);
+
+                if( ! is_valid( $channel ) ) {
+                    Log::$type($user_id.'['. $log_header .']['.$message.']', (array) $data);
+                } else {
+                    Log::channel( $channel )->$type($user_id.'['. $log_header .']['.$message.']', (array) $data);
+                }
 
                 // activity()->useLog($type)
                 //             ->withProperties(['status' => $message])
@@ -71,14 +77,17 @@ if (! function_exists('log_error')) {
      * Logs the error into laravel.log File
      *
      * @param  Exception error 
+     * @param  string channel (Optional) 
      * @return void
      */
-    function log_error( $error ) {
+    function log_error( $error, $channel="" ) {
         try{
-            log_to_file('critical', 'Error', [$error]);
+            log_to_file('critical', 'Error', [$error], $channel);
         }catch(Exception $e){
             throw $e;
         }
     }
 }
+
+
 

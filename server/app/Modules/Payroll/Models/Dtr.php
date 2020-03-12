@@ -75,11 +75,36 @@ class Dtr extends Model
      *  Relationships
      */
     /**
-     * hasMany Relationship for Schedule Policies model
+     * hasMany Relationship for DTR Payroll Items model
      */
     public function dtr_payroll_items(){
-        return $this->hasMany(DtrPayrollItems::class);
+        return $this->hasMany(DtrPayrollItem::class);
     }
 
+    /**
+     *  Relationships
+     */
+    /**
+     * hasMany Relationship for Dtr Holidays model
+     */
+    public function holidays(){
+        return $this->belongsToMany(Holiday::class, 'dtr_holidays', 'dtr_id', 'holiday_id');
+        
+    }
+
+    /**
+     * hasMany Relationship for Dtr Leaves model
+     */
+    public function leaves(){
+        return $this->hasMany(Leave::class);
+        
+    }
+
+
+    # Fetch the User's Supervisee 
+    public function supervisee()
+    {
+        return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
+    }
 
 }

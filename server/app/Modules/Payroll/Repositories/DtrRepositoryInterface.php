@@ -12,8 +12,9 @@ interface DtrRepositoryInterface
 
     public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
 
-    // public function apply_dtr_schedule_to_department( $department, $start_date, $end_date = null );
-    
+    public function bind_holidays_to_dtr( string $start_date, string $end_date );
 
-    public function sync_biometrics_to_dtr( string $start_datetime, string $end_datetime, Collection $user_collection = null );
+    // public function bind_leaves_to_dtr( string $start_date, string $end_date, Collection $bhr_leaves_collection );
+
+    public function sync_biometrics_to_dtr( Collection $biometrics_collection );
 }
