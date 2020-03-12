@@ -20,6 +20,13 @@ const scheduleReducer = (state = initState, action) => {
                 isScheduleLoaded : true
             };
             break;
+        case "FETCH_TEMPLATE_SCHEDULE_SUCCESS":
+            message = "Template Schedule"
+            return {
+                ...action.template,
+                isScheduleLoaded : true
+            };
+            break;
         case "FETCH_DEFAULT_SCHEDULE_FAILED":
             message = "Login Failed!"
             return {

@@ -19,7 +19,7 @@ class API  {
 
       // Declare the Default Headers that will be used on the API Call.
       var default_headers = {
-        "Content-Type"    : Validator.isValid(config.method) && config.method == 'put' ? "application/x-www-form-urlencoded" : "application/json" ,
+        "Content-Type"    : "application/json" ,
 
         // Pass the JWT Token given on Login for Secured User Authentication 
         "Authorization"   : "Bearer " + localStorage.getItem("access_token"),
