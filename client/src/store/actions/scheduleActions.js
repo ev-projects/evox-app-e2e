@@ -80,13 +80,52 @@ export const getTemplateSchedule = (template_id) => {
     }
 }
 
-export const updateSchedule = (post_data) => {
-    console.log(post_data);
+
+
+
+
+
+export const updateSchedule = (post_data,sched_id) => {
     return (dispatch, getState) => {
         API.call({
             method: "put",
-            url: "/schedule/8/",
+            url: "/schedule/"+sched_id+"/",
             data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const listTemplate = () => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/schedule/templates/",
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_TEMPLATES_SCHEDULE_SUCCESS', 
+                'template'   : result.data.content
+            })
+            // Sets the Reloading to False
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const deleteSchedule = (id) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "delete",
+            url: "/schedule/"+id+"/",
         })
         .then(result => {
             dispatch( Formatter.alert_success( result ));
@@ -107,6 +146,7 @@ export const scheduleAssign = (post_data) => {
             data: post_data
         })
         .then(result => {
+
             dispatch( Formatter.alert_success( result ));
         })
         .catch(e => {

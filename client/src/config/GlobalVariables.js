@@ -5,6 +5,7 @@
 
 global.login_url = "/login";
 global.dashboard_url = "/app/Dashboard";
+global.template_url = "/app/schedule/template/";
 
 global.invalid_token_response = [
     'token_expired',

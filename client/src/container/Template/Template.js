@@ -40,7 +40,7 @@ class Schedule extends Component {
     }
 
     values.schedule_details = this.state;
-    this.props.updateSchedule(values)
+    this.props.updateSchedule(values,this.props.params.templateid)
   }
 
 
@@ -326,7 +326,7 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      updateSchedule : (post_data) => dispatch( updateSchedule(post_data) ),
+      updateSchedule : (post_data,sched_id) => dispatch( updateSchedule(post_data,sched_id) ),
       getTemplateSchedule : (template_id) => dispatch( getTemplateSchedule(template_id) ),
     }
   }
