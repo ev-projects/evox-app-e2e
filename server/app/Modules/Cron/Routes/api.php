@@ -26,5 +26,8 @@ Route::group(['prefix' => 'cron', 'middleware' => ['jwtauth', 'auth.apikey']], f
     # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
     Route::get('/sync_holidays',     'CronController@sync_holidays');
 
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/sync_leaves',     'CronController@sync_leaves');
+
 
 });

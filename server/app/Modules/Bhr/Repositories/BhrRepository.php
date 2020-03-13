@@ -33,45 +33,42 @@ class BhrRepository implements BhrRepositoryInterface{
 
             $holidays_collection = new Collection;
 
-            foreach( bhr_api_call('GET', 'time_off/whos_out/?start='.$start_date.'&end='.$end_date) as $row ) {
+            // Get the Holidays from BHr to be iterated. 
+            foreach( $this->get_holidays( $start_date, $end_date ) as $row ) {
 
-                // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-                if( $row->type == 'holiday' ) {
+                // Checks if the current Holiday in the Iteration is already Pre-defined OR already existing and synced.
+                $existing_holiday_query = Holiday::whereRaw("
+                                                        ( is_predefined = 1 
+                                                            AND DATE_FORMAT(date,'%m-%d') = DATE_FORMAT(?,'%m-%d') )
+                                                    OR
+                                                        ( is_predefined = 0 
+                                                            AND date = ?
+                                                            AND name = ?  )
+                                                    ", array( 
+                                                            $row->start, 
+                                                            $row->start, 
+                                                            $row->name 
+                                                        )
+                                                    );
 
-                    // Checks if the current Holiday in the Iteration is already Pre-defined OR already existing and synced.
-                    $existing_holiday_query = Holiday::whereRaw("
-                                                            ( is_predefined = 1 
-                                                              AND DATE_FORMAT(date,'%m-%d') = DATE_FORMAT(?,'%m-%d') )
-                                                        OR
-                                                            ( is_predefined = 0 
-                                                              AND date = ?
-                                                              AND name = ?  )
-                                                        ", array( 
-                                                                $row->start, 
-                                                                $row->start, 
-                                                                $row->name 
-                                                            )
-                                                        );
+                $existing_holiday = $existing_holiday_query->get();
 
-                    // If the Holiday is Not Existing, Proceed on saving the Holiday as new.                                           
-                    if( $existing_holiday_query->count() == 0 ) {
+                // If the Holiday is Not Existing, Proceed on saving the Holiday as new.                                           
+                if( $existing_holiday->count() == 0 ) {
 
-                        log_to_file( 'info', 'Holiday NOT Existing!', $row, "bhrlog");
+                    $holiday                  = new Holiday();
+                    $holiday->name            = $row->name;
+                    $holiday->type            = ( Str::contains($row->name, 'Regular Holiday') ? 'lh' : 'sh' );
+                    $holiday->date            = $row->start;
+                    $holiday->is_predefined   = false;
+                    $holiday->save();
 
-                        $holiday                  = new Holiday();
-                        $holiday->name            = $row->name;
-                        $holiday->type            = ( Str::contains($row->name, 'Regular Holiday') ? 'lh' : 'sh' );
-                        $holiday->date            = $row->start;
-                        $holiday->is_predefined   = false;
-                        $holiday->save();
+                    $holidays_collection->push( $holiday );
 
-                        $holidays_collection->push( $holiday );
+                    log_to_file( 'info', 'Holiday NOT Existing! Inserted to DB.', $holiday->getAttributes(), "bhrlog");
 
-                        log_to_file( 'info', 'Inserted!', $holiday->getAttributes(), "bhrlog");
-
-                    } else {
-                        log_to_file( 'info', 'Holiday Existing!', $existing_holiday_query->get(), "bhrlog");
-                    }
+                } else {
+                    log_to_file( 'info', 'Holiday Existing!', $existing_holiday, "bhrlog");
                 }
             }
 
@@ -93,31 +90,80 @@ class BhrRepository implements BhrRepositoryInterface{
         }
     }
 
-    
     /**
-     *  Responsible for Fetching Leaves from BHr.
+     *  Responsible for Fetching Holdays from BHr.
      * @param string $start_date
      * @param string $end_date
-     * @return Collection $holiday_collection
+     * @return Collection $bhr_holidays_array
      */
-    public function get_leaves( string $start_date, string $end_date )
+    public function get_holidays( string $start_date, string $end_date  )
     {
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date], "bhrlog");
-        DB::beginTransaction();
         try {
 
+            $bhr_holidays_array = [];
 
-            DB::commit();
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            // Define the End Point for the API.
+            $end_point = 'time_off/whos_out/?start='.$start_date.'&end='.$end_date;
+
+            // Iterate the BHr Call Result
+            foreach( bhr_api_call('GET', $end_point) as $row ) {
+
+                // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+                if( $row->type == 'holiday' ) {
+                    $bhr_holidays_array[] = $row;
+                }
+            }
+             
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_holidays_array, "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
 
-            return null;
+            return $bhr_holidays_array;
 
         } catch (Exception $e) {
             DB::rollback();
             
             log_error($e);
-            log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "bhrlog");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+    
+    /**
+     *  Responsible for Fetching Leaves from BHr.
+     * @param string $start_date
+     * @param string $end_date
+     * @param User $user (Optional)
+     * @return Collection $bhr_leaves_array
+     */
+    public function get_leaves( string $start_date, string $end_date, User $user = null   )
+    {
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date, 'user' => $user], "bhrlog");
+        try {
+
+            $bhr_leaves_array = [];
+
+            // Define the End Point for the API.
+            $end_point = 'time_off/requests/?start='.$start_date.'&end='.$end_date;
+
+            // If there is an instance of User, use it's BHr Number as Parameter. 
+            if( is_valid($user) ){
+                $end_point .= '&employeeId='.$user->bhr_num;
+            }
+            
+            $bhr_leaves_array = bhr_api_call('GET', $end_point);
+            
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_leaves_array, "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            return $bhr_leaves_array;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            
+            log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
 

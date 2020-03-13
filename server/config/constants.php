@@ -21,6 +21,8 @@ return [
     */
 
     'DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+
+    'LEAVE_REQUEST_STATUS' => ['requested', 'approved', 'denied', 'canceled'],
     
     'LOG_START' => ' [ CALL START ] ',
     'LOG_END' => ' [ CALL END ] ',

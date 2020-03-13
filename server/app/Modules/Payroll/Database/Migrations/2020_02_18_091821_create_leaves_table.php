@@ -16,17 +16,19 @@ class CreateLeavesTable extends Migration
         Schema::create('leaves', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('dtr_id')->nullable()->index();
-            $table->string('name')->index();
-            $table->enum('status', array('approved', 'pending', 'denied', 'cancelled'))->index();
+            $table->string('type')->index();
+            $table->enum('status', array('requested', 'approved', 'denied', 'canceled'))->index();
+            $table->text('employee_note')->nullable();
+            $table->text('manager_note')->nullable();
             $table->softDeletes();
             $table->timestamps();
             
-            $table->index(['dtr_id', 'name', 'status']);
-            $table->index(['dtr_id', 'name']);
+            $table->index(['dtr_id', 'type', 'status']);
+            $table->index(['dtr_id', 'type']);
             $table->index(['dtr_id', 'status']);
-            $table->index(['name', 'status']);
+            $table->index(['type', 'status']);
 
-            $table->unique(['dtr_id', 'name', 'status']);
+            $table->unique(['dtr_id', 'type']);
         });
     }
 

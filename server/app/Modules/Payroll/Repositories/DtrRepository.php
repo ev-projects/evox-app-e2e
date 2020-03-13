@@ -327,6 +327,104 @@ class DtrRepository implements DtrRepositoryInterface{
     }
 
 
+    
+
+    
+    /**
+     *  Responsible for Binding the Leaves that was fetched between the Date Range to the DTR Related by Date.
+     * @param string $start_date
+     * @param string $end_date
+     * @return Collection $result
+     */
+    public function bind_leaves_to_dtr( array $bhr_leaves_array )
+    {
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr");
+
+        DB::beginTransaction();
+        try {
+
+            $result = new Collection;
+
+            // Iterate the fetched Employee Leaves that was fetched from BHr.
+            foreach( $bhr_leaves_array as $row ) {
+
+                // Proceed only if the Status of the Leave Request is in the LEAVE REQUEST STATUS constant Array
+                if( in_array( $row->status->status, get_constant('LEAVE_REQUEST_STATUS') ) )   {
+
+                    // Get the DTR related on the Leave Request's Date Range
+                    $dtr_collection = Dtr::select('dtrs.*')
+                                            ->join('users', 'dtrs.user_id', '=', 'users.id')
+                                            ->whereRaw("
+                                                    users.bhr_num = ?
+                                                    AND date BETWEEN ? AND ?
+                                                ", array(
+                                                    $row->employeeId,
+                                                    $row->start,
+                                                    $row->end
+                                                )
+                                            )->get();
+                    
+                    // Iterate each DTR in order to bind the Leave on each DTR.
+                    foreach( $dtr_collection as $dtr ) {
+
+                        # Create the Leave Insert Value Array Structure
+                        $leave_insert_values =  [
+                            'dtr_id'              => ( is_valid( $dtr->id ) ) ?  "'".$dtr->id."'" : 'null',
+                            'type'                => ( is_valid( $row->type ) && isset( $row->type->name ) ) ?  "'".$row->type->name."'" : 'null',
+                            'status'              => ( is_valid( $row->status->status ) ) ?  "'".$row->status->status."'" : 'null',
+                            'employee_note'       => ( is_valid( $row->notes ) && isset( $row->notes->employee ) ) ?  "'".addslashes($row->notes->employee)."'" : 'null',
+                            'manager_note'        => ( is_valid( $row->notes ) && isset( $row->notes->manager ) ) ?  "'".addslashes($row->notes->manager)."'" : 'null',
+                            'updated_by'          => 'NOW()',
+                            'created_by'          => 'NOW()'
+                        ];
+
+                        # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
+                        $leave_insert_array[] = implode(",", $leave_insert_values);
+                    }
+                }
+            }
+                                    
+            # Creates the Customized Query for Batch inserting the To-be-generated Leaves.
+            $leave_insert_query = "INSERT INTO leaves (
+                                                dtr_id, 
+                                                type, 
+                                                status,
+                                                employee_note,
+                                                manager_note,
+                                                updated_at, 
+                                                created_at) 
+                                            VALUES (".implode( "), (", $leave_insert_array ).") 
+                                            ON DUPLICATE KEY UPDATE
+                                                dtr_id          = VALUES(dtr_id), 
+                                                type            = VALUES(type), 
+                                                status          = VALUES(status), 
+                                                employee_note   = VALUES(employee_note), 
+                                                manager_note    = VALUES(manager_note), 
+                                                created_at      = IF(created_at IS NULL, VALUES(created_at), created_at),
+                                                updated_at      = VALUES(updated_at)";
+            
+            # Executes the Batch Insert Query
+            $result = [
+                "result" => DB::insert($leave_insert_query), 
+                "total_dtr_count" => count( $leave_insert_array ),
+                "dtr_leaves"   => $leave_insert_array
+            ];
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            DB::commit();
+            return $result;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
     /**
      *  Responsible for Syncing Biometrics Logs to the existing DTR.
      * @param Collection $biometrics_collection

@@ -18,4 +18,7 @@ if ($uri !== '/' && file_exists(__DIR__.'/public'.$uri)) {
     return false;
 }
 
+ini_set('memory_limit', "6G");
+set_time_limit(0);
+
 require_once __DIR__.'/public/index.php';

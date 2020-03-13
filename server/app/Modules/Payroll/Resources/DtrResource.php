@@ -18,12 +18,25 @@ class DtrResource extends JsonResource
         
         if( ! is_null( $this->resource ) ) {
 
-            # Create Resource for Dtr Payroll Items
+            # Create Resource for Holidays
             $holidays = [];
             foreach( $this->holidays()->get() as $holiday){
                 $holidays[ $holiday->id ] = [
                     'name'  => $holiday->name,
                     'type'  => $holiday->type
+                ];
+            }
+
+            # Create Resource for Leaves
+            $leaves = [];
+            foreach( $this->leaves()->get() as $leave){
+                $leaves[ $leave->id ] = [
+                    'type'  => $leave->type,
+                    'status'  => $leave->status,
+                    'note'=> [
+                        'employee_note'  => $leave->employee_note,
+                        'manager_note'  => $leave->manager_note
+                    ]
                 ];
             }
 
@@ -44,6 +57,7 @@ class DtrResource extends JsonResource
                     'source_type_tagging' => $this->source_type_tagging
                 ), 
                 array('holidays' => $holidays),
+                array('leaves' => $leaves),
             );
         }
         return $result;

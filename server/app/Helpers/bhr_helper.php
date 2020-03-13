@@ -10,7 +10,7 @@ if (! function_exists('bhr_api_call')) {
      * @param  string method
      * @param  string api_endpoint
      * @param  array data (Optional)
-     * @return \Illuminate\Support\Collection;
+     * @return array;
      */
     function bhr_api_call($method = 'GET', $api_endpoint,  $data = array()) {
         try{
@@ -28,7 +28,7 @@ if (! function_exists('bhr_api_call')) {
                 $response->withData( $data );
                 log_to_file( 'info', 'Has data parameter passed.', $data, "bhrlog");
             }
-            
+
             // Executes the given Method.
             switch( $method ) {
                 case 'GET':
@@ -54,7 +54,7 @@ if (! function_exists('bhr_api_call')) {
             // If the Curl is a success, Decode the returned Content as a JSON
             if( $result->status == JsonResponse::HTTP_OK ) {
                 log_to_file( 'info', 'API Call Success!', ['count' => count( json_decode($result->content) )], "bhrlog");
-                return collect(json_decode($result->content));
+                return json_decode($result->content);
 
             // If not successful, manually throw exception.
             } else {
