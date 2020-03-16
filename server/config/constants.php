@@ -23,6 +23,14 @@ return [
     'DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
 
     'LEAVE_REQUEST_STATUS' => ['requested', 'approved', 'denied', 'canceled'],
+
+    'ATTENDANCE_STATUS' => [
+        "absent"    => "ABSENT",
+        "present"   => "PRESENT",
+        "rest_day"  => "REST DAY",
+        "on_leave"  => "ON LEAVE"
+    ],
+
     
     'LOG_START' => ' [ CALL START ] ',
     'LOG_END' => ' [ CALL END ] ',

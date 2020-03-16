@@ -367,11 +367,15 @@ class DtrRepository implements DtrRepositoryInterface{
                     // Iterate each DTR in order to bind the Leave on each DTR.
                     foreach( $dtr_collection as $dtr ) {
 
+                        # Setting the Amount of Leave from the Leave request for the Corresponding Date
+                        $amount = ( is_valid( $row->dates ) && is_valid( $row->dates->{$dtr->date} ) ) ? (float) $row->dates->{$dtr->date} : 0 ;
+
                         # Create the Leave Insert Value Array Structure
                         $leave_insert_values =  [
                             'dtr_id'              => ( is_valid( $dtr->id ) ) ?  "'".$dtr->id."'" : 'null',
                             'type'                => ( is_valid( $row->type ) && isset( $row->type->name ) ) ?  "'".$row->type->name."'" : 'null',
                             'status'              => ( is_valid( $row->status->status ) ) ?  "'".$row->status->status."'" : 'null',
+                            'amount'              =>  "'". ( $amount == 0 ? 0 : ( $amount <= 0.5 ? 0.5 : 1 ) ) ."'",
                             'employee_note'       => ( is_valid( $row->notes ) && isset( $row->notes->employee ) ) ?  "'".addslashes($row->notes->employee)."'" : 'null',
                             'manager_note'        => ( is_valid( $row->notes ) && isset( $row->notes->manager ) ) ?  "'".addslashes($row->notes->manager)."'" : 'null',
                             'updated_by'          => 'NOW()',
@@ -389,6 +393,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                                 dtr_id, 
                                                 type, 
                                                 status,
+                                                amount,
                                                 employee_note,
                                                 manager_note,
                                                 updated_at, 
@@ -398,6 +403,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                                 dtr_id          = VALUES(dtr_id), 
                                                 type            = VALUES(type), 
                                                 status          = VALUES(status), 
+                                                amount          = VALUES(amount), 
                                                 employee_note   = VALUES(employee_note), 
                                                 manager_note    = VALUES(manager_note), 
                                                 created_at      = IF(created_at IS NULL, VALUES(created_at), created_at),

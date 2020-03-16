@@ -11,7 +11,7 @@ class Leave extends Model
 
     protected $guarded = [];
 
-    protected static $logAttributes = ['dtr_id', 'name', 'status'];
+    protected static $logAttributes = ['dtr_id', 'type', 'status', 'amount', 'employee_note', 'manager_note'];
 
     protected $dates = [
         'deleted_at',
@@ -20,11 +20,55 @@ class Leave extends Model
     ];
 
     protected $casts = [
-        'is_predefined' => 'boolean'  # Casts the is_predefinedto Boolean
+        'is_predefined' => 'boolean'  # Casts the is_predefined to Boolean
     ];
-
+    
     ########################################################################
     ############################ Custom Helpers ############################
     ########################################################################
+
+
+    /**
+     * 
+     *  Check if the Leave status is Requested
+     * @return bool 
+     */
+    public function isRequested()
+    {
+        return ( $this->status == 'requested' ) ? true : false;
+    }
+
+
+    /**
+     * 
+     *  Check if the Leave status is Approved
+     * @return bool 
+     */
+    public function isApproved()
+    {
+        return ( $this->status == 'approved' ) ? true : false;
+    }
+    
+
+    /**
+     * 
+     *  Check if the Leave status is Denied.
+     * @return bool 
+     */
+    public function isDenied()
+    {
+        return ( $this->status == 'denied' ) ? true : false;
+    }
+
+
+    /**
+     * 
+     *  Check if the Leave status is Canceled.
+     * @return bool 
+     */
+    public function isCanceled()
+    {
+        return ( $this->status == 'canceled' ) ? true : false;
+    }
 
 }

@@ -18,11 +18,13 @@ class CreateLeavesTable extends Migration
             $table->unsignedBigInteger('dtr_id')->nullable()->index();
             $table->string('type')->index();
             $table->enum('status', array('requested', 'approved', 'denied', 'canceled'))->index();
+            $table->decimal('amount', 2, 1)->index();
             $table->text('employee_note')->nullable();
             $table->text('manager_note')->nullable();
             $table->softDeletes();
             $table->timestamps();
             
+            $table->index(['dtr_id', 'type', 'status', 'amount']);
             $table->index(['dtr_id', 'type', 'status']);
             $table->index(['dtr_id', 'type']);
             $table->index(['dtr_id', 'status']);

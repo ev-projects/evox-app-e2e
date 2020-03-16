@@ -41,16 +41,23 @@ class CronController extends Controller
      * Generates the Weekly DTR for all the Employees
      * @return \Illuminate\Http\JsonResponse
      */
-    public function generate_weekly_dtr(){
+    public function generate_weekly_dtr($start_date = null, $end_date = null){
         try {
+            
+            // Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
+            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
+                $start_date =  Carbon::tomorrow();
+                $end_date = 7;
+            }
+
             # Fetches all the Active Users
             $user_collection = $this->user->getAllActiveUsers();
-            
+
             # Generates the Date Range that would be generated as DTR for each Active Employees
-            $date_array = generate_date_array( Carbon::tomorrow(), 7 );
+            $date_array = generate_date_array($start_date, $end_date );
             
             # Test Data for Debugging
-            // $date_array = generate_date_array( "2019-07-01", '2020-06-31' );
+            // $date_array = generate_date_array( "2019-07-01", '2020-06-30' );
             
             $result = $this->dtr->generate_dtr( $user_collection, $date_array );
 
@@ -72,10 +79,14 @@ class CronController extends Controller
      * @param string $end_date
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sync_realtime_biometrics(){   
+    public function sync_realtime_biometrics($start_datetime = null, $end_datetime = null){   
         try {
-            $start_datetime = Carbon::now()->subMinutes(30)->format('Y-m-d H:i:s');
-            $end_datetime = Carbon::now()->format('Y-m-d H:i:s'); 
+            
+            // If Start Datetime and End Datetime is not set, fetch the Default 30 minutes gap from the current time.
+            if( !is_valid( $start_datetime ) && !is_valid( $end_datetime ) ) {
+                $start_datetime = Carbon::now()->subMinutes(30)->format('Y-m-d H:i:s');
+                $end_datetime = Carbon::now()->format('Y-m-d H:i:s'); 
+            }
 
             # Test Data for Debugging
             // $start_datetime = "2020-02-15 00:00:00";
@@ -102,17 +113,19 @@ class CronController extends Controller
      *  3. Bind Holidays to DTR
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sync_holidays(){
+    public function sync_holidays($start_date = null, $end_date = null){
         try {
-            // Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
-            $payroll_cutoff = $this->payroll->get_payroll_cutoff();
-
-            $start_date = $payroll_cutoff->start_date;
-            $end_date = $payroll_cutoff->end_date;
+            
+            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
+            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
+                $payroll_cutoff = $this->payroll->get_payroll_cutoff();
+                $start_date = $payroll_cutoff->start_date;
+                $end_date = $payroll_cutoff->end_date;
+            }
 
             # Test Data for Debugging
             // $start_date = "2019-07-01";
-            // $end_date = "2020-06-31";
+            // $end_date = "2020-06-30";
 
             // Sync the Holidays from BHr to EVOX within the Payroll Cutoff as Date Range.
             $this->bhr->sync_holidays( $start_date, $end_date );
@@ -137,20 +150,22 @@ class CronController extends Controller
      *  3. Bind Leaves to DTR
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sync_leaves(){
+    public function sync_leaves($start_date = null, $end_date = null){
         try {
-            // Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
-            $payroll_cutoff = $this->payroll->get_payroll_cutoff();
-
-            $start_date = $payroll_cutoff->start_date;
-            $end_date = $payroll_cutoff->end_date;
+            
+            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
+            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
+                $payroll_cutoff = $this->payroll->get_payroll_cutoff();
+                $start_date = $payroll_cutoff->start_date;
+                $end_date = $payroll_cutoff->end_date;
+            }
 
             # Test Data for Debugging
-            // $start_date = "2020-03-01";
-            // $end_date = "2020-03-31";
+            // $start_date = "2019-07-01";
+            // $end_date = "2020-06-30";
 
             // Fetch the Leaves from BHr within the Payroll Cutoff as Date Range.
-            $bhr_leaves_array = $this->bhr->get_leaves( $start_date, $end_date, User::find(8) );
+            $bhr_leaves_array = $this->bhr->get_leaves( $start_date, $end_date );
             
             // Binding of the Leaves fetched from BHr within the Date Range to the DTR within the Date Range.
             $result = $this->dtr->bind_leaves_to_dtr( $bhr_leaves_array );

@@ -30,4 +30,19 @@ Route::group(['prefix' => 'cron', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('/sync_leaves',     'CronController@sync_leaves');
 
 
+    # FOR TESTING PURPOSES 
+
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/generate_weekly_dtr/{start_date}/{end_date}',     'CronController@generate_weekly_dtr');
+
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/sync_realtime_biometrics/{start_datetime}/{end_datetime}',     'CronController@sync_realtime_biometrics'); 
+
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/sync_holidays/{start_date}/{end_date}',     'CronController@sync_holidays');
+
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/sync_leaves/{start_date}/{end_date}',     'CronController@sync_leaves');
+
+
 });
