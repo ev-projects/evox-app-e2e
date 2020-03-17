@@ -15,23 +15,24 @@ const ScheduleType = (props) => {
         <label>
         <input 
           type="checkbox"
-          checked={field.value.schedule_policies.allow_undertime}
-          onChange={() => form.setFieldValue('schedule_policies.allow_undertime', !field.value.schedule_policies.allow_undertime)}
+          checked={field.value.schedule_policies.allow_undertime=="1"}
+          onChange={() => form.setFieldValue('schedule_policies.allow_undertime', field.value.schedule_policies.allow_undertime==1?0:1 )}
         />
+
         Undertime &nbsp;</label>
         <label>
         <input 
           type="checkbox"
-          checked={field.value.schedule_policies.allow_late}
-          onChange={() => form.setFieldValue('schedule_policies.allow_late', !field.value.schedule_policies.allow_late)}
+          checked={field.value.schedule_policies.allow_late=="1"}
+          onChange={() => form.setFieldValue('schedule_policies.allow_late', field.value.schedule_policies.allow_late==1?0:1)}
         />
         Tardiness &nbsp;</label>
         <label>
         <input 
           type="checkbox"
-          checked={field.value.schedule_policies.allow_night_diff}
+          checked={field.value.schedule_policies.allow_night_diff=="1"}
           onChange={()  => {
-           form.setFieldValue('schedule_policies.allow_night_diff', !field.value.schedule_policies.allow_night_diff)}}
+           form.setFieldValue('schedule_policies.allow_night_diff',field.value.schedule_policies.allow_night_diff==1?0:1)}}
         />
         Night Differential &nbsp;</label>
         </Form.Group>

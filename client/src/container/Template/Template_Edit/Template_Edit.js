@@ -1,15 +1,16 @@
 import React, { Component,useState  } from "react";
+import PageNotFound from "../../PageNotFound";
 import { Redirect } from "react-router-dom";
 import { Form,Button,Container,Col,InputGroup,FormControl  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
-import { updateSchedule, getTemplateSchedule, getDefaultSchedule } from '../../store/actions/scheduleActions'
-import Formatter from '../../services/Formatter'
+import { updateSchedule, getTemplateSchedule, getDefaultSchedule } from '../../../store/actions/scheduleActions'
+import Formatter from '../../../services/Formatter'
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, Workdays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, Workdays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 
 
 class Schedule extends Component {    
@@ -38,37 +39,35 @@ class Schedule extends Component {
           this.setState((state, props) => ({ [day] : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}  }));
         })
     }
-
+    console.log(values.schedule_policies);
     values.schedule_details = this.state;
     this.props.updateSchedule(values,this.props.params.templateid)
   }
 
 
   componentWillMount(){
-    this.props.getTemplateSchedule(this.props.params.templateid);
+    this.props.getTemplateSchedule(this.props.params.templateid,'Template');
   }
 
   render = () => {
   if(this.props.template.isScheduleLoaded){
-    console.log(this.props);
+
     const name = this.props.template.name;
     const sched_type = this.props.template.schedule_type;
     const work_days = this.props.template.work_days;
+    console.log(this.props.schedule_policies);
 
 
-    var allow_late = (this.props.template.schedule_policies?.allow_late!==undefined)?this.props.template.schedule_policies.allow_late:0;
-    var allow_undertime = (this.props.template.schedule_policies?.allow_undertime!==undefined)?this.props.template.schedule_policies.allow_undertime:0;
-    var allow_night_diff = (this.props.template.schedule_policies?.allow_night_diff!==undefined)?this.props.template.schedule_policies.allow_night_diff:0;
+    var allow_late = (this.props.template.schedule_policies?.allow_late!==undefined&&this.props.template.schedule_policies.allow_late==1)?this.props.template.schedule_policies.allow_late:0;
+    var allow_undertime = (this.props.template.schedule_policies?.allow_undertime!==undefined&&this.props.template.schedule_policies.allow_undertime==1)?this.props.template.schedule_policies.allow_undertime:0;
+    var allow_night_diff = (this.props.template.schedule_policies?.allow_night_diff!==undefined&&this.props.template.schedule_policies.allow_night_diff==1)?this.props.template.schedule_policies.allow_night_diff:0;
 
-    const schedule_policies = {schedule_policies: {allow_late : allow_late , allow_undertime : allow_undertime, allow_night_diff: allow_night_diff }};
-
-
+    var schedule_policies =  {allow_late : allow_late , allow_undertime : allow_undertime, allow_night_diff: allow_night_diff };
     var std_schedule_details = [];
     var flx_schedule_details = [];
     var cst_schedule_details = [];
 
     if(sched_type=='standard'){
-      console.log(this.props.template.schedule_details);
       std_schedule_details = [{start_time: new Date("2020-01-01 " + this.props.template.schedule_details.all.start_time), end_time : new Date("2020-01-01 " + this.props.template.schedule_details.all.end_time), break_time:new Date("2020-01-01 " +this.props.template.schedule_details.all.break_time)}];
     }else if(sched_type=='flexible'){
       flx_schedule_details = [{start_time: new Date("2020-01-01 " + this.props.template.schedule_details.all.start_time), end_time : new Date("2020-01-01 " + this.props.template.schedule_details.all.end_time), start_flexy_time: new Date("2020-01-01 " + this.props.template.schedule_details.all.start_flexy_time), end_flexy_time : new Date("2020-01-01 " + this.props.template.schedule_details.all.end_flexy_time), break_time:new Date("2020-01-01 " +this.props.template.schedule_details.all.break_time)}];
@@ -96,7 +95,7 @@ class Schedule extends Component {
       flx_schedule_details: flx_schedule_details,
       cst_schedule_details: cst_schedule_details, 
       source_type: 'template',
-      schedule_policies : schedule_policies.schedule_policies,
+      schedule_policies : schedule_policies,
       schedule_type : sched_type, 
       work_days: work_days 
     }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
@@ -265,7 +264,7 @@ class Schedule extends Component {
   </Formik>;
   }
 
-  return <div>Page not Found!</div>
+  return <PageNotFound/>;
   }
 
 
@@ -320,6 +319,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const mapStateToProps = (state) => {
+
     return {
         template : state.schedule
     }
@@ -327,7 +327,7 @@ const mapStateToProps = (state) => {
   const mapDispatchToProps = (dispatch) => {
     return {
       updateSchedule : (post_data,sched_id) => dispatch( updateSchedule(post_data,sched_id) ),
-      getTemplateSchedule : (template_id) => dispatch( getTemplateSchedule(template_id) ),
+      getTemplateSchedule : (template_id,type) => dispatch( getTemplateSchedule(template_id,type) ),
     }
   }
 

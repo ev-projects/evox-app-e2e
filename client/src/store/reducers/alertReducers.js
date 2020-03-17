@@ -27,7 +27,7 @@ const alertReducer = (state = initState, action) => {
                     onShow          : true,
                     variant         : 'danger',
                     header          : ( action.header ? action.header : "An error has occured:"),
-                    body            : ( action.error.data.message ? action.error.data.message : ( action.error.data.error.message ?  action.error.data.error.message : "" ) ),
+                    body            : action.error.statusText,
                     timeOut         : ( action.timeOut ?  action.timeOut : 0 ),
                     isTimeOutActive : ( action.timeOut != 0 ?  true : false )
                 }

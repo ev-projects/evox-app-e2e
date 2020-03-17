@@ -2,17 +2,15 @@ import React, { Component,useState  } from "react";
 import { Redirect } from "react-router-dom";
 import { Modal,Button,Container,Col,Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { listTemplate,deleteSchedule } from '../../store/actions/scheduleActions'
-import Formatter from '../../services/Formatter'
+import { listTemplate,deleteSchedule } from '../../../store/actions/scheduleActions'
+import Formatter from '../../../services/Formatter'
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./Template_List.css";
 
-
-
 class Schedule extends Component {    
-  state = { modal_bool:false, modal_name: 'TEST', modal_id : '',index : null }
+  state = { modal_bool:false, modal_name: '', modal_id : '',index : null }
 
   onSubmitHandler = (props,index) => {
     this.setState({ modal_bool: !this.state.modal_bool , modal_name: props.name, modal_id : props.id, index : index}) 
@@ -33,7 +31,7 @@ class Schedule extends Component {
   }
 
   render = () => {
-    if(this.props.templates.isScheduleLoaded){
+    if(this.props.isTemplateListLoaded){
       return <div>
       <Container> 
         <Col sm={8} >
@@ -47,10 +45,10 @@ class Schedule extends Component {
             </tr>
           </thead>
           <tbody>
-              
-        {this.props.templates.list.map((day, index) => {
-          return <tr><td>{index + 1}</td> <td>{day.name}</td> <td><Button variant="success" href={`${global.template_url}${day.id}`}> <i class="fa fa-edit"></i> Edit </Button>  <Button variant="danger" onClick={ () => this.onSubmitHandler(day,index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
+        {this.props.templateList.map((day, index) => {
+           return <tr><td>{index + 1}</td> <td>{day.name}</td> <td><Button variant="success" href={`${global.template_url}${day.id}`}> <i class="fa fa-edit"></i> Edit </Button>  <Button variant="danger" onClick={ () => this.onSubmitHandler(day,index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
         })}
+
             </tbody>
         </Table>
 
@@ -69,11 +67,9 @@ class Schedule extends Component {
   }
 }
 
-
-
 const mapStateToProps = (state) => {
       return {
-        templates : state.schedule
+        ...state.schedule
     }
   }
   const mapDispatchToProps = (dispatch) => {
