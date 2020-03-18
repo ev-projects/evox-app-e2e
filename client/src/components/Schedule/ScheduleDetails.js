@@ -3,6 +3,8 @@ import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import { Form,Button,Container,Col,InputGroup,FormControl  } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 
+import "./Schedule.css";
+
 var day = {mon:"Monday", tue:"Tuesday", wed : "Wednesday" , thu: "Thursday", fri: "Friday", sat : "Saturday", sun : "Sunday"};
 
 const ScheduleType = (props) => {
@@ -13,23 +15,24 @@ const ScheduleType = (props) => {
         <label>
         <input 
           type="checkbox"
-          checked={field.value.schedule_policies.allow_undertime}
-          onChange={() => form.setFieldValue('schedule_policies.allow_undertime', !field.value.schedule_policies.allow_undertime)}
+          checked={field.value.schedule_policies.allow_undertime=="1"}
+          onChange={() => form.setFieldValue('schedule_policies.allow_undertime', field.value.schedule_policies.allow_undertime==1?0:1 )}
         />
+
         Undertime &nbsp;</label>
         <label>
         <input 
           type="checkbox"
-          checked={field.value.schedule_policies.allow_late}
-          onChange={() => form.setFieldValue('schedule_policies.allow_late', !field.value.schedule_policies.allow_late)}
+          checked={field.value.schedule_policies.allow_late=="1"}
+          onChange={() => form.setFieldValue('schedule_policies.allow_late', field.value.schedule_policies.allow_late==1?0:1)}
         />
         Tardiness &nbsp;</label>
         <label>
         <input 
           type="checkbox"
-          checked={field.value.schedule_policies.allow_night_diff}
+          checked={field.value.schedule_policies.allow_night_diff=="1"}
           onChange={()  => {
-           form.setFieldValue('schedule_policies.allow_night_diff', !field.value.schedule_policies.allow_night_diff)}}
+           form.setFieldValue('schedule_policies.allow_night_diff',field.value.schedule_policies.allow_night_diff==1?0:1)}}
         />
         Night Differential &nbsp;</label>
         </Form.Group>
@@ -63,9 +66,7 @@ const Workdays = (props) => {
                     const nextValue = field.value.work_days.concat(props.day);
                     form.setFieldValue('work_days', nextValue);
 
-              
-                      arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" });
-
+                    arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" });
                   }
               }}
             />
@@ -78,15 +79,180 @@ const Workdays = (props) => {
 }
 
 
+const StandardSchedDetailsForm = (props) => {
+   return (<Field>
+        {({ field, form }) => (
+          <div>
+          <Form.Row>
+            <Col sm={4}>
+              <Form.Label>On Duty :</Form.Label>
+              <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    selected={field.value.std_schedule_details[0].start_time}              
+                    onChange={(date) => onSelectTimeHandlerStd(date,0,form.setFieldValue,'std_')}
+                  />
+              <Form.Control.Feedback type="invalid">
+                <ErrorMessage component="div" name="std_schedule_details[0].start_time" className="input-feedback" />
+              </Form.Control.Feedback>
+            </Col>
+            <Col sm={4}>
+            <Form.Label>Off Duty :</Form.Label>
+                <DatePicker 
+                      className="form-control"                      
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm" 
+                      selected={field.value.std_schedule_details[0].end_time}                
+                      onChange={date => form.setFieldValue('std_schedule_details[0].end_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="std_schedule_details[0].end_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+            <Col sm={4}>
+            <Form.Label>Break :</Form.Label>
+                <DatePicker 
+                      className="form-control"                      
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Break"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm" 
+                      selected={field.value.std_schedule_details[0].break_time}                
+                      onChange={date => form.setFieldValue('std_schedule_details[0].break_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="std_schedule_details[0].break_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+            </Form.Row>
+          </div>
+        )}
+      </Field>);
+}
+
+const FlexibleSchedDetailsForm = (props) => {
+   return (<Field>
+        {({ field, form }) => (
+          <div>
+          <Form.Row>
+            <Col sm={4}>
+                <Form.Label>On Duty :</Form.Label>
+                <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="On Duty"
+                      selected={field.value.flx_schedule_details[0].start_time}              
+                      onChange={(date) => onSelectTimeHandlerStd(date,0,form.setFieldValue,'flx_')}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].start_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+
+            <Col sm={4}>
+                <Form.Label>Off Duty :</Form.Label>
+                <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="On Duty"
+                      selected={field.value.flx_schedule_details[0].end_time}                
+                      onChange={date => form.setFieldValue('flx_schedule_details[0].end_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].end_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+        </Form.Row>
+
+        <Form.Row>
+            <Col sm={4}>
+                <Form.Label>Flexi Start :</Form.Label>
+                    <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="On Duty"
+                      selected={field.value.flx_schedule_details[0].start_flexy_time}                
+                      onChange={(date) => onSelectTimeHandlerFlexi(date,0,form.setFieldValue,'flx_')}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].start_flexy_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+
+            <Col sm={4}>
+                <Form.Label>Flexi End :</Form.Label>
+                    <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="On Duty"
+                      selected={field.value.flx_schedule_details[0].end_flexy_time}                
+                      onChange={date => form.setFieldValue('flx_schedule_details[0].end_flexy_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].end_flexy_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+
+            <Col sm={4}>
+                <Form.Label>Break :</Form.Label>
+                    <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="Break"
+                      selected={field.value.flx_schedule_details[0].break_time}                
+                      onChange={date => form.setFieldValue('flx_schedule_details[0].break_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].break_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+        </Form.Row>
+          </div>
+        )}
+      </Field>);
+}
+
 const Scheduledetails = (props) => {
     return (<Field>
         {({ field, form }) => (
-          <div>
-        <div className="header">
-            <h1>
-              {eval('day.'+props.day)} Customize Schedule
-            </h1>
-        </div>
+          <div className="stripe">
+          <h6>{eval('day.'+props.day)}</h6>
         <Form.Row>
             <Form.Group as={Col} sm={4}>
                 <Form.Label>On Duty :</Form.Label>
@@ -116,9 +282,6 @@ const Scheduledetails = (props) => {
                 </Field>
               </Form.Control.Feedback>
             </Form.Group>
-   
-
-
             <Form.Group as={Col} sm={4} >
                 <Form.Label>Off Duty :</Form.Label>
                 <DatePicker 
@@ -207,7 +370,7 @@ const Scheduledetails = (props) => {
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group as={Col} sm={4} controlId="formGridPassword">
+            <Form.Group as={Col} sm={4}>
             <Form.Label>Break :</Form.Label>
                 <DatePicker 
                   className="form-control"
@@ -288,6 +451,8 @@ export {
   Scheduledetails,
   onSelectTimeHandlerStd,
   onSelectTimeHandlerFlexi,
+  StandardSchedDetailsForm,
+  FlexibleSchedDetailsForm,
   ScheduleType,
   Workdays
 }

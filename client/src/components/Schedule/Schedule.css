@@ -1,0 +1,22 @@
+/*
+ * AssignDefault css File
+*/
+
+.stripe:nth-child(odd) {background-color: #ececec;}
+
+.white_bg{
+	background-color: white;
+}
+
+.stripe{
+	padding: 5px 15px;
+}
+
+.body{
+	padding: 15px;
+	padding-left: 15px;
+}
+
+h1 {
+    margin-bottom: 0px !important;
+}

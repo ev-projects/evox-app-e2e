@@ -13,7 +13,10 @@ import Login from "../container/Login";
 import Dashboard from "../container/Dashboard";
 import Schedule from "../container/Schedule";
 import AssignDefault from "../container/AssignDefault";
+import Template_Edit from "../container/Template/Template_Edit";
+import Template_List from "../container/Template/Template_List";
 import PageNotFound from "../container/PageNotFound";
+import DailyTimeRecord from "../container/DailyTimeRecord";
 
 const RoutesList = () => {
 
@@ -25,8 +28,10 @@ const RoutesList = () => {
       <Switch>
         <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
         <ProtectedRoute exact path="/app/schedule" ><Schedule /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/assign/:userId" ><AssignDefault /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/Test" ><Dashboard /></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/assign/:userid" ><AssignDefault /></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/template/:templateid" ><Template_Edit/></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/template/" ><Template_List /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>
       <Footer />

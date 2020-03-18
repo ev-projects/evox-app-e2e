@@ -10,7 +10,6 @@ import Formatter from "../../services/Formatter";
 
 // Add Template
 export const addTemplateSchedule = ( post_data ) => {
-    
     return (dispatch, getState) => {
         API.call({
             method: "post",
@@ -55,6 +54,88 @@ export const getDefaultSchedule = (employee_id) => {
 }
 
 
+export const getTemplateSchedule = (template_id,type) => {
+ 
+    var reducer_case = '';
+    if(type=='Template'){
+        reducer_case = 'FETCH_TEMPLATE_SCHEDULE_SUCCESS';
+    }else if(type=='Default'){
+        reducer_case = 'FETCH_TEMPLATE_DEFAULT_SCHEDULE_SUCCESS';
+    }
+
+    return (dispatch, getState) => {
+        dispatch({'type': 'RELOAD_START'});
+        
+        API.call({
+            method: "get",
+            url: "/schedule/"+template_id+"/",
+        })
+        .then(result => {
+            dispatch({
+                'type'      : reducer_case, 
+                'templatedata'   : result.data.content
+            })
+            // Sets the Reloading to False
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
+        });
+    }
+}
+
+export const updateSchedule = (post_data,sched_id) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "put",
+            url: "/schedule/"+sched_id+"/",
+            data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const listTemplate = () => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/schedule/templates/",
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_TEMPLATES_SCHEDULE_SUCCESS', 
+                'template'   : result.data.content
+            })
+            // Sets the Reloading to False
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const deleteSchedule = (id) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "delete",
+            url: "/schedule/"+id+"/",
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
 export const scheduleAssign = (post_data) => {
     
     return (dispatch, getState) => {
@@ -64,6 +145,7 @@ export const scheduleAssign = (post_data) => {
             data: post_data
         })
         .then(result => {
+
             dispatch( Formatter.alert_success( result ));
         })
         .catch(e => {

@@ -1,4 +1,5 @@
 import React, { Component,useState  } from "react";
+import PageNotFound from "../PageNotFound";
 import { Redirect } from "react-router-dom";
 import { Form,Button,Container,Col,InputGroup,FormControl  } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -8,9 +9,8 @@ import Formatter from '../../services/Formatter'
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
-import "./Schedule.css";
 
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleType,Workdays} from '../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, Workdays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../components/Schedule/ScheduleDetails.js';
 
 
 class Schedule extends Component {    
@@ -57,80 +57,94 @@ class Schedule extends Component {
       <form onSubmit={handleSubmit}> 
     <Container> 
     <Col sm={7} >
-                <div className="header">
-                    <h1>
-                        Schedule Template
-                    </h1>
-                </div>
-    <InputGroup>
-        <FormControl variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
-        <Form.Control.Feedback type="invalid">
-        &nbsp;{errors.name && touched.name && errors.name}
-        </Form.Control.Feedback>
-    </InputGroup> 
+      <Form.Group className="white_bg">
+        <div className="header">
+          <h1>
+            Schedule Template
+          </h1>
+        </div>
+        <div className="body">
+          <InputGroup>
+            <FormControl variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
+            <Form.Control.Feedback type="invalid">
+            &nbsp;{errors.name && touched.name && errors.name}
+            </Form.Control.Feedback>
+          </InputGroup> 
+        </div>
+      </Form.Group>
     </Col>          
     <Col sm={7}>
+      <Form.Group className="white_bg">
         <div className="header">
-            <h1>
-                Schedule Policy
-            </h1>
+          <h1>
+            Schedule Policy
+          </h1>
         </div>
-    <Form.Row></Form.Row>
-      <ScheduleType/> 
+        <div className="body">
+          <ScheduleType/> 
+        </div>
+      </Form.Group>
     </Col>
     <Col sm={7} >
-                <div className="header">
-                    <h1>
-                        Schedule Type
-                    </h1>
-                </div>
-      <FieldArray name="std_schedule_details" render={arrayHelpers => (
+      <Form.Group className="white_bg">
+        <div className="header">
+          <h1>
+            Schedule Type
+          </h1>
+        </div>
+      <div className="body">
+        <FieldArray name="std_schedule_details" render={arrayHelpers => (
           <label>          
-          <input 
-            type="radio"
-            name="schedule_type"
-            onChange={() => {
-              arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
-              setFieldValue('schedule_type', 'standard')
-            }}
-          /> 
-        Standard &nbsp;</label>
+            <input 
+              type="radio"
+              name="schedule_type"
+              checked={values.schedule_type === "standard"}
+              onChange={() => {
+                setFieldValue('std_schedule_details', []);
+                arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
+                setFieldValue('schedule_type', 'standard')
+              }}
+            /> 
+          Standard &nbsp;</label>
+        )}/>
+         <FieldArray name="flx_schedule_details" render={arrayHelpers => (
+          <label>
+            <input 
+              type="radio"
+              name="schedule_type"
+              checked={values.schedule_type === "flexible"}
+              onChange={() => { 
+                setFieldValue('flx_schedule_details', []);
+
+                arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
+                setFieldValue('schedule_type', 'flexible');
+              }}
+            /> 
+          Flexible &nbsp;</label>
+          )}
+          />
+          <FieldArray name="cst_schedule_details" render={arrayHelpers => (
+          <label>
+            <input 
+              type="radio"
+              name="schedule_type"
+              checked={values.schedule_type === "customize"}
+              onChange={() => {
+                setFieldValue('cst_schedule_details', []);
+                for (var i = 0; i < values.work_days.length; i++) {
+                  arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
+                }
+                setFieldValue('schedule_type', 'customize')
+              }}
+            /> 
+          Customize &nbsp;</label>      
         )}
-        />
-        <FieldArray name="flx_schedule_details" render={arrayHelpers => (
-        <label>
-          <input 
-            type="radio"
-            name="schedule_type"
-            onChange={() => { 
-              arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
-              setFieldValue('schedule_type', 'flexible');
-            }}
-          /> 
-        Flexible &nbsp;</label>
-        )}
-        />
-        <FieldArray name="cst_schedule_details" render={arrayHelpers => (
-        <label>
-          <input 
-            type="radio"
-            name="schedule_type"
-            onChange={() => {
-              setFieldValue('cst_schedule_details', []);
-              for (var i = 0; i < values.work_days.length; i++) {
-                arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
-              }
-              setFieldValue('schedule_type', 'customize')
-            }}
-          /> 
-        Custom &nbsp;</label>      
-      )}
-      />  
+        />  
         <Form.Control.Feedback type="invalid">
         &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
         </Form.Control.Feedback>
-            
-    </Col>
+      </div>
+      </Form.Group >   </Col>
     <Col sm={7} >
                 <div className="header">
                     <h1>
@@ -152,174 +166,33 @@ class Schedule extends Component {
        null
     ) : values.schedule_type  === 'standard' ? ( 
     <Col sm={7} >
+      <Form.Group>
         <div className="header">
             <h1>
               Standard Form
             </h1>
         </div>
-        <Form.Row>
-            <Form.Group as={Col} sm={4} controlId="formGridEmail">
-            <Form.Label>On Duty :</Form.Label>
-                <DatePicker 
-                      className="form-control"
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={60}
-                      timeCaption="Time"
-                      dateFormat="HH:mm"
-                      timeFormat="HH:mm"
-                      selected={values.std_schedule_details[0].start_time}              
-                      onChange={(date) => onSelectTimeHandlerStd(date,0,setFieldValue,'std_')}
-                    />
-                <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="std_schedule_details[0].start_time" className="input-feedback" />
-                </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group as={Col} sm={4} controlId="formGridPassword">
-            <Form.Label>Off Duty :</Form.Label>
-                <DatePicker 
-                      className="form-control"                      
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={60}
-                      timeCaption="Time"
-                      dateFormat="HH:mm"
-                      timeFormat="HH:mm" 
-                      selected={values.std_schedule_details[0].end_time}                
-                      onChange={date => setFieldValue('std_schedule_details[0].end_time', date)}
-                    />
-                <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="std_schedule_details[0].end_time" className="input-feedback" />
-                </Form.Control.Feedback>
-            </Form.Group>
-           <Form.Group as={Col} sm={4} controlId="formGridPassword">
-            <Form.Label>Break :</Form.Label>
-                <DatePicker 
-                      className="form-control"                      
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={60}
-                      timeCaption="Break"
-                      dateFormat="HH:mm"
-                      timeFormat="HH:mm" 
-                      selected={values.std_schedule_details[0].break_time}                
-                      onChange={date => setFieldValue('std_schedule_details[0].break_time', date)}
-                    />
-                <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="std_schedule_details[0].break_time" className="input-feedback" />
-                </Form.Control.Feedback>
-            </Form.Group>
-        </Form.Row>
+        <StandardSchedDetailsForm/>
+        </Form.Group>
     </Col>
     ) : values.schedule_type=== 'flexible' ? (
     <Col sm={7} >
+      <Form.Group>
         <div className="header">
             <h1>
               Flexible Form
             </h1>
         </div>
-        <Form.Row>
-            <Form.Group as={Col} sm={4} controlId="formGridEmail">
-                <Form.Label>On Duty :</Form.Label>
-                <DatePicker 
-                      className="form-control"
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={60}
-                      timeCaption="Time"
-                      dateFormat="HH:mm"
-                      timeFormat="HH:mm"
-                      placeholder="On Duty"
-                      selected={values.flx_schedule_details[0].start_time}              
-                      onChange={(date) => onSelectTimeHandlerStd(date,0,setFieldValue,'flx_')}
-                    />
-                <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="flx_schedule_details[0].start_time" className="input-feedback" />
-                </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group as={Col} sm={4} controlId="formGridPassword">
-                <Form.Label>Off Duty :</Form.Label>
-                <DatePicker 
-                      className="form-control"
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={60}
-                      timeCaption="Time"
-                      dateFormat="HH:mm"
-                      timeFormat="HH:mm"
-                      placeholder="On Duty"
-                      selected={values.flx_schedule_details[0].end_time}                
-                      onChange={date => setFieldValue('flx_schedule_details[0].end_time', date)}
-                    />
-                <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="flx_schedule_details[0].end_flexy_time" className="input-feedback" />
-                </Form.Control.Feedback>
-            </Form.Group>
-        </Form.Row>
-
-        <Form.Row>
-            <Form.Group as={Col} sm={4} controlId="formGridEmail">
-                <Form.Label>Flexi Start :</Form.Label>
-                    <DatePicker 
-                      className="form-control"
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={60}
-                      timeCaption="Time"
-                      dateFormat="HH:mm"
-                      timeFormat="HH:mm"
-                      placeholder="On Duty"
-                      selected={values.flx_schedule_details[0].start_flexy_time}                
-                      onChange={(date) => onSelectTimeHandlerFlexi(date,0,setFieldValue,'flx_')}
-                    />
-                <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="flx_schedule_details[0].start_flexy_time" className="input-feedback" />
-                </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group as={Col} sm={4} controlId="formGridPassword">
-                <Form.Label>Flexi End :</Form.Label>
-                    <DatePicker 
-                      className="form-control"
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={60}
-                      timeCaption="Time"
-                      dateFormat="HH:mm"
-                      timeFormat="HH:mm"
-                      placeholder="On Duty"
-                      selected={values.flx_schedule_details[0].end_flexy_time}                
-                      onChange={date => setFieldValue('flx_schedule_details[0].end_flexy_time', date)}
-                    />
-                <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="flx_schedule_details[0].end_flexy_time" className="input-feedback" />
-                </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group as={Col} sm={4} controlId="formGridPassword">
-                <Form.Label>Break :</Form.Label>
-                    <DatePicker 
-                      className="form-control"
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={60}
-                      timeCaption="Time"
-                      dateFormat="HH:mm"
-                      timeFormat="HH:mm"
-                      placeholder="Break"
-                      selected={values.flx_schedule_details[0].break_time}                
-                      onChange={date => setFieldValue('flx_schedule_details[0].break_time', date)}
-                    />
-                <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name="flx_schedule_details[0].break_time" className="input-feedback" />
-                </Form.Control.Feedback>
-            </Form.Group>
-        </Form.Row>
+        <FlexibleSchedDetailsForm/>
+      </Form.Group>
     </Col>
     ): values.schedule_type === 'customize' ? (
         <Col sm={7} >
+          <div className="header">
+            <h1>
+              Customize Schedule
+            </h1>
+        </div>
             {values.sorted_weekday.map((day, index) => {
                   if(values.work_days.includes(day)==true){
                   return <Scheduledetails day={day} index={values.work_days.indexOf(day)} />
@@ -336,6 +209,8 @@ class Schedule extends Component {
  
   </Formik>;
   }
+
+  
 }
 
 
@@ -347,11 +222,7 @@ const validation_var = Yup.string().required(required_field).nullable();
 
 
 const validationSchema = Yup.object().shape({
-  name: Yup
-    .string()
-    .min(3)
-    .max(255)
-    .required(required_field),
+  name: validation_var,
   schedule_type: Yup
     .string()
     .min(3)
@@ -388,7 +259,7 @@ const validationSchema = Yup.object().shape({
           break_time: validation_var,
         }))
   })
-  });
+});
 
 
 

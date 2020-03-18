@@ -51,8 +51,8 @@ class Dashboard extends Component {
                             <td>00:00:00</td>
                             <td>00:00:00</td>
                         </tr>
-                        <tr>
-                            <td>Jan 21</td>
+                       <tr>
+                            <td>Jan 22</td>
                             <td>00:00:00 00:00:00</td>
                             <td>00:00:00 00:00:00</td>
                             <td>00:00:00</td>
