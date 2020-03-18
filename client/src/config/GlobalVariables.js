@@ -5,7 +5,10 @@
 
 global.login_url = "/login";
 global.dashboard_url = "/app/Dashboard";
-global.template_url = "/app/schedule/template/";
+global.template_list_url = "/app/schedule/template/";
+global.template_add = "/app/schedule/";
+global.daily_time_record_view = "/app/dtr/";
+
 
 global.invalid_token_response = [
     'token_expired',

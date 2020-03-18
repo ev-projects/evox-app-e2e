@@ -1,7 +1,9 @@
 /*
  * Dashboard css File
 */
+table .center{
+	text-align: center;
+}
 
-.Dashboard {
-    /* propertys here */
+.body {
 }

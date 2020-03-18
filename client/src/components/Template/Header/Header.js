@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./Header.css";
 import { connect } from 'react-redux'
 import { logOut } from '../../../store/actions/userActions'
-import { Nav, Navbar } from 'react-bootstrap';
+import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
 const Header = (props) => {
 
@@ -14,26 +14,21 @@ const Header = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="ml-auto">
-          <Nav.Item>
-            <Nav.Link>
+          <Nav.Item >
+            <Nav.Link href="/">
               Home
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link>
-              Daily Time Record
-            </Nav.Link>
+            <NavDropdown title="Schedule" id="basic-nav-dropdown">
+              <NavDropdown.Item href={`${global.template_list_url}`}>Template List</NavDropdown.Item>
+              <NavDropdown.Item href={`${global.template_add}`}>Template  </NavDropdown.Item>
+              <NavDropdown.Item href={`${global.daily_time_record_view}1/2020-03-01/2020-03-31`}>Daily Time Record</NavDropdown.Item>
+            </NavDropdown>
           </Nav.Item>
-          <Nav.Item>
-            <Nav.Link>
-              Associates
+          <Nav.Link>
+              Logout
             </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link>
-              Inpiration
-            </Nav.Link>
-          </Nav.Item>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

@@ -18,7 +18,7 @@ class Schedule extends Component {
 
   onDeleteHandler = (id) => {
     this.props.deleteSchedule(id);
-    this.props.templates.list.splice(this.state.index, 1);
+    this.props.templateList.splice(this.state.index, 1);
     this.toggleModal();
   }
 

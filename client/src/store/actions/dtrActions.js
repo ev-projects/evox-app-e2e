@@ -3,11 +3,11 @@ import API from "../../services/API";
 import { trackPromise } from "react-promise-tracker";
 import Formatter from "../../services/Formatter";
 
-export const viewEmployeeDtr = () => {
+export const viewEmployeeDtr = (id,from,to) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr/1/2020-03-01/2020-03-31",
+            url: "/dtr/"+id+"/"+from+"/"+to,
         })
         .then(result => {
             dispatch({
