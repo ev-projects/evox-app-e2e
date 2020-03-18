@@ -24,6 +24,7 @@ const Header = (props) => {
               <NavDropdown.Item href={`${global.template_list_url}`}>Template List</NavDropdown.Item>
               <NavDropdown.Item href={`${global.template_add}`}>Template  </NavDropdown.Item>
               <NavDropdown.Item href={`${global.daily_time_record_view}1/2020-03-01/2020-03-31`}>Daily Time Record</NavDropdown.Item>
+              <NavDropdown.Item href={`${global.default_schedule}1`}>Default Schedule</NavDropdown.Item>
             </NavDropdown>
           </Nav.Item>
           <Nav.Link>

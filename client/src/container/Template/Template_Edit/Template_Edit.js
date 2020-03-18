@@ -55,7 +55,6 @@ class Schedule extends Component {
     const name = this.props.template.name;
     const sched_type = this.props.template.schedule_type;
     const work_days = this.props.template.work_days;
-    console.log(this.props.schedule_policies);
 
 
     var allow_late = (this.props.template.schedule_policies?.allow_late!==undefined&&this.props.template.schedule_policies.allow_late==1)?this.props.template.schedule_policies.allow_late:0;

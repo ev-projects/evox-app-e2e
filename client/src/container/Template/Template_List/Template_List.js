@@ -46,7 +46,7 @@ class Schedule extends Component {
           </thead>
           <tbody>
         {this.props.templateList.map((day, index) => {
-           return <tr><td>{index + 1}</td> <td>{day.name}</td> <td><Button variant="success" href={`${global.template_url}${day.id}`}> <i class="fa fa-edit"></i> Edit </Button>  <Button variant="danger" onClick={ () => this.onSubmitHandler(day,index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
+           return <tr><td>{index + 1}</td> <td>{day.name}</td> <td><Button variant="success" href={`${global.template_list_url}${day.id}`}> <i class="fa fa-edit"></i> Edit </Button>  <Button variant="danger" onClick={ () => this.onSubmitHandler(day,index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
         })}
 
             </tbody>

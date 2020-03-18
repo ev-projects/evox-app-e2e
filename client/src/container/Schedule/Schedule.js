@@ -17,6 +17,8 @@ class Schedule extends Component {
   state = {}
 
   onSubmitHandler = (values) => {
+    console.log(values.std_schedule_details);
+
     if(values.schedule_type=='standard'){
         var start_time = Formatter.convert_time(values.std_schedule_details[0].start_time);
         var end_time = Formatter.convert_time(values.std_schedule_details[0].end_time);
@@ -146,58 +148,68 @@ class Schedule extends Component {
       </div>
       </Form.Group >   </Col>
     <Col sm={7} >
-                <div className="header">
-                    <h1>
-                      Work Days
-                    </h1>
-                </div>
-    <Form.Group>
-      <Workdays day="mon" />
-      <Workdays day="tue" />
-      <Workdays day="wed" />
-      <Workdays day="thu" />
-      <Workdays day="fri" />
-      <Workdays day="sat" />
-      <Workdays day="sun" />
-    </Form.Group>
+      <Form.Group className="white_bg">
+        <div className="header">
+          <h1>
+            Work Days
+          </h1>
+        </div>
+        <div className="body">
+          <Workdays day="mon" />
+          <Workdays day="tue" />
+          <Workdays day="wed" />
+          <Workdays day="thu" />
+          <Workdays day="fri" />
+          <Workdays day="sat" />
+          <Workdays day="sun" />
+        </div>
+      </Form.Group>
     </Col>
             
     { values.schedule_type  === '' ? (
        null
     ) : values.schedule_type  === 'standard' ? ( 
-    <Col sm={7} >
-      <Form.Group>
-        <div className="header">
-            <h1>
-              Standard Form
-            </h1>
-        </div>
-        <StandardSchedDetailsForm/>
+      <Col sm={7} >
+        <Form.Group className="white_bg">
+          <div className="header">
+              <h1>
+                Standard Form
+              </h1>
+          </div>
+          <div className="body">
+            <StandardSchedDetailsForm/>
+          </div>
         </Form.Group>
-    </Col>
-    ) : values.schedule_type=== 'flexible' ? (
-    <Col sm={7} >
-      <Form.Group>
-        <div className="header">
-            <h1>
-              Flexible Form
-            </h1>
-        </div>
-        <FlexibleSchedDetailsForm/>
-      </Form.Group>
-    </Col>
+      </Col>
+      ) : values.schedule_type=== 'flexible' ? (
+      <Col sm={7} >
+        <Form.Group className="white_bg">
+          <div className="header">
+              <h1>
+                Flexible Form
+              </h1>
+          </div>
+          <div className="body">
+            <FlexibleSchedDetailsForm/>
+          </div>
+        </Form.Group>
+      </Col>
     ): values.schedule_type === 'customize' ? (
         <Col sm={7} >
+          <Form.Group className="white_bg">
           <div className="header">
             <h1>
               Customize Schedule
             </h1>
-        </div>
+          </div>
+          <div className="body">
             {values.sorted_weekday.map((day, index) => {
                   if(values.work_days.includes(day)==true){
                   return <Scheduledetails day={day} index={values.work_days.indexOf(day)} />
                   }
             })}
+          </div>
+          </Form.Group>
         </Col>
      ) : null}
     <Button variant="primary" type="submit">
@@ -206,7 +218,6 @@ class Schedule extends Component {
   </Container>
   </form>
   )}
- 
   </Formik>;
   }
 
