@@ -39,7 +39,7 @@ class DailyTimeRecord extends Component {
     flexySchedule(dtr){
         var schedule = '';
         if(dtr.start_flexy_datetime!=null&&dtr.end_flexy_datetime!=null){
-            schedule = this.convertToTime(dtr.start_datetime)+ ' - '+this.convertToTime(dtr.end_datetime);
+            schedule = this.convertToTime(dtr.start_flexy_datetime)+ ' - '+this.convertToTime(dtr.end_flexy_datetime);
         }
         return schedule;
     }
