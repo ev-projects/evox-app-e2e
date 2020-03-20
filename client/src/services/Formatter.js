@@ -44,10 +44,9 @@ class Formatter {
     }
   }
 
-    /** Formats the error response that would be interpretted by the Dispatch of Alert Reducer 
-   * param | Object | call_result ( The parameter indicated on the 'then' )
-   * param | Integer | time_out ( The time where the alert would fade out. 0 by default if not instantiated. )
-   * return | Object ( will be the parameter for the Dispatch from the caller. )
+    /** Convert Date Object to String  
+   * param | Object |  ( date that will be converted to string )
+   * return | String ( will be the parameter for the Dispatch from the caller. )
   */
   convert_time( date ) {
     date = String("00" +date.getHours()).slice(-2) + ":" + String("00" +date.getMinutes()).slice(-2)

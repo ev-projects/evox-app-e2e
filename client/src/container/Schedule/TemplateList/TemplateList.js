@@ -2,12 +2,13 @@ import React, { Component,useState  } from "react";
 import { Redirect } from "react-router-dom";
 import { Modal,Button,Container,Col,Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { listTemplate,deleteSchedule } from '../../../store/actions/scheduleActions'
-import Formatter from '../../../services/Formatter'
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
-import "./Template_List.css";
+import "./TemplateList.css";
+
+import { listTemplate,deleteSchedule } from '../../../store/actions/scheduleActions'
+import Formatter from '../../../services/Formatter'
 
 class Schedule extends Component {    
   state = { modal_bool:false, modal_name: '', modal_id : '',index : null }

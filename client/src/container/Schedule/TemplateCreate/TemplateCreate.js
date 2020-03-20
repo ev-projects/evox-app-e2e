@@ -1,22 +1,26 @@
 import React, { Component,useState  } from "react";
-import PageNotFound from "../../PageNotFound";
 import { Redirect } from "react-router-dom";
 import { Form,Button,Container,Col,InputGroup,FormControl  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
-import { updateSchedule, getTemplateSchedule, getDefaultSchedule } from '../../../store/actions/scheduleActions'
-import Formatter from '../../../services/Formatter'
+
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
+import PageNotFound from "../../PageNotFound";
+import { addTemplateSchedule } from '../../../store/actions/scheduleActions'
+import Formatter from '../../../services/Formatter'
 import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, Workdays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+
 
 
 class Schedule extends Component {    
   state = {}
 
   onSubmitHandler = (values) => {
+    console.log(values.std_schedule_details);
+
     if(values.schedule_type=='standard'){
         var start_time = Formatter.convert_time(values.std_schedule_details[0].start_time);
         var end_time = Formatter.convert_time(values.std_schedule_details[0].end_time);
@@ -39,66 +43,22 @@ class Schedule extends Component {
           this.setState((state, props) => ({ [day] : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}  }));
         })
     }
-    console.log(values.schedule_policies);
     values.schedule_details = this.state;
-    this.props.updateSchedule(values,this.props.params.templateid)
+
+    this.props.addTemplateSchedule(values)
   }
 
-
   componentWillMount(){
-    this.props.getTemplateSchedule(this.props.params.templateid,'Template');
+      
   }
 
   render = () => {
-  if(this.props.template.isScheduleLoaded){
-
-    const name = this.props.template.name;
-    const sched_type = this.props.template.schedule_type;
-    const work_days = this.props.template.work_days;
-
-
-    var allow_late = (this.props.template.schedule_policies?.allow_late!==undefined&&this.props.template.schedule_policies.allow_late==1)?this.props.template.schedule_policies.allow_late:0;
-    var allow_undertime = (this.props.template.schedule_policies?.allow_undertime!==undefined&&this.props.template.schedule_policies.allow_undertime==1)?this.props.template.schedule_policies.allow_undertime:0;
-    var allow_night_diff = (this.props.template.schedule_policies?.allow_night_diff!==undefined&&this.props.template.schedule_policies.allow_night_diff==1)?this.props.template.schedule_policies.allow_night_diff:0;
-
-    var schedule_policies =  {allow_late : allow_late , allow_undertime : allow_undertime, allow_night_diff: allow_night_diff };
-    var std_schedule_details = [];
-    var flx_schedule_details = [];
-    var cst_schedule_details = [];
-
-    if(sched_type=='standard'){
-      std_schedule_details = [{start_time: new Date("2020-01-01 " + this.props.template.schedule_details.all.start_time), end_time : new Date("2020-01-01 " + this.props.template.schedule_details.all.end_time), break_time:new Date("2020-01-01 " +this.props.template.schedule_details.all.break_time)}];
-    }else if(sched_type=='flexible'){
-      flx_schedule_details = [{start_time: new Date("2020-01-01 " + this.props.template.schedule_details.all.start_time), end_time : new Date("2020-01-01 " + this.props.template.schedule_details.all.end_time), start_flexy_time: new Date("2020-01-01 " + this.props.template.schedule_details.all.start_flexy_time), end_flexy_time : new Date("2020-01-01 " + this.props.template.schedule_details.all.end_flexy_time), break_time:new Date("2020-01-01 " +this.props.template.schedule_details.all.break_time)}];
-    }else if(sched_type=='customize'){
-      var index = 0;
-      for (var key in this.props.template.schedule_details) {
-        var start_time        =  new Date("2020-01-01 " + eval('this.props.template.schedule_details.' +key+'.start_time'));
-        var end_time          =  new Date("2020-01-01 " + eval('this.props.template.schedule_details.' +key+'.end_time'));
-        var start_flexy_time  =  new Date("2020-01-01 " + eval('this.props.template.schedule_details.' +key+'.start_flexy_time'));
-        var end_flexy_time    =  new Date("2020-01-01 " + eval('this.props.template.schedule_details.' +key+'.end_flexy_time'));
-        var break_time        =  new Date("2020-01-01 " + eval('this.props.template.schedule_details.' +key+'.break_time'));
-        cst_schedule_details[index] = {start_time: start_time, end_time : end_time, start_flexy_time: start_flexy_time, end_flexy_time : end_flexy_time, break_time: break_time }; 
-        index++;
-      }
-    }
-
     return <Formik 
     onSubmit={this.onSubmitHandler} 
     validationSchema={validationSchema} 
-    initialValues={{
-      sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
-      wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}},
-      name : name,
-      std_schedule_details: std_schedule_details,
-      flx_schedule_details: flx_schedule_details,
-      cst_schedule_details: cst_schedule_details, 
-      source_type: 'template',
-      schedule_policies : schedule_policies,
-      schedule_type : sched_type, 
-      work_days: work_days 
-    }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-    <form onSubmit={handleSubmit}> 
+    initialValues={{sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}}
+    ,name : '',std_schedule_details: [],flx_schedule_details: [],cst_schedule_details: [], source_type: 'template',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0}, schedule_type : '', work_days: [] }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+      <form onSubmit={handleSubmit}> 
     <Container> 
     <Col sm={7} >
       <Form.Group className="white_bg">
@@ -150,9 +110,9 @@ class Schedule extends Component {
               }}
             /> 
           Standard &nbsp;</label>
-      )}/>
-      <FieldArray name="flx_schedule_details" render={arrayHelpers => (
-        <label>
+        )}/>
+         <FieldArray name="flx_schedule_details" render={arrayHelpers => (
+          <label>
             <input 
               type="radio"
               name="schedule_type"
@@ -188,7 +148,7 @@ class Schedule extends Component {
         &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
         </Form.Control.Feedback>
       </div>
-      </Form.Group>    </Col>
+      </Form.Group >   </Col>
     <Col sm={7} >
       <Form.Group className="white_bg">
         <div className="header">
@@ -263,10 +223,7 @@ class Schedule extends Component {
   </Formik>;
   }
 
-  return <PageNotFound/>;
-  }
-
-
+  
 }
 
 
@@ -317,16 +274,17 @@ const validationSchema = Yup.object().shape({
   })
 });
 
-const mapStateToProps = (state) => {
 
+
+
+const mapStateToProps = (state) => {
     return {
-        template : state.schedule
+        user : state.user
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      updateSchedule : (post_data,sched_id) => dispatch( updateSchedule(post_data,sched_id) ),
-      getTemplateSchedule : (template_id,type) => dispatch( getTemplateSchedule(template_id,type) ),
+      addTemplateSchedule : (post_data) => dispatch( addTemplateSchedule(post_data) ),
     }
   }
 

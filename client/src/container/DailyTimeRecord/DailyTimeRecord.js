@@ -1,9 +1,11 @@
+import { viewEmployeeDtr } from '../../store/actions/dtrActions';
+import { fetchUser } from '../../store/actions/userActions'
+
 import React, { Component } from "react";
 import "./DailyTimeRecord.css";
-import { viewEmployeeDtr } from '../../store/actions/dtrActions';
+
 import { Container,Row,Col,Table,Image,Card,Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux'
-import { fetchUser } from '../../store/actions/userActions'
 
 class DailyTimeRecord extends Component {
     constructor(props){
@@ -18,9 +20,7 @@ class DailyTimeRecord extends Component {
         var date = '';
 
         if(dateStr!=null){
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-            ];
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             var d = new Date(dateStr);
             date = monthNames[d.getMonth()] + ' ' + d.getDate() ;
         }
@@ -56,11 +56,9 @@ class DailyTimeRecord extends Component {
 
     render(){
         if(this.props.dtr.isDtrLoaded){
-
         return (
             <Container>
- 
-                                <Row>
+                <Row>
                     <div>
                     <h1>&nbsp;</h1>
                     </div>

@@ -1,17 +1,16 @@
 import React, { Component,useState  } from "react";
-import PageNotFound from "../PageNotFound";
 import { Redirect,Link } from "react-router-dom";
 import { Form,Button,Container,Col,InputGroup,FormControl,Tabs,Tab  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
-import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } from '../../store/actions/scheduleActions'
-import Formatter from '../../services/Formatter'
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleType,Workdays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../components/Schedule/ScheduleDetails.js';
-
+import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleType,Workdays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import PageNotFound from "../../PageNotFound";
+import Formatter from '../../../services/Formatter';
+import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } from '../../../store/actions/scheduleActions';
 
 class AssignDefault extends Component {    
   constructor(props){

@@ -11,10 +11,10 @@ import Footer from "../components/Template/Footer";
 // Containers
 import Login from "../container/Login";
 import Dashboard from "../container/Dashboard";
-import Schedule from "../container/Schedule";
-import AssignDefault from "../container/AssignDefault";
-import Template_Edit from "../container/Template/Template_Edit";
-import Template_List from "../container/Template/Template_List";
+import TemplateCreate from "../container/Schedule/TemplateCreate";
+import ScheduleAssign from "../container/Schedule/ScheduleAssign";
+import TemplateEdit from "../container/Schedule/TemplateEdit";
+import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
 
@@ -27,10 +27,10 @@ const RoutesList = () => {
       <Sidebar />
       <Switch>
         <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/schedule" ><Schedule /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/assign/:userid" ><AssignDefault /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/template/:templateid" ><Template_Edit/></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/template/" ><Template_List /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/schedule" ><TemplateCreate /></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/assign/:userid" ><ScheduleAssign /></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
         <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>
