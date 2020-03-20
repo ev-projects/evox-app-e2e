@@ -27,7 +27,7 @@ const Header = (props) => {
               <NavDropdown.Item href={`${global.default_schedule}1`}>Default Schedule</NavDropdown.Item>
             </NavDropdown>
           </Nav.Item>
-          <Nav.Link>
+          <Nav.Link onClick={() => props.logOut()}>
               Logout
             </Nav.Link>
         </Nav>
