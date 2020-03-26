@@ -18,6 +18,20 @@ class DtrResource extends JsonResource
         
         if( ! is_null( $this->resource ) ) {
 
+            # Create Resource for Payroll Items
+            $payroll_items = [];
+            foreach( $this->payroll_items()->get() as $payroll_item){
+                $type = ( $payroll_item->type == null ) ? 'regular' : $payroll_item->type;
+                $payroll_items[ $type ][ $payroll_item->item ] = seconds_to_time($payroll_item->value);
+            }
+
+            # Create Resource for Policies
+            $policies = [];
+            foreach( $this->policies()->get() as $policy){
+                $policies[ $policy->policy ] = $policy->value;
+            }
+            
+
             # Create Resource for Holidays
             $holidays = [];
             foreach( $this->holidays()->get() as $holiday){
@@ -27,12 +41,12 @@ class DtrResource extends JsonResource
                 ];
             }
 
-            # Create Resource for Leaves
-            $leaves = [];
 
             # Flag for catching Approved Leaves that would be use later for Attendance Status.
             $has_approved_leave_flag = false;
 
+            # Create Resource for Leaves
+            $leaves = [];
             foreach( $this->leaves()->get() as $leave){
                 $leaves[ $leave->id ] = [
                     'type'  => $leave->type,
@@ -49,6 +63,7 @@ class DtrResource extends JsonResource
                     $has_approved_leave_flag = true;
                 }
             }
+
 
             # Setting of Attendance Status of the current DTR. (Default status is Absent)
             $attendance_status = get_constant("ATTENDANCE_STATUS.absent");
@@ -83,6 +98,8 @@ class DtrResource extends JsonResource
                     'source_type_tagging' => $this->source_type_tagging,
                     'attendance_status' => $attendance_status
                 ), 
+                array('payroll_items' => $payroll_items),
+                array('policies' => $policies),
                 array('holidays' => $holidays),
                 array('leaves' => $leaves),
             );

@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Modules\Schedule\Models;
+namespace App\Modules\Payroll\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class SchedulePolicy extends Model{
+class DtrPolicy extends Model
+{
 
     use LogsActivity;
 
     protected $guarded = [];
 
     protected static $logAttributes = ['policy', 'value'];
-    
+
     public $timestamps = false;
 
     
@@ -23,10 +24,10 @@ class SchedulePolicy extends Model{
      */
 
     /**
-     * belongsTo Relationship for Schedule model
+     * belongsTo Relationship for DTR model
      */
-    public function schedule(){
-        return $this->belongsTo(Schedule::class);
+    public function dtr(){
+        return $this->belongsTo(Dtr::class);
     }
 
 }

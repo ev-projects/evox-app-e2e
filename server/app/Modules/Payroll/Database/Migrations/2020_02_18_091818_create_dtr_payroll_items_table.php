@@ -16,12 +16,12 @@ class CreateDtrPayrollItemsTable extends Migration
         Schema::create('dtr_payroll_items', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('dtr_id')->nullable()->index();
-            $table->enum('computation_type', array('regular', 'legal', 'special', 'rest_day'))->index();
-            $table->string('items')->index();
+            $table->enum('type', array('lh', 'sh', 'dlh', 'dsh', 'slh', 'rd'))->nullable()->default(null)->index();
+            $table->string('item')->index();
             $table->string('value');
             
-            $table->index(['dtr_id', 'computation_type']);
-            $table->index(['dtr_id', 'computation_type', 'items']);
+            $table->index(['dtr_id', 'type']);
+            $table->index(['dtr_id', 'type', 'item']);
         });
     }
 

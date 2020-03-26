@@ -4,6 +4,7 @@ namespace App\Modules\Payroll\Http\Controllers;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\User\Models\User;
@@ -56,6 +57,43 @@ class DtrController extends Controller
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
                 DtrResource::collection( $user->dtr($start_date, $end_date)->get() ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    
+
+
+    /**
+     * Returns the Daily Time Record of the User by the User ID as Parameter
+     * @param string $user_id
+     * @param string $start_date
+     * @param string $end_date
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function insert_time_in_and_out( $dtr_id, $time_in, $time_out ){   
+        try {
+
+            $this->validate(new Request([
+                'dtr_id' => $dtr_id,
+                'time_in' => $time_in,
+                'time_out' => $time_out,
+            ]), [
+                'dtr_id' => 'int',
+                'time_in' => 'date_format:Y-m-d H:i:s',
+                'time_out' => 'date_format:Y-m-d H:i:s',
+            ]);
+            
+            $dtr = Dtr::find( $dtr_id );
+            $dtr->time_in = datetime_to_timestamp($time_in);
+            $dtr->time_out = datetime_to_timestamp($time_out);
+            $dtr->update();
+            
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                new DtrResource( $dtr )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

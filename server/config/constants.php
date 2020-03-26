@@ -22,13 +22,42 @@ return [
 
     'DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
 
-    'LEAVE_REQUEST_STATUS' => ['requested', 'approved', 'denied', 'canceled'],
+    'LEAVE_REQUEST_STATUS' => [
+        'requested', 
+        'approved', 
+        'denied', 
+        'canceled'
+    ],
+
+    'UNPAID_LEAVE_TYPES' => [
+        "Unpaid Leave",
+        "Work from home",
+        "MGC Unpaid Call Out Days"
+    ],
+
+    
+
+    'PAYROLL_ITEM_DATA_TYPE' => [
+        'TIME' => [
+            "late",
+            "undertime",
+            "night_differential",
+            "overtime",
+        ]
+    ],
 
     'ATTENDANCE_STATUS' => [
         "absent"    => "ABSENT",
         "present"   => "PRESENT",
         "rest_day"  => "REST DAY",
         "on_leave"  => "ON LEAVE"
+    ],
+    
+    'TIMESTAMP' => [
+        "minute"        => 60,
+        "hour"          => 3600,
+        "eight_hours"   => 28800,
+        "day"           => 86400,
     ],
 
     

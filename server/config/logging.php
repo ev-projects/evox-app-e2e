@@ -96,6 +96,12 @@ return [
             'path' => storage_path('logs/dtr.log'),
             'level' => 'debug',
         ],
+
+        'dtr_computation' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/dtr_computation.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

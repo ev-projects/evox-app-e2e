@@ -17,6 +17,10 @@ use Illuminate\Http\Request;
 Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
     
     # Gets the DTR of the User indicated.
-    Route::get('/{user_id}/{date_start}/{date_end}', 'DtrController@daily_time_record');//->middleware('auth.apikey');
+    Route::get('/{user_id}/{start_date}/{end_date}', 'DtrController@daily_time_record');//->middleware('auth.apikey');
+
+    
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/insert_time_in_out/{dtr_id}/{time_in}/{time_out}', 'DtrController@insert_time_in_and_out');//->middleware('auth.apikey');
 
 });

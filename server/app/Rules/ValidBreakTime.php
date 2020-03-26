@@ -26,7 +26,7 @@ class ValidBreakTime implements Rule
     public function passes($attribute, $value)
     {
         if( !empty( $value ) ){
-            return (time_to_seconds($value) > 3600)? false : true;
+            return (time_to_seconds($value) > get_constant("TIMESTAMP.hour"))? false : true;
         }
     }
 

@@ -156,7 +156,7 @@ if (! function_exists('add_days_to_timestamp')) {
     {
         try {
             return ( ( !is_int($date)      ? strtotime($date) : $date ) + 
-                        (3600*24) * $days
+                        get_constant("TIMESTAMP.day") * $days
                     );
         }catch(Exception $e){
             throw $e;
