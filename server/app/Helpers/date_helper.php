@@ -71,12 +71,14 @@ if (! function_exists('seconds_to_time')) {
      * This function returns a converted Seconds to Time
      *
      * @param  timestamp seconds
+     * @param  boolean is_complete_date_format
      * @return time time
      */
-    function seconds_to_time( $seconds ) 
+    function seconds_to_time( $seconds, $is_complete_date_format=false ) 
     {
         try {
-            return ( is_valid( $seconds ) ) ? date('H:i', strtotime('today') + $seconds) : null;
+            $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
+            return ( is_valid( $seconds ) ) ? date($date_format, strtotime('today') + $seconds) : null;
         }catch(Exception $e){
             throw $e;
         }

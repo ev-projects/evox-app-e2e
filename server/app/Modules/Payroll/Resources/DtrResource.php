@@ -22,7 +22,7 @@ class DtrResource extends JsonResource
             $payroll_items = [];
             foreach( $this->payroll_items()->get() as $payroll_item){
                 $type = ( $payroll_item->type == null ) ? 'regular' : $payroll_item->type;
-                $payroll_items[ $type ][ $payroll_item->item ] = seconds_to_time($payroll_item->value);
+                $payroll_items[ $type ][ $payroll_item->item ] = seconds_to_time($payroll_item->value, true);
             }
 
             # Create Resource for Policies

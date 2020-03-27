@@ -59,6 +59,18 @@ class Dtr extends Model
         return ( is_valid( $this->start_datetime ) && is_valid( $this->end_datetime ) ) ? true : false;
     }
 
+    
+
+    /**
+     * 
+     *  Check if the current DTR has a Flexible Schedule
+     * @return bool 
+     */
+    public function hasFlexibleSchedule()
+    {
+        return ( is_valid( $this->start_flexy_datetime ) && is_valid( $this->end_flexy_datetime ) ) ? true : false;
+    }
+
     /**
      * 
      *  Check if the current DTR is a Rest Day
@@ -98,6 +110,50 @@ class Dtr extends Model
     public function isChangeSchedule()
     {
         return ( $this->source_type_tagging == 'change_schedule' ) ? true : false;
+    }
+
+    
+
+    /**
+     * 
+     *  Gets the Expected Time In base from the Start Datetime and Start Flexy Datetime.
+     * @return timestamp|0 
+     */
+    public function getExpectedTimeIn()
+    {
+        $expected_time_in = 0;
+
+        # If the Flexy Start Date has value, use it as an Expected Time In. (Flexible)
+        if( is_valid( $this->start_flexy_datetime ) ){
+            $expected_time_in = $this->start_flexy_datetime;
+
+        # else, If the Start Date has value, use it as an Expected Time In. (Standard)
+        } elseif( is_valid( $this->start_datetime ) ){
+            $expected_time_in = $this->start_datetime;
+        }
+
+        return $expected_time_in;
+    }
+
+    /**
+     * 
+     *  Gets the Rendered hours base from the Time-in and Time-out
+     * @return timestamp 
+     */
+    public function getRenderedTime()
+    {
+        return ( $this->hasValidTimelogs() ) ? (int) $this->time_out - $this->time_in : 0;
+    }
+
+
+    /**
+     * 
+     *  Gets the Required hours base from the Start-Datetime and End-Datetime
+     * @return timestamp 
+     */
+    public function getRequiredTime()
+    {
+        return ( $this->hasSchedule() ) ? (int) $this->end_datetime - $this->start_datetime : 0;
     }
 
 
