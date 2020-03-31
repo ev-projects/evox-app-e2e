@@ -5,7 +5,8 @@ import React, { Component } from "react";
 import "./DailyTimeRecord.css";
 
 import { Container,Row,Col,Table,Image,Card,Spinner } from 'react-bootstrap';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import DtrFormatter from '../../services/DtrFormatter';
 
 class DailyTimeRecord extends Component {
     constructor(props){
@@ -14,44 +15,6 @@ class DailyTimeRecord extends Component {
 
     componentWillMount(){
         this.props.viewEmployeeDtr(this.props.params.id,this.props.params.from,this.props.params.to);
-    }
-
-    convertDate(dateStr){
-        var date = '';
-
-        if(dateStr!=null){
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var d = new Date(dateStr);
-            date = monthNames[d.getMonth()] + ' ' + d.getDate() ;
-        }
-
-        return date;
-    }
-
-    stdSchedule(dtr){
-        var schedule = '';
-        if(dtr.start_datetime!=null&&dtr.end_datetime!=null){
-            schedule = this.convertToTime(dtr.start_datetime)+ ' - '+this.convertToTime(dtr.end_datetime);
-        }
-        return schedule;
-    }
-
-    flexySchedule(dtr){
-        var schedule = '';
-        if(dtr.start_flexy_datetime!=null&&dtr.end_flexy_datetime!=null){
-            schedule = this.convertToTime(dtr.start_datetime)+ ' - '+this.convertToTime(dtr.end_datetime);
-        }
-        return schedule;
-    }
-
-    convertToTime(dateStr){
-        var time = '';
-
-        if(dateStr!=null){
-            var d = new Date(dateStr);
-            time =   ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) +':'+   ('0' + d.getSeconds()).slice(-2) ;
-        }
-        return time;
     }
 
     render(){
@@ -76,6 +39,7 @@ class DailyTimeRecord extends Component {
                     <thead>
                         <tr>
                             <th><i class="fa fa-calendar"></i> Date</th>
+                            <th><i class="fa fa-calendar"></i> Status</th>
                             <th><i class="fa fa-calendar"></i> Schedule</th>
                             <th><i class="fa fa-clock-o"></i> Clock In</th>
                             <th><i class="fa fa-clock-o"></i> Clock Out</th>
@@ -83,14 +47,21 @@ class DailyTimeRecord extends Component {
                             <th><i class="fa fa-hourglass-start"></i> Undertime</th>
                             <th><i class="fa fa-moon-o"></i> NightDiff</th>
                             <th><i class="fa fa-hourglass"></i> Overtime</th>
-                            <th><i class="fa fa-hourglass"></i> OT w/ ND</th>
                         </tr>
                     </thead>
                     <tbody>
                     {this.props.dtr.list.map((dtr, index) => {
-                          return <tr className="center"><td>{this.convertDate(dtr.date)}</td><td><div>{this.stdSchedule(dtr)}</div><div>{this.flexySchedule(dtr)}
-                          </div></td><td><div>{this.convertToTime(dtr.time_in)}</div><div>{this.convertDate(dtr.time_in)}</div></td>
-                          <td><div>{this.convertToTime(dtr.time_out)}</div><div>{this.convertDate(dtr.time_out)}</div></td><td></td><td></td><td></td><td></td><td></td></tr>
+                          return <tr className="center">
+                          <td>{DtrFormatter.displayDate(dtr.date)}</td> 
+                          <td><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div></td>
+                          <td><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
+                          <td><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
+                          <td><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          </tr>
                     })}
                     </tbody>
                 </Table>

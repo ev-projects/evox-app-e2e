@@ -7,3 +7,29 @@ table .center{
 
 .body {
 }
+
+.month {
+    font-size: 10px;
+}
+
+.day{
+	font-size: 20px;
+    color: #82af13;
+    font-weight: bold;
+}
+
+.dayname {
+	font-size: 12px;
+}
+
+.present{
+	color: #82af13;
+}
+
+.absent{
+	color: red;
+}
+
+.rest-day{
+	color: gray;
+}
