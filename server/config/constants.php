@@ -47,10 +47,9 @@ return [
     ],
 
     'ATTENDANCE_STATUS' => [
-        "absent"    => "ABSENT",
-        "present"   => "PRESENT",
-        "rest_day"  => "REST DAY",
-        "on_leave"  => "ON LEAVE"
+        "absent"    => "Absent",
+        "present"   => "Present",
+        "rest_day"  => "Rest Day"
     ],
     
     'TIMESTAMP' => [

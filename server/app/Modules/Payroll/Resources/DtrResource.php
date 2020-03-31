@@ -43,7 +43,7 @@ class DtrResource extends JsonResource
 
 
             # Flag for catching Approved Leaves that would be use later for Attendance Status.
-            $has_approved_leave_flag = false;
+            $approved_leave_type = null;
 
             # Create Resource for Leaves
             $leaves = [];
@@ -58,9 +58,9 @@ class DtrResource extends JsonResource
                     ]
                 ];
 
-                # If the Leave is Approved and has a Valid amount, Sets the Approved Leave Flag to True.
-                if( $leave->isApproved() && $leave->amount > 0 ){
-                    $has_approved_leave_flag = true;
+                # If the Leave is Approved, a Paid Leave, and has a Valid amount, Sets the Approved Leave Name to get the Slug format of the Leave Type.
+                if( $leave->isApproved() && $leave->isPaidLeave() && $leave->amount > 0 ){
+                    $approved_leave_type =  $leave->type; 
                 }
             }
 
@@ -68,12 +68,12 @@ class DtrResource extends JsonResource
             # Setting of Attendance Status of the current DTR. (Default status is Absent)
             $attendance_status = get_constant("ATTENDANCE_STATUS.absent");
 
-            # If has an Approved Leave, set status to On Leave
-            if( $has_approved_leave_flag ) {
-                $attendance_status = get_constant("ATTENDANCE_STATUS.on_leave");
+            # If has an Approved Leave, set status to the parsre-to-slug Leave Type
+            if( is_valid( $approved_leave_type ) ) {
+                $attendance_status = $approved_leave_type;
 
-            # If has a valid time in and out, set status to Present
-            } elseif( is_valid( $this->time_in ) && is_valid( $this->time_out ) ) {
+            # If has a valid time in and out and has Schedule, set status to Present
+            } elseif( $this->hasCompleteTimelogs() && $this->hasSchedule() ) {
                 $attendance_status = get_constant("ATTENDANCE_STATUS.present");
 
             # If set as Rest Day, set status as Rest Day.
@@ -96,7 +96,10 @@ class DtrResource extends JsonResource
                     'break_time' => seconds_to_time( $this->break_time ),
                     'is_rest_day' => $this->is_rest_day,
                     'source_type_tagging' => $this->source_type_tagging,
-                    'attendance_status' => $attendance_status
+                    'attendance_status' => [
+                        'name' => $attendance_status,
+                        'slug' => parse_to_slug( $attendance_status )
+                    ]
                 ), 
                 array('payroll_items' => $payroll_items),
                 array('policies' => $policies),

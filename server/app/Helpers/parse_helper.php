@@ -36,3 +36,22 @@ if (! function_exists('parse_emp_num_for_evox')) {
 }
 
 
+
+if (! function_exists('parse_to_slug')) {   
+    /**
+     * This function parses the given string into a slug human-readable format.
+     *
+     * @param  string $string
+     * @param  string
+     */
+    function parse_to_slug( $string ) 
+    {
+        try {
+            return preg_replace('/\s+/', '_', strtolower($string));
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+
