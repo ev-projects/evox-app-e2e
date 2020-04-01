@@ -73,6 +73,25 @@ class Dtr extends Model
 
     /**
      * 
+     *  Check if the current DTR's Break Time has a Valid Break Time (More than 0)
+     * @return bool 
+     */
+    public function hasValidBreakTime()
+    {
+        return ( is_valid( $this->break_time ) && $this->break_time > 0 ) ? true : false;
+    }
+
+    /**
+     *  Checks if the current DTR's Time Logs overlapped on the Next Day.
+     */
+    public function hasOverlappedTimeLogs(){
+        return ( $this->hasValidTimelogs() && 
+                 timestamp_to_date( $this->time_in ) != timestamp_to_date( $this->time_out ) ) ? true : false;
+    }
+
+
+    /**
+     * 
      *  Check if the current DTR is a Rest Day
      * @return bool 
      */
@@ -112,6 +131,38 @@ class Dtr extends Model
         return ( $this->source_type_tagging == 'change_schedule' ) ? true : false;
     }
 
+    /**
+     * 
+     *  Check if the Time-In is BEFORE or EQUAL the Start-Datetime
+     * @return bool 
+     */
+    public function isTimedInBeforeSchedule()
+    {
+        return ( $this->time_in <= $this->start_datetime ) ? true : false;
+    }
+
+    /**
+     * 
+     *  Check if the Time-In is BETWEEN the Start-Datetime and Start-Flexy-Datetime
+     * @return bool 
+     */
+    public function isTimedInBetweenSchedule()
+    {
+        return (  $this->time_in > $this->start_datetime && 
+                  $this->time_in < $this->start_flexy_datetime ) ? true : false;
+    }
+    
+    /**
+     * 
+     *  Check if the Time-In is AFTER or EQUAL the Start-Flexy-Datetime.
+     * @return bool 
+     */
+    public function isTimedInAfterSchedule()
+    {
+        return ( $this->time_in >= $this->start_flexy_datetime ) ? true : false;
+    }
+
+
     
 
     /**
@@ -137,7 +188,7 @@ class Dtr extends Model
 
     /**
      * 
-     *  Gets the Rendered hours base from the Time-in and Time-out
+     *  Gets the Rendered Time base from the Time-in and Time-out
      * @return timestamp 
      */
     public function getRenderedTime()
@@ -148,12 +199,22 @@ class Dtr extends Model
 
     /**
      * 
-     *  Gets the Required hours base from the Start-Datetime and End-Datetime
+     *  Gets the Required Time base from the Start-Datetime and End-Datetime
      * @return timestamp 
      */
     public function getRequiredTime()
     {
         return ( $this->hasSchedule() ) ? (int) $this->end_datetime - $this->start_datetime : 0;
+    }
+
+    /**
+     *  Gets the Required Half Day time base from the Start-Datetime and End-Datetime (Subtracts the Break Time)
+     * @return timestamp
+     */
+    public function getRequiredHalfDayTime()
+    {
+        # Gets the Half Day Time by dividing the Required Time by 2 and subtracting the divided Break time by 2 from it.
+        return ( ( $this->getRequiredTime() / 2 ) - ( $this->break_time / 2 ) );
     }
 
 
