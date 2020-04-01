@@ -256,9 +256,15 @@ if (! function_exists('get_month_date_range')) {
     {
         try {
             $date_range = new Collection;
+            $month_range = [];
 
-            # Gets all the Month between the Date Range.
-            foreach ( CarbonPeriod::create($start_date, '1 month', $end_date)->toArray() as $month){
+            # Gets all the Year-Month between the Date Range.
+            foreach( CarbonPeriod::create($start_date, $end_date)->toArray() as $date ) {
+                $month_range[ $date->format('Y-m') ] = $date->format('Y-m');
+            }
+
+            # Iterate the Year-Month detected between the Date Range.
+            foreach ( $month_range as $month){
 
                 # Sets the First and Last Day of the Iteration Month
                 $first_day = Carbon::parse($month)->startOfMonth();
