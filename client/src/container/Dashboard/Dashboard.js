@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import "./Dashboard.css";
 import { Container,Row,Col,Table,Image, Spinner } from 'react-bootstrap';
-import { connect } from 'react-redux'
-import { fetchUser } from '../../store/actions/userActions'
+import { connect } from 'react-redux';
+import { fetchUser } from '../../store/actions/userActions' ;
 
 class Dashboard extends Component {
     constructor(props){
@@ -14,19 +14,27 @@ class Dashboard extends Component {
       const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
         return (
-      <Container>
-        <Row>
-            <div>
-                <h1>&nbsp;</h1>
-            </div>
-        </Row>
-        <Row>
-            <Col sm={12} >
-                <div className="header">
-                    <h1>
-                      <i class="fa fa-clock-o"></i> Recent Daily Time Records
-                    </h1>
+   <div class="content-wrapper">
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Dashboard</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-12">
+          <div class="card">
+              <div class="card-header border-0">
+                <div class="d-flex justify-content-between">
+                  <h3 class="card-title">Daily Time Record</h3>
                 </div>
+              </div>
+              <div class="card-body">
                 <Table striped responsive hover>
                     <thead>
                         <tr>
@@ -63,16 +71,20 @@ class Dashboard extends Component {
                         </tr>
                     </tbody>
                 </Table>
-            </Col>
-        </Row>
-        <Row>
-            <Col sm={9}>
-                <div className="header">
-                    <h1>
-    	    		<i class="fa fa-history"></i> Recent Pending Requests
-    	  			</h1>
+            </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-header border-0">
+                <div class="d-flex justify-content-between">
+                  <h3 class="card-title">Pending Request</h3>
                 </div>
-                <Table striped responsive hover>
+              </div>
+              <div class="card-body">
+            <Table striped responsive hover>
                     <tbody>
                         <tr>
                             <td>Jan 22</td>
@@ -106,16 +118,13 @@ class Dashboard extends Component {
                         </tr>
                     </tbody>
                 </Table>
-            </Col>
-            <Col sm={3}>
-                <div className="header">
-                    <h1>
-    		    	<i class="fa fa-book"></i> Evox Manual
-    		  		</h1>
-                </div>
-            </Col>
-        </Row>
-    </Container>          
+                            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
         );
     }
 };
