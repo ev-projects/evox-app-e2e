@@ -74,11 +74,11 @@ if (! function_exists('seconds_to_time')) {
      * @param  boolean is_complete_date_format
      * @return time time
      */
-    function seconds_to_time( $seconds, $is_complete_date_format=false ) 
+    function seconds_to_time( $seconds = 0, $is_complete_date_format=false ) 
     {
         try {
             $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
-            return ( is_valid( $seconds ) ) ? date($date_format, strtotime('today') + $seconds) : null;
+            return date($date_format, strtotime('today') + $seconds);
         }catch(Exception $e){
             throw $e;
         }
@@ -117,6 +117,23 @@ if (! function_exists('timestamp_to_datetime')) {
     {
         try {
             return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp) : null;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+if (! function_exists('timestamp_to_date')) {   
+    /**
+     * This function returns a converted Timestamp to Date
+     *
+     * @param  timestamp timestamp
+     * @return datetime
+     */
+    function timestamp_to_date( $timestamp ) 
+    {
+        try {
+            return ( is_valid( $timestamp ) ) ? date('Y-m-d', $timestamp) : null;
         }catch(Exception $e){
             throw $e;
         }
@@ -186,6 +203,26 @@ if (! function_exists('add_time_to_timestamp')) {
     }
 }
 
+if (! function_exists('subtract_days_from_timestamp')) {   
+    /**
+     * This function subtracts a specific amount of Days on a Timestamp.
+     *
+     * @param  date|timestamp $date
+     * @param  int $days 
+     * @return timestamp
+     */
+    function subtract_days_from_timestamp( $date, $days ) 
+    {
+        try {
+            return ( ( !is_int($date)      ? strtotime($date) : $date ) - 
+                        get_constant("TIMESTAMP.day") * $days
+                    );
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
 if (! function_exists('subtract_time_from_timestamp')) {   
     /**
      * This function subtracts a specific amount of Time on a Timestamp.
@@ -219,9 +256,15 @@ if (! function_exists('get_month_date_range')) {
     {
         try {
             $date_range = new Collection;
+            $month_range = [];
 
-            # Gets all the Month between the Date Range.
-            foreach ( CarbonPeriod::create($start_date, '1 month', $end_date)->toArray() as $month){
+            # Gets all the Year-Month between the Date Range.
+            foreach( CarbonPeriod::create($start_date, $end_date)->toArray() as $date ) {
+                $month_range[ $date->format('Y-m') ] = $date->format('Y-m');
+            }
+
+            # Iterate the Year-Month detected between the Date Range.
+            foreach ( $month_range as $month){
 
                 # Sets the First and Last Day of the Iteration Month
                 $first_day = Carbon::parse($month)->startOfMonth();

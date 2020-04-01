@@ -35,6 +35,11 @@ return [
         "MGC Unpaid Call Out Days"
     ],
 
+
+    'PAYROLL_NIGHT_DIFF_TIME' => [
+        "start" => "22:00",
+        "end" => "06:00",
+    ],
     
 
     'PAYROLL_ITEM_DATA_TYPE' => [
