@@ -38,7 +38,7 @@ const Header = (props) => {
                   </a>
                 </li>
                 <li className="nav-item has-treeview ">
-                  <a href="#" className="nav-link ">
+                  <a className="nav-link ">
                     <i className="nav-icon fa fa-calendar-o" />
                     <p>
                       Schedule
@@ -58,11 +58,16 @@ const Header = (props) => {
                         <p>Add Template</p>
                       </a>
                     </li>
- 
                     <li className="nav-item">
                       <a href={`${global.default_schedule}1`} className="nav-link ">
                         <i className="nav-icon fa fa-calendar-check-o nav-icon" />
                         <p>Default Schedule</p>
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a href={`${global.daily_time_record_view}1/2020-03-01/2020-03-31`} className="nav-link ">
+                        <i className="nav-icon fa fa-clock-o nav-icon" />
+                        <p>Daily Time Record</p>
                       </a>
                     </li>
                   </ul>

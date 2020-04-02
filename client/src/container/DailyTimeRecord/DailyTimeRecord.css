@@ -33,3 +33,11 @@ table .center{
 .rest-day{
 	color: gray;
 }
+
+.vacation_leave, .sick_leave{
+	color : rgba(49, 106, 197, 0.93);
+}
+
+.sh,.lh{
+	color: rgb(255, 194, 71) !important; 	
+}

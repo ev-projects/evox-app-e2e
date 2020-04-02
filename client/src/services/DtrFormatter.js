@@ -103,6 +103,19 @@ class DtrFormatter {
         return time;
     }
 
+    /** Display List of Holiday */
+    displayHoliday(holiday){ 
+        var holidayList = []; 
+
+        if(holiday!=undefined){
+            holiday.map((day, index) => { 
+                holidayList.push(<div className={day.type}>{day.name}</div>);
+            }); 
+        }
+            return (<div>{holidayList}</div>);
+        
+    }
+
 }
 
 export default new DtrFormatter();
