@@ -7,6 +7,7 @@ import "./DailyTimeRecord.css";
 import { Container,Row,Col,Table,Image,Card,Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import DtrFormatter from '../../services/DtrFormatter';
+import { ContainerHeader,Content,ContainerWrapper } from '../../components/GridComponent/AdminLte.js';
 
 class DailyTimeRecord extends Component {
     constructor(props){
@@ -20,33 +21,20 @@ class DailyTimeRecord extends Component {
     render(){
         if(this.props.dtr.isDtrLoaded){
         return (
-            <Container>
-                <Row>
-                    <div>
-                    <h1>&nbsp;</h1>
-                    </div>
-                </Row>
-                <Row>
-                <Col sm={12} >
-                <div className="white_bg">
-                    <div className="header">
-                        <h1>
-                            <i class="fa fa-clock-o"></i> Recent Daily Time Records
-                        </h1>
-                    </div>
-                <div className="body">
+            <ContainerWrapper>
+              <Content col="12" title="Daily Time Record">
                 <Table striped responsive hover>
                     <thead>
                         <tr>
-                            <th><i class="fa fa-calendar"></i> Date</th>
-                            <th><i class="fa fa-calendar"></i> Status</th>
-                            <th><i class="fa fa-calendar"></i> Schedule</th>
-                            <th><i class="fa fa-clock-o"></i> Clock In</th>
-                            <th><i class="fa fa-clock-o"></i> Clock Out</th>
-                            <th><i class="fa fa-hourglass-end"></i> Late</th>
-                            <th><i class="fa fa-hourglass-start"></i> Undertime</th>
-                            <th><i class="fa fa-moon-o"></i> NightDiff</th>
-                            <th><i class="fa fa-hourglass"></i> Overtime</th>
+                            <th><i className="fa fa-calendar"></i> Date</th>
+                            <th><i className="fa fa-calendar"></i> Status</th>
+                            <th><i className="fa fa-calendar"></i> Schedule</th>
+                            <th><i className="fa fa-clock-o"></i> Clock In</th>
+                            <th><i className="fa fa-clock-o"></i> Clock Out</th>
+                            <th><i className="fa fa-hourglass-end"></i> Late</th>
+                            <th><i className="fa fa-hourglass-start"></i> Undertime</th>
+                            <th><i className="fa fa-moon-o"></i> NightDiff</th>
+                            <th><i className="fa fa-hourglass"></i> Overtime</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,19 +45,16 @@ class DailyTimeRecord extends Component {
                           <td><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
                           <td><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
                           <td><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
+                          <td>{dtr?.payroll_items?.regular?.late}</td>
+                          <td>{dtr?.payroll_items?.regular?.undertime}</td>
+                          <td>{dtr?.payroll_items?.regular?.night_diff}</td>
+                          <td>{dtr?.payroll_items?.regular?.overtime}</td>
                           </tr>
                     })}
                     </tbody>
                 </Table>
-                </div>
-                </div>
-                </Col>
-                </Row>
-            </Container>          
+              </Content>
+            </ContainerWrapper>          
         );
         }
         return <div></div>;

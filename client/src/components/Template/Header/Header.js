@@ -18,7 +18,7 @@ const Header = (props) => {
           </ul>
         </nav>
         <aside className="main-sidebar sidebar-dark-primary elevation-4">
-          <a href="index3.html" className="brand-link">
+          <a href="/" className="brand-link">
             <span className="brand-text font-weight-light">Evox</span>
           </a>
           <div className="sidebar">
@@ -26,7 +26,7 @@ const Header = (props) => {
               <div className="image">
               </div>
               <div className="info">
-                <a href="#" className="d-block">{name}</a>
+                <a href="/" className="d-block">{name}</a>
               </div>
             </div>
             <nav className="mt-2">

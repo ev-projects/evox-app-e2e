@@ -12,7 +12,7 @@ class DtrFormatter {
         var day = '';
 
         if(dateStr!=null){
-            const dayName = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat","Sun"];
+            const dayName = ["Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             var d = new Date(dateStr);
             day = dayName[d.getDay()];
@@ -78,11 +78,10 @@ class DtrFormatter {
         if(dtrObject.start_flexy_datetime!=null&&dtrObject.end_flexy_datetime!=null){
             flxSchedule = 
             <Row><Col>
-                <Row className={centerClass}>{this.convertToTime(dtrObject.start_flexy_datetime)}</Row>
-                <Row className={"month " + centerClass}>{this.displayMonthDay(dtrObject.start_flexy_datetime)}</Row></Col><Col>
-                <Row>{this.convertToTime(dtrObject.end_flexy_datetime)}</Row>
-                <Row className={"month " + centerClass}>{this.displayMonthDay(dtrObject.end_flexy_datetime)}</Row>
-            </Col></Row>;
+            <Row className={centerClass}>{this.convertToTime(dtrObject.start_flexy_datetime)}</Row>
+            <Row className={"month " + centerClass}>{this.displayMonthDay(dtrObject.start_flexy_datetime)}</Row></Col><Col>
+            <Row className={centerClass}>{this.convertToTime(dtrObject.end_flexy_datetime)}</Row>
+            <Row className={"month " + centerClass}>{this.displayMonthDay(dtrObject.end_flexy_datetime)}</Row></Col></Row> ;
         }
 
 
