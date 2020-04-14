@@ -86,7 +86,11 @@ class Dtr extends Model
      */
     public function hasOverlappedTimeLogs(){
         return ( $this->hasValidTimelogs() && 
-                 timestamp_to_date( $this->time_in ) != timestamp_to_date( $this->time_out ) ) ? true : false;
+                 timestamp_to_date( $this->time_out ) == timestamp_to_date(add_days_to_timestamp( $this->date, 1 ))
+               ) ? true : false;
+               
+                //  Old Code:
+                //  timestamp_to_date( $this->time_in ) != timestamp_to_date( $this->time_out ) ) ? true : false;
     }
 
 
@@ -143,13 +147,21 @@ class Dtr extends Model
 
     /**
      * 
-     *  Check if the Time-In is BETWEEN the Start-Datetime and Start-Flexy-Datetime
+     *  Check if the Time-In is:
+     *  - BETWEEN the Start-Datetime and Start-Flexy-Datetime if FLEXIBLE
+     *  - BEYOND or EQUAL the Start-Datetime if STANDARD
+     * 
      * @return bool 
      */
     public function isTimedInBetweenSchedule()
     {
-        return (  $this->time_in > $this->start_datetime && 
-                  $this->time_in < $this->start_flexy_datetime ) ? true : false;
+        return ( ($this->hasFlexibleSchedule() &&
+                  $this->time_in > $this->start_datetime && 
+                  $this->time_in < $this->start_flexy_datetime) 
+                ||
+                 (!$this->hasFlexibleSchedule() &&
+                  $this->time_in >= $this->start_datetime) 
+               ) ? true : false;
     }
     
     /**
@@ -162,6 +174,52 @@ class Dtr extends Model
         return ( $this->time_in >= $this->start_flexy_datetime ) ? true : false;
     }
 
+    /**
+     * 
+     *  Check if the Time-Out is BEFORE or EQUAL the End-Datetime
+     * @return bool 
+     */
+    public function isTimedOutBeforeSchedule()
+    {
+        return ( $this->time_out <= $this->end_datetime ) ? true : false;
+    }
+
+    /**
+     * 
+     *  Check if the Time-Out is:
+     *  - BETWEEN the End-Datetime and End-Flexy-Datetime if FLEXIBLE
+     *  - BEYOND or EQUAL the End-Datetime if STANDARD
+     * 
+     * @return bool 
+     */
+    public function isTimedOutBetweenSchedule()
+    {
+        return ( ($this->hasFlexibleSchedule() &&
+                  $this->time_out > $this->end_datetime && 
+                  $this->time_out < $this->end_flexy_datetime) 
+                ||
+                 (!$this->hasFlexibleSchedule() &&
+                  $this->time_out >= $this->end_datetime) 
+               ) ? true : false;
+    }
+
+    /**
+     * 
+     *  Check if the Time-Out is:
+     *  - BEYOND or EQUAL the End-Flexy-Datetime if FLEXIBLE
+     *  - BEYOND or EQUAL the End-Datetime if STANDARD
+     * 
+     * @return bool 
+     */
+    public function isTimedOutAfterSchedule()
+    {
+        return ( ($this->hasFlexibleSchedule() &&
+                  $this->time_out >= $this->end_flexy_datetime)
+                ||
+                 (!$this->hasFlexibleSchedule() &&
+                  $this->time_out >= $this->end_datetime) 
+                ) ? true : false;
+    }
 
     
 
@@ -191,7 +249,7 @@ class Dtr extends Model
      *  Gets the Rendered Time base from the Time-in and Time-out
      * @return timestamp 
      */
-    public function getRenderedTime()
+    public function getTotalRenderedTime()
     {
         return ( $this->hasValidTimelogs() ) ? (int) $this->time_out - $this->time_in : 0;
     }
@@ -258,13 +316,14 @@ class Dtr extends Model
     public function leaves(){
         return $this->hasMany(Leave::class);
         
+    }    
+    
+    /**
+     * hasOne Relationship for Previous Dtr Model
+     */
+    public function previous_dtr(){
+        return $this->hasOne(Dtr::class, 'user_id', 'user_id')->where([
+            'date' => timestamp_to_date( subtract_days_from_timestamp( $this->date, 1 ) )
+        ]);
     }
-
-
-    # Fetch the User's Supervisee 
-    public function supervisee()
-    {
-        return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
-    }
-
 }

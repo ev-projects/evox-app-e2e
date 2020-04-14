@@ -3,6 +3,7 @@
 namespace App\Modules\Payroll\Models;
 
 use Illuminate\Database\Eloquent\Collection;
+use Exception;
 
 class Computation
 {  
@@ -17,13 +18,13 @@ class Computation
     private $expected_work_start_datetime = 0;
     private $expected_work_end_datetime = 0;
 
-    # The Expected Night Diff Start and End Time of the specific DTR.
-    private $night_diff_start_datetime = 0;
-    private $night_diff_end_datetime = 0;
-
     # The Break Start and End Date of the specific DTR.
     private $break_start_datetime = 0;
     private $break_end_datetime = 0;
+
+    # The Actual Time Start and End Datetime of the DTR
+    private $actual_time_start_datetime = 0;
+    private $actual_time_end_datetime = 0;
 
     
     private $leaves;
@@ -44,11 +45,11 @@ class Computation
 
         $this->set_timeoff();  
 
-        $this->set_expected_work_datetime();
+        $this->set_expected_work();
 
-        $this->set_night_diff_datetime();
+        $this->set_break();
 
-        $this->set_break_datetime();
+        $this->set_actual_time();
     }
 
 
@@ -67,6 +68,7 @@ class Computation
         # Check if the DTR has Valid Time Logs and has a proper Schedule.
         if( $this->dtr->hasValidTimelogs() && $this->dtr->hasSchedule() ) {
 
+
             /**
              *   COMPUTE for Late
              */
@@ -80,6 +82,7 @@ class Computation
                 }
             }
 
+
             /**
              *   COMPUTE for Undertime
              */
@@ -92,6 +95,7 @@ class Computation
                     $payroll_items[] = $undertime_payroll_item;
                 }
             }
+
 
             /**
              *   COMPUTE for Night Diff.
@@ -112,10 +116,14 @@ class Computation
             /**
              *   COMPUTE for Rendered Hours
              */ 
-            $payroll_items[] = new DtrPayrollItems([
-                'item'  => 'rendered_hours',
-                'value' => $this->dtr->getRenderedTime()
-            ]);
+            $rendered_time_payroll_item_collection = $this->compute_rendered_time();
+
+            # If the $rendered_time_payroll_item_collection is valid, Iterate it and add each item on $payroll_items array.
+            if( is_valid( $rendered_time_payroll_item_collection ) ) {
+                foreach( $rendered_time_payroll_item_collection as $rendered_time_payroll_item ) {
+                    $payroll_items[] = $rendered_time_payroll_item;
+                }
+            }
         }
         return $payroll_items;
     }
@@ -153,7 +161,7 @@ class Computation
     /**
      *  Responsible for setting the expected Work Time In and Out base on the Schedule and Time In & Out of the DTR instance.
      */
-    private function set_expected_work_datetime(){
+    private function set_expected_work(){
 
         # If Schedule applied on the DTR is Standard only
         if( ! $this->dtr->hasFlexibleSchedule() ) { 
@@ -188,39 +196,9 @@ class Computation
     }
 
     /**
-     *  Responsible for setting the Night Differential Start & End Date base on the Schedule and Time In & Out of the DTR instance.
-     */
-    private function set_night_diff_datetime(){
-        
-        /**
-         *      Night Diff. Time Duration 10PM - 6AM
-         */
-
-        # If the Work Start-Datetime is after the Date @ 6AM, set the Night Diff. for later until tomorrow. (10PM - 6AM)
-        if( add_time_to_timestamp( $this->dtr->date, get_constant('PAYROLL_NIGHT_DIFF_TIME.end') ) < $this->expected_work_start_datetime ){
-
-            # Sets the Date's start of Night Diff. Time (10PM of the current date.)
-            $this->night_diff_start_datetime    = add_time_to_timestamp( $this->dtr->date, get_constant('PAYROLL_NIGHT_DIFF_TIME.start') );   
-
-            # Sets the Date's End of Night Diff. Time (6AM of the next day.)
-            $this->night_diff_end_datetime      = add_time_to_timestamp( add_days_to_timestamp( $this->dtr->date, 1 ) , get_constant('PAYROLL_NIGHT_DIFF_TIME.end') );
-
-        # If the Work Start-Datetime is before the Date @ 6AM, set the Night Diff. for yesterday until today. (10PM - 6AM)
-        }else{
-
-            # Sets the Date's start of Night Diff. Time (10PM of the date yesterday.)
-            $this->night_diff_start_datetime    = add_time_to_timestamp( subtract_days_from_timestamp( $this->dtr->date, 1 ) , get_constant('PAYROLL_NIGHT_DIFF_TIME.start') );   
-
-            # Sets the Date's End of Night Diff. Time (6AM of the current day.)
-            $this->night_diff_end_datetime      = add_time_to_timestamp( $this->dtr->date, get_constant('PAYROLL_NIGHT_DIFF_TIME.end') );   
-
-        }
-    }
-
-    /**
      *  Responsible for setting the Break Time-In and Out base on the Schedule and Time In & Out of the DTR Instance.
      */
-    private function set_break_datetime(){
+    private function set_break(){
 
         # Checks if the Break Time of the current DTR instance is more than 0.
         // if( $this->dtr->hasValidBreakTime() ) {
@@ -231,6 +209,57 @@ class Computation
             # Gets the Break End-Datetime by adding the total Break Time from the Break Start-Datetime.
             $this->break_end_datetime = $this->break_start_datetime +  $this->dtr->break_time;
         // }
+    }
+
+    /**
+     *  Reponsible for setting the Actual Time Start and End Datetime of the DTR base on the Schedule and the Time Logs.
+     */
+    private function set_actual_time(){
+
+        // OLD CODE. Double Check for Clean-up. (2020-04-13)
+
+        /** Sets the Actual Time Start-Datetime for computing the Rendered Hours. */ 
+        //     # If the Time-In is BEFORE the Schedule, use DTR's Start-Datetime.
+        //     if( $this->dtr->isTimedInBeforeSchedule() ) {
+        //         $this->actual_time_start_datetime = $this->dtr->start_datetime;
+        //     # If the Time-In is BETWEEN or AFTER the Schedule , use DTR's Time-In.
+        //     } elseif( $this->dtr->isTimedInBetweenSchedule() || $this->dtr->isTimedInAfterSchedule() ) {
+        //         $this->actual_time_start_datetime = $this->dtr->time_in;
+        //     } 
+        // /** Sets the Actual Time End-Datetime for computing the Rendered Hours. */ 
+        //     # If the Time-Out is BEFORE the Schedule OR BETWEEN the Schedule and DTR is a FLEXIBLE Schedule, use DTR's Time-Out.
+        //     if( $this->dtr->isTimedOutBeforeSchedule() ||
+        //         ($this->dtr->isTimedOutBetweenSchedule() && $this->dtr->hasFlexibleSchedule()) ) {
+        //         $this->actual_time_end_datetime = $this->dtr->time_out;
+        //     # If the Time-Out is AFTER the Schedule and DTR is a STANDARD Schedule, use DTR's End-Datetime.
+        //     } elseif( $this->dtr->isTimedOutAfterSchedule() && !$this->dtr->hasFlexibleSchedule() ) { 
+        //         $this->actual_time_end_datetime = $this->dtr->end_datetime;
+        //     # If the Time-Out is AFTER the Schedule and DTR is a FLEXIBLE Schedule, use DTR's End-Flexy-Datetime.
+        //     } elseif( $this->dtr->isTimedOutAfterSchedule() && $this->dtr->hasFlexibleSchedule() ) { 
+        //         $this->actual_time_end_datetime = $this->dtr->end_flexy_datetime;
+        //     }
+
+        /** Sets the Actual Time Start-Datetime for computing the Rendered Hours. */ 
+
+            # If the Time-In is BEFORE or EQUAL the Expected Work Start-Datetime, use the Expected Work Start-Datetime.
+            if( $this->dtr->time_in <= $this->expected_work_start_datetime ) {
+                $this->actual_time_start_datetime = $this->expected_work_start_datetime;
+
+            # If the Time-In is BEYOND the Expected Work Start-Datetime, use the DTR's Time-In.
+            } else {
+                $this->actual_time_start_datetime = $this->dtr->time_in;
+            } 
+
+        /** Sets the Actual Time End-Datetime for computing the Rendered Hours. */ 
+
+            # If the Time-Out is BEFORE or EQUAL the Expected Work End-Datetime, use the DTR's Time-Out.
+            if( $this->dtr->time_out <= $this->expected_work_end_datetime ) {
+                $this->actual_time_end_datetime = $this->dtr->time_out;
+
+            # If the Time-In is BEYOND the Expected Work End-Datetime, use the Expected Work End-Datetime.
+            } else {
+                $this->actual_time_end_datetime = $this->expected_work_end_datetime;
+            } 
     }
 
     ###############################################################################################
@@ -267,7 +296,7 @@ class Computation
             }
 
             return ( $late > 0 ) ? new DtrPayrollItems([
-                                            'item'  => 'late',
+                                            'item'  => get_constant('PAYROLL_ITEMS.late'),
                                             'value' => $late
                                         ]) : null;
 
@@ -286,8 +315,8 @@ class Computation
         try{    
             $undertime = 0;
                     
-            # Get the Rendered Time (Time-Out - Time-in)
-            $rendered_time = $this->dtr->getRenderedTime();
+            # Get the Total Rendered Time (Time-Out - Time-in)
+            $rendered_time = $this->dtr->getTotalRenderedTime();
 
             # Get the Required Time (Start-Datetime - End-Datetime)
             $required_time = $this->dtr->getRequiredTime();
@@ -365,7 +394,7 @@ class Computation
             }
             
             return ( $undertime > 0 ) ? new DtrPayrollItems([
-                                            'item'  => 'undertime',
+                                            'item'  => get_constant('PAYROLL_ITEMS.undertime'),
                                             'value' => $undertime
                                         ]) : null;
 
@@ -375,8 +404,11 @@ class Computation
         }
     }
 
+
+
     /**
      *  Responsible for Computing the Night Diff. of the current DTR Instance.
+     *  - Break Time will be deducted from Night Diff.
      *  Night Diff.             - The computed Night Diff. for the current Day of the DTR.
      *  Night Diff. Overlapped  - The computed Night Diff. for the next Day of the DTR.
      *   
@@ -389,44 +421,66 @@ class Computation
             $night_diff = 0;
             $night_diff_overlapped = 0;
             
+            # Set the Expected Night Diff Start and End Time of the specific DTR base from the Expected Work Start-Datetime.
+            $night_diff_datetime_array = $this->get_night_diff_datetime( $this->expected_work_start_datetime );
+
+
+            // dd( timestamp_to_datetime( $this->break_start_datetime ), timestamp_to_datetime( $this->break_end_datetime ) );
 
             /**
              *       Computation of the Night Diff. - START
              */
+                # Discern if the DTR has NO Overlapped time Logs, compute for Night Diff. only between the Time-In and Time-Out.
+                if( ! $this->dtr->hasOverlappedTimeLogs() ) { 
+
+                    $night_diff = $this->get_total_night_diff([
+                        'time_start_to_compute'         => $this->dtr->time_in,
+                        'time_end_to_compute'           => $this->dtr->time_out,
+                        'expected_work_start_datetime'  => $this->expected_work_start_datetime,
+                        'expected_work_end_datetime'    => $this->expected_work_end_datetime,
+                        'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                        'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                    ]);
+
                 # If the DTR has Overlapped time Logs (Ex. Time-In is Day 1 and Time-Out is Day 2), compute Separately for Night Diff. and Overlapped Night Diff.
-                if( $this->dtr->hasOverlappedTimeLogs() ) { 
-                    
-                    # Compute the Night Diff. of Day 1 by setting the (Time Start = Time-In) and (Time End = 12 Midnight of the Next Day).
-                    $night_diff = $this->get_total_night_diff([
-                        'time_start_to_compute'         => $this->dtr->time_in,
-                        'time_end_to_compute'           => add_days_to_timestamp( $this->dtr->date, 1),
-                        'expected_work_start_datetime'  => $this->expected_work_start_datetime,
-                        'expected_work_end_datetime'    => $this->expected_work_end_datetime,
-                        'night_diff_start_datetime'     => $this->night_diff_start_datetime,
-                        'night_diff_end_datetime'       => $this->night_diff_end_datetime,
-                    ]);
-
-                    # Compute the Night Diff. of Day 2 by setting the (Time Start = 12 Midnight of the Next Day) and (Time End = Time-Out).
-                    $night_diff_overlapped = $this->get_total_night_diff([
-                        'time_start_to_compute'         => add_days_to_timestamp( $this->dtr->date, 1),
-                        'time_end_to_compute'           => $this->dtr->time_out,
-                        'expected_work_start_datetime'  => $this->expected_work_start_datetime,
-                        'expected_work_end_datetime'    => $this->expected_work_end_datetime,
-                        'night_diff_start_datetime'     => $this->night_diff_start_datetime,
-                        'night_diff_end_datetime'       => $this->night_diff_end_datetime,
-                    ]);
-
-                # If the DTR has NO Overlapped time Logs, compute for Night Diff. only between the Time-In and Time-Out.
                 } else {
+                    
+                    # Discern if the Time In is BEFORE the 12AM of the Next Day, compute for Night Diff. and Night Diff. Overlapped.
+                    if( $this->dtr->time_in < add_days_to_timestamp( $this->dtr->date, 1) ) {
 
-                    $night_diff = $this->get_total_night_diff([
-                        'time_start_to_compute'         => $this->dtr->time_in,
-                        'time_end_to_compute'           => $this->dtr->time_out,
-                        'expected_work_start_datetime'  => $this->expected_work_start_datetime,
-                        'expected_work_end_datetime'    => $this->expected_work_end_datetime,
-                        'night_diff_start_datetime'     => $this->night_diff_start_datetime,
-                        'night_diff_end_datetime'       => $this->night_diff_end_datetime,
-                    ]);
+                        # Compute the Night Diff. of Day 1 by setting the (Time Start = Time-In) and (Time End = 12 Midnight of the Next Day).
+                        $night_diff = $this->get_total_night_diff([
+                            'time_start_to_compute'         => $this->dtr->time_in,
+                            'time_end_to_compute'           => add_days_to_timestamp( $this->dtr->date, 1),
+                            'expected_work_start_datetime'  => $this->expected_work_start_datetime,
+                            'expected_work_end_datetime'    => $this->expected_work_end_datetime,
+                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                        ]);
+                        
+                        # Compute the Night Diff. of Day 2 by setting the (Time Start = 12 Midnight of the Next Day) and (Time End = Time-Out).
+                        $night_diff_overlapped = $this->get_total_night_diff([
+                            'time_start_to_compute'         => add_days_to_timestamp( $this->dtr->date, 1),
+                            'time_end_to_compute'           => $this->dtr->time_out,
+                            'expected_work_start_datetime'  => $this->expected_work_start_datetime,
+                            'expected_work_end_datetime'    => $this->expected_work_end_datetime,
+                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                        ]);
+
+                    # Discern if the Time In is BEYOND the 12AM of the Next Day, compute for Night Diff. Overlapped only.
+                    } else {
+                        
+                        # Compute the Night Diff. of Day 2 by setting the (Time Start = Time In) and (Time End = Time-Out).
+                        $night_diff_overlapped = $this->get_total_night_diff([
+                            'time_start_to_compute'         => $this->dtr->time_in,
+                            'time_end_to_compute'           => $this->dtr->time_out,
+                            'expected_work_start_datetime'  => $this->expected_work_start_datetime,
+                            'expected_work_end_datetime'    => $this->expected_work_end_datetime,
+                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                        ]);
+                    }
                 }
             /**
              *        Computation of the Night Diff. - END     
@@ -436,9 +490,9 @@ class Computation
             /**
              *        Computation of the Night Diff. Break Time and Deductions - START     
              */
-                # If the DTR has a Valid Break Time and the Rendered Time is more than the (Required Half Day Time + Break Time), Deduct the Break Time.
+                # If the DTR has a Valid Break Time and the Total Rendered Time is more than the (Required Half Day Time + Break Time), Deduct the Break Time.
                 if( $this->dtr->hasValidBreakTime() &&
-                    $this->dtr->getRenderedTime() > $this->dtr->getRequiredHalfDayTime() + $this->dtr->break_time ){
+                    $this->dtr->getTotalRenderedTime() > $this->dtr->getRequiredHalfDayTime() + $this->dtr->break_time ){
 
                     # If the Break Start and End Da te is NOT the same day, compute for Night Diff. Break Time for the Night Diff. and Overlapped Night Diff.
                     if( timestamp_to_date( $this->break_start_datetime ) != timestamp_to_date( $this->break_end_datetime )) {
@@ -449,8 +503,8 @@ class Computation
                                 'time_end_to_compute'           => add_days_to_timestamp( $this->dtr->date, 1),
                                 'expected_work_start_datetime'  => $this->expected_work_start_datetime,
                                 'expected_work_end_datetime'    => $this->expected_work_end_datetime,
-                                'night_diff_start_datetime'     => $this->night_diff_start_datetime,
-                                'night_diff_end_datetime'       => $this->night_diff_end_datetime,
+                                'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                                'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
                             ]);
 
                             # Compute Night Diff. Break Time for Day 2 by setting the (Time Start = 12 Midnight of the Next Day) and (Time End = Break End-Datetime).
@@ -459,8 +513,8 @@ class Computation
                                 'time_end_to_compute'           => $this->break_end_datetime,
                                 'expected_work_start_datetime'  => $this->expected_work_start_datetime,
                                 'expected_work_end_datetime'    => $this->expected_work_end_datetime,
-                                'night_diff_start_datetime'     => $this->night_diff_start_datetime,
-                                'night_diff_end_datetime'       => $this->night_diff_end_datetime,
+                                'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                                'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
                             ]);
 
                             # Deduct the computed Break Times respectively.
@@ -476,18 +530,18 @@ class Computation
                             'time_end_to_compute'           => $this->break_end_datetime,
                             'expected_work_start_datetime'  => $this->expected_work_start_datetime,
                             'expected_work_end_datetime'    => $this->expected_work_end_datetime,
-                            'night_diff_start_datetime'     => $this->night_diff_start_datetime,
-                            'night_diff_end_datetime'       => $this->night_diff_end_datetime,
+                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
                         ]);
-                        
-                        # If the Time-In has the SAME DAY from the Break Date, deduct it from the Night. Diff. (Day 1)
-                        if( timestamp_to_date( $this->dtr->time_in ) == timestamp_to_date( $this->break_start_datetime ) ) {
-                            $night_diff -= $night_diff_break_time;
 
                         # If the DTR has Overlapped Time Logs AND Time-Out has the SAME DAY from the Break Date, deduct it from the Night. Diff. Overlapped (Day 2)
-                        }elseif( $this->dtr->hasOverlappedTimeLogs() &&
+                        if( $this->dtr->hasOverlappedTimeLogs() &&
                                 timestamp_to_date( $this->dtr->time_out ) == timestamp_to_date( $this->break_start_datetime ) ) {
                             $night_diff_overlapped  -= $night_diff_break_time;
+                        
+                        # If the Time-In has the SAME DAY from the Break Date, deduct it from the Night. Diff. (Day 1)
+                        }elseif( timestamp_to_date( $this->dtr->time_in ) == timestamp_to_date( $this->break_start_datetime ) ) {
+                            $night_diff -= $night_diff_break_time;
                         }
                     }
                 }
@@ -514,7 +568,7 @@ class Computation
             # Checks if the Night Diff. has valid Data before appedning it on the Collection.
             if( $night_diff > 0 ) {
                 $dtr_payroll_item_collection->push( new DtrPayrollItems([
-                    'item'  => 'night_diff',
+                    'item'  => get_constant('PAYROLL_ITEMS.night_diff'),
                     'value' => $night_diff
                 ]) );
             }
@@ -522,8 +576,9 @@ class Computation
             # Checks if the Night Diff. has valid Data before appedning it on the Collection.
             if( $night_diff_overlapped > 0 ) {
                 $dtr_payroll_item_collection->push( new DtrPayrollItems([
-                    'item'  => 'night_diff_overlapped',
-                    'value' => $night_diff_overlapped
+                    'item'  => get_constant('PAYROLL_ITEMS.night_diff'),
+                    'value' => $night_diff_overlapped,
+                    'tag'   => get_constant('PAYROLL_ITEM_TAGS.overlapped')
                 ]) );
             }
 
@@ -535,13 +590,180 @@ class Computation
         }
     }
 
+    
+
+    /**
+     *  Responsible for Computing the Rendered Hours of the current DTR Instance.
+     *  - Break Time will be deducted from Rendered Hours.
+     *  Rendered Hours             - The computed Rendered Hours for the current Day of the DTR.
+     *  Rendered Hours Overlapped  - The computed Rendered Hours for the next Day of the DTR.
+     *   
+     * @return Collection $dtr_payroll_item_collection (DtrPayrollItem)
+     */
+    private function compute_rendered_time(){
+        try{    
+
+            $dtr_payroll_item_collection = new Collection();
+            $rendered_hours = 0;
+            $rendered_hours_overlapped = 0;
+            
+            # If the DTR has NO Overlapped Time Logs AND Actual Time Start and End is within the same Date.
+            if( ! $this->dtr->hasOverlappedTimeLogs() &&
+                timestamp_to_date( $this->actual_time_start_datetime ) ==  timestamp_to_date( $this->actual_time_end_datetime ) ) {
+                
+                # Gets the Rendered hours by adding the 1st Half (Start Time to Break Time Start) and the 2nd Half (Break Time End to End Time);
+                #   Ex. (7AM - 11AM) + (12PM - 4PM) = 8 Hrs.
+                
+                $rendered_hours = ( $this->break_start_datetime - $this->actual_time_start_datetime ) + ( $this->actual_time_end_datetime - $this->break_end_datetime );
+                
+            } else {
+
+                /**
+                 *   Compute for Rendered Hours and Overlapped
+                 */
+
+                # Discern if the Actual Time Start-Datetime is BEFORE the 12AM of the Next Day, compute for Rendered Hours and Rendered Hours Overlapped.
+                if( $this->actual_time_start_datetime < add_days_to_timestamp( $this->dtr->date, 1) ) { 
+                    
+                    # Gets the Rendered Hours for the Day 1 of the DTR. (Actual Start Datetime to Day 2 12AM)
+                    $rendered_hours = add_days_to_timestamp( $this->dtr->date, 1) - $this->actual_time_start_datetime;
+
+                    # Gets the Rendered Hours for the Day 2 of the DTR. (Day 2 12AM to Actual End Datetime)
+                    $rendered_hours_overlapped = $this->actual_time_end_datetime - add_days_to_timestamp( $this->dtr->date, 1);
+
+                # Discern if the Actual Time Start-Datetime is BEYOND the 12AM of the Next Day, compute for Rendered Hours Overlapped only.
+                } else {
+
+                    # Gets the Rendered Hours for the Day 2 of the DTR. (Actual Start Datetime to Actual End Datetime)
+                    $rendered_hours_overlapped = $this->actual_time_end_datetime - $this->actual_time_start_datetime;
+                }
+
+                /**
+                 *   Deduct the Breaktime from Rendered Hours and Overlapped.
+                 */
+
+                # If the Break Start and End Date is NOT the same day, compute for Night Diff. Break Time for the Rendered Hours and Rendered Hours Overlapped.
+                if( timestamp_to_date( $this->break_start_datetime ) != timestamp_to_date( $this->break_end_datetime )) {
+                            
+                    # Deduct the computed Break Times respectively.
+                    $rendered_hours             -= add_days_to_timestamp( $this->dtr->date, 1) - $this->break_start_datetime;
+                    $rendered_hours_overlapped  -= $this->break_end_datetime - add_days_to_timestamp( $this->dtr->date, 1);
+
+                # If the Break Start and End Date is the same day, compute for Rendered Hours Break Time and deduct it on the correct Date.
+                # Break Start-Datetime will represent the Break Date.
+                }else{
+
+                    # Gets the total Break Time.
+                    $rendered_hours_break_time = $this->break_end_datetime - $this->break_start_datetime;
+
+                    # If the DTR has Overlapped Time Logs AND Time-Out has the SAME DAY from the Break Date, deduct it from the Rendered Hours Overlapped (Day 2)
+                    if( $this->dtr->hasOverlappedTimeLogs() &&
+                            timestamp_to_date( $this->dtr->time_out ) == timestamp_to_date( $this->break_start_datetime ) ) {
+                        $rendered_hours_overlapped  -= $rendered_hours_break_time;
+
+                    # If the Time-In has the SAME DAY from the Break Date, deduct it from the Rendered Hours. (Day 1)
+                    }elseif( timestamp_to_date( $this->dtr->time_in ) == timestamp_to_date( $this->break_start_datetime ) ) {
+                        $rendered_hours -= $rendered_hours_break_time;
+                    }
+
+                }
+
+            }
+            
+            // dd( seconds_to_time( $rendered_hours ), seconds_to_time( $rendered_hours_overlapped ) );
+
+            # Double checks the Validity of the Computed Rendered Hours. If not valid, set it to Default value (0)
+            # 1. If Rendered Hours is LESS THAN 0 (Negative values)
+            # 2. If Rendered Hours is GREATHER THAN 8 hours.
+            if( $rendered_hours < 0 || $rendered_hours > get_constant('TIMESTAMP.eight_hours') ){
+                $rendered_hours = 0;
+            }
+            
+            # Double checks the Validity of the Computed Rendered Hours Overlapped. If not valid, set it to Default value (0)
+            # 1. If Rendered Hours Overlapped is LESS THAN 0 (Negative values)
+            # 2. If Rendered Hours Overlapped is GREATHER THAN 8 hours.
+            if( $rendered_hours_overlapped < 0 || $rendered_hours_overlapped > get_constant('TIMESTAMP.eight_hours') ){
+                $rendered_hours_overlapped = 0;
+            }
+
+
+            # Checks if the Rendered Hours has valid Data before appedning it on the Collection.
+            if( $rendered_hours > 0 ) {
+                $dtr_payroll_item_collection->push( new DtrPayrollItems([
+                    'item'  => get_constant('PAYROLL_ITEMS.rendered_hours'),
+                    'value' => $rendered_hours
+                ]) );
+            }
+
+            # Checks if the Rendered Hours Overlapped has valid Data before appedning it on the Collection.
+            if( $rendered_hours_overlapped > 0 ) {
+                $dtr_payroll_item_collection->push( new DtrPayrollItems([
+                    'item'  => get_constant('PAYROLL_ITEMS.rendered_hours'),
+                    'value' => $rendered_hours_overlapped,
+                    'tag'   => get_constant('PAYROLL_ITEM_TAGS.overlapped')
+                ]) );
+            }
+
+            return $dtr_payroll_item_collection;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+    
+
 
     ###############################################################################################
     ##################################### General functions ####################################
     ###############################################################################################
 
+
+
+    /**
+     *  Responsible for getting the Night Differential Start & End Date base on the $datetime_to_compare Parameter.
+     * 
+     * @param timestamp $datetime_to_compare
+     * @return array $night_diff_datetime;
+     */
+    private function get_night_diff_datetime( $datetime_to_compare ){
+        
+        $night_diff_datetime['start_datetime'] = 0;
+        $night_diff_datetime['end_datetime'] = 0;
+
+        /**
+         *      Night Diff. Time Duration 10PM - 6AM
+         */
+
+        # If the Date to compare is after the Date @ 6AM, set the Night Diff. for later until tomorrow. (10PM - 6AM)
+        if( add_time_to_timestamp( $this->dtr->date, get_constant('PAYROLL_NIGHT_DIFF_TIME.end') ) < $datetime_to_compare ){
+
+            # Sets the Date's start of Night Diff. Time (10PM of the current date.)
+            $night_diff_datetime['start_datetime']    = add_time_to_timestamp( $this->dtr->date, get_constant('PAYROLL_NIGHT_DIFF_TIME.start') );   
+
+            # Sets the Date's End of Night Diff. Time (6AM of the next day.)
+            $night_diff_datetime['end_datetime']      = add_time_to_timestamp( add_days_to_timestamp( $this->dtr->date, 1 ) , get_constant('PAYROLL_NIGHT_DIFF_TIME.end') );
+
+        # If the Date to compare is before the Date @ 6AM, set the Night Diff. for yesterday until today. (10PM - 6AM)
+        }else{
+
+            # Sets the Date's start of Night Diff. Time (10PM of the date yesterday.)
+            $night_diff_datetime['start_datetime']    = add_time_to_timestamp( subtract_days_from_timestamp( $this->dtr->date, 1 ) , get_constant('PAYROLL_NIGHT_DIFF_TIME.start') );   
+
+            # Sets the Date's End of Night Diff. Time (6AM of the current day.)
+            $night_diff_datetime['end_datetime']      = add_time_to_timestamp( $this->dtr->date, get_constant('PAYROLL_NIGHT_DIFF_TIME.end') );   
+
+        }
+
+        return $night_diff_datetime;
+    }
+
+
     /**
      *  A general function responsible for getting the Night Diff. Range with the Given Parameters.
+     * 
+     * @param array $parameters
+     * @return timestamp $total_night_diff;
      */
     private function get_total_night_diff( $parameters ){
 
@@ -591,6 +813,8 @@ class Computation
 
         return $total_night_diff;
     }
+
+
 
     ###############################################################################################
     ##################################### Validation functions ####################################
