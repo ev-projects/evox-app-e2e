@@ -42,14 +42,20 @@ return [
     ],
     
 
-    'PAYROLL_ITEM_DATA_TYPE' => [
-        'TIME' => [
-            "late",
-            "undertime",
-            "night_differential",
-            "overtime",
-        ]
+    'PAYROLL_ITEMS' => [
+        "late" => "late" ,
+        "undertime" => "undertime" ,
+        "night_diff" => "night_diff" ,
+        "overtime" => "overtime" ,
+        "rendered_hours" => "rendered_hours"
     ],
+
+    'PAYROLL_ITEM_TAGS' => [
+        "regular" => "regular",
+        "overlapped" => "overlapped"
+    ],
+
+
 
     'ATTENDANCE_STATUS' => [
         "absent"    => "Absent",
