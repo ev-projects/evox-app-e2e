@@ -115,6 +115,41 @@ class DtrFormatter {
         
     }
 
+    /** Display the regular and previous day */
+    displayOverlap(payroll_policies){ 
+        if(payroll_policies!=undefined){
+            var regular =  0;
+            var overlapped =  0;
+
+            if(payroll_policies.night_diff!=undefined){
+                regular = this.convertToSeconds(payroll_policies.night_diff);
+            }
+
+            if(payroll_policies.night_diff!=undefined){
+                overlapped = this.convertToSeconds(payroll_policies.night_diff_overlapped);
+            }
+
+            var total = regular + overlapped;
+            return this.formatSeconds(total)    ;
+        }
+        return '';
+    }
+
+    /** Convert 00:00:00 to seconds */
+    convertToSeconds(time){
+        var his = time;   // your input string
+        var a = his.split(':'); // split it at the colons
+        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+        return seconds;
+    }
+
+    /** Convert Seconds to 00:00:00  */
+    formatSeconds(seconds){
+        var date = new Date(1970,0,1);
+        date.setSeconds(seconds);
+        return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
+    }
+
 }
 
 export default new DtrFormatter();
