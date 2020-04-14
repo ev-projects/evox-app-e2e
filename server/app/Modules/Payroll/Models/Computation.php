@@ -615,7 +615,7 @@ class Computation
                 #   Ex. (7AM - 11AM) + (12PM - 4PM) = 8 Hrs.
                 
                 $rendered_hours = ( $this->break_start_datetime - $this->actual_time_start_datetime ) + ( $this->actual_time_end_datetime - $this->break_end_datetime );
-                
+
             } else {
 
                 /**
@@ -674,15 +674,15 @@ class Computation
 
             # Double checks the Validity of the Computed Rendered Hours. If not valid, set it to Default value (0)
             # 1. If Rendered Hours is LESS THAN 0 (Negative values)
-            # 2. If Rendered Hours is GREATHER THAN 8 hours.
-            if( $rendered_hours < 0 || $rendered_hours > get_constant('TIMESTAMP.eight_hours') ){
+            # 2. If Rendered Hours is GREATHER THAN the Required Time.
+            if( $rendered_hours < 0 || $rendered_hours > $this->dtr->getRequiredTime() ){
                 $rendered_hours = 0;
             }
             
             # Double checks the Validity of the Computed Rendered Hours Overlapped. If not valid, set it to Default value (0)
             # 1. If Rendered Hours Overlapped is LESS THAN 0 (Negative values)
-            # 2. If Rendered Hours Overlapped is GREATHER THAN 8 hours.
-            if( $rendered_hours_overlapped < 0 || $rendered_hours_overlapped > get_constant('TIMESTAMP.eight_hours') ){
+            # 2. If Rendered Hours Overlapped is GREATHER THAN the Required Time.
+            if( $rendered_hours_overlapped < 0 || $rendered_hours > $this->dtr->getRequiredTime() ){
                 $rendered_hours_overlapped = 0;
             }
 
