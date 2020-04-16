@@ -46,13 +46,21 @@ return [
         "late" => "late" ,
         "undertime" => "undertime" ,
         "night_diff" => "night_diff" ,
-        "overtime" => "overtime" ,
+        "overtime" => "overtime",
+        "overtime_night_diff" => "overtime_night_diff",
         "rendered_hours" => "rendered_hours"
     ],
 
     'PAYROLL_ITEM_TAGS' => [
         "regular" => "regular",
-        "overlapped" => "overlapped"
+        "overlapped" => "overlapped",
+        "underlapped" => "underlapped",
+    ],
+
+
+    'OVERTIME_TYPE' => [
+        "pre" => "pre_overtime",
+        "post" => "post_overtime"
     ],
 
 
