@@ -10,6 +10,8 @@ interface DtrRepositoryInterface
 {
     public function generate_dtr( Collection $user_collection, array $date_array );
 
+    public function generate_dtrsummary( $user_id, string $start_date, string $end_date );
+
     public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
 
     public function bind_holidays_to_dtr( string $start_date, string $end_date );

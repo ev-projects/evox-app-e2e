@@ -24,3 +24,13 @@ Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], fu
     Route::get('/insert_time_in_out/{dtr_id}/{time_in}/{time_out}', 'DtrController@insert_time_in_and_out');//->middleware('auth.apikey');
 
 });
+
+# API Call for DTR Summary
+Route::group(['prefix' => 'dtr_summary', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the DTR Summary of the User indicated.
+    Route::get('/{user_id}/{start_date}/{end_date}', 'DtrController@dtr_summary');
+
+});
+
+

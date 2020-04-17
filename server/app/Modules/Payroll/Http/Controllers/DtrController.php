@@ -5,25 +5,19 @@ namespace App\Modules\Payroll\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Models\Dtr;
-use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\User\Models\User;
-use App\Modules\User\Repositories\UserRepositoryInterface;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DtrController extends Controller
 {    
-    protected $dtr;
-
-    public function __construct(DtrRepositoryInterface $dtr, UserRepositoryInterface $user){
+    private $dtr;
+    public function __construct(DtrRepositoryInterface $dtr){
         $this->dtr = $dtr;
     }
-
-
 
     /**
      * Returns the Daily Time Record of the User by the User ID as Parameter
@@ -34,7 +28,6 @@ class DtrController extends Controller
      */
     public function daily_time_record( $user_id, $start_date, $end_date ){   
         try {
-
             $this->validate(new Request([
                 'user_id' => $user_id,
                 'start_date' => $start_date,
@@ -65,6 +58,29 @@ class DtrController extends Controller
 
     
 
+    public function dtr_summary( $user_id, $start_date, $end_date ){
+        try {
+            $this->validate(new Request([
+                'user_id' => $user_id,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ]), [
+                'user_id' => 'int',
+                'start_date' => 'date_format:Y-m-d',
+                'end_date' => 'date_format:Y-m-d',
+            ]);
+            
+ 
+            return $this->dtr->generate_dtrsummary($user_id,$start_date,$end_date);
+            
+            // return success_response(
+            //     trans('messages.'.__FUNCTION__.'_success'), 
+            //     DtrResource::collection( $user->dtr($start_date, $end_date)->get() ) 
+            // );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
 
     /**
      * Returns the Daily Time Record of the User by the User ID as Parameter

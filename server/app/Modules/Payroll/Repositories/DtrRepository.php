@@ -5,6 +5,7 @@ namespace App\Modules\Payroll\Repositories;
 use App\Modules\Payroll\Models\Biometrics;
 use App\Modules\Payroll\Models\Computation;
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Payroll\Models\Holiday;
 use App\Modules\Schedule\Models\Schedule;
@@ -19,7 +20,16 @@ class DtrRepository implements DtrRepositoryInterface{
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
+    public function generate_dtrsummary( $user_id, string $start_date, string $end_date ){
 
+    
+        $user = auth()->user()->supervisee()->findOrFail( $user_id );
+        $dtr = $user->dtr($start_date, $end_date)->get();
+
+        $summary = new DtrSummary($dtr);
+
+        return $summary->get_summary();
+    }
     /**
      *  Responsible for Generating DTR for set of Users with the given date/dates
      * @param array (Post Variables) $data

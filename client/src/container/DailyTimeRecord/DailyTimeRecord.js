@@ -47,7 +47,7 @@ class DailyTimeRecord extends Component {
                           <td><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
                           <td>{dtr?.payroll_items?.regular?.late}</td>
                           <td>{dtr?.payroll_items?.regular?.undertime}</td>
-                          <td>{DtrFormatter.displayOverlap(dtr?.payroll_items?.regular)}</td>
+                          <td></td>
                           <td>{dtr?.payroll_items?.regular?.overtime}</td>
                           </tr>
                     })}

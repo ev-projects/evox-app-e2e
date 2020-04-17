@@ -326,4 +326,13 @@ class Dtr extends Model
             'date' => timestamp_to_date( subtract_days_from_timestamp( $this->date, 1 ) )
         ]);
     }
+
+    /**
+     * hasOne Relationship for Next Dtr Model
+     */
+    public function next_dtr(){
+        return $this->hasOne(Dtr::class, 'user_id', 'user_id')->where([
+            'date' => timestamp_to_date( add_days_to_timestamp( $this->date, 1 ) )
+        ]);
+    }
 }
