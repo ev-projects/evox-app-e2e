@@ -633,13 +633,13 @@ class Computation
              *  These are the Test Data for Overtime since Overtime is being submitted through request which is not yet existing.
              */
                 // Test day for Pre-Overtime: 
-                $overtime_type = get_constant('OVERTIME_TYPE.pre');
-                $overtime_amount = $this->actual_time_start_datetime - $this->dtr->time_in;
+                // $overtime_type = get_constant('OVERTIME_TYPE.pre');
+                // $overtime_amount = $this->actual_time_start_datetime - $this->dtr->time_in;
                 // $overtime_amount = 2*3600;
 
                 // Test data for Post-Overtime:
-                // $overtime_type = get_constant('OVERTIME_TYPE.post');
-                // $overtime_amount = $this->dtr->time_out - $this->actual_time_end_datetime;
+                $overtime_type = get_constant('OVERTIME_TYPE.post');
+                $overtime_amount = $this->dtr->time_out - $this->actual_time_end_datetime;
                 // $overtime_amount = 1*3600;
             /** */
 
