@@ -70,13 +70,11 @@ class DtrController extends Controller
                 'end_date' => 'date_format:Y-m-d',
             ]);
             
- 
-            return $this->dtr->generate_dtrsummary($user_id,$start_date,$end_date);
             
-            // return success_response(
-            //     trans('messages.'.__FUNCTION__.'_success'), 
-            //     DtrResource::collection( $user->dtr($start_date, $end_date)->get() ) 
-            // );
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $this->dtr->generate_dtrsummary($user_id,$start_date,$end_date)  
+            );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

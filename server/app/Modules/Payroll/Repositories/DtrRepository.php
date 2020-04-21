@@ -21,13 +21,12 @@ class DtrRepository implements DtrRepositoryInterface{
     ###################################### Public functions #######################################
     ###############################################################################################
     public function generate_dtrsummary( $user_id, string $start_date, string $end_date ){
-
-    
+        # Get the DTR of the user
         $user = auth()->user()->supervisee()->findOrFail( $user_id );
         $dtr = $user->dtr($start_date, $end_date)->get();
 
+        # Get the Summary
         $summary = new DtrSummary($dtr);
-
         return $summary->get_summary();
     }
     /**
