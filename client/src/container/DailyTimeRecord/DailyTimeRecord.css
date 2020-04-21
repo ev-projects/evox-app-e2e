@@ -38,6 +38,15 @@ table .center{
 	color : rgba(49, 106, 197, 0.93);
 }
 
+.absent-background-color{
+	background: #f7dbd6 !important;
+}
+
+.holiday-background-color{
+	background: #fff9de !important;
+}
+
+
 .sh,.lh{
 	color: rgb(255, 194, 71) !important; 	
 }

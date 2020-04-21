@@ -7,7 +7,11 @@ import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 const Header = (props) => {
 
     const { user } = props;
-    const name    =  user.first_name + " " + user.last_name;
+    var name = 'Loading...';
+    if(user.first_name!=null&&user.last_name!=null){
+       name =  user.first_name + " " + user.last_name;
+    }
+
     return (
       <div>
         <nav className="main-header navbar navbar-expand navbar-white navbar-light">
@@ -19,11 +23,16 @@ const Header = (props) => {
         </nav>
         <aside className="main-sidebar sidebar-dark-primary elevation-4">
           <a href="/" className="brand-link">
+            <img src="/images/icon.jpg" className="brand-image img-circle elevation-3" alt="User Image"/>
             <span className="brand-text font-weight-light">Evox</span>
           </a>
+
+
+
           <div className="sidebar">
             <div className="user-panel mt-3 pb-3 mb-3 d-flex">
               <div className="image">
+                <img src="/images/Carmela_Garcia.jpg" className="img-circle elevation-2" alt="User Image"/>
               </div>
               <div className="info">
                 <a href="/" className="d-block">{name}</a>

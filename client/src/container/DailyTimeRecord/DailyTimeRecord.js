@@ -23,7 +23,7 @@ class DailyTimeRecord extends Component {
         return (
             <ContainerWrapper>
               <Content col="12" title="Daily Time Record">
-                <Table striped responsive hover>
+                <Table responsive hover>
                     <thead>
                         <tr>
                             <th><i className="fa fa-calendar"></i> Date</th>
@@ -35,6 +35,7 @@ class DailyTimeRecord extends Component {
                             <th><i className="fa fa-hourglass-start"></i> Undertime</th>
                             <th><i className="fa fa-moon-o"></i> NightDiff</th>
                             <th><i className="fa fa-hourglass"></i> Overtime</th>
+                            <th><i className="fa fa-hourglass"></i> OT w/ Nightdiff</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,6 +50,7 @@ class DailyTimeRecord extends Component {
                           <td>{dtr?.payroll_items?.undertime}</td>
                           <td>{dtr?.payroll_items?.night_diff}</td>
                           <td>{dtr?.payroll_items?.overtime}</td>
+                          <td>{dtr?.payroll_items?.overtime_night_diff}</td>
                           </tr>
                     })}
                     </tbody>
