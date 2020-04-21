@@ -14,7 +14,6 @@ class DtrSummary
 
     function __construct($dtr){
         $this->total = $dtr;
-
     }
 
     public function get_summary(){
@@ -23,53 +22,47 @@ class DtrSummary
             $dtr_model = Dtr::find( $value['id']);
             $current_day_type = null;
             $next_day_type = null;
+            $previous_dtr_model = null;
 
-
-            foreach ($dtr_model->payroll_items()->get() as $payroll_item) {
-                
+            $payroll_items = $dtr_model->payroll_items()->get() ;
+            foreach ($payroll_items as $payroll_item) {
                  # If the Item is undertime and Late
                  if($payroll_item['undertime']||$payroll_item['late']){
-                    $total['reg'][$payroll_item['item']] =  isset($total[$payroll_item['item']])?$total[$payroll_item['item']]+(int) $payroll_item['value']:(int) $payroll_item['value'];
+                    $total['regular'][$payroll_item['item']] =  isset($total[$payroll_item['item']])?$total[$payroll_item['item']]+(int) $payroll_item['value']:(int) $payroll_item['value'];
                     continue;
                  }
-
                  # Separate the dtr that is overlap and that is not
-
                  if($payroll_item['tag']==null){
                     # Get the Holiday 
                     if($current_day_type==null){
-                        $current_day_type = $this->get_holiday_type($dtr_model);
+                        $current_day_type = $dtr_model->get_holiday();
                     }
-
                     $total[$current_day_type][$payroll_item['item']] =  isset($total[$payroll_item['item']])?$total[$payroll_item['item']]+(int) $payroll_item['value']:(int) $payroll_item['value'];
-                 
                  # This condition is for the overlapped
-                 }else{
+                 }elseif ($payroll_item['tag']=='overlapped'){
                     # Get the Next Day Holiday 
                     if($next_day_type==null){
                         $next_dtr_model = Dtr::find($dtr_model->next_dtr()->get()[0]['id']);
-                        $next_day_type = $this->get_holiday_type($next_dtr_model);
+                        $next_day_type = $next_dtr_model->get_holiday();
                     }
-
-
                     $total[$next_day_type][$payroll_item['item']] =  isset($total[$payroll_item['item']])?$total[$payroll_item['item']]+(int) $payroll_item['value']:(int) $payroll_item['value'];
+                 
+                 }elseif ($payroll_item['tag']=='underlapped'){
+                    # Get the Next Day Holiday 
+                    if($previous_dtr_model==null){
+                        $previous_dtr_model = Dtr::find($dtr_model->previous_dtr()->get()[0]['id']);
+                        $previous_dtr_model = $previous_dtr_model->get_holiday();
+                    }
+                    $total[$previous_dtr_model][$payroll_item['item']] =  isset($total[$payroll_item['item']])?$total[$payroll_item['item']]+(int) $payroll_item['value']:(int) $payroll_item['value'];
                  }
-
             }
         }
-            return $total;
-
+        
+    # Reduction of nightdifferential to rendered hours
+    foreach ($total as  $key => $value) {
+        $total[$key]['rendered_hours'] = $total[$key]['rendered_hours'] - $total[$key]['night_diff'];
     }
-
-
-    public function get_holiday_type($dtr_model){
-        $holidays = $dtr_model->holidays()->get();
-        if(count($holidays)>0){
-            $type = $holidays[0]["type"];
-        }else{
-            $type = 'reg';
-        }     
-        return $type;         
+        return $total;
     }
 
 }

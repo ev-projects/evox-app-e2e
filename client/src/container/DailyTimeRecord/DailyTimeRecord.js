@@ -45,10 +45,10 @@ class DailyTimeRecord extends Component {
                           <td><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
                           <td><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
                           <td><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
-                          <td>{dtr?.payroll_items?.regular?.late}</td>
-                          <td>{dtr?.payroll_items?.regular?.undertime}</td>
-                          <td></td>
-                          <td>{dtr?.payroll_items?.regular?.overtime}</td>
+                          <td>{dtr?.payroll_items?.late}</td>
+                          <td>{dtr?.payroll_items?.undertime}</td>
+                          <td>{dtr?.payroll_items?.night_diff}</td>
+                          <td>{dtr?.payroll_items?.overtime}</td>
                           </tr>
                     })}
                     </tbody>

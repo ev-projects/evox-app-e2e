@@ -63,7 +63,12 @@ return [
         "post" => "post_overtime"
     ],
 
-
+    'DTR_TYPE' => [
+        "reg" => "regular",
+        "rest_day" => "rest_day",
+        "lh" => "legal_holiday",
+        "sh" => "special_holiday"
+    ],
 
     'ATTENDANCE_STATUS' => [
         "absent"    => "Absent",

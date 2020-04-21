@@ -335,4 +335,20 @@ class Dtr extends Model
             'date' => timestamp_to_date( add_days_to_timestamp( $this->date, 1 ) )
         ]);
     }
+
+    /**
+     * hasOne Relationship for Next Dtr Model
+     */
+    public function get_holiday(){
+        $dtr_Type = get_constant("DTR_TYPE");
+
+        $holidays = $this->holidays()->get();
+        if(count($holidays)>0){
+            $type = $dtr_Type[$holidays[0]["type"]];
+        }else{
+            $type = $dtr_Type['reg'];
+        }     
+        return $type;
+    }
+
 }

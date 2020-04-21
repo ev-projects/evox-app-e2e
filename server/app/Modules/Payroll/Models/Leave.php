@@ -81,5 +81,4 @@ class Leave extends Model
     {
         return ( ! in_array( $this->type, get_constant("UNPAID_LEAVE_TYPES") ) ) ? true : false;
     }
-
 }
