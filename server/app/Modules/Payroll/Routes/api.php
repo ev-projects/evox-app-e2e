@@ -21,7 +21,7 @@ Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], fu
 
     
     # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
-    Route::get('/insert_time_in_out/{dtr_id}/{time_in}/{time_out}', 'DtrController@insert_time_in_and_out');//->middleware('auth.apikey');
+    Route::get('/insert_time_in_out/{dtr_id}/{time_in}/{time_out}/{is_rest_day}', 'DtrController@insert_time_in_and_out');//->middleware('auth.apikey');
 
 });
 

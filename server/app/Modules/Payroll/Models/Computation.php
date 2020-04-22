@@ -33,23 +33,7 @@ class Computation
 
     private $payroll_items = array();
 
-    function __construct( Dtr $dtr ){
-
-        $this->dtr = $dtr;
-        
-        $this->policies = $dtr->policies()->get();
-
-        $this->leaves = $dtr->leaves()->get();
-
-        $this->holidays = $dtr->holidays()->get();
-
-        $this->set_timeoff();  
-
-        $this->set_expected_work();
-
-        $this->set_break();
-
-        $this->set_actual_time();
+    function __construct(){
     }
 
 
@@ -61,7 +45,31 @@ class Computation
      *  Main function for triggering the Computation of the DTR Instance.
      */
 
-    public function get_computed_payroll_items(){
+    public function get_computed_payroll_items( Dtr $dtr ){
+
+        /**
+         *  Sets all the Variables needed before computation.
+         */
+
+            $this->dtr = $dtr;
+            
+            $this->policies = $dtr->policies()->get();
+
+            $this->leaves = $dtr->leaves()->get();
+
+            $this->holidays = $dtr->holidays()->get();
+
+            $this->set_timeoff();  
+
+            $this->set_expected_work();
+
+            $this->set_break();
+
+            $this->set_actual_time();
+        
+        /**
+         *  Proceed on the Proper computation of the Payroll Items.
+         */
 
         $payroll_items = [];
 
@@ -229,29 +237,6 @@ class Computation
      *  Reponsible for setting the Actual Time Start and End Datetime of the DTR base on the Schedule and the Time Logs.
      */
     private function set_actual_time(){
-
-        // OLD CODE. Double Check for Clean-up. (2020-04-13)
-
-        /** Sets the Actual Time Start-Datetime for computing the Rendered Hours. */ 
-        //     # If the Time-In is BEFORE the Schedule, use DTR's Start-Datetime.
-        //     if( $this->dtr->isTimedInBeforeSchedule() ) {
-        //         $this->actual_time_start_datetime = $this->dtr->start_datetime;
-        //     # If the Time-In is BETWEEN or AFTER the Schedule , use DTR's Time-In.
-        //     } elseif( $this->dtr->isTimedInBetweenSchedule() || $this->dtr->isTimedInAfterSchedule() ) {
-        //         $this->actual_time_start_datetime = $this->dtr->time_in;
-        //     } 
-        // /** Sets the Actual Time End-Datetime for computing the Rendered Hours. */ 
-        //     # If the Time-Out is BEFORE the Schedule OR BETWEEN the Schedule and DTR is a FLEXIBLE Schedule, use DTR's Time-Out.
-        //     if( $this->dtr->isTimedOutBeforeSchedule() ||
-        //         ($this->dtr->isTimedOutBetweenSchedule() && $this->dtr->hasFlexibleSchedule()) ) {
-        //         $this->actual_time_end_datetime = $this->dtr->time_out;
-        //     # If the Time-Out is AFTER the Schedule and DTR is a STANDARD Schedule, use DTR's End-Datetime.
-        //     } elseif( $this->dtr->isTimedOutAfterSchedule() && !$this->dtr->hasFlexibleSchedule() ) { 
-        //         $this->actual_time_end_datetime = $this->dtr->end_datetime;
-        //     # If the Time-Out is AFTER the Schedule and DTR is a FLEXIBLE Schedule, use DTR's End-Flexy-Datetime.
-        //     } elseif( $this->dtr->isTimedOutAfterSchedule() && $this->dtr->hasFlexibleSchedule() ) { 
-        //         $this->actual_time_end_datetime = $this->dtr->end_flexy_datetime;
-        //     }
 
         /** Sets the Actual Time Start-Datetime for computing the Rendered Hours. */ 
 
@@ -1001,7 +986,7 @@ class Computation
 
 
     ###############################################################################################
-    ##################################### General functions ####################################
+    ####################################### General functions #####################################
     ###############################################################################################
 
 

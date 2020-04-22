@@ -77,8 +77,17 @@ if (! function_exists('seconds_to_time')) {
     function seconds_to_time( $seconds = 0, $is_complete_date_format=false ) 
     {
         try {
-            $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
-            return date($date_format, strtotime('today') + $seconds);
+            # If the Seconds are less than equal the Timestamp of a Day (86,400), format by default proceedure.
+            if( $seconds <= get_constant('TIMESTAMP.day') ) {
+                $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
+                return date($date_format, strtotime('today') + $seconds);
+                
+            # If the Seconds are greater than the Timestamp of the Day (86,400), Format the Time in another way.
+            } else {
+                $separator = ':';
+                $end_seconds =( $is_complete_date_format ) ? $separator . ($seconds%60) : '';
+                return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds/60)%60) . $end_seconds;
+            }
         }catch(Exception $e){
             throw $e;
         }

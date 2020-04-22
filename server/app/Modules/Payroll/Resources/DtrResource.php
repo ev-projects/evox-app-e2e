@@ -21,12 +21,15 @@ class DtrResource extends JsonResource
             # Create Resource for Payroll Items
             $payroll_items = [];
             foreach( $this->payroll_items()->get() as  $key => $payroll_item){
-                $tag = ( $payroll_item->tag == null ) ? get_constant('PAYROLL_ITEM_TAGS.regular') : $payroll_item->tag;
+                
                 if(isset($payroll_items[ $payroll_item->item ])){
-                $payroll_items[ $payroll_item->item ] += $payroll_item->value;
+                    $payroll_items[ $payroll_item->item ] += $payroll_item->value;
                 }else{
-                $payroll_items[ $payroll_item->item] = $payroll_item->value;
+                    $payroll_items[ $payroll_item->item] = $payroll_item->value;
                 }
+
+                // $tag = ( $payroll_item->tag == null ) ? get_constant('PAYROLL_ITEM_TAGS.regular') : $payroll_item->tag;
+                // $payroll_items[$tag][ $payroll_item->item ] = seconds_to_time($payroll_item->value,true);
             }
 
             foreach( $payroll_items as  $key => $value){
