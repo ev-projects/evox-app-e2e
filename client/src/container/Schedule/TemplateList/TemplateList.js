@@ -11,6 +11,7 @@ import { listTemplate,deleteSchedule } from '../../../store/actions/scheduleActi
 import Formatter from '../../../services/Formatter'
 
 import { ContainerHeader,Content,ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
+import PageLoading from "../../PageLoading";
 
 class Schedule extends Component {    
   state = { modal_bool:false, modal_name: '', modal_id : '',index : null }
@@ -56,7 +57,7 @@ class Schedule extends Component {
                 ;
     }
 
-    return <div>TEST</div>
+    return <PageLoading/>
   }
 }
 
