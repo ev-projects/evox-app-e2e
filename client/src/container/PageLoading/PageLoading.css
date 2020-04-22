@@ -6,11 +6,6 @@
         background-position: 468px 0
     }
 }
-
-.header-loader{
-    width: 200px;
-}
-
 .linear-background {
     animation-duration: 1s;
     animation-fill-mode: forwards;
@@ -23,4 +18,5 @@
     height: 40px;
     position: relative;
     overflow: hidden;
+    margin-bottom: 20px;
 }

@@ -9,6 +9,9 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleType,Workdays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 import PageNotFound from "../../PageNotFound";
+import PageLoading from "../../PageLoading";
+import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
+
 import Formatter from '../../../services/Formatter';
 import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } from '../../../store/actions/scheduleActions';
 
@@ -37,7 +40,6 @@ class AssignDefault extends Component {
   }
 
   render = () => {
-
   if( this.props.page_reloaded ){   
     console.log(this.props);
     var templateList = this.props.template_list;
@@ -108,7 +110,7 @@ class AssignDefault extends Component {
       work_days:work_day 
     }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}> 
-    <Container> 
+    <ContainerWrapper> 
     <Col sm={7}>
       <div>
       <Form.Group className="white_bg">
@@ -372,16 +374,18 @@ class AssignDefault extends Component {
           </Form.Group>
         </Col>
      ) : null}
-    <Button variant="primary" type="submit">
-      Create
-    </Button>
-  </Container>
+    <Col sm={7}>
+      <Button variant="primary" type="submit">
+        Create
+      </Button>
+    </Col>
+  </ContainerWrapper>
   </form>
   )}
  
   </Formik>;
     }
-    return <PageNotFound/>;
+    return <PageLoading/>;
    
   }
 }

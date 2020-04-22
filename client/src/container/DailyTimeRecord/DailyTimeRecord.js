@@ -8,6 +8,7 @@ import { Container,Row,Col,Table,Image,Card,Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import DtrFormatter from '../../services/DtrFormatter';
 import { ContainerHeader,Content,ContainerWrapper } from '../../components/GridComponent/AdminLte.js';
+import PageLoading from "../PageLoading";
 
 class DailyTimeRecord extends Component {
     constructor(props){
@@ -59,7 +60,7 @@ class DailyTimeRecord extends Component {
             </ContainerWrapper>          
         );
         }
-        return <div></div>;
+        return <PageLoading/>;
     }
 };
 

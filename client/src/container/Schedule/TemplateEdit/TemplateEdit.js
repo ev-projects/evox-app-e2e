@@ -10,7 +10,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { updateSchedule, getTemplateSchedule, getDefaultSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
 import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, Workdays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
+
 import PageNotFound from "../../PageNotFound";
+import PageLoading from "../../PageLoading";
 
 class Schedule extends Component {    
   state = {}
@@ -76,7 +79,7 @@ class Schedule extends Component {
       work_days: work_days 
     }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
     <form onSubmit={handleSubmit}> 
-    <Container> 
+    <ContainerWrapper> 
     <Col sm={7} >
       <Form.Group className="white_bg">
         <div className="header">
@@ -231,16 +234,18 @@ class Schedule extends Component {
           </Form.Group>
         </Col>
      ) : null}
-    <Button variant="primary" type="submit">
-      Create
-    </Button>
-  </Container>
+    <Col sm={7}>
+      <Button variant="primary" type="submit">
+        Create
+      </Button>
+    </Col>
+  </ContainerWrapper>
   </form>
   )}
   </Formik>;
   }
 
-  return <PageNotFound/>;
+  return <PageLoading/>;
   }
 
 

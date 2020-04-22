@@ -24,7 +24,7 @@ const Header = (props) => {
         <aside className="main-sidebar sidebar-dark-primary elevation-4">
           <a href="/" className="brand-link">
             <img src="/images/icon.jpg" className="brand-image img-circle elevation-3" alt="User Image"/>
-            <span className="brand-text font-weight-light">Evox</span>
+            <span className="brand-text font-weight-light">EVOX</span>
           </a>
 
 

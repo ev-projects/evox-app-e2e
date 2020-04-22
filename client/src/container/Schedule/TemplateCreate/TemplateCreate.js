@@ -9,10 +9,12 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
 import PageNotFound from "../../PageNotFound";
+
 import { addTemplateSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
 import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, Workdays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 
+import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 
 
 class Schedule extends Component {    
@@ -36,7 +38,7 @@ class Schedule extends Component {
     initialValues={{sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}}
     ,name : '',std_schedule_details: [],flx_schedule_details: [],cst_schedule_details: [], source_type: 'template',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0}, schedule_type : '', work_days: [] }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}> 
-    <Container> 
+    <ContainerWrapper> 
     <Col sm={7} >
       <Form.Group className="white_bg">
         <div className="header">
@@ -191,10 +193,12 @@ class Schedule extends Component {
           </Form.Group>
         </Col>
      ) : null}
-    <Button variant="primary" type="submit">
-      Create
-    </Button>
-  </Container>
+    <Col sm={7}>
+      <Button variant="primary" type="submit">
+        Create
+      </Button>
+    </Col>
+  </ContainerWrapper>
   </form>
   )}
   </Formik>;
