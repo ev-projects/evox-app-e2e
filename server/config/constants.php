@@ -64,11 +64,25 @@ return [
     ],
 
     'DTR_TYPE' => [
-        "reg" => "regular",
-        "rest_day" => "rest_day",
-        "lh" => "legal_holiday",
-        "sh" => "special_holiday"
+        "regular" => "reg",
+        "rest_day" => "rd",
+        "holiday" => [
+            "legal" => "lh",
+            "double_legal" => "dlh",
+            "special" => "sh",
+            "double_special" => "dsh",
+            "special_legal" => "slh"
+        ]
     ],
+
+
+    'DTR_SOURCE_TYPE_TAGGING' => [
+        "default" => "default",
+        "temporary" => "temporary",
+        "change_schedule" => "change_schedule",
+        "rest_day_work" => "rest_day_work",
+    ],
+
 
     'ATTENDANCE_STATUS' => [
         "absent"    => "Absent",

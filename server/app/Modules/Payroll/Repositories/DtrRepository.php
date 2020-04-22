@@ -17,18 +17,16 @@ use Illuminate\Support\Facades\DB;
 
 class DtrRepository implements DtrRepositoryInterface{
     
+    function __construct(){
+        $this->computation = new Computation();
+        $this->dtr_summary = new DtrSummary();
+    }
+
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
-    public function generate_dtrsummary( $user_id, string $start_date, string $end_date ){
-        # Get the DTR of the user
-        $user = auth()->user()->supervisee()->findOrFail( $user_id );
-        $dtr = $user->dtr($start_date, $end_date)->get();
+    
 
-        # Get the Summary
-        $summary = new DtrSummary($dtr);
-        return $summary->get_summary();
-    }
     /**
      *  Responsible for Generating DTR for set of Users with the given date/dates
      * @param array (Post Variables) $data
@@ -488,6 +486,69 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
+    
+
+    /**
+     *  Responsible for Computing the DTR Payroll Items Summary base from the User Collection and the Date Range.
+     * @param Collection $user_collection
+     * @param string $start_date
+     * @param string $end_date
+     * @return array
+     */
+    public function compute_dtr_summary( Collection $user_collection, string $start_date, string $end_date ){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
+        
+        try{
+            
+            $user_dtr_summary = [];
+
+            foreach( $user_collection as $user ) {
+                $user_dtr_summary[ $user->id ] = $this->dtr_summary->get_summary( $user->dtr($start_date, $end_date)->get() );
+            }
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$user_dtr_summary], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            
+            return $user_dtr_summary;
+            
+        } catch (Exception $e) {
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            throw $e;
+        }
+    }
+
+
+    /**
+     *  Responsible for the Computing the Payroll items of the DTR.
+     * @param Dtr $dtr
+     * @return Collection $payroll_items (Payroll Items)
+     */
+    public function compute_payroll_items(Dtr $dtr){
+        DB::beginTransaction();
+        try{
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'dtr' => $dtr], "dtr_computation");
+            
+            $dtr->payroll_items()->delete();
+
+            $payroll_items = $this->computation->get_computed_payroll_items( $dtr );
+
+            $dtr->payroll_items()->saveMany($payroll_items);
+
+            DB::commit();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$payroll_items], "dtr_computation");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_computation");
+            return $payroll_items;
+
+        } catch (Exception $e) {
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_computation");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_computation");
+            throw $e;
+        }
+    }
 
     ###############################################################################################
     ##################################### Protected functions #####################################
@@ -570,38 +631,6 @@ class DtrRepository implements DtrRepositoryInterface{
         } catch (Exception $e) {
             DB::rollback();
             log_error($e);
-            throw $e;
-        }
-    }
-
-
-    
-
-    /**
-     *  Responsible for the Computing the Payroll items of the DTR.
-     * @param Dtr $dtr
-     * @return Collection $payroll_items (Payroll Items)
-     */
-    protected function compute_payroll_items(Dtr $dtr){
-        DB::beginTransaction();
-        try{
-            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'dtr' => $dtr], "dtr_computation");
-            
-            $dtr->payroll_items()->delete();
-
-            $payroll_items = (new Computation( $dtr ))->get_computed_payroll_items();
-            
-            $dtr->payroll_items()->saveMany($payroll_items);
-
-            DB::commit();
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$payroll_items], "dtr_computation");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_computation");
-            return $payroll_items;
-
-        } catch (Exception $e) {
-            log_error($e);
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_computation");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_computation");
             throw $e;
         }
     }

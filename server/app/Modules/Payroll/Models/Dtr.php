@@ -221,7 +221,6 @@ class Dtr extends Model
                 ) ? true : false;
     }
 
-    
 
     /**
      * 
@@ -276,6 +275,68 @@ class Dtr extends Model
     }
 
 
+    /**
+     *  Gets DTR Type of the DTR wether it's a Regular, Rest Day, or Holiday
+     * @return string
+     */
+    public function getDtrType(){
+
+        $type = '';
+
+        $holiday_collection = $this->holidays()->get();
+
+        if( count($holiday_collection) > 0 ){
+
+            foreach( $holiday_collection as $holiday ) {
+                
+                if( is_valid($type) ){
+
+                    switch( $type ) {
+                        case get_constant('DTR_TYPE.holiday.legal'):
+
+                            switch( $holiday->type ){
+                                
+                                case get_constant('DTR_TYPE.holiday.legal'):
+                                    $type = get_constant('DTR_TYPE.holiday.double_legal');
+                                    break;
+
+                                case get_constant('DTR_TYPE.holiday.special'):
+                                    $type = get_constant('DTR_TYPE.holiday.special_legal');
+                                    break;
+                            }
+
+                            break;
+
+                        case get_constant('DTR_TYPE.holiday.special'):
+
+                            switch( $holiday->type ){
+                                
+                                case get_constant('DTR_TYPE.holiday.special'):
+                                    $type = get_constant('DTR_TYPE.holiday.double_special');
+                                    break;
+
+                                case get_constant('DTR_TYPE.holiday.legal'):
+                                    $type = get_constant('DTR_TYPE.holiday.special_legal');
+                                    break;
+                            }
+                            break;
+                    }
+
+                } else {
+                    $type = $holiday->type;
+                }
+            }
+
+        }elseif( $this->is_rest_day && $this->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work') ){
+            $type = get_constant('DTR_TYPE.rest_day');
+
+        }else{
+            $type = get_constant('DTR_TYPE.regular');
+        }     
+        return $type;
+    }
+
+
     ########################################################################
 
     /**
@@ -300,6 +361,25 @@ class Dtr extends Model
      */
     public function payroll_items(){
         return $this->hasMany(DtrPayrollItems::class);
+    }
+    
+    /**
+     * hasMany Relationship for DTR Payroll Items Model that are tagged as Underlapped.
+     */
+    public function underlapped_payroll_items(){
+        return  $this->hasMany(DtrPayrollItems::class)->where([
+            'tag' => get_constant('PAYROLL_ITEM_TAGS.underlapped')
+        ]);
+    }
+
+    
+    /**
+     * hasMany Relationship for DTR Payroll Items Model that are tagged as Overlapped.
+     */
+    public function overlapped_payroll_items(){
+        return  $this->hasMany(DtrPayrollItems::class)->where([
+            'tag' => get_constant('PAYROLL_ITEM_TAGS.overlapped')
+        ]);
     }
 
     /**
@@ -335,20 +415,4 @@ class Dtr extends Model
             'date' => timestamp_to_date( add_days_to_timestamp( $this->date, 1 ) )
         ]);
     }
-
-    /**
-     * hasOne Relationship for Next Dtr Model
-     */
-    public function get_holiday(){
-        $dtr_Type = get_constant("DTR_TYPE");
-
-        $holidays = $this->holidays()->get();
-        if(count($holidays)>0){
-            $type = $dtr_Type[$holidays[0]["type"]];
-        }else{
-            $type = $dtr_Type['reg'];
-        }     
-        return $type;
-    }
-
 }

@@ -46,6 +46,8 @@
             "app/Helpers/parse_helper.php",
             "app/Helpers/rule_helper.php",
             "app/Helpers/schedule_helper.php",
+            "app/Helpers/summary_helper.php",
+            "app/Helpers/user_helper.php",
             "app/Helpers/validator_helper.php"
         ]
     },
