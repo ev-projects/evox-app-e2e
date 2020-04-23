@@ -124,12 +124,15 @@ class DtrSummary
                             # Fetch Previous DTR's Overlapped Payroll Items.
                             $payroll_items_collection = $previous_dtr->overlapped_payroll_items()->get();
 
-                            # Formatting of the Payroll Items fetched.
-                            $grouped_payroll_items_array = grouped_payroll_items( $payroll_items_collection );
+                            if( count($payroll_items_collection) > 0 ) {
+                                
+                                # Formatting of the Payroll Items fetched.
+                                $grouped_payroll_items_array = grouped_payroll_items( $payroll_items_collection );
 
-                            # Computes the Payroll Items and Adds it to the Summary.
-                            $this->compute_payroll_items_to_summary( $dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.overlapped') ] );
-
+                                # Computes the Payroll Items and Adds it to the Summary.
+                                $this->compute_payroll_items_to_summary( $dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.overlapped') ] );
+                            
+                            }
                         }
                     }
 
@@ -142,13 +145,16 @@ class DtrSummary
 
                             # Fetch Next DTR's Underlapped Payroll Items.
                             $payroll_items_collection = $next_dtr->underlapped_payroll_items()->get();  
+                            
+                            if( count($payroll_items_collection) > 0 ) {
 
-                            # Formatting of the Payroll Items fetched.
-                            $grouped_payroll_items_array = grouped_payroll_items( $payroll_items_collection );
+                                # Formatting of the Payroll Items fetched.
+                                $grouped_payroll_items_array = grouped_payroll_items( $payroll_items_collection );
 
-                            # Computes the Payroll Items and Adds it to the Summary.
-                            $this->compute_payroll_items_to_summary( $dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.underlapped') ] );
+                                # Computes the Payroll Items and Adds it to the Summary.
+                                $this->compute_payroll_items_to_summary( $dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.underlapped') ] );
 
+                            }
                         }
                     }
 

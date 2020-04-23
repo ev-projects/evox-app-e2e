@@ -535,8 +535,13 @@ class Computation
                                 timestamp_to_date( $this->dtr->time_out ) == timestamp_to_date( $this->break_start_datetime ) ) {
                             $night_diff_overlapped  -= $night_diff_break_time;
                         
-                        # If the Time-In has the SAME DAY from the Break Date, deduct it from the Night. Diff. (Day 1)
-                        }elseif( timestamp_to_date( $this->dtr->time_in ) == timestamp_to_date( $this->break_start_datetime ) ) {
+                        // # If the Time-In has the SAME DAY from the Break Date, deduct it from the Night. Diff. (Day 1)
+                        // }elseif( timestamp_to_date( $this->dtr->time_in ) == timestamp_to_date( $this->break_start_datetime ) ) {
+                        //     $night_diff -= $night_diff_break_time;
+                        // } 
+                        
+                        # else, deduct it from the Night Diff.
+                        } else {
                             $night_diff -= $night_diff_break_time;
                         }
                     }

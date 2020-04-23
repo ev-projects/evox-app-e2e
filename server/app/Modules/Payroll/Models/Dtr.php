@@ -82,6 +82,18 @@ class Dtr extends Model
     }
 
     /**
+     *  Checks if the current DTR's Time Logs Underlapped from the Previous Day.
+     */
+    public function hasUnderlappedTimeLogs(){
+        return ( $this->hasValidTimelogs() && 
+                 timestamp_to_date( $this->time_in ) == timestamp_to_date( subtract_days_from_timestamp( $this->date, 1 ))
+               ) ? true : false;
+               
+                //  Old Code:
+                //  timestamp_to_date( $this->time_in ) != timestamp_to_date( $this->time_out ) ) ? true : false;
+    }
+
+    /**
      *  Checks if the current DTR's Time Logs overlapped on the Next Day.
      */
     public function hasOverlappedTimeLogs(){
