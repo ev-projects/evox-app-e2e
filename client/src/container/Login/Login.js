@@ -8,7 +8,7 @@ import { Spring } from 'react-spring/renderprops';
 import { Formik } from 'formik';
 import * as yup from "yup";
 
-import "./Login.css";
+import styles from "./Login.css";
 
 class Login extends Component {
 

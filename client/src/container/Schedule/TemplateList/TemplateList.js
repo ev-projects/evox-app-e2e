@@ -10,6 +10,9 @@ import "./TemplateList.css";
 import { listTemplate,deleteSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
 
+import { ContainerHeader,Content,ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
+import PageLoading from "../../PageLoading";
+
 class Schedule extends Component {    
   state = { modal_bool:false, modal_name: '', modal_id : '',index : null }
 
@@ -33,10 +36,8 @@ class Schedule extends Component {
 
   render = () => {
     if(this.props.isTemplateListLoaded){
-      return <div>
-      <Container> 
-        <Col sm={8} >
-        <h1><i class="fa fa-calendar-check-o"></i>  Template Schedule</h1><br/>
+      return <ContainerWrapper>   
+        <Content col="12" title="List of Template Schedules">
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -46,25 +47,17 @@ class Schedule extends Component {
             </tr>
           </thead>
           <tbody>
-        {this.props.templateList.map((day, index) => {
-           return <tr><td>{index + 1}</td> <td>{day.name}</td> <td><Button variant="success" href={`${global.template_list_url}${day.id}`}> <i class="fa fa-edit"></i> Edit </Button>  <Button variant="danger" onClick={ () => this.onSubmitHandler(day,index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
-        })}
-
+            {this.props.templateList.map((day, index) => {
+               return <tr><td>{index + 1}</td> <td>{day.name}</td> <td><Button variant="success" href={`${global.template_list_url}${day.id}`}> <i class="fa fa-edit"></i> Edit </Button>  <Button variant="danger" onClick={ () => this.onSubmitHandler(day,index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
+            })}
             </tbody>
         </Table>
-
-        </Col>
-      </Container> 
-        <Modal show={this.state.modal_bool}>
-        <Modal.Header><h2> Delete Template</h2></Modal.Header>
-        <Modal.Body>Are you sure you want to delete {this.state.modal_name} ?</Modal.Body>
-        <Modal.Footer><Button variant="secondary" onClick={ () => this.toggleModal()}  ><i class="fa fa-close"></i> Close</Button>
-          <Button variant="danger" onClick={ () => this.onDeleteHandler(this.state.modal_id,)} ><i class="fa fa-trash"></i> Delete</Button></Modal.Footer>
-        </Modal>
-      </div>;
+        </Content>
+              </ContainerWrapper>   
+                ;
     }
 
-    return <div>TEST</div>
+    return <PageLoading/>
   }
 }
 

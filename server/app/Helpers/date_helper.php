@@ -71,12 +71,23 @@ if (! function_exists('seconds_to_time')) {
      * This function returns a converted Seconds to Time
      *
      * @param  timestamp seconds
+     * @param  boolean is_complete_date_format
      * @return time time
      */
-    function seconds_to_time( $seconds ) 
+    function seconds_to_time( $seconds = 0, $is_complete_date_format=false ) 
     {
         try {
-            return ( is_valid( $seconds ) ) ? date('H:i', strtotime('today') + $seconds) : null;
+            # If the Seconds are less than equal the Timestamp of a Day (86,400), format by default proceedure.
+            if( $seconds <= get_constant('TIMESTAMP.day') ) {
+                $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
+                return date($date_format, strtotime('today') + $seconds);
+                
+            # If the Seconds are greater than the Timestamp of the Day (86,400), Format the Time in another way.
+            } else {
+                $separator = ':';
+                $end_seconds =( $is_complete_date_format ) ? $separator . ($seconds%60) : '';
+                return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds/60)%60) . $end_seconds;
+            }
         }catch(Exception $e){
             throw $e;
         }
@@ -121,6 +132,23 @@ if (! function_exists('timestamp_to_datetime')) {
     }
 }
 
+if (! function_exists('timestamp_to_date')) {   
+    /**
+     * This function returns a converted Timestamp to Date
+     *
+     * @param  timestamp timestamp
+     * @return datetime
+     */
+    function timestamp_to_date( $timestamp ) 
+    {
+        try {
+            return ( is_valid( $timestamp ) ) ? date('Y-m-d', $timestamp) : null;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
 
 if (! function_exists('merge_date_and_time')) {   
     /**
@@ -156,7 +184,7 @@ if (! function_exists('add_days_to_timestamp')) {
     {
         try {
             return ( ( !is_int($date)      ? strtotime($date) : $date ) + 
-                        (3600*24) * $days
+                        get_constant("TIMESTAMP.day") * $days
                     );
         }catch(Exception $e){
             throw $e;
@@ -177,6 +205,26 @@ if (! function_exists('add_time_to_timestamp')) {
         try {
             return ( ( !is_int($timestamp)      ? strtotime($timestamp) : $timestamp ) + 
                      ( !is_int($time)           ? time_to_seconds($time) : $time )
+                    );
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+if (! function_exists('subtract_days_from_timestamp')) {   
+    /**
+     * This function subtracts a specific amount of Days on a Timestamp.
+     *
+     * @param  date|timestamp $date
+     * @param  int $days 
+     * @return timestamp
+     */
+    function subtract_days_from_timestamp( $date, $days ) 
+    {
+        try {
+            return ( ( !is_int($date)      ? strtotime($date) : $date ) - 
+                        get_constant("TIMESTAMP.day") * $days
                     );
         }catch(Exception $e){
             throw $e;
@@ -217,9 +265,15 @@ if (! function_exists('get_month_date_range')) {
     {
         try {
             $date_range = new Collection;
+            $month_range = [];
 
-            # Gets all the Month between the Date Range.
-            foreach ( CarbonPeriod::create($start_date, '1 month', $end_date)->toArray() as $month){
+            # Gets all the Year-Month between the Date Range.
+            foreach( CarbonPeriod::create($start_date, $end_date)->toArray() as $date ) {
+                $month_range[ $date->format('Y-m') ] = $date->format('Y-m');
+            }
+
+            # Iterate the Year-Month detected between the Date Range.
+            foreach ( $month_range as $month){
 
                 # Sets the First and Last Day of the Iteration Month
                 $first_day = Carbon::parse($month)->startOfMonth();

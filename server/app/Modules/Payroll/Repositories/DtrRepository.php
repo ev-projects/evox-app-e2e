@@ -3,7 +3,10 @@
 namespace App\Modules\Payroll\Repositories;
 
 use App\Modules\Payroll\Models\Biometrics;
+use App\Modules\Payroll\Models\Computation;
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Payroll\Models\DtrSummary;
+use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Payroll\Models\Holiday;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\User\Models\User;
@@ -14,9 +17,15 @@ use Illuminate\Support\Facades\DB;
 
 class DtrRepository implements DtrRepositoryInterface{
     
+    function __construct(){
+        $this->computation = new Computation();
+        $this->dtr_summary = new DtrSummary();
+    }
+
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
+    
 
     /**
      *  Responsible for Generating DTR for set of Users with the given date/dates
@@ -148,7 +157,7 @@ class DtrRepository implements DtrRepositoryInterface{
         DB::beginTransaction();
         try {
 
-            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user'=>$user_or_user_id, 'schedule'=>$schedule ], "dtr");
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user' => $user_or_user_id, 'schedule' => $schedule ], "dtr");
 
             $result = [
                 'updated' => [],
@@ -198,16 +207,26 @@ class DtrRepository implements DtrRepositoryInterface{
                         
                         # Get the Parsed Schedule Detail to Date
                         $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
-        
+                        
                         # Update the DTR properties
-                        $dtr->start_datetime        =  ( is_valid($parsed_schedule_detail['start_datetime']) ) ? $parsed_schedule_detail['start_datetime'] :  $dtr->start_datetime;
-                        $dtr->end_datetime          =  ( is_valid($parsed_schedule_detail['end_datetime']) ) ? $parsed_schedule_detail['end_datetime'] : $dtr->end_datetime;
-                        $dtr->start_flexy_datetime  =  ( is_valid($parsed_schedule_detail['start_flexy_datetime']) ) ? $parsed_schedule_detail['start_flexy_datetime'] : $dtr->start_flexy_datetime;
-                        $dtr->end_flexy_datetime    =  ( is_valid($parsed_schedule_detail['end_flexy_datetime']) ) ? $parsed_schedule_detail['end_flexy_datetime'] : $dtr->end_flexy_datetime;
-                        $dtr->break_time            =  ( is_valid($parsed_schedule_detail['break_time']) ) ? $parsed_schedule_detail['break_time'] : $dtr->break_time;
+                        $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
+                        $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
+                        $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
+                        $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
+                        $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                        
                         $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : $dtr->is_rest_day;
                         $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
                         $dtr->update();
+
+                        # Delete the existing DTR Policies before saving the new ones.
+                        $dtr->policies()->delete();
+
+                        # Save the DTR Policies base on the Schedule Policies.
+                        $this->save_dtr_policies( $dtr, $schedule->schedule_policies()->get() );
+
+                        # Compute for the Items
+                        $this->compute_payroll_items( $dtr );
 
                         $result['updated'][] = $dtr;
                     }
@@ -467,6 +486,69 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
+    
+
+    /**
+     *  Responsible for Computing the DTR Payroll Items Summary base from the User Collection and the Date Range.
+     * @param Collection $user_collection
+     * @param string $start_date
+     * @param string $end_date
+     * @return array
+     */
+    public function compute_dtr_summary( Collection $user_collection, string $start_date, string $end_date ){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
+        
+        try{
+            
+            $user_dtr_summary = [];
+
+            foreach( $user_collection as $user ) {
+                $user_dtr_summary[ $user->id ] = $this->dtr_summary->get_summary( $user->dtr($start_date, $end_date)->get() );
+            }
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$user_dtr_summary], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            
+            return $user_dtr_summary;
+            
+        } catch (Exception $e) {
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            throw $e;
+        }
+    }
+
+
+    /**
+     *  Responsible for the Computing the Payroll items of the DTR.
+     * @param Dtr $dtr
+     * @return Collection $payroll_items (Payroll Items)
+     */
+    public function compute_payroll_items(Dtr $dtr){
+        DB::beginTransaction();
+        try{
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'dtr' => $dtr], "dtr_computation");
+            
+            $dtr->payroll_items()->delete();
+
+            $payroll_items = $this->computation->get_computed_payroll_items( $dtr );
+
+            $dtr->payroll_items()->saveMany($payroll_items);
+
+            DB::commit();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$payroll_items], "dtr_computation");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_computation");
+            return $payroll_items;
+
+        } catch (Exception $e) {
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_computation");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_computation");
+            throw $e;
+        }
+    }
 
     ###############################################################################################
     ##################################### Protected functions #####################################
@@ -522,8 +604,70 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
+    /**
+     *  Responsible for saving the Dtr Policies inherited from the Schedule Policies.
+     * @param Dtr $dtr
+     * @param Collection $schedule_policies_collection (SchedulePolicies)
+     * @return bool
+     */
+    protected function save_dtr_policies(Dtr $dtr, Collection $schedule_policies_collection){
+        DB::beginTransaction();
+        try{
+            $dtr_policies_array = [];
+            
+            # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
+            foreach( $schedule_policies_collection as $schedule_policy ){
+                $dtr_policies_array[ $schedule_policy->policy ] = new DtrPolicy();
+                $dtr_policies_array[ $schedule_policy->policy ]->policy        = $schedule_policy->policy;
+                $dtr_policies_array[ $schedule_policy->policy ]->value         = $schedule_policy->value;
+            }
 
-    //....
+            $dtr->policies()->saveMany( $dtr_policies_array );
+            
+            DB::commit();
+            log_to_file('info', 'Success', [$dtr_policies_array]);
+            return true;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+    ###############################################################################################
+    ##################################### Private functions #####################################
+    ###############################################################################################
+
+
+    /**
+     *  Responsible for fetching the Time-off for the current DTR Instance.
+     *   
+     * @param Dtr $dtr
+     * @param Collection $dtr_leaves_collection (Leave)
+     * @return timestamp $timeoff
+     */
+    private function get_timeoff(Dtr $dtr, $dtr_leaves_collection){
+        try{    
+            $timeoff = 0;
+
+            # Iterate the DTR Leave Collection
+            foreach( $dtr_leaves_collection as $leave ) {
+
+                # If the current Iterated Leave is Approved and is a Paid Leave,
+                if( $leave->isApproved() && $leave->isPaidLeave() ){
+                    $timeoff = (int) ( $leave->amount * ( $dtr->end_datetime - $dtr->start_datetime - $dtr->break_time ) );
+                }
+            }
+
+            return $timeoff;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
 
 
     ###############################################################################################

@@ -22,13 +22,79 @@ return [
 
     'DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
 
-    'LEAVE_REQUEST_STATUS' => ['requested', 'approved', 'denied', 'canceled'],
+    'LEAVE_REQUEST_STATUS' => [
+        'requested', 
+        'approved', 
+        'denied', 
+        'canceled'
+    ],
+
+    'UNPAID_LEAVE_TYPES' => [
+        "Unpaid Leave",
+        "Work from home",
+        "MGC Unpaid Call Out Days"
+    ],
+
+
+    'PAYROLL_NIGHT_DIFF_TIME' => [
+        "start" => "22:00",
+        "end" => "06:00",
+    ],
+    
+
+    'PAYROLL_ITEMS' => [
+        "late" => "late" ,
+        "undertime" => "undertime" ,
+        "night_diff" => "night_diff" ,
+        "overtime" => "overtime",
+        "overtime_night_diff" => "overtime_night_diff",
+        "rendered_hours" => "rendered_hours"
+    ],
+
+    'PAYROLL_ITEM_TAGS' => [
+        "regular" => "regular",
+        "overlapped" => "overlapped",
+        "underlapped" => "underlapped",
+    ],
+
+
+    'OVERTIME_TYPE' => [
+        "pre" => "pre_overtime",
+        "post" => "post_overtime"
+    ],
+
+    'DTR_TYPE' => [
+        "regular" => "reg",
+        "rest_day" => "rd",
+        "holiday" => [
+            "legal" => "lh",
+            "double_legal" => "dlh",
+            "special" => "sh",
+            "double_special" => "dsh",
+            "special_legal" => "slh"
+        ]
+    ],
+
+
+    'DTR_SOURCE_TYPE_TAGGING' => [
+        "default" => "default",
+        "temporary" => "temporary",
+        "change_schedule" => "change_schedule",
+        "rest_day_work" => "rest_day_work",
+    ],
+
 
     'ATTENDANCE_STATUS' => [
-        "absent"    => "ABSENT",
-        "present"   => "PRESENT",
-        "rest_day"  => "REST DAY",
-        "on_leave"  => "ON LEAVE"
+        "absent"    => "Absent",
+        "present"   => "Present",
+        "rest_day"  => "Rest Day"
+    ],
+    
+    'TIMESTAMP' => [
+        "minute"        => 60,
+        "hour"          => 3600,
+        "eight_hours"   => 28800,
+        "day"           => 86400,
     ],
 
     

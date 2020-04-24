@@ -71,4 +71,14 @@ class Leave extends Model
         return ( $this->status == 'canceled' ) ? true : false;
     }
 
+
+    /**
+     * 
+     *  Check if the current Leave is Paid.
+     * @return bool 
+     */
+    public function isPaidLeave()
+    {
+        return ( ! in_array( $this->type, get_constant("UNPAID_LEAVE_TYPES") ) ) ? true : false;
+    }
 }

@@ -1,4 +1,4 @@
-
+import React, { Component }  from 'react';
 import API from "./API";
 
 class Formatter {
@@ -51,6 +51,41 @@ class Formatter {
   convert_time( date ) {
     date = String("00" +date.getHours()).slice(-2) + ":" + String("00" +date.getMinutes()).slice(-2)
     return date.toString();
+  }
+
+  /** Convert Schedule Details for the API
+    * param | Object |  ( schedules that will be formatted for passing api)
+   * return | Object ( formatted data )
+  */
+  format_schedule_details = (values) => {
+    if(values.schedule_type=='standard'){
+      var schedule_details = {};
+
+      var start_time = this.convert_time(values.std_schedule_details[0].start_time);
+      var end_time = this.convert_time(values.std_schedule_details[0].end_time);
+      var break_time =this.convert_time(values.std_schedule_details[0].break_time);
+      schedule_details = { all : {start_time : start_time,end_time : end_time,break_time : break_time}  };
+    }else if (values.schedule_type=='flexible') {
+      var schedule_details = {};
+
+      var start_time = this.convert_time(values.flx_schedule_details[0].start_time);
+      var end_time = this.convert_time(values.flx_schedule_details[0].end_time);
+      var start_flexy_time = this.convert_time(values.flx_schedule_details[0].start_flexy_time);
+      var end_flexy_time = this.convert_time(values.flx_schedule_details[0].end_flexy_time);
+      var break_time = this.convert_time(values.flx_schedule_details[0].break_time) ;
+      schedule_details = { all : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}};
+    }else if (values.schedule_type=='customize'){
+      var  schedule_details = {};
+      values.work_days.forEach((day,index) => {
+        var start_time = this.convert_time(values.cst_schedule_details[index].start_time);
+        var end_time = this.convert_time(values.cst_schedule_details[index].end_time);
+        var start_flexy_time = this.convert_time(values.cst_schedule_details[index].start_flexy_time);
+        var end_flexy_time = this.convert_time(values.cst_schedule_details[index].end_flexy_time);
+        var break_time = this.convert_time(values.cst_schedule_details[index].break_time);
+        schedule_details[day] = {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time} ;
+      })
+    }
+    return schedule_details;
   }
 }
 

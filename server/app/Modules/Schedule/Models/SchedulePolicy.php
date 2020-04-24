@@ -11,8 +11,8 @@ class SchedulePolicy extends Model{
 
     protected $guarded = [];
 
-    protected static $logAttributes = ['name', 'start_time', 'end_time', 'start_flexy_time', 'end_flexy_time', 'break_time'];
-
+    protected static $logAttributes = ['policy', 'value'];
+    
     public $timestamps = false;
 
     

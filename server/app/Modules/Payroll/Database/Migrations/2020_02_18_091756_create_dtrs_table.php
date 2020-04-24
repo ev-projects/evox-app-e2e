@@ -25,7 +25,7 @@ class CreateDtrsTable extends Migration
             $table->bigInteger('end_flexy_datetime')->nullable();
             $table->bigInteger('break_time')->nullable();
             $table->boolean('is_rest_day')->default(false);
-            $table->enum('source_type_tagging', array('default', 'temporary', 'change_schedule'))->nullable()->index();
+            $table->enum('source_type_tagging', array('default', 'temporary', 'change_schedule', 'rest_day_work'))->nullable()->index();
             $table->softDeletes();
             $table->timestamps();
             

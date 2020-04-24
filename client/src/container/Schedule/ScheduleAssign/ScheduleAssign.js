@@ -9,6 +9,9 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleType,Workdays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 import PageNotFound from "../../PageNotFound";
+import PageLoading from "../../PageLoading";
+import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
+
 import Formatter from '../../../services/Formatter';
 import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } from '../../../store/actions/scheduleActions';
 
@@ -17,32 +20,9 @@ class AssignDefault extends Component {
     super(props)
   }
 
-  state = { std_schedule_details:[], flx_schedule_details: [] , cst_schedule_details : [] }
-
   onSubmitHandler = (values) => {
-    if(values.schedule_type=='standard'){
-        var start_time = Formatter.convert_time(values.std_schedule_details[0].start_time);
-        var end_time = Formatter.convert_time(values.std_schedule_details[0].end_time);
-        var break_time =Formatter.convert_time(values.std_schedule_details[0].break_time);
-        this.setState((state, props) => ({ all : {start_time : start_time,end_time : end_time,break_time : break_time}  }));
-    }else if (values.schedule_type=='flexible') {
-        var start_time = Formatter.convert_time(values.flx_schedule_details[0].start_time)
-        var end_time = Formatter.convert_time(values.flx_schedule_details[0].end_time)
-        var start_flexy_time = Formatter.convert_time(values.flx_schedule_details[0].start_flexy_time)
-        var end_flexy_time = Formatter.convert_time(values.flx_schedule_details[0].end_flexy_time)
-        var break_time = Formatter.convert_time(values.flx_schedule_details[0].break_time) 
-        this.setState((state, props) => ({ all : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}}));
-    }else if (values.schedule_type=='customize'){
-        values.work_days.forEach((day,index) => {
-          var start_time = Formatter.convert_time(values.cst_schedule_details[index].start_time);
-          var end_time = Formatter.convert_time(values.cst_schedule_details[index].end_time);
-          var start_flexy_time = Formatter.convert_time(values.cst_schedule_details[index].start_flexy_time);
-          var end_flexy_time = Formatter.convert_time(values.cst_schedule_details[index].end_flexy_time);
-          var break_time = Formatter.convert_time(values.cst_schedule_details[index].break_time);
-          this.setState((state, props) => ({ [day] : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}  }));
-        })
-    }
-    values.schedule_details = this.state;
+    // Format the data that will be past on the API
+    values.schedule_details = Formatter.format_schedule_details(values);
     values.valid_from = values.from.toISOString().substring(0, 10);
     values.valid_to = values.to.toISOString().substring(0, 10);
     this.props.scheduleAssign(values)
@@ -60,7 +40,6 @@ class AssignDefault extends Component {
   }
 
   render = () => {
-
   if( this.props.page_reloaded ){   
     console.log(this.props);
     var templateList = this.props.template_list;
@@ -131,7 +110,7 @@ class AssignDefault extends Component {
       work_days:work_day 
     }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}> 
-    <Container> 
+    <ContainerWrapper> 
     <Col sm={7}>
       <div>
       <Form.Group className="white_bg">
@@ -395,16 +374,18 @@ class AssignDefault extends Component {
           </Form.Group>
         </Col>
      ) : null}
-    <Button variant="primary" type="submit">
-      Create
-    </Button>
-  </Container>
+    <Col sm={7}>
+      <Button variant="primary" type="submit">
+        Create
+      </Button>
+    </Col>
+  </ContainerWrapper>
   </form>
   )}
  
   </Formik>;
     }
-    return <PageNotFound/>;
+    return <PageLoading/>;
    
   }
 }

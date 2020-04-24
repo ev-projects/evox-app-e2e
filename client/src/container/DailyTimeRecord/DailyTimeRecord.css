@@ -7,3 +7,46 @@ table .center{
 
 .body {
 }
+
+.month {
+    font-size: 10px;
+}
+
+.day{
+	font-size: 20px;
+    color: #82af13;
+    font-weight: bold;
+}
+
+.dayname {
+	font-size: 12px;
+}
+
+.present{
+	color: #82af13;
+}
+
+.absent{
+	color: red;
+}
+
+.rest-day{
+	color: gray;
+}
+
+.vacation_leave, .sick_leave{
+	color : rgba(49, 106, 197, 0.93);
+}
+
+.absent-background-color{
+	background: #f7dbd6 !important;
+}
+
+.holiday-background-color{
+	background: #fff9de !important;
+}
+
+
+.sh,.lh{
+	color: rgb(255, 194, 71) !important; 	
+}

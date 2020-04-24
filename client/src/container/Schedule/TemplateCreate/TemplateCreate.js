@@ -9,41 +9,20 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
 import PageNotFound from "../../PageNotFound";
+
 import { addTemplateSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
 import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, Workdays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 
+import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 
 
 class Schedule extends Component {    
   state = {}
 
   onSubmitHandler = (values) => {
-    console.log(values.std_schedule_details);
-
-    if(values.schedule_type=='standard'){
-        var start_time = Formatter.convert_time(values.std_schedule_details[0].start_time);
-        var end_time = Formatter.convert_time(values.std_schedule_details[0].end_time);
-        var break_time =Formatter.convert_time(values.std_schedule_details[0].break_time);
-        this.setState((state, props) => ({ all : {start_time : start_time,end_time : end_time,break_time : break_time}  }));
-    }else if (values.schedule_type=='flexible') {
-        var start_time = Formatter.convert_time(values.flx_schedule_details[0].start_time)
-        var end_time = Formatter.convert_time(values.flx_schedule_details[0].end_time)
-        var start_flexy_time = Formatter.convert_time(values.flx_schedule_details[0].start_flexy_time)
-        var end_flexy_time = Formatter.convert_time(values.flx_schedule_details[0].end_flexy_time)
-        var break_time = Formatter.convert_time(values.flx_schedule_details[0].break_time) 
-        this.setState((state, props) => ({ all : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}}));
-    }else if (values.schedule_type=='customize'){
-        values.work_days.forEach((day,index) => {
-          var start_time = Formatter.convert_time(values.cst_schedule_details[index].start_time);
-          var end_time = Formatter.convert_time(values.cst_schedule_details[index].end_time);
-          var start_flexy_time = Formatter.convert_time(values.cst_schedule_details[index].start_flexy_time);
-          var end_flexy_time = Formatter.convert_time(values.cst_schedule_details[index].end_flexy_time);
-          var break_time = Formatter.convert_time(values.cst_schedule_details[index].break_time);
-          this.setState((state, props) => ({ [day] : {start_time : start_time,end_time : end_time, start_flexy_time : start_flexy_time, end_flexy_time : end_flexy_time, break_time : break_time}  }));
-        })
-    }
-    values.schedule_details = this.state;
+    // Format the data that will be past on the API
+    values.schedule_details = Formatter.format_schedule_details(values);
 
     this.props.addTemplateSchedule(values)
   }
@@ -59,7 +38,7 @@ class Schedule extends Component {
     initialValues={{sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}}
     ,name : '',std_schedule_details: [],flx_schedule_details: [],cst_schedule_details: [], source_type: 'template',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0}, schedule_type : '', work_days: [] }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}> 
-    <Container> 
+    <ContainerWrapper> 
     <Col sm={7} >
       <Form.Group className="white_bg">
         <div className="header">
@@ -214,10 +193,12 @@ class Schedule extends Component {
           </Form.Group>
         </Col>
      ) : null}
-    <Button variant="primary" type="submit">
-      Create
-    </Button>
-  </Container>
+    <Col sm={7}>
+      <Button variant="primary" type="submit">
+        Create
+      </Button>
+    </Col>
+  </ContainerWrapper>
   </form>
   )}
   </Formik>;

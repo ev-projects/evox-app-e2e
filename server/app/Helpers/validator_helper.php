@@ -10,7 +10,8 @@ if (! function_exists('is_valid')) {
     function is_valid( $var ) 
     {
         try {
-            return ( !empty( $var ) && !is_null( $var ) ) ? true : false;
+            // return ( !empty( $var ) && !is_null( $var ) ) ? true : false;
+            return ( (is_numeric( $var ) || (!is_numeric( $var ) && !empty( $var ))) && !is_null( $var ) ) ? true : false;
         }catch(Exception $e){
             throw $e;
         }
