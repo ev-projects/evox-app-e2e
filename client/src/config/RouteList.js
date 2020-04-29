@@ -18,6 +18,11 @@ import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
 
+import Overtime from "../container/Request/Overtime";
+import RestdayWork from "../container/Request/RestdayWork";
+import WorkFromHome from "../container/Request/WorkFromHome";
+import ChangeSchedule from "../container/Request/ChangeSchedule";
+
 const RoutesList = () => {
 
   // Register all the Routes that will be used in the Application (excluding the Login)
@@ -31,6 +36,13 @@ const RoutesList = () => {
         <ProtectedRoute path="/app/schedule/assign/:userid" ><ScheduleAssign /></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
+
+        <ProtectedRoute path="/app/request/Overtime/"><Overtime/></ProtectedRoute>
+        <ProtectedRoute path="/app/request/RestdayWork/"><RestdayWork/></ProtectedRoute>
+        <ProtectedRoute path="/app/request/WorkFromHome/"><WorkFromHome/></ProtectedRoute>
+        <ProtectedRoute path="/app/request/ChangeSchedule/"><ChangeSchedule/></ProtectedRoute>
+
+
         <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>

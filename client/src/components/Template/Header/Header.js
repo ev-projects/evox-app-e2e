@@ -24,7 +24,7 @@ const Header = (props) => {
         <aside className="main-sidebar sidebar-dark-primary elevation-4">
           <a href="/" className="brand-link">
             <img src="/images/icon.jpg" className="brand-image img-circle elevation-3" alt="User Image"/>
-            <span className="brand-text font-weight-light">EVOX</span>
+            <span className="brand-text font-weight-light"><b>EVOX</b></span>
           </a>
 
 
@@ -47,7 +47,7 @@ const Header = (props) => {
                   </a>
                 </li>
                 <li className="nav-item has-treeview ">
-                  <a className="nav-link ">
+                  <a className="nav-link" >
                     <i className="nav-icon fa fa-calendar-o" />
                     <p>
                       Schedule
@@ -79,6 +79,42 @@ const Header = (props) => {
                         <p>Daily Time Record</p>
                       </a>
                     </li>
+                  </ul>
+                </li>
+                <li className="nav-item has-treeview ">
+                  <a className="nav-link" >
+                    <i className="nav-icon fa fa-list-alt" />
+                    <p>
+                      Request
+                      <i className="right fa fa-chevron-left" />
+                    </p>
+                  </a>
+                  <ul className="nav nav-treeview">
+                    <li className="nav-item">
+                      <a href={`${global.base_url}`+'request/Overtime/'} className="nav-link ">
+                        <i className="nav-icon fa fa-clock-o nav-icon" />
+                        <p>Overtime</p>
+                      </a> 
+                    </li>
+                    <li className="nav-item">
+                      <a href={`${global.base_url}`+'request/WorkFromHome/'} className="nav-link ">
+                        <i className="nav-icon fa fa-list nav-icon" />
+                        <p>Work From Home</p>
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a href={`${global.base_url}`+'request/RestdayWork/'} className="nav-link ">
+                        <i className="nav-icon fa fa-plus nav-icon" />
+                        <p>Rest Day Work</p>
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a href={`${global.base_url}`+'request/ChangeSchedule/'} className="nav-link ">
+                        <i className="nav-icon fa fa-calendar-check-o nav-icon" />
+                        <p>Change of Schedule</p>
+                      </a>
+                    </li>
+                    
                   </ul>
                 </li>
                 <li className="nav-item">

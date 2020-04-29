@@ -4,6 +4,7 @@
  */
 
 global.login_url = "/login";
+global.base_url = "/app/";
 global.dashboard_url = "/app/Dashboard";
 global.template_list_url = "/app/schedule/template/";
 global.template_add = "/app/schedule/";
