@@ -41,6 +41,8 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
                 $overtime->set_employee_note( $data['employee_note']  );
             }
 
+            $overtime->pending();
+
             $overtime->save();
             
             DB::commit();
