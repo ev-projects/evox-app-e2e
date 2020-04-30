@@ -29,6 +29,23 @@ return [
         'canceled'
     ],
 
+    'REQUEST_TYPES' => [
+        'overtime' => 'overtime', 
+        'alter_log' => 'alter_log', 
+        'rest_day_work' => 'rest_day_work', 
+        'change_schedule' => 'change_schedule',
+        'work_from_home' => 'work_from_home'
+    ],
+
+    'REQUEST_STATUS' => [
+        'approved' => 'approved', 
+        'declined' => 'declined', 
+        'pending' => 'pending', 
+        'canceled' => 'canceled'
+    ],
+
+
+
     'UNPAID_LEAVE_TYPES' => [
         "Unpaid Leave",
         "Work from home",

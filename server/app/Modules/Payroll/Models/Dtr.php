@@ -2,6 +2,7 @@
 
 namespace App\Modules\Payroll\Models;
 
+use App\Modules\Request\Models\Overtime;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -427,4 +428,15 @@ class Dtr extends Model
             'date' => timestamp_to_date( add_days_to_timestamp( $this->date, 1 ) )
         ]);
     }
+
+
+    /**
+     * hasOne Relationship for the Overtime
+     */
+    public function overtime(){
+        return $this->hasOne(Overtime::class, 'user_id', 'user_id')->where([
+            'date' => $this->date
+        ]);
+    }
+
 }

@@ -1,0 +1,6 @@
+{
+    "name": "Request",
+    "slug": "request",
+    "version": "1.0",
+    "description": "This is a module responsible for all the Request related functionalities on the Application."
+}
