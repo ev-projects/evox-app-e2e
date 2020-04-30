@@ -37,7 +37,7 @@ return [
     /**
      *  Schedule 
      */
-    'create_schedule|_attempt' => 'Create Schedule Attempt',
+    'create_schedule_attempt' => 'Create Schedule Attempt',
     'create_schedule_success' => 'A new schedule is now created!',
 
     'update_schedule_attempt' => 'Update Schedule Attempt',
@@ -55,6 +55,41 @@ return [
     'assign_schedule_success' => 'Schedule successfully updated!',
 
 
+    /**
+     *  Request 
+     */
+    'create_overtime_attempt' => 'Create Overtime Request Attempt',
+    'create_overtime_success' => 'A new Overtime Request is now created!',
+
+    'update_overtime_attempt' => 'Update Overtime Request Attempt',
+    'update_overtime_success' => 'The Overtime Request is now updated!',
+
+    'delete_overtime_attempt' => 'Delete Overtime Request Attempt',
+    'delete_overtime_success' => 'The Overtime Request is now deleted!',
+
+    'find_overtime_success' => 'The Overtime Request is now shown!',
+
+
+    'approve_overtime_attempt' => 'Approving of Overtime Request Attempt',
+    'approve_overtime_success' => 'The Overtime Request is now Approved!',
+
+    'decline_overtime_attempt' => 'Declining of Overtime Request Attempt',
+    'decline_overtime_success' => 'The Overtime Request is now Declined!',
+
+    'pending_overtime_attempt' => 'Setting to Pending of Overtime Request Attempt',
+    'pending_overtime_success' => 'The Overtime Request is now set to Pending!',
+
+    'cancel_overtime_attempt' => 'Canceling of Overtime Request Attempt',
+    'cancel_overtime_success' => 'The Overtime Request is now Canceled!'
+
+        
+        
+        
+        
+        
+        
+        
+        
     /**
      *  Schedule Forms
      */

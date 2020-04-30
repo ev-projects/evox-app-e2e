@@ -26,9 +26,9 @@ class OvertimeRequest extends FormRequest
      * @return array
      */
     public function rules()
-    {
+    {   
         return [
-            'date'                               => 'required|date_format:Y-m-d',
+            'date'                               => 'required|date_format:Y-m-d|unique:overtimes,date,NULL,id,user_id,'.auth()->user()->id,
             'type'                               => 'required|string|in:'.get_imploded_constant('OVERTIME_TYPE'),
             'amount'                             => 'required|date_format:H:i',
             'employee_note'                      => 'string|max:255',
