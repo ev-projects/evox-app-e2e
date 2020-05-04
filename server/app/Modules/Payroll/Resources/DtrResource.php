@@ -27,11 +27,9 @@ class DtrResource extends JsonResource
                 }else{
                     $payroll_items[ $payroll_item->item] = $payroll_item->value;
                 }
-
-                // $tag = ( $payroll_item->tag == null ) ? get_constant('PAYROLL_ITEM_TAGS.regular') : $payroll_item->tag;
-                // $payroll_items[$tag][ $payroll_item->item ] = seconds_to_time($payroll_item->value,true);
             }
 
+            # Convert the time to seconds to 00:00:00 format
             foreach( $payroll_items as  $key => $value){
                 $payroll_items[$key] = seconds_to_time($value,true);
             }
@@ -43,17 +41,6 @@ class DtrResource extends JsonResource
                 $policies[ $policy->policy ] = $policy->value;
             }
             
-
-            # Create Resource for Holidays
-            $holidays = [];
-            foreach( $this->holidays()->get() as $holiday){
-                $holidays[ $holiday->id ] = [
-                    'name'  => $holiday->name,
-                    'type'  => $holiday->type
-                ];
-            }
-
-
             # Flag for catching Approved Leaves that would be use later for Attendance Status.
             $approved_leave_type = null;
 
@@ -92,6 +79,16 @@ class DtrResource extends JsonResource
             }elseif( $this->is_rest_day ) {
                 $attendance_status = get_constant("ATTENDANCE_STATUS.rest_day");
             }
+
+            # Create Resource for Holidays
+            $holidays = [];
+            foreach( $this->holidays()->get() as $holiday){
+                $holidays[ $holiday->id ] = [
+                    'name'  => $holiday->name,
+                    'type'  => $holiday->type
+                ];
+            }
+
 
             $result =  array_merge( 
                 array(

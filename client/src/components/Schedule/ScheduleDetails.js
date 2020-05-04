@@ -41,7 +41,18 @@ const ScheduleType = (props) => {
       </Field>);
 }
 
-const Workdays = (props) => {
+const WorkDays = (props) => {
+    return (<div>   <WorkDay day="mon" />
+                    <WorkDay day="tue" />
+                    <WorkDay day="wed" />
+                    <WorkDay day="thu" />
+                    <WorkDay day="fri" />
+                    <WorkDay day="sat" />
+                    <WorkDay day="sun" /></div>);
+}
+
+
+const WorkDay = (props) => {
     return (<Field>
         {({ field, form }) => (
         <FieldArray
@@ -77,6 +88,7 @@ const Workdays = (props) => {
         )}
       </Field>);
 }
+
 
 
 const StandardSchedDetailsForm = (props) => {
@@ -454,5 +466,5 @@ export {
   StandardSchedDetailsForm,
   FlexibleSchedDetailsForm,
   ScheduleType,
-  Workdays
+  WorkDays
 }

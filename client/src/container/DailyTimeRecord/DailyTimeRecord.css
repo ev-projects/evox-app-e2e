@@ -38,15 +38,21 @@ table .center{
 	color : rgba(49, 106, 197, 0.93);
 }
 
-.absent-background-color{
-	background: #f7dbd6 !important;
+.rest_day-bg-color{
+	background: #efefef !important;
 }
 
-.holiday-background-color{
+.holiday-bg-color{
 	background: #fff9de !important;
 }
 
+.absent-bg-color{
+	background: #f7dbd6 !important;
+}
 
+.lh < .center{
+	background-color: black !important;
+}
 .sh,.lh{
 	color: rgb(255, 194, 71) !important; 	
 }

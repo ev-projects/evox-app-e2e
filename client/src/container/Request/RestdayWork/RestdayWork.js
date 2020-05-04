@@ -36,24 +36,24 @@ class RestdayWork extends Component {
  			       </Col>
  			       </Row>
  			       <Row>  
- 			       <div className="col-sm-4">   
+ 			       <Col size="4"> 
 		            <div className="form-group">
                     <label for="exampleInputEmail1">On Duty : </label>
                 	<InputTime name="on_duty" />
                   </div>
-                  </div> 
-                  <div className="col-sm-4">   
+                  </Col> 
+                  <Col size="4">   
                   <div className="form-group">
                     <label for="exampleInputEmail1">Off Duty : </label>
                  	<InputTime name="off_duty" />
                   </div>
-                  </div> 
-                  <div className="col-sm-4">   
+                  </Col> 
+                  <Col size="4">   
                   <div className="form-group">
                     <label for="exampleInputEmail1">Break : </label>
                  	<InputTime name="break" />
                   </div>
-                  </div> 
+                  </Col> 
                   </Row> 
 				  <div className="form-group">
                     <label>Reason:</label>

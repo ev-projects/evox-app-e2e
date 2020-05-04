@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleType,Workdays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleType,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 import PageNotFound from "../../PageNotFound";
 import PageLoading from "../../PageLoading";
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
@@ -317,13 +317,7 @@ class AssignDefault extends Component {
           </h1>
         </div>
         <div className="body">
-          <Workdays day="mon" />
-          <Workdays day="tue" />
-          <Workdays day="wed" />
-          <Workdays day="thu" />
-          <Workdays day="fri" />
-          <Workdays day="sat" />
-          <Workdays day="sun" />
+          <WorkDays/>
         </div>
       </Form.Group>
     </Col>

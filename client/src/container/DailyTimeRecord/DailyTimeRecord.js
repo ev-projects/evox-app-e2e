@@ -41,7 +41,7 @@ class DailyTimeRecord extends Component {
                     </thead>
                     <tbody>
                     {this.props.dtr.list.map((dtr, index) => {
-                          return <tr className="center">
+                          return <tr className={"center "+dtr.attendance_status.slug+"-bg-color"}>
                           <td>{DtrFormatter.displayDate(dtr.date)}</td> 
                           <td><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></td>
                           <td><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
