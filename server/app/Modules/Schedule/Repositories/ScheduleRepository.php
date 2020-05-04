@@ -161,7 +161,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             if( $data['bind_to'] == 'user' ) {
 
                 # Gets the Employee from the Logged-in User's Supervisee by Employee Number.
-                $employee = auth()->user()->supervisee()->findOrFail( $data['bind_id'] );
+                $employee = get_authenticated_user( $data['bind_id'] );
                 
                 $schedule = $this->assign_to_employee( $data, $employee );
             }

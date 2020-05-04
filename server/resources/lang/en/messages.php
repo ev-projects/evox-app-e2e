@@ -33,6 +33,9 @@ return [
     'payload' => 'Payload',
     'payload_success' => 'Payload successfully loaded!',
 
+    'user_not_authorized' => 'The User/Property of the User being accessed is not Authorized.',
+    'user_not_under_supervisee' => 'The User/Property of the User being accessed is not under your Supervisee.',
+
 
     /**
      *  Schedule 

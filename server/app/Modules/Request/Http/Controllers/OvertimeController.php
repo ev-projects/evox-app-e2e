@@ -66,7 +66,7 @@ class OvertimeController extends Controller
             log_activity( trans('messages.delete_overtime_attempt') );
 
             return success_response(
-                trans('messages.update_overtime_success'), 
+                trans('messages.delete_overtime_success'), 
                 $this->overtime->destroy( $id ) 
             );
         } catch(Exception $e){

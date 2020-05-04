@@ -40,7 +40,7 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
             if( isset($data['employee_note'] ) ) {
                 $overtime->set_employee_note( $data['employee_note']  );
             }
-
+            
             $overtime->pending();
 
             $overtime->save();
@@ -69,25 +69,28 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
         try {
 
             $overtime = Overtime::findOrFail($id);
-
-            $overtime->date         = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
-            $overtime->amount       = ( isset( $data['amount'] ) && is_valid( $data['amount'] ) ) ? time_to_seconds( $data['amount'] ) : 0;
-            $overtime->type         = ( isset( $data['type'] ) && is_valid( $data['type'] ) ) ? $data['type'] : null;
-            $overtime->updated_by   = auth()->user()->id;
             
-            if( isset($data['employee_note'] ) && is_valid( $data['employee_note'] ) ) {
-                $overtime->set_employee_note( $data['employee_note']  );
-            }
-
-            if( isset($data['approver_note'] ) && is_valid( $data['approver_note'] ) ) {
-                $overtime->set_approver_note( $data['approver_note']  );
-            }
-
-            $overtime->update();
+            if( get_authenticated_user( $overtime->user_id ) ) {
             
-            DB::commit();
-            log_to_file('info', 'Success', [$overtime]);
-            return $overtime;
+                $overtime->date         = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
+                $overtime->amount       = ( isset( $data['amount'] ) && is_valid( $data['amount'] ) ) ? time_to_seconds( $data['amount'] ) : 0;
+                $overtime->type         = ( isset( $data['type'] ) && is_valid( $data['type'] ) ) ? $data['type'] : null;
+                $overtime->updated_by   = auth()->user()->id;
+                
+                if( isset($data['employee_note'] ) && is_valid( $data['employee_note'] ) ) {
+                    $overtime->set_employee_note( $data['employee_note']  );
+                }
+    
+                if( isset($data['approver_note'] ) && is_valid( $data['approver_note'] ) ) {
+                    $overtime->set_approver_note( $data['approver_note']  );
+                }
+    
+                $overtime->update();
+                
+                DB::commit();
+                log_to_file('info', 'Success', [$overtime]);
+                return $overtime;
+            }
 
         } catch (Exception $e) {
             DB::rollback();
@@ -108,16 +111,20 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
         try {
 
             $overtime = Overtime::findOrFail($id);
+            
+            if( get_authenticated_user( $overtime->user_id ) ) {
 
-            $overtime->updated_by = auth()->user()->id;
+                $overtime->updated_by = auth()->user()->id;
 
-            $overtime->update();
+                $overtime->update();
 
-            $overtime->delete();
+                $overtime->delete();
 
-            DB::commit();
-            log_to_file('info', 'Success', [$overtime]);
-            return true;
+                DB::commit();
+                log_to_file('info', 'Success', [$overtime]);
+                return true;
+
+            }
 
         } catch (Exception $e) {
             DB::rollback();

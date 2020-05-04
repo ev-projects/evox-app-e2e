@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class OvertimeRequest extends FormRequest
 {
@@ -25,10 +26,20 @@ class OvertimeRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {   
+        $id = ( is_valid( $this->route('id') ) ) ? $this->route('id') : 'null';
+
+        // 'required|date_format:Y-m-d|unique:overtimes,date,'.($this->route('id') ?? 'null').',id,user_id,'.auth()->user()->id
+
         return [
-            'date'                               => 'required|date_format:Y-m-d|unique:overtimes,date,NULL,id,user_id,'.auth()->user()->id,
+            'date'                               => ['required',
+                                                     'date_format:Y-m-d',  
+                                                     Rule::unique('overtimes', 'date')->where(function ($query) {
+                                                            return $query->where('user_id', auth()->user()->id);
+                                                     })->ignore( $this->route('id') ?? 'null' )
+                                                       ->whereNull('deleted_at')
+                                                    ],
             'type'                               => 'required|string|in:'.get_imploded_constant('OVERTIME_TYPE'),
             'amount'                             => 'required|date_format:H:i',
             'employee_note'                      => 'string|max:255',

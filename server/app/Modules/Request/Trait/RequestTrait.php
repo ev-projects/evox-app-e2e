@@ -15,10 +15,11 @@ trait RequestTrait
         try {
             $current_status = $this->status;
 
-            if( $current_status != get_constant('REQUEST_STATUS.approved') ) {
+            if( is_under_supervisee( $this->user_id ) && $current_status != get_constant('REQUEST_STATUS.approved') ) {
 
                 
-                $this->status  = get_constant('REQUEST_STATUS.approved');
+                $this->status       = get_constant('REQUEST_STATUS.approved');
+                $this->updated_by   = auth()->user()->id;
                 $this->save();
                 
                 DB::commit();
@@ -43,10 +44,11 @@ trait RequestTrait
         try {
             $current_status = $this->status;
 
-            if( $current_status != get_constant('REQUEST_STATUS.declined') ) {
+            if( is_under_supervisee( $this->user_id ) && $current_status != get_constant('REQUEST_STATUS.declined') ) {
 
                 
-                $this->status  = get_constant('REQUEST_STATUS.declined');
+                $this->status       = get_constant('REQUEST_STATUS.declined');
+                $this->updated_by   = auth()->user()->id;
                 $this->save();
                 
                 DB::commit();
@@ -72,7 +74,8 @@ trait RequestTrait
             if( $current_status != get_constant('REQUEST_STATUS.pending') ) {
 
                 
-                $this->status  = get_constant('REQUEST_STATUS.pending');
+                $this->status       = get_constant('REQUEST_STATUS.pending');
+                $this->updated_by   = auth()->user()->id;
                 $this->save();
                 
                 DB::commit();
@@ -95,10 +98,11 @@ trait RequestTrait
         try {
             $current_status = $this->status;
 
-            if( $current_status != get_constant('REQUEST_STATUS.canceled') ) {
+            if( get_authenticated_user( $this->user_id ) && $current_status != get_constant('REQUEST_STATUS.canceled') ) {
 
                 
-                $this->status  = get_constant('REQUEST_STATUS.canceled');
+                $this->status       = get_constant('REQUEST_STATUS.canceled');
+                $this->updated_by   = auth()->user()->id;
                 $this->save();
                 
                 DB::commit();
