@@ -55,12 +55,12 @@ class RestdayWork extends Component {
                   </div>
                   </Col> 
                   </Row> 
-				  <div className="form-group">
+				          <div className="form-group">
                     <label>Reason:</label>
                     <textarea className="form-control" rows="3" name="name" onChange={handleChange} value={values.reason} placeholder="Enter Reason..."></textarea>
                   <Form.Control.Feedback type="invalid">
-		            &nbsp;{errors.reason && touched.reason && errors.reason}
-		          </Form.Control.Feedback> 
+    		            &nbsp;{errors.reason && touched.reason && errors.reason}
+    		          </Form.Control.Feedback> 
                   </div>
                   <button type="submit" className="btn btn-primary">Submit</button>
 	              </Content>

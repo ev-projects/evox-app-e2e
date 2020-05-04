@@ -38,13 +38,13 @@ class ChangeSchedule extends Component {
 		            <Row>
 		                <Col size="4">
 		                    <div className="form-group">
-		                        <label for="valid_to">Valid From</label>
+		                        <label for="valid_to">Valid From :</label>
 		                        <InputDate name="date_from" />
 		                    </div>
 		                </Col>
 		                <Col size="4">
 		                    <div className="form-group">
-		                        <label for="valid_to">Valid To</label>
+		                        <label for="valid_to">Valid To :</label>
 		                        <InputDate name="date_to" />
 		                    </div>
 		                </Col>
@@ -52,7 +52,7 @@ class ChangeSchedule extends Component {
 		            <Row>
 		            	<Col size="12">
 			            	<div className="form-group">
-			                    <label for="valid_to">Payroll Policy</label>
+			                    <label for="valid_to">Payroll Policy :</label>
 					    		<ScheduleType/>
 					    	</div>
 					    </Col> 
@@ -60,7 +60,7 @@ class ChangeSchedule extends Component {
 		            <Row>
 		            	<Col size="12">
 			            	<div className="form-group">
-			                    <label for="valid_to">Work Days</label>
+			                    <label for="valid_to">Work Days :</label>
 					                <WorkDays/>
 							</div>
 					    </Col>
@@ -70,6 +70,13 @@ class ChangeSchedule extends Component {
 		                  return <Scheduledetails day={day} index={values.work_days.indexOf(day)} />
 		                  }
 		            })}
+				    <div className="form-group">
+                    	<label>Reason:</label>
+                    	<textarea className="form-control" rows="3" name="name" onChange={handleChange} value={values.reason} placeholder="Enter Reason..."></textarea>
+                  		<Form.Control.Feedback type="invalid">
+    		            	&nbsp;{errors.reason && touched.reason && errors.reason}
+    		          	</Form.Control.Feedback> 
+                  	</div>
 		            <button type="submit" className="btn btn-primary">Submit</button>
 		        </Content>
 		    </ContainerBody>
@@ -87,6 +94,7 @@ const validation_var = Yup.string().required(required_field).nullable();
 const validationSchema = Yup.object().shape({
 	date_from: validation_var,
 	date_to: validation_var,
+	reason: validation_var,
 	cst_schedule_details: Yup.array().of(Yup.object().shape({
          start_time: validation_var,
           end_time: validation_var,
