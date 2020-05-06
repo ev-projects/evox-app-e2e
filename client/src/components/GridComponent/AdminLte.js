@@ -18,7 +18,7 @@ const ContainerHeader = (props) => {
 
 /** Content Wrapper */
 const ContainerWrapper = (props) => {
-    return(<div className="content-wrapper">{props.children}</div>);
+    return(<div className="content-wrapper" style={{backgroundColor: "transparent"}}>{props.children}</div>);
 }
 
 /** Content Body */

@@ -10,8 +10,8 @@ if (! function_exists('get_constant')) {
      * 
      * @return string|array
      */
-    function get_constant($key) {
-        return Config::get('constants.'.$key);
+    function get_constant($key=null) {
+        return ( !is_null($key) ) ? Config::get('constants.'.$key) : Config::get('constants');
     }
 }
 

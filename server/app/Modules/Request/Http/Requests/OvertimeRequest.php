@@ -33,8 +33,7 @@ class OvertimeRequest extends FormRequest
         // 'required|date_format:Y-m-d|unique:overtimes,date,'.($this->route('id') ?? 'null').',id,user_id,'.auth()->user()->id
 
         return [
-            'date'                               => ['required',
-                                                     'date_format:Y-m-d',  
+            'date'                               => ['required', 'date_format:Y-m-d',  
                                                      Rule::unique('overtimes', 'date')->where(function ($query) {
                                                             return $query->where('user_id', auth()->user()->id);
                                                      })->ignore( $this->route('id') ?? 'null' )

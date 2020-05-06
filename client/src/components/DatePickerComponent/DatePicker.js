@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 
 /** This is component for Time Picker */
 const InputTime = (props) => {
+  
   if(props.name=="on_duty"){
     return(<Field>
         {({ field, form }) => (

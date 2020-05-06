@@ -26,6 +26,7 @@ class UserProfileResource extends JsonResource
     public function toArray($request){       
         
         $main_info = array(
+            'id' => $this->id,
             'emp_num' => $this->emp_num,
             'bhr_num' => $this->bhr_num,
             'department' => $this->department()->first()->getCompleteName(),

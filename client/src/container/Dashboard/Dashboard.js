@@ -25,14 +25,14 @@ class Dashboard extends Component {
                           <Table striped responsive hover>
                               <thead>
                                   <tr>
-                                      <th><i class="fa fa-calendar"></i> Date</th>
-                                      <th><i class="fa fa-calendar"></i> Schedule</th>
-                                      <th><i class="fa fa-clock-o"></i> Clock</th>
-                                      <th><i class="fa fa-hourglass-end"></i> Late</th>
-                                      <th><i class="fa fa-hourglass-start"></i> Undertime</th>
-                                      <th><i class="fa fa-moon-o"></i> NightDiff</th>
-                                      <th><i class="fa fa-hourglass"></i> Overtime</th>
-                                      <th><i class="fa fa-hourglass"></i> OT w/ ND</th>
+                                      <th><i className="fa fa-calendar"></i> Date</th>
+                                      <th><i className="fa fa-calendar"></i> Schedule</th>
+                                      <th><i className="fa fa-clock-o"></i> Clock</th>
+                                      <th><i className="fa fa-hourglass-end"></i> Late</th>
+                                      <th><i className="fa fa-hourglass-start"></i> Undertime</th>
+                                      <th><i className="fa fa-moon-o"></i> NightDiff</th>
+                                      <th><i className="fa fa-hourglass"></i> Overtime</th>
+                                      <th><i className="fa fa-hourglass"></i> OT w/ ND</th>
                                   </tr>
                               </thead>
                               <tbody>
@@ -64,33 +64,33 @@ class Dashboard extends Component {
                               <tbody>
                                   <tr>
                                       <td>Jan 22</td>
-                                      <td><i class="fa fa-user"></i> Breggie Pasatiempo</td>
+                                      <td><i className="fa fa-user"></i> Breggie Pasatiempo</td>
                                       <td>ACE - Ace Displays</td>
-                                      <td><i class="fa fa-pencil-square-o"></i> Alteration</td>
+                                      <td><i className="fa fa-pencil-square-o"></i> Alteration</td>
                                   </tr>
                                   <tr>
                                       <td>Jan 21</td>
-                                      <td><i class="fa fa-user"></i> Aaron Colina</td>
+                                      <td><i className="fa fa-user"></i> Aaron Colina</td>
                                       <td>BDG - Boondoggle</td>
-                                      <td><i class="fa fa-calendar-check-o"></i> Change of Sched</td>
+                                      <td><i className="fa fa-calendar-check-o"></i> Change of Sched</td>
                                   </tr>
                                   <tr>
                                       <td>Jan 21</td>
-                                      <td><i class="fa fa-user"></i> Ritchie Soriano</td>
+                                      <td><i className="fa fa-user"></i> Ritchie Soriano</td>
                                       <td>GfM - Gesellschaft für</td>
-                                      <td><i class="fa fa-pencil-square-o"></i> Alteration</td>
+                                      <td><i className="fa fa-pencil-square-o"></i> Alteration</td>
                                   </tr>
                                   <tr>
                                       <td>Jan 21</td>
-                                      <td><i class="fa fa-user"></i> Carmela Garcia</td>
+                                      <td><i className="fa fa-user"></i> Carmela Garcia</td>
                                       <td>HTF - Hard To Find</td>
-                                      <td><i class="fa fa-calendar-check-o"></i> Change of Sched</td>
+                                      <td><i className="fa fa-calendar-check-o"></i> Change of Sched</td>
                                   </tr>
                                   <tr>
                                       <td>Jan 21</td>
-                                      <td><i class="fa fa-user"></i> John Doe</td>
+                                      <td><i className="fa fa-user"></i> John Doe</td>
                                       <td>OTM - Optimy</td>
-                                      <td><i class="fa fa-pencil-square-o"></i> Rest Day Work</td>
+                                      <td><i className="fa fa-pencil-square-o"></i> Rest Day Work</td>
                                   </tr>
                               </tbody>
                           </Table>

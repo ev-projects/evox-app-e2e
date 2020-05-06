@@ -2,9 +2,18 @@ import React, { Component } from "react";
 import "./Header.css";
 import { connect } from 'react-redux'
 import { logOut } from '../../../store/actions/userActions'
+import { useHistory } from "react-router-dom";
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
+
+
 const Header = (props) => {
+  
+  const history = useHistory();
+
+    function navigateLink( link ) {
+      history.push( link );
+    }
 
     const { user } = props;
     var name = 'Loading...';
@@ -41,7 +50,7 @@ const Header = (props) => {
             <nav className="mt-2">
               <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li className="nav-item">
-                  <a href="/" className="nav-link">
+                  <a href="javascript:void(0);" onClick={()=>navigateLink('/app/Dashboard')} className="nav-link">
                     <i className="nav-icon fa fa-dashboard "/>
                     <p> Dashboard</p>
                   </a>
@@ -56,25 +65,25 @@ const Header = (props) => {
                   </a>
                   <ul className="nav nav-treeview">
                     <li className="nav-item">
-                      <a href={`${global.template_list_url}`} className="nav-link ">
+                      <a href="javascript:void(0);" onClick={()=>navigateLink( global.template_list_url )} className="nav-link">
                         <i className="nav-icon fa fa-list nav-icon" />
                         <p>Template List</p>
                       </a>
                     </li>
                     <li className="nav-item">
-                      <a href={`${global.template_add}`} className="nav-link ">
+                      <a href="javascript:void(0);" onClick={()=>navigateLink( global.template_add )} className="nav-link">
                         <i className="nav-icon fa fa-plus nav-icon" />
                         <p>Add Template</p>
                       </a>
                     </li>
                     <li className="nav-item">
-                      <a href={`${global.default_schedule}1`} className="nav-link ">
+                      <a href="javascript:void(0);" onClick={()=>navigateLink( global.default_schedule + user.id )} className="nav-link">
                         <i className="nav-icon fa fa-calendar-check-o nav-icon" />
                         <p>Default Schedule</p>
                       </a>
                     </li>
                     <li className="nav-item">
-                      <a href={`${global.daily_time_record_view}1/2020-03-01/2020-03-31`} className="nav-link ">
+                      <a href="javascript:void(0);" onClick={()=>navigateLink( global.daily_time_record_view + '1/2020-03-01/2020-03-31' )} className="nav-link">
                         <i className="nav-icon fa fa-clock-o nav-icon" />
                         <p>Daily Time Record</p>
                       </a>
@@ -82,7 +91,7 @@ const Header = (props) => {
                   </ul>
                 </li>
                 <li className="nav-item has-treeview ">
-                  <a className="nav-link" >
+                  <a className="nav-link">
                     <i className="nav-icon fa fa-list-alt" />
                     <p>
                       Request
@@ -91,25 +100,25 @@ const Header = (props) => {
                   </a>
                   <ul className="nav nav-treeview">
                     <li className="nav-item">
-                      <a href={`${global.base_url}`+'request/Overtime/'} className="nav-link ">
+                      <a href="javascript:void(0);" onClick={()=>navigateLink( global.base_url +'request/Overtime/' )} className="nav-link">
                         <i className="nav-icon fa fa-clock-o nav-icon" />
                         <p>Overtime</p>
                       </a> 
                     </li>
                     <li className="nav-item">
-                      <a href={`${global.base_url}`+'request/WorkFromHome/'} className="nav-link ">
+                      <a href="javascript:void(0);" onClick={()=>navigateLink( global.base_url +'request/WorkFromHome/' )} className="nav-link">
                         <i className="nav-icon fa fa-list nav-icon" />
                         <p>Work From Home</p>
                       </a>
                     </li>
                     <li className="nav-item">
-                      <a href={`${global.base_url}`+'request/RestdayWork/'} className="nav-link ">
+                      <a href="javascript:void(0);" onClick={()=>navigateLink( global.base_url +'request/RestdayWork/' )} className="nav-link">
                         <i className="nav-icon fa fa-plus nav-icon" />
                         <p>Rest Day Work</p>
                       </a>
                     </li>
                     <li className="nav-item">
-                      <a href={`${global.base_url}`+'request/ChangeSchedule/'} className="nav-link ">
+                      <a href="javascript:void(0);" onClick={()=>navigateLink( global.base_url +'request/ChangeSchedule/' )} className="nav-link">
                         <i className="nav-icon fa fa-calendar-check-o nav-icon" />
                         <p>Change of Schedule</p>
                       </a>

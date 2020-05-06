@@ -87,6 +87,31 @@ class Formatter {
     }
     return schedule_details;
   }
+
+  
+
+  /** Converts a slug to title
+   * param | slug |  ( a slug text that will be converted to Title format )
+   * return | String
+  */
+  slug_to_title( slug ) {
+      return slug.replace(/_/g, ' ')
+                .replace(/\w\S*/g,
+                  function(txt) {
+                      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                  });
+  }
+
+
+
+  /** Converts a title to slug
+   * param | title |  ( a title text that will be converted to Slug format )
+   * return | String
+  */
+  title_to_slug( text ) {
+      return text.replace(/ /g, '_')
+                .toLowerCase();
+  }
 }
 
 export default new Formatter();

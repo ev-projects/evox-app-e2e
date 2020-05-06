@@ -50,6 +50,7 @@ class AuthController extends Controller
                 'expires_in' => auth()->factory()->getTTL() * 60,
                 'user' => new UserProfileResource( auth()->user() ),
                 'payload' => auth()->payload(),
+                'constant' => get_constant()
             ];
 
             log_to_file('info', 'Success', $result);
@@ -92,6 +93,7 @@ class AuthController extends Controller
             $result = [
                 'user' => new UserProfileResource( auth()->user() ),
                 'payload' => auth()->payload(),
+                'constant' => get_constant()
             ];
 
             log_to_file('info', 'Success', $result);

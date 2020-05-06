@@ -37,7 +37,8 @@ const RoutesList = () => {
         <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
 
-        <ProtectedRoute path="/app/request/Overtime/"><Overtime/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/Overtime/"><Overtime onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/Overtime/:id"><Overtime onApproval={false}/></ProtectedRoute>
         <ProtectedRoute path="/app/request/RestdayWork/"><RestdayWork/></ProtectedRoute>
         <ProtectedRoute path="/app/request/WorkFromHome/"><WorkFromHome/></ProtectedRoute>
         <ProtectedRoute path="/app/request/ChangeSchedule/"><ChangeSchedule/></ProtectedRoute>

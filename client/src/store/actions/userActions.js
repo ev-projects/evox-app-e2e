@@ -35,6 +35,13 @@ export const logIn = (credentials) => {
                 'user'      : result.data.content.user
             })
 
+            // Render the Constant Variables on React
+            dispatch({
+                'type'      : 'RENDER_CONSTANT', 
+                'constant'   : result.data.content.constant
+            })
+            
+
             // Dispatch Alert of Login Success
             dispatch( Formatter.alert_success( result, 3000 )  );
         })
@@ -88,6 +95,12 @@ export const fetchUser = () => {
                 'type'      : 'FETCH_USER_SUCCESS', 
                 'payload'   : result.data.content.payload,
                 'user'      : result.data.content.user
+            })
+
+            // Render the Constant Variables on React
+            dispatch({
+                'type'      : 'RENDER_CONSTANT', 
+                'constant'   : result.data.content.constant
             })
 
             dispatch( Formatter.alert_success( result, 3000 )  );
