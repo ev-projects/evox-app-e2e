@@ -264,10 +264,10 @@ const Scheduledetails = (props) => {
     return (<Field>
         {({ field, form }) => (
           <div className="stripe">
-          <h6>{eval('day.'+props.day)}</h6>
+          <Form.Label>{eval('day.'+props.day)} :</Form.Label>
         <Form.Row>
             <Form.Group as={Col} sm={4}>
-                <Form.Label>On Duty :</Form.Label>
+                <h6>On Duty</h6>
                 <DatePicker 
                   className="form-control"
                   showTimeSelect
@@ -280,22 +280,12 @@ const Scheduledetails = (props) => {
                   selected={field.value.cst_schedule_details[props.index].start_time}              
                   onChange={(date) => onSelectTimeHandlerStd(date,props.index,form.setFieldValue,'cst_')}
                 />
-              <Form.Control.Feedback type="invalid">
-                <Field name={`cst_schedule_details.${props.index}.start_time`}>
-                    {({
-                          meta
-                      }) => (
-                        <div>
-                            {meta.touched && meta.error && (
-                                <div className="error">{meta.error}</div>
-                            )}
-                        </div>
-                    )}
-                </Field>
-              </Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={`cst_schedule_details.${props.index}.start_time`}className="input-feedback" />
+                </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} sm={4} >
-                <Form.Label>Off Duty :</Form.Label>
+                <h6>Off Duty</h6>
                 <DatePicker 
                   className="form-control"
                   showTimeSelect
@@ -308,24 +298,14 @@ const Scheduledetails = (props) => {
                   selected={field.value.cst_schedule_details[props.index].end_time}              
                   onChange={date => form.setFieldValue('cst_schedule_details['+props.index+'].end_time', date)}
                 />
-              <Form.Control.Feedback type="invalid">
-                <Field name={`cst_schedule_details.${props.index}.end_time`}>
-                    {({
-                          meta
-                      }) => (
-                        <div>
-                            {meta.touched && meta.error && (
-                                <div className="error">{meta.error}</div>
-                            )}
-                        </div>
-                    )}
-                </Field>
-              </Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={`cst_schedule_details.${props.index}.end_time`}className="input-feedback"/>
+                </Form.Control.Feedback>
             </Form.Group>
         </Form.Row>
         <Form.Row>
             <Form.Group as={Col} sm={4} >
-            <Form.Label>Flexi Start :</Form.Label>
+            <h6>Flexi Start</h6>
                 <DatePicker 
                   className="form-control"
                   showTimeSelect
@@ -339,22 +319,12 @@ const Scheduledetails = (props) => {
                   onChange={(date) => onSelectTimeHandlerFlexi(date,props.index,form.setFieldValue,'cst_')}
                 />
                 <Form.Control.Feedback type="invalid">
-                  <Field name={`cst_schedule_details.${props.index}.start_flexy_time`}>
-                      {({
-                            meta
-                        }) => (
-                          <div>
-                              {meta.touched && meta.error && (
-                                  <div className="error">{meta.error}</div>
-                              )}
-                          </div>
-                      )}
-                  </Field>
+                  <ErrorMessage component="div" name={`cst_schedule_details.${props.index}.start_flexy_time`}className="input-feedback" />
                 </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group as={Col} sm={4}>
-            <Form.Label>Flexi End :</Form.Label>
+            <h6>Flexi End </h6>
                 <DatePicker 
                   className="form-control"
                   showTimeSelect
@@ -367,23 +337,13 @@ const Scheduledetails = (props) => {
                   selected={field.value.cst_schedule_details[props.index].end_flexy_time}              
                   onChange={date => form.setFieldValue('cst_schedule_details['+props.index+'].end_flexy_time', date)}
                 />
-              <Form.Control.Feedback type="invalid">
-                <Field name={`cst_schedule_details.${props.index}.end_flexy_time`}>
-                    {({
-                          meta
-                      }) => (
-                        <div>
-                            {meta.touched && meta.error && (
-                                <div className="error">{meta.error}</div>
-                            )}
-                        </div>
-                    )}
-                </Field>
-              </Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={`cst_schedule_details.${props.index}.end_flexy_time`}className="input-feedback" />
+                </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group as={Col} sm={4}>
-            <Form.Label>Break :</Form.Label>
+            <h6>Break </h6>
                 <DatePicker 
                   className="form-control"
                   showTimeSelect
@@ -396,19 +356,9 @@ const Scheduledetails = (props) => {
                   selected={field.value.cst_schedule_details[props.index].break_time}              
                   onChange={date => form.setFieldValue('cst_schedule_details['+props.index+'].break_time', date)}
                 />
-              <Form.Control.Feedback type="invalid">
-                <Field name={`cst_schedule_details.${props.index}.break_time`}>
-                    {({
-                          meta
-                      }) => (
-                        <div>
-                            {meta.touched && meta.error && (
-                                <div className="error">{meta.error}</div>
-                            )}
-                        </div>
-                    )}
-                </Field>
-              </Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={`cst_schedule_details.${props.index}.break_time`}className="input-feedback" />
+                </Form.Control.Feedback>
         </Form.Group>
         </Form.Row>
         </div>
