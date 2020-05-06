@@ -21,7 +21,7 @@ class RestdayWork extends Component {
       on_duty: null,  
       off_duty: null, 
       break: null, 
-      reason: null, 
+      note: null, 
     }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
     <form onSubmit={handleSubmit}>
       		<ContainerWrapper>
@@ -56,10 +56,10 @@ class RestdayWork extends Component {
                   </Col> 
                   </Row> 
 				          <div className="form-group">
-                    <label>Reason:</label>
-                    <textarea className="form-control" rows="3" name="name" onChange={handleChange} value={values.reason} placeholder="Enter Reason..."></textarea>
+                    <label>Note:</label>
+                    <textarea className="form-control" rows="3" name="note" onChange={handleChange} value={values.note} placeholder="Enter Reason..."></textarea>
                   <Form.Control.Feedback type="invalid">
-    		            &nbsp;{errors.reason && touched.reason && errors.reason}
+    		            &nbsp;{errors.note && touched.note && errors.note}
     		          </Form.Control.Feedback> 
                   </div>
                   <button type="submit" className="btn btn-primary">Submit</button>
@@ -82,7 +82,7 @@ const validationSchema = Yup.object().shape({
   on_duty: validation_var,
   off_duty: validation_var,
   break: validation_var,
-  reason: validation_var
+  note: validation_var
 });
 
 

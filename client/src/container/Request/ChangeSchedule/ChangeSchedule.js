@@ -24,7 +24,7 @@ class ChangeSchedule extends Component {
     initialValues={{
 	    date_from: null,  
 	    date_to: null, 
-	    reason: null, 
+	    note: null, 
 	    cst_schedule_details: [],
 	    sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
 	    schedule_policies : schedule_policies,
@@ -71,10 +71,10 @@ class ChangeSchedule extends Component {
 		                  }
 		            })}
 				    <div className="form-group">
-                    	<label>Reason:</label>
-                    	<textarea className="form-control" rows="3" name="name" onChange={handleChange} value={values.reason} placeholder="Enter Reason..."></textarea>
+                    	<label>Note:</label>
+                    	<textarea className="form-control" rows="3" name="note" onChange={handleChange} value={values.note} placeholder="Enter Reason..."></textarea>
                   		<Form.Control.Feedback type="invalid">
-    		            	&nbsp;{errors.reason && touched.reason && errors.reason}
+    		            	&nbsp;{errors.note && touched.note && errors.note}
     		          	</Form.Control.Feedback> 
                   	</div>
 		            <button type="submit" className="btn btn-primary">Submit</button>
@@ -94,7 +94,7 @@ const validation_var = Yup.string().required(required_field).nullable();
 const validationSchema = Yup.object().shape({
 	date_from: validation_var,
 	date_to: validation_var,
-	reason: validation_var,
+	note: validation_var,
 	cst_schedule_details: Yup.array().of(Yup.object().shape({
          start_time: validation_var,
           end_time: validation_var,
