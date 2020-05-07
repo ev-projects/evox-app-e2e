@@ -1,0 +1,168 @@
+<?php
+
+namespace App\Modules\Request\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Http\Controllers\Controller;
+use App\Modules\Request\Http\Requests\ChangeScheduleRequest;
+use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
+
+use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
+use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
+
+use App\Modules\Request\Resources\ChangeScheduleResource;
+use Exception;
+use Illuminate\Http\JsonResponse;
+
+
+class ChangeScheduleController extends Controller
+{   
+    private $changeschedule;
+    private $schedule;
+
+    public function __construct(ChangeScheduleRepositoryInterface $changeschedule,ScheduleRepositoryInterface $schedule){
+        $this->changeschedule = $changeschedule;
+        $this->schedule = $schedule;
+    }
+
+    /**
+     * Creates an Change Schedule Request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(ChangeScheduleRequest $request){
+        try {
+            log_activity( trans('messages.create_change_schedule_attempt') );
+
+        $schedule = $this->schedule->store($request->all());
+        $changeschedule = $this->changeschedule->store( array_merge($request->all(), ['schedule_id' => $schedule->id ]));
+
+            return success_response(
+                trans('messages.create_change_schedule_success'), 
+                new ChangeScheduleResource($changeschedule,$schedule),
+                JsonResponse::HTTP_CREATED
+            );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    /**
+     * Updates an existing Change Schedule Request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ChangeScheduleRequest $request, $id){
+        return "Update";
+    }
+
+    /**
+     * Deletes an existing Change Schedule Request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id){
+        try {
+            log_activity( trans('messages.delete_hange_schedule_attempt') );
+
+            return success_response(
+                trans('messages.delete_change_schedule_success'), 
+                $this->changeschedule->destroy( $id ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    /**
+     * Shows an existing Change Schedule Request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function find($id){
+        try {
+            $changeschedule = $this->changeschedule->find( $id );
+            $schedule = $this->schedule->show( $changeschedule->schedule_id );
+            return success_response(
+                trans('messages.find_change_schedule_success'), 
+                new ChangeScheduleResource( $changeschedule , $schedule  ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+    
+
+    /**
+     * Approves an Change Schedule Request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function approve(ChangeScheduleRequest $request, $id){
+        try {
+            log_activity( trans('messages.pending_change_schedule_attempt') );
+
+            return success_response(
+                trans('messages.pending_change_schedule_success'), 
+                new ChangeScheduleResource( $this->changeschedule->approve( $id ) ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+    
+
+    /**
+     * Declines an Change Schedule Request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function decline(ChangeScheduleRequest $request, $id){
+        try {
+            log_activity( trans('messages.decline_change_schedule_attempt') );
+
+            $changeschedule = $this->changeschedule->decline( $request->all(), $id );
+
+            // Add code to remove the Change Schedule on the specific DTR.
+
+            return success_response(
+                trans('messages.decline_change_schedule_success'), 
+                new ChangeScheduleResource( $this->changeschedule->decline( $request->all(), $id ) ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+    
+
+    /**
+     * Sets an Change Schedule Request to Pending.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function pending($id){
+        try {
+            log_activity( trans('messages.pending_change_schedule_attempt') );
+
+            return success_response(
+                trans('messages.pending_change_schedule_success'), 
+                new ChangeScheduleResource( $this->changeschedule->pending( $id ) ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+
+
+    /**
+     * Cancel an Change Schedule Request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cancel($id){
+        try {
+            log_activity( trans('messages.cancel_change_schedule_attempt') );
+
+            return success_response(
+                trans('messages.cancel_overtime_success'), 
+                new ChangeScheduleResource( $this->changeschedule->cancel( $id ) ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+}

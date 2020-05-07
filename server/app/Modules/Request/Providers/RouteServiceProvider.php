@@ -4,6 +4,9 @@ namespace App\Modules\Request\Providers;
 
 use App\Modules\Request\Repositories\OvertimeRepository;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
+
+use App\Modules\Request\Repositories\ChangeScheduleRepository;
+use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +30,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         //
         $this->app->bind( OvertimeRepositoryInterface::class, OvertimeRepository::class );
+        $this->app->bind( ChangeScheduleRepositoryInterface::class, ChangeScheduleRepository::class );
         // $this->app->bind( OvertimeRepositoryInterface::class, OvertimeRepository::class );
         // $this->app->bind( OvertimeRepositoryInterface::class, OvertimeRepository::class );
         // $this->app->bind( OvertimeRepositoryInterface::class, OvertimeRepository::class );

@@ -3,6 +3,7 @@
 namespace App\Modules\Payroll\Models;
 
 use App\Modules\Request\Models\Overtime;
+use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -435,6 +436,15 @@ class Dtr extends Model
      */
     public function overtime(){
         return $this->hasOne(Overtime::class, 'user_id', 'user_id')->where([
+            'date' => $this->date
+        ]);
+    }
+
+    /**
+     * hasOne Relationship for the Change of Schedule
+     */
+    public function change_schedule(){
+        return $this->hasOne(ChangeSchedule::class, 'user_id', 'user_id')->where([
             'date' => $this->date
         ]);
     }

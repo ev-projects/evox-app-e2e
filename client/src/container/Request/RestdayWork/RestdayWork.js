@@ -57,7 +57,7 @@ class RestdayWork extends Component {
                   </Row> 
 				          <div className="form-group">
                     <label>Note:</label>
-                    <textarea className="form-control" rows="3" name="note" onChange={handleChange} value={values.note} placeholder="Enter Reason..."></textarea>
+                    <textarea className="form-control" rows="3" name="note" onChange={handleChange} value={values.note} placeholder="Enter Note..."></textarea>
                   <Form.Control.Feedback type="invalid">
     		            &nbsp;{errors.note && touched.note && errors.note}
     		          </Form.Control.Feedback> 

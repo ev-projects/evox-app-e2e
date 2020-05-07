@@ -51,5 +51,35 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
         
     });
 
+
+    Route::group(['prefix' => 'changeschedule'], function () {
+    
+        # Insert new Change Schedule Request
+        Route::post('/',     'ChangeScheduleController@store'); 
+
+        # Update existing Change Schedule Request
+        Route::put('/{id}', 'ChangeScheduleController@update');
+
+        # Delete Change Schedule Request
+        Route::delete('/{id}', 'ChangeScheduleController@destroy'); 
+
+        # Find existing Change Schedule Request
+        Route::get('/{id}', 'ChangeScheduleController@find'); 
+
+        # Approves the Change Schedule Request
+        Route::put('/approve/{id}', 'ChangeScheduleController@approve'); 
+
+        # Decline the Change Schedule Request
+        Route::put('/decline/{id}', 'ChangeScheduleController@decline'); 
+
+        # Pending the Change Schedule Request
+        Route::put('/pending/{id}', 'ChangeScheduleController@pending'); 
+
+        # Cancels the Change Schedule Request
+        Route::put('/cancel/{id}', 'ChangeScheduleController@cancel'); 
+        
+    });
+
+
     
 });

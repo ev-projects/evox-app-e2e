@@ -37,7 +37,7 @@ class StoreScheduleRequest extends FormRequest
             inhert_validation_rules( $form_requests, $request ), 
             [
                 'name'              => 'required|string|max:255',
-                'source_type'       => 'required|string|in:template',
+                'source_type'       => 'required|string|in:template,change_schedule',
             ]
         );
         return $rules;
