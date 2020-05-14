@@ -109,7 +109,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     $schedule = ( is_valid( $temporary_schedule ) ? $temporary_schedule : 
                                     ( is_valid( $change_schedule ) ? $change_schedule : $default_schedule ) );
                     
-
+                    # Fetch Rest Day Work of the DTR Instance.
                     $rest_day_work = $dtr->rest_day_work()->first();
 
                     # Check if there's an Approved Rest Day Work for the current DTR. If yes, apply the Rest Day Work instead of the Schedule.
@@ -306,7 +306,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work');
 
                 # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
-                if( $rest_day_work->start_time > $rest_day_work->end_time ) {
+                if( $rest_day_work->start_time >= $rest_day_work->end_time ) {
                     $dtr->end_datetime = add_days_to_timestamp( $dtr->end_datetime, 1 );
                 }
 
