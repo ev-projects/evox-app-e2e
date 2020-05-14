@@ -6,16 +6,17 @@ namespace App\Modules\Request;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
-trait RequestTrait
+trait ApprovalTrait
 {
 
+    /** Sets the Instance to Approved Status */
     public function approve()
     {
         DB::beginTransaction();
         try {
             $current_status = $this->status;
 
-            if( is_under_supervisee( $this->user_id ) && $current_status != get_constant('REQUEST_STATUS.approved') ) {
+            if( is_under_supervisee( $this->user_id ) && !$this->isApproved() ) {
 
                 
                 $this->status       = get_constant('REQUEST_STATUS.approved');
@@ -38,13 +39,14 @@ trait RequestTrait
     }
     
 
+    /** Sets the Instance to Declined Status */
     public function decline()
     {
         DB::beginTransaction();
         try {
             $current_status = $this->status;
 
-            if( is_under_supervisee( $this->user_id ) && $current_status != get_constant('REQUEST_STATUS.declined') ) {
+            if( is_under_supervisee( $this->user_id ) && !$this->isDeclined() ) {
 
                 
                 $this->status       = get_constant('REQUEST_STATUS.declined');
@@ -64,14 +66,14 @@ trait RequestTrait
         }
     }
     
-    
+    /** Sets the Instance to Pending Status */
     public function pending()
     {
         DB::beginTransaction();
         try {
             $current_status = $this->status;
 
-            if( $current_status != get_constant('REQUEST_STATUS.pending') ) {
+            if( !$this->isPending() ) {
 
                 
                 $this->status       = get_constant('REQUEST_STATUS.pending');
@@ -91,14 +93,14 @@ trait RequestTrait
         }
     }
 
-    
+    /** Sets the Instance to Cancel Status */
     public function cancel()
     {
         DB::beginTransaction();
         try {
             $current_status = $this->status;
 
-            if( get_authenticated_user( $this->user_id ) && $current_status != get_constant('REQUEST_STATUS.canceled') ) {
+            if( get_authenticated_user( $this->user_id ) && !$this->isCanceled() ) {
 
                 
                 $this->status       = get_constant('REQUEST_STATUS.canceled');
@@ -118,16 +120,42 @@ trait RequestTrait
         }
     }
 
-
+    /** Sets the Employee Note. */
     public function set_employee_note( $note )
     {
         $this->employee_note = ( isset( $note ) && is_valid( $note ) ) ? $note : null;
     }
 
-
+    /** Sets the Approver Note. */
     public function set_approver_note( $note )
     {
         $this->approver_note = ( isset( $note ) && is_valid( $note ) ) ? $note : null;
+    }
+
+    
+    ########################################################################
+    ############################ Custom Helpers ############################
+    ########################################################################
+
+    
+    /** Checks if the instance is approved. */
+    public function isApproved(){
+        return ( $this->status == get_constant('REQUEST_STATUS.approved') ) ? true : false;
+    }
+
+    /** Checks if the instance is declined. */
+    public function isDenied(){
+        return ( $this->status == get_constant('REQUEST_STATUS.declined') ) ? true : false;
+    }
+
+    /** Checks if the instance is canceled. */
+    public function isCanceled(){
+        return ( $this->status == get_constant('REQUEST_STATUS.canceled') ) ? true : false;
+    }
+
+    /** Checks if the instance is pending. */
+    public function isPending(){
+        return ( $this->status == get_constant('REQUEST_STATUS.pending') ) ? true : false;
     }
 
 }

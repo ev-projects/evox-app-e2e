@@ -82,4 +82,36 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
 
 
     
+
+    # API Call for Rest Day Work
+    Route::group(['prefix' => 'rest_day_work'], function () {
+    
+        # Insert new Rest Day Work
+        Route::post('/',     'RestDayWorkController@store'); //->middleware('permission:add_rest_day_work');
+
+        # Update existing Rest Day Work
+        Route::put('/{id}', 'RestDayWorkController@update'); //->middleware('permission:update_rest_day_work')
+
+        # Delete Rest Day Work
+        Route::delete('/{id}', 'RestDayWorkController@destroy'); //->middleware('permission:delete_rest_day_work');
+
+        # Find existing Rest Day Work
+        Route::get('/{id}', 'RestDayWorkController@find'); //->middleware('permission:view_rest_day_work')
+
+        # Approves the Rest Day Work
+        Route::put('/approve/{id}', 'RestDayWorkController@approve'); //->middleware('permission:approval_of_request');
+
+        # Decline the Rest Day Work
+        Route::put('/decline/{id}', 'RestDayWorkController@decline'); //->middleware('permission:approval_of_request');
+
+        # Pending the Rest Day Work
+        Route::put('/pending/{id}', 'RestDayWorkController@pending'); //->middleware('permission:approval_of_request');
+
+        # Cancels the Rest Day Work
+        Route::put('/cancel/{id}', 'RestDayWorkController@cancel'); //->middleware('permission:approval_of_request');
+        
+    });
+
+
+    
 });

@@ -8,6 +8,7 @@ use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\User\Models\User;
 use Carbon\Carbon;
@@ -46,20 +47,58 @@ class DtrRepository implements DtrRepositoryInterface{
             # Iterates per User per Date.
             foreach( $user_collection as $user ) {
 
+                foreach( $date_array as $date) {
+
+                    # Create the DTR Insert Value Array Structure
+                    $dtr_insert_values =  [
+                        'user_id'               => "'".$user->id."'",
+                        'date'                  => "'".$date."'",
+                        'updated_by'            => 'NOW()',
+                        'created_by'            => 'NOW()'
+                    ];
+
+                    # Append the imploded DTR Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
+                    $dtr_insert_array[] = implode(",", $dtr_insert_values);
+                } 
+            }
+
+            # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
+            $dtr_insert_query = "INSERT INTO dtrs (
+                                    user_id, 
+                                    date,
+                                    updated_at, 
+                                    created_at) 
+                                VALUES (".implode( "), (", $dtr_insert_array ).") 
+                                ON DUPLICATE KEY UPDATE
+                                    user_id                 = VALUES(user_id), 
+                                    date                    = VALUES(date), 
+                                    created_at              = IF(created_at IS NULL, VALUES(created_at), created_at),
+                                    updated_at              = VALUES(updated_at)";
+
+            # Executes the Batch Insert Query
+            DB::insert($dtr_insert_query);
+                
+            
+            # Apply the Schedule of the Dates that's been generated.
+            
+            foreach( $user_collection as $user ) {
+
                 # Fetch the Default Schedule for the current User.
                 $default_schedule = $user->defaultSchedule()->first();
-
+    
                 # Fetch the Temporary Schedules for the current User within the Date Range
-                $temporary_schedule_collection = $user->temporarySchedules($start_date, $end_date)->get();
-                
-                foreach( $date_array as $date) {
+                $temporary_schedule_collection = $user->temporarySchedules( $start_date, $end_date )->get();
+
+                foreach( $user->dtr( $start_date, $end_date )->get() as $dtr ) {
+
+                    $date = $dtr->date;
 
                     # Gets the Latest Temporary Schedule that the current $date is in scope.
                     $temporary_schedule = $temporary_schedule_collection->filter(function ( $schedule ) use ( $date ) {
                         return ( $date >= $schedule->valid_from && $date <= $schedule->valid_to) ;
-                     })
-                     ->sortByDesc('updated_at')
-                     ->first();
+                    })
+                    ->sortByDesc('updated_at')
+                    ->first();
 
                     # Gets the Change Schedule that the current $date is in scope
                     // Put code here...
@@ -70,62 +109,48 @@ class DtrRepository implements DtrRepositoryInterface{
                     $schedule = ( is_valid( $temporary_schedule ) ? $temporary_schedule : 
                                     ( is_valid( $change_schedule ) ? $change_schedule : $default_schedule ) );
                     
-                    # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
-                    $schedule_detail = ( is_valid( $schedule ) ? $schedule->getPerDay( get_day_from_date($date) ) : null);
+
+                    $rest_day_work = $dtr->rest_day_work()->first();
+
+                    # Check if there's an Approved Rest Day Work for the current DTR. If yes, apply the Rest Day Work instead of the Schedule.
+                    if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {
+
+                        $this->apply_rest_day_work_to_dtr( $rest_day_work );
                     
-                    # Get the Parsed Schedule Detail to Date
-                    $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $date ) : null);
-
-                    # Create the DTR Insert Value Array Structure
-                    $dtr_insert_values =  [
-                        'user_id'               => "'".$user->id."'",
-                        'date'                  => "'".$date."'",
-                        'start_datetime'        =>  ( is_valid($parsed_schedule_detail['start_datetime']) ) ? $parsed_schedule_detail['start_datetime'] : 'null',
-                        'end_datetime'          =>  ( is_valid($parsed_schedule_detail['end_datetime']) ) ? $parsed_schedule_detail['end_datetime'] : 'null',
-                        'start_flexy_datetime'  =>  ( is_valid($parsed_schedule_detail['start_flexy_datetime']) ) ? $parsed_schedule_detail['start_flexy_datetime'] : 'null',
-                        'end_flexy_datetime'    =>  ( is_valid($parsed_schedule_detail['end_flexy_datetime']) ) ? $parsed_schedule_detail['end_flexy_datetime'] : 'null',
-                        'break_time'            =>  ( is_valid($parsed_schedule_detail['break_time']) ) ? $parsed_schedule_detail['break_time'] : 'null',
-                        'is_rest_day'           =>  ( is_valid($schedule_detail) ) ? 0 : 1,
-                        'source_type_tagging'   =>  ( is_valid($schedule) ) ? "'".$schedule->source_type."'" : 'null',
-                        'updated_by'            => 'NOW()',
-                        'created_by'            => 'NOW()'
-                    ];
-
-                    # Append the imploded DTR Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
-                    $dtr_insert_array[] = implode(",", $dtr_insert_values);
-                } 
+                    # Checks if there's a valid schedule to apply on the DTR.
+                    } elseif( is_valid( $schedule ) ) {
+                        
+                        # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
+                        $schedule_detail = ( is_valid( $schedule ) ? $schedule->getPerDay( get_day_from_date( $date ) ) : null);
+                        
+                        # Get the Parsed Schedule Detail to Date
+                        $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $date ) : null);
+    
+                        # Update the DTR properties
+                        $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
+                        $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
+                        $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
+                        $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
+                        $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                        
+                        $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : $dtr->is_rest_day;
+                        $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
+                        $dtr->update();
+    
+                        # Delete the existing DTR Policies before saving the new ones.
+                        $dtr->policies()->delete();
+    
+                        # Save the DTR Policies base on the Schedule Policies.
+                        $this->save_dtr_policies( $dtr, $schedule->schedule_policies()->get() );
+                    }
+                }
             }
+
             
-            # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
-            $dtr_insert_query = "INSERT INTO dtrs (
-                                        user_id, 
-                                        date, 
-                                        start_datetime,
-                                        end_datetime,
-                                        start_flexy_datetime,
-                                        end_flexy_datetime,
-                                        break_time,
-                                        is_rest_day,
-                                        source_type_tagging,
-                                        updated_at, 
-                                        created_at) 
-                                    VALUES (".implode( "), (", $dtr_insert_array ).") 
-                                    ON DUPLICATE KEY UPDATE
-                                        user_id                 = VALUES(user_id), 
-                                        date                    = VALUES(date), 
-                                        start_datetime          = VALUES(start_datetime), 
-                                        end_datetime            = VALUES(end_datetime), 
-                                        start_flexy_datetime    = VALUES(start_flexy_datetime), 
-                                        end_flexy_datetime      = VALUES(end_flexy_datetime), 
-                                        break_time              = VALUES(break_time), 
-                                        is_rest_day             = VALUES(is_rest_day), 
-                                        source_type_tagging     = VALUES(source_type_tagging), 
-                                        created_at              = IF(created_at IS NULL, VALUES(created_at), created_at),
-                                        updated_at              = VALUES(updated_at)";
+
             
-            # Executes the Batch Insert Query
             $result = [
-                "result" => DB::insert($dtr_insert_query), 
+                // "result" => , 
                 "total_dtr_count" => count( $dtr_insert_array ),
                 "dtr"   => $dtr_insert_array
             ];
@@ -145,6 +170,8 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
+
+
 
     /**
      *  Responsible for Applying of Schedule to DTR.
@@ -188,14 +215,14 @@ class DtrRepository implements DtrRepositoryInterface{
         
                     # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
         
-                    # If the Schedule Instance is Change Schedule AND the current DTR tagging was already set as Temporary, sets the Update Flag to FALSE
-                    if( $schedule->isChangeSchedule() && $dtr->isTemporary() ) {
+                    # If the Schedule Instance is Change Schedule AND the current DTR tagging was already set as Temporary/Rest Day Work, sets the Update Flag to FALSE
+                    if( $schedule->isChangeSchedule() && ($dtr->isTemporary() || $dtr->isRestDayWork()) ) {
                         $to_update_flag = false;
                         $result['not_updated'][] = $dtr;
                     }
         
-                    # If the Schedule Instance is Default AND the current DTR tagging was already set as Temporary/Change Schedule, sets the Update Flag to FALSE
-                    if( $schedule->isDefault() && ($dtr->isTemporary() || $dtr->isChangeSchedule()) ) {
+                    # If the Schedule Instance is Default AND the current DTR tagging was already set as Temporary/Change Schedule/Rest Day Work, sets the Update Flag to FALSE
+                    if( $schedule->isDefault() && ($dtr->isTemporary() || $dtr->isChangeSchedule() || $dtr->isRestDayWork()) ) {
                         $to_update_flag = false;
                         $result['not_updated'][] = $dtr;
                     }
@@ -238,6 +265,62 @@ class DtrRepository implements DtrRepositoryInterface{
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             return $result;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+    
+
+    /**
+     *  Responsible for Applying of Rest Day Work to DTR.
+     * @param RestDayWork $rest_day_work
+     * @return Dtr $dtr
+     */
+    public function apply_rest_day_work_to_dtr( RestDayWork $rest_day_work )
+    {
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'rest_day_work' => $rest_day_work], "dtr");
+
+            # Checks if the $rest_day_work instance are valid.
+            if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {
+
+                # Gets the DTR related on the Rest Day Work.
+                $dtr = $rest_day_work->dtr()->first();
+
+                # Updates the DTR properties
+                $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
+                $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
+                $dtr->start_flexy_datetime  =  null;
+                $dtr->end_flexy_datetime    =  null;
+                $dtr->break_time            =  $rest_day_work->break_time;
+                $dtr->is_rest_day           =  true;
+                $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work');
+
+                # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
+                if( $rest_day_work->start_time > $rest_day_work->end_time ) {
+                    $dtr->end_datetime = add_days_to_timestamp( $dtr->end_datetime, 1 );
+                }
+
+                # Updates the DTR with the Rest Day Work Details.
+                $dtr->update();
+
+                # Compute for the Items
+                $this->compute_payroll_items( $dtr );
+                
+                DB::commit();
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+                return $dtr;
+            }
 
         } catch (Exception $e) {
             DB::rollback();
@@ -534,7 +617,7 @@ class DtrRepository implements DtrRepositoryInterface{
             $dtr->payroll_items()->delete();
 
             $payroll_items = $this->computation->get_computed_payroll_items( $dtr );
-
+            
             $dtr->payroll_items()->saveMany($payroll_items);
 
             DB::commit();

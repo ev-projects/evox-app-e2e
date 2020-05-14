@@ -5,6 +5,7 @@ namespace App\Modules\User\Models;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Request\Models\Overtime;
+use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Schedule\Models\Schedule;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -120,6 +121,11 @@ class User extends Authenticatable implements JWTSubject
     # Fetch the User's Overtime Requests
     public function overtimes(){
         return $this->hasMany(Overtime::class, 'user_id', 'id');
+    }
+
+    # Fetch the User's Rest Day Work Requests
+    public function rest_day_works(){
+        return $this->hasMany(RestDayWork::class, 'user_id', 'id');
     }
 
     # Fetch the User's Schedule (Source type is Temporary)
