@@ -288,7 +288,7 @@ class DtrRepository implements DtrRepositoryInterface{
         DB::beginTransaction();
         try {
 
-            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'rest_day_work' => $rest_day_work], "dtr");
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'rest_day_work' => $rest_day_work ], "dtr");
 
             # Checks if the $rest_day_work instance are valid.
             if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {

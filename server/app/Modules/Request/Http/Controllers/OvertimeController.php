@@ -5,6 +5,7 @@ namespace App\Modules\Request\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Http\Requests\OvertimeRequest;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
 use App\Modules\Request\Resources\OvertimeResource;
@@ -14,9 +15,12 @@ use Illuminate\Http\JsonResponse;
 class OvertimeController extends Controller
 {   
     protected $overtime;
+    protected $dtr;
 
-    public function __construct(OvertimeRepositoryInterface $overtime){
+    public function __construct(OvertimeRepositoryInterface $overtime,
+                                DtrRepositoryInterface $dtr){
         $this->overtime = $overtime;
+        $this->dtr = $dtr;
     }
 
     /**
@@ -101,7 +105,8 @@ class OvertimeController extends Controller
 
             $overtime = $this->overtime->approve( $request->all(), $id );
 
-            // Add code to apply the Overtime on the specific DTR.
+            // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
+            $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
 
             return success_response(
                 trans('messages.approve_overtime_success'), 

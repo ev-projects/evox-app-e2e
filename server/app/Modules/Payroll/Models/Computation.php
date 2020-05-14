@@ -619,175 +619,166 @@ class Computation
             $overtime_start_datetime = 0;
             $overtime_end_datetime = 0;
 
-            /**
-             *  These are the Test Data for Overtime since Overtime is being submitted through request which is not yet existing.
-             */
-                // Test day for Pre-Overtime: 
-                $overtime_type = get_constant('OVERTIME_TYPE.pre');
-                $overtime_amount = $this->actual_time_start_datetime - $this->dtr->time_in;
-                // $overtime_amount = 2*3600;
 
-                // Test data for Post-Overtime:
-                // $overtime_type = get_constant('OVERTIME_TYPE.post');
-                // $overtime_amount = $this->dtr->time_out - $this->actual_time_end_datetime;
-                // $overtime_amount = 1*3600;
-            /** */
+            // Fetch the Overtime Request for the current DTR.
+            $overtime_request = $this->dtr->overtime()->first();
+            
+            // Checks if the Fetched Overtime exist AND is Approved. If so, proceed on the Computation Business logic.
+            if( is_valid( $overtime_request )  && $overtime_request->isApproved() ) {
 
-            // dd( seconds_to_time( $overtime_amount ), timestamp_to_datetime( $this->actual_time_start_datetime ), timestamp_to_datetime( $this->actual_time_end_datetime ) );
-           
-            // If the Overtime Type is a Pre-Overtime.
-            if( $overtime_type == get_constant('OVERTIME_TYPE.pre') ) {
+                // If the Overtime Type is a Pre-Overtime.
+                if( $overtime_request->type == get_constant('OVERTIME_TYPE.pre') ) {
 
-                // Set the Overtime Start-Datetime by subtracting the Overtime Amount from the Actual Time Start-Datetime.
-                $overtime_start_datetime = $this->actual_time_start_datetime -  $overtime_amount;
+                    // Set the Overtime Start-Datetime by subtracting the Overtime Amount from the Actual Time Start-Datetime.
+                    $overtime_start_datetime = $this->actual_time_start_datetime -  $overtime_request->amount;
 
-                // Set the Overtime End-Datetime using the Actual Time Start-Datetime.
-                $overtime_end_datetime   = $this->actual_time_start_datetime;
+                    // Set the Overtime End-Datetime using the Actual Time Start-Datetime.
+                    $overtime_end_datetime   = $this->actual_time_start_datetime;
 
-                // If the Time-In is between the Overtime Datetime, use the Time-In as Overtime Start-Datetime to gate this Scenario below:
-                //  - The User files Higher Overtime Amount vs the Actual Overtime Amount base from the Timelogs.
-                if( $this->dtr->time_in >= $overtime_start_datetime && 
-                    $this->dtr->time_in <= $overtime_end_datetime ){
-                    $overtime_start_datetime = $this->dtr->time_in;
-                }
-                
-                # Sets the Date to compare to 12AM of the current Day
-                $date_to_compare = datetime_to_timestamp($this->dtr->date);
+                    // If the Time-In is between the Overtime Datetime, use the Time-In as Overtime Start-Datetime to gate this Scenario below:
+                    //  - The User files Higher Overtime Amount vs the Actual Overtime Amount base from the Timelogs.
+                    if( $this->dtr->time_in >= $overtime_start_datetime && 
+                        $this->dtr->time_in <= $overtime_end_datetime ){
+                        $overtime_start_datetime = $this->dtr->time_in;
+                    }
+                    
+                    # Sets the Date to compare to 12AM of the current Day
+                    $date_to_compare = datetime_to_timestamp($this->dtr->date);
 
-            // If the Overtime Type is a Post-Overtime.
-            } elseif( $overtime_type == get_constant('OVERTIME_TYPE.post') ) {
+                // If the Overtime Type is a Post-Overtime.
+                } elseif( $overtime_request->type == get_constant('OVERTIME_TYPE.post') ) {
 
-                // Set the Overtime Start-Datetime using the Actual Time End-Datetime.
-                $overtime_start_datetime = $this->actual_time_end_datetime;
+                    // Set the Overtime Start-Datetime using the Actual Time End-Datetime.
+                    $overtime_start_datetime = $this->actual_time_end_datetime;
 
-                // Set the Overtime Start-Datetime by adding the Overtime Amount to the Actual Time End-Datetime.
-                $overtime_end_datetime   = $this->actual_time_end_datetime + $overtime_amount;
+                    // Set the Overtime Start-Datetime by adding the Overtime Amount to the Actual Time End-Datetime.
+                    $overtime_end_datetime   = $this->actual_time_end_datetime + $overtime_request->amount;
 
-                // If the Time-Out is between the Overtime Datetime, use the Time-Out as Overtime End-Datetime to gate this Scenario below:
-                //  - The User files Higher Overtime Amount vs the Actual Overtime Amount base from the Timelogs.
-                if( $this->dtr->time_out >= $overtime_start_datetime && 
-                    $this->dtr->time_out <= $overtime_end_datetime ){
-                    $overtime_end_datetime = $this->dtr->time_out;
-                }
-
-                # Sets the Date to compare to 12AM of the Next Day
-                $date_to_compare = add_days_to_timestamp( $this->dtr->date, 1);
-            }
-
-            // dd( seconds_to_time( $overtime_amount ), timestamp_to_datetime( $overtime_start_datetime ), timestamp_to_datetime( $overtime_end_datetime ) );
-
-            # Set the Expected Night Diff Start and End Time of the specific DTR base from the Expected Work Start-Datetime.
-            $night_diff_datetime_array = $this->get_night_diff_datetime( $overtime_start_datetime );
-
-
-            # If Overtime Start and End-Datetime is within the same Date.
-            if( timestamp_to_date( $overtime_start_datetime ) == $this->dtr->date &&
-                timestamp_to_date( $overtime_start_datetime ) == timestamp_to_date( $overtime_end_datetime ) ) {
-
-                # Compute the Overtime Night Diff. of Day 1 by setting the (Time Start = Overtime Start-Datetime) and (Time End = Overtime End-Datetime).
-                $overtime_night_diff = $this->get_total_night_diff([
-                    'time_start_to_compute'         => $overtime_start_datetime,
-                    'time_end_to_compute'           => $overtime_end_datetime,
-                    'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
-                    'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
-                ]);
-
-                # Compute the Overtime of Day 1 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
-                $overtime = ($overtime_end_datetime - $overtime_start_datetime) - $overtime_night_diff;
-
-
-            } else {
-
-                # Discern if the Overtime Start-Datetime is BEFORE the Date to Compare, compute for Overtime, Overtime Night Diff., Overtime Night Diff. Overlapped, and Overtime Overlapped.
-                if( $overtime_start_datetime < $date_to_compare ) {
-
-                    # If the Overtime Request is a Pre-Overtime AND the Overtime Start-Datetime started before the Current DTR Date (Previous Day), Compute for Underlapped Details. 
-                    if( $overtime_type == get_constant('OVERTIME_TYPE.pre') &&
-                        $overtime_start_datetime < datetime_to_timestamp($this->dtr->date) ) {
-
-                        # Compute the Overtime Night Diff. Underlapped of Day 0 by setting the getting the difference between Overtime Start-Datetime AND 12 Midnight of the Next Day.
-                        $overtime_night_diff_underlapped = $this->get_total_night_diff([
-                            'time_start_to_compute'         => $overtime_start_datetime,
-                            'time_end_to_compute'           => $date_to_compare,
-                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
-                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
-                        ]);
-
-                        # Compute the Overtime Underlapped of Day 0 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
-                        $overtime_underlapped = ($date_to_compare - $overtime_start_datetime) - $overtime_night_diff_underlapped;
-
-                        
-                        # Compute the Overtime Night Diff. of Day 1 by getting the difference between 12 Midnight of the Next Day AND Overtime End-Datetime.
-                        $overtime_night_diff = $this->get_total_night_diff([
-                            'time_start_to_compute'         => $date_to_compare,
-                            'time_end_to_compute'           => $overtime_end_datetime,
-                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
-                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
-                        ]);
-
-                        # Compute the Overtime  of Day 1 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
-                        $overtime = ($overtime_end_datetime - $date_to_compare) - $overtime_night_diff;
-                        
-                    # else, Compute for Overlapped Details. 
-                    } else {
-
-                        # Compute the Overtime Night Diff. of Day 1 by setting the getting the difference between Overtime Start-Datetime AND 12 Midnight of the Next Day.
-                        $overtime_night_diff = $this->get_total_night_diff([
-                            'time_start_to_compute'         => $overtime_start_datetime,
-                            'time_end_to_compute'           => $date_to_compare,
-                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
-                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
-                        ]);
-
-                        # Compute the Overtime of Day 1 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
-                        $overtime = ($date_to_compare - $overtime_start_datetime) - $overtime_night_diff;
-
-                        
-                        # Compute the Overtime Night Diff. Overlapped of Day 2 by getting the difference between 12 Midnight of the Next Day AND Overtime End-Datetime.
-                        $overtime_night_diff_overlapped = $this->get_total_night_diff([
-                            'time_start_to_compute'         => $date_to_compare,
-                            'time_end_to_compute'           => $overtime_end_datetime,
-                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
-                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
-                        ]);
-
-                        # Compute the Overtime Overlapped of Day 2 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
-                        $overtime_overlapped = ($overtime_end_datetime - $date_to_compare) - $overtime_night_diff_overlapped;
-                        
+                    // If the Time-Out is between the Overtime Datetime, use the Time-Out as Overtime End-Datetime to gate this Scenario below:
+                    //  - The User files Higher Overtime Amount vs the Actual Overtime Amount base from the Timelogs.
+                    if( $this->dtr->time_out >= $overtime_start_datetime && 
+                        $this->dtr->time_out <= $overtime_end_datetime ){
+                        $overtime_end_datetime = $this->dtr->time_out;
                     }
 
+                    # Sets the Date to compare to 12AM of the Next Day
+                    $date_to_compare = add_days_to_timestamp( $this->dtr->date, 1);
+                }
+
+                // dd( seconds_to_time( $overtime_request->amount ), timestamp_to_datetime( $overtime_start_datetime ), timestamp_to_datetime( $overtime_end_datetime ) );
+
+                # Set the Expected Night Diff Start and End Time of the specific DTR base from the Expected Work Start-Datetime.
+                $night_diff_datetime_array = $this->get_night_diff_datetime( $overtime_start_datetime );
 
 
-                # Discern if the Time In is BEYOND the 12AM of the Next Day, compute for Overtime Night Diff. Overlapped and Overtime Overlapped only.
-                } else {
-                    
-                    # Compute the Overtime Night Diff. Overlapped of Day 2 by getting the difference between 12 Midnight of the Next Day AND Overtime End-Datetime.
-                    $overtime_night_diff_overlapped = $this->get_total_night_diff([
+                # If Overtime Start and End-Datetime is within the same Date.
+                if( timestamp_to_date( $overtime_start_datetime ) == $this->dtr->date &&
+                    timestamp_to_date( $overtime_start_datetime ) == timestamp_to_date( $overtime_end_datetime ) ) {
+
+                    # Compute the Overtime Night Diff. of Day 1 by setting the (Time Start = Overtime Start-Datetime) and (Time End = Overtime End-Datetime).
+                    $overtime_night_diff = $this->get_total_night_diff([
                         'time_start_to_compute'         => $overtime_start_datetime,
                         'time_end_to_compute'           => $overtime_end_datetime,
                         'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
                         'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
                     ]);
 
-                    # Compute the Overtime Overlapped of Day 2 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
-                    $overtime_overlapped = ($overtime_end_datetime - $overtime_start_datetime) - $overtime_night_diff_overlapped;;
-                    
+                    # Compute the Overtime of Day 1 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
+                    $overtime = ($overtime_end_datetime - $overtime_start_datetime) - $overtime_night_diff;
+
+
+                } else {
+
+                    # Discern if the Overtime Start-Datetime is BEFORE the Date to Compare, compute for Overtime, Overtime Night Diff., Overtime Night Diff. Overlapped, and Overtime Overlapped.
+                    if( $overtime_start_datetime < $date_to_compare ) {
+
+                        # If the Overtime Request is a Pre-Overtime AND the Overtime Start-Datetime started before the Current DTR Date (Previous Day), Compute for Underlapped Details. 
+                        if( $overtime_request->type == get_constant('OVERTIME_TYPE.pre') &&
+                            $overtime_start_datetime < datetime_to_timestamp($this->dtr->date) ) {
+
+                            # Compute the Overtime Night Diff. Underlapped of Day 0 by setting the getting the difference between Overtime Start-Datetime AND 12 Midnight of the Next Day.
+                            $overtime_night_diff_underlapped = $this->get_total_night_diff([
+                                'time_start_to_compute'         => $overtime_start_datetime,
+                                'time_end_to_compute'           => $date_to_compare,
+                                'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                                'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                            ]);
+
+                            # Compute the Overtime Underlapped of Day 0 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
+                            $overtime_underlapped = ($date_to_compare - $overtime_start_datetime) - $overtime_night_diff_underlapped;
+
+                            
+                            # Compute the Overtime Night Diff. of Day 1 by getting the difference between 12 Midnight of the Next Day AND Overtime End-Datetime.
+                            $overtime_night_diff = $this->get_total_night_diff([
+                                'time_start_to_compute'         => $date_to_compare,
+                                'time_end_to_compute'           => $overtime_end_datetime,
+                                'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                                'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                            ]);
+
+                            # Compute the Overtime  of Day 1 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
+                            $overtime = ($overtime_end_datetime - $date_to_compare) - $overtime_night_diff;
+                            
+                        # else, Compute for Overlapped Details. 
+                        } else {
+
+                            # Compute the Overtime Night Diff. of Day 1 by setting the getting the difference between Overtime Start-Datetime AND 12 Midnight of the Next Day.
+                            $overtime_night_diff = $this->get_total_night_diff([
+                                'time_start_to_compute'         => $overtime_start_datetime,
+                                'time_end_to_compute'           => $date_to_compare,
+                                'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                                'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                            ]);
+
+                            # Compute the Overtime of Day 1 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
+                            $overtime = ($date_to_compare - $overtime_start_datetime) - $overtime_night_diff;
+
+                            
+                            # Compute the Overtime Night Diff. Overlapped of Day 2 by getting the difference between 12 Midnight of the Next Day AND Overtime End-Datetime.
+                            $overtime_night_diff_overlapped = $this->get_total_night_diff([
+                                'time_start_to_compute'         => $date_to_compare,
+                                'time_end_to_compute'           => $overtime_end_datetime,
+                                'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                                'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                            ]);
+
+                            # Compute the Overtime Overlapped of Day 2 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
+                            $overtime_overlapped = ($overtime_end_datetime - $date_to_compare) - $overtime_night_diff_overlapped;
+                            
+                        }
+
+
+
+                    # Discern if the Time In is BEYOND the 12AM of the Next Day, compute for Overtime Night Diff. Overlapped and Overtime Overlapped only.
+                    } else {
+                        
+                        # Compute the Overtime Night Diff. Overlapped of Day 2 by getting the difference between 12 Midnight of the Next Day AND Overtime End-Datetime.
+                        $overtime_night_diff_overlapped = $this->get_total_night_diff([
+                            'time_start_to_compute'         => $overtime_start_datetime,
+                            'time_end_to_compute'           => $overtime_end_datetime,
+                            'night_diff_start_datetime'     => $night_diff_datetime_array['start_datetime'],
+                            'night_diff_end_datetime'       => $night_diff_datetime_array['end_datetime'],
+                        ]);
+
+                        # Compute the Overtime Overlapped of Day 2 by getting the difference between Overtime Start and End-Datetime and subtracting the Overtime Night Diff. from the total.
+                        $overtime_overlapped = ($overtime_end_datetime - $overtime_start_datetime) - $overtime_night_diff_overlapped;;
+                        
+                    }
                 }
-            }
 
 
-            // dd( 'overtime = ' . seconds_to_time( $overtime ), 
-            //     'overtime_night_diff = ' . seconds_to_time( $overtime_night_diff ), 
-            //     'overtime_night_diff_underlapped = ' . seconds_to_time( $overtime_night_diff_underlapped ), 
-            //     'overtime_underlapped = ' . seconds_to_time( $overtime_underlapped ), 
-            //     'overtime_night_diff_overlapped = ' . seconds_to_time( $overtime_night_diff_overlapped ), 
-            //     'overtime_overlapped = ' . seconds_to_time( $overtime_overlapped ), 
-            //     timestamp_to_datetime( $overtime_start_datetime ), 
-            //     timestamp_to_datetime( $overtime_end_datetime ) );
+                // dd( 'overtime = ' . seconds_to_time( $overtime ), 
+                //     'overtime_night_diff = ' . seconds_to_time( $overtime_night_diff ), 
+                //     'overtime_night_diff_underlapped = ' . seconds_to_time( $overtime_night_diff_underlapped ), 
+                //     'overtime_underlapped = ' . seconds_to_time( $overtime_underlapped ), 
+                //     'overtime_night_diff_overlapped = ' . seconds_to_time( $overtime_night_diff_overlapped ), 
+                //     'overtime_overlapped = ' . seconds_to_time( $overtime_overlapped ), 
+                //     timestamp_to_datetime( $overtime_start_datetime ), 
+                //     timestamp_to_datetime( $overtime_end_datetime ) );
 
             
            /* Double checks the Validity of the Computed Overtime, Overtime Night Diff., Overtime Night Diff. Overlapped, and Overtime Overlapped. If not valid, set it to Default value (0) */
-                
+                        
                 $overtime                        = ( $overtime > 0 ) ? $overtime : 0;
                 $overtime_night_diff             = ( $overtime_night_diff > 0 ) ? $overtime_night_diff : 0;
 
@@ -857,6 +848,8 @@ class Computation
                         'tag'   => get_constant('PAYROLL_ITEM_TAGS.overlapped')
                     ]) );
                 }
+
+            }
 
             return $dtr_payroll_item_collection;
 
