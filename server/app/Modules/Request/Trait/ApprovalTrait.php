@@ -16,9 +16,8 @@ trait ApprovalTrait
         try {
             $current_status = $this->status;
 
-            if( is_under_supervisee( $this->user_id ) && !$this->isApproved() ) {
+            if( is_under_supervisee( $this->user_id ) && $this->isPending() ) {
 
-                
                 $this->status       = get_constant('REQUEST_STATUS.approved');
                 $this->updated_by   = auth()->user()->id;
                 $this->save();
@@ -26,7 +25,7 @@ trait ApprovalTrait
                 DB::commit();
                 log_to_file('info', 'Request changed from ['.$current_status.'] to ['. get_constant('REQUEST_STATUS.approved').']', $this->attributes, 'request');
             } else {
-                log_to_file('info', 'Request is already ['. get_constant('REQUEST_STATUS.approved').']', $this->attributes, 'request');
+                log_to_file('info', 'Request\'s status cannot be changed.', $this->attributes, 'request');
             }
 
             return $this;
@@ -46,9 +45,8 @@ trait ApprovalTrait
         try {
             $current_status = $this->status;
 
-            if( is_under_supervisee( $this->user_id ) && !$this->isDeclined() ) {
+            if( is_under_supervisee( $this->user_id ) &&  $this->isPending() ) {
 
-                
                 $this->status       = get_constant('REQUEST_STATUS.declined');
                 $this->updated_by   = auth()->user()->id;
                 $this->save();
@@ -56,7 +54,7 @@ trait ApprovalTrait
                 DB::commit();
                 log_to_file('info', 'Request changed from ['.$current_status.'] to ['. get_constant('REQUEST_STATUS.declined').']', $this->attributes, 'request');
             } else {
-                log_to_file('info', 'Request is already ['. get_constant('REQUEST_STATUS.declined').']', $this->attributes, 'request');
+                log_to_file('info', 'Request\'s status cannot be changed.', $this->attributes, 'request');
             }
 
         } catch( Exception $e) {
@@ -75,7 +73,6 @@ trait ApprovalTrait
 
             if( !$this->isPending() ) {
 
-                
                 $this->status       = get_constant('REQUEST_STATUS.pending');
                 $this->updated_by   = auth()->user()->id;
                 $this->save();
@@ -83,7 +80,7 @@ trait ApprovalTrait
                 DB::commit();
                 log_to_file('info', 'Request changed from ['.$current_status.'] to ['. get_constant('REQUEST_STATUS.pending').']', $this->attributes, 'request');
             } else {
-                log_to_file('info', 'Request is already ['. get_constant('REQUEST_STATUS.pending').']', $this->attributes, 'request');
+                log_to_file('info', 'Request\'s status cannot be changed.', $this->attributes, 'request');
             }
 
         } catch( Exception $e) {
@@ -100,9 +97,8 @@ trait ApprovalTrait
         try {
             $current_status = $this->status;
 
-            if( get_authenticated_user( $this->user_id ) && !$this->isCanceled() ) {
+            if( get_authenticated_user( $this->user_id ) &&  $this->isPending() ) {
 
-                
                 $this->status       = get_constant('REQUEST_STATUS.canceled');
                 $this->updated_by   = auth()->user()->id;
                 $this->save();
@@ -110,7 +106,7 @@ trait ApprovalTrait
                 DB::commit();
                 log_to_file('info', 'Request changed from ['.$current_status.'] to ['. get_constant('REQUEST_STATUS.canceled').']', $this->attributes, 'request');
             } else {
-                log_to_file('info', 'Request is already ['. get_constant('REQUEST_STATUS.canceled').']', $this->attributes, 'request');
+                log_to_file('info', 'Request\'s status cannot be changed.', $this->attributes, 'request');
             }
 
         } catch( Exception $e) {
@@ -144,7 +140,7 @@ trait ApprovalTrait
     }
 
     /** Checks if the instance is declined. */
-    public function isDenied(){
+    public function isDeclined(){
         return ( $this->status == get_constant('REQUEST_STATUS.declined') ) ? true : false;
     }
 
