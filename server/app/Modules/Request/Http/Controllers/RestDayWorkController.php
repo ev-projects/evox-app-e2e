@@ -129,7 +129,6 @@ class RestDayWorkController extends Controller
             $rest_day_work = $this->rest_day_work->decline( $request->all(), $id );
 
             // Add code to remove the Rest Day Work on the specific DTR.
-            dd( $rest_day_work );
 
             return success_response(
                 trans('messages.decline_rest_day_work_success'), 
