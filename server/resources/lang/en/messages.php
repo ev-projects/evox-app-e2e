@@ -83,13 +83,57 @@ return [
     'pending_overtime_success' => 'The Overtime Request is now set to Pending!',
 
     'cancel_overtime_attempt' => 'Canceling of Overtime Request Attempt',
-    'cancel_overtime_success' => 'The Overtime Request is now Canceled!'
+    'cancel_overtime_success' => 'The Overtime Request is now Canceled!',
 
+    
+    'create_change_schedule_attempt' => 'Create Change Schedule Request Attempt',
+    'create_change_schedule_success' => 'A new Change Schedule Request is now created!',
+
+    'update_change_schedule_attempt' => 'Update Change Schedule Request Attempt',
+    'update_change_schedule_success' => 'The Change Schedule Request is now updated!',
+
+    'delete_change_schedule_attempt' => 'Delete Change Schedule Request Attempt',
+    'delete_change_schedule_success' => 'The Change Schedule Request is now deleted!',
+
+    'find_change_schedule_success' => 'The Change Schedule Request is now shown!',
+
+
+    'approve_change_schedule_attempt' => 'Approving of Change Schedule Request Attempt',
+    'approve_change_schedule_success' => 'The Change Schedule Request is now Approved!',
+
+    'decline_change_schedule_attempt' => 'Declining of Change Schedule Request Attempt',
+    'decline_change_schedule_success' => 'The Change Schedule Request is now Declined!',
+
+    'pending_change_schedule_attempt' => 'Setting to Pending of Change Schedule Request Attempt',
+    'pending_change_schedule_success' => 'The Change Schedule Request is now set to Pending!',
+
+    'cancel_change_schedule_attempt' => 'Canceling of Change Schedule Request Attempt',
+    'cancel_change_schedule_success' => 'The Change Schedule Request is now Canceled!',
         
-        
-        
-        
-        
+
+    'create_alter_log_attempt' => 'Create Alteration Request Attempt',
+    'create_alter_log_success' => 'A new Alteration Request is now created!',
+
+    'update_alter_log_attempt' => 'Update Alteration Request Attempt',
+    'update_alter_log_success' => 'The Alteration Request is now updated!',
+
+    'delete_alter_log_attempt' => 'Delete Alteration Request Attempt',
+    'delete_alter_log_success' => 'The Alteration Request is now deleted!',
+
+    'find_alter_log_success' => 'The Change Schedule Request is now shown!',
+
+
+    'approve_alter_log_attempt' => 'Approving of Alteration Request Attempt',
+    'approve_alter_log_success' => 'The Alteration Request is now Approved!',
+
+    'decline_alter_log_attempt' => 'Declining of Alteration Request Attempt',
+    'decline_alter_log_success' => 'The Alteration Request is now Declined!',
+
+    'pending_alter_log_attempt' => 'Setting to Pending of Alteration Request Attempt',
+    'pending_alter_log_success' => 'The Alteration Request is now set to Pending!',
+
+    'cancel_alter_log_attempt' => 'Canceling of Alteration Request Attempt',
+    'cancel_alter_log_success' => 'The Alteration Request is now Canceled!'
         
         
         

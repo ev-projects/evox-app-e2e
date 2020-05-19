@@ -11,12 +11,10 @@ interface ChangeScheduleRepositoryInterface
     public function destroy( $id );
 
     public function find( $id );
-
-    public function where( array $parameter );
     
-    public function approve( $id );
+    public function approve( array $data , $id );
 
-    public function decline( $id );
+    public function decline( array $data , $id );
 
     public function pending( $id );
 

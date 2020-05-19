@@ -3,17 +3,13 @@
 namespace App\Modules\Request\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Modules\User\Resources\UserProfileResource;
+use App\Modules\Schedule\Resources\ScheduleResource;
+
+use App\Modules\Schedule\Repositories\ScheduleRepository;
 
 class ChangeScheduleResource extends JsonResource
 {
-    private $schedule;
-    public function __construct($resource, $schedule)
-    {
-        parent::__construct($resource);
-        $this->resource = $resource;
-        $this->schedule = $schedule;
-    }
+
 
     /**
      * Transform the resource into an array.
@@ -26,6 +22,8 @@ class ChangeScheduleResource extends JsonResource
         $result = null;
 
         if( ! is_null( $this->resource ) ) {
+            $schedule = new ScheduleRepository();
+            $schedule =  $schedule->show($this->schedule_id);
 
             $result = array(
                 'request_type' => get_constant('REQUEST_TYPES.change_schedule'),
@@ -33,8 +31,10 @@ class ChangeScheduleResource extends JsonResource
                 'user_id' => $this->user_id,
                 'employee_note' => $this->employee_note,
                 'approver_note' => $this->approver_note,
-                'schedule_info' =>   $this->schedule,
+                'valid_from' => $this->valid_from,
+                'valid_to' => $this->valid_to,
                 'status' => $this->status,
+                'schedule_info' =>    new ScheduleResource($schedule),
             );
         }
 

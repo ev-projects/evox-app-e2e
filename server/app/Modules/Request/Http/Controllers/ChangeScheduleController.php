@@ -18,12 +18,10 @@ use Illuminate\Http\JsonResponse;
 
 class ChangeScheduleController extends Controller
 {   
-    private $changeschedule;
-    private $schedule;
+    private $change_schedule;
 
-    public function __construct(ChangeScheduleRepositoryInterface $changeschedule,ScheduleRepositoryInterface $schedule){
-        $this->changeschedule = $changeschedule;
-        $this->schedule = $schedule;
+    public function __construct(ChangeScheduleRepositoryInterface $change_schedule){
+        $this->change_schedule = $change_schedule;
     }
 
     /**
@@ -34,12 +32,11 @@ class ChangeScheduleController extends Controller
         try {
             log_activity( trans('messages.create_change_schedule_attempt') );
 
-        $schedule = $this->schedule->store($request->all());
-        $changeschedule = $this->changeschedule->store( array_merge($request->all(), ['schedule_id' => $schedule->id ]));
-
+            $change_schedule = $this->change_schedule->store( $request->all());
+            
             return success_response(
                 trans('messages.create_change_schedule_success'), 
-                new ChangeScheduleResource($changeschedule,$schedule),
+                new ChangeScheduleResource($change_schedule),
                 JsonResponse::HTTP_CREATED
             );
 
@@ -53,7 +50,16 @@ class ChangeScheduleController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ChangeScheduleRequest $request, $id){
-        return "Update";
+        try {
+            log_activity( trans('messages.update_change_schedule_attempt') );
+
+            return success_response(
+                trans('messages.update_overtime_success'), 
+                new ChangeScheduleResource( $this->change_schedule->update( $request->all(), $id ) ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
     }
 
     /**
@@ -66,7 +72,7 @@ class ChangeScheduleController extends Controller
 
             return success_response(
                 trans('messages.delete_change_schedule_success'), 
-                $this->changeschedule->destroy( $id ) 
+                $this->change_schedule->destroy( $id ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -79,11 +85,10 @@ class ChangeScheduleController extends Controller
      */
     public function find($id){
         try {
-            $changeschedule = $this->changeschedule->find( $id );
-            $schedule = $this->schedule->show( $changeschedule->schedule_id );
+            $change_schedule = $this->change_schedule->find( $id );
             return success_response(
                 trans('messages.find_change_schedule_success'), 
-                new ChangeScheduleResource( $changeschedule , $schedule  ) 
+                new ChangeScheduleResource( $change_schedule ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -97,11 +102,11 @@ class ChangeScheduleController extends Controller
      */
     public function approve(ChangeScheduleRequest $request, $id){
         try {
-            log_activity( trans('messages.pending_change_schedule_attempt') );
+            log_activity( trans('messages.approve_change_schedule_attempt') );
 
             return success_response(
-                trans('messages.pending_change_schedule_success'), 
-                new ChangeScheduleResource( $this->changeschedule->approve( $id ) ) 
+                trans('messages.approve_change_schedule_success'), 
+                new ChangeScheduleResource( $this->change_schedule->approve( $request->all(), $id )) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -116,14 +121,9 @@ class ChangeScheduleController extends Controller
     public function decline(ChangeScheduleRequest $request, $id){
         try {
             log_activity( trans('messages.decline_change_schedule_attempt') );
-
-            $changeschedule = $this->changeschedule->decline( $request->all(), $id );
-
-            // Add code to remove the Change Schedule on the specific DTR.
-
             return success_response(
                 trans('messages.decline_change_schedule_success'), 
-                new ChangeScheduleResource( $this->changeschedule->decline( $request->all(), $id ) ) 
+                new ChangeScheduleResource( $this->change_schedule->decline( $request->all(), $id ) ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -141,7 +141,7 @@ class ChangeScheduleController extends Controller
 
             return success_response(
                 trans('messages.pending_change_schedule_success'), 
-                new ChangeScheduleResource( $this->changeschedule->pending( $id ) ) 
+                new ChangeScheduleResource( $this->change_schedule->pending( $id ) ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -159,7 +159,7 @@ class ChangeScheduleController extends Controller
 
             return success_response(
                 trans('messages.cancel_overtime_success'), 
-                new ChangeScheduleResource( $this->changeschedule->cancel( $id ) ) 
+                new ChangeScheduleResource( $this->change_schedule->cancel( $id ) ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);

@@ -29,9 +29,6 @@ class ChangeScheduleRequest extends FormRequest
      */
     public function rules(StoreScheduleRequest $request)
     {
-        $id = ( is_valid( $this->route('id') ) ) ? $this->route('id') : 'null';
-
-        // 'required|date_format:Y-m-d|unique:overtimes,date,'.($this->route('id') ?? 'null').',id,user_id,'.auth()->user()->id
 
         return [
             'valid_from'     => 'required | date_format:Y-m-d',

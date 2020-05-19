@@ -10,8 +10,13 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
 
+use App\Modules\Schedule\Repositories\ScheduleRepository;
+use App\Modules\Payroll\Repositories\DtrRepository;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+
+use App\Modules\Schedule\Models\Schedule;
 
 class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
     
@@ -34,12 +39,11 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
 
         DB::beginTransaction();
         try {   
-
-
+            $schedule = new ScheduleRepository();
+            $schedule =  $schedule->store($data);
             $changeschedule = new ChangeSchedule();
-
             $changeschedule->user_id      = auth()->user()->id;
-            $changeschedule->schedule_id  = $data['schedule_id'] ;
+            $changeschedule->schedule_id  = $schedule->id ;
             $changeschedule->valid_from  = $data['valid_from'] ;
             $changeschedule->valid_to  = $data['valid_to'] ;
             $changeschedule->employee_note  = $data['employee_note'] ;
@@ -56,9 +60,6 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
             log_error($e);
             throw $e;
         }
-
-
-
     }
 
 
@@ -69,8 +70,27 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
      * @return ChangeSchedule $ChangeSchedule
      */
     public function update(array $data, $id)
-    {
-        return "update";
+    {   
+        DB::beginTransaction();
+        try {   
+            $change_schedule = ChangeSchedule::findOrFail($id);
+            $change_schedule->valid_from  =  ( isset( $data['valid_from'] ) && is_valid( $data['valid_from'] ) ) ? $data['valid_from'] : $change_schedule->valid_from ;
+            $change_schedule->valid_to  = ( isset( $data['valid_to'] ) && is_valid( $data['valid_to'] ) ) ? $data['valid_to'] : $change_schedule->valid_to ;
+            $change_schedule->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $change_schedule->employee_note ;
+            $change_schedule->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $change_schedule->approver_note ;
+            $change_schedule->updated_by   = auth()->user()->id;
+            $change_schedule->update();
+
+            DB::commit();
+            log_to_file('info', 'Success', [$change_schedule]);
+            return $change_schedule;
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+
+
     }
 
 
@@ -127,33 +147,24 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
         }
     }
 
-    
-    /**
-     *  Responsible for fetching the Overtime Requests with the given Parameters.
-     * @param array $parameter
-     * @return Collection $overtime_collection
-     */
-    public function where(array $parameter)
-    {
-        return "where";
-    }
-
-
     /**
      *  Responsible for updating the Request's Details and Approving the Change Schedule Request with the ID given
      * @param array $data
      * @param $id
      * @return Change Schedule $changeschedule
      */
-    public function approve($id)
+    public function approve(array $data, $id)
     {
         try {
-            
-            $changeschedule = ChangeSchedule::findOrFail($id);
-            $changeschedule->approve();
+            # Update the fields  and Apply schedule updates
+            $change_schedule = $this->update($data, $id);
+            $change_schedule->approve();
 
-            return $changeschedule;
+            # Apply the Schedule on the DTR
+            $dtr = new DtrRepository();
+            $dtr->apply_schedule_to_dtr($change_schedule->user_id,Schedule::findOrFail($change_schedule->schedule_id));
 
+            return $change_schedule;
         } catch (Exception $e) {
             log_error($e);
             throw $e;
@@ -168,15 +179,13 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
      * @param $id
      * @return ChangeSchedule $ChangeSchedule
      */
-    public function decline( $id)
+    public function decline($data, $id)
     {
         try {
-            
             $changeschedule = ChangeSchedule::findOrFail($id);
+            $change_schedule = $this->update($data, $id);
             $changeschedule->decline();
-
             return $changeschedule;
-
         } catch (Exception $e) {
             log_error($e);
             throw $e;
@@ -194,10 +203,10 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
     {
         try {
             
-            $changeschedule = ChangeSchedule::findOrFail($id);
-            $changeschedule->pending();
+            $change_schedule = ChangeSchedule::findOrFail($id);
+            $change_schedule->pending();
 
-            return $ChangeSchedule;
+            return $change_schedule;
 
         } catch (Exception $e) {
             log_error($e);
@@ -216,10 +225,10 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
     {
         try {
             
-            $changeschedule = ChangeSchedule::findOrFail($id);
-            $changeschedule->cancel();
+            $change_schedule = ChangeSchedule::findOrFail($id);
+            $change_schedule->cancel();
 
-            return $changeschedule;
+            return $change_schedule;
 
         } catch (Exception $e) {
             log_error($e);
