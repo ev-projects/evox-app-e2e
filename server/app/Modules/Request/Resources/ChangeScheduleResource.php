@@ -22,8 +22,6 @@ class ChangeScheduleResource extends JsonResource
         $result = null;
 
         if( ! is_null( $this->resource ) ) {
-            $schedule = new ScheduleRepository();
-            $schedule =  $schedule->show($this->schedule_id);
 
             $result = array(
                 'request_type' => get_constant('REQUEST_TYPES.change_schedule'),
@@ -34,7 +32,7 @@ class ChangeScheduleResource extends JsonResource
                 'valid_from' => $this->valid_from,
                 'valid_to' => $this->valid_to,
                 'status' => $this->status,
-                'schedule_info' =>    new ScheduleResource($schedule),
+                'schedule' =>    new ScheduleResource( $this->schedule()->first() ),
             );
         }
 

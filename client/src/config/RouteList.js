@@ -18,10 +18,11 @@ import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
 
+import AlterLog from "../container/Request/AlterLog";
+import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
 import RestdayWork from "../container/Request/RestdayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
-import ChangeSchedule from "../container/Request/ChangeSchedule";
 
 const RoutesList = () => {
 
@@ -37,11 +38,20 @@ const RoutesList = () => {
         <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
 
+        <ProtectedRoute exact path="/app/request/AlterLog/"><AlterLog onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/AlterLog/:id"><AlterLog onApproval={false}/></ProtectedRoute>
+
+        <ProtectedRoute exact path="/app/request/ChangeSchedule/"><ChangeSchedule onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/ChangeSchedule/:id"><ChangeSchedule onApproval={false}/></ProtectedRoute>
+
         <ProtectedRoute exact path="/app/request/Overtime/"><Overtime onApproval={false}/></ProtectedRoute>
         <ProtectedRoute exact path="/app/request/Overtime/:id"><Overtime onApproval={false}/></ProtectedRoute>
-        <ProtectedRoute path="/app/request/RestdayWork/"><RestdayWork/></ProtectedRoute>
-        <ProtectedRoute path="/app/request/WorkFromHome/"><WorkFromHome/></ProtectedRoute>
-        <ProtectedRoute path="/app/request/ChangeSchedule/"><ChangeSchedule/></ProtectedRoute>
+        
+        <ProtectedRoute exact path="/app/request/RestdayWork/"><RestdayWork onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/RestdayWork/:id"><RestdayWork onApproval={false}/></ProtectedRoute>
+
+        <ProtectedRoute exact path="/app/request/WorkFromHome/"><WorkFromHome onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/WorkFromHome/:id"><WorkFromHome onApproval={false}/></ProtectedRoute>
 
 
         <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>

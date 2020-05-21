@@ -17,8 +17,10 @@ class CreateAlterLogsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id')->nullable()->index();
             $table->date('date')->index();
-            $table->bigInteger('time_in')->nullable();
-            $table->bigInteger('time_out')->nullable();
+            $table->bigInteger('current_time_in')->nullable();
+            $table->bigInteger('current_time_out')->nullable();
+            $table->bigInteger('new_time_in')->nullable();
+            $table->bigInteger('new_time_out')->nullable();
             $table->text('employee_note')->nullable();
             $table->text('approver_note')->nullable();
             $table->string('status')->default('pending')->index();
@@ -28,9 +30,13 @@ class CreateAlterLogsTable extends Migration
             $table->timestamps();
 
             $table->index(['user_id', 'date']);
-            $table->index(['user_id', 'date', 'time_in']);
-            $table->index(['user_id', 'date', 'time_out']);
-            $table->index(['user_id', 'date', 'time_in', 'time_out']);
+            $table->index(['user_id', 'date', 'current_time_in']);
+            $table->index(['user_id', 'date', 'current_time_out']);
+            $table->index(['user_id', 'date', 'new_time_in']);
+            $table->index(['user_id', 'date', 'new_time_out']);
+            $table->index(['user_id', 'date', 'new_time_in', 'new_time_out']);
+            $table->index(['user_id', 'date', 'current_time_in', 'current_time_out']);
+            $table->index(['user_id', 'date', 'current_time_in', 'current_time_out', 'new_time_in', 'new_time_out'], 'alter_logs_all_keys');
         });
     }
 

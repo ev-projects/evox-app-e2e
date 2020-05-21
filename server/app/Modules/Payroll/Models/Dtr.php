@@ -456,9 +456,9 @@ class Dtr extends Model
      * hasOne Relationship for the Change of Schedule
      */
     public function change_schedule(){
-        return $this->hasOne(ChangeSchedule::class, 'user_id', 'user_id')->where([
-            'date' => $this->date
-        ]);
+        return $this->hasOne(ChangeSchedule::class, 'user_id', 'user_id')->whereRaw(
+            "( '". $this->date ."' BETWEEN valid_from AND valid_to )"
+        );
     }
 
     /**

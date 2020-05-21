@@ -7,10 +7,12 @@ import "./DailyTimeRecord.css";
 import { Container,Row,Col,Table,Image,Card,Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import DtrFormatter from '../../services/DtrFormatter';
+import { Link } from "react-router-dom"; 
 import { ContainerHeader,Content,ContainerWrapper } from '../../components/GridComponent/AdminLte.js';
 import PageLoading from "../PageLoading";
 
 class DailyTimeRecord extends Component {
+
     constructor(props){
         super(props)
     }
@@ -42,17 +44,29 @@ class DailyTimeRecord extends Component {
                     <tbody>
                     {this.props.dtr.list.map((dtr, index) => {
                           return <tr className={"center "+dtr.attendance_status.slug+"-bg-color"}>
-                          <td>{DtrFormatter.displayDate(dtr.date)}</td> 
-                          <td><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></td>
-                          <td><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
-                          <td><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
-                          <td><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
-                          <td>{dtr?.payroll_items?.late}</td>
-                          <td>{dtr?.payroll_items?.undertime}</td>
-                          <td>{dtr?.payroll_items?.night_diff}</td>
-                          <td>{dtr?.payroll_items?.overtime}</td>
-                          <td>{dtr?.payroll_items?.overtime_night_diff}</td>
-                          </tr>
+                                  <td>{DtrFormatter.displayDate(dtr.date)}</td> 
+                                  <td><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></td>
+                                  <td><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
+                                  <td><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
+                                  <td><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
+                                  <td>{dtr?.payroll_items?.late}</td>
+                                  <td>{dtr?.payroll_items?.undertime}</td>
+                                  <td>{dtr?.payroll_items?.night_diff}</td>
+                                  <td>{dtr?.payroll_items?.overtime}</td>
+                                  <td>{dtr?.payroll_items?.overtime_night_diff}</td>
+                                  <td><Link className="btn btn-primary" 
+                                            title="Alter Log"
+                                            to={{
+                                              pathname: global.base_url +'request/AlterLog/', 
+                                              date: dtr.date,
+                                              current_time_in: dtr.time_in,
+                                              current_time_out: dtr.time_out
+                                            }}
+                                      >
+                                        <i className="fa fa-edit" 
+                                           style={{color : "white" }}></i>
+                                        </Link></td>
+                                </tr>
                     })}
                     </tbody>
                 </Table>

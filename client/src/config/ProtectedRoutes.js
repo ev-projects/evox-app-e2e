@@ -21,9 +21,10 @@ const  ProtectedRoute = (props) => {
 
           // If User has Emp Num (Which means Auth is Successful), show the Actual Component.
           if ( Validator.isValid(user.emp_num) ) {
+            
             const childrenWithProps = React.Children.map(props.children, child =>
               // Add the parameter for the 
-              React.cloneElement(child, { params: props.computedMatch.params })
+              React.cloneElement(child, { params: props.computedMatch.params, ...props })
             );
 
             return <div>{childrenWithProps}</div>;

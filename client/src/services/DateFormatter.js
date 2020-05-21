@@ -19,6 +19,24 @@ class DateFormatter {
 
     return date;
   }
+
+  
+  /** Gets the specific Datetime within the Parameter (The Datetime format of Javascript)
+   * param | date |  ( a String with "Y-m-d" format as Date. If Null, gets the Date Today )
+   * param | time |  ( a String with "H:i:s" format as Time. If Null, gets the 00:00:00 time )
+   * return | String
+  */
+  add_day_to_datetime( datetime, day ) {
+      
+    var default_date = new Date();
+
+    datetime = ( (datetime || null) != null ) ? new Date(datetime) : default_date;
+
+    datetime.setDate( datetime.getDate() + day );
+
+    return datetime;
+  }
+  
 }
 
 export default new DateFormatter();
