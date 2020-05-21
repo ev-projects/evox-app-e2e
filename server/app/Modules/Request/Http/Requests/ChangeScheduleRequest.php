@@ -31,11 +31,12 @@ class ChangeScheduleRequest extends FormRequest
     {
 
         return [
-            'valid_from'     => 'required | date_format:Y-m-d',
-            'valid_to'       => 'required | date_format:Y-m-d',
-            'employee_note'  => 'required | string|max:255',
-            'approver_note'  => 'string | max:255'
-        ];}
+            'valid_from'    =>  'required|date|date_format:"Y-m-d"|unique_dates:change_schedules',
+            'valid_to'      =>  'required|date|after_or_equal:valid_from|date_format:"Y-m-d"',
+            'employee_note'  => 'required|string|max:255',
+            'approver_note'  => 'string|max:255'
+        ]
+        ;}
     
     /**
      * Get the error messages for the defined validation rules.
@@ -45,6 +46,7 @@ class ChangeScheduleRequest extends FormRequest
     public function messages()
     {
         return [
+            'valid_from.unique_dates' => 'The dates that are submitted is already exist'
           ];
     }
 

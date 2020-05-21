@@ -81,6 +81,35 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
     });
 
 
+    Route::group(['prefix' => 'alterlog'], function () {
+    
+        # Insert new Change Schedule Request
+        Route::post('/',     'AlterLogController@store'); 
+
+        # Update existing Change Schedule Request
+        Route::put('/{id}', 'AlterLogController@update');
+
+        # Delete Change Schedule Request
+        Route::delete('/{id}', 'AlterLogController@destroy'); 
+
+        # Find existing Change Schedule Request
+        Route::get('/{id}', 'AlterLogController@find'); 
+
+        # Approves the Change Schedule Request
+        Route::put('/approve/{id}', 'AlterLogController@approve'); 
+
+        # Decline the Change Schedule Request
+        Route::put('/decline/{id}', 'AlterLogController@decline'); 
+
+        # Pending the Change Schedule Request
+        Route::put('/pending/{id}', 'AlterLogController@pending'); 
+
+        # Cancels the Change Schedule Request
+        Route::put('/cancel/{id}', 'AlterLogController@cancel'); 
+        
+    });
+
+
     
 
     # API Call for Rest Day Work
