@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AlterLogRequest extends FormRequest
 {
@@ -27,8 +28,21 @@ class AlterLogRequest extends FormRequest
      */
     public function rules()
     {
+        $id = ( is_valid( $this->route('id') ) ) ? $this->route('id') : 'null';
+
+        // 'required|date_format:Y-m-d|unique:overtimes,date,'.($this->route('id') ?? 'null').',id,user_id,'.auth()->user()->id
+
         return [
-            //
+            'date'                               => ['required', 'date_format:Y-m-d',  
+                                                     Rule::unique('alter_logs', 'date')->where(function ($query) {
+                                                            return $query->where('user_id', auth()->user()->id);
+                                                     })->ignore( $this->route('id') ?? 'null' )
+                                                       ->whereNull('deleted_at')
+                                                    ],
+            'time_in'                               => 'required|date_format:Y-m-d H:i:s',
+            'time_out'                             => 'required|date_format:Y-m-d H:i:s',
+            'employee_note'                      => 'required|string|max:255',
+            'approver_note'                      => 'string|max:255'
         ];
     }
 
@@ -41,6 +55,7 @@ class AlterLogRequest extends FormRequest
     public function messages()
     {
         return [
+            
           ];
     }
 

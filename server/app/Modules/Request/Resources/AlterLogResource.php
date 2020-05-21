@@ -14,6 +14,21 @@ class AlterLogResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $result = null;
+
+        if( ! is_null( $this->resource ) ) {
+            $result = array(
+                'request_type' => get_constant('REQUEST_TYPES.alter_log'),
+                'id' => $this->id,
+                'date' => $this->user_id,
+                'time_in' => date("Y-m-d H:i:s", $this->time_in),
+                'time_out' => date("Y-m-d H:i:s",$this->time_out),
+                'status' => $this->status,
+                'employee_note' => $this->employee_note,
+                'approver_note' => $this->approver_note,
+            );
+        }
+
+        return $result;
     }
 }
