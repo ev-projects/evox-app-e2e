@@ -34,7 +34,7 @@ class CreateAlterLogsTable extends Migration
             $table->index(['user_id', 'date', 'current_time_out']);
             $table->index(['user_id', 'date', 'new_time_in']);
             $table->index(['user_id', 'date', 'new_time_out']);
-            $table->index(['user_id', 'date', 'time_in', 'time_out']);
+            $table->index(['user_id', 'date', 'new_time_in', 'new_time_out']);
             $table->index(['user_id', 'date', 'current_time_in', 'current_time_out']);
             $table->index(['user_id', 'date', 'new_time_in', 'new_time_out']);
             $table->index(['user_id', 'date', 'current_time_in', 'current_time_out', 'new_time_in', 'new_time_out']);
