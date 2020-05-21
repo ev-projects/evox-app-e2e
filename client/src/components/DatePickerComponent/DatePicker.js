@@ -70,7 +70,8 @@ const InputDate = (props) => {
                       timeCaption="Time"
                       dateFormat="MMMM d, yyyy"
                       timeFormat="MMMM d, yyyy"
-                      selected={ eval('field.value.' + props.name)}              
+                      selected={ eval('field.value.' + props.name)}       
+                      readOnly={ props.readOnly != undefined ? props.readOnly : false }
                       onChange={date => form.setFieldValue(props.name, date)}
                   /> 
                   <Form.Control.Feedback type="invalid">
@@ -79,6 +80,42 @@ const InputDate = (props) => {
                 </div>)}
       </Field>
           );
+}
+
+
+const CustomTimeInput = ({ value, onChange }) => (
+  <input
+    value={value}
+    onChange={e => onChange(e.target.value)}
+    style={{ border: "solid 1px green", textAlign : "center", fontSize : "17.5px" }}
+  />
+);
+
+/** This is component for Date */
+const InputDateTime = (props) => {
+  return(<Field>
+      {({ field, form }) => (
+              <div>
+                <DatePicker 
+                    className="form-control" 
+                    showTimeInput
+                    customTimeInput={<CustomTimeInput />}
+                    popperPlacement={ props.popperPlacement != undefined ? props.popperPlacement : false }
+                    showTimeSelectOnly={ props.showTimeSelectOnly != undefined ? props.showTimeSelectOnly : false }
+                    showDateSelectOnly={ props.showDateSelectOnly != undefined ? props.showDateSelectOnly : false }
+                    minDate={ props.minDate != undefined ? props.minDate : false }
+                    maxDate={ props.maxDate != undefined ? props.maxDate : false }
+                    dateFormat="MMMM d, yyyy HH:mm"
+                    selected={ eval('field.value.' + props.name)}       
+                    readOnly={ props.readOnly != undefined ? props.readOnly : false }
+                    onChange={date => form.setFieldValue(props.name, date)}
+                /> 
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={props.name} className="input-feedback" />
+                </Form.Control.Feedback> 
+              </div>)}
+    </Field>
+        );
 }
     
 
@@ -106,5 +143,6 @@ const InputDate = (props) => {
 
 export {
   InputDate,
-  InputTime
+  InputTime,
+  InputDateTime
 }

@@ -6,7 +6,10 @@ import pageReducer from "./pageReducers";
 import alertReducer from "./alertReducers";
 import scheduleReducer from "./scheduleReducers";
 import constantReducers from "./constantReducers";
+
 import overtimeReducers from "./overtimeReducers";
+import alterLogReducers from "./alterLogReducers";
+
 import dtrReducer from "./dtrReducers";
 
 // Combiner of Reducers.
@@ -19,6 +22,8 @@ const rootReducer = combineReducers({
     dtr: dtrReducer,
     schedule: scheduleReducer,
     constant : constantReducers,
+
+    alterLog : alterLogReducers,
     overtime : overtimeReducers,
 });
 

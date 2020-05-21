@@ -52,7 +52,7 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
     });
 
 
-    Route::group(['prefix' => 'changeschedule'], function () {
+    Route::group(['prefix' => 'change_schedule'], function () {
     
         # Insert new Change Schedule Request
         Route::post('/',     'ChangeScheduleController@store'); 

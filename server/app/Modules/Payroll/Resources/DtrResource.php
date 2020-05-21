@@ -2,6 +2,9 @@
 
 namespace App\Modules\Payroll\Resources;
 
+use App\Modules\Request\Resources\ChangeScheduleResource;
+use App\Modules\Request\Resources\OvertimeResource;
+use App\Modules\Request\Resources\RestDayWorkResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DtrResource extends JsonResource
@@ -89,6 +92,23 @@ class DtrResource extends JsonResource
                 ];
             }
 
+            # Create Resource for Requests
+            $requests = [];
+            // foreach( $this->alter_log()->get() as $alter_log){
+            //     $requests[] = new AlterLogResource( $alter_log );
+            // }
+            foreach( $this->change_schedule()->get() as $change_schedule){
+                $requests[] = new ChangeScheduleResource( $change_schedule );
+            }
+            foreach( $this->overtime()->get() as $overtime){
+                $requests[] = new OvertimeResource( $overtime );
+            }
+            foreach( $this->rest_day_work()->get() as $rest_day_work){
+                $requests[] = new RestDayWorkResource( $rest_day_work );
+            }
+            // foreach( $this->work_from_home()->get() as $work_from_home){
+            //     $requests[] = new WorkFromHomeResource( $work_from_home );
+            // }
 
             $result =  array_merge( 
                 array(
@@ -114,6 +134,7 @@ class DtrResource extends JsonResource
                 array('policies' => $policies),
                 array('holidays' => $holidays),
                 array('leaves' => $leaves),
+                array('requests' => $requests),
             );
         }
         return $result;

@@ -17,8 +17,10 @@ class CreateAlterLogsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id')->nullable()->index();
             $table->date('date')->index();
-            $table->bigInteger('time_in')->nullable();
-            $table->bigInteger('time_out')->nullable();
+            $table->bigInteger('current_time_in')->nullable();
+            $table->bigInteger('current_time_out')->nullable();
+            $table->bigInteger('new_time_in')->nullable();
+            $table->bigInteger('new_time_out')->nullable();
             $table->text('employee_note')->nullable();
             $table->text('approver_note')->nullable();
             $table->string('status')->default('pending')->index();
