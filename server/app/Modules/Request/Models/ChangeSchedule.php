@@ -65,4 +65,17 @@ class ChangeSchedule extends Model
             'source_type' => get_constant('DTR_SOURCE_TYPE_TAGGING.change_schedule')
         ]);
     }
+
+    # Fetch the User's Schedule (Source type is Change Schedule)
+    public function changeSchedules($start_date, $end_date){
+        $change_schedule_condition = [
+            'bind_to' => 'user',
+            'source_type' => 'change_schedule'
+        ];
+        
+        return $this->hasMany(Schedule::class, 'bind_id', 'id')
+                    ->where($change_schedule_condition)
+                    ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')")
+                    ;  
+    }
 }

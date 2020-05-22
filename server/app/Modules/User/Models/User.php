@@ -6,7 +6,10 @@ use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
+
 use App\Modules\Schedule\Models\Schedule;
+use App\Modules\Request\Models\ChangeSchedule;
+
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -153,11 +156,12 @@ class User extends Authenticatable implements JWTSubject
     }
 
     # Fetch the User's Schedule (Source type is Change Schedule)
-    public function changeSchedule(){
-        return $this->hasMany(Schedule::class, 'bind_id', 'id')->where([
-            'bind_to' => 'user',
-            'source_type' => 'change_schedule'
-        ]);
+    public function changeSchedules($start_date, $end_date){
+
+        return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')
+                    ->where("status","approved")
+                    ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')")
+                    ;  
     }
 
     # Fetch the User's DTR

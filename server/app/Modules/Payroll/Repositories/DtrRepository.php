@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Modules\Request\Models\ChangeSchedule;
 
 class DtrRepository implements DtrRepositoryInterface{
     
@@ -89,8 +90,10 @@ class DtrRepository implements DtrRepositoryInterface{
                 # Fetch the Temporary Schedules for the current User within the Date Range
                 $temporary_schedule_collection = $user->temporarySchedules( $start_date, $end_date )->get();
 
-                foreach( $user->dtr( $start_date, $end_date )->get() as $dtr ) {
+                $change_schedule_collection = $user->changeSchedules( $start_date, $end_date )->get(); 
 
+                
+                foreach( $user->dtr( $start_date, $end_date )->get() as $dtr ) {
                     $date = $dtr->date;
 
                     # Gets the Latest Temporary Schedule that the current $date is in scope.
@@ -101,8 +104,14 @@ class DtrRepository implements DtrRepositoryInterface{
                     ->first();
 
                     # Gets the Change Schedule that the current $date is in scope
-                    // Put code here...
-                    $change_schedule = null;
+                    $change_schedule = $change_schedule_collection->filter(function ( $schedule ) use ( $date ) {
+                        return ( $date >= $schedule->valid_from && $date <= $schedule->valid_to) ;
+                    })
+                    ->first();
+
+                    if($change_schedule!=null){
+                        $change_schedule = Schedule::find($change_schedule->schedule_id);
+                    }
 
                     # Setting the Schedule that would be used for that specific Day.
                     # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule

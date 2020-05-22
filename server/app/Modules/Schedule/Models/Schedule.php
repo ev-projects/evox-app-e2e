@@ -6,6 +6,7 @@ use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Modules\Request\Models\ChangeSchedule;
 
 class Schedule extends Model{
     
@@ -164,6 +165,13 @@ class Schedule extends Model{
      */
     public function schedule_policies(){
         return $this->hasMany(SchedulePolicy::class);
+    }
+
+    /**
+     * belongsTo Relationship for User change_schedule
+     */
+    public function change_schedule(){
+        return $this->hasOne(ChangeSchedule::class, 'schedule_id', 'id')->where('status','approved');
     }
 
     /**
