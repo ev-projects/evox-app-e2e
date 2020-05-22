@@ -18,27 +18,27 @@ class AppServiceProvider extends ServiceProvider
     {
         Validator::extend('unique_dates', function ($attribute, $value, $parameters, $validator) {
             $inputs = $validator->getData();      
-            $query_count = DB::table($parameters[0])->where('user_id', '=', auth()->user()->id)                            
+            $query_count = DB::table($parameters[0])->where('user_id', '=',  $inputs['bind_id'])                            
                             ->where(function ($query) use ($inputs) {
                                 $query
                                 # If there record between "from" date
                                 ->where(function ($query) use ($inputs) {
-                                    $query->whereDate('valid_from', '<=' ,$inputs['valid_from'])
-                                    ->whereDate('valid_to', '>=' ,$inputs['valid_from']);
+                                    $query->whereDate('valid_from', '<' ,$inputs['valid_from'])
+                                    ->whereDate('valid_to', '>' ,$inputs['valid_from']);
                                 })
                                 # If there record between "to" date
-                                ->orwhere(function ($query) use ($inputs) {
-                                    $query->whereDate('valid_from', '<=' ,$inputs['valid_to'])
-                                    ->whereDate('valid_to', '>=' ,$inputs['valid_to']);
-                                })
-                                # If there record within submitted dates
                                 ->orwhere(function ($query) use ($inputs) {
                                     $query->whereDate('valid_from', '<' ,$inputs['valid_to'])
                                     ->whereDate('valid_to', '>' ,$inputs['valid_to']);
                                 })
+                                # If there record within submitted dates
+                                ->orwhere(function ($query) use ($inputs) {
+                                    $query->whereDate('valid_from', '<' ,$inputs['valid_from'])
+                                    ->whereDate('valid_to', '>' ,$inputs['valid_to']);
+                                })
                                 # If there is dates between submitted dates
                                 ->orwhere(function ($query) use ($inputs) {
-                                    $query->whereDate('valid_from', '>' ,$inputs['valid_to'])
+                                    $query->whereDate('valid_from', '>' ,$inputs['valid_from'])
                                     ->whereDate('valid_to', '<' ,$inputs['valid_to']);
                                 });
                             })

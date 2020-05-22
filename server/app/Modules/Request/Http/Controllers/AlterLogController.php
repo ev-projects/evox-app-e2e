@@ -12,6 +12,7 @@ use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
 
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Request\Models\AlterLog;
 
 use App\Modules\Request\Resources\AlterLogResource;
 use Exception;
@@ -107,18 +108,20 @@ class AlterLogController extends Controller
         try {
             log_activity( trans('messages.approve_alter_log_attempt') );
 
-            $data = $request->all();
+            $data = AlterLog::find($id);
             # Apply the changes on the DTR
-            $dtr = Dtr::where('user_id', '=', auth()->user()->id )->where('date', '=', $data['date'] )->first();
-            $dtr->time_in = strtotime($data['new_time_in']);
-            $dtr->time_out = strtotime($data['new_time_out']);
+            $dtr = Dtr::where('user_id', '=', $data->user_id )->where('date', '=', $data->date )->first();
+
+            $dtr->time_in = $data->new_time_in;
+            $dtr->time_out = $data->new_time_out;
+
             $dtr->save();
             
             $dtr->update();
             $this->dtr->compute_payroll_items($dtr);
             return success_response(
                 trans('messages.approve_alter_log_success'), 
-                new AlterLogResource( $this->alter_log->approve( $data , $id )) 
+                new AlterLogResource( $this->alter_log->approve( $request->all() , $id )) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
