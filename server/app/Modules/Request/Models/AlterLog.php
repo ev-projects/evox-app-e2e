@@ -13,7 +13,7 @@ class AlterLog extends Model
 
     protected $guarded = [];
     
-    protected static $logAttributes = ['user_id','date','time_in', 'time_out', 'employee_note' , 'approver_note', 'status'];
+    protected static $logAttributes = ['user_id','date','current_time_in', 'current_time_out','new_time_in', 'new_time_out', 'employee_note' , 'approver_note', 'status'];
 
     protected $dates = [
         'deleted_at',

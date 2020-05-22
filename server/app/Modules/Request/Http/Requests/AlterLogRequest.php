@@ -39,8 +39,10 @@ class AlterLogRequest extends FormRequest
                                                      })->ignore( $this->route('id') ?? 'null' )
                                                        ->whereNull('deleted_at')
                                                     ],
-            'time_in'                               => 'required|date_format:Y-m-d H:i:s',
-            'time_out'                             => 'required|date_format:Y-m-d H:i:s',
+            'current_time_in'                               => 'required|date_format:Y-m-d H:i:s',
+            'current_time_out'                             => 'required|date_format:Y-m-d H:i:s',
+            'new_time_in'                               => 'required|date_format:Y-m-d H:i:s',
+            'new_time_out'                             => 'required|date_format:Y-m-d H:i:s',
             'employee_note'                      => 'required|string|max:255',
             'approver_note'                      => 'string|max:255'
         ];

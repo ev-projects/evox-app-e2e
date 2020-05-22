@@ -39,8 +39,10 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             $alter_log = new AlterLog();
             $alter_log->user_id      = auth()->user()->id;
             $alter_log->date  = $data['date'];
-            $alter_log->time_in  = strtotime($data['time_in']);
-            $alter_log->time_out  = strtotime($data['time_out']);
+            $alter_log->current_time_in  = strtotime($data['time_in']);
+            $alter_log->current_time_out  = strtotime($data['time_out']);
+            $alter_log->new_time_in  = strtotime($data['time_in']);
+            $alter_log->new_time_out  = strtotime($data['time_out']);
             $alter_log->employee_note  = $data['employee_note'];
             $alter_log->updated_by   = auth()->user()->id;
             $alter_log->created_by   = auth()->user()->id;
@@ -69,8 +71,11 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
         try {   
             $alter_log =   AlterLog::findOrFail($id);
             $alter_log->date  = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : $alter_log->date ;
-            $alter_log->time_in  = ( isset( $data['time_in'] ) && is_valid( $data['time_in'] ) ) ? strtotime($data['time_in']) : $alter_log->time_in ;
-            $alter_log->time_out  = ( isset( $data['time_out'] ) && is_valid( $data['time_out'] ) ) ? strtotime($data['time_out']) : $alter_log->time_out ;
+            $alter_log->current_time_in  = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['time_in']) : $alter_log->current_time_in ;
+            $alter_log->current_time_out  = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) : $alter_log->current_time_out ;
+            $alter_log->new_time_in  = ( isset( $data['new_time_in'] ) && is_valid( $data['new_time_in'] ) ) ? strtotime($data['new_time_in']) : $alter_log->new_time_in ;
+            $alter_log->new_time_out  = ( isset( $data['new_time_out'] ) && is_valid( $data['new_time_out'] ) ) ? strtotime($data['new_time_out']) : $alter_log->new_time_out ;
+
             $alter_log->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $alter_log->valid_from ;
             $alter_log->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['valid_from'] ) ) ? $data['approver_note'] : $alter_log->valid_from ;
             $alter_log->updated_by   = auth()->user()->id;

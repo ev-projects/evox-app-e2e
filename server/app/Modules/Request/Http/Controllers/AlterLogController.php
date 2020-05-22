@@ -110,8 +110,8 @@ class AlterLogController extends Controller
             $data = $request->all();
             # Apply the changes on the DTR
             $dtr = Dtr::where('user_id', '=', auth()->user()->id )->where('date', '=', $data['date'] )->first();
-            $dtr->time_in = strtotime($data['time_in']);
-            $dtr->time_out = strtotime($data['time_out']);
+            $dtr->time_in = strtotime($data['new_time_in']);
+            $dtr->time_out = strtotime($data['new_time_out']);
             $dtr->save();
             
             $dtr->update();
