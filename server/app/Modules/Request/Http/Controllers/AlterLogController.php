@@ -109,11 +109,12 @@ class AlterLogController extends Controller
             log_activity( trans('messages.approve_alter_log_attempt') );
 
             $data = AlterLog::find($id);
+            $request_data = $request->all();
             # Apply the changes on the DTR
             $dtr = Dtr::where('user_id', '=', $data->user_id )->where('date', '=', $data->date )->first();
 
-            $dtr->time_in = $data->new_time_in;
-            $dtr->time_out = $data->new_time_out;
+            $dtr->time_in =  ($request_data['new_time_in']!=null)?strtotime($request_data['new_time_in']):$data->new_time_in;
+            $dtr->time_out = ($request_data['new_time_out']!=null)?strtotime($request_data['new_time_out']):$data->new_time_in;
 
             $dtr->save();
             
@@ -121,7 +122,7 @@ class AlterLogController extends Controller
             $this->dtr->compute_payroll_items($dtr);
             return success_response(
                 trans('messages.approve_alter_log_success'), 
-                new AlterLogResource( $this->alter_log->approve( $request->all() , $id )) 
+                new AlterLogResource( $this->alter_log->approve( $request_data , $id )) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
