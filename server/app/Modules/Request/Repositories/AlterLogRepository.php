@@ -39,10 +39,10 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             $alter_log = new AlterLog();
             $alter_log->user_id      = auth()->user()->id;
             $alter_log->date  = $data['date'];
-            $alter_log->current_time_in  = strtotime($data['time_in']);
-            $alter_log->current_time_out  = strtotime($data['time_out']);
-            $alter_log->new_time_in  = strtotime($data['time_in']);
-            $alter_log->new_time_out  = strtotime($data['time_out']);
+            $alter_log->current_time_in  = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['time_in']) : null ;
+            $alter_log->current_time_out  = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) : null ;
+            $alter_log->new_time_in  = strtotime($data['new_time_in']);
+            $alter_log->new_time_out  = strtotime($data['new_time_out']);
             $alter_log->employee_note  = $data['employee_note'];
             $alter_log->updated_by   = auth()->user()->id;
             $alter_log->created_by   = auth()->user()->id;
