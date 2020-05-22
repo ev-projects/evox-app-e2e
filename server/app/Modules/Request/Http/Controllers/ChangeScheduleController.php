@@ -54,7 +54,7 @@ class ChangeScheduleController extends Controller
             log_activity( trans('messages.update_change_schedule_attempt') );
 
             return success_response(
-                trans('messages.update_overtime_success'), 
+                trans('messages.update_change_schedule_attempt'), 
                 new ChangeScheduleResource( $this->change_schedule->update( $request->all(), $id ) ) 
             );
         } catch(Exception $e){

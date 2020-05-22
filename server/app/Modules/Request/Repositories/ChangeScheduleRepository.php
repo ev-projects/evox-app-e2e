@@ -74,6 +74,10 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
         DB::beginTransaction();
         try {   
             $change_schedule = ChangeSchedule::findOrFail($id);
+
+            $schedule = new ScheduleRepository();
+            $schedule->update($data,$change_schedule->schedule_id);
+
             $change_schedule->valid_from  =  ( isset( $data['valid_from'] ) && is_valid( $data['valid_from'] ) ) ? $data['valid_from'] : $change_schedule->valid_from ;
             $change_schedule->valid_to  = ( isset( $data['valid_to'] ) && is_valid( $data['valid_to'] ) ) ? $data['valid_to'] : $change_schedule->valid_to ;
             $change_schedule->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $change_schedule->employee_note ;
