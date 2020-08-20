@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { fetchUser } from '../../store/actions/userActions' ;
 
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
+import Wrapper from "../../components/Template/Wrapper";
 
 class Dashboard extends Component {
     constructor(props){
@@ -16,6 +17,7 @@ class Dashboard extends Component {
       const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
         return (
+            <Wrapper>
                <ContainerWrapper>
                   <ContainerHeader>
                       Dashboard
@@ -97,6 +99,7 @@ class Dashboard extends Component {
                       </Content>
                   </ContainerBody>
               </ContainerWrapper>
+            </Wrapper>
         );
     }
 };

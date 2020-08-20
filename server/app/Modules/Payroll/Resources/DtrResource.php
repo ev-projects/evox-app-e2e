@@ -2,6 +2,7 @@
 
 namespace App\Modules\Payroll\Resources;
 
+use App\Modules\Request\Resources\AlterLogResource;
 use App\Modules\Request\Resources\ChangeScheduleResource;
 use App\Modules\Request\Resources\OvertimeResource;
 use App\Modules\Request\Resources\RestDayWorkResource;
@@ -94,9 +95,9 @@ class DtrResource extends JsonResource
 
             # Create Resource for Requests
             $requests = [];
-            // foreach( $this->alter_log()->get() as $alter_log){
-            //     $requests[] = new AlterLogResource( $alter_log );
-            // }
+            foreach( $this->alter_log()->get() as $alter_log){
+                $requests[] = new AlterLogResource( $alter_log );
+            }
             foreach( $this->change_schedule()->get() as $change_schedule){
                 $requests[] = new ChangeScheduleResource( $change_schedule );
             }

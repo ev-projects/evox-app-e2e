@@ -4,7 +4,7 @@
 
 const initState = {
     isInstanceLoaded: false,
-    instance: {},
+    instance: {}
 }
 
 const alterLogReducers = (state = initState, action) => {
@@ -14,17 +14,33 @@ const alterLogReducers = (state = initState, action) => {
         /**
          *  Logout Actions
          */
+
+        // Apply the Instance that was recently fetched
         case "FETCH_ALTER_LOG_SUCCESS":
             return {
                 instance : action.alterLog,
                 isInstanceLoaded : true
             };
             break;
-        case "STORE_ALTER_LOG_SUCCESS":
+
+        // Resets the Instance of the Alter Log but retains the ID so it would be reused.
+        case "RESET_ALTER_LOG_INSTANCE":
             return {
-                // alterLogInstance : action.alterLog
+                instance : {
+                    id   :    state.instance.id
+                },
+                isInstanceLoaded : true
             };
             break;
+
+        // Clear the Instance totally for the Alter Log 
+        case "CLEAR_ALTER_LOG_INSTANCE":
+            return {
+                instance : {},
+                isInstanceLoaded : false
+            };
+            break;
+            
         default:
             result = state;
     }

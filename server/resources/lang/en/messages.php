@@ -120,7 +120,7 @@ return [
     'delete_alter_log_attempt' => 'Delete Alteration Request Attempt',
     'delete_alter_log_success' => 'The Alteration Request is now deleted!',
 
-    'find_alter_log_success' => 'The Change Schedule Request is now shown!',
+    'find_alter_log_success' => 'The Alteration Request is now shown!',
 
 
     'approve_alter_log_attempt' => 'Approving of Alteration Request Attempt',

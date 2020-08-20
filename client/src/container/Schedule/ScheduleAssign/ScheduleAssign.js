@@ -14,6 +14,7 @@ import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js'
 
 import Formatter from '../../../services/Formatter';
 import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } from '../../../store/actions/scheduleActions';
+import Wrapper from "../../../components/Template/Wrapper/index.js";
 
 class AssignDefault extends Component {    
   constructor(props){
@@ -89,25 +90,26 @@ class AssignDefault extends Component {
       }
     }
 
-    return <Formik 
-    enableReinitialize
-    onSubmit={this.onSubmitHandler} 
-    validationSchema={validationSchema} 
-    initialValues={{
-      bind_to:'user', 
-      bind_id: this.props.params.userid,
-      sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
-      wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}},
-      from : from_date,
-      to : to_date,
-      std_schedule_details: std_schedule_details,
-      flx_schedule_details: flx_schedule_details,
-      cst_schedule_details: cst_schedule_details, 
-      creation_type : creation_type,
-      source_type: 'default',
-      schedule_policies : schedule_policies,
-      schedule_type : sched_type,
-      work_days:work_day 
+    return <Wrapper>
+    <Formik 
+      enableReinitialize
+      onSubmit={this.onSubmitHandler} 
+      validationSchema={validationSchema} 
+      initialValues={{
+        bind_to:'user', 
+        bind_id: this.props.params.userid,
+        sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
+        wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}},
+        from : from_date,
+        to : to_date,
+        std_schedule_details: std_schedule_details,
+        flx_schedule_details: flx_schedule_details,
+        cst_schedule_details: cst_schedule_details, 
+        creation_type : creation_type,
+        source_type: 'default',
+        schedule_policies : schedule_policies,
+        schedule_type : sched_type,
+        work_days:work_day 
     }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}> 
     <ContainerWrapper> 
@@ -377,7 +379,8 @@ class AssignDefault extends Component {
   </form>
   )}
  
-  </Formik>;
+  </Formik>
+  </Wrapper>;
     }
     return <PageLoading/>;
    

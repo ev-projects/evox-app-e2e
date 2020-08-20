@@ -20,9 +20,9 @@ class AlterLogResource extends JsonResource
             $result = array(
                 'request_type' => get_constant('REQUEST_TYPES.alter_log'),
                 'id' => $this->id,
-                'date' => $this->user_id,
-                'current_time_in' => ($this->current_time_in!=null)?date("Y-m-d H:i:s", $this->current_time_in):"",
-                'current_time_out' =>($this->current_time_out!=null)? date("Y-m-d H:i:s",$this->current_time_out):"",
+                'date' => $this->date,
+                'current_time_in' => ( $this->current_time_in!=null)?date("Y-m-d H:i:s", $this->current_time_in):null,
+                'current_time_out' =>( $this->current_time_out!=null)? date("Y-m-d H:i:s",$this->current_time_out):null,
                 'new_time_in' => date("Y-m-d H:i:s", $this->new_time_in),
                 'new_time_out' => date("Y-m-d H:i:s",$this->new_time_out),
                 'status' => $this->status,

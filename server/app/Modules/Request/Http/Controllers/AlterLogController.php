@@ -58,7 +58,7 @@ class AlterLogController extends Controller
             log_activity( trans('messages.update_alter_log_attempt') );
 
             return success_response(
-                trans('messages.update_overtime_success'), 
+                trans('messages.update_alter_log_success'), 
                 new AlterLogResource( $this->alter_log->update( $request->all(), $id ) ) 
             );
         } catch(Exception $e){

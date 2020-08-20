@@ -77,7 +77,7 @@ const Header = (props) => {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to={ global.daily_time_record_view + '1/2020-03-01/2020-03-31' }>
+                      <Link className="nav-link" to={ global.daily_time_record_view + '1/2020-01-01/2020-01-31' }>
                         <i className="nav-icon fa fa-clock-o nav-icon" />
                         <p>Daily Time Record</p>
                       </Link>

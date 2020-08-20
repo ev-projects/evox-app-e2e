@@ -19,6 +19,7 @@ import DateFormatter from "../../../services/DateFormatter";
 
 
 import { fetchOvertime, addOvertime, updateOvertime } from '../../../store/actions/overtimeActions';
+import Wrapper from "../../../components/Template/Wrapper";
 
 
 class Overtime extends Component {
@@ -53,104 +54,106 @@ class Overtime extends Component {
     /** Show the Form if the Method is Store OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     if( method == 'store' || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
       
-      return <Formik 
-        enableReinitialize
-        // onSubmit={this.onSubmitHandler} 
-        validationSchema={validationSchema} 
-        initialValues={initialValue}>
-      {
-      ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-        <form onSubmit={handleSubmit}>
-          <ContainerWrapper>
-            <ContainerBody>
-              <Content col="6" title="Overtime">
-                <Row>  
-                  <Col size="4"> 
+      return <Wrapper>
+        <Formik 
+          enableReinitialize
+          // onSubmit={this.onSubmitHandler} 
+          validationSchema={validationSchema} 
+          initialValues={initialValue}>
+        {
+        ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+          <form onSubmit={handleSubmit}>
+            <ContainerWrapper>
+              <ContainerBody>
+                <Content col="6" title="Overtime">
+                  <Row>  
+                    <Col size="4"> 
+                      <div className="form-group">
+                        <label>Date:</label>
+                        <InputDate name="date" value={values.date}/>
+                      </div>
+                    </Col> 
+                    <Col size="3">   
+                      <div className="form-group">
+                        <label>Amount:</label>
+                        <InputTime name="amount" value={values.amount}/>
+                      </div>
+                    </Col> 
+                    <Col size="5">   
+                      <div className="form-group">
+                        <label>Type:</label>
+                        <select name="type" value={ values.type } className="form-control" onChange={handleChange}>
+                            <option></option>
+                            { /** Iterates the Overtime Type */
+                              overtimeType != null ? 
+                                Object.keys( overtimeType ).map(function(key, index, value){
+                                  return <option value={overtimeType[key]} >{ Formatter.slug_to_title( overtimeType[key] ) }</option>
+                                }) 
+                                : 
+                                null
+                            }
+                        </select>
+                        <Form.Control.Feedback type="invalid">
+                            <ErrorMessage component="div" name="type" className="input-feedback" />
+                        </Form.Control.Feedback> 
+                      </div>
+                    </Col> 
+                  </Row> 
+
+                  {  /** Shows Employee Note if Not on Approval   */
+                  ! onApproval ? 
                     <div className="form-group">
-                      <label>Date:</label>
-                      <InputDate name="date" value={values.date}/>
-                    </div>
-                  </Col> 
-                  <Col size="3">   
-                    <div className="form-group">
-                      <label>Amount:</label>
-                      <InputTime name="amount" value={values.amount}/>
-                    </div>
-                  </Col> 
-                  <Col size="5">   
-                    <div className="form-group">
-                      <label>Type:</label>
-                      <select name="type" value={ values.type } className="form-control" onChange={handleChange}>
-                          <option></option>
-                          { /** Iterates the Overtime Type */
-                            overtimeType != null ? 
-                              Object.keys( overtimeType ).map(function(key, index, value){
-                                return <option value={overtimeType[key]} >{ Formatter.slug_to_title( overtimeType[key] ) }</option>
-                              }) 
-                              : 
-                              null
-                          }
-                      </select>
+                      <label>Note:</label>
+                      <textarea className="form-control" rows="3" name="employee_note" onChange={handleChange} value={values.employee_note??''} placeholder="Enter Note..."></textarea>
                       <Form.Control.Feedback type="invalid">
-                          <ErrorMessage component="div" name="type" className="input-feedback" />
+                        &nbsp;{errors.employee_note && touched.employee_note && errors.employee_note}
                       </Form.Control.Feedback> 
-                    </div>
-                  </Col> 
-                </Row> 
+                    </div> 
+                    :
+                    null 
+                  }
 
-                {  /** Shows Employee Note if Not on Approval   */
-                ! onApproval ? 
-                  <div className="form-group">
-                    <label>Note:</label>
-                    <textarea className="form-control" rows="3" name="employee_note" onChange={handleChange} value={values.employee_note??''} placeholder="Enter Note..."></textarea>
-                    <Form.Control.Feedback type="invalid">
-                      &nbsp;{errors.employee_note && touched.employee_note && errors.employee_note}
-                    </Form.Control.Feedback> 
-                  </div> 
-                  :
-                  null 
-                }
-
-                {  /** Shows Approver Note if on Approval   */
-                  onApproval ? 
-                  <div className="form-group">
-                    <label>Note:</label>
-                    <textarea className="form-control" rows="3" name="approver_note" onChange={handleChange} value={values.approver_note} placeholder="Enter Note..."></textarea>
-                    <Form.Control.Feedback type="invalid">
-                      &nbsp;{errors.approver_note && touched.approver_note && errors.approver_note}
-                    </Form.Control.Feedback> 
-                  </div> 
-                  :
-                  null 
-                }
-                
-                { /** Shows the respective buttons base on the onApproval variable  */
-                  method == 'store' ? 
-                    <button type="submit" className="btn btn-primary">Submit</button> 
-                  : 
-                  method == 'update' ?
-                    <div>
-                      <button type="submit" className="btn btn-primary">Update</button> &nbsp;
-                    </div>
-                  :
-                  method == 'approval' ?
-                    <div>
-                      <button type="submit" className="btn btn-primary">Approve</button> &nbsp;
-                      <button type="submit" className="btn btn-danger">Deny</button>  &nbsp;
-                      <button type="submit" className="btn btn-secondary">Cancel</button> &nbsp;
-                    </div>
-                  :
-                  ''
-                }
-                
-              </Content>
-            </ContainerBody>
-          </ContainerWrapper>
-        </form>
-    )}
-  
-    </Formik>;    
-    }
+                  {  /** Shows Approver Note if on Approval   */
+                    onApproval ? 
+                    <div className="form-group">
+                      <label>Note:</label>
+                      <textarea className="form-control" rows="3" name="approver_note" onChange={handleChange} value={values.approver_note} placeholder="Enter Note..."></textarea>
+                      <Form.Control.Feedback type="invalid">
+                        &nbsp;{errors.approver_note && touched.approver_note && errors.approver_note}
+                      </Form.Control.Feedback> 
+                    </div> 
+                    :
+                    null 
+                  }
+                  
+                  { /** Shows the respective buttons base on the onApproval variable  */
+                    method == 'store' ? 
+                      <button type="submit" className="btn btn-primary">Submit</button> 
+                    : 
+                    method == 'update' ?
+                      <div>
+                        <button type="submit" className="btn btn-primary">Update</button> &nbsp;
+                      </div>
+                    :
+                    method == 'approval' ?
+                      <div>
+                        <button type="submit" className="btn btn-primary">Approve</button> &nbsp;
+                        <button type="submit" className="btn btn-danger">Deny</button>  &nbsp;
+                        <button type="submit" className="btn btn-secondary">Cancel</button> &nbsp;
+                      </div>
+                    :
+                    ''
+                  }
+                  
+                </Content>
+              </ContainerBody>
+            </ContainerWrapper>
+          </form>
+      )}
+    
+      </Formik>;    
+      </Wrapper>
+  }
     return <PageLoading/>;
   }
 }

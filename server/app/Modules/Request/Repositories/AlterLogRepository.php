@@ -81,8 +81,11 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             $alter_log->updated_by   = auth()->user()->id;
             $alter_log->created_by   = auth()->user()->id;
             $alter_log->update();
-            
+
             DB::commit();
+
+            $alter_log->pending();
+
             log_to_file('info', 'Success', [$alter_log]);
             return $alter_log;
         } catch (Exception $e) {

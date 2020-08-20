@@ -9,6 +9,7 @@ import constantReducers from "./constantReducers";
 
 import overtimeReducers from "./overtimeReducers";
 import alterLogReducers from "./alterLogReducers";
+import redirectReducers from "./redirectReducers";
 
 import dtrReducer from "./dtrReducers";
 
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
 
     alterLog : alterLogReducers,
     overtime : overtimeReducers,
+    redirect : redirectReducers
 });
 
 export default rootReducer;

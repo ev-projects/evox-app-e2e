@@ -103,7 +103,7 @@ export const fetchUser = () => {
                 'constant'   : result.data.content.constant
             })
 
-            dispatch( Formatter.alert_success( result, 3000 )  );
+            // dispatch( Formatter.alert_success( result, 3000 )  );
 
             // Sets the Reloading to False
             dispatch({'type': 'RELOAD_END'});

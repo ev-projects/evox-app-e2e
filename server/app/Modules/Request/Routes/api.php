@@ -81,7 +81,7 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
     });
 
 
-    Route::group(['prefix' => 'alterlog'], function () {
+    Route::group(['prefix' => 'alter_log'], function () {
     
         # Insert new Change Schedule Request
         Route::post('/',     'AlterLogController@store'); 

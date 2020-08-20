@@ -2,6 +2,7 @@
 
 namespace App\Modules\Payroll\Models;
 
+use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\Request\Models\RestDayWork;
@@ -439,6 +440,16 @@ class Dtr extends Model
     public function next_dtr(){
         return $this->hasOne(Dtr::class, 'user_id', 'user_id')->where([
             'date' => timestamp_to_date( add_days_to_timestamp( $this->date, 1 ) )
+        ]);
+    }
+
+
+    /**
+     * hasOne Relationship for the Alter Log
+     */
+    public function alter_log(){
+        return $this->hasOne(AlterLog::class, 'user_id', 'user_id')->where([
+            'date' => $this->date
         ]);
     }
 

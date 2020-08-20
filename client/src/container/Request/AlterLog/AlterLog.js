@@ -14,33 +14,92 @@ import * as Yup from 'yup';
 
 import PageLoading from "../../PageLoading";
 
-import Formatter from "../../../services/Formatter";
 import DateFormatter from "../../../services/DateFormatter";
 
+import { fetchAlterLog, 
+         addAlterLog, 
+         updateAlterLog, 
+         resetAlterLogInstance, 
+         clearAlterLogInstance } from '../../../store/actions/alterLogActions';
 
+import { setRedirect } from '../../../store/actions/redirectActions';
 
-import { fetchAlterLog, addAlterLog, updateAlterLog } from '../../../store/actions/alterLogActions';
+import Wrapper from "../../../components/Template/Wrapper";
+
 
 
 class AlterLog extends Component {
+
+  onSubmitHandler = (values) => {
+
+    // Setting of Form Data to be passed in the submission
+    var formData = new FormData();
+
+    for (var key in values) {
+      
+        if( values[key] != null ) {
+            switch( key ) {
+                case "date":
+                    formData.set(key, values[key].toISOString().substring(0, 10));
+                    break;
+                case "current_time_in":
+                case "current_time_out":
+                case "new_time_in":
+                case "new_time_out":
+                    formData.append(key, moment( values[key] ).format("YYYY-MM-DD HH:mm:ss") );
+                    break;
+                default:
+                    formData.set(key, values[key]);
+                    break;
+            }
+        }
+    }
+
+    // Checks on what method to use depending on the values.method
+    switch( values.method ) {
+
+      case "store":
+          this.props.addAlterLog( formData );
+          break;
+
+      case "update":
+          formData.append('_method', 'PUT')
+          this.props.updateAlterLog( values.id, formData );
+          break;
+
+      case "approval":
+          break;
+
+      default:
+          break;
+    }
     
 
-  onSubmitHandler = (values, e) => {
-    console.log(values);
-    console.log(this.props);
-    console.log(e);
   }
 
+  goBack = () => {
+    this.props.setRedirect( this.props.location.previousPath );
+  }
 
   componentWillMount(){
+      
+      // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+      this.props.clearAlterLogInstance();
+
       // If the ID is defined, load the Overtime Instance base on the ID Parameter in Route.
       if( this.props.params.id != undefined ) {
-        this.props.fetchOvertime( this.props.params.id )
+
+        this.props.fetchAlterLog( this.props.params.id )
       }
   }
 
   render = () => {  
-  
+
+    // If there's an existing instance and it's status is Canceled/Declined, reset the Alter Log instance but retain the ID to reuse the existing record.
+    if( this.props.instance.id != undefined && ['canceled', 'declined'].includes( this.props.instance.status ) ) {
+      this.props.resetAlterLogInstance();
+    }
+
     // Checks if the Instance is On Approval state.
     const onApproval = this.props.onApproval != undefined ? this.props.onApproval : false;
 
@@ -50,6 +109,7 @@ class AlterLog extends Component {
     // Sets Initial Value of the current Formik form.
     const initialValue = {
         method:             method,
+        id:                 this.props.instance.id != undefined ? this.props.instance.id : null, 
         date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : ( this.props.location.date != undefined ? new Date(  this.props.location.date ) : null ), 
         current_time_in:    this.props.instance.current_time_in != undefined ? new Date( this.props.instance.current_time_in ) : ( this.props.location.current_time_in != undefined ? new Date(  this.props.location.current_time_in ) : null ), 
         current_time_out:   this.props.instance.current_time_out != undefined ? new Date( this.props.instance.current_time_out ) : ( this.props.location.current_time_out != undefined ? new Date(  this.props.location.current_time_out ) : null ), 
@@ -59,10 +119,11 @@ class AlterLog extends Component {
         approver_note:      this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null
     }
 
-    /** Show the Form if the Method is Store OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
+    /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
-      
-      return <Formik 
+    
+      return <Wrapper previousPath={this.props.location.previousPath}>
+        <Formik 
         enableReinitialize
         onSubmit={this.onSubmitHandler} 
         validationSchema={validationSchema} 
@@ -71,94 +132,94 @@ class AlterLog extends Component {
       {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
         
-        <form onSubmit={handleSubmit}>
-          <input type="hidden" name="method" value={method} />
-          <input type="hidden" name="date" value={values.date} />
-          <ContainerWrapper>
-            <ContainerBody>
-              <Content col="6" title={ initialValue.date != undefined ? 'Alter Log for ' + moment(values.date).format("MMMM D, YYYY, dddd") : '' }>
-              <Row>  
-                  <Col size="6"> 
-                    <div className="form-group">
-                      <label>Current Time-In:</label>
-                      <InputDateTime name="current_time_in" value={values.current_time_in} readOnly />
-                    </div>
-                  </Col> 
-                  <Col size="6">   
-                    <div className="form-group">
-                      <label>Current Time-Out:</label>
-                      <InputDateTime name="current_time_out" value={values.current_time_out} readOnly />
-                    </div>
-                  </Col> 
-                </Row> 
+          <form onSubmit={handleSubmit}>
+            <input type="hidden" name="method" value={method} />
+            <input type="hidden" name="date" value={values.date} />
+            <input type="hidden" name="id"  value={values.id} />
+            <ContainerWrapper>
+              <ContainerBody>
+                <Content col="6" title={ initialValue.date != undefined ? 'Alter Log for ' + moment(values.date).format("MMMM D, YYYY, dddd") : '' }>
                 <Row>  
-                  <Col size="6"> 
+                    <Col size="6"> 
+                      <div className="form-group">
+                        <label>Current Time-In:</label>
+                        <InputDateTime name="current_time_in" value={values.current_time_in} readOnly />
+                      </div>
+                    </Col> 
+                    <Col size="6">   
+                      <div className="form-group">
+                        <label>Current Time-Out:</label>
+                        <InputDateTime name="current_time_out" value={values.current_time_out} readOnly />
+                      </div>
+                    </Col> 
+                  </Row> 
+                  <Row>  
+                    <Col size="6"> 
+                      <div className="form-group">
+                        <label>New Time-In:</label>
+                        <InputDateTime name="new_time_in" value={values.new_time_in} minDate={values.date} maxDate={values.date} popperPlacement="right-start" />
+                      </div>  
+                    </Col> 
+                    <Col size="6">
+                      <div className="form-group">
+                        <label>New Time-Out:</label>
+                        <InputDateTime name="new_time_out" value={values.new_time_out} minDate={values.date} maxDate={ DateFormatter.add_day_to_datetime( values.date, 1 ) } popperPlacement="right-start" />
+                      </div> 
+                    </Col> 
+                  </Row> 
+
+                  {  /** Shows Employee Note if Not on Approval   */
+                  ! onApproval ? 
                     <div className="form-group">
-                      <label>New Time-In:</label>
-                      <InputDateTime name="new_time_in" value={values.new_time_in} minDate={values.date} maxDate={values.date} popperPlacement="right-start" />
-                    </div>  
-                  </Col> 
-                  <Col size="6">
-                    <div className="form-group">
-                      <label>New Time-Out:</label>
-                      <InputDateTime name="new_time_out" value={values.new_time_out} minDate={values.date} maxDate={ DateFormatter.add_day_to_datetime( values.date, 1 ) } popperPlacement="right-start" />
+                      <label>Note:</label>
+                      <textarea className="form-control" rows="3" name="employee_note" onChange={handleChange} value={values.employee_note??''} placeholder="Enter Note..."></textarea>
+                      <Form.Control.Feedback type="invalid">
+                        &nbsp;{errors.employee_note && touched.employee_note && errors.employee_note}
+                      </Form.Control.Feedback> 
                     </div> 
-                  </Col> 
-                </Row> 
+                    :
+                    null 
+                  }
 
-                {  /** Shows Employee Note if Not on Approval   */
-                ! onApproval ? 
-                  <div className="form-group">
-                    <label>Note:</label>
-                    <textarea className="form-control" rows="3" name="employee_note" onChange={handleChange} value={values.employee_note??''} placeholder="Enter Note..."></textarea>
-                    <Form.Control.Feedback type="invalid">
-                      &nbsp;{errors.employee_note && touched.employee_note && errors.employee_note}
-                    </Form.Control.Feedback> 
-                  </div> 
-                  :
-                  null 
-                }
-
-                {  /** Shows Approver Note if on Approval   */
-                  onApproval ? 
-                  <div className="form-group">
-                    <label>Note:</label>
-                    <textarea className="form-control" rows="3" name="approver_note" onChange={handleChange} value={values.approver_note} placeholder="Enter Note..."></textarea>
-                    <Form.Control.Feedback type="invalid">
-                      &nbsp;{errors.approver_note && touched.approver_note && errors.approver_note}
-                    </Form.Control.Feedback> 
-                  </div> 
-                  :
-                  null 
-                }
-                
-                { /** Shows the respective buttons base on the onApproval variable  */
-                  method == 'store' ? 
-                    <Button type="submit" className="btn btn-primary">Submit</Button> 
-                  : 
-                  method == 'update' ?
-                    <div>
-                      <Button type="submit" className="btn btn-primary">Update</Button> &nbsp;
-                    </div>
-                  :
-                  method == 'approval' ?
-                    <div>
-                      <Button type="submit" className="btn btn-primary">Approve</Button> &nbsp;
-                      <Button type="submit" className="btn btn-danger">Deny</Button>  &nbsp;
-                      <Button type="submit" className="btn btn-secondary">Cancel</Button> &nbsp;
-                    </div>
-                  :
-                  ''
-                }
-                
-              </Content>
-            </ContainerBody>
-          </ContainerWrapper>
-        </form>
-    )}
-  
-    </Formik>;    
-    }
+                  {  /** Shows Approver Note if on Approval   */
+                    onApproval ? 
+                    <div className="form-group">
+                      <label>Note:</label>
+                      <textarea className="form-control" rows="3" name="approver_note" onChange={handleChange} value={values.approver_note} placeholder="Enter Note..."></textarea>
+                      <Form.Control.Feedback type="invalid">
+                        &nbsp;{errors.approver_note && touched.approver_note && errors.approver_note}
+                      </Form.Control.Feedback> 
+                    </div> 
+                    :
+                    null 
+                  }
+                  
+                  { /** Shows the respective buttons base on the onApproval variable  */
+                    method == 'store' ? 
+                        <Button type="submit" className="btn btn-primary">Submit</Button>
+                    : 
+                    method == 'update' ?
+                        <Button type="submit" className="btn btn-primary">Update</Button>   
+                    : 
+                    method == 'approval' ?
+                      <div>
+                        <Button type="submit" className="btn btn-primary">Approve</Button> &nbsp;
+                        <Button type="submit" className="btn btn-danger">Deny</Button>  &nbsp;
+                      </div>
+                    :
+                    ''
+                  }
+                  &nbsp;<Button type="button" onClick={this.goBack} className="btn btn-secondary float-right" >Go Back</Button>
+                  
+                </Content>
+              </ContainerBody>
+            </ContainerWrapper>
+          </form>
+      )}
+    
+      </Formik>
+      </Wrapper>
+  }
     return <PageLoading/>;
   }
 }
@@ -189,9 +250,12 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchAlterLog   : ( id ) => dispatch( fetchAlterLog( id ) ),
-      addAlterLog     : ( post_data ) => dispatch( addAlterLog( post_data ) ),
-      updateAlterLog  : ( id, post_data ) => dispatch( updateAlterLog( id, post_data ) ),
+      fetchAlterLog         : ( id ) => dispatch( fetchAlterLog( id ) ),
+      addAlterLog           : ( post_data ) => dispatch( addAlterLog( post_data ) ),
+      updateAlterLog        : ( id, post_data ) => dispatch( updateAlterLog( id, post_data ) ),
+      setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
+      resetAlterLogInstance : () => dispatch( resetAlterLogInstance() ),
+      clearAlterLogInstance : () => dispatch( clearAlterLogInstance() )
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(AlterLog);

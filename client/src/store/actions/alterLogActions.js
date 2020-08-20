@@ -3,6 +3,9 @@ import API from "../../services/API";
 import { trackPromise } from "react-promise-tracker";
 import Formatter from "../../services/Formatter";
 
+
+import { setRedirect, clearRedirect } from '../actions/redirectActions';
+
 /**
  *  A dedicated repository of Actions for Alter Log
  */
@@ -17,7 +20,13 @@ export const addAlterLog = ( post_data ) => {
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result ));
+            dispatch( Formatter.alert_success( result, 3000 ));
+            
+            dispatch({
+                'type'      : 'SET_REDIRECT',
+                'link'      : global.dashboard_url
+            })
+
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
@@ -30,12 +39,17 @@ export const addAlterLog = ( post_data ) => {
 export const updateAlterLog = ( id, post_data ) => {
     return (dispatch, getState) => {
         API.call({
-            method: "put",
+            method: "post",
             url: "/request/alter_log/" + id,
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result ));
+            dispatch( Formatter.alert_success( result, 3000 ));
+            
+            dispatch({
+                'type'      : 'SET_REDIRECT',
+                'link'      : global.dashboard_url
+            })
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
@@ -43,7 +57,7 @@ export const updateAlterLog = ( id, post_data ) => {
     }
 }
 
-
+// Fetch Alter Log instance
 export const fetchAlterLog = ( id ) => {
     return (dispatch, getState) => {
         API.call({
@@ -59,6 +73,24 @@ export const fetchAlterLog = ( id ) => {
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
         });
+    }
+}
+
+// Clear Alter Log Instance
+export const clearAlterLogInstance = () => {
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'CLEAR_ALTER_LOG_INSTANCE'
+        })
+    }
+}
+
+// Reset Alter Log Instance
+export const resetAlterLogInstance = () => {
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'RESET_ALTER_LOG_INSTANCE'
+        })
     }
 }
 
