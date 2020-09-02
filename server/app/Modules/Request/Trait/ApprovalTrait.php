@@ -21,13 +21,13 @@ trait ApprovalTrait
                 $this->status       = get_constant('REQUEST_STATUS.approved');
                 $this->updated_by   = auth()->user()->id;
                 $this->save();
-                
-                DB::commit();
+
                 log_to_file('info', 'Request changed from ['.$current_status.'] to ['. get_constant('REQUEST_STATUS.approved').']', $this->attributes, 'request');
             } else {
                 log_to_file('info', 'Request\'s status cannot be changed.', $this->attributes, 'request');
             }
 
+            DB::commit();
             return $this;
 
         } catch( Exception $e) {
@@ -77,12 +77,14 @@ trait ApprovalTrait
                 $this->updated_by   = auth()->user()->id;
                 $this->save();
                 
-                DB::commit();
                 log_to_file('info', 'Request changed from ['.$current_status.'] to ['. get_constant('REQUEST_STATUS.pending').']', $this->attributes, 'request');
             } else {
                 log_to_file('info', 'Request\'s status cannot be changed.', $this->attributes, 'request');
             }
 
+            DB::commit();
+            return $this;
+            
         } catch( Exception $e) {
             DB::rollback();
             log_error($e);

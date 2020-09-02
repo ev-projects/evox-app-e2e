@@ -2,6 +2,7 @@
 
 namespace App\Modules\Request\Repositories;
 
+use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Request\Models\AlterLog;
 
 use App\Modules\Request\Resources\AlterLogResource;
@@ -39,7 +40,7 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             $alter_log = new AlterLog();
             $alter_log->user_id      = auth()->user()->id;
             $alter_log->date  = $data['date'];
-            $alter_log->current_time_in  = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['time_in']) : null ;
+            $alter_log->current_time_in  = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['current_time_in']) : null ;
             $alter_log->current_time_out  = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) : null ;
             $alter_log->new_time_in  = strtotime($data['new_time_in']);
             $alter_log->new_time_out  = strtotime($data['new_time_out']);
@@ -69,25 +70,32 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
     {   
         DB::beginTransaction();
         try {   
+            
             $alter_log =   AlterLog::findOrFail($id);
-            $alter_log->date  = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : $alter_log->date ;
-            $alter_log->current_time_in  = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['time_in']) : $alter_log->current_time_in ;
-            $alter_log->current_time_out  = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) : $alter_log->current_time_out ;
-            $alter_log->new_time_in  = ( isset( $data['new_time_in'] ) && is_valid( $data['new_time_in'] ) ) ? strtotime($data['new_time_in']) : $alter_log->new_time_in ;
-            $alter_log->new_time_out  = ( isset( $data['new_time_out'] ) && is_valid( $data['new_time_out'] ) ) ? strtotime($data['new_time_out']) : $alter_log->new_time_out ;
+            
+            // Authenticate the User first if valid for the Update
+            if( get_authenticated_user( $alter_log->user_id ) ) {
 
-            $alter_log->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $alter_log->valid_from ;
-            $alter_log->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['valid_from'] ) ) ? $data['approver_note'] : $alter_log->valid_from ;
-            $alter_log->updated_by   = auth()->user()->id;
-            $alter_log->created_by   = auth()->user()->id;
-            $alter_log->update();
+                $alter_log->date  = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : $alter_log->date ;
+                $alter_log->current_time_in  = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['current_time_in']) : $alter_log->current_time_in ;
+                $alter_log->current_time_out  = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) : $alter_log->current_time_out ;
+                $alter_log->new_time_in  = ( isset( $data['new_time_in'] ) && is_valid( $data['new_time_in'] ) ) ? strtotime($data['new_time_in']) : $alter_log->new_time_in ;
+                $alter_log->new_time_out  = ( isset( $data['new_time_out'] ) && is_valid( $data['new_time_out'] ) ) ? strtotime($data['new_time_out']) : $alter_log->new_time_out ;
 
-            DB::commit();
+                $alter_log->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $alter_log->employee_note ;
+                $alter_log->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $alter_log->approver_note ;
+                $alter_log->updated_by   = auth()->user()->id;
+                $alter_log->created_by   = auth()->user()->id;
+                $alter_log->update();
 
-            $alter_log->pending();
+                DB::commit();
 
-            log_to_file('info', 'Success', [$alter_log]);
-            return $alter_log;
+                $alter_log->pending();
+
+                log_to_file('info', 'Success', [$alter_log]);
+                return $alter_log;
+            }
+            
         } catch (Exception $e) {
             DB::rollback();
             log_error($e);
@@ -142,8 +150,11 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
         try {
             $alter_log = AlterLog::find($id);
 
-            log_to_file('info', 'Success', [$alter_log]);
-            return $alter_log;
+            if( get_authenticated_user( $alter_log->user_id ) ) {
+                
+                log_to_file('info', 'Success', [$alter_log]);
+                return $alter_log;
+            }
 
         } catch (Exception $e) {
             log_error($e);
@@ -159,13 +170,30 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
      */
     public function approve(array $data, $id)
     {
+        DB::beginTransaction();
         try {
-            # Update the fields  and Apply schedule updates
+            # Update the fields and Apply schedule updates
             $alter_log = $this->update($data, $id);
             $alter_log->approve();
+
+            // Authenticate the User first if the Alter Log Submitter is under the user logged in's supervisee
+            if( is_under_supervisee( $alter_log->user_id ) ) {
+
+                # Apply the changes on the DTR
+                $dtr = $alter_log->dtr()->first();
+    
+                # Update the New Time in and out of the DTR.
+                $dtr->time_in =     $alter_log->new_time_in;
+                $dtr->time_out =    $alter_log->new_time_out;
+                
+                $dtr->save();
+            }
             
+            DB::commit();
             return $alter_log;
+
         } catch (Exception $e) {
+            DB::rollback();
             log_error($e);
             throw $e;
         }

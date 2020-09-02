@@ -19,17 +19,29 @@ import DateFormatter from "../../../services/DateFormatter";
 import { fetchAlterLog, 
          addAlterLog, 
          updateAlterLog, 
+         updateAlterLogStatus, 
          resetAlterLogInstance, 
          clearAlterLogInstance } from '../../../store/actions/alterLogActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 
 import Wrapper from "../../../components/Template/Wrapper";
+import { RequestButtons } from "../../../components/RequestComponent/RequestButtons/RequestButtons";
 
 
 
 class AlterLog extends Component {
 
+  // Set the default constructor with Action state in null
+  constructor(props) {
+    super(props);
+    this.state = {
+      action: null
+    }
+  }
+
+
+  // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = (values) => {
 
     // Setting of Form Data to be passed in the submission
@@ -56,29 +68,45 @@ class AlterLog extends Component {
     }
 
     // Checks on what method to use depending on the values.method
-    switch( values.method ) {
+    switch( this.state.action ) { 
 
-      case "store":
-          this.props.addAlterLog( formData );
-          break;
+        // If action is NULL, it means it's either store/update
+        case null:
+            switch( values.method ) {
 
-      case "update":
-          formData.append('_method', 'PUT')
-          this.props.updateAlterLog( values.id, formData );
-          break;
+              case "store":
+                  this.props.addAlterLog( formData );
+                  break;
+        
+              case "update":
+                  formData.append('_method', 'PUT')
+                  this.props.updateAlterLog( values.id, formData );
+                  break;
 
-      case "approval":
-          break;
+              default:
+                  break;
 
-      default:
-          break;
+            }
+            break;
+
+        // If action is approve/decline/cancel, it means it's a change of Status
+        case "approve":
+        case "decline":
+        case "cancel":
+            formData.append('_method', 'PUT')
+            this.props.updateAlterLogStatus( values.id, formData, this.state.action );
+            break;
     }
-    
-
   }
-
+  
+  // Set the goBack Function for instance of going back the previous page from the history.
   goBack = () => {
     this.props.setRedirect( this.props.location.previousPath );
+  }
+
+  // Set the setAction Function for Setting of the Approval Action to be proceeded
+  setAction = (action) => {
+    this.setState({'action':action});
   }
 
   componentWillMount(){
@@ -101,7 +129,7 @@ class AlterLog extends Component {
     }
 
     // Checks if the Instance is On Approval state.
-    const onApproval = this.props.onApproval != undefined ? this.props.onApproval : false;
+    const onApproval = this.props.instance?.is_under_supervisee ? this.props.instance.is_under_supervisee : false;
 
     // Sets the Method of the current state.
     const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )
@@ -116,7 +144,13 @@ class AlterLog extends Component {
         new_time_in:        this.props.instance.new_time_in != undefined ? new Date( this.props.instance.new_time_in ) : ( this.props.location.current_time_in != undefined ? new Date(  this.props.location.current_time_in ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
         new_time_out:       this.props.instance.new_time_out != undefined ? new Date( this.props.instance.new_time_out ) : ( this.props.location.current_time_out != undefined ? new Date(  this.props.location.current_time_out ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
         employee_note:      this.props.instance.employee_note != undefined ? this.props.instance.employee_note : null,
-        approver_note:      this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null
+        approver_note:      this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null,
+    }
+
+    // Sets the default title for hte Request. Checks aswell if it's for approval.
+    let title = initialValue.date != undefined ? 'Alter Log for ' + moment(initialValue.date).format("MMMM D, YYYY, dddd") : '';
+    if( method == "approval" && this.props.instance.employee_name != undefined ) {
+        title += " of " + this.props.instance.employee_name;
     }
 
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
@@ -136,9 +170,10 @@ class AlterLog extends Component {
             <input type="hidden" name="method" value={method} />
             <input type="hidden" name="date" value={values.date} />
             <input type="hidden" name="id"  value={values.id} />
+            { onApproval ? <input type="hidden" name="status"  value={values.status} /> : null}
             <ContainerWrapper>
               <ContainerBody>
-                <Content col="6" title={ initialValue.date != undefined ? 'Alter Log for ' + moment(values.date).format("MMMM D, YYYY, dddd") : '' }>
+                <Content col="6" title={title}>
                 <Row>  
                     <Col size="6"> 
                       <div className="form-group">
@@ -183,6 +218,10 @@ class AlterLog extends Component {
 
                   {  /** Shows Approver Note if on Approval   */
                     onApproval ? 
+                    <span>
+                    <div className="form-group">
+                      <b>Employee's Note:</b> {values.employee_note??''}
+                    </div>
                     <div className="form-group">
                       <label>Note:</label>
                       <textarea className="form-control" rows="3" name="approver_note" onChange={handleChange} value={values.approver_note} placeholder="Enter Note..."></textarea>
@@ -190,26 +229,11 @@ class AlterLog extends Component {
                         &nbsp;{errors.approver_note && touched.approver_note && errors.approver_note}
                       </Form.Control.Feedback> 
                     </div> 
+                    </span>
                     :
                     null 
                   }
-                  
-                  { /** Shows the respective buttons base on the onApproval variable  */
-                    method == 'store' ? 
-                        <Button type="submit" className="btn btn-primary">Submit</Button>
-                    : 
-                    method == 'update' ?
-                        <Button type="submit" className="btn btn-primary">Update</Button>   
-                    : 
-                    method == 'approval' ?
-                      <div>
-                        <Button type="submit" className="btn btn-primary">Approve</Button> &nbsp;
-                        <Button type="submit" className="btn btn-danger">Deny</Button>  &nbsp;
-                      </div>
-                    :
-                    ''
-                  }
-                  &nbsp;<Button type="button" onClick={this.goBack} className="btn btn-secondary float-right" >Go Back</Button>
+                  <RequestButtons method={method} {...this} />
                   
                 </Content>
               </ContainerBody>
@@ -253,6 +277,7 @@ const mapDispatchToProps = (dispatch) => {
       fetchAlterLog         : ( id ) => dispatch( fetchAlterLog( id ) ),
       addAlterLog           : ( post_data ) => dispatch( addAlterLog( post_data ) ),
       updateAlterLog        : ( id, post_data ) => dispatch( updateAlterLog( id, post_data ) ),
+      updateAlterLogStatus  : ( id, post_data, status ) => dispatch( updateAlterLogStatus( id, post_data, status ) ),
       setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
       resetAlterLogInstance : () => dispatch( resetAlterLogInstance() ),
       clearAlterLogInstance : () => dispatch( clearAlterLogInstance() )

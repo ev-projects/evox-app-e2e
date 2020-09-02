@@ -33,12 +33,17 @@ if (! function_exists('is_under_supervisee')) {
      * This function checks if the $user_id is Under the Logged-In's User Supervisee.
      *
      * @param  int $user_id
+     * @param  bool $force_to_fail
      * @return App\Modules\User\Models\User
      */
-    function is_under_supervisee( $user_id ) 
+    function is_under_supervisee( $user_id, $force_to_fail = true ) 
     {
         try {
-            return auth()->user()->supervisee()->findOrFail( $user_id ) ? true : false;
+            if( $force_to_fail ) {
+                return auth()->user()->supervisee()->findOrFail( $user_id ) ? true : false;
+            } else {
+                return auth()->user()->supervisee()->find( $user_id ) ? true : false;
+            }
 
         }catch(Exception $e){
             

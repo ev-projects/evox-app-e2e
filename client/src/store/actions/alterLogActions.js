@@ -57,6 +57,29 @@ export const updateAlterLog = ( id, post_data ) => {
     }
 }
 
+
+// Update Alter Log Status Request
+export const updateAlterLogStatus = ( id, post_data, status ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/request/alter_log/"+ status + "/" + id,
+            data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result, 3000 ));
+            
+            dispatch({
+                'type'      : 'SET_REDIRECT',
+                'link'      : global.dashboard_url
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 // Fetch Alter Log instance
 export const fetchAlterLog = ( id ) => {
     return (dispatch, getState) => {

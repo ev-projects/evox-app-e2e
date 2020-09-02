@@ -28,6 +28,8 @@ class AlterLogResource extends JsonResource
                 'status' => $this->status,
                 'employee_note' => $this->employee_note,
                 'approver_note' => $this->approver_note,
+                'is_under_supervisee'   => is_under_supervisee( $this->user_id, false ),
+                'employee_name' => $this->user()->first()->getFullName()
             );
         }
 
