@@ -149,9 +149,11 @@ class AlterLog extends Component {
 
     // Sets the default title for hte Request. Checks aswell if it's for approval.
     let title = initialValue.date != undefined ? 'Alter Log for ' + moment(initialValue.date).format("MMMM D, YYYY, dddd") : '';
-    if( method == "approval" && this.props.instance.employee_name != undefined ) {
-        title += " of " + this.props.instance.employee_name;
+    if( method == "approval" && this.props.instance.user != undefined ) {
+        title += " of " + this.props.instance.user.full_name;
     }
+
+
 
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){

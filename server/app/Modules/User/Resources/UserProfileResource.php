@@ -36,7 +36,8 @@ class UserProfileResource extends JsonResource
             'last_name' => $this->last_name,
             'employment_status' => $this->employment_status,
             'is_active' => $this->is_active,
-            'force_change_password' => $this->force_change_password
+            'force_change_password' => $this->force_change_password,
+            'full_name' => $this->getFullName()
         );
 
         if( $this->show_full_info ) {
