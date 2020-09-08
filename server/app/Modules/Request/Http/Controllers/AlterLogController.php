@@ -110,9 +110,8 @@ class AlterLogController extends Controller
 
             $alter_log = $this->alter_log->approve( $request->all() , $id );
 
-            $dtr =  $alter_log->dtr()->first();
-
-            $this->dtr->compute_payroll_items( $dtr );
+            // Add code to apply the Alter Log on the specific DTR.
+            $dtr = $this->dtr->apply_alter_log_to_dtr( $alter_log );
 
             return success_response(
                 trans('messages.approve_alter_log_success'), 
@@ -169,7 +168,7 @@ class AlterLogController extends Controller
             log_activity( trans('messages.cancel_alter_log_attempt') );
 
             return success_response(
-                trans('messages.cancel_overtime_success'), 
+                trans('messages.cancel_alter_log_success'), 
                 new AlterLogResource( $this->alter_log->cancel( $id ) ) 
             );
         } catch(Exception $e){

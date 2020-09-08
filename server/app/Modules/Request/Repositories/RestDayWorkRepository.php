@@ -30,20 +30,15 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
 
             $rest_day_work = new RestDayWork();
 
-            $rest_day_work->user_id      = auth()->user()->id;
-            $rest_day_work->date         = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
-            $rest_day_work->start_time   = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] ) : 0;
-            $rest_day_work->end_time     = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] )   : 0;
-            $rest_day_work->break_time   = ( isset( $data['break_time'] ) && is_valid( $data['break_time'] ) ) ? time_to_seconds( $data['break_time'] )   : 0;
-            $rest_day_work->updated_by   = auth()->user()->id;
-            $rest_day_work->created_by   = auth()->user()->id;
-                        
-            if( isset($data['employee_note'] ) ) {
-                $rest_day_work->set_employee_note( $data['employee_note']  );
-            }
-            
-            $rest_day_work->pending();
-
+            $rest_day_work->user_id         = auth()->user()->id;
+            $rest_day_work->date            = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
+            $rest_day_work->start_time      = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] ) : 0;
+            $rest_day_work->end_time        = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] )   : 0;
+            $rest_day_work->break_time      = ( isset( $data['break_time'] ) && is_valid( $data['break_time'] ) ) ? time_to_seconds( $data['break_time'] )   : 0;
+            $rest_day_work->updated_by      = auth()->user()->id;
+            $rest_day_work->employee_note   = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : null;
+            $rest_day_work->updated_by      = auth()->user()->id;
+            $rest_day_work->created_by      = auth()->user()->id;
             $rest_day_work->save();
             
             DB::commit();
@@ -61,16 +56,17 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
     /**
      *  Responsible for Updating the Rest Day Work Request 
      * @param array (Rest Day Work Post Variables) $data
-     * @param $id
+     * @param RestDayWork (Rest Day Work Instance/ ID String ) $id_or_rest_day_work
      * @return RestDayWork $rest_day_work
      */
-    public function update(array $data, $id)
+    public function update(array $data, $id_or_rest_day_work)
     {
         DB::beginTransaction();
         try {
 
-            $rest_day_work = RestDayWork::findOrFail($id);
+            $rest_day_work =   ( $id_or_rest_day_work instanceof RestDayWork ) ? $id_or_rest_day_work : RestDayWork::findOrFail($id_or_rest_day_work);
             
+            // Authenticate the User first if valid for the Update
             if( get_authenticated_user( $rest_day_work->user_id ) ) {
             
                 $rest_day_work->date         = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
@@ -79,17 +75,15 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                 $rest_day_work->break_time   = ( isset( $data['break_time'] ) && is_valid( $data['break_time'] ) ) ? time_to_seconds( $data['break_time'] )   : 0;
                 $rest_day_work->updated_by   = auth()->user()->id;
                 
-                if( isset($data['employee_note'] ) && is_valid( $data['employee_note'] ) ) {
-                    $rest_day_work->set_employee_note( $data['employee_note']  );
-                }
-    
-                if( isset($data['approver_note'] ) && is_valid( $data['approver_note'] ) ) {
-                    $rest_day_work->set_approver_note( $data['approver_note']  );
-                }
-    
+                $rest_day_work->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $rest_day_work->employee_note ;
+                $rest_day_work->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $rest_day_work->approver_note ;
+                $rest_day_work->updated_by   = auth()->user()->id;
                 $rest_day_work->update();
                 
                 DB::commit();
+
+                $rest_day_work->pending();
+
                 log_to_file('info', 'Success', [$rest_day_work]);
                 return $rest_day_work;
             }
@@ -147,8 +141,11 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
 
             $rest_day_work = RestDayWork::find($id);
 
-            log_to_file('info', 'Success', [$rest_day_work]);
-            return $rest_day_work;
+            if( get_authenticated_user( $rest_day_work->user_id ) ) {
+                
+                log_to_file('info', 'Success', [$rest_day_work]);
+                return $rest_day_work;
+            }
 
         } catch (Exception $e) {
             log_error($e);
@@ -254,14 +251,23 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
      */
     public function approve(array $data, $id)
     {
+        DB::beginTransaction();
         try {
-            
-            $rest_day_work = $this->update($data, $id);
-            $rest_day_work->approve();
+            # Fetch the Rest Day Work base on the ID
+            $rest_day_work = RestDayWork::findOrFail($id);
 
+            // Authenticate the User first if the Rest Day Work Submitter is under the user logged in's supervisee
+            if( is_under_supervisee( $rest_day_work->user_id ) ) {
+
+                $this->update($data, $rest_day_work);
+
+                $rest_day_work->approve();
+            }
+            DB::commit();
             return $rest_day_work;
 
         } catch (Exception $e) {
+            DB::rollback();
             log_error($e);
             throw $e;
         }
@@ -275,16 +281,27 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
      * @param $id
      * @return RestDayWork $rest_day_work
      */
-    public function decline(array $data, $id)
+    public function decline( array $data, $id)
     {
+        DB::beginTransaction();
         try {
             
-            $rest_day_work = $this->update($data, $id);
-            $rest_day_work->decline();
+            # Fetch the Rest Day Work base on the ID
+            $rest_day_work = RestDayWork::findOrFail($id);
 
+            // Authenticate the User first if the Rest Day Work Submitter is under the user logged in's supervisee
+            if( is_under_supervisee( $rest_day_work->user_id ) ) {
+
+                $this->update($data, $id);
+
+                $rest_day_work->decline();
+            }
+
+            DB::commit();
             return $rest_day_work;
 
         } catch (Exception $e) {
+            DB::rollback();
             log_error($e);
             throw $e;
         }
@@ -300,12 +317,11 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
     public function pending( $id )
     {
         try {
-            
             $rest_day_work = RestDayWork::findOrFail($id);
             $rest_day_work->pending();
 
             return $rest_day_work;
-
+            
         } catch (Exception $e) {
             log_error($e);
             throw $e;
@@ -322,7 +338,6 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
     public function cancel( $id )
     {
         try {
-            
             $rest_day_work = RestDayWork::findOrFail($id);
             $rest_day_work->cancel();
 

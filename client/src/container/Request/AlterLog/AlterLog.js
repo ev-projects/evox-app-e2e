@@ -26,20 +26,9 @@ import { fetchAlterLog,
 import { setRedirect } from '../../../store/actions/redirectActions';
 
 import Wrapper from "../../../components/Template/Wrapper";
-import { RequestButtons } from "../../../components/RequestComponent/RequestButtons/RequestButtons";
-
-
+import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";
 
 class AlterLog extends Component {
-
-  // Set the default constructor with Action state in null
-  constructor(props) {
-    super(props);
-    this.state = {
-      action: null
-    }
-  }
-
 
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = (values) => {
@@ -52,7 +41,7 @@ class AlterLog extends Component {
         if( values[key] != null ) {
             switch( key ) {
                 case "date":
-                    formData.set(key, values[key].toISOString().substring(0, 10));
+                    formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
                     break;
                 case "current_time_in":
                 case "current_time_out":
@@ -67,25 +56,27 @@ class AlterLog extends Component {
         }
     }
 
-    // Checks on what method to use depending on the values.method
-    switch( this.state.action ) { 
+    // Checks on what action to use depending on the values.action
+    switch( values.action  ) { 
 
         // If action is NULL, it means it's either store/update
         case null:
-            switch( values.method ) {
+          if (window.confirm("Are you sure you want to submit/update this request?")) {
+              switch( values.method ) {
 
-              case "store":
-                  this.props.addAlterLog( formData );
-                  break;
-        
-              case "update":
-                  formData.append('_method', 'PUT')
-                  this.props.updateAlterLog( values.id, formData );
-                  break;
+                case "store":
+                    this.props.addAlterLog( formData );
+                    break;
+          
+                case "update":
+                    formData.append('_method', 'PUT')
+                    this.props.updateAlterLog( values.id, formData );
+                    break;
 
-              default:
-                  break;
+                default:
+                    break;
 
+              }
             }
             break;
 
@@ -93,8 +84,10 @@ class AlterLog extends Component {
         case "approve":
         case "decline":
         case "cancel":
-            formData.append('_method', 'PUT')
-            this.props.updateAlterLogStatus( values.id, formData, this.state.action );
+            if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
+                formData.append('_method', 'PUT')
+                this.props.updateAlterLogStatus( values.id, formData, values.action );
+            }
             break;
     }
   }
@@ -102,11 +95,6 @@ class AlterLog extends Component {
   // Set the goBack Function for instance of going back the previous page from the history.
   goBack = () => {
     this.props.setRedirect( this.props.location.previousPath );
-  }
-
-  // Set the setAction Function for Setting of the Approval Action to be proceeded
-  setAction = (action) => {
-    this.setState({'action':action});
   }
 
   componentWillMount(){
@@ -136,6 +124,7 @@ class AlterLog extends Component {
 
     // Sets Initial Value of the current Formik form.
     const initialValue = {
+        action:             null,
         method:             method,
         id:                 this.props.instance.id != undefined ? this.props.instance.id : null, 
         date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : ( this.props.location.date != undefined ? new Date(  this.props.location.date ) : null ), 
@@ -161,7 +150,7 @@ class AlterLog extends Component {
       return <Wrapper previousPath={this.props.location.previousPath}>
         <Formik 
         enableReinitialize
-        onSubmit={this.onSubmitHandler} 
+        onSubmit={this.onSubmitHandler}
         validationSchema={validationSchema} 
         initialValues={initialValue}
         >
@@ -169,6 +158,7 @@ class AlterLog extends Component {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
         
           <form onSubmit={handleSubmit}>
+            <input type="hidden" name="action" value={values.action} />
             <input type="hidden" name="method" value={method} />
             <input type="hidden" name="date" value={values.date} />
             <input type="hidden" name="id"  value={values.id} />

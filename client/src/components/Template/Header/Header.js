@@ -106,7 +106,7 @@ const Header = (props) => {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to={ global.base_url +'request/RestdayWork/' }>
+                      <Link className="nav-link" to={ global.base_url +'request/RestDayWork/' }>
                         <i className="nav-icon fa fa-plus nav-icon" />
                         <p>Rest Day Work</p>
                       </Link>

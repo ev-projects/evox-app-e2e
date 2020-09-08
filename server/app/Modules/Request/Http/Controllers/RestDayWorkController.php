@@ -104,7 +104,7 @@ class RestDayWorkController extends Controller
             log_activity( trans('messages.approve_rest_day_work_attempt') );
 
             $rest_day_work = $this->rest_day_work->approve( $request->all(), $id );
-
+            
             // Add code to apply the Rest Day Work on the specific DTR.
             $dtr = $this->dtr->apply_rest_day_work_to_dtr( $rest_day_work );
             
@@ -125,10 +125,6 @@ class RestDayWorkController extends Controller
     public function decline(RestDayWorkRequest $request, $id){
         try {
             log_activity( trans('messages.decline_rest_day_work_attempt') );
-
-            $rest_day_work = $this->rest_day_work->decline( $request->all(), $id );
-
-            // Add code to remove the Rest Day Work on the specific DTR.
 
             return success_response(
                 trans('messages.decline_rest_day_work_success'), 

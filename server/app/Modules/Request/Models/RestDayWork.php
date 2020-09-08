@@ -40,13 +40,9 @@ class RestDayWork extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
-
     
     /**
-     *  Relationships
-     */
-    /**
-     * belongsTo Relationship for the DTR
+     * belongsTo Relationship for DTR
      */
     public function dtr(){
         return $this->belongsTo(Dtr::class, 'user_id', 'user_id')->where([

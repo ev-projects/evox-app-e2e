@@ -21,7 +21,7 @@ import DailyTimeRecord from "../container/DailyTimeRecord";
 import AlterLog from "../container/Request/AlterLog";
 import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
-import RestdayWork from "../container/Request/RestdayWork";
+import RestDayWork from "../container/Request/RestDayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
 
 const RoutesList = () => {
@@ -47,8 +47,8 @@ const RoutesList = () => {
         <ProtectedRoute exact path="/app/request/Overtime/"><Overtime onApproval={false}/></ProtectedRoute>
         <ProtectedRoute exact path="/app/request/Overtime/:id"><Overtime onApproval={false}/></ProtectedRoute>
         
-        <ProtectedRoute exact path="/app/request/RestdayWork/"><RestdayWork onApproval={false}/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/request/RestdayWork/:id"><RestdayWork onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/RestDayWork/"><RestDayWork onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/RestDayWork/:id"><RestDayWork onApproval={false}/></ProtectedRoute>
 
         <ProtectedRoute exact path="/app/request/WorkFromHome/"><WorkFromHome onApproval={false}/></ProtectedRoute>
         <ProtectedRoute exact path="/app/request/WorkFromHome/:id"><WorkFromHome onApproval={false}/></ProtectedRoute>

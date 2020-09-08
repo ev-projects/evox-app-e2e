@@ -3,6 +3,7 @@
 namespace App\Modules\Payroll\Repositories;
 
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\User\Models\User;
@@ -13,6 +14,8 @@ interface DtrRepositoryInterface
     public function generate_dtr( Collection $user_collection, array $date_array );
 
     public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
+
+    public function apply_alter_log_to_dtr( AlterLog $alter_log );
 
     public function apply_rest_day_work_to_dtr( RestDayWork $rest_day_work );
 

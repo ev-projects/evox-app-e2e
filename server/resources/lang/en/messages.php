@@ -72,7 +72,6 @@ return [
 
     'find_overtime_success' => 'The Overtime Request is now shown!',
 
-
     'approve_overtime_attempt' => 'Approving of Overtime Request Attempt',
     'approve_overtime_success' => 'The Overtime Request is now Approved!',
 
@@ -85,6 +84,8 @@ return [
     'cancel_overtime_attempt' => 'Canceling of Overtime Request Attempt',
     'cancel_overtime_success' => 'The Overtime Request is now Canceled!',
 
+
+
     
     'create_change_schedule_attempt' => 'Create Change Schedule Request Attempt',
     'create_change_schedule_success' => 'A new Change Schedule Request is now created!',
@@ -96,7 +97,6 @@ return [
     'delete_change_schedule_success' => 'The Change Schedule Request is now deleted!',
 
     'find_change_schedule_success' => 'The Change Schedule Request is now shown!',
-
 
     'approve_change_schedule_attempt' => 'Approving of Change Schedule Request Attempt',
     'approve_change_schedule_success' => 'The Change Schedule Request is now Approved!',
@@ -111,6 +111,8 @@ return [
     'cancel_change_schedule_success' => 'The Change Schedule Request is now Canceled!',
         
 
+
+
     'create_alter_log_attempt' => 'Create Alteration Request Attempt',
     'create_alter_log_success' => 'A new Alteration Request is now created!',
 
@@ -122,7 +124,6 @@ return [
 
     'find_alter_log_success' => 'The Alteration Request is now shown!',
 
-
     'approve_alter_log_attempt' => 'Approving of Alteration Request Attempt',
     'approve_alter_log_success' => 'The Alteration Request is now Approved!',
 
@@ -133,7 +134,33 @@ return [
     'pending_alter_log_success' => 'The Alteration Request is now set to Pending!',
 
     'cancel_alter_log_attempt' => 'Canceling of Alteration Request Attempt',
-    'cancel_alter_log_success' => 'The Alteration Request is now Canceled!'
+    'cancel_alter_log_success' => 'The Alteration Request is now Canceled!',
+
+
+
+    
+    'create_rest_day_work_attempt' => 'Create Rest Day Work Request Attempt',
+    'create_rest_day_work_success' => 'A new Rest Day Work Request is now created!',
+
+    'update_rest_day_work_attempt' => 'Update Rest Day Work Request Attempt',
+    'update_rest_day_work_success' => 'The Rest Day Work Request is now updated!',
+
+    'delete_rest_day_work_attempt' => 'Delete Rest Day Work Request Attempt',
+    'delete_rest_day_work_success' => 'The Rest Day Work Request is now deleted!',
+
+    'find_rest_day_work_success' => 'The Rest Day Work Request is now shown!',
+
+    'approve_rest_day_work_attempt' => 'Approving of Rest Day Work Request Attempt',
+    'approve_rest_day_work_success' => 'The Rest Day Work Request is now Approved!',
+
+    'decline_rest_day_work_attempt' => 'Declining of Rest Day Work Request Attempt',
+    'decline_rest_day_work_success' => 'The Rest Day Work Request is now Declined!',
+
+    'pending_rest_day_work_attempt' => 'Setting to Pending of Rest Day Work Request Attempt',
+    'pending_rest_day_work_success' => 'The Rest Day Work Request is now set to Pending!',
+
+    'cancel_rest_day_work_attempt' => 'Canceling of Rest Day Work Request Attempt',
+    'cancel_rest_day_work_success' => 'The Rest Day Work Request is now Canceled!'
         
         
         

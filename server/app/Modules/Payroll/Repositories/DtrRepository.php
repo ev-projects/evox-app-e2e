@@ -8,6 +8,7 @@ use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\User\Models\User;
@@ -285,6 +286,48 @@ class DtrRepository implements DtrRepositoryInterface{
     }
 
 
+
+    /**
+     *  Responsible for Applying of Alter Log to DTR.
+     * @param AlterLog $alter_log
+     * @return Dtr $dtr
+     */
+    public function apply_alter_log_to_dtr( AlterLog $alter_log )
+    {
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'alter_log' => $alter_log ], "dtr");
+
+            # Checks if the $rest_day_work instance are valid.
+            if( is_valid( $alter_log ) && $alter_log->isApproved() ) {
+
+                # Gets the DTR related on the Alter Log.
+                $dtr = $alter_log->dtr()->first();
+
+                // # Update the New Time in and out of the DTR.
+                $dtr->time_in =     $alter_log->new_time_in;
+                $dtr->time_out =    $alter_log->new_time_out;
+                $dtr->update();
+
+                # Compute for the Items
+                $this->compute_payroll_items( $dtr );
+                
+                DB::commit();
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+                return $dtr;
+            }
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            log_error($e);
+            throw $e;
+        }
+    }
+
     
 
     /**
@@ -304,7 +347,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Gets the DTR related on the Rest Day Work.
                 $dtr = $rest_day_work->dtr()->first();
-
+                
                 # Updates the DTR properties
                 $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
                 $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
@@ -320,7 +363,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 }
 
                 # Updates the DTR with the Rest Day Work Details.
-                $dtr->update();
+                $dtr->save();
 
                 # Compute for the Items
                 $this->compute_payroll_items( $dtr );

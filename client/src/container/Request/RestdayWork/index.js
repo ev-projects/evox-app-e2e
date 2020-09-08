@@ -1,1 +1,1 @@
-export { default } from './RestdayWork.js';
+export { default } from './RestDayWork.js';
