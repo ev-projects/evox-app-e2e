@@ -36,6 +36,7 @@ const Content = (props) => {
               <div className="card-header border-0">
                 <div className="d-flex justify-content-between">
                   <h3 className="card-title">{props.title}</h3>
+                  { props.subtitle? props.subtitle : null}
                 </div>
               </div>
               <div className="card-body">

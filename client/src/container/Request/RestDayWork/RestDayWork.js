@@ -27,6 +27,7 @@ import { setRedirect } from '../../../store/actions/redirectActions';
 
 import Wrapper from "../../../components/Template/Wrapper";
 import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";
+import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 
 class RestDayWork extends Component {
 
@@ -135,12 +136,11 @@ class RestDayWork extends Component {
     }
 
 
-    console.log(initialValue);
     // Sets the default title for the Request. Checks aswell if it's for approval.
     let title = 'Rest Day Work';
-    if( method == "approval" && this.props.instance.employee_name != undefined ) {
-        title += " of " + this.props.instance.employee_name;
-    }
+    // if( method == "approval" && this.props.instance.user != undefined ) {
+    //     title += " of " + this.props.instance.user.full_name;
+    // }
 
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     if( (method == 'store') || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
@@ -163,7 +163,7 @@ class RestDayWork extends Component {
             { onApproval ? <input type="hidden" name="status"  value={values.status} /> : null}
             <ContainerWrapper>
               <ContainerBody>
-                <Content col="6" title={title}>
+                <Content col="6" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
                   <Row>  
                     <Col size="4"> 
                       <div className="form-group">

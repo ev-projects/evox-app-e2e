@@ -27,6 +27,7 @@ import { setRedirect } from '../../../store/actions/redirectActions';
 
 import Wrapper from "../../../components/Template/Wrapper";
 import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";
+import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 
 class AlterLog extends Component {
 
@@ -137,10 +138,10 @@ class AlterLog extends Component {
     }
 
     // Sets the default title for hte Request. Checks aswell if it's for approval.
-    let title = initialValue.date != undefined ? 'Alter Log for ' + moment(initialValue.date).format("MMMM D, YYYY, dddd") : '';
-    if( method == "approval" && this.props.instance.user != undefined ) {
-        title += " of " + this.props.instance.user.full_name;
-    }
+    let title = initialValue.date != undefined ? 'Alter Log - ' + moment(initialValue.date).format("MMMM D YYYY") : '';
+    // if( method == "approval" && this.props.instance.user != undefined ) {
+    //     title += " of " + this.props.instance.user.full_name;
+    // }
 
 
 
@@ -165,7 +166,7 @@ class AlterLog extends Component {
             { onApproval ? <input type="hidden" name="status"  value={values.status} /> : null}
             <ContainerWrapper>
               <ContainerBody>
-                <Content col="6" title={title}>
+                <Content col="6" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
                 <Row>  
                     <Col size="6"> 
                       <div className="form-group">
