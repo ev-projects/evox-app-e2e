@@ -234,9 +234,9 @@ class Overtime extends Component {
                       {  /** Shows Approver Note if on Approval   */
                         isManager ? 
                         <div>
-                        <textarea className="form-control" rows="3" name="approver_ote" onChange={handleChange} value={values.approver_ote??''} placeholder="Enter Note..."  ></textarea> 
+                        <textarea className="form-control" rows="3" name="approver_note" onChange={handleChange} value={values.approver_note??''} placeholder="Enter Note..."  ></textarea> 
                         <Form.Control.Feedback type="invalid">
-                          &nbsp;{errors.approver_ote && touched.approver_ote && errors.approver_ote}
+                          &nbsp;{errors.approver_note && touched.approver_note && errors.approver_note}
                         </Form.Control.Feedback> 
                         </div>
                         :
