@@ -29,10 +29,13 @@ class OvertimeResource extends JsonResource
                 'employee_note' => $this->employee_note,
                 'approver_note' => $this->approver_note,
                 'status' => $this->status,
-                'user' => new UserProfileResource($this->user()->first(), false) 
+                'user' => new UserProfileResource($this->user()->first(), false) ,
+                'is_under_supervisee'   => is_under_supervisee( $this->user_id, false ),
+                'employee_name' => $this->user()->first()->getFullName()
             );
         }
 
         return $result;
     }
 }
+

@@ -30,12 +30,17 @@ export const addOvertime = ( post_data ) => {
 export const updateOvertime = ( id, post_data ) => {
     return (dispatch, getState) => {
         API.call({
-            method: "put",
+            method: "post",
             url: "/request/overtime/" + id,
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result ));
+            dispatch( Formatter.alert_success( result, 3000 ));
+            
+            dispatch({
+                'type'      : 'SET_REDIRECT',
+                'link'      : global.dashboard_url
+            })
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
@@ -43,7 +48,7 @@ export const updateOvertime = ( id, post_data ) => {
     }
 }
 
-
+// Fetch Overtime Request
 export const fetchOvertime = ( id ) => {
     return (dispatch, getState) => {
         API.call({
@@ -61,4 +66,50 @@ export const fetchOvertime = ( id ) => {
         });
     }
 }
+
+// Update Overtime Request
+export const updateOvertimeStatus = ( id, post_data, status ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/request/overtime/"+ status + "/" + id,
+            data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result, 3000 ));
+            
+            dispatch({
+                'type'      : 'SET_REDIRECT',
+                'link'      : global.dashboard_url
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+// Clear Overtime Instance
+export const clearOvertimeInstance = () => {
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'CLEAR_OVERTIME_INSTANCE'
+        })
+    }
+}
+
+// Reset Overtime Instance
+export const resetOvertimeInstance = () => {
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'RESET_OVERTIME_INSTANCE'
+        })
+    }
+}
+
+
+
+
+
+
 
