@@ -34,7 +34,7 @@ class StoreScheduleRequest extends FormRequest
         
         # Merge the Inherited rules and the custom rules for this Form Request.
         $rules = array_merge(
-            inhert_validation_rules( $form_requests, $request ), 
+            inherit_validation_rules( $form_requests, $request ), 
             [
                 'name'              => 'required|string|max:255',
                 'source_type'       => 'required|string|in:template,change_schedule',

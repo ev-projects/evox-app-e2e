@@ -64,7 +64,6 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
      *  Responsible for Updating the AlterLog Request 
      * @param array (AlterLog Post Variables) $data
      * @param AlterLog (Alter Log Instance/ ID String ) $id_or_alter_log
-     * 
      * @return AlterLog $AlterLog
      */
     public function update(array $data, $id_or_alter_log)
@@ -172,6 +171,7 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
     {
         DB::beginTransaction();
         try {
+            
             # Fetch the Alter Log base on the ID
             $alter_log = AlterLog::findOrFail($id);
 
@@ -237,10 +237,11 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
     public function pending( $id )
     {
         try {
-            $change_schedule = AlterLog::findOrFail($id);
-            $change_schedule->pending();
 
-            return $change_schedule;
+            $alter_log = AlterLog::findOrFail($id);
+            $alter_log->pending();
+
+            return $alter_log;
 
         } catch (Exception $e) {
             log_error($e);
@@ -259,10 +260,10 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
     {
         try {
             
-            $change_schedule = AlterLog::findOrFail($id);
-            $change_schedule->cancel();
+            $alter_log = AlterLog::findOrFail($id);
+            $alter_log->cancel();
 
-            return $change_schedule;
+            return $alter_log;
 
         } catch (Exception $e) {
             log_error($e);

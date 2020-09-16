@@ -3,7 +3,7 @@
 
 use Illuminate\Http\Request;
 
-if (! function_exists('inhert_validation_rules')) {   
+if (! function_exists('inherit_validation_rules')) {   
     /**
      * This function returns an Array of rules that was inherited on the specified Form Requests
      *
@@ -11,7 +11,7 @@ if (! function_exists('inhert_validation_rules')) {
      * @param  Request request
      * @return array|null;
      */
-    function inhert_validation_rules( $form_requests, Request $request ) 
+    function inherit_validation_rules( $form_requests, Request $request ) 
     {
         try {
             # Iterates the Rules of the declared Form Requests and merge it into one rule.

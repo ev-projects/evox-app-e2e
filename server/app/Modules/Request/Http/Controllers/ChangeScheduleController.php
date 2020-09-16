@@ -5,6 +5,7 @@ namespace App\Modules\Request\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Http\Requests\ChangeScheduleRequest;
 use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
 
@@ -19,9 +20,11 @@ use Illuminate\Http\JsonResponse;
 class ChangeScheduleController extends Controller
 {   
     private $change_schedule;
+    private $dtr;
 
-    public function __construct(ChangeScheduleRepositoryInterface $change_schedule){
+    public function __construct(ChangeScheduleRepositoryInterface $change_schedule,DtrRepositoryInterface $dtr){
         $this->change_schedule = $change_schedule;
+        $this->dtr = $dtr;
     }
 
     /**
@@ -54,7 +57,7 @@ class ChangeScheduleController extends Controller
             log_activity( trans('messages.update_change_schedule_attempt') );
 
             return success_response(
-                trans('messages.update_change_schedule_attempt'), 
+                trans('messages.update_change_schedule_success'), 
                 new ChangeScheduleResource( $this->change_schedule->update( $request->all(), $id ) ) 
             );
         } catch(Exception $e){
@@ -104,9 +107,14 @@ class ChangeScheduleController extends Controller
         try {
             log_activity( trans('messages.approve_change_schedule_attempt') );
 
+            $change_schedule = $this->change_schedule->approve( $request->all(), $id );
+            
+            // Add code to apply the Schedule on the specific DTRs.
+            $dtr = $this->dtr->apply_schedule_to_dtr( $change_schedule->user_id, $change_schedule->schedule()->first() );
+
             return success_response(
                 trans('messages.approve_change_schedule_success'), 
-                new ChangeScheduleResource( $this->change_schedule->approve( $request->all(), $id )) 
+                new ChangeScheduleResource( $change_schedule ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -121,6 +129,7 @@ class ChangeScheduleController extends Controller
     public function decline(ChangeScheduleRequest $request, $id){
         try {
             log_activity( trans('messages.decline_change_schedule_attempt') );
+
             return success_response(
                 trans('messages.decline_change_schedule_success'), 
                 new ChangeScheduleResource( $this->change_schedule->decline( $request->all(), $id ) ) 
