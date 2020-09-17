@@ -16,7 +16,7 @@ trait ApprovalTrait
         try {
             $current_status = $this->status;
 
-            if( is_under_supervisee( $this->user_id ) && $this->isPending() ) {
+            if( is_under_supervisee( $this->user_id ) ) {
 
                 $this->status       = get_constant('REQUEST_STATUS.approved');
                 $this->updated_by   = auth()->user()->id;
@@ -45,7 +45,7 @@ trait ApprovalTrait
         try {
             $current_status = $this->status;
 
-            if( is_under_supervisee( $this->user_id ) &&  $this->isPending() ) {
+            if( is_under_supervisee( $this->user_id ) ) {
 
                 $this->status       = get_constant('REQUEST_STATUS.declined');
                 $this->updated_by   = auth()->user()->id;
@@ -99,7 +99,7 @@ trait ApprovalTrait
         try {
             $current_status = $this->status;
 
-            if( get_authenticated_user( $this->user_id ) &&  $this->isPending() ) {
+            if( get_authenticated_user( $this->user_id ) ) {
 
                 $this->status       = get_constant('REQUEST_STATUS.canceled');
                 $this->updated_by   = auth()->user()->id;

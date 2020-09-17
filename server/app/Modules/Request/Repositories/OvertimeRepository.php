@@ -88,6 +88,9 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
                 $overtime->update();
                 
                 DB::commit();
+
+                $overtime->pending();
+
                 log_to_file('info', 'Success', [$overtime]);
                 return $overtime;
             }

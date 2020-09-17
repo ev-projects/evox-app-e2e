@@ -112,9 +112,9 @@ class ChangeSchedule extends Component {
   	render = () => {  
 
 		// If there's an existing instance and it's status is Canceled/Declined, reset the Change Schedule instance but retain the ID to reuse the existing record.
-		if( this.props.instance.id != undefined && ['canceled', 'declined'].includes( this.props.instance.status ) ) {
-			this.props.resetChangeScheduleInstance();
-		}
+		// if( this.props.instance.id != undefined && ['canceled', 'declined'].includes( this.props.instance.status ) ) {
+		// 	this.props.resetChangeScheduleInstance();
+		// }
 
 		// Checks if the Instance is On Approval state.
 		const onApproval = this.props.instance?.is_under_supervisee ? this.props.instance.is_under_supervisee : false;

@@ -28,6 +28,7 @@ import {  fetchOvertime,
 
 import Wrapper from "../../../components/Template/Wrapper";
 import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";
+import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 
 
 class Overtime extends Component {
@@ -48,7 +49,6 @@ class Overtime extends Component {
     var formData = new FormData();
 
     for (var key in values) {
-      console.log(values);
 
         if( values[key] != null ) {
             switch( key ) {
@@ -148,12 +148,11 @@ class Overtime extends Component {
     }
 
     // Sets the default title for hte Request. Checks aswell if it's for approval.
-    let title = initialValue.date != undefined ? 'Overtime for ' + moment(initialValue.date).format("MMMM D, YYYY, dddd") : '';
-    if( method == "approval" && this.props.instance.employee_name != undefined ) {
-      title += " of " + this.props.instance.employee_name;
-    }
+    let title = 'Overtime';
+    // if( method == "approval" && this.props.instance.employee_name != undefined ) {
+    //   title += " of " + this.props.instance.employee_name;
+    // }
 
-    console.log(method);
   
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     if( method == 'store' || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
@@ -175,7 +174,7 @@ class Overtime extends Component {
             <input type="hidden" name="id"  value={values.id} />
             <ContainerWrapper>
               <ContainerBody>
-                <Content col="6" title="Overtime">
+                <Content col="6"  title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
                   <Row>  
                     <Col size="4"> 
                       <div className="form-group">
