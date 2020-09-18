@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import "./Dashboard.css";
-import { Container,Row,Col,Table,Image, Spinner } from 'react-bootstrap';
+import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { fetchUser } from '../../store/actions/userActions' ;
 
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../components/Template/Wrapper";
+import QuickPunch from "../../container/QuickPunch";
 
 class Dashboard extends Component {
     constructor(props){
@@ -22,8 +23,10 @@ class Dashboard extends Component {
                   <ContainerHeader>
                       Dashboard
                   </ContainerHeader>
+                 
                   <ContainerBody>
-                      <Content col="12" title="Daily Time Record">
+                      <Row>
+                      <Content col="8" title="Daily Time Record">
                           <Table striped responsive hover>
                               <thead>
                                   <tr>
@@ -60,43 +63,49 @@ class Dashboard extends Component {
                                   </tr>
                               </tbody>
                           </Table>
-                      </Content>
-                      <Content col="12" title="Pending Request">
-                          <Table striped responsive hover>
-                              <tbody>
-                                  <tr>
-                                      <td>Jan 22</td>
-                                      <td><i className="fa fa-user"></i> Breggie Pasatiempo</td>
-                                      <td>ACE - Ace Displays</td>
-                                      <td><i className="fa fa-pencil-square-o"></i> Alteration</td>
-                                  </tr>
-                                  <tr>
-                                      <td>Jan 21</td>
-                                      <td><i className="fa fa-user"></i> Aaron Colina</td>
-                                      <td>BDG - Boondoggle</td>
-                                      <td><i className="fa fa-calendar-check-o"></i> Change of Sched</td>
-                                  </tr>
-                                  <tr>
-                                      <td>Jan 21</td>
-                                      <td><i className="fa fa-user"></i> Ritchie Soriano</td>
-                                      <td>GfM - Gesellschaft für</td>
-                                      <td><i className="fa fa-pencil-square-o"></i> Alteration</td>
-                                  </tr>
-                                  <tr>
-                                      <td>Jan 21</td>
-                                      <td><i className="fa fa-user"></i> Carmela Garcia</td>
-                                      <td>HTF - Hard To Find</td>
-                                      <td><i className="fa fa-calendar-check-o"></i> Change of Sched</td>
-                                  </tr>
-                                  <tr>
-                                      <td>Jan 21</td>
-                                      <td><i className="fa fa-user"></i> John Doe</td>
-                                      <td>OTM - Optimy</td>
-                                      <td><i className="fa fa-pencil-square-o"></i> Rest Day Work</td>
-                                  </tr>
-                              </tbody>
-                          </Table>
-                      </Content>
+                        </Content>
+                        <div className="col-lg-4" >
+                            <QuickPunch/>
+                        </div>
+                        </Row>
+                        <Row>
+                            <Content col="12" title="Pending Request">
+                                <Table striped responsive hover>
+                                    <tbody>
+                                        <tr>
+                                            <td>Jan 22</td>
+                                            <td><i className="fa fa-user"></i> Breggie Pasatiempo</td>
+                                            <td>ACE - Ace Displays</td>
+                                            <td><i className="fa fa-pencil-square-o"></i> Alteration</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jan 21</td>
+                                            <td><i className="fa fa-user"></i> Aaron Colina</td>
+                                            <td>BDG - Boondoggle</td>
+                                            <td><i className="fa fa-calendar-check-o"></i> Change of Sched</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jan 21</td>
+                                            <td><i className="fa fa-user"></i> Ritchie Soriano</td>
+                                            <td>GfM - Gesellschaft für</td>
+                                            <td><i className="fa fa-pencil-square-o"></i> Alteration</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jan 21</td>
+                                            <td><i className="fa fa-user"></i> Carmela Garcia</td>
+                                            <td>HTF - Hard To Find</td>
+                                            <td><i className="fa fa-calendar-check-o"></i> Change of Sched</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jan 21</td>
+                                            <td><i className="fa fa-user"></i> John Doe</td>
+                                            <td>OTM - Optimy</td>
+                                            <td><i className="fa fa-pencil-square-o"></i> Rest Day Work</td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </Content>
+                        </Row>
                   </ContainerBody>
               </ContainerWrapper>
             </Wrapper>
