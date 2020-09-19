@@ -113,9 +113,9 @@ class AlterLog extends Component {
   render = () => {  
 
     // If there's an existing instance and it's status is Canceled/Declined, reset the Alter Log instance but retain the ID to reuse the existing record.
-    if( this.props.instance.id != undefined && ['canceled', 'declined'].includes( this.props.instance.status ) ) {
-      this.props.resetAlterLogInstance();
-    }
+    // if( this.props.instance.id != undefined && ['canceled', 'declined'].includes( this.props.instance.status ) ) {
+    //   this.props.resetAlterLogInstance();
+    // }
 
     // Checks if the Instance is On Approval state.
     const onApproval = this.props.instance?.is_under_supervisee ? this.props.instance.is_under_supervisee : false;

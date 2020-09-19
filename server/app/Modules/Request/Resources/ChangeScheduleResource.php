@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Schedule\Resources\ScheduleResource;
 
 use App\Modules\Schedule\Repositories\ScheduleRepository;
+use App\Modules\User\Resources\UserProfileResource;
 
 class ChangeScheduleResource extends JsonResource
 {
@@ -27,12 +28,14 @@ class ChangeScheduleResource extends JsonResource
                 'request_type' => get_constant('REQUEST_TYPES.change_schedule'),
                 'id' => $this->id,
                 'user_id' => $this->user_id,
-                'employee_note' => $this->employee_note,
-                'approver_note' => $this->approver_note,
                 'valid_from' => $this->valid_from,
                 'valid_to' => $this->valid_to,
-                'status' => $this->status,
                 'schedule' =>    new ScheduleResource( $this->schedule()->first() ),
+                'status' => $this->status,
+                'employee_note' => $this->employee_note,
+                'approver_note' => $this->approver_note,
+                'user' => new UserProfileResource( $this->user()->first(), false), 
+                'is_under_supervisee'   => is_under_supervisee( $this->user_id, false ),
             );
         }
 

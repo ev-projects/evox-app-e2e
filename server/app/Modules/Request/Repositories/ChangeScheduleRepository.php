@@ -32,29 +32,28 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
     /**
      *  Responsible for Storing the ChangeSchedule Request
      * @param array (ChangeSchedule Post Variables) $data
-     * @return ChangeSchedule $ChangeSchedule
+     * @return ChangeSchedule $change_schedule
      */
     public function store(array $data)
     {
-
         DB::beginTransaction();
         try {   
             $schedule = new ScheduleRepository();
             $schedule =  $schedule->store($data);
-            $changeschedule = new ChangeSchedule();
-            $changeschedule->user_id      = auth()->user()->id;
-            $changeschedule->schedule_id  = $schedule->id ;
-            $changeschedule->valid_from  = $data['valid_from'] ;
-            $changeschedule->valid_to  = $data['valid_to'] ;
-            $changeschedule->employee_note  = $data['employee_note'] ;
-            $changeschedule->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : null;
-            $changeschedule->updated_by   = auth()->user()->id;
-            $changeschedule->created_by   = auth()->user()->id;
-            $changeschedule->save();
+
+            $change_schedule = new ChangeSchedule();
+            $change_schedule->user_id        = auth()->user()->id;
+            $change_schedule->schedule_id    = $schedule->id ;
+            $change_schedule->valid_from     = ( isset( $data['valid_from'] ) && is_valid( $data['valid_from'] ) ) ? $data['valid_from'] : null ;
+            $change_schedule->valid_to       = ( isset( $data['valid_to'] ) && is_valid( $data['valid_to'] ) ) ? $data['valid_to'] : null ;
+            $change_schedule->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : null;
+            $change_schedule->updated_by     = auth()->user()->id;
+            $change_schedule->created_by     = auth()->user()->id;
+            $change_schedule->save();
             
             DB::commit();
-            log_to_file('info', 'Success', [$changeschedule]);
-            return $changeschedule;
+            log_to_file('info', 'Success', [$change_schedule]);
+            return $change_schedule;
         } catch (Exception $e) {
             DB::rollback();
             log_error($e);
@@ -66,28 +65,36 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
     /**
      *  Responsible for Updating the ChangeSchedule Request 
      * @param array (ChangeSchedule Post Variables) $data
-     * @param $id
+     * @param ChangeSchedule (ChangeSchedule Instance/ ID String ) $id_or_change_schedule
      * @return ChangeSchedule $ChangeSchedule
      */
-    public function update(array $data, $id)
+    public function update(array $data, $id_or_change_schedule)
     {   
         DB::beginTransaction();
         try {   
-            $change_schedule = ChangeSchedule::findOrFail($id);
+            
+            $change_schedule =   ( $id_or_change_schedule instanceof ChangeSchedule ) ? $id_or_change_schedule : ChangeSchedule::findOrFail($id_or_change_schedule);
+            
+            // Authenticate the User first if valid for the Update
+            if( get_authenticated_user( $change_schedule->user_id ) ) {
 
-            $schedule = new ScheduleRepository();
-            $schedule->update($data,$change_schedule->schedule_id);
+                $schedule = new ScheduleRepository();
+                $schedule->update($data,$change_schedule->schedule_id);
+    
+                $change_schedule->valid_from     = ( isset( $data['valid_from'] ) && is_valid( $data['valid_from'] ) ) ? $data['valid_from'] : $change_schedule->valid_from ;
+                $change_schedule->valid_to       = ( isset( $data['valid_to'] ) && is_valid( $data['valid_to'] ) ) ? $data['valid_to'] : $change_schedule->valid_to ;
+                $change_schedule->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $change_schedule->employee_note ;
+                $change_schedule->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $change_schedule->approver_note ;
+                $change_schedule->updated_by   = auth()->user()->id;
+                $change_schedule->update();
+    
+                DB::commit();
 
-            $change_schedule->valid_from  =  ( isset( $data['valid_from'] ) && is_valid( $data['valid_from'] ) ) ? $data['valid_from'] : $change_schedule->valid_from ;
-            $change_schedule->valid_to  = ( isset( $data['valid_to'] ) && is_valid( $data['valid_to'] ) ) ? $data['valid_to'] : $change_schedule->valid_to ;
-            $change_schedule->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $change_schedule->employee_note ;
-            $change_schedule->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $change_schedule->approver_note ;
-            $change_schedule->updated_by   = auth()->user()->id;
-            $change_schedule->update();
+                $change_schedule->pending();
 
-            DB::commit();
-            log_to_file('info', 'Success', [$change_schedule]);
-            return $change_schedule;
+                log_to_file('info', 'Success', [$change_schedule]);
+                return $change_schedule;
+            }
         } catch (Exception $e) {
             DB::rollback();
             log_error($e);
@@ -108,18 +115,18 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
         DB::beginTransaction();
         try {
 
-            $changeschedule = ChangeSchedule::findOrFail($id);
+            $change_schedule = ChangeSchedule::findOrFail($id);
             
-            if( get_authenticated_user( $changeschedule->user_id ) ) {
+            if( get_authenticated_user( $change_schedule->user_id ) ) {
 
-                $changeschedule->updated_by = auth()->user()->id;
+                $change_schedule->updated_by = auth()->user()->id;
 
-                $changeschedule->update();
+                $change_schedule->update();
 
-                $changeschedule->delete();
+                $change_schedule->delete();
 
                 DB::commit();
-                log_to_file('info', 'Success', [$changeschedule]);
+                log_to_file('info', 'Success', [$change_schedule]);
                 return true;
 
             }
@@ -140,10 +147,13 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
     public function find($id)
     {
         try {
-            $changeschedule = ChangeSchedule::find($id);
+            $change_schedule = ChangeSchedule::find($id);
 
-            log_to_file('info', 'Success', [$changeschedule]);
-            return $changeschedule;
+            if( get_authenticated_user( $change_schedule->user_id ) ) {
+                
+                log_to_file('info', 'Success', [$change_schedule]);
+                return $change_schedule;
+            }
 
         } catch (Exception $e) {
             log_error($e);
@@ -159,17 +169,25 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
      */
     public function approve(array $data, $id)
     {
+        DB::beginTransaction();
         try {
-            # Update the fields  and Apply schedule updates
-            $change_schedule = $this->update($data, $id);
-            $change_schedule->approve();
 
-            # Apply the Schedule on the DTR
-            $dtr = new DtrRepository();
-            $dtr->apply_schedule_to_dtr($change_schedule->user_id,Schedule::findOrFail($change_schedule->schedule_id));
+            # Fetch the Change Schedule base on the ID
+            $change_schedule = ChangeSchedule::findOrFail($id);
 
+            // Authenticate the User first if the Change Schedule Submitter is under the user logged in's supervisee
+            if( is_under_supervisee( $change_schedule->user_id ) ) {
+
+                $this->update($data, $change_schedule);
+
+                $change_schedule->approve();
+            }
+            
+            DB::commit();
             return $change_schedule;
+
         } catch (Exception $e) {
+            DB::rollback();
             log_error($e);
             throw $e;
         }
@@ -185,12 +203,25 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
      */
     public function decline($data, $id)
     {
+        DB::beginTransaction();
         try {
-            $changeschedule = ChangeSchedule::findOrFail($id);
-            $change_schedule = $this->update($data, $id);
-            $changeschedule->decline();
-            return $changeschedule;
+            
+            # Fetch the Change Schedule base on the ID
+            $change_schedule = ChangeSchedule::findOrFail($id);
+
+            // Authenticate the User first if the Change Schedule Submitter is under the user logged in's supervisee
+            if( is_under_supervisee( $change_schedule->user_id ) ) {
+
+                $this->update($data, $change_schedule);
+
+                $change_schedule->decline();
+            }
+
+            DB::commit();
+            return $change_schedule;
+
         } catch (Exception $e) {
+            DB::rollback();
             log_error($e);
             throw $e;
         }

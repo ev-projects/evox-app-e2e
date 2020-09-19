@@ -238,7 +238,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     }
                     
                     if( $to_update_flag ) {
-        
+                        
                         # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
                         $schedule_detail = ( is_valid( $schedule ) ? $schedule->getPerDay( get_day_from_date( $dtr->date ) ) : null);
                         
@@ -252,7 +252,7 @@ class DtrRepository implements DtrRepositoryInterface{
                         $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
                         $dtr->break_time            =  $parsed_schedule_detail['break_time'];
                         
-                        $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : $dtr->is_rest_day;
+                        $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
                         $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
                         $dtr->update();
 
