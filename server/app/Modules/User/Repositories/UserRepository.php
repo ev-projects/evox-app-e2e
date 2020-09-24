@@ -2,18 +2,208 @@
 
 namespace App\Modules\User\Repositories;
 
+use App\Modules\Department\Models\Department;
 use App\Modules\User\Models\User;
 use DebugBar\DebugBar;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
 
 class UserRepository implements UserRepositoryInterface{
     
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
+
+    
+    /**
+     *  Responsible for Inserting the BHR Users to EVOX
+     * @param object $bhr_user_number
+     * @return User $user
+     */
+    public function insert_bhr_user_to_evox(object $bhr_user){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
+
+        DB::beginTransaction();
+        try {  
+
+            $user = User::where('bhr_num', $bhr_user->id)->first();
+
+            // Check first if the User is already existing before creating new User.
+            if( $user == null&& is_valid( $bhr_user->workEmail ) ) {
+
+                $user = new User();
+
+                $user->emp_num = $bhr_user->employeeNumber;
+                $user->bhr_num = $bhr_user->id;
+                $user->email = $bhr_user->workEmail;
+                $user->username = generate_username( $bhr_user );
+                $user->password = Hash::make( get_constant('DEFAULT_PASSWORD') );
+                $user->first_name = $bhr_user->firstName;
+                $user->middle_name = $bhr_user->middleName;
+                $user->last_name = $bhr_user->lastName;
+                $user->employment_status = $bhr_user->employmentHistoryStatus;
+                $user->is_active = true;
+                
+                /** Fetch Department if existing */ 
+                    if( is_valid( $bhr_user->department ) ) {
+                        
+                        $department = Department::where('department_name', $bhr_user->department)->first();
+                        
+                        // If the Department is not existing, create it manually.
+                        if($department == null) {
+
+                            $department = new Department();
+                            $department->department_name = $bhr_user->department;
+                            $department->description = null;
+                            $department->created_at = date('Y-m-d H:i:s');
+                            $department->updated_at = date('Y-m-d H:i:s');
+                            $department->save();
+                        }
+
+                        // Set the Department ID
+                        $user->department_id = $department->id;
+                    }
+                /** */
+                
+
+                // Save the User and it will generate the User ID
+                $user->save();
+
+                
+                /**  Fetch the Employee Role to attach on the User  */
+                    $employee_role = Role::findByName( get_constant('USER_ROLES.employee') );
+
+                    // Assign the Employee Role
+                    $user->assignRole( $employee_role );
+
+                    // Total Permissions that are not synced yet on the User
+                    $permissions_to_sync = [];
+
+                    // Iterate and filter out all the Permissions that are already existing for the User.
+                    foreach( $employee_role->permissions()->get() as $permission ){
+                        if( ! $user->hasDirectPermission( $permission ) ) {
+                            $permissions_to_sync[] = $permission;
+                        }
+                    }
+                    
+                    // Assign the Employee's Permissions
+                    $user->givePermissionTo( $permissions_to_sync );
+                /** */
+
+
+                # 2.
+                // Assign the User x Supervisor data for iteration afterwards
+                $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
+                
+                log_to_file( 'info', 'User Inserted', [$user], 'user_sync');
+
+                DB::commit();
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+                return $user;
+
+            } else {
+                
+                DB::commit();
+                log_to_file( 'info', 'User Existing', [$user], 'user_sync');
+
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+    
+                return $user;
+            }
+
+        } catch (Exception $e) {
+
+            DB::rollback();
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            throw $e;
+        }
+    }
+
+
+    /**
+     *  Responsible for applying the User X Supervisor Pivot Table for the Relationship.
+     * @param array $user_supervisor_pivot_array
+     * @return array $result
+     */
+    public function apply_user_supervisor_pivot( $user_supervisor_pivot_array ){
+        
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
+
+        DB::beginTransaction();
+        try {  
+            $result = [];
+
+            // Apply the Pivot for Supervisor BHR Number x User ID Relationship
+            foreach( $user_supervisor_pivot_array as $supervisor_bhr_number => $user_id_array ) {
+
+                // Fetch the Supervisor via Supervisor's BHR Number
+                $supervisor = User::where('bhr_num', $supervisor_bhr_number)->first();
+                
+                if( is_valid( $supervisor ) ) {
+                    
+                    log_to_file( 'info', 'Superisee Inserted', ['supervisor'=> $supervisor->id, 'user_id' => $user_id_array], 'user_sync');
+                    
+                    $supervisor->supervisee()->syncWithoutDetaching( $user_id_array );
+
+                    /**  Fetch the Supervisor Role to attach on the Supervisor  */
+                        $supervisor_role = Role::findByName( get_constant('USER_ROLES.supervisor') );
+
+                        // Check if the Supervisor has already a Role
+                        if( ! $supervisor->hasRole($supervisor_role) ){
+
+                            // Assign the Supervisor Role
+                            $supervisor->assignRole( $supervisor_role );
+
+                            // Total Permissions that are not synced yet on the Supervisor
+                            $permissions_to_sync = [];
+
+                            // Iterate and filter out all the Permissions that are already existing for the Supervisor.
+                            foreach( $supervisor_role->permissions()->get() as $permission ){
+                                if( ! $supervisor->hasDirectPermission( $permission ) ) {
+                                    $permissions_to_sync[] = $permission;
+                                }
+                            }
+                            
+                            // Assign the Supervisor's Permissions
+                            $supervisor->givePermissionTo( $permissions_to_sync );
+                        }
+                    /** */
+
+                    $result[ $supervisor->id ] = $user_id_array;
+
+                } else {
+                    log_to_file( 'info', 'Superisee NOT Inserted', ['supervisor_bhr_number'=> $supervisor_bhr_number, 'user_id' => $user_id_array], 'user_sync');
+                }
+            }
+
+            DB::commit();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            return $result;
+
+        } catch (Exception $e) {
+
+            DB::rollback();
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            throw $e;
+        }
+    }
 
     /**
      *  Responsible for Storing the User. 

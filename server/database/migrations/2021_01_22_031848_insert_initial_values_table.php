@@ -233,16 +233,8 @@ class InsertInitialValuesTable extends Migration
         // Insert departments Values
         $insert = array(
             array(
-                'department_name' => "Product Development",
-                'department_code' => "OPS",
-                'description' => "This department's responsible for all the In-house Application Development.",
-                'created_at' =>         date('Y-m-d H:i:s'),
-                'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array(
-                'department_name' => "Operations",
-                'department_code' => "OPS",
-                'description' => "This department's responsible for all Management of all the Company's Operations.",
+                'department_name' => "OPS - Product Dev",
+                'description' => null,
                 'created_at' =>         date('Y-m-d H:i:s'),
                 'updated_at' =>         date('Y-m-d H:i:s')
             )
@@ -253,8 +245,8 @@ class InsertInitialValuesTable extends Migration
 
 
         // Roles
-        $employee_role = Role::create(['name' => 'Employee']);
-        $supervisor_role = Role::create(['name' => 'Supervisor']);
+        $employee_role = Role::create(['name' => 'employee']);
+        $supervisor_role = Role::create(['name' => 'supervisor']);
 
         // Employee Permissions
         $employee_permissions = [
@@ -344,104 +336,104 @@ class InsertInitialValuesTable extends Migration
                   'created_at' =>         date('Y-m-d H:i:s'),
                   'updated_at' =>         date('Y-m-d H:i:s')
             ),
-            array('emp_num' => '1742',
-                  'bhr_num' => '42270',
-                  'department_id' => 1,
-                  'email' => "juan.norico@eastvantage.com",
-                  'username' => "jnorico1742",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Juan Rodrigo',
-                  'middle_name' => 'ITT',
-                  'last_name' => 'Norico - NIGHT SHIFT',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array('emp_num' => '273',
-                  'bhr_num' => '40616',
-                  'department_id' => 1,
-                  'email' => "kier.soriano@eastvantage.com",
-                  'username' => "ksoriano273",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Kier',
-                  'middle_name' => 'HKI',
-                  'last_name' => 'Norico - NIGHT SHIFT',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array('emp_num' => '2042',
-                  'bhr_num' => '42553',
-                  'department_id' => 1,
-                  'email' => "allan.rimando@eastvantage.com",
-                  'username' => "arimando2042",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Allan Paul',
-                  'middle_name' => 'OPT',
-                  'last_name' => 'Rimando - MID SHIFT',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array('emp_num' => '114',
-                  'bhr_num' => '40457',
-                  'department_id' => 1,
-                  'email' => "analyn.condat@eastvantage.com",
-                  'username' => "acondat114",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Analyn',
-                  'middle_name' => 'VID',
-                  'last_name' => 'Condat - MID SHIFT',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array('emp_num' => '1234',
-                  'bhr_num' => '42606',
-                  'department_id' => 1,
-                  'email' => "dummy@ops.eastvantage.com",
-                  'username' => "demployee1234",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Dummy',
-                  'middle_name' => 'OPS',
-                  'last_name' => 'Employee - MID SHIFT',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array('emp_num' => '4321',
-                  'bhr_num' => '42605',
-                  'department_id' => 1,
-                  'email' => "dummy_manager@ops.eastvantage.com",
-                  'username' => "dmanager4321",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Dummy',
-                  'middle_name' => 'OPS',
-                  'last_name' => 'Manager - MID SHIFT',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array('emp_num' => '1590',
-                  'bhr_num' => '42129',
-                  'department_id' => 1,
-                  'email' => "Claribel.Jalbuena@globalenglish.com",
-                  'username' => "cjalbuena",
-                  'password' => Hash::make("ABC123"),
-                  'first_name' => 'Claribel Karen ',
-                  'middle_name' => 'GBE',
-                  'last_name' => 'Jalbuena',
-                  'employment_status' => "Full-Time",
-                  'is_active' => true,
-                  'created_at' =>         date('Y-m-d H:i:s'),
-                  'updated_at' =>         date('Y-m-d H:i:s')
-            ),
+            // array('emp_num' => '1742',
+            //       'bhr_num' => '42270',
+            //       'department_id' => 1,
+            //       'email' => "juan.norico@eastvantage.com",
+            //       'username' => "jnorico1742",
+            //       'password' => Hash::make("ABC123"),
+            //       'first_name' => 'Juan Rodrigo',
+            //       'middle_name' => 'ITT',
+            //       'last_name' => 'Norico - NIGHT SHIFT',
+            //       'employment_status' => "Full-Time",
+            //       'is_active' => true,
+            //       'created_at' =>         date('Y-m-d H:i:s'),
+            //       'updated_at' =>         date('Y-m-d H:i:s')
+            // ),
+            // array('emp_num' => '273',
+            //       'bhr_num' => '40616',
+            //       'department_id' => 1,
+            //       'email' => "kier.soriano@eastvantage.com",
+            //       'username' => "ksoriano273",
+            //       'password' => Hash::make("ABC123"),
+            //       'first_name' => 'Kier',
+            //       'middle_name' => 'HKI',
+            //       'last_name' => 'Norico - NIGHT SHIFT',
+            //       'employment_status' => "Full-Time",
+            //       'is_active' => true,
+            //       'created_at' =>         date('Y-m-d H:i:s'),
+            //       'updated_at' =>         date('Y-m-d H:i:s')
+            // ),
+            // array('emp_num' => '2042',
+            //       'bhr_num' => '42553',
+            //       'department_id' => 1,
+            //       'email' => "allan.rimando@eastvantage.com",
+            //       'username' => "arimando2042",
+            //       'password' => Hash::make("ABC123"),
+            //       'first_name' => 'Allan Paul',
+            //       'middle_name' => 'OPT',
+            //       'last_name' => 'Rimando - MID SHIFT',
+            //       'employment_status' => "Full-Time",
+            //       'is_active' => true,
+            //       'created_at' =>         date('Y-m-d H:i:s'),
+            //       'updated_at' =>         date('Y-m-d H:i:s')
+            // ),
+            // array('emp_num' => '114',
+            //       'bhr_num' => '40457',
+            //       'department_id' => 1,
+            //       'email' => "analyn.condat@eastvantage.com",
+            //       'username' => "acondat114",
+            //       'password' => Hash::make("ABC123"),
+            //       'first_name' => 'Analyn',
+            //       'middle_name' => 'VID',
+            //       'last_name' => 'Condat - MID SHIFT',
+            //       'employment_status' => "Full-Time",
+            //       'is_active' => true,
+            //       'created_at' =>         date('Y-m-d H:i:s'),
+            //       'updated_at' =>         date('Y-m-d H:i:s')
+            // ),
+            // array('emp_num' => '1234',
+            //       'bhr_num' => '42606',
+            //       'department_id' => 1,
+            //       'email' => "dummy@ops.eastvantage.com",
+            //       'username' => "demployee1234",
+            //       'password' => Hash::make("ABC123"),
+            //       'first_name' => 'Dummy',
+            //       'middle_name' => 'OPS',
+            //       'last_name' => 'Employee - MID SHIFT',
+            //       'employment_status' => "Full-Time",
+            //       'is_active' => true,
+            //       'created_at' =>         date('Y-m-d H:i:s'),
+            //       'updated_at' =>         date('Y-m-d H:i:s')
+            // ),
+            // array('emp_num' => '4321',
+            //       'bhr_num' => '42605',
+            //       'department_id' => 1,
+            //       'email' => "dummy_manager@ops.eastvantage.com",
+            //       'username' => "dmanager4321",
+            //       'password' => Hash::make("ABC123"),
+            //       'first_name' => 'Dummy',
+            //       'middle_name' => 'OPS',
+            //       'last_name' => 'Manager - MID SHIFT',
+            //       'employment_status' => "Full-Time",
+            //       'is_active' => true,
+            //       'created_at' =>         date('Y-m-d H:i:s'),
+            //       'updated_at' =>         date('Y-m-d H:i:s')
+            // ),
+            // array('emp_num' => '1590',
+            //       'bhr_num' => '42129',
+            //       'department_id' => 1,
+            //       'email' => "Claribel.Jalbuena@globalenglish.com",
+            //       'username' => "cjalbuena",
+            //       'password' => Hash::make("ABC123"),
+            //       'first_name' => 'Claribel Karen ',
+            //       'middle_name' => 'GBE',
+            //       'last_name' => 'Jalbuena',
+            //       'employment_status' => "Full-Time",
+            //       'is_active' => true,
+            //       'created_at' =>         date('Y-m-d H:i:s'),
+            //       'updated_at' =>         date('Y-m-d H:i:s')
+            // ),
         );
         DB::table('users')->insert($insert);
 
@@ -459,34 +451,34 @@ class InsertInitialValuesTable extends Migration
                 'user_id' => '3',
                 'supervisor_id' => '2'
             ),
-            array(
-                'user_id' => '4',
-                'supervisor_id' => '2'
-            ),
-            array(
-                'user_id' => '5',
-                'supervisor_id' => '2'
-            ),
-            array(
-                'user_id' => '6',
-                'supervisor_id' => '2'
-            ),
-            array(
-                'user_id' => '7',
-                'supervisor_id' => '2'
-            ),
-            array(
-                'user_id' => '8',
-                'supervisor_id' => '9'
-            ),
-            array(
-                'user_id' => '9',
-                'supervisor_id' => '2'
-            ),
-            array(
-                'user_id' => '10',
-                'supervisor_id' => '2'
-            ),
+            // array(
+            //     'user_id' => '4',
+            //     'supervisor_id' => '2'
+            // ),
+            // array(
+            //     'user_id' => '5',
+            //     'supervisor_id' => '2'
+            // ),
+            // array(
+            //     'user_id' => '6',
+            //     'supervisor_id' => '2'
+            // ),
+            // array(
+            //     'user_id' => '7',
+            //     'supervisor_id' => '2'
+            // ),
+            // array(
+            //     'user_id' => '8',
+            //     'supervisor_id' => '9'
+            // ),
+            // array(
+            //     'user_id' => '9',
+            //     'supervisor_id' => '2'
+            // ),
+            // array(
+            //     'user_id' => '10',
+            //     'supervisor_id' => '2'
+            // ),
         );
         DB::table('users_supervisors')->insert($insert);
 
@@ -497,32 +489,32 @@ class InsertInitialValuesTable extends Migration
         User::find(3)
             ->assignRole($employee_role)
             ->syncPermissions(array_merge($employee_permissions));
-        User::find(4)
-            ->assignRole($employee_role)
-            ->syncPermissions(array_merge($employee_permissions));
-        User::find(5)
-            ->assignRole($employee_role)
-            ->syncPermissions(array_merge($employee_permissions));
-        User::find(6)
-            ->assignRole($employee_role)
-            ->syncPermissions(array_merge($employee_permissions));
-        User::find(7)
-            ->assignRole($employee_role)
-            ->syncPermissions(array_merge($employee_permissions));
-        User::find(8)
-            ->assignRole($employee_role)
-            ->syncPermissions(array_merge($employee_permissions));
-        User::find(10)
-            ->assignRole($employee_role)
-            ->syncPermissions(array_merge($employee_permissions));
+        // User::find(4)
+        //     ->assignRole($employee_role)
+        //     ->syncPermissions(array_merge($employee_permissions));
+        // User::find(5)
+        //     ->assignRole($employee_role)
+        //     ->syncPermissions(array_merge($employee_permissions));
+        // User::find(6)
+        //     ->assignRole($employee_role)
+        //     ->syncPermissions(array_merge($employee_permissions));
+        // User::find(7)
+        //     ->assignRole($employee_role)
+        //     ->syncPermissions(array_merge($employee_permissions));
+        // User::find(8)
+        //     ->assignRole($employee_role)
+        //     ->syncPermissions(array_merge($employee_permissions));
+        // User::find(10)
+        //     ->assignRole($employee_role)
+        //     ->syncPermissions(array_merge($employee_permissions));
             
         User::find(2)
             ->assignRole([$employee_role, $supervisor_role])
             ->syncPermissions(array_merge($employee_permissions, $supervisor_permissions));
 
-        User::find(9)
-            ->assignRole([$employee_role, $supervisor_role])
-            ->syncPermissions(array_merge($employee_permissions, $supervisor_permissions));
+        // User::find(9)
+        //     ->assignRole([$employee_role, $supervisor_role])
+        //     ->syncPermissions(array_merge($employee_permissions, $supervisor_permissions));
 
 
     }

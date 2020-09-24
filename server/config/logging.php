@@ -79,6 +79,12 @@ return [
 
         // Custom Logging Channels
 
+        'user_sync' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/user_sync.log'),
+            'level' => 'debug',
+        ],
+
         'bhrlog' => [
             'driver' => 'single',
             'path' => storage_path('logs/bhr.log'),
