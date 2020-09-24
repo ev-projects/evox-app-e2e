@@ -7,17 +7,22 @@ use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 use App\Modules\User\Models\User;
+use App\Modules\Payroll\Models\Biometrics;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class DtrController extends Controller
 {    
     private $dtr;
-    public function __construct(DtrRepositoryInterface $dtr){
+    public function __construct(DtrRepositoryInterface $dtr, BiometricsRepositoryInterface $biometrics){
         $this->dtr = $dtr;
+        $this->biometrics = $biometrics;
     }
 
     /**
@@ -61,7 +66,6 @@ class DtrController extends Controller
      */
     public function dtr_summary( $user_id, $start_date, $end_date ){
         try {
-
             $user_collection = Collection::make();
 
             $this->validate(new Request([
@@ -86,6 +90,47 @@ class DtrController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+
+    /**
+     * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
+     * @param string $user_id
+     * @param string $start_date
+     * @param string $end_date
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function quickpunch(Request $request){    
+        try { 
+            $biometrix_collection = Collection::make();
+            $biometrics = new Biometrics();
+    
+            if($request->quickpunch=='in'){
+                $biometrics->CheckType = 'I';
+            }elseif($request->quickpunch=='out'){
+                $biometrics->CheckType = 'O';
+            }else{
+                return error_response( trans('messages.error_default'), $e );
+            }
+
+            $biometrics->Userid          = Auth::user()->emp_num;
+            $biometrics->CheckTime       = date("Y-m-d H:i:s");
+            $biometrix_collection->push( $biometrics );
+            
+            return success_response(
+                trans('messages.quickpunch_'.$request->quickpunch.'_success'), 
+                DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrix_collection ) )
+            );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+        
+    }
+
+
+
+
+
 
     /**
      * Returns the Daily Time Record of the User by the User ID as Parameter

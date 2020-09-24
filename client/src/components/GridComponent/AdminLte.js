@@ -29,8 +29,7 @@ const ContainerBody = (props) => {
 /** Content - Contains the grid number, title and the body */
 const Content = (props) => {
     return(
-      <div className="container-fluid">
-        <div className="row">
+     
           <div className={"col-lg-" + props.col}>
             <div className="card">
               <div className="card-header border-0">
@@ -44,8 +43,6 @@ const Content = (props) => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
     );
 }
 

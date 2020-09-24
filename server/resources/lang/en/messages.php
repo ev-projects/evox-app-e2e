@@ -161,9 +161,12 @@ return [
     'pending_rest_day_work_success' => 'The Rest Day Work Request is now set to Pending!',
 
     'cancel_rest_day_work_attempt' => 'Canceling of Rest Day Work Request Attempt',
-    'cancel_rest_day_work_success' => 'The Rest Day Work Request is now Canceled!'
-        
-        
+    'cancel_rest_day_work_success' => 'The Rest Day Work Request is now Canceled!',
+
+    'quickpunch_in_success' => 'Log In Successful',
+    'quickpunch_out_success' => 'Log Out Successful',
+
+
         
     /**
      *  Schedule Forms
