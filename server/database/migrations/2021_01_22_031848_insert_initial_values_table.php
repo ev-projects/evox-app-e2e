@@ -233,14 +233,8 @@ class InsertInitialValuesTable extends Migration
         // Insert departments Values
         $insert = array(
             array(
-                'department_name' => "Product Development",
-                'description' => "This department's responsible for all the In-house Application Development.",
-                'created_at' =>         date('Y-m-d H:i:s'),
-                'updated_at' =>         date('Y-m-d H:i:s')
-            ),
-            array(
-                'department_name' => "Operations",
-                'description' => "This department's responsible for all Management of all the Company's Operations.",
+                'department_name' => "OPS - Product Dev",
+                'description' => null,
                 'created_at' =>         date('Y-m-d H:i:s'),
                 'updated_at' =>         date('Y-m-d H:i:s')
             )

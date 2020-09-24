@@ -69,7 +69,7 @@ return [
         'supervisor'  =>  'supervisor'
     ],
 
-    'DEFAULT_PASSWORD'  => '{ev2020}',
+    'DEFAULT_PASSWORD'  => '{ev2010}',
 
     'LEAVE_REQUEST_STATUS' => [
         'requested', 
