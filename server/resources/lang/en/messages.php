@@ -167,7 +167,7 @@ return [
     'quickpunch_out_success' => 'Log Out Successful',
 
     'request_attempt' => 'Request List Attempt',
-    'request_attempt_success' => 'The Alteration Request is now updated!',
+    'request_display_success' => 'List of Request are now displayed',
         
     /**
      *  Schedule Forms

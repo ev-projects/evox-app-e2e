@@ -197,28 +197,28 @@ class User extends Authenticatable implements JWTSubject
         $column = array('id','status','created_at','created_by','updated_by');
 
         $change_schedule    =   ChangeSchedule::select(  DB::raw(implode(",",$column). ',
-                                                        schedule_id column_one,
-                                                        NULL column_two,CONCAT(valid_from," ", valid_to) As date_requested  
+                                                        schedule_id fourth_column,
+                                                        NULL fifth_column,CONCAT(valid_from," ", valid_to) As date_requested  
                                                         ,"change_schedule" as table_name'))
                                                         ->where('user_id',$id);
 
         $overtime           =   Overtime::select(        DB::raw(implode(",",$column) .',
-                                                        amount column_one     ,
-                                                        type column_two,date As date_requested
+                                                        amount fourth_column     ,
+                                                        type fifth_column,date As date_requested
                                                         , "overtime" as table_name'))
                                                         ->where('user_id',$id);
                                                         
         $rest_day_work      =   RestDayWork::select(     DB::raw(implode(",",$column) .',
-                                                        end_time column_two,
-                                                        start_time as column_one,
+                                                        end_time fifth_column,
+                                                        start_time as fourth_column,
                                                         date As date_requested,
                                                          "rest_day_work" as table_name'))
                                                          ->where('user_id',$id);
 
 
         $data               =   AlterLog::select(       DB::raw(implode(",",$column) .',
-                                                        id As column_one,
-                                                        NULL column_two,date As date_requested,
+                                                        id As fourth_column,
+                                                        NULL fifth_column,date As date_requested,
                                                         "alter_log" as table_name'))
                                                         ->where('user_id',$id)
                                 ->union($change_schedule)
