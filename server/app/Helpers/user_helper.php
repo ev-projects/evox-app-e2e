@@ -51,3 +51,28 @@ if (! function_exists('is_under_supervisee')) {
         }
     }
 }
+
+
+if (! function_exists('under_supervisee_id_list')) {   
+    /**
+     * This function return list of id under an employee
+     *
+     * @param  object user model
+     * @return array id
+     */
+    function under_supervisee_id_list($list ) 
+    {
+        try {
+            $user_list =array();
+            foreach($list as $key => $user) {
+                array_push($user_list,$user->id);
+            }
+
+            return $user_list;
+
+        }catch(Exception $e){
+            
+            throw new Exception( trans('messages.error_default') );
+        }
+    }
+}

@@ -165,7 +165,8 @@ return [
     'quickpunch_in_success' => 'Log In Successful',
     'quickpunch_out_success' => 'Log Out Successful',
 
-
+    'request_attempt' => 'Request List Attempt',
+    'request_attempt_success' => 'The Alteration Request is now updated!',
         
     /**
      *  Schedule Forms

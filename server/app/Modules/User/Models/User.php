@@ -4,11 +4,8 @@ namespace App\Modules\User\Models;
 
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\Dtr;
-use App\Modules\Request\Models\Overtime;
-use App\Modules\Request\Models\RestDayWork;
 
 use App\Modules\Schedule\Models\Schedule;
-use App\Modules\Request\Models\ChangeSchedule;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -18,6 +15,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Traits\HasPermissions;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+
+
+use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Request\Models\Overtime;
+use App\Modules\Request\Models\RestDayWork;
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\WorkFromHome;
+use DB;
+
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -157,7 +163,6 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the User's Schedule (Source type is Change Schedule)
     public function changeSchedules($start_date, $end_date){
-
         return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')
                     ->where("status","approved")
                     ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')")
@@ -180,6 +185,54 @@ class User extends Authenticatable implements JWTSubject
             return $this->hasMany(Dtr::class);
         }
     }
+
+    public function requests_list($request){
+        
+        if($request=='my_team_request'){
+            $id = under_supervisee_id_list($this->supervisee()->select('id')->get());
+        }elseif($request=='my_request'){
+            $id = auth()->user()->id;
+        }
+        
+        $column = array('id','status','created_at','created_by','updated_by');
+
+        $change_schedule    =   ChangeSchedule::select(  DB::raw(implode(",",$column). ',
+                                                        schedule_id column_one,
+                                                        NULL column_two,CONCAT(valid_from," ", valid_to) As date_requested  
+                                                        ,"change_schedule" as table_name'))
+                                                        ->where('user_id',$id);
+
+        $overtime           =   Overtime::select(        DB::raw(implode(",",$column) .',
+                                                        amount column_one     ,
+                                                        type column_two,date As date_requested
+                                                        , "overtime" as table_name'))
+                                                        ->where('user_id',$id);
+                                                        
+        $rest_day_work      =   RestDayWork::select(     DB::raw(implode(",",$column) .',
+                                                        end_time column_two,
+                                                        start_time as column_one,
+                                                        date As date_requested,
+                                                         "rest_day_work" as table_name'))
+                                                         ->where('user_id',$id);
+
+
+        $data               =   AlterLog::select(       DB::raw(implode(",",$column) .',
+                                                        id As column_one,
+                                                        NULL column_two,date As date_requested,
+                                                        "alter_log" as table_name'))
+                                                        ->where('user_id',$id)
+                                ->union($change_schedule)
+                                ->union($overtime)
+                                ->union($rest_day_work)
+                                ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ")
+                                ->paginate(10);
+
+
+        return $data;
+    }
+
+
+  
 
 
     ########################################################################

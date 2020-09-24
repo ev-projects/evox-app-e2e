@@ -17,9 +17,14 @@ use Illuminate\Http\Request;
 # API Call for Requests
 Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
+    # My Request
+    Route::get('/myrequests',     'RequestController@myrequest');
+
+    # My team request
+    Route::get('/myteamrequests',     'RequestController@myteamrequest');
 
     # Find existing Request Collections
-    Route::get('/', 'RequestController@find'); //->middleware('permission:view_overtime')
+    Route::get('/', 'RequestController@find'); 
 
 
     # API Call for Overtime
@@ -114,7 +119,7 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
 
     # API Call for Rest Day Work
     Route::group(['prefix' => 'rest_day_work'], function () {
-    
+        Route::get('/myrequests',     'RequestController@allrequest'); //->middleware('permission:add_rest_day_work');
         # Insert new Rest Day Work
         Route::post('/',     'RestDayWorkController@store'); //->middleware('permission:add_rest_day_work');
 
@@ -140,6 +145,8 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
         Route::put('/cancel/{id}', 'RestDayWorkController@cancel'); //->middleware('permission:approval_of_request');
         
     });
+
+
 
 
     
