@@ -18,6 +18,9 @@ Route::group(['prefix' => 'cron', 'middleware' => ['jwtauth', 'auth.apikey']], f
     
 
     # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/initial_sync_of_users',     'CronController@initial_sync_of_users');
+
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
     Route::get('/generate_weekly_dtr',     'CronController@generate_weekly_dtr');
 
     # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.

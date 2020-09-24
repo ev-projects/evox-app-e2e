@@ -51,3 +51,27 @@ if (! function_exists('is_under_supervisee')) {
         }
     }
 }
+
+
+if (! function_exists('generate_username')) {   
+    /**
+     * This function checks if the $user_id is Under the Logged-In's User Supervisee.
+     *
+     * @param  object $bhr_user
+     * @return string $username
+     */
+    function generate_username( $bhr_user ) 
+    {
+        try {
+           if( $bhr_user->employeeNumber != null &&
+                $bhr_user->firstName != null &&
+                $bhr_user->lastName != null ){
+                    return clean(substr(strtolower($bhr_user->firstName), 0, 1) . strtolower($bhr_user->lastName) . $bhr_user->employeeNumber);
+                }
+
+        }catch(Exception $e){
+            
+            throw new Exception( trans('messages.user_instance_invalid') );
+        }
+    }
+}

@@ -12,7 +12,7 @@ if (! function_exists('bhr_api_call')) {
      * @param  array data (Optional)
      * @return array;
      */
-    function bhr_api_call($method = 'GET', $api_endpoint,  $data = array()) {
+    function bhr_api_call($method = 'GET', $api_endpoint,  $data = array(), $send_as_json = false) {
         try{
             $result = null;
 
@@ -26,6 +26,10 @@ if (! function_exists('bhr_api_call')) {
             # If there's a Data that needs to be sent, adds the Data on the Curl request.
             if( count( $data ) > 0 ) {
                 $response->withData( $data );
+
+                if( $send_as_json ){
+                    $response->asJson();
+                }
                 log_to_file( 'info', 'Has data parameter passed.', $data, "bhrlog");
             }
 
@@ -53,17 +57,27 @@ if (! function_exists('bhr_api_call')) {
 
             // If the Curl is a success, Decode the returned Content as a JSON
             if( $result->status == JsonResponse::HTTP_OK ) {
-                log_to_file( 'info', 'API Call Success!', ['count' => count( json_decode($result->content) )], "bhrlog");
-                return json_decode($result->content);
+                if( in_array( $method, array('POST', 'PUT') ) ){
+                    $result = true;
+                } else {
+                    $result = json_decode($result->content);
+                }
 
             // If not successful, manually throw exception.
             } else {
-                throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
+                // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
+                log_to_file( 'info', 'ERROR', ['error' => $result ], "bhrlog");
+                return null;
             }
+            
+            log_to_file( 'info', 'API Call Success!', ['info' => $result ], "bhrlog");
+            // log_to_file( 'info', get_constant('LOG_GAP'), [], 'bhrlog');
+            return $result;
 
         } catch(Exception $e) {
             
             log_to_file( 'critical', 'API Call Failed!', $e->getMessage(), "bhrlog");
+            // log_to_file( 'info', get_constant('LOG_GAP'), [], 'bhrlog');
             throw $e;
         }
     }

@@ -22,6 +22,55 @@ return [
 
     'DAYS' => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
 
+    'BHR_USER_SYNC_FIELDS' => [
+        'employeeNumber',
+        'firstName',
+        'middleName',
+        'lastName',
+        'department',
+        'workEmail',
+        'status',
+        'employmentHistoryStatus',
+        'supervisorEId'
+    ],
+
+    'BHR_USER_FIELDS' => [
+        'employeeNumber',
+        'firstName',
+        'lastName',
+        'fullname1',
+        'nickname',
+        'dateOfBirth',
+        'gender',
+        'maritalStatus',
+        'department',
+        'supervisor',
+        'employmentHistoryStatus',
+        'jobTitle',
+        'mobilePhone',
+        'customSSS',
+        'customTIN',
+        'customPhilhealth',
+        'customHDMF',
+        'customBankaccount',
+        'homePhone',
+        'hireDate',
+        'address1',
+        'address2',
+        'city',
+        'state',
+        'zipcode',
+        'bestEmail',
+        'status'
+    ],
+
+    'USER_ROLES' => [
+        'employee'    =>  'employee', 
+        'supervisor'  =>  'supervisor'
+    ],
+
+    'DEFAULT_PASSWORD'  => '{ev2020}',
+
     'LEAVE_REQUEST_STATUS' => [
         'requested', 
         'approved', 

@@ -37,6 +37,61 @@ class CronController extends Controller
         $this->biometrics = $biometrics;
     }
 
+
+    /**
+     * Initially Sync all the Users from BHr
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function initial_sync_of_users($start_date = null, $end_date = null){
+        try {
+
+            /**
+             *  Steps:
+             *  1. Fetch all the User's BHR Number
+             *  2. Insert and Iterate per User (generate Department if existing)
+             *  3. Every iteration, save the Supervisor ID x User ID
+             *  4. After iteration, insert the Supervisor ID x User ID on the matrix table.
+             * 
+             */
+
+            $user_supervisor_pivot_array = [];
+
+            # 1
+            # Fetches all BHR Users Numbers and set it as a collection
+            $bhr_user_number_collection = $this->bhr->get_all_bhr_user_numbers();
+            
+            # 2
+            // Iterate the BHR User Numbers Collection and insert the user
+            foreach( $bhr_user_number_collection as $bhr_user_number ) {
+
+                $bhr_user = $this->bhr->get_user( $bhr_user_number, true );
+
+                if( is_valid( $bhr_user ) ) {
+                    
+                    $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
+
+                    if( is_valid( $user ) ) {
+                        # 3.
+                        $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
+                    }
+                }
+            }
+            
+            # 4
+            $apply_user_supervisor_pivot_result = $this->user->apply_user_supervisor_pivot( $user_supervisor_pivot_array );
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $apply_user_supervisor_pivot_result,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+
     /**
      * Generates the Weekly DTR for all the Employees
      * @return \Illuminate\Http\JsonResponse

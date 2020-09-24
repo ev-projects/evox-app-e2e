@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface BhrRepositoryInterface
 {
+    public function get_all_bhr_user_numbers();
+
+    public function get_user( string $bhr_user_number, $for_sync = false );
+
     public function sync_holidays( string $start_date, string $end_date );
     
     public function get_holidays( string $start_date, string $end_date );

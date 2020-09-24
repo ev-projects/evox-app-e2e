@@ -19,6 +19,77 @@ class BhrRepository implements BhrRepositoryInterface{
     ###################################### Public functions #######################################
     ###############################################################################################
 
+    
+    /**
+     *  Responsible for Fetching ALL the BHR Users' Number
+     * @return Collection $bhr_user_number_collection
+     */
+    public function get_all_bhr_user_numbers(){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
+        try {
+
+            $bhr_user_number_collection = new Collection;
+
+            // Define the End Point for the API.
+            $end_point = 'employees/directory';
+            
+            // Iterate the BHr Call Result
+            foreach( bhr_api_call('GET', $end_point)->employees as  $row ) {
+                
+                # Push the BHR Employee Number on the collection
+                $bhr_user_number_collection->push( $row->id );
+
+            }
+             
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user_number_collection, "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            return $bhr_user_number_collection;
+
+        } catch (Exception $e) {
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+
+
+    /**
+     *  Responsible for Fetching the User's Detail via BHR User number
+     * @param string $bhr_user_number
+     * @param boolean $for_sync
+     * @return Object $bhr_user
+     */
+    public function get_user( string $bhr_user_number, $for_sync = false ){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
+        try {
+
+            $fields =  get_imploded_constant( $for_sync  ? 'BHR_USER_SYNC_FIELDS' : 'BHR_USER_FIELDS' );
+
+            # Call the API of BHR to fetch the User's details in BHR
+            $bhr_user = bhr_api_call('GET', 'employees/'.$bhr_user_number.'?fields='. $fields   );
+                
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user, "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            return $bhr_user;
+
+        } catch (Exception $e) {
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+
+
     /**
      *  Responsible for Fetching Holidays from BHr and Syncing it on our Holiday Table. Conducts checking if holiday already exists.
      * @param string $start_date

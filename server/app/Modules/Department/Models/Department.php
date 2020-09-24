@@ -11,7 +11,7 @@ class Department extends Model
 
     protected $guarded = [];
 
-    // protected static $logAttributes = ['department_name', 'department_code', 'description', 'schedule_id'];
+    // protected static $logAttributes = ['department_name', 'description', 'schedule_id'];
 
     protected $dates = [
         'deleted_at'
@@ -28,7 +28,7 @@ class Department extends Model
      */
     public function getCompleteName()
     {
-        return $this->department_code . ' - ' . $this->department_name;
+        return  $this->department_name;
     }
     
 
