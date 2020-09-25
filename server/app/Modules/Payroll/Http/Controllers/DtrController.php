@@ -112,7 +112,7 @@ class DtrController extends Controller
                 return error_response( trans('messages.error_default'), $e );
             }
 
-            $biometrics->Userid          = Auth::user()->emp_num;
+            $biometrics->Userid          = '20'.Auth::user()->emp_num;
             $biometrics->CheckTime       = date("Y-m-d H:i:s");
             $biometrix_collection->push( $biometrics );
             

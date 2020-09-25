@@ -5,12 +5,17 @@ import { logOut } from '../../../store/actions/userActions'
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom"; 
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
-
+import moment from 'moment';
 
 
 const Header = (props) => {
   
   const history = useHistory();
+
+  var date = new Date();
+  var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
 
     const { user } = props;
     var name = 'Loading...';
@@ -49,6 +54,12 @@ const Header = (props) => {
                     <p> Dashboard</p>
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to={ global.daily_time_record_view + user.id +'/'+moment(firstDay).format("YYYY-MM-DD")+'/'+moment(lastDay).format("YYYY-MM-DD")+'' }>
+                    <i className="nav-icon fa fa-clock-o nav-icon" />
+                    <p> Daily Time Record</p>
+                  </Link>
+                </li>
                 <li className="nav-item has-treeview ">
                   <a className="nav-link" >
                     <i className="nav-icon fa fa-calendar-o" />
@@ -74,12 +85,6 @@ const Header = (props) => {
                       <Link className="nav-link" to={ global.default_schedule + user.id  }>
                         <i className="nav-icon fa fa-calendar-check-o nav-icon" />
                         <p>Default Schedule</p>
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link className="nav-link" to={ global.daily_time_record_view + user.id +'/2020-01-01/2020-01-31' }>
-                        <i className="nav-icon fa fa-clock-o nav-icon" />
-                        <p>Daily Time Record</p>
                       </Link>
                     </li>
                   </ul>
