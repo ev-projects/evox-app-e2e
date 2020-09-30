@@ -287,6 +287,97 @@ class DtrRepository implements DtrRepositoryInterface{
 
 
 
+
+    /**
+     *  Responsible for Removing the Schedule from DTR and apply the proper schedule.
+     * @param User|user_id $user_or_user_id
+     * @param Schedule $schedule
+     * @return array $result
+     */
+    public function remove_schedule_to_dtr( $user_or_user_id, Schedule $schedule )
+    {
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user' => $user_or_user_id, 'schedule' => $schedule ], "dtr");
+
+            $result = [
+                'updated' => [],
+                'not_updated' => []
+            ];
+
+            $user = ( $user_or_user_id instanceof User ) ? $user_or_user_id : User::findOrFail($user_or_user_id);
+
+            # Checks if the $user and $schedule instance are valid.
+            if( is_valid( $user ) && is_valid( $schedule ) ) {
+
+                # If Valid to is existing, fetch between the dates.
+                if( is_valid( $schedule->valid_to ) ) {
+                    $dtr_collection = $user->dtr($schedule->valid_from, $schedule->valid_to)
+                                            ->get();
+
+                # If Valid to is NOT existing, fetch from the Valid From date onwards
+                } else {
+                    $dtr_collection = $user->dtr($schedule->valid_from)
+                                            ->get();
+                }
+
+                # Iteration of DTR Collection that was fetched.
+                foreach( $dtr_collection as $dtr ) {
+                    
+                    // Gets the Best Schedule for the DTR
+                    # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
+        
+                    $best_schedule = $dtr->getBestSchedule();
+                        
+                    # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
+                    $schedule_detail = ( is_valid( $best_schedule ) ? $best_schedule->getPerDay( get_day_from_date( $dtr->date ) ) : null);
+                    
+                    # Get the Parsed Schedule Detail to Date
+                    $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
+                    
+                    # Update the DTR properties
+                    $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
+                    $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
+                    $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
+                    $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
+                    $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                    
+                    $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
+                    $dtr->source_type_tagging   =  ( is_valid($best_schedule) ) ? $best_schedule->source_type : $dtr->source_type_tagging;
+
+                    $dtr->update();
+
+                    # Delete the existing DTR Policies before saving the new ones.
+                    $dtr->policies()->delete();
+
+                    # Save the DTR Policies base on the Schedule Policies.
+                    $this->save_dtr_policies( $dtr, $best_schedule->schedule_policies()->get() );
+
+                    # Compute for the Items
+                    $this->compute_payroll_items( $dtr );
+
+                    $result['updated'][] = $dtr;
+        
+                }
+            }
+
+            DB::commit();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            return $result;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+
     /**
      *  Responsible for Applying of Alter Log to DTR.
      * @param AlterLog $alter_log
@@ -308,6 +399,49 @@ class DtrRepository implements DtrRepositoryInterface{
                 // # Update the New Time in and out of the DTR.
                 $dtr->time_in =     $alter_log->new_time_in;
                 $dtr->time_out =    $alter_log->new_time_out;
+                $dtr->update();
+
+                # Compute for the Items
+                $this->compute_payroll_items( $dtr );
+                
+                DB::commit();
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+                return $dtr;
+            }
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+    
+
+    /**
+     *  Responsible for Removing the Alter Log from DTR and revert it from the original state.
+     * @param AlterLog $alter_log
+     * @return Dtr $dtr
+     */
+    public function remove_alter_log_from_dtr( AlterLog $alter_log )
+    {
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'alter_log' => $alter_log ], "dtr");
+
+            # Checks if the $rest_day_work instance are valid and Declined.
+            if( is_valid( $alter_log ) && $alter_log->isDeclined() ) {
+
+                # Gets the DTR related on the Alter Log.
+                $dtr = $alter_log->dtr()->first();
+
+                // # Set the Time In/Out to Current Time in and out of the DTR.
+                $dtr->time_in =     $alter_log->current_time_in;
+                $dtr->time_out =    $alter_log->current_time_out;
                 $dtr->update();
 
                 # Compute for the Items
@@ -382,6 +516,57 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
+
+    
+
+
+    /**
+     *  Responsible for Removing the Rest Day Work from DTR and revert it from the original state.
+     * @param RestDayWork $rest_day_work
+     * @return Dtr $dtr
+     */
+    public function remove_rest_day_from_dtr( RestDayWork $rest_day_work )
+    {
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'rest_day_work' => $rest_day_work ], "dtr");
+
+            # Checks if the $rest_day_work instance are valid and Declined.
+            if( is_valid( $rest_day_work ) && $rest_day_work->isDeclined() ) {
+
+                # Gets the DTR related on the Rest Day Work.
+                $dtr = $rest_day_work->dtr()->first();
+                
+                # Updates the DTR properties
+                $dtr->start_datetime        =  null;
+                $dtr->end_datetime          =  null;
+                $dtr->start_flexy_datetime  =  null;
+                $dtr->end_flexy_datetime    =  null;
+                $dtr->break_time            =  null;
+                $dtr->is_rest_day           =  true;
+                $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.default');
+
+                $dtr->save();
+
+                # Compute for the Items
+                $this->compute_payroll_items( $dtr );
+                
+                DB::commit();
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+                return $dtr;
+            }
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            log_error($e);
+            throw $e;
+        }
+    }
+
 
 
 

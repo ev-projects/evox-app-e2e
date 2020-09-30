@@ -130,9 +130,14 @@ class ChangeScheduleController extends Controller
         try {
             log_activity( trans('messages.decline_change_schedule_attempt') );
 
+            $change_schedule = $this->change_schedule->decline( $request->all(), $id );
+            
+            // Add code to remove the Schedule on the specific DTRs.
+            $dtr = $this->dtr->remove_schedule_to_dtr( $change_schedule->user_id, $change_schedule->schedule()->first() );
+
             return success_response(
                 trans('messages.decline_change_schedule_success'), 
-                new ChangeScheduleResource( $this->change_schedule->decline( $request->all(), $id ) ) 
+                new ChangeScheduleResource( $change_schedule ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);

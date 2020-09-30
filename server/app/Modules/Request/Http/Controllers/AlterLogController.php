@@ -131,9 +131,14 @@ class AlterLogController extends Controller
         try {
             log_activity( trans('messages.decline_alter_log_attempt') );
 
+            $alter_log = $this->alter_log->decline( $request->all(),$id );
+
+            // Add code to Remove the Alter Log from the specific DTR.
+            $dtr = $this->dtr->remove_alter_log_from_dtr( $alter_log );
+
             return success_response(
                 trans('messages.decline_alter_log_success'), 
-                new AlterLogResource( $this->alter_log->decline( $request->all(),$id ) ) 
+                new AlterLogResource( $alter_log ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
