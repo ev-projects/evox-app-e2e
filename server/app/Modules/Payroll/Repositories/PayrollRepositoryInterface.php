@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface PayrollRepositoryInterface
 {   
-    public function get_payroll_cutoff( string $date );
+    public function get_payroll_cutoff( string $date = null );
 }

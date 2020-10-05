@@ -15,9 +15,9 @@ class CreatePayrollCutoffsTable extends Migration
     {
         Schema::create('payroll_cutoffs', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name')->index();
             $table->date('start_date')->index();
             $table->date('end_date')->index();
-            $table->string('description')->index();
             $table->softDeletes();
             $table->timestamps();
 

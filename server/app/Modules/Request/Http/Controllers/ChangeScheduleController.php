@@ -71,7 +71,7 @@ class ChangeScheduleController extends Controller
      */
     public function destroy($id){
         try {
-            log_activity( trans('messages.delete_hange_schedule_attempt') );
+            log_activity( trans('messages.delete_change_schedule_attempt') );
 
             return success_response(
                 trans('messages.delete_change_schedule_success'), 
