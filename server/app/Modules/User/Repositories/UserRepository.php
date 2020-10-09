@@ -311,10 +311,13 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function assign_roles_to_user( array $roles_array, $user_id ){
         try {
+            
+            if( is_under_supervisee( $user_id ) ) {
 
-            $user =  User::findOrFail( $user_id );
+                $user =  User::findOrFail( $user_id );
 
-            $user->syncRoles( $roles_array );
+                $user->syncRoles( $roles_array );
+            }
 
             return $user;
         } catch (Exception $e) {
@@ -333,9 +336,12 @@ class UserRepository implements UserRepositoryInterface{
     public function assign_permissions_to_user( array $permissions_array, $user_id ){
         try {
 
-            $user =  User::findOrFail( $user_id );
+            if( is_under_supervisee( $user_id ) ) {
 
-            $user->syncPermissions( $permissions_array );
+                $user =  User::findOrFail( $user_id );
+
+                $user->syncPermissions( $permissions_array );
+            }
             
             return $user;
         } catch (Exception $e) {
