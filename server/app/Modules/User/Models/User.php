@@ -186,49 +186,138 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
-    public function requests_list($request){
-        
-        if($request=='my_team_request'){
-            $id = under_supervisee_id_list($this->supervisee()->select('id')->get());
-        }elseif($request=='my_request'){
-            $id = auth()->user()->id;
-        }
-        
+    public function requests_list($request,$filter = array()){
         $column = array('id','status','created_at','created_by','updated_by');
 
-        $change_schedule    =   ChangeSchedule::select(  DB::raw(implode(",",$column). ',
-                                                        schedule_id fourth_column,
-                                                        NULL fifth_column,CONCAT(valid_from," ", valid_to) As date_requested  
-                                                        ,"change_schedule" as table_name'))
-                                                        ->where('user_id',$id);
+        $change_schedules    =   DB::table('change_schedules')
+        ->Leftjoin('users as a', 'a.id', '=', 'change_schedules.created_by')
+        ->Leftjoin('users as b', 'b.id', '=', 'change_schedules.updated_by')
+        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->select(  
+                    'change_schedules.id',
+                    'change_schedules.status',
+                    'change_schedules.created_at',
+                    DB::raw('CONCAT(a.first_name," ", a.last_name) as user_id'), 
+                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'),
+                    'change_schedules.schedule_id as fourth_column',
+                    DB::raw('NULL fifth_column'),
+                    DB::raw('CONCAT(valid_from," ", valid_to) As date_requested '),
+                    DB::raw('"change_schedules" as table_name'),
+                    'c.department_name',
+                    'change_schedules.updated_at');
 
-        $overtime           =   Overtime::select(        DB::raw(implode(",",$column) .',
-                                                        amount fourth_column     ,
-                                                        type fifth_column,date As date_requested
-                                                        , "overtime" as table_name'))
-                                                        ->where('user_id',$id);
-                                                        
-        $rest_day_work      =   RestDayWork::select(     DB::raw(implode(",",$column) .',
-                                                        end_time fifth_column,
-                                                        start_time as fourth_column,
-                                                        date As date_requested,
-                                                         "rest_day_work" as table_name'))
-                                                         ->where('user_id',$id);
+        $overtimes    =   DB::table('overtimes')
+        ->Leftjoin('users as a', 'a.id', '=', 'overtimes.user_id')
+        ->Leftjoin('users as b', 'b.id', '=', 'overtimes.updated_by')
+        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->select(  
+                    'overtimes.id',
+                    'overtimes.status',
+                    'overtimes.created_at',
+                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'),  
+                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                    'overtimes.amount as fourth_column',
+                    DB::raw('overtimes.type fifth_column'),
+                    DB::raw('overtimes.date As date_requested'),
+                    DB::raw('"overtimes"  as table_name'),
+                    'c.department_name',
+                    'overtimes.updated_at');
+
+        $rest_day_works    =   DB::table('rest_day_works')
+        ->Leftjoin('users as a', 'a.id', '=', 'rest_day_works.user_id')
+        ->Leftjoin('users as b', 'b.id', '=', 'rest_day_works.updated_by')
+        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->select(  
+                    'rest_day_works.id',
+                    'rest_day_works.status',
+                    'rest_day_works.created_at',
+                    DB::raw('CONCAT(a.first_name," ", a.last_name) as user_id'), 
+                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                    'rest_day_works.start_time as fourth_column',
+                    DB::raw('rest_day_works.end_time fifth_column'),
+                    DB::raw('rest_day_works.date As date_requested'),
+                    DB::raw('"rest_day_works"  as table_name'),
+                    'c.department_name',
+                    'rest_day_works.updated_at');
+
+        $alter_logs    =   DB::table('alter_logs')
+        ->Leftjoin('users as a', 'a.id', '=', 'alter_logs.user_id')
+        ->Leftjoin('users as b', 'b.id', '=', 'alter_logs.updated_by')
+        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->select(  
+                    'alter_logs.id',
+                    'alter_logs.status',
+                    'alter_logs.created_at',
+                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
+                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                    'alter_logs.id As fourth_column',
+                    DB::raw('NULL fifth_column'),
+                    DB::raw('alter_logs.date As date_requested'),
+                    DB::raw('"alter_logs"  as table_name'),
+                    'c.department_name',
+                    'alter_logs.updated_at');
+
+        #Team or Individual Request
+        if($request=='my_team_request'){
+            $id = under_supervisee_id_list($this->supervisee()->select('id')->get());
+
+            $change_schedules->whereIn('change_schedules.user_id',$id);
+            $overtimes       ->whereIn('overtimes.user_id',$id);
+            $rest_day_works  ->whereIn('rest_day_works.user_id',$id);
+            $alter_logs      ->whereIn('alter_logs.user_id',$id);
+        }elseif($request=='my_request'){
+            $id = auth()->user()->id;
+
+            $change_schedules->where('change_schedules.user_id',$id);
+            $overtimes       ->where('overtimes.user_id',$id);
+            $rest_day_works  ->where('rest_day_works.user_id',$id);
+            $alter_logs      ->where('alter_logs.user_id',$id);
+        }
+        
+        # Status
+        if(isset($filter['status'])){
+            $change_schedules->where('change_schedules.status',$filter['status']);
+            $overtimes       ->where('overtimes.status',$filter['status']);
+            $rest_day_works  ->where('rest_day_works.status',$filter['status']);
+            $alter_logs      ->where('alter_logs.status',$filter['status']);
+        }
 
 
-        $data               =   AlterLog::select(       DB::raw(implode(",",$column) .',
-                                                        id As fourth_column,
-                                                        NULL fifth_column,date As date_requested,
-                                                        "alter_log" as table_name'))
-                                                        ->where('user_id',$id)
-                                ->union($change_schedule)
-                                ->union($overtime)
-                                ->union($rest_day_work)
-                                ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ")
-                                ->paginate(10);
+
+        # Name Filter
+        if(isset($filter['name'])){
+            $change_schedules->where('a.first_name', 'like', '%' . $filter['name']. '%');
+            $overtimes       ->where('a.first_name', 'like', '%' . $filter['name']. '%');
+            $rest_day_works  ->where('a.first_name', 'like', '%' . $filter['name']. '%');
+            $alter_logs      ->where('a.first_name', 'like', '%' . $filter['name']. '%');
+        }
+
+        # Date Filter
+        if(isset($filter['valid_from'])&&isset($filter['valid_to'])){
+            $change_schedules->whereBetween("valid_from", array($filter['valid_from'], $filter['valid_to']))
+            ->orwhereBetween("valid_to", array($filter['valid_from'], $filter['valid_to']))
+            ->orwhereRaw('valid_from < '.$filter['valid_from'].' AND valid_to > '.$filter['valid_to']);
+            $rest_day_works       ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
+            $overtimes       ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
+            $alter_logs      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
+        }
+  
+        # Department Filter
+        if(isset($filter['department_id'])){
+            $change_schedules->where('a.department_id', $filter['department_id']);
+            $overtimes       ->where('a.department_id', $filter['department_id']);
+            $rest_day_works  ->where('a.department_id', $filter['department_id']);
+            $alter_logs      ->where('a.department_id', $filter['department_id']);
+        }
+        
+       $query = $alter_logs->union($change_schedules)
+        ->union($overtimes)
+        ->union($rest_day_works)
+        ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ")
+        ->paginate(10);
 
 
-        return $data;
+        return  $query;
     }
 
 

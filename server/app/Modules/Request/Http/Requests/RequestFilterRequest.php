@@ -30,14 +30,12 @@ class RequestFilterRequest extends FormRequest
         return [
             'user'                  => 'string|max:255',
             'department_id'         => 'int',
-            'request_type'          => 'string|in:'.get_imploded_constant('REQUEST_TYPES'),
-            'request_status'        => 'string|in:'.get_imploded_constant('REQUEST_STATUS'),
+            'status'                =>  'string|in:'.get_imploded_constant('REQUEST_STATUS'),
             'valid_from'            => 'date_format:Y-m-d',
             'valid_to'              => 'date_format:Y-m-d',
             'show_owned'            => 'bool',
         ];
     }
-
 
     /**
      * Get the error messages for the defined validation rules.

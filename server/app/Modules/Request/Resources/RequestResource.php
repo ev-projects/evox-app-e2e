@@ -24,14 +24,15 @@ class RequestResource extends JsonResource
             
             foreach($this->resource as $key => $request) {
                 switch ($request->table_name) {
-                    case 'overtime':
+                    case 'overtimes':
                         $request->fourth_column = seconds_to_time( $request->fourth_column );
+                        $request->fifth_column = slug_to_text( $request->fifth_column );
                       break;
-                    case 'rest_day_work':
+                    case 'rest_day_works':
                         $request->fourth_column = timestamp_to_datetime( $request->fourth_column  );
                         $request->fifth_column = timestamp_to_datetime( $request->fifth_column );
                       break;
-                    case 'change_schedule':
+                    case 'change_schedules':
                         $schedule = Schedule::find($request->fourth_column);
                         
                         if($schedule!=null){
@@ -49,14 +50,14 @@ class RequestResource extends JsonResource
                         }
 
                       break;
-                    case 'alter_log':
+                    case 'alter_logs':
                         $alter_log = AlterLog::find($request->fourth_column);
-                        $old_time_logs = array(  "current_time_in" =>  timestamp_to_datetime($alter_log->current_time_in),
-                        "current_time_out" => timestamp_to_datetime($alter_log->current_time_out));
+                        $old_time_logs = array(   "current_time_in" =>  timestamp_to_datetime($alter_log->current_time_in),
+                                                  "current_time_out" => timestamp_to_datetime($alter_log->current_time_out));
 
                         
-                        $new_time_logs = array(  "new_time_in" =>  timestamp_to_datetime($alter_log->new_time_in),
-                        "new_time_out" => timestamp_to_datetime($alter_log->new_time_out));
+                        $new_time_logs = array(   "new_time_in" =>  timestamp_to_datetime($alter_log->new_time_in),
+                                                  "new_time_out" => timestamp_to_datetime($alter_log->new_time_out));
                 
                         $request->fourth_column =  $old_time_logs;
                         $request->fifth_column =  $new_time_logs;
@@ -64,6 +65,10 @@ class RequestResource extends JsonResource
                       break;
                     default:
                   }
+
+                  $request->table_name = substr_replace(slug_to_text($request->table_name),"",-1);
+                  $request->status = ucfirst($request->status);
+
             }
 
 

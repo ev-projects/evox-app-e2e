@@ -70,14 +70,13 @@ class RequestController extends Controller
      * Shows a list of Team Requests.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function myteamrequest(){
+    public function myteamrequest(RequestFilterRequest $request){
         $user = User::find(auth()->user()->id);
-
         try {
             log_activity( trans('messages.request_display_attempt') );
             return success_response(
                 trans('messages.request_display_success'), 
-                  new RequestResource( $user->requests_list('my_team_request') ) 
+                  new RequestResource( $user->requests_list('my_team_request',$request) ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -85,17 +84,18 @@ class RequestController extends Controller
     }
 
     /**
-     * Shows a list of User Request Requests.
+     * Shows a list of User Requests.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function myrequest(){
+    public function myrequest(RequestFilterRequest $request){
+
         $user = User::find(auth()->user()->id);
 
         try {
             log_activity( trans('messages.request_display_attempt') );
             return success_response(
                 trans('messages.request_display_success'), 
-                  new RequestResource( $user->requests_list('my_request') ) 
+                  new RequestResource( $user->requests_list('my_request',$request) ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

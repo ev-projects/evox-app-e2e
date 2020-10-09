@@ -18,10 +18,10 @@ use Illuminate\Http\Request;
 Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
     # My Request
-    Route::get('/myrequests',     'RequestController@myrequest');
+    Route::get('/my-requests',     'RequestController@myrequest');
 
-    # My team request
-    Route::get('/myteamrequests',     'RequestController@myteamrequest');
+    # My Team Request
+    Route::get('/my-team-requests',     'RequestController@myteamrequest');
 
     # Find existing Request Collections
     Route::get('/', 'RequestController@find'); 
