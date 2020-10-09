@@ -18,5 +18,9 @@ interface UserRepositoryInterface
 
     public function show( $id );
 
-    public function getAllActiveUsers();
+    public function get_all_active_users();
+
+    public function assign_roles_to_user( array $roles_array, $user_id );
+
+    public function assign_permissions_to_user( array $permissions_array, $user_id );
 }

@@ -247,50 +247,57 @@ class InsertInitialValuesTable extends Migration
         // Roles
         $employee_role = Role::create(['name' => 'employee']);
         $supervisor_role = Role::create(['name' => 'supervisor']);
+        $admin_role = Role::create(['name' => 'admin']);
 
         // Employee Permissions
         $employee_permissions = [
-            Permission::create(['name' => 'view_my_profile']),
-            Permission::create(['name' => 'view_dtr']),
-            Permission::create(['name' => 'allow_quickpunch']),
-            Permission::create(['name' => 'view_request']),
-            Permission::create(['name' => 'add_request']),
-            Permission::create(['name' => 'edit_request']),
-            Permission::create(['name' => 'view_my_inbox']),
-            Permission::create(['name' => 'view_associates']),
-            Permission::create(['name' => 'view_inspirations']),
-            Permission::create(['name' => 'view_ev_buddy']),
-            Permission::create(['name' => 'view_ev_elearnings']),
-            Permission::create(['name' => 'view_contact_us']),
+            Permission::create(['name' => 'view_my_profile', 'label' => 'View My Profile']),
+            Permission::create(['name' => 'view_dtr', 'label' => 'View DTR']),
+            Permission::create(['name' => 'allow_quickpunch', 'label' => 'Allow Quickpunch']),
+            Permission::create(['name' => 'view_request', 'label' => 'View Request']),
+            Permission::create(['name' => 'add_request', 'label' => 'Add Request']),
+            Permission::create(['name' => 'edit_request', 'label' => 'Edit Request']),
+            Permission::create(['name' => 'view_my_inbox', 'label' => 'View My Inbox']),
+            Permission::create(['name' => 'view_associates', 'label' => 'View Associates']),
+            Permission::create(['name' => 'view_inspirations', 'label' => 'View Inspirations']),
+            Permission::create(['name' => 'view_ev_buddy', 'label' => 'View EV Buddy']),
+            Permission::create(['name' => 'view_ev_elearnings', 'label' => 'View EV E-learnings']),
+            Permission::create(['name' => 'view_contact_us', 'label' => 'View Contact Us']),
         ];
 
         // Supervisor Permissions
         $supervisor_permissions = [
-            Permission::create(['name' => 'view_my_team']),
-            Permission::create(['name' => 'view_my_team_dtr']),
-            Permission::create(['name' => 'view_my_team_schedule']),
-            Permission::create(['name' => 'edit_my_team_schedule']),
+            Permission::create(['name' => 'view_my_team', 'label' => 'View My Team']),
+            Permission::create(['name' => 'view_my_team_dtr', 'label' => 'View My Team DTR']),
+            Permission::create(['name' => 'view_my_team_schedule', 'label' => 'View My Team Schedule']),
+            Permission::create(['name' => 'edit_my_team_schedule', 'label' => 'Edit My Team Schedule']),
             
-            Permission::create(['name' => 'view_dtr_logs']),
-            Permission::create(['name' => 'view_dtr_summary']),
+            Permission::create(['name' => 'view_dtr_logs', 'label' => 'View DTR Logs']),
+            Permission::create(['name' => 'view_dtr_summary', 'label' => 'View DTR Summary']),
 
-            Permission::create(['name' => 'view_my_team_request']),
-            Permission::create(['name' => 'allow_my_team_request_approval']),
+            Permission::create(['name' => 'view_my_team_request', 'label' => 'View My Team Request']),
+            Permission::create(['name' => 'allow_my_team_request_approval', 'label' => 'Allow My Team Request Approval']),
 
-            Permission::create(['name' => 'view_schedule']),
-            Permission::create(['name' => 'add_schedule']),
-            Permission::create(['name' => 'edit_schedule']),
-            Permission::create(['name' => 'delete_schedule']),
+            Permission::create(['name' => 'view_schedule', 'label' => 'View Schedule']),
+            Permission::create(['name' => 'add_schedule', 'label' => 'Add Schedule']),
+            Permission::create(['name' => 'edit_schedule', 'label' => 'Edit Schedule']),
+            Permission::create(['name' => 'delete_schedule', 'label' => 'Delete Schedule']),
             
-            Permission::create(['name' => 'assign_schedule']),
+            Permission::create(['name' => 'assign_schedule', 'label' => 'Assign Schedule']),
 
-            Permission::create(['name' => 'assign_schedule_per_department']),
+            Permission::create(['name' => 'assign_schedule_per_department', 'label' => 'Assign Schedule per Department']),
+        ];
+        
+        // Admin Permissions
+        $admin_permission = [
+            Permission::create(['name' => 'full_access', 'label' => 'Full Access'])
         ];
         
 
         // Add Permission for their distinct role
         $employee_role->syncPermissions($employee_permissions);
         $supervisor_role->syncPermissions($supervisor_permissions);
+        $admin_role->syncPermissions($admin_permission);
 
         // Insert USERS Default Values
         $insert = array(

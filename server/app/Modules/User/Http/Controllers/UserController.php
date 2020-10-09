@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\Schedule\Resources\ScheduleResource;
+use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserProfileResource;
 use Exception;
@@ -28,7 +29,6 @@ class UserController extends Controller
      */
     public function default_schedule( $id ){   
         try {
-            // log_activity( trans('messages.payload') );
             
             $this->validate(new Request([
                 'id' => $id
@@ -54,7 +54,6 @@ class UserController extends Controller
      */
     public function temporary_schedules( $id ){   
         try {
-            // log_activity( trans('messages.payload') );
 
             $this->validate(new Request([
                 'id' => $id
@@ -67,6 +66,36 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_temporary_schedule'), 
                 ScheduleResource::collection( $user->temporarySchedules()->get() ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    
+
+    /**
+     * Returns the Temporary Schedules of the User by the User ID
+     * @param string $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function assign( AssignUserRolePermissionRequest $request, $user_id ){   
+        try {
+            log_activity( trans('messages.user_assign_roles_permissions_attempt') );
+            
+            $this->validate(new Request([
+                'user_id' => $user_id
+            ]), [
+                'user_id' => 'int'
+            ]);
+
+            $this->user->assign_roles_to_user( $request->get('roles'), $user_id );
+
+            $this->user->assign_permissions_to_user( $request->get('permissions'), $user_id );
+            
+            return success_response(
+                trans('messages.user_assign_roles_permissions_success'), 
+                true
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

@@ -37,6 +37,11 @@ return [
     'user_not_under_supervisee' => 'The User/Property of the User being accessed is not under your Supervisee.',
     'user_instance_invalid' => 'The User instance is invalid.',
 
+    /**
+     *  User Assigning
+     */
+    'user_assign_roles_permissions_attempt' => 'Attempt for Assigning the Roles and Permissions to the User',
+    'user_assign_roles_permissions_success' => 'Successfully assign the Roles and Permissions to the User!',
 
     /**
      *  Schedule 
@@ -171,8 +176,9 @@ return [
 
 
     
-
-    
+    /**
+     *  Payroll Cutoff  
+     */
     'create_payroll_cutoff_attempt' => 'Create Payroll Cutoff Attempt',
     'create_payroll_cutoff_success' => 'A new Payroll Cutoff is now created!',
 
@@ -186,6 +192,8 @@ return [
     
     'all_payroll_cutoff_success' => 'All the Payroll Cutoff is now shown!',
         
+
+    
     /**
      *  Schedule Forms
      */
