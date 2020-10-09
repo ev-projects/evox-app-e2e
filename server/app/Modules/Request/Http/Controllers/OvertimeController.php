@@ -128,7 +128,8 @@ class OvertimeController extends Controller
 
             $overtime = $this->overtime->decline( $request->all(), $id );
 
-            // Add code to remove the Overtime on the specific DTR.
+            // Call the function to compute for the Payroll Items (Which will automatically check for the Declined Overtime.)
+            $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
 
             return success_response(
                 trans('messages.decline_overtime_success'), 

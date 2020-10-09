@@ -6,6 +6,7 @@ use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\Request\Models\RestDayWork;
+use App\Modules\Schedule\Models\Schedule;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -364,6 +365,44 @@ class Dtr extends Model
     }
 
 
+    
+
+    /**
+     *  Gets the Best Schedule of the DTR base from the existing schedules
+     * @return string
+     */
+    public function getBestSchedule(){
+
+        $user = $this->user()->first();
+
+        # Fetch the Default Schedule for the current User.
+        $default_schedule = $user->defaultSchedule()->first();
+
+        # Fetch the Temporary Schedule for the current User within the Date
+        $temporary_schedule = $user->temporarySchedules( $this->date, $this->date)
+                                    ->orderBy('updated_at', 'DESC')
+                                    ->get()
+                                    ->first();
+
+        $change_schedule = $user->changeSchedules($this->date, $this->date)
+                                ->orderBy('updated_at', 'DESC')
+                                ->get()
+                                ->first();
+
+        if($change_schedule != null){
+            $change_schedule = Schedule::find($change_schedule->schedule_id);
+        }
+
+
+        # Setting the Schedule that would be used for that specific Day.
+        # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
+        $schedule = ( is_valid( $temporary_schedule ) ? $temporary_schedule : 
+                        ( is_valid( $change_schedule ) ? $change_schedule : $default_schedule ) );
+
+        return $schedule;
+    }
+
+
     ########################################################################
 
     /**
@@ -480,5 +519,6 @@ class Dtr extends Model
             'date' => $this->date
         ]);
     }
+
 
 }

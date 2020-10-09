@@ -165,8 +165,7 @@ class User extends Authenticatable implements JWTSubject
     public function changeSchedules($start_date, $end_date){
         return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')
                     ->where("status","approved")
-                    ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')")
-                    ;  
+                    ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')");  
     }
 
     # Fetch the User's DTR

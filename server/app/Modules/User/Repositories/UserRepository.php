@@ -292,10 +292,52 @@ class UserRepository implements UserRepositoryInterface{
      * @param $id
      * @return User $user
      */
-    public function getAllActiveUsers(){
+    public function get_all_active_users(){
         try {
             $users = User::where('is_active', 1)->get();
             return $users;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
+
+
+    /**
+     *  Responsible for assigning Roles for the user.
+     * @param $id
+     * @return User $user
+     */
+    public function assign_roles_to_user( array $roles_array, $user_id ){
+        try {
+
+            $user =  User::findOrFail( $user_id );
+
+            $user->syncRoles( $roles_array );
+
+            return $user;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
+
+
+    /**
+     *  Responsible for assigning Permissions for the user.
+     * @param $id
+     * @return User $user
+     */
+    public function assign_permissions_to_user( array $permissions_array, $user_id ){
+        try {
+
+            $user =  User::findOrFail( $user_id );
+
+            $user->syncPermissions( $permissions_array );
+            
+            return $user;
         } catch (Exception $e) {
             throw $e;
         }

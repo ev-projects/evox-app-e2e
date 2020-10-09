@@ -13,11 +13,21 @@ interface DtrRepositoryInterface
 {
     public function generate_dtr( Collection $user_collection, array $date_array );
 
+    
     public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
+
+    public function remove_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
+
 
     public function apply_alter_log_to_dtr( AlterLog $alter_log );
 
+    public function remove_alter_log_from_dtr( AlterLog $alter_log );
+    
+
     public function apply_rest_day_work_to_dtr( RestDayWork $rest_day_work );
+
+    public function remove_rest_day_from_dtr( RestDayWork $rest_day_work );
+
 
     public function bind_holidays_to_dtr( string $start_date, string $end_date );
 

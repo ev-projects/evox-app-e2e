@@ -126,9 +126,14 @@ class RestDayWorkController extends Controller
         try {
             log_activity( trans('messages.decline_rest_day_work_attempt') );
 
+            $rest_day_work = $this->rest_day_work->decline( $request->all(), $id );
+
+            // Add code to Remove the Rest Day Work on the specific DTR.
+            $dtr = $this->dtr->remove_rest_day_from_dtr( $rest_day_work );
+
             return success_response(
                 trans('messages.decline_rest_day_work_success'), 
-                new RestDayWorkResource( $this->rest_day_work->decline( $request->all(), $id ) ) 
+                new RestDayWorkResource( $rest_day_work ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);

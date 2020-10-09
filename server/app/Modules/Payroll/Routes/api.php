@@ -36,3 +36,28 @@ Route::group(['prefix' => 'dtr_summary', 'middleware' => ['jwtauth', 'auth.apike
 });
 
 
+
+# API Call for Payroll
+Route::group(['prefix' => 'payroll', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # API Call for Payroll Cutoffs
+    Route::group(['prefix' => 'cutoff'], function () {
+
+        
+        
+        # Gets all the Payroll Cutoff Lists
+        Route::get('/all', 'PayrollCutoffController@all');
+
+        # Gets the Payroll Cutoff of the ID indicated on the Parameter
+        Route::get('/{id}', 'PayrollCutoffController@find');
+    
+        # Insert new Overtime
+        Route::post('/',     'PayrollCutoffController@store'); //->middleware('permission:add_overtime');
+
+        # Update existing Overtime
+        Route::put('/{id}', 'PayrollCutoffController@update'); //->middleware('permission:update_overtime')
+
+        # Delete Overtime
+        Route::delete('/{id}', 'PayrollCutoffController@destroy'); //->middleware('permission:delete_overtime');
+    });
+});

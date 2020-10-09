@@ -45,3 +45,13 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 
 });
 
+
+#####################################################################################################
+
+Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the Payroll Cutoff of the ID indicated on the Parameter
+    Route::post('/assign/{user_id}', 'UserController@assign');
+
+
+});
