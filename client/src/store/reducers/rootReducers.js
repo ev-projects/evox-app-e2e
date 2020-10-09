@@ -15,6 +15,7 @@ import redirectReducers from "./redirectReducers";
 
 import dtrReducer from "./dtrReducers";
 
+import requestListReducers from "./requestListReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 
@@ -30,7 +31,9 @@ const rootReducer = combineReducers({
     changeSchedule: changeScheduleReducers,
     overtime : overtimeReducers,
     restDayWork : restDayWorkReducers,
-    redirect : redirectReducers
+    redirect : redirectReducers,
+
+    requestList: requestListReducers,
 });
 
 export default rootReducer;

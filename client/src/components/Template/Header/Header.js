@@ -60,6 +60,12 @@ const Header = (props) => {
                     <p> Daily Time Record</p>
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/app/request/RequestList">
+                    <i className="nav-icon fa fa-envelope-o nav-icon" />
+                    <p> My Team Request</p> 
+                  </Link>
+                </li>
                 <li className="nav-item has-treeview ">
                   <a className="nav-link" >
                     <i className="nav-icon fa fa-calendar-o" />

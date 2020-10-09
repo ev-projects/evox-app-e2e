@@ -42,6 +42,8 @@ class API  {
   
           // Renders the Data on the AXIOS Call
           data: Validator.isValid(config.data) ? config.data  : {},
+
+          params :  Validator.isValid(config.params) ? config.params  : {}
         
         })
       ).then(response => {

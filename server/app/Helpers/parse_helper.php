@@ -55,3 +55,20 @@ if (! function_exists('parse_to_slug')) {
 }
 
 
+if (! function_exists('slug_to_text')) {   
+    /**
+     * This function parses the given slug to string readable format
+     *
+     * @param  string $string
+     * @param  string
+     */
+    function slug_to_text( $string ) 
+    {
+        try {
+            return ucwords(str_replace("_", " ",$string));
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
