@@ -75,8 +75,10 @@ class PayrollCutoff extends Component {
             // Clear the Instance of Payroll Cutoff before rendering new Instance (If applicable)
             // await this.props.clearPayrollCutoffListInstance();
 
-            // If the ID is defined, load the Overtime Instance base on the ID Parameter in Route.
-            await this.props.fetchPayrollCutoffList()
+             setTimeout( async() => {
+                // If the ID is defined, load the Overtime Instance base on the ID Parameter in Route.
+                await this.props.fetchPayrollCutoffList()
+            }, 100);
         }
     }
 
