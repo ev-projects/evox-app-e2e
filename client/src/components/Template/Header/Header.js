@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom"; 
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import moment from 'moment';
+import Authenticator from "../../../services/Authenticator";
 
 
 const Header = (props) => {
@@ -131,6 +132,29 @@ const Header = (props) => {
                     
                   </ul>
                 </li>
+                { // Checks if the User has 'admin' role and 'full_access' Permission before rendering Settings
+                  Authenticator.check('admin', 'full_access') ?
+                    <li className="nav-item has-treeview ">
+                      <a className="nav-link">
+                        <i className="nav-icon fa fa-cog" />
+                        <p>
+                          Settings
+                          <i className="right fa fa-chevron-left" />
+                        </p>
+                      </a>
+                      <ul className="nav nav-treeview">
+                        <li className="nav-item">
+                          <Link className="nav-link" to={ global.payroll_cutoff }>
+                            <i className="nav-icon fa fa-table nav-icon" />
+                            <p>Payroll Cutoff</p>
+                          </Link> 
+                        </li>
+                        
+                      </ul>
+                    </li>
+                  :
+                  null
+                }
                 <li className="nav-item">
                   <a onClick={() => props.logOut()} className="nav-link">
                     <i className="fa fa-sign-out nav-icon" />

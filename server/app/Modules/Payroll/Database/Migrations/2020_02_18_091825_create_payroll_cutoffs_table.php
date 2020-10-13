@@ -23,7 +23,7 @@ class CreatePayrollCutoffsTable extends Migration
 
             $table->index(['start_date', 'end_date']);
 
-            $table->unique(['start_date', 'end_date']);
+            // $table->unique(['start_date', 'end_date']);
         });
     }
 

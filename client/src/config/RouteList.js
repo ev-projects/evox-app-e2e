@@ -24,6 +24,7 @@ import Overtime from "../container/Request/Overtime";
 import RestDayWork from "../container/Request/RestDayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
 import RequestList from "../container/Request/RequestList";
+import PayrollCutoff from "../container/Settings/PayrollCutoff";
 
 const RoutesList = () => {
 
@@ -38,6 +39,8 @@ const RoutesList = () => {
         <ProtectedRoute path="/app/schedule/assign/:userid" ><ScheduleAssign /></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
+        
+        <ProtectedRoute exact path="/app/settings/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
 
         <ProtectedRoute exact path="/app/request/AlterLog/"><AlterLog onApproval={false}/></ProtectedRoute>
         <ProtectedRoute exact path="/app/request/AlterLog/:id"><AlterLog onApproval={false}/></ProtectedRoute>

@@ -21,7 +21,7 @@ import { fetchAlterLog,
          updateAlterLog, 
          updateAlterLogStatus, 
          resetAlterLogInstance, 
-         clearAlterLogInstance } from '../../../store/actions/alterLogActions';
+         clearAlterLogInstance } from '../../../store/actions/requests/alterLogActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 

@@ -21,7 +21,7 @@ import { fetchRestDayWork,
          updateRestDayWork, 
          updateRestDayWorkStatus, 
          resetRestDayWorkInstance, 
-         clearRestDayWorkInstance } from '../../../store/actions/restDayWorkActions';
+         clearRestDayWorkInstance } from '../../../store/actions/requests/restDayWorkActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 

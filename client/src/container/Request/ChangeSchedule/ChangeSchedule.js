@@ -22,7 +22,7 @@ import { fetchChangeSchedule,
          updateChangeSchedule, 
          updateChangeScheduleStatus, 
          resetChangeScheduleInstance, 
-         clearChangeScheduleInstance } from '../../../store/actions/changeScheduleActions';
+         clearChangeScheduleInstance } from '../../../store/actions/requests/changeScheduleActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 

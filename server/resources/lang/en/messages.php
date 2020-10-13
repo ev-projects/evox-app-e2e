@@ -183,7 +183,7 @@ return [
     'create_payroll_cutoff_success' => 'A new Payroll Cutoff is now created!',
 
     'update_payroll_cutoff_attempt' => 'Update Payroll Cutoff Attempt',
-    'update_payroll_cutoff_attempt' => 'The Payroll Cutoff is now updated!',
+    'update_payroll_cutoff_success' => 'The Payroll Cutoff is now updated!',
 
     'delete_payroll_cutoff_attempt' => 'Delete Payroll Cutoff Attempt',
     'delete_payroll_cutoff_success' => 'The Payroll Cutoff is now deleted!',
