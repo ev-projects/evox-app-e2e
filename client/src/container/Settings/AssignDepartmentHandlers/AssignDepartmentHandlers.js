@@ -21,6 +21,7 @@ import { assignDepartmentHandlers } from '../../../store/actions/settings/assign
 import { setRedirect } from '../../../store/actions/redirectActions';
 
 import Wrapper from "../../../components/Template/Wrapper";
+import Validator from "../../../services/Validator";
 
 
 class AssignDepartmentHandlers extends Component {
@@ -89,10 +90,16 @@ class AssignDepartmentHandlers extends Component {
         selectedValues: JSON.parse(event.target.options[event.target.selectedIndex].getAttribute('department_handlers'))
     });
 
-    
-    this.setState({
-      showSupervisorList : true
-    });
+    if( Validator.isValid(event.target.value)  )  {
+      this.setState({
+        showSupervisorList : true
+      });
+    } else {
+      this.setState({
+        showSupervisorList : false
+      });
+    }
+
   }
 
   // Function for handling the onChange of Selected Supervisor
@@ -211,7 +218,7 @@ class AssignDepartmentHandlers extends Component {
                               <Col size="1">
                               </Col>  
                               { /** Show the Assign Button and Selected Supervisor List if the Selected Values has data. */
-                                this.state.selectedValues.length != 0 ?
+                                Validator.isValid( this.state.selectedValues ) && this.state.selectedValues.length != 0 ?
                                   <Col size="5">
                                     <Row>   
                                       <Button type="submit" style={{'width': '80%'}} className="btn btn-primary">Assign</Button>
