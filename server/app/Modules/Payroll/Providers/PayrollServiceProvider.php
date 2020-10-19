@@ -22,6 +22,7 @@ class PayrollServiceProvider extends ServiceProvider
         $this->app->bind( DtrRepositoryInterface::class, DtrRepository::class );
         $this->app->bind( PayrollRepositoryInterface::class, PayrollRepository::class );
         $this->app->bind( BiometricsRepositoryInterface::class, BiometricsRepository::class );
+        $this->app->bind( PayrollCutoffRepositoryInterface::class, PayrollCutoffRepository::class );
     }
 
     /**

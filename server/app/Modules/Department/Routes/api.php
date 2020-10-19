@@ -13,6 +13,18 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/department', function (Request $request) {
-    // return $request->department();
-})->middleware('auth:api');
+
+
+# API Call for Department
+Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+
+    # Gets all the Department Lists
+    Route::get('/all', 'DepartmentController@all');
+
+    # Gets the Department of the ID indicated on the Parameter
+    Route::get('/{id}', 'DepartmentController@find');
+
+    # Gets the Department of the ID indicated on the Parameter
+    Route::post('/assign_handlers/{id}', 'DepartmentController@assign_handlers');
+
+});

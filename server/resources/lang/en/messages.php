@@ -44,6 +44,20 @@ return [
     'user_assign_roles_permissions_success' => 'Successfully assign the Roles and Permissions to the User!',
 
     /**
+     *  List User Roles
+     */
+    'list_role_attempt' => 'Attempt for Listing the Users base on Role',
+    'list_role_success' => 'Successfully shown all the Users base on Role!',
+
+    /**
+     *  Department
+     */
+    'all_department_success' => 'Successfully fetched all Department!',
+    'find_department_success' => 'Successfully found a Department!',
+    'department_assign_handlers_attempt' => 'Attempt for Assigning of Department Handlers',
+    'department_assign_handlers_success' => 'Successfully Assigned Department Handlers!',
+
+    /**
      *  Schedule 
      */
     'create_schedule_attempt' => 'Create Schedule Attempt',

@@ -16,12 +16,15 @@ import redirectReducers from "./redirectReducers";
 import requestListReducers from "./requestListReducers";
 import payrollCutoffReducers from "./settings/payrollCutoffReducers"
 
+import lookupListReducers from "./lookup/lookupListReducers"
+
 import dtrReducer from "./dtrReducers";
 
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 
 const rootReducer = combineReducers({
+    
     page : pageReducer,
     user : userReducer,
     alert: alertReducer,
@@ -36,6 +39,8 @@ const rootReducer = combineReducers({
 
     payrollCutoff: payrollCutoffReducers,
     requestList: requestListReducers,
+
+    lookup:   lookupListReducers,
 
     redirect : redirectReducers
 });

@@ -149,6 +149,12 @@ const Header = (props) => {
                             <p>Payroll Cutoff</p>
                           </Link> 
                         </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to={ global.assign_department_handlers }>
+                            <i className="nav-icon fa fa-users nav-icon" />
+                            <p style={{'fontSize':13}}>Assign Department Handlers</p>
+                          </Link> 
+                        </li>
                         
                       </ul>
                     </li>

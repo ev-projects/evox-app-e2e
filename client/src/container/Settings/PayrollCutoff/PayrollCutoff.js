@@ -137,10 +137,10 @@ class PayrollCutoff extends Component {
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
     
-      return <Wrapper previousPath={this.props.location.previousPath}>
+      return <Wrapper previousPath={this.props.location.previousPath} role={'admin'} permission={'full_access'}>
         <ContainerWrapper>
             <ContainerBody>
-                {  Authenticator.check('admin', 'full_access')  ?
+              <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
                 <Row>  
                   <Content col="6" title="Payroll Cut-Off List"  subtitle={<Button type="button" className="btn btn-secondary" onClick={()=> {this.showForm(); Authenticator.check();}}>Add</Button>} >
                       <Col size="12"> 
@@ -165,10 +165,8 @@ class PayrollCutoff extends Component {
                     :
                     null
                   }
-                  </Row> 
-              :
-              <h1>You have no access on this page</h1>
-            }
+                </Row> 
+              </div>
           </ContainerBody>
       </ContainerWrapper>
       </Wrapper>

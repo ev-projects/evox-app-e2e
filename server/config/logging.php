@@ -120,6 +120,12 @@ return [
             'path' => storage_path('logs/request.log'),
             'level' => 'debug',
         ],
+
+        'assign' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/assign.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

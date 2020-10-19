@@ -3,17 +3,59 @@ import "./Wrapper.css";
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 
+import { ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
 import { clearRedirect } from '../../../store/actions/redirectActions';
+import Validator from "../../../services/Validator";
+import Authenticator from "../../../services/Authenticator";
 
 const Wrapper = (props) => {
   
   let link = ( props.previousPath != undefined ) ? props.previousPath : ( props.redirect.link != undefined ) ? props.redirect.link : null;
+  
+  // Check if a role is needed to be authenticated
+  const role = props?.role ? props.role : null;
+
+  // Check if a permission is needed to be authenticated
+  const permission = props?.permission ? props.permission : null;
+
+  
+  let allow_to_show = true;
+
+  // If role and permission are to be checked, proceed on this code
+  if( Validator.isValid( role )  && Validator.isValid( permission ) ) {
+
+      allow_to_show = Authenticator.check( role, permission );
+
+  // If permission only is to be checked, proceed on this code
+  } else if( !Validator.isValid( role )  && Validator.isValid( permission ) ) {
+
+    allow_to_show = Authenticator.checkPermission( permission );
+    
+  // If role only is to be checked, proceed on this code
+  }else if( Validator.isValid( role )  && !Validator.isValid( permission ) ) {
+
+    allow_to_show = Authenticator.checkRole( role );
+    
+  }
+
 
   if( props.redirect.run == true && link != null ) {
+
     props.clearRedirect();
     return <Redirect to={link} />;
+
   } else {
-    return  <div>{props.children}</div> 
+
+    return  (
+      allow_to_show ? 
+        <div>{props.children}</div>
+      : 
+        <ContainerWrapper>
+          <ContainerBody>
+              <h1>You have no access on this page!</h1>
+            </ContainerBody>
+        </ContainerWrapper>
+    ) 
   }
 
 }

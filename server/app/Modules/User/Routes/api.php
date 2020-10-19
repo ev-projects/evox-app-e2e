@@ -55,3 +55,14 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
 
 
 });
+
+
+#####################################################################################################
+
+Route::group(['prefix' => 'role/{role}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the List of Specific Role
+    Route::get('/list', 'UserController@list_role');
+
+
+});

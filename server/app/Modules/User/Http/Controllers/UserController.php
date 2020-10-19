@@ -10,7 +10,7 @@ use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\Schedule\Resources\ScheduleResource;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
-use App\Modules\User\Resources\UserProfileResource;
+use App\Modules\User\Resources\UserListResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -101,5 +101,33 @@ class UserController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+    
+
+    /**
+     * Returns all the Users that has a role in the Parameter.
+     * @param string $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function list_role( $role ){   
+        try {
+            log_activity( trans('messages.list_role_attempt') );
+            
+            $this->validate(new Request([
+                'role' => $role
+            ]), [
+                'role' => 'exists:roles,name'
+            ]);
+            
+            return success_response(
+                trans('messages.list_role_success'), 
+                UserListResource::collection( $this->user->list_role( $role ), false )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
 
 }

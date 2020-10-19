@@ -348,6 +348,24 @@ class UserRepository implements UserRepositoryInterface{
             throw $e;
         }
     }
+
+
+
+
+    /**
+     *  Responsible for fetching the specific list of a Role
+     * @param string $role
+     * @return Collection $user_collection
+     */
+    public function list_role( $role ){
+        try {
+            $user_collection = Role::findByName( $role )->users()->get();
+        
+            return $user_collection;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
     ###############################################################################################
     ##################################### Protected functions #####################################
     ###############################################################################################

@@ -23,4 +23,7 @@ interface UserRepositoryInterface
     public function assign_roles_to_user( array $roles_array, $user_id );
 
     public function assign_permissions_to_user( array $permissions_array, $user_id );
+
+    public function list_role( $role );
+
 }

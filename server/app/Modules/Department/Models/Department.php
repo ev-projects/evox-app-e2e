@@ -3,6 +3,7 @@
 namespace App\Modules\Department\Models;
 
 use App\Modules\Schedule\Models\Schedule;
+use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
@@ -44,6 +45,12 @@ class Department extends Model
             'bind_to' => 'department',
             'source_type' => 'default'
         ]);
+    }
+
+    # Fetch the Department's Assigned Users 
+    public function department_handlers()
+    {
+        return $this->belongsToMany(User::class, 'department_handlers', 'department_id', 'user_id');
     }
 
 }
