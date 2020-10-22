@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\Schedule\Resources\ScheduleResource;
+use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
@@ -79,7 +80,7 @@ class UserController extends Controller
      * @param string $user_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function assign( AssignUserRolePermissionRequest $request, $user_id ){   
+    public function assign_roles_permissions( AssignUserRolePermissionRequest $request, $user_id ){   
         try {
             log_activity( trans('messages.user_assign_roles_permissions_attempt') );
             
@@ -89,13 +90,42 @@ class UserController extends Controller
                 'user_id' => 'int'
             ]);
 
-            $this->user->assign_roles_to_user( $request->get('roles'), $user_id );
+            $this->user->assign_roles_to_user( $user_id , $request->get('roles'), );
 
-            $this->user->assign_permissions_to_user( $request->get('permissions'), $user_id );
+            $this->user->assign_permissions_to_user( $user_id ,$request->get('permissions') );
             
             return success_response(
                 trans('messages.user_assign_roles_permissions_success'), 
                 true
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    
+
+    /**
+     * Returns the Temporary Schedules of the User by the User ID
+     * @param string $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function assign_employees( AssignUserEmployeesRequest $request, $user_id ){   
+        try {
+            log_activity( trans('messages.user_assign_employees_attempt') );
+            
+            $this->validate(new Request([
+                'user_id' => $user_id
+            ]), [
+                'user_id' => 'int'
+            ]);
+
+            $user = $this->user->assign_employees_to_user( $user_id , $request->all() );
+            
+            return success_response(
+                trans('messages.user_assign_employees_success'), 
+                new UserListResource( $user )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -109,7 +139,7 @@ class UserController extends Controller
      * @param string $user_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function list_role( $role ){   
+    public function list_via_role( $role ){   
         try {
             log_activity( trans('messages.list_role_attempt') );
             
@@ -121,12 +151,42 @@ class UserController extends Controller
             
             return success_response(
                 trans('messages.list_role_success'), 
-                UserListResource::collection( $this->user->list_role( $role ), false )
+                UserListResource::collection( $this->user->list_via_role( $role ), false )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+    
+
+    /**
+     * Returns all the User List of Specific Department
+     * @param string $department_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function list_via_department( $department_id ){   
+        try {
+            log_activity( trans('messages.list_role_attempt') );
+            
+            $this->validate(new Request([
+                'department_id' => $department_id
+            ]), [
+                'department_id' => 'int'
+            ]);
+            
+            return success_response(
+                trans('messages.list_role_success'), 
+                UserListResource::collection( $this->user->list_via_department( $department_id ), false )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+
+
 
 
 

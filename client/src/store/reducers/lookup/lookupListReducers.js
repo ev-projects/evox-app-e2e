@@ -21,6 +21,17 @@ const lookupListReducers = (state = initState, action) => {
             break;
 
         // Apply the List that was recently fetched
+        case "UPDATE_USER_LIST":
+                const user_index = state[action.role].findIndex((user) => user.id === action.user.id)
+
+                state[action.role][user_index] = action.user;
+                
+                result = {
+                    ...state
+                }
+            break;
+
+        // Apply the List that was recently fetched
         case "FETCH_DEPARTMENT_LIST_SUCCESS":
             result = {
                 ...state,
@@ -30,15 +41,29 @@ const lookupListReducers = (state = initState, action) => {
 
         // Apply the List that was recently fetched
         case "UPDATE_DEPARTMENT_LIST":
-                const index = state.department.findIndex((department) => department.id === action.department.id)
+                const department_index = state.department.findIndex((department) => department.id === action.department.id)
 
-                state.department[index] = action.department;
+                state.department[department_index] = action.department;
                 
                 result = {
                     ...state
                 }
             break;
 
+
+        // // Apply the List that was recently fetched
+        // case "FETCH_DEPARTMENT_USER_LIST_SUCCESS":
+        //     result = {
+        //         ...state,
+        //         department_users : {
+        //             ...state.department_users
+        //         }
+        //     }
+        //     result.department_users[action.department_id] = action.list;
+            
+        //     break;
+
+            
             
     }
     return result;

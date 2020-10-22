@@ -39,6 +39,14 @@ class Department extends Model
     ########################################################################
 
 
+
+    # Fetch the Department's Default Schedule (Source type is Default)
+    public function users(){
+        return $this->hasMany(User::class, 'department_id', 'id');
+    }
+
+    
+
     # Fetch the Department's Default Schedule (Source type is Default)
     public function defaultSchedule(){
         return $this->hasOne(Schedule::class, 'bind_id', 'id')->where([

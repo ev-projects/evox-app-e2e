@@ -51,7 +51,10 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
     
     # Gets the Payroll Cutoff of the ID indicated on the Parameter
-    Route::post('/assign/{user_id}', 'UserController@assign');
+    Route::post('/assign_roles_permissions/{user_id}', 'UserController@assign_roles_permissions');
+    
+    # Gets the Payroll Cutoff of the ID indicated on the Parameter
+    Route::post('/assign_employees/{user_id}', 'UserController@assign_employees');
 
 
 });
@@ -61,8 +64,18 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
 
 Route::group(['prefix' => 'role/{role}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
     
-    # Gets the List of Specific Role
-    Route::get('/list', 'UserController@list_role');
+    # Gets the User List of Specific Role
+    Route::get('/users', 'UserController@list_via_role');
+
+
+});
+
+#####################################################################################################
+
+Route::group(['prefix' => 'department/{department_id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the User List of Specific Department
+    Route::get('/users', 'UserController@list_via_department');
 
 
 });

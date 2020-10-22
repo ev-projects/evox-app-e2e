@@ -26,7 +26,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function all()
     {
         try {
-            $department_collection = Department::get();
+            $department_collection = Department::orderBy('department_name', 'asc')->get();
             log_to_file('info', 'Success', [$department_collection]);
             return $department_collection;
 

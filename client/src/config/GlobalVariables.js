@@ -12,6 +12,7 @@ global.daily_time_record_view = "/app/dtr/";
 global.default_schedule = "/app/schedule/assign/";
 global.payroll_cutoff = "/app/settings/PayrollCutoff/";
 global.assign_department_handlers = "/app/settings/AssignDepartmentHandlers/";
+global.assign_employee_supervisors = "/app/settings/AssignEmployeeSupervisors/";
 
 
 global.invalid_token_response = [

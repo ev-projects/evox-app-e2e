@@ -29,6 +29,7 @@ import RequestList from "../container/Request/RequestList";
 // Settings
 import PayrollCutoff from "../container/Settings/PayrollCutoff";
 import AssignDepartmentHandlers from "../container/Settings/AssignDepartmentHandlers";
+import AssignEmployeeSupervisors from "../container/Settings/AssignEmployeeSupervisors";
 
 
 const RoutesList = () => {
@@ -68,6 +69,7 @@ const RoutesList = () => {
         {/* Settings */}
         <ProtectedRoute exact path="/app/settings/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
         <ProtectedRoute exact path="/app/settings/AssignDepartmentHandlers/"><AssignDepartmentHandlers /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/settings/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
 
 
         <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>

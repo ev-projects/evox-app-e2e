@@ -16,7 +16,7 @@ export const fetchUserList = ( role ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/role/"+ role +"/list"
+            url: "/role/"+ role +"/users"
         })
         .then(result => {
             
@@ -32,6 +32,30 @@ export const fetchUserList = ( role ) => {
         });
     }
 }
+
+
+
+// // Fetch Department User List base on Department ID
+// export const fetchDepartmentUsers = ( department_id ) => {
+//     return (dispatch, getState) => {
+//         API.call({
+//             method: "get",
+//             url: "/department/"+ department_id +"/users"
+//         })
+//         .then(result => {
+            
+//             dispatch({
+//                 'type'              : 'FETCH_DEPARTMENT_USER_LIST_SUCCESS',
+//                 'department_id'     : department_id,
+//                 'list'              : result.data.content,
+//             })
+
+//         })
+//         .catch(e => {
+//             dispatch( Formatter.alert_error( e ) ) 
+//         });
+//     }
+// }
 
 
 // Fetch User List base on Role
@@ -52,109 +76,6 @@ export const fetchDepartmentList = () => {
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
         });
-    }
-}
-
-
-// Update PayrollCutoff
-export const updatePayrollCutoff = ( id, post_data ) => {
-    return (dispatch, getState) => {
-        API.call({
-            method: "post",
-            url: "/payroll/cutoff/" + id,
-            data: post_data
-        })
-        .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
-            
-            // dispatch({
-            //     'type'      : 'SET_REDIRECT',
-            //     'link'      : global.payroll_cutoff
-            // })
-            // window.location.reload(false);
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    }
-}
-
-
-// Delete PayrollCutoff
-export const deletePayrollCutoff = ( id ) => {
-    return (dispatch, getState) => {
-        API.call({
-            method: "delete",
-            url: "/payroll/cutoff/" + id
-        })
-        .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
-            
-            // dispatch({
-            //     'type'      : 'SET_REDIRECT',
-            //     'link'      : global.payroll_cutoff
-            // })
-            // window.location.reload(false);
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    }
-}
-
-// Fetch PayrollCutoff instance
-export const fetchPayrollCutoff = ( id ) => {
-    return (dispatch, getState) => {
-        API.call({
-            method: "get",
-            url: "/payroll/cutoff/" + id
-        })
-        .then(result => {
-            dispatch({
-                'type'           : 'FETCH_PAYROLL_CUTOFF_SUCCESS', 
-                'payrollCutoff'  : result.data.content
-            })
-            
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    }
-}
-
-// Fetch Payroll Cutoff List
-export const fetchPayrollCutoffList = () => {
-    return (dispatch, getState) => {
-        API.call({
-            method: "get",
-            url: "/payroll/cutoff/all"
-        })
-        .then(result => {
-            dispatch({
-                'type'      : 'FETCH_PAYROLL_CUTOFF_LIST_SUCCESS', 
-                'list'      : result.data.content
-            })
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    }
-}
-
-// Clear PayrollCutoff Instance
-export const clearPayrollCutoffInstance = () => {
-    return (dispatch, getState) => {
-        dispatch({
-            'type'      : 'CLEAR_PAYROLL_CUTOFF_INSTANCE'
-        })
-    }
-}
-// Clear PayrollCutoff Instance
-export const clearPayrollCutoffListInstance = () => {
-    return (dispatch, getState) => {
-        dispatch({
-            'type'      : 'CLEAR_PAYROLL_CUTOFF_LIST_INSTANCE'
-        })
     }
 }
 

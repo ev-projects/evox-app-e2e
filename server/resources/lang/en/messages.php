@@ -41,7 +41,10 @@ return [
      *  User Assigning
      */
     'user_assign_roles_permissions_attempt' => 'Attempt for Assigning the Roles and Permissions to the User',
-    'user_assign_roles_permissions_success' => 'Successfully assign the Roles and Permissions to the User!',
+    'user_assign_roles_permissions_success' => 'Successfully Assign the Roles and Permissions to the User!',
+
+   'user_assign_employees_attempt' => 'Attempt for Assigning the Employees to the Supervisor',
+   'user_assign_employees_success' => 'Successfully Assigned the Employees to the Supervisor!',
 
     /**
      *  List User Roles
