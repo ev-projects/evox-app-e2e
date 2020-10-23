@@ -20,8 +20,6 @@ import lookupListReducers from "./lookup/lookupListReducers"
 
 import dtrReducer from "./dtrReducers";
 
-import requestListReducers from "./requestListReducers";
-
 import dtrSummaryReducers from "./dtrSummaryReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';

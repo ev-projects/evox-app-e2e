@@ -67,12 +67,6 @@ const Header = (props) => {
                     <p> My Requests</p> 
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/app/team/MyTeamRequests">
-                    <i className="nav-icon fa fa-users" aria-hidden="true"></i>
-                    <p> My Team Request</p> 
-                  </Link>
-                </li>
                 <li className="nav-item has-treeview ">
                   <a className="nav-link" >
                     <i className="nav-icon fa fa-calendar-o" />
