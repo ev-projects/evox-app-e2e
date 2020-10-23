@@ -6,15 +6,16 @@ import Formatter from "../../services/Formatter";
 
 
 // Fetch Request List
-export const fetchRequestList = ( page,data = null ) => {
-
+export const fetchRequestList = ( data = null ) => {
+    console.log(data);
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/request/my-team-requests",
+            url: "/request/request-list",
             params : data
         })
         .then(result => {
+            console.log(result.data);
             dispatch({
                 'type'      : 'FETCH_REQUEST_LIST_SUCCESS', 
                 'requestList'  : result.data.content
@@ -26,8 +27,11 @@ export const fetchRequestList = ( page,data = null ) => {
     }
 }
 
-// Reset Change Schedule Instance
-export const resetRequestList = () => {
+
+
+
+
+export const resetRequestListInstance = () => {
     return (dispatch, getState) => {
         dispatch({
             'type'      : 'RESET_REQUEST_LIST'
@@ -35,11 +39,4 @@ export const resetRequestList = () => {
     }
 }
 
-// Reset Change Schedule Instance
-export const paginateRequestList = () => {
-    return (dispatch, getState) => {
-        dispatch({
-            'type'      : 'RESET_CHANGE_SCHEDULE_INSTANCE'
-        })
-    }
-}
+

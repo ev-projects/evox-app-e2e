@@ -23,8 +23,11 @@ import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
 import RestDayWork from "../container/Request/RestDayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
-import RequestList from "../container/Request/RequestList";
 
+import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
+import MyRequests from "../container/MyRequests/MyRequests";
+
+import DtrSummary from "../container/MyTeam/DtrSummary";
 const RoutesList = () => {
 
   // Register all the Routes that will be used in the Application (excluding the Login)
@@ -54,8 +57,10 @@ const RoutesList = () => {
         <ProtectedRoute exact path="/app/request/WorkFromHome/"><WorkFromHome onApproval={false}/></ProtectedRoute>
         <ProtectedRoute exact path="/app/request/WorkFromHome/:id"><WorkFromHome onApproval={false}/></ProtectedRoute>
 
-        <ProtectedRoute exact path="/app/request/RequestList"><RequestList/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/account/MyRequests"><MyRequests/></ProtectedRoute>
 
+        <ProtectedRoute exact path="/app/team/MyTeamRequests"><MyTeamRequests/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/team/DtrSummary"><DtrSummary/></ProtectedRoute>
 
         <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />

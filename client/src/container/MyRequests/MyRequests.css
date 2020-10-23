@@ -47,3 +47,20 @@
     border-radius: 0px !important;
 }
 
+.request_list_btn.active {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(130, 175, 19, 0.2) !important;
+}
+
+.pagination .active{
+    background-color: #82af13 !important;
+    color: white !important;
+}
+
+.fa-check-circle{
+    color: #82af13 !important;
+}
+
+.fa-times-circle{
+    color: red  !important;
+}

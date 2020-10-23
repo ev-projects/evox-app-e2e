@@ -16,13 +16,16 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DtrController extends Controller
 {    
     private $dtr;
-    public function __construct(DtrRepositoryInterface $dtr, BiometricsRepositoryInterface $biometrics){
+    public function __construct(DtrRepositoryInterface $dtr, BiometricsRepositoryInterface $biometrics, UsersExport $export){
         $this->dtr = $dtr;
         $this->biometrics = $biometrics;
+        $this->export = $export;
     }
 
     /**
@@ -91,7 +94,65 @@ class DtrController extends Controller
         }
     }
 
+    public function summary_list($filter) {
+        $user_collection = Collection::make();
+        $under_supervisee =  Auth::user()->supervisee() ; 
+        
+        if(isset($filter->department_id)){
+            $under_supervisee->where('department_id',$filter->department_id );
+        }
+        
+        if(isset($filter->name)){
+            $under_supervisee->where('first_name', 'like', '%' . $filter->name. '%');;
+        }
 
+        $employees =  $under_supervisee->get();
+
+        foreach( $employees as $user ) {
+            $user_collection->push(  $user  );
+        }
+
+        $start_date = $filter->valid_from;
+        $end_date = $filter->valid_to;
+     
+        $result = $this->dtr->compute_dtr_summary( $user_collection, $start_date, $end_date);
+
+        return  $result ;
+    }
+
+        /**
+     * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function team_dtr_summary(  Request $request  ){
+        try {
+            
+            $result = $this->summary_list($request);
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $result  
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+        /**
+     * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export_team_dtr_summary( Request $request ){
+
+        $result = $this->summary_list($request);
+
+        $this->export->data = $result ;
+         return Excel::download( $this->export , 'dtrsummary.csv');
+       
+    }
+
+
+    
     /**
      * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
      * @param string $user_id

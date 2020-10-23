@@ -1,0 +1,54 @@
+import axios from "axios";
+import API from "../../services/API";
+import { trackPromise } from "react-promise-tracker";
+import Formatter from "../../services/Formatter";
+
+
+
+// Fetch Request List
+export const fetchDtrSummary = ( data = null ) => {
+    console.log(data);
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr_summary/team",
+            params : data
+        })
+        .then(result => {
+        
+            dispatch({
+                'type'      : 'FETCH_DTR_SUMMARY_SUCCESS', 
+                'dtrSummary'  : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+export const exportDtrSummary = ( data = null ) => {
+    return (dispatch, getState) => {
+        API.export({
+            method: "get",
+            url: "/dtr_summary/export",
+            params : data
+        })
+        .then(result => {
+            var fileURL = window.URL.createObjectURL(new Blob([result.data]));
+            var fileLink = document.createElement('a');
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'dtr_summary.csv');
+            document.body.appendChild(fileLink);
+            fileLink.click();
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+
+

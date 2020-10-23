@@ -309,14 +309,23 @@ class User extends Authenticatable implements JWTSubject
             $alter_logs      ->where('a.department_id', $filter['department_id']);
         }
         
-       $query = $alter_logs->union($change_schedules)
+
+      
+        $query = $alter_logs->union($change_schedules)
         ->union($overtimes)
         ->union($rest_day_works)
         ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ")
-        ->paginate(10);
+        ;
 
 
-        return  $query;
+        $query_number = $alter_logs->count();
+        
+        $result = array(
+            "query" =>  $query->paginate(10),
+            "request_count" => $query_number,
+        );
+     
+        return   $result ;
     }
 
 

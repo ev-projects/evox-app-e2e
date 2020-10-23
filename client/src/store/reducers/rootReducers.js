@@ -16,6 +16,8 @@ import redirectReducers from "./redirectReducers";
 import dtrReducer from "./dtrReducers";
 
 import requestListReducers from "./requestListReducers";
+
+import dtrSummaryReducers from "./dtrSummaryReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 
@@ -34,6 +36,7 @@ const rootReducer = combineReducers({
     redirect : redirectReducers,
 
     requestList: requestListReducers,
+    dtrSummary: dtrSummaryReducers,
 });
 
 export default rootReducer;

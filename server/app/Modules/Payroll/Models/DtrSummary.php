@@ -11,6 +11,7 @@ class DtrSummary
 {  
     # Instance of the Summary
     private $summary;
+    public $column = array();
 
     /**
      *  Initialize the Structure of all the Data that would be returned by the Summary.
@@ -24,7 +25,9 @@ class DtrSummary
                 get_constant('PAYROLL_ITEMS.rendered_hours')         => 0,
                 get_constant('PAYROLL_ITEMS.night_diff')             => 0,
                 get_constant('PAYROLL_ITEMS.overtime')               => 0,
-                get_constant('PAYROLL_ITEMS.overtime_night_diff')    => 0
+                get_constant('PAYROLL_ITEMS.overtime_night_diff')    => 0,
+                get_constant('PAYROLL_ITEMS.on_leave')               => 0,
+                get_constant('PAYROLL_ITEMS.unpaid_leave')           => 0,
             ], 
             get_constant('DTR_TYPE.rest_day') =>  [
                 get_constant('PAYROLL_ITEMS.rendered_hours')         => 0,
@@ -34,14 +37,7 @@ class DtrSummary
             ]
         ];
 
-        foreach( get_constant('DTR_TYPE.holiday') as $holiday_type ){
-            $this->summary[ $holiday_type ] = [
-                get_constant('PAYROLL_ITEMS.rendered_hours')         => 0,
-                get_constant('PAYROLL_ITEMS.night_diff')             => 0,
-                get_constant('PAYROLL_ITEMS.overtime')               => 0,
-                get_constant('PAYROLL_ITEMS.overtime_night_diff')    => 0,
-            ];
-        }
+     
     }
 
 
@@ -59,6 +55,7 @@ class DtrSummary
     {
         try {
 
+
             # Iterates the DTR Collection
             foreach ( $dtr_collection as $dtr ) {
 
@@ -67,7 +64,7 @@ class DtrSummary
 
                     # Gets all the Payroll Items of the current DTR Instance.
                     $payroll_items_collection = $dtr->payroll_items()->get();
-
+                   ;
                     # Group the Payroll Items base on Tagging.
                     $grouped_payroll_items_array = grouped_payroll_items( $payroll_items_collection );
 
@@ -88,6 +85,18 @@ class DtrSummary
 
                     # If the current DTR type is a Holiday, Compute only the REGULAR Payroll Tag from the Payroll Items.
                     if( $this->check_if_holiday( $dtr_type ) ) {
+
+                            if(!isset($this->summary[ $dtr_type ])){
+                                $this->summary[ $dtr_type ] = [
+                                    get_constant('PAYROLL_ITEMS.rendered_hours')         => 0,
+                                    get_constant('PAYROLL_ITEMS.night_diff')             => 0,
+                                    get_constant('PAYROLL_ITEMS.overtime')               => 0,
+                                    get_constant('PAYROLL_ITEMS.overtime_night_diff')    => 0,
+                                ];
+                            }
+
+                            $this->column[ $dtr_type ] =  $dtr_type ;
+
 
                         # Computes the Payroll Items and Adds it to the Summary.
                         $this->compute_payroll_items_to_summary( $dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.regular') ] );
@@ -158,13 +167,24 @@ class DtrSummary
                         }
                     }
 
+                }elseif(!$dtr->hasValidTimelogs() && $dtr->hasSchedule() && $dtr->leaves()->count() < 0  ){
+                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] +=  1;
+                }elseif( $dtr->on_leave() )  {
+                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->leaves()->first()->amount;
                 }
+
+                
             }
 
-            # Formats the Computed Payroll Items from SECONDS to TIME.
+            # Formats the Computed Payroll Items from SECONDS to HOUR.
             foreach( $this->summary as $dtr_type => $payroll_items ){
+
                 foreach( $payroll_items as $payroll_item => $payroll_item_value ) {
-                    $this->summary[$dtr_type][$payroll_item] = seconds_to_time($payroll_item_value,true);
+
+                    if($payroll_item!=get_constant('PAYROLL_ITEMS.on_leave') && $payroll_item!=get_constant('PAYROLL_ITEMS.unpaid_leave')){
+                        $this->summary[$dtr_type][$payroll_item] = seconds_to_hour($payroll_item_value,true);
+                    }
+                    
                 }
             }
 

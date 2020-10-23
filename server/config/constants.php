@@ -109,6 +109,8 @@ return [
     
 
     'PAYROLL_ITEMS' => [
+        "on_leave" => "vl_sl",
+        "unpaid_leave" => "ul",
         "late" => "late" ,
         "undertime" => "undertime" ,
         "night_diff" => "night_diff" ,
@@ -131,6 +133,7 @@ return [
 
     'DTR_TYPE' => [
         "regular" => "reg",
+        "rest_day" => "rd",
         "rest_day" => "rd",
         "holiday" => [
             "legal" => "lh",

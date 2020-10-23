@@ -19,10 +19,9 @@ class RequestResource extends JsonResource
     public function toArray($request)
     {
         $result = null;
-
         if( ! is_null( $this->resource ) ) {
             
-            foreach($this->resource as $key => $request) {
+            foreach($this->resource['query'] as $key => $request) {
                 switch ($request->table_name) {
                     case 'overtimes':
                         $request->fourth_column = seconds_to_time( $request->fourth_column );
@@ -74,7 +73,8 @@ class RequestResource extends JsonResource
 
 
             $result = array(
-                $this->resource
+                'result' => $this->resource['query'],
+                'record_number' => $this->resource['request_count'], 
             );
         }
         return $result;

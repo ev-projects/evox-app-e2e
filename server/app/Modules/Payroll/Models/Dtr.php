@@ -461,8 +461,15 @@ class Dtr extends Model
      */
     public function leaves(){
         return $this->hasMany(Leave::class);
-        
-    }    
+    }   
+    
+    
+    /**
+     * hasMany Relationship for Dtr Leaves model
+     */
+    public function on_leave(){
+        return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->count();
+    } 
     
     /**
      * hasOne Relationship for Previous Dtr Model

@@ -61,8 +61,14 @@ const Header = (props) => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/app/request/RequestList">
-                    <i className="nav-icon fa fa-envelope-o nav-icon" />
+                  <Link className="nav-link" to="/app/account/MyRequests">
+                  <i class="nav-icon fa fa-inbox" aria-hidden="true"></i>
+                    <p> My Requests</p> 
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/app/team/MyTeamRequests">
+                    <i className="nav-icon fa fa-users" aria-hidden="true"></i>
                     <p> My Team Request</p> 
                   </Link>
                 </li>
@@ -96,9 +102,33 @@ const Header = (props) => {
                   </ul>
                 </li>
                 <li className="nav-item has-treeview ">
+                  <a className="nav-link" >
+                    <i className="nav-icon fa fa-users" />
+                    <p>
+                      My Team
+                      <i className="right fa fa-chevron-left" />
+                    </p>
+                  </a>
+                  <ul className="nav nav-treeview">
+                    <li className="nav-item">
+                    <Link className="nav-link" to="/app/team/MyTeamRequests" >
+                    <i className="nav-icon fa fa-users" aria-hidden="true"></i>
+                    <p> My Team Request</p> 
+                  </Link>
+                    </li> 
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/app/team/DtrSummary" >
+                        <i className="nav-icon fa fa-file-text nav-icon" />
+                        <p>DTR Summary</p>
+                      </Link>
+                    </li>
+                    
+                  </ul>
+                </li>
+                <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-list-alt" />
-                    <p>
+                    <p> 
                       Request
                       <i className="right fa fa-chevron-left" />
                     </p>

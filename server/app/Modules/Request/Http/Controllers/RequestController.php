@@ -67,40 +67,35 @@ class RequestController extends Controller
     }
 
     /**
-     * Shows a list of Team Requests.
+     * Shows a list of Request.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function myteamrequest(RequestFilterRequest $request){
+    public function requestlist(RequestFilterRequest $request){
         $user = User::find(auth()->user()->id);
+        return success_response(
+            trans('messages.request_display_success'), 
+              new RequestResource( $user->requests_list('my_request',$request) ) 
+        );
+        
         try {
             log_activity( trans('messages.request_display_attempt') );
-            return success_response(
-                trans('messages.request_display_success'), 
-                  new RequestResource( $user->requests_list('my_team_request',$request) ) 
-            );
+            if($request->url=="MyRequests"){
+                return success_response(
+                    trans('messages.request_display_success'), 
+                      new RequestResource( $user->requests_list('my_request',$request) ) 
+                );
+            }elseif($request->url=="MyTeamRequests"){
+                return success_response(
+                    trans('messages.request_display_success'), 
+                      new RequestResource( $user->requests_list('my_team_request',$request) ) 
+                );
+            }
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
     }
 
-    /**
-     * Shows a list of User Requests.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function myrequest(RequestFilterRequest $request){
-
-        $user = User::find(auth()->user()->id);
-
-        try {
-            log_activity( trans('messages.request_display_attempt') );
-            return success_response(
-                trans('messages.request_display_success'), 
-                  new RequestResource( $user->requests_list('my_request',$request) ) 
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
     
 
 }

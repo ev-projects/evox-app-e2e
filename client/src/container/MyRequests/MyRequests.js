@@ -1,18 +1,18 @@
 import React, { Component } from "react";
-import { Container,Col,Tabs,Tab,Badge,Table,Button,Pagination,FormControl,Row } from 'react-bootstrap';
+import { Container,Col,Tabs,Tab,Badge,Table,Button,Pagination,FormControl,Row,ToggleButton,ButtonGroup } from 'react-bootstrap';
 import { connect,dispatch } from 'react-redux';
-import "./RequestList.css";
-import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
-import Wrapper from "../../../components/Template/Wrapper";
+import "./MyRequests.css";
+import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
+import Wrapper from "../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import * as Yup from 'yup';
-import PageLoading from "../../PageLoading";
+import PageLoading from "../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
-import { fetchRequestList,resetRequestList } from '../../../store/actions/requestListActions';
-import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
+import { fetchRequestList } from '../../store/actions/requestListActions';
+import { InputDate,InputTime   } from '../../components/DatePickerComponent/DatePicker.js';
 
-class RequestList extends Component {
+class MyRequests extends Component {
 
   onSubmitHandler = (values) => {
 
@@ -31,23 +31,13 @@ class RequestList extends Component {
           }
       } 
   }
-  console.log(formData);
-  this.props.fetchRequestList( values.page, formData );
-  
+  this.props.fetchRequestList( formData );
   }
 
   componentWillMount(){
-    var page = 1;
-    if( this.props.params.page != undefined ) {
-      page = this.props.params.page;
-    }else{
-      page = 1;
-    }
-      this.props.fetchRequestList(page);
-  }
 
-  paginate(page) {
-    this.props.fetchRequestList(page)
+    var urlData = {url: this.props.params.url};
+      this.props.fetchRequestList(urlData);
   }
 
   render = () => {  
@@ -57,22 +47,28 @@ class RequestList extends Component {
     valid_to: null,
     department_id: null,
     name: null,
-    page: 1
+    page: 1,
+    url: 'MyRequests'
   }
+  
+
+  var request_list = this.props.requestList.result;
+  var record_number = this.props.requestList.record_number;
 
   const validationSchema = Yup.object().shape({});
   if(this.props.isListLoaded){
     let pagination = [];
-    for (let number = 1; number <= this.props.requestList[0].last_page; number++) {
+    for (let number = 1; number <= request_list.last_page; number++) {
       pagination.push(
         <Field>
           {({ field, form }) => (
             <div>
-              <Button type="submit" className="pagination_btn text-center" onClick={() => form.setFieldValue("page",number)}>{number}</Button>
+              <Button type="submit" className="pagination_btn text-center" active={number === request_list.current_page} onClick={() => form.setFieldValue("page",number)}>{number}</Button>
             </div>
           )}
         </Field>
       );
+      
     }
 
     return(<Formik 
@@ -85,25 +81,70 @@ class RequestList extends Component {
       <form onSubmit={handleSubmit}>
       <Wrapper>
             <ContainerWrapper>       
-                <Content col="12" title="My Team Request">
+                <Content col="12" title="My Requests">
                 <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
                   <Tab eventKey="home" title="All Requests">
-                  <Button className="request_list_btn" variant="primary" onClick={() => setFieldValue("status", null)}>
-                    <Badge variant="light">9</Badge> All Status 
-                  </Button>
-                  <Button className="request_list_btn" variant="primary" onClick={() => setFieldValue("status", "pending")}>
-                    <Badge className="pending" variant="light">9</Badge> Pending 
-                  </Button>
-                  <Button className="request_list_btn" variant="primary" onClick={() => setFieldValue("status", "approved")}>
-                    <Badge className="approved" variant="light">9</Badge> Approved 
-                  </Button>
-                  <Button className="request_list_btn" variant="primary" onClick={() => setFieldValue("status", "canceled")}>
-                    <Badge className="canceled" variant="light">9</Badge> Canceled 
-                  </Button>
-                  <Button className="request_list_btn" variant="primary" onClick={() => setFieldValue("status", "declined")}>
-                    <Badge className="denied" variant="light">9</Badge> Denied 
-                  </Button>
-                  <Button variant="primary" type="submit">
+                  <ButtonGroup toggle className="mb-2">
+                    <ToggleButton
+                      type="checkbox"
+                      variant="secondary"
+                      className="request_list_btn"
+                      checked={values.status==null}
+                      onClick={() => setFieldValue("status", null)}
+                    >
+                      <Badge variant="light">{record_number.all}</Badge>
+                       &nbsp;All Status
+                    </ToggleButton>
+                  </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2">
+                    <ToggleButton
+                      type="checkbox"
+                      variant="secondary"
+                      className="request_list_btn"
+                      checked={values.status=="pending"}
+                      onClick={() => setFieldValue("status", "pending")}
+                    >
+                      <Badge className="pending" variant="light">9</Badge>
+                       &nbsp;Pending
+                    </ToggleButton>
+                  </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2">
+                    <ToggleButton
+                      type="checkbox"
+                      variant="secondary"
+                      className="request_list_btn"
+                      checked={values.status=="approved"}
+                      onClick={() => setFieldValue("status", "approved")}
+                    >
+                      <Badge className="approved" variant="light">9</Badge>
+                      &nbsp;Approved 
+                    </ToggleButton>
+                  </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2">
+                    <ToggleButton
+                      type="checkbox"
+                      variant="secondary"
+                      className="request_list_btn"
+                      checked={values.status=="canceled"}
+                      onClick={() => setFieldValue("status", "canceled")}
+                    >
+                      <Badge className="canceled" variant="light">9</Badge>
+                      &nbsp;Canceled 
+                    </ToggleButton>
+                  </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2">
+                    <ToggleButton
+                      type="checkbox"
+                      variant="secondary"
+                      className="request_list_btn"
+                      checked={values.status=="declined"}
+                      onClick={() => setFieldValue("status", "declined")}
+                    >
+                      <Badge className="denied" variant="light">9</Badge>
+                      &nbsp;Declined 
+                    </ToggleButton>
+                  </ButtonGroup>
+                  <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
                     Filter
                   </Button>
                   <Row>  
@@ -119,38 +160,12 @@ class RequestList extends Component {
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
                     </Col>
-                    <Col size="2"> 
-                      <div className="form-group">
-                          <label>Department:</label>
-                          <select
-                          className="form-control" 
-                            name="department_id"
-                            value={values.department_id}
-                            onChange={handleChange}
-                            style={{ display: 'block' }}
-                          >
-                          <option    label="Select a Department" />
-                          <option value="1" label="OPS - Product Dev" />
-                          </select>
-                      </div>
-                    
-                    </Col> 
-                    <Col size="2"> 
-                      <div className="form-group">
-                          <label>Name:</label>
-                          <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
-                      </div>
-                    
-                    </Col> 
                     </Row>
-                    { this.props.requestList[0].data.length > 0  ? (<div>
-                
+                    { request_list.data.length > 0  ? (<div>
+                      Record Displayed: { record_number }
                 <Table striped bordered hover>
                   <thead>
                     <tr>
-                      <th>
-                        <input type="checkbox"/></th>
-                      <th>Name / Department</th>
                       <th>Request Type / Date</th>
                       <th>Date Requested</th>
                       <th  colspan="2"> Request Information</th>
@@ -160,7 +175,7 @@ class RequestList extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {this.props.requestList[0].data.map(function(item){
+                    {request_list.data.map(function(item){
                         var fourthColumn = [];
                         var fifthColumn = [];
                         switch( item.table_name ) { 
@@ -180,7 +195,7 @@ class RequestList extends Component {
                               <p> Rest Days: {item.fourth_column.rest_day.join()}</p>
                               <p> Work Days: {item.fourth_column.work_days.join()}</p>
                               </div>
-                            );
+                            ); 
                             
                               break;
                           case "Alter Log":
@@ -221,13 +236,11 @@ class RequestList extends Component {
                               break;
                        }
                         return <tr>
-                        <td><input type="checkbox"/></td>
-                        <td>{item.created_by} / {item.department_name}</td>
-                        <td>{item.table_name} / Date</td>
+                        <td>{item.table_name} / {item.created_at}</td>
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>
-                        <td>{item.status}</td>
+                        <td> <Status status={item.status} /></td>
                         <td>{item.updated_by} / {item.updated_at}</td>
                         <td><i className="fa fa-eye" aria-hidden="true"></i>&nbsp;<i className="fa fa-check-circle" aria-hidden="true"></i>&nbsp;<i className="fa fa-times-circle" aria-hidden="true"></i></td>
                       </tr>         
@@ -246,12 +259,31 @@ class RequestList extends Component {
     
       </Formik>);
   }
-
   return <PageLoading/>;
-
-
   }
   }
+
+
+  const Status = (props) => {
+    let pagination = [];
+    switch( props.status ) { 
+      case "Pending":
+          pagination.push( <Badge variant="secondary">{props.status}</Badge>);
+          break;
+      case "Canceled":
+          pagination.push(<Badge variant="dark">{props.status}</Badge>);
+          break;
+      case "Approved":
+          pagination.push(<Badge variant="success">{props.status}</Badge>);
+          break;
+      case "Declined":
+          pagination.push(<Badge variant="danger">{props.status}</Badge>);
+      break;
+   }
+    return pagination;
+}
+
+
 
   const mapStateToProps = (state) => {
     return {
@@ -261,11 +293,10 @@ class RequestList extends Component {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchRequestList : ( page , params ) => dispatch( fetchRequestList( page , params ) ),
-      resetRequestList : () => dispatch( resetRequestList() )
+      fetchRequestList : ( params ) => dispatch( fetchRequestList(  params ) ),
     }
   }
-  export default connect(mapStateToProps, mapDispatchToProps)(RequestList);
+  export default connect(mapStateToProps, mapDispatchToProps)(MyRequests);
 
 
 
