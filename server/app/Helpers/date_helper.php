@@ -95,6 +95,23 @@ if (! function_exists('seconds_to_time')) {
 }
 
 
+if (! function_exists('seconds_to_hour')) {   
+    /**
+     * This function returns a converted Seconds to Time
+     *
+     * @param  timestamp seconds
+
+     */
+    function seconds_to_hour( $seconds = 0 ) 
+    {
+        try {
+            return $seconds/3600;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
 
 if (! function_exists('datetime_to_timestamp')) {   
     /**
