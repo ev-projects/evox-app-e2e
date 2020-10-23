@@ -41,7 +41,24 @@ return [
      *  User Assigning
      */
     'user_assign_roles_permissions_attempt' => 'Attempt for Assigning the Roles and Permissions to the User',
-    'user_assign_roles_permissions_success' => 'Successfully assign the Roles and Permissions to the User!',
+    'user_assign_roles_permissions_success' => 'Successfully Assign the Roles and Permissions to the User!',
+
+   'user_assign_employees_attempt' => 'Attempt for Assigning the Employees to the Supervisor',
+   'user_assign_employees_success' => 'Successfully Assigned the Employees to the Supervisor!',
+
+    /**
+     *  List User Roles
+     */
+    'list_role_attempt' => 'Attempt for Listing the Users base on Role',
+    'list_role_success' => 'Successfully shown all the Users base on Role!',
+
+    /**
+     *  Department
+     */
+    'all_department_success' => 'Successfully fetched all Department!',
+    'find_department_success' => 'Successfully found a Department!',
+    'department_assign_handlers_attempt' => 'Attempt for Assigning of Department Handlers',
+    'department_assign_handlers_success' => 'Successfully Assigned Department Handlers!',
 
     /**
      *  Schedule 
@@ -183,7 +200,7 @@ return [
     'create_payroll_cutoff_success' => 'A new Payroll Cutoff is now created!',
 
     'update_payroll_cutoff_attempt' => 'Update Payroll Cutoff Attempt',
-    'update_payroll_cutoff_attempt' => 'The Payroll Cutoff is now updated!',
+    'update_payroll_cutoff_success' => 'The Payroll Cutoff is now updated!',
 
     'delete_payroll_cutoff_attempt' => 'Delete Payroll Cutoff Attempt',
     'delete_payroll_cutoff_success' => 'The Payroll Cutoff is now deleted!',

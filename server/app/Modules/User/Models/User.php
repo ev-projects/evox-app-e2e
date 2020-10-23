@@ -119,6 +119,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Department::class, 'id', 'department_id');
     }
 
+    # Fetch the User Departments Handled
+    public function departments_handled()
+    {
+        return $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id');
+    }
+
     # Fetch the User's Schedule (Source type is Default)
     public function defaultSchedule(){
         return $this->hasOne(Schedule::class, 'bind_id', 'id')->where([

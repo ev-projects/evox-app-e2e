@@ -309,13 +309,17 @@ class UserRepository implements UserRepositoryInterface{
      * @param $id
      * @return User $user
      */
-    public function assign_roles_to_user( array $roles_array, $user_id ){
+    public function assign_roles_to_user( $user_id , array $roles_array){
         try {
+            
+            if( is_under_supervisee( $user_id ) ) {
 
-            $user =  User::findOrFail( $user_id );
+                $user =  User::findOrFail( $user_id );
 
-            $user->syncRoles( $roles_array );
+                $user->syncRoles( $roles_array );
+            }
 
+            log_to_file('info', 'Success', [$user_id, $roles_array], 'assign');
             return $user;
         } catch (Exception $e) {
             throw $e;
@@ -330,14 +334,98 @@ class UserRepository implements UserRepositoryInterface{
      * @param $id
      * @return User $user
      */
-    public function assign_permissions_to_user( array $permissions_array, $user_id ){
+    public function assign_permissions_to_user( $user_id, array $permissions_array ){
+        try {
+
+            if( is_under_supervisee( $user_id ) ) {
+
+                $user =  User::findOrFail( $user_id );
+
+                $user->syncPermissions( $permissions_array );
+            }
+            
+            log_to_file('info', 'Success', [$user_id, $permissions_array], 'assign');
+            return $user;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
+
+
+    /**
+     *  Responsible for assigning Employees to a user.
+     * @param $id
+     * @return User $user
+     */
+    public function assign_employees_to_user( $user_id, array $post_data ){
         try {
 
             $user =  User::findOrFail( $user_id );
 
-            $user->syncPermissions( $permissions_array );
+            // If there is a Department in the post data, Sync the Users by detaching the exisitng department user first then sync the updated list.
+            if( is_valid( $post_data['department_id'] ) ){
+
+                // Desync the Users of the chosen Department
+                $user->supervisee()->detach( Department::find( $post_data['department_id'] )->users()->get() );
+
+                // Sync the new Users from the chosen Department and merge with the existing supervisees.
+                if( is_valid( $post_data['user_id'] ) ) {
+                    $user->supervisee()->syncWithoutDetaching( $post_data['user_id'] );
+                }
+
+            } else {
+
+                $user->supervisee()->syncWithoutDetaching( $post_data['user_id'] );
+            }
             
+            
+            log_to_file('info', 'Success', [$user_id, $post_data], 'assign');
             return $user;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    
+
+
+
+    /**
+     *  Responsible for fetching the specific User list of a Role
+     * @param string $role
+     * @return Collection $user_collection
+     */
+    public function list_via_role( $role ){
+        try {
+            $user_collection = Role::findByName( $role )->users()
+                                                        ->orderBy('first_name', 'asc')
+                                                        ->orderBy('last_name', 'asc')
+                                                        ->get();
+        
+            return $user_collection;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
+
+
+    /**
+     *  Responsible for fetching the specific User list of a Department
+     * @param string $role
+     * @return Collection $user_collection
+     */
+    public function list_via_department( $department_id ){
+        try {
+            $user_collection = Department::find( $department_id )->users()
+                                                                 ->orderBy('first_name', 'asc')
+                                                                 ->orderBy('last_name', 'asc')
+                                                                 ->get();
+        
+            return $user_collection;
         } catch (Exception $e) {
             throw $e;
         }

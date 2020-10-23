@@ -24,7 +24,7 @@ import {  fetchOvertime,
           updateOvertimeStatus, 
           resetOvertimeInstance, 
           clearOvertimeInstance,
-        } from '../../../store/actions/overtimeActions';
+        } from '../../../store/actions/requests/overtimeActions';
 
 import Wrapper from "../../../components/Template/Wrapper";
 import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";

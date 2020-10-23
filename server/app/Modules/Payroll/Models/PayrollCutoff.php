@@ -12,7 +12,7 @@ class PayrollCutoff extends Model
 
     protected $guarded = [];
 
-    protected static $logAttributes = ['start_date', 'end_date'];
+    protected static $logAttributes = ['name', 'start_date', 'end_date'];
 
-    public $timestamps = false;
+    public $timestamps = true;
 }

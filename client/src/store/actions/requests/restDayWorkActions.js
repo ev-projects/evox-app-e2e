@@ -1,10 +1,10 @@
 import axios from "axios";
-import API from "../../services/API";
+import API from "../../../services/API";
 import { trackPromise } from "react-promise-tracker";
-import Formatter from "../../services/Formatter";
+import Formatter from "../../../services/Formatter";
 
 
-import { setRedirect, clearRedirect } from './redirectActions';
+import { setRedirect, clearRedirect } from '../../actions/redirectActions';
 
 /**
  *  A dedicated repository of Actions for Rest Day Work

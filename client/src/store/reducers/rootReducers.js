@@ -7,11 +7,16 @@ import alertReducer from "./alertReducers";
 import scheduleReducer from "./scheduleReducers";
 import constantReducers from "./constantReducers";
 
-import alterLogReducers from "./alterLogReducers";
-import changeScheduleReducers from "./changeScheduleReducers";
-import overtimeReducers from "./overtimeReducers";
-import restDayWorkReducers from "./restDayWorkReducers"
+import alterLogReducers from "./requests/alterLogReducers";
+import changeScheduleReducers from "./requests/changeScheduleReducers";
+import overtimeReducers from "./requests/overtimeReducers";
+import restDayWorkReducers from "./requests/restDayWorkReducers"
 import redirectReducers from "./redirectReducers";
+
+import requestListReducers from "./requestListReducers";
+import payrollCutoffReducers from "./settings/payrollCutoffReducers"
+
+import lookupListReducers from "./lookup/lookupListReducers"
 
 import dtrReducer from "./dtrReducers";
 
@@ -22,6 +27,7 @@ import dtrSummaryReducers from "./dtrSummaryReducers";
 import { combineReducers } from 'redux';
 
 const rootReducer = combineReducers({
+    
     page : pageReducer,
     user : userReducer,
     alert: alertReducer,
@@ -33,10 +39,14 @@ const rootReducer = combineReducers({
     changeSchedule: changeScheduleReducers,
     overtime : overtimeReducers,
     restDayWork : restDayWorkReducers,
-    redirect : redirectReducers,
 
+    payrollCutoff: payrollCutoffReducers,
     requestList: requestListReducers,
     dtrSummary: dtrSummaryReducers,
+
+    lookup:   lookupListReducers,
+
+    redirect : redirectReducers
 });
 
 export default rootReducer;

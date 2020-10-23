@@ -20,7 +20,14 @@ interface UserRepositoryInterface
 
     public function get_all_active_users();
 
-    public function assign_roles_to_user( array $roles_array, $user_id );
+    public function assign_roles_to_user( $user_id, array $roles_array );
 
-    public function assign_permissions_to_user( array $permissions_array, $user_id );
+    public function assign_permissions_to_user( $user_id, array $permissions_array );
+
+    public function assign_employees_to_user( $user_id, array $employee_id_array );
+
+    public function list_via_role( $role );
+
+    public function list_via_department( $department_id );
+
 }

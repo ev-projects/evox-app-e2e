@@ -23,13 +23,15 @@ class UserProfileResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request){       
-        
+    public function toArray($request){    
+
+        $department = $this->department()->first();
+
         $main_info = array(
             'id' => $this->id,
             'emp_num' => $this->emp_num,
             'bhr_num' => $this->bhr_num,
-            'department' => $this->department()->first()->getCompleteName(),
+            'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
             'email' => $this->email,
             'first_name' => $this->first_name,
             'middle_name' => $this->middle_name,
@@ -54,10 +56,17 @@ class UserProfileResource extends JsonResource
                 array_push( $roles, $role->name );
             }
 
+            // Create Resource for Department Handled
+            $departments_handled = [];
+            foreach( $this->departments_handled()->get()  as $departments){
+                array_push( $departments_handled, $departments );
+            }
+
             return array_merge( 
                 $main_info, 
                 array('permissions' => $permissions),
                 array('roles' => $roles),
+                array('departments_handled' => $departments_handled),
             );
             
         } else {

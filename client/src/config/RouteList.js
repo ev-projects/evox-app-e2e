@@ -18,6 +18,7 @@ import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
 
+// Requests
 import AlterLog from "../container/Request/AlterLog";
 import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
@@ -28,6 +29,11 @@ import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
 import MyRequests from "../container/MyRequests/MyRequests";
 
 import DtrSummary from "../container/MyTeam/DtrSummary";
+// Settings
+import PayrollCutoff from "../container/Settings/PayrollCutoff";
+import AssignDepartmentHandlers from "../container/Settings/AssignDepartmentHandlers";
+import AssignEmployeeSupervisors from "../container/Settings/AssignEmployeeSupervisors";
+
 const RoutesList = () => {
 
   // Register all the Routes that will be used in the Application (excluding the Login)
@@ -42,6 +48,8 @@ const RoutesList = () => {
         <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
 
+
+        {/* Requests */}
         <ProtectedRoute exact path="/app/request/AlterLog/"><AlterLog onApproval={false}/></ProtectedRoute>
         <ProtectedRoute exact path="/app/request/AlterLog/:id"><AlterLog onApproval={false}/></ProtectedRoute>
 
@@ -61,6 +69,12 @@ const RoutesList = () => {
 
         <ProtectedRoute exact path="/app/team/MyTeamRequests"><MyTeamRequests/></ProtectedRoute>
         <ProtectedRoute exact path="/app/team/DtrSummary"><DtrSummary/></ProtectedRoute>
+
+        {/* Settings */}
+        <ProtectedRoute exact path="/app/settings/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/settings/AssignDepartmentHandlers/"><AssignDepartmentHandlers /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/settings/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
+
 
         <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
