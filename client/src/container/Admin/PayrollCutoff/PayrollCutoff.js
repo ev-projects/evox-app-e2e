@@ -23,7 +23,7 @@ import { addPayrollCutoff,
       fetchPayrollCutoff,
       fetchPayrollCutoffList,
       clearPayrollCutoffInstance,
-      clearPayrollCutoffListInstance } from '../../../store/actions/settings/payrollCutoffActions';
+      clearPayrollCutoffListInstance } from '../../../store/actions/admin/payrollCutoffActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 

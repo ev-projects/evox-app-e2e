@@ -29,10 +29,11 @@ import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
 import MyRequests from "../container/MyRequests/MyRequests";
 
 import DtrSummary from "../container/MyTeam/DtrSummary";
-// Settings
-import PayrollCutoff from "../container/Settings/PayrollCutoff";
-import AssignDepartmentHandlers from "../container/Settings/AssignDepartmentHandlers";
-import AssignEmployeeSupervisors from "../container/Settings/AssignEmployeeSupervisors";
+
+// Admin
+import PayrollCutoff from "../container/Admin/PayrollCutoff";
+import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandlers";
+import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervisors";
 
 const RoutesList = () => {
 
@@ -71,9 +72,9 @@ const RoutesList = () => {
         <ProtectedRoute exact path="/app/team/DtrSummary"><DtrSummary/></ProtectedRoute>
 
         {/* Settings */}
-        <ProtectedRoute exact path="/app/settings/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/settings/AssignDepartmentHandlers/"><AssignDepartmentHandlers /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/settings/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/admin/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/admin/AssignDepartmentHandlers/"><AssignDepartmentHandlers /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/admin/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
 
 
         <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>

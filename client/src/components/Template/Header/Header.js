@@ -162,7 +162,7 @@ const Header = (props) => {
                       <a className="nav-link">
                         <i className="nav-icon fa fa-cog" />
                         <p>
-                          Settings
+                          Admin Functions
                           <i className="right fa fa-chevron-left" />
                         </p>
                       </a>
