@@ -14,7 +14,7 @@ import restDayWorkReducers from "./requests/restDayWorkReducers"
 import redirectReducers from "./redirectReducers";
 
 import requestListReducers from "./requestListReducers";
-import payrollCutoffReducers from "./settings/payrollCutoffReducers"
+import payrollCutoffReducers from "./admin/payrollCutoffReducers"
 
 import lookupListReducers from "./lookup/lookupListReducers"
 

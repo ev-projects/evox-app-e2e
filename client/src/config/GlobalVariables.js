@@ -10,9 +10,9 @@ global.template_list_url = "/app/schedule/template/";
 global.template_add = "/app/schedule/";
 global.daily_time_record_view = "/app/dtr/";
 global.default_schedule = "/app/schedule/assign/";
-global.payroll_cutoff = "/app/settings/PayrollCutoff/";
-global.assign_department_handlers = "/app/settings/AssignDepartmentHandlers/";
-global.assign_employee_supervisors = "/app/settings/AssignEmployeeSupervisors/";
+global.payroll_cutoff = "/app/admin/PayrollCutoff/";
+global.assign_department_handlers = "/app/admin/AssignDepartmentHandlers/";
+global.assign_employee_supervisors = "/app/admin/AssignEmployeeSupervisors/";
 
 
 global.invalid_token_response = [

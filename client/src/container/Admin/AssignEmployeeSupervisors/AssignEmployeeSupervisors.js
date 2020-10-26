@@ -16,7 +16,7 @@ import PageLoading from "../../PageLoading";
 import DateFormatter from "../../../services/DateFormatter";
 
 import { fetchUserList, fetchDepartmentList } from '../../../store/actions/lookup/lookupListActions';
-import { assignEmployeeSupervisorsActions } from '../../../store/actions/settings/assignEmployeeSupervisorsActions'
+import { assignEmployeeSupervisorsActions } from '../../../store/actions/admin/assignEmployeeSupervisorsActions'
 
 import Wrapper from "../../../components/Template/Wrapper";
 import Validator from "../../../services/Validator";

@@ -89,8 +89,9 @@ class MyTeamRequests extends Component {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
       <Wrapper>
-            <ContainerWrapper>       
-                <Content col="12" title="My Team Requests">
+            <ContainerWrapper>   
+            <ContainerBody>  
+                <Content col="12" title="My Team Request">
                 <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
                   <Tab eventKey="home" title="All Requests">
                   <ButtonGroup toggle className="mb-2">
@@ -284,6 +285,7 @@ class MyTeamRequests extends Component {
                   </Tab>
                 </Tabs>    
                 </Content>
+            </ContainerBody>  
             </ContainerWrapper>
           </Wrapper>
       </form>

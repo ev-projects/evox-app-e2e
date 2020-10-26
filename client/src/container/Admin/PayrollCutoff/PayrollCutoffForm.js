@@ -20,7 +20,7 @@ import DateFormatter from "../../../services/DateFormatter";
 import { addPayrollCutoff,
       updatePayrollCutoff,
       fetchPayrollCutoffList,
-      clearPayrollCutoffListInstance } from '../../../store/actions/settings/payrollCutoffActions';
+      clearPayrollCutoffListInstance } from '../../../store/actions/admin/payrollCutoffActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 

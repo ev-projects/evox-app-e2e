@@ -8,7 +8,7 @@ import { Container,Row,Col,Table,Image,Card,Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import DtrFormatter from '../../services/DtrFormatter';
 import { Link } from "react-router-dom"; 
-import { ContainerHeader,Content,ContainerWrapper } from '../../components/GridComponent/AdminLte.js';
+import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import PageLoading from "../PageLoading";
 import Formatter from '../../services/Formatter';
 import Wrapper from '../../components/Template/Wrapper';
@@ -26,8 +26,9 @@ class DailyTimeRecord extends Component {
     render(){
         if(this.props.dtr.isDtrLoaded){
         return (
-          <Wrapper>
-            <ContainerWrapper>
+        <Wrapper>
+          <ContainerWrapper>
+            <ContainerBody>
               <Content col="12" title="Daily Time Record">
                 <Table responsive hover>
                     <thead>
@@ -97,8 +98,9 @@ class DailyTimeRecord extends Component {
                     </tbody>
                 </Table>
               </Content>
-            </ContainerWrapper>          
-          </Wrapper>
+            </ContainerBody>
+          </ContainerWrapper>          
+        </Wrapper>
         );
         }
         return <PageLoading/>;

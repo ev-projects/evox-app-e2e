@@ -16,7 +16,7 @@ import PageLoading from "../../PageLoading";
 import DateFormatter from "../../../services/DateFormatter";
 
 import { fetchUserList, fetchDepartmentList } from '../../../store/actions/lookup/lookupListActions';
-import { assignDepartmentHandlers } from '../../../store/actions/settings/assignDepartmentHandlersActions'
+import { assignDepartmentHandlers } from '../../../store/actions/admin/assignDepartmentHandlersActions'
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 

@@ -399,10 +399,16 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function list_via_role( $role ){
         try {
-            $user_collection = Role::findByName( $role )->users()
-                                                        ->orderBy('first_name', 'asc')
-                                                        ->orderBy('last_name', 'asc')
-                                                        ->get();
+
+            if( request()->get('page') == 'all' ){
+                $user_collection = Role::findByName( $role )->users()->orderBy('first_name', 'asc')
+                                                                     ->orderBy('last_name', 'asc')
+                                                                     ->get();
+            } else {
+                $user_collection = Role::findByName( $role )->users()->orderBy('first_name', 'asc')
+                                                                     ->orderBy('last_name', 'asc')
+                                                                     ->paginate(15);
+            }                                     
         
             return $user_collection;
         } catch (Exception $e) {
@@ -420,10 +426,17 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function list_via_department( $department_id ){
         try {
-            $user_collection = Department::find( $department_id )->users()
-                                                                 ->orderBy('first_name', 'asc')
-                                                                 ->orderBy('last_name', 'asc')
-                                                                 ->get();
+
+            if( request()->get('page') == 'all' ){
+                $user_collection = Department::find( $department_id )->users()->orderBy('first_name', 'asc')
+                                                                              ->orderBy('last_name', 'asc')
+                                                                              ->get();
+
+            } else {
+                $user_collection = Department::find( $department_id )->users()->orderBy('first_name', 'asc')
+                                                                              ->orderBy('last_name', 'asc')
+                                                                              ->paginate(15);
+            }     
         
             return $user_collection;
         } catch (Exception $e) {
