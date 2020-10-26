@@ -59,7 +59,7 @@ class MyTeamRequests extends Component {
     page: 1,
     url: 'MyTeamRequests'
   }
-  
+  console.log(this.props.user);
 
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
@@ -176,7 +176,9 @@ class MyTeamRequests extends Component {
                             style={{ display: 'block' }}
                           >
                           <option    label="Select a Department" />
-                          <option value="1" label="OPS - Product Dev" />
+                          {this.props.user.departments_handled.map(function(item){
+                            return <option value={item.id} label={item.department_name} />;
+                          })}
                           </select>
                       </div>
                     

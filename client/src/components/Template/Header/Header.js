@@ -96,6 +96,8 @@ const Header = (props) => {
                     </li>
                   </ul>
                 </li>
+                { 
+                  Authenticator.checkRole('supervisor') ?
                 <li className="nav-item has-treeview ">
                   <a className="nav-link" >
                     <i className="nav-icon fa fa-users" />
@@ -105,21 +107,33 @@ const Header = (props) => {
                     </p>
                   </a>
                   <ul className="nav nav-treeview">
+                  { 
+                  Authenticator.check('supervisor', 'view_my_team_request') ?
                     <li className="nav-item">
                     <Link className="nav-link" to="/app/team/MyTeamRequests" >
                     <i className="nav-icon fa fa-users" aria-hidden="true"></i>
                     <p> My Team Request</p> 
                   </Link>
                     </li> 
+                        :
+                  null
+                }
+                { 
+                  Authenticator.check('supervisor', 'view_dtr_summary') ?
                     <li className="nav-item">
                       <Link className="nav-link" to="/app/team/DtrSummary" >
                         <i className="nav-icon fa fa-file-text nav-icon" />
                         <p>DTR Summary</p>
                       </Link>
                     </li>
-                    
+                   :
+                   null
+                 }
                   </ul>
                 </li>
+                :
+                null
+              }
                 <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-list-alt" />

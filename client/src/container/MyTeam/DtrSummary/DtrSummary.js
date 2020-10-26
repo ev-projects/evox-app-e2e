@@ -88,7 +88,7 @@ class DtrSummary extends Component {
                       </div>
                     </Col>
                     <Col> 
-                      <div className="form-group">
+                    <div className="form-group">
                           <label>Department:</label>
                           <select
                           className="form-control" 
@@ -98,7 +98,9 @@ class DtrSummary extends Component {
                             style={{ display: 'block' }}
                           >
                           <option    label="Select a Department" />
-                          <option value="1" label="OPS - Product Dev" />
+                          {this.props.user.departments_handled.map(function(item){
+                            return <option value={item.id} label={item.department_name} />;
+                          })}
                           </select>
                           <Form.Control.Feedback type="invalid">
                     <ErrorMessage component="div" name="department_id" className="input-feedback" />
