@@ -181,52 +181,66 @@ class InsertInitialValuesTable extends Migration
         DB::table('holidays')->insert($insert);
 
         // Insert Payroll Cutoffs
-        // $insert = array(
-        //     array(
-        //         'start_date' => "2020-01-19",
-        //         'end_date' => "2020-02-18",
-        //         'description' => "For January",
-        //         'created_at' => date('Y-m-d H:i:s'),
-        //         'updated_at' => date('Y-m-d H:i:s')
-        //     ),
-        //     array(
-        //         'start_date' => "2020-02-19",
-        //         'end_date' => "2020-03-18",
-        //         'description' => "For February",
-        //         'created_at' => date('Y-m-d H:i:s'),
-        //         'updated_at' => date('Y-m-d H:i:s')
-        //     ),
-        //     array(
-        //         'start_date' => "2020-03-19",
-        //         'end_date' => "2020-04-18",
-        //         'description' => "For March",
-        //         'created_at' => date('Y-m-d H:i:s'),
-        //         'updated_at' => date('Y-m-d H:i:s')
-        //     ),
-        //     array(
-        //         'start_date' => "2020-04-19",
-        //         'end_date' => "2020-05-18",
-        //         'description' => "For April",
-        //         'created_at' => date('Y-m-d H:i:s'),
-        //         'updated_at' => date('Y-m-d H:i:s')
-        //     ),
-        //     array(
-        //         'start_date' => "2020-05-19",
-        //         'end_date' => "2020-06-18",
-        //         'description' => "For May",
-        //         'created_at' => date('Y-m-d H:i:s'),
-        //         'updated_at' => date('Y-m-d H:i:s')
-        //     ),
-        //     array(
-        //         'start_date' => "2020-06-19",
-        //         'end_date' => "2020-07-18",
-        //         'description' => "For June",
-        //         'created_at' => date('Y-m-d H:i:s'),
-        //         'updated_at' => date('Y-m-d H:i:s')
-        //     ),
-        // );
+        $insert = array(
+            array(
+                'name' => "August 2020",
+                'start_date' => "2020-07-19",
+                'end_date' => "2020-08-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "September 2020",
+                'start_date' => "2020-08-19",
+                'end_date' => "2020-09-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "October 2020",
+                'start_date' => "2020-09-19",
+                'end_date' => "2020-10-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "November 2020",
+                'start_date' => "2020-10-19",
+                'end_date' => "2020-11-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "December 2020",
+                'start_date' => "2020-11-19",
+                'end_date' => "2020-12-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "January 2021",
+                'start_date' => "2020-12-19",
+                'end_date' => "2021-01-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "February 2021",
+                'start_date' => "2021-01-19",
+                'end_date' => "2021-02-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "March 2021",
+                'start_date' => "2021-02-19",
+                'end_date' => "2021-03-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+        );
         
-        // DB::table('payroll_cutoffs')->insert($insert);
+        DB::table('payroll_cutoffs')->insert($insert);
 
 
 

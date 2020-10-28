@@ -5,12 +5,20 @@ namespace App\Modules\User\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Repositories\PayrollRepository;
+use App\Modules\Payroll\Resources\PayrollCutoffResource;
 use App\Modules\User\Resources\UserProfileResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
+    protected $payroll;
+    
+
+    public function __construct(PayrollRepository $payroll){
+        $this->payroll = $payroll;
+    }
     /**
      * Create a new AuthController instance.
      *
@@ -47,11 +55,10 @@ class AuthController extends Controller
             $result = [
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 60,
-                'user' => new UserProfileResource( auth()->user() ),
-                'payload' => auth()->payload(),
-                'constant' => get_constant()
+                'expires_in' => auth()->factory()->getTTL() * 60
             ];
+
+            $result = $this->get_default_payload( $result );
 
             log_to_file('info', 'Success', $result);
             return success_response( trans('messages.login_success'), $result );
@@ -90,11 +97,7 @@ class AuthController extends Controller
         try {
             log_activity( trans('messages.payload') );
 
-            $result = [
-                'user' => new UserProfileResource( auth()->user() ),
-                'payload' => auth()->payload(),
-                'constant' => get_constant()
-            ];
+            $result = $this->get_default_payload( [] );
 
             log_to_file('info', 'Success', $result);
             
@@ -102,6 +105,21 @@ class AuthController extends Controller
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
+    }
+
+    private function get_default_payload( $result ){
+        
+        $result['user'] = new UserProfileResource( auth()->user() );
+
+        $result['payload'] = auth()->payload();
+
+        $result['constant'] = get_constant();
+
+        $result['settings'] = [
+            'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll->get_payroll_cutoff()) 
+        ];
+
+        return $result;
     }
     
 }

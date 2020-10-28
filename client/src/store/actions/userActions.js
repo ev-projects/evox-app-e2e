@@ -40,6 +40,12 @@ export const logIn = (credentials) => {
                 'type'      : 'RENDER_CONSTANT', 
                 'constant'   : result.data.content.constant
             })
+
+            // Render the Settings that will be used on React
+            dispatch({
+                'type'      : 'RENDER_SETTINGS', 
+                'settings'   : result.data.content.settings
+            })
             
 
             // Dispatch Alert of Login Success
@@ -101,6 +107,12 @@ export const fetchUser = () => {
             dispatch({
                 'type'      : 'RENDER_CONSTANT', 
                 'constant'   : result.data.content.constant
+            })
+
+            // Render the Settings that will be used on React
+            dispatch({
+                'type'      : 'RENDER_SETTINGS', 
+                'settings'   : result.data.content.settings
             })
 
             // dispatch( Formatter.alert_success( result, 3000 )  );

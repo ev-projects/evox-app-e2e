@@ -24,6 +24,23 @@ class PayrollCutoffController extends Controller
      * Shows all existing Payroll Cutoff
      * @return \Illuminate\Http\JsonResponse
      */
+    public function get_filter_for_dtr( $user_id ){
+        try {
+            $collection = $this->payroll_cutoff->get_filter_for_dtr( $user_id );
+
+            return success_response(
+                trans('messages.get_filter_for_dtr_success'), 
+                $collection
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Shows all existing Payroll Cutoff
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function all(){
         try {
             $payroll_cutoff_collection = $this->payroll_cutoff->all();

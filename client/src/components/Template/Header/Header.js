@@ -11,11 +11,7 @@ import Authenticator from "../../../services/Authenticator";
 
 const Header = (props) => {
   
-  const history = useHistory();
-
-  var date = new Date();
-  var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const history = useHistory();
 
 
     const { user } = props;
@@ -56,7 +52,7 @@ const Header = (props) => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to={ global.daily_time_record_view + user.id +'/'+moment(firstDay).format("YYYY-MM-DD")+'/'+moment(lastDay).format("YYYY-MM-DD")+'' }>
+                  <Link className="nav-link" to={ global.daily_time_record_view + user.id +'/' }>
                     <i className="nav-icon fa fa-clock-o nav-icon" />
                     <p> Daily Time Record</p>
                   </Link>

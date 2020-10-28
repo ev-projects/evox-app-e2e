@@ -51,34 +51,34 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 foreach( $date_array as $date) {
 
-                    # Create the DTR Insert Value Array Structure
-                    $dtr_insert_values =  [
+
+                    # Append the imploded DTR Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
+                    $dtr_insert_array[] = implode(",", [
                         'user_id'               => "'".$user->id."'",
                         'date'                  => "'".$date."'",
                         'updated_by'            => 'NOW()',
                         'created_by'            => 'NOW()'
-                    ];
-
-                    # Append the imploded DTR Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
-                    $dtr_insert_array[] = implode(",", $dtr_insert_values);
+                    ]);
                 } 
             }
 
-            # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
-            $dtr_insert_query = "INSERT INTO dtrs (
-                                    user_id, 
-                                    date,
-                                    updated_at, 
-                                    created_at) 
-                                VALUES (".implode( "), (", $dtr_insert_array ).") 
-                                ON DUPLICATE KEY UPDATE
-                                    user_id                 = VALUES(user_id), 
-                                    date                    = VALUES(date), 
-                                    created_at              = IF(created_at IS NULL, VALUES(created_at), created_at),
-                                    updated_at              = VALUES(updated_at)";
-
-            # Executes the Batch Insert Query
-            DB::insert($dtr_insert_query);
+            foreach( array_chunk( $dtr_insert_array, 5000 ) as $dtr_insert_array_chunk ){
+                # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
+                $dtr_insert_query = "INSERT INTO dtrs (
+                                        user_id, 
+                                        date,
+                                        updated_at, 
+                                        created_at) 
+                                    VALUES (".implode( "), (", $dtr_insert_array_chunk ).") 
+                                    ON DUPLICATE KEY UPDATE
+                                        user_id                 = VALUES(user_id), 
+                                        date                    = VALUES(date), 
+                                        created_at              = IF(created_at IS NULL, VALUES(created_at), created_at),
+                                        updated_at              = VALUES(updated_at)";
+                
+                # Executes the Batch Insert Query
+                DB::insert($dtr_insert_query);
+            }
                 
             
             # Apply the Schedule of the Dates that's been generated.
