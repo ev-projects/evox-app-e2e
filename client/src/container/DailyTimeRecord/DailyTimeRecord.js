@@ -1,4 +1,5 @@
-import { viewEmployeeDtr, getFilterForDtr } from '../../store/actions/dtrActions';
+
+import { viewEmployeeDtr, getFilterForDtr, setSelectedPayrollCutoff } from '../../store/actions/dtrActions';
 import { fetchUser } from '../../store/actions/userActions'
 
 import React, { Component } from "react";
@@ -62,11 +63,37 @@ class DailyTimeRecord extends Component {
           && Validator.isValid( this.state.selectedMonth ) 
           && Validator.isValid( selected ) ) {
 
-        const payroll_cutoff = this.props.dtr.filter[this.state.selectedYear.value][this.state.selectedMonth.value].data[selected.value]
+        const payrollCutoff = this.props.dtr.filter[this.state.selectedYear.value][this.state.selectedMonth.value].data[selected.value]
 
-        this.props.viewEmployeeDtr(this.props.params.id,payroll_cutoff.start_date,payroll_cutoff.end_date);
-        
+        this.props.viewEmployeeDtr(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
+
+        this.props.setSelectedPayrollCutoff( payrollCutoff );
       }
+    }
+
+
+    // Sets the selected Payorll Cutoff Instance of the DTR filters.
+    setPayrollCutoffInstance = async( payrollCutoff ) => {
+      
+      await this.setState({
+        selectedYear: {
+          label: payrollCutoff.year,
+          value: payrollCutoff.year,
+        },
+        selectedMonth: {
+          label: payrollCutoff.month_label,
+          value: payrollCutoff.month,
+        },
+        selectedPayrollCutoff: {
+          label: payrollCutoff.name,
+          value: payrollCutoff.id,
+        },
+        isCurrentPayrollCutoffLoaded : true
+      })
+
+      await this.props.viewEmployeeDtr(this.props.params.id , payrollCutoff.start_date, payrollCutoff.end_date);
+
+      await this.props.setSelectedPayrollCutoff( payrollCutoff );
     }
 
     
@@ -82,34 +109,22 @@ class DailyTimeRecord extends Component {
       // If the 'settings' props is not yet loaded OR the settings prop is already loaded but the isCurrentPayrollCutoffLoaded is FALSE, set the default selected data.
       if( nextProps.settings != this.props.settings  ||
           ( nextProps.settings == this.props.settings && !this.state.isCurrentPayrollCutoffLoaded )) {
+          
+          // If there's a selected Payroll Cutoff, use it as the current instance.
+          if( Object.keys(this.props.dtr.selectedPayrollCutoff).length > 0 ) {
+            this.setPayrollCutoffInstance( this.props.dtr.selectedPayrollCutoff );
 
-        this.setState({
-          selectedYear: {
-            label: nextProps.settings.current_payroll_cutoff.year,
-            value: nextProps.settings.current_payroll_cutoff.year,
-          },
-          selectedMonth: {
-            label: nextProps.settings.current_payroll_cutoff.month_label,
-            value: nextProps.settings.current_payroll_cutoff.month,
-          },
-          selectedPayrollCutoff: {
-            label: nextProps.settings.current_payroll_cutoff.name,
-            value: nextProps.settings.current_payroll_cutoff.id,
-          },
-          isCurrentPayrollCutoffLoaded : true
-        })
-
-        await this.props.viewEmployeeDtr(this.props.params.id , nextProps.settings.current_payroll_cutoff.start_date, nextProps.settings.current_payroll_cutoff.end_date);
+          // If there's NOT selected Payroll Cutoff, use the default payroll cutoff instance.
+          } else {
+            this.setPayrollCutoffInstance( nextProps.settings.current_payroll_cutoff );
+          }
       }
 
       
   }
 
     render(){
-
-      console.log(this.state)
-      console.log(this.props)
-
+      
         var yearOptions = [];
         var monthOptions = [];
         var payrollCutoffOptions = [];
@@ -149,9 +164,6 @@ class DailyTimeRecord extends Component {
           }
         }
 
-        
-            
-        console.log(this.state, yearOptions, monthOptions, payrollCutoffOptions)
 
         return (
         <Wrapper>
@@ -302,6 +314,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchUser : () => dispatch( fetchUser() ),
     viewEmployeeDtr : (user_id,from,to) => dispatch( viewEmployeeDtr(user_id,from,to) ),
     getFilterForDtr : (user_id) => dispatch( getFilterForDtr(user_id) ),
+    setSelectedPayrollCutoff :   ( payrollCutoff ) => dispatch( setSelectedPayrollCutoff( payrollCutoff ) ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(DailyTimeRecord);

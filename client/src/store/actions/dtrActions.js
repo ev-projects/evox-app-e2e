@@ -41,3 +41,12 @@ export const getFilterForDtr = (user_id) => {
     }
 }
 
+// Set Selected Payroll Cutoff instance
+export const setSelectedPayrollCutoff = ( payrollCutoff ) => {
+    return (dispatch, getState) => {
+        dispatch({
+            'type'           : 'SET_SELECTED_PAYROLL_CUTOFF', 
+            'payrollCutoff'  : payrollCutoff
+        })
+    }
+}

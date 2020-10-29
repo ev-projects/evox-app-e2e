@@ -7,6 +7,7 @@ const initState = {
     isFilterLoaded : false,
     list: [],
     filter: [],
+    selectedPayrollCutoff: {}
 }
 
 const dtrReducer = (state = initState, action) => {
@@ -38,7 +39,13 @@ const dtrReducer = (state = initState, action) => {
                 ...action.error,
             }
             break;
-
+        
+        case "SET_SELECTED_PAYROLL_CUTOFF":
+            return {
+                ...state,
+                selectedPayrollCutoff : action.payrollCutoff
+            };
+            break;
         
         
         default:

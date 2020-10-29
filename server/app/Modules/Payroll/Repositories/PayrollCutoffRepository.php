@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Modules\Payroll\Repositories\DtrRepository;
+use App\Modules\Payroll\Resources\PayrollCutoffResource;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -48,7 +49,7 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
                 $month = Carbon::parse($payroll_cutoff->end_date)->format('m');
 
                 $result[ $year ][ $month ]['label'] = Carbon::parse($payroll_cutoff->end_date)->format('F');
-                $result[ $year ][ $month ]['data'][$payroll_cutoff->id] = $payroll_cutoff->getAttributes();;
+                $result[ $year ][ $month ]['data'][$payroll_cutoff->id] = new PayrollCutoffResource($payroll_cutoff);
                 
             }
 
