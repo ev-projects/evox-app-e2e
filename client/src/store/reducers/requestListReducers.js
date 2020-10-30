@@ -4,8 +4,9 @@
 
 const initState = {
     isListLoaded: false,
+    isNumbersLoaded: false,
     instance: {},
-    isPageLoaded: false
+    statusNumbers: null,
 }
 
 const requestListReducers = (state = initState, action) => {
@@ -17,18 +18,33 @@ const requestListReducers = (state = initState, action) => {
          */
 
         // Apply the Instance that was recently fetched
-        case "FETCH_REQUEST_LIST_SUCCESS":
+        case "FETCH_REQUEST_LIST_SUCCESS_INITIALLY":
+
             return {
                 instance : action.requestList,
                 isListLoaded : true,
-                isPageLoaded: true
+                isNumbersLoaded : false,
+                statusNumbers: null,
             };
             break;
-        case "RESET_REQUEST_LIST":
+
+        case "FETCH_REQUEST_LIST_SUCCESS":
+
+                return {
+                    instance : action.requestList,
+                    isListLoaded : true,
+                    isNumbersLoaded : true,
+                    statusNumbers: null,
+                };
+                break;
+
+
+        case "FETCH_REQUEST_STATUS_NUMBERS":
             return {
                 instance : action.requestList,
                 isListLoaded : true,
-                isPageLoaded: true
+                isNumbersLoaded : true,
+                statusNumbers:  action.statusNumbers
             };
         break;
         default:

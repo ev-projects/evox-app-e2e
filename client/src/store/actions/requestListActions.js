@@ -7,7 +7,6 @@ import Formatter from "../../services/Formatter";
 
 // Fetch Request List
 export const fetchRequestList = ( data = null ) => {
-    console.log(data);
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -15,10 +14,38 @@ export const fetchRequestList = ( data = null ) => {
             params : data
         })
         .then(result => {
-            console.log(result.data);
+            if (data === null){
+                dispatch({
+                    'type'      : 'FETCH_REQUEST_LIST_SUCCESS_INITIALLY', 
+                    'requestList'  : result.data.content
+                })
+            }else{
+                dispatch({
+                    'type'      : 'FETCH_REQUEST_LIST_SUCCESS', 
+                    'requestList'  : result.data.content
+                })
+            }
+            
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+//  fetch the request status numbers
+export const fetchStatusNumbers = ( params , requestList ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/request/request-numbers",
+            params : params
+        })
+        .then(result => {
             dispatch({
-                'type'      : 'FETCH_REQUEST_LIST_SUCCESS', 
-                'requestList'  : result.data.content
+                'type'      : 'FETCH_REQUEST_STATUS_NUMBERS', 
+                'statusNumbers'  : result.data.content.status_numbers,
+                'requestList'  : requestList,
             })
         })
         .catch(e => {
@@ -29,14 +56,5 @@ export const fetchRequestList = ( data = null ) => {
 
 
 
-
-
-export const resetRequestListInstance = () => {
-    return (dispatch, getState) => {
-        dispatch({
-            'type'      : 'RESET_REQUEST_LIST'
-        })
-    }
-}
 
 

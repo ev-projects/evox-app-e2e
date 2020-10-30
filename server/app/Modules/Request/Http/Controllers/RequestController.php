@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Request\Http\Requests\RequestFilterRequest;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
+use App\Modules\Request\Repositories\RequestRepositoryInterface;
 use App\Modules\Request\Resources\OvertimeResource;
 use App\Modules\Request\Resources\RequestResource;
 use Exception;
@@ -24,11 +25,9 @@ class RequestController extends Controller
     protected $change_schedule;
     protected $work_from_home;
 
-    public function __construct(OvertimeRepositoryInterface $overtime){
+    public function __construct(OvertimeRepositoryInterface $overtime,RequestRepositoryInterface $request){
         $this->overtime         = $overtime;
-        // $this->rest_day_work    = $rest_day_work;
-        // $this->change_schedule  = $change_schedule;
-        // $this->work_from_home   = $work_from_home;
+        $this->request          = $request;
     }
 
     /**
@@ -72,25 +71,29 @@ class RequestController extends Controller
      */
     public function requestlist(RequestFilterRequest $request){
         $user = User::find(auth()->user()->id);
-        return success_response(
-            trans('messages.request_display_success'), 
-              new RequestResource( $user->requests_list('my_request',$request) ) 
-        );
-        
+      
         try {
             log_activity( trans('messages.request_display_attempt') );
-            if($request->url=="MyRequests"){
-                return success_response(
-                    trans('messages.request_display_success'), 
-                      new RequestResource( $user->requests_list('my_request',$request) ) 
-                );
-            }elseif($request->url=="MyTeamRequests"){
-                return success_response(
-                    trans('messages.request_display_success'), 
-                      new RequestResource( $user->requests_list('my_team_request',$request) ) 
-                );
-            }
+            return success_response(
+                trans('messages.request_display_success'), 
+                  new RequestResource( $user->requests_list('my_request',$request) ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
 
+
+    /**
+     * Shows a list of Request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function requestlistNumbers(Request $request){
+        try {
+            log_activity( trans('messages.request_display_attempt') );
+            return success_response(
+                trans('messages.request_display_success'), $this->request->get_status_numbers( $request)
+            );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

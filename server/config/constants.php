@@ -78,6 +78,12 @@ return [
         'canceled'
     ],
 
+    'REQUEST_TABLES' => [
+        'overtimes', 
+        'alter_logs', 
+        'rest_day_works'
+    ],
+
     'REQUEST_TYPES' => [
         'overtime' => 'overtime', 
         'alter_log' => 'alter_log', 

@@ -9,13 +9,12 @@ import * as Yup from 'yup';
 import PageLoading from "../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
-import { fetchRequestList } from '../../store/actions/requestListActions';
+import { fetchRequestList,fetchStatusNumbers } from '../../store/actions/requestListActions';
 import { InputDate,InputTime   } from '../../components/DatePickerComponent/DatePicker.js';
 
 class MyRequests extends Component {
 
   onSubmitHandler = (values) => {
-
     var formData = {};
 
     for (var key in values) {
@@ -35,10 +34,16 @@ class MyRequests extends Component {
   }
 
   componentWillMount(){
-
-    var urlData = {url: this.props.params.url};
-      this.props.fetchRequestList(urlData);
+    this.props.fetchRequestList();
   }
+
+  componentDidUpdate(){
+    if(!this.props.isNumbersLoaded&&this.props.isListLoaded){
+      var formData = { "url" : "my_request" };
+      this.props.fetchStatusNumbers( formData , this.props.requestList );
+    }
+  }
+
 
   render = () => {  
   const initialValue = {
@@ -71,6 +76,21 @@ class MyRequests extends Component {
       
     }
 
+    // Variables for status numbers
+    var pending = 0;
+    var approved = 0;
+    var canceled = 0;
+    var declined = 0;
+    var all_status = pending + approved + canceled+ declined;
+
+    if(this.props.isNumbersLoaded){
+      pending = this.props.statusNumbers.pending===undefined?0:this.props.statusNumbers.pending;
+      approved = this.props.statusNumbers.approved===undefined?0:this.props.statusNumbers.approved;
+      canceled = this.props.statusNumbers.canceled===undefined?0:this.props.statusNumbers.canceled;
+      declined = this.props.statusNumbers.declined===undefined?0:this.props.statusNumbers.approved;
+      all_status = pending + approved + canceled+ declined;
+    }
+
     return(<Formik 
       enableReinitialize
       onSubmit={this.onSubmitHandler} 
@@ -92,7 +112,7 @@ class MyRequests extends Component {
                       checked={values.status==null}
                       onClick={() => setFieldValue("status", null)}
                     >
-                      <Badge variant="light">{record_number.all}</Badge>
+                      <Badge variant="light">{all_status}</Badge>
                        &nbsp;All Status
                     </ToggleButton>
                   </ButtonGroup>
@@ -104,7 +124,7 @@ class MyRequests extends Component {
                       checked={values.status=="pending"}
                       onClick={() => setFieldValue("status", "pending")}
                     >
-                      <Badge className="pending" variant="light">9</Badge>
+                      <Badge className="pending" variant="light">{pending}</Badge>
                        &nbsp;Pending
                     </ToggleButton>
                   </ButtonGroup>
@@ -116,7 +136,7 @@ class MyRequests extends Component {
                       checked={values.status=="approved"}
                       onClick={() => setFieldValue("status", "approved")}
                     >
-                      <Badge className="approved" variant="light">9</Badge>
+                      <Badge className="approved" variant="light">{approved}</Badge>
                       &nbsp;Approved 
                     </ToggleButton>
                   </ButtonGroup>
@@ -128,7 +148,7 @@ class MyRequests extends Component {
                       checked={values.status=="canceled"}
                       onClick={() => setFieldValue("status", "canceled")}
                     >
-                      <Badge className="canceled" variant="light">9</Badge>
+                      <Badge className="canceled" variant="light">{canceled}</Badge>
                       &nbsp;Canceled 
                     </ToggleButton>
                   </ButtonGroup>
@@ -140,7 +160,7 @@ class MyRequests extends Component {
                       checked={values.status=="declined"}
                       onClick={() => setFieldValue("status", "declined")}
                     >
-                      <Badge className="denied" variant="light">9</Badge>
+                      <Badge className="denied" variant="light">{declined}</Badge>
                       &nbsp;Declined 
                     </ToggleButton>
                   </ButtonGroup>
@@ -192,8 +212,8 @@ class MyRequests extends Component {
                             }
                             fifthColumn.push(
                               <div>
-                              <p> Rest Days: {item.fourth_column.rest_day.join()}</p>
-                              <p> Work Days: {item.fourth_column.work_days.join()}</p>
+                               <p> Rest Days: {item.fourth_column?.rest_day.join()}</p>
+                              <p> Work Days: {item.fourth_column?.work_days.join()}</p>
                               </div>
                             ); 
                             
@@ -287,13 +307,16 @@ class MyRequests extends Component {
 
   const mapStateToProps = (state) => {
     return {
-      requestList  : state.requestList.instance,
-      isListLoaded : state.requestList.isListLoaded
+      requestList     : state.requestList.instance,
+      isListLoaded    : state.requestList.isListLoaded,
+      isNumbersLoaded : state.requestList.isNumbersLoaded,
+      statusNumbers   : state.requestList.statusNumbers
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchRequestList : ( params ) => dispatch( fetchRequestList(  params ) ),
+      fetchRequestList : ( params ) => dispatch( fetchRequestList(  params ) ), 
+      fetchStatusNumbers : ( params , requestList ) => dispatch( fetchStatusNumbers( params , requestList ) ),
     }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(MyRequests);
