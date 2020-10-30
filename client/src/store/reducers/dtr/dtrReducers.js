@@ -4,6 +4,10 @@
 
 const initState = {
     isDtrLoaded : false,
+    isFilterLoaded : false,
+    list: [],
+    filter: [],
+    selectedPayrollCutoff: {}
 }
 
 const dtrReducer = (state = initState, action) => {
@@ -14,19 +18,34 @@ const dtrReducer = (state = initState, action) => {
          *  Logout Actions
          */
         case "FETCH_DTR_SUCCESS":
-            message = "Dtr Fetching Success!"
-            return {
+            result = {
+                ...state,
                 list : action.list,
                 isDtrLoaded : true,
             }
             break;
+
+        case "FETCH_DTR_FILTER_SUCCESS":
+            result = {
+                ...state,
+                filter : action.filter,
+                isFilterLoaded : true,
+            }
+            break;
+            
         case "FETCH_DTR_FAILED":
             message = "Fetching Dtr Failed!"
             return {
                 ...action.error,
             }
             break;
-
+        
+        case "SET_SELECTED_PAYROLL_CUTOFF":
+            return {
+                ...state,
+                selectedPayrollCutoff : action.payrollCutoff
+            };
+            break;
         
         
         default:

@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
+import withRouter from '../services/HandleRoute';
 
 import Validator from "../services/Validator";
 import { connect } from 'react-redux';
@@ -54,4 +55,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, null)(ProtectedRoute);
+export default connect(mapStateToProps, null)( withRouter(ProtectedRoute));

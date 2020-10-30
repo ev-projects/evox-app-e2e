@@ -48,7 +48,9 @@ Route::group(['prefix' => 'payroll', 'middleware' => ['jwtauth', 'auth.apikey']]
     Route::group(['prefix' => 'cutoff'], function () {
 
         
-        
+        # Gets all the Payroll Cutoff Lists
+        Route::get('/get_filter_for_dtr/{user_id}', 'PayrollCutoffController@get_filter_for_dtr');
+
         # Gets all the Payroll Cutoff Lists
         Route::get('/all', 'PayrollCutoffController@all');
 

@@ -1,10 +1,12 @@
-import { viewEmployeeDtr } from '../../store/actions/dtrActions';
+
+import { viewEmployeeDtr, getFilterForDtr, setSelectedPayrollCutoff } from '../../store/actions/dtrActions';
 import { fetchUser } from '../../store/actions/userActions'
 
 import React, { Component } from "react";
 import "./DailyTimeRecord.css";
 
 import { Container,Row,Col,Table,Image,Card,Spinner } from 'react-bootstrap';
+import Select from "react-select";
 import { connect } from 'react-redux';
 import DtrFormatter from '../../services/DtrFormatter';
 import { Link } from "react-router-dom"; 
@@ -12,24 +14,206 @@ import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../c
 import PageLoading from "../PageLoading";
 import Formatter from '../../services/Formatter';
 import Wrapper from '../../components/Template/Wrapper';
+import Validator from '../../services/Validator';
 
 class DailyTimeRecord extends Component {
 
     constructor(props){
-        super(props)
+        super(props);
+
+        this.initialState = {
+
+          selectedYear : {},
+          selectedMonth : {},
+          selectedPayrollCutoff: {},
+          isCurrentPayrollCutoffLoaded : false,
+        }
+        
+        this.state = this.initialState; 
     }
+
+    
+
+    // Function for handling the onChange of Select Year
+    handleSelectYear = ( selected ) => {
+
+      this.setState({
+          selectedYear: Validator.isValid( selected ) ? selected : null,
+          selectedMonth: {},
+          selectedPayrollCutoff: {},
+      });
+    }
+
+    // Function for handling the onChange of Select Month
+    handleSelectMonth = ( selected ) => {
+      this.setState({
+          selectedMonth: Validator.isValid( selected ) ? selected : null,
+          selectedPayrollCutoff: {},
+      });
+    }
+
+    // Function for handling the onChange of Select Payroll Cutoff
+    handleSelectPayrollCutoff = ( selected ) => {
+      this.setState({
+          selectedPayrollCutoff: Validator.isValid( selected ) ? selected : null,
+      });
+
+      // If there's a selected year, month, and payroll cutoff, fetch the DTR base on the selected cutoff.
+      if( Validator.isValid( this.state.selectedYear ) 
+          && Validator.isValid( this.state.selectedMonth ) 
+          && Validator.isValid( selected ) ) {
+
+        const payrollCutoff = this.props.dtr.filter[this.state.selectedYear.value][this.state.selectedMonth.value].data[selected.value]
+
+        this.props.viewEmployeeDtr(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
+
+        this.props.setSelectedPayrollCutoff( payrollCutoff );
+      }
+    }
+
+
+    // Sets the selected Payorll Cutoff Instance of the DTR filters.
+    setPayrollCutoffInstance = async( payrollCutoff ) => {
+      
+      await this.setState({
+        selectedYear: {
+          label: payrollCutoff.year,
+          value: payrollCutoff.year,
+        },
+        selectedMonth: {
+          label: payrollCutoff.month_label,
+          value: payrollCutoff.month,
+        },
+        selectedPayrollCutoff: {
+          label: payrollCutoff.name,
+          value: payrollCutoff.id,
+        },
+        isCurrentPayrollCutoffLoaded : true
+      })
+
+      await this.props.viewEmployeeDtr(this.props.params.id , payrollCutoff.start_date, payrollCutoff.end_date);
+
+      await this.props.setSelectedPayrollCutoff( payrollCutoff );
+    }
+
+    
+
 
     componentWillMount(){
-        this.props.viewEmployeeDtr(this.props.params.id,this.props.params.from,this.props.params.to);
+        // Get the Filters to be used for the DTR (Payroll Cutoffs)
+        this.props.getFilterForDtr(this.props.params.id);
     }
 
+    componentWillReceiveProps = async(nextProps) => {
+      
+      // If the 'settings' props is not yet loaded OR the settings prop is already loaded but the isCurrentPayrollCutoffLoaded is FALSE, set the default selected data.
+      if( nextProps.settings != this.props.settings  ||
+          ( nextProps.settings == this.props.settings && !this.state.isCurrentPayrollCutoffLoaded )) {
+          
+          // If there's a selected Payroll Cutoff, use it as the current instance.
+          if( Object.keys(this.props.dtr.selectedPayrollCutoff).length > 0 ) {
+            this.setPayrollCutoffInstance( this.props.dtr.selectedPayrollCutoff );
+
+          // If there's NOT selected Payroll Cutoff, use the default payroll cutoff instance.
+          } else {
+            this.setPayrollCutoffInstance( nextProps.settings.current_payroll_cutoff );
+          }
+      }
+
+      
+  }
+
     render(){
-        if(this.props.dtr.isDtrLoaded){
+      
+        var yearOptions = [];
+        var monthOptions = [];
+        var payrollCutoffOptions = [];
+
+        // Construction of Year Options to be rendered in the select.
+        for (const [key, value] of Object.entries(this.props.dtr.filter)) {
+          // yearOptions.push(<option value={key}>{key}</option>);
+          yearOptions.push({
+            value : key,
+            label : key,
+          });
+        };
+
+        
+        if( Object.keys(this.props.dtr.filter).length > 0 ) {
+          // Construction of Month Options to be rendered in the select. Checks first if there's a selected Year before proceeding.
+          if( Validator.isValid( this.state.selectedYear?.value ) ) {
+
+              for (const [key, value] of Object.entries(this.props.dtr.filter[this.state.selectedYear.value])) {
+                // monthOptions.push(<option value={key}>{value.label}</option>);
+                monthOptions.push({
+                  value : key,
+                  label : value.label,
+                });
+              };
+
+              // Construction of Payroll Cutoff Options to be rendered in the select. Checks first if there's a selected Year and Month before proceeding.
+              if( Validator.isValid( this.state.selectedMonth?.value ) ) {
+                for (const [key, value] of Object.entries(this.props.dtr.filter[this.state.selectedYear.value][this.state.selectedMonth.value].data)) {
+                  // payrollCutoffOptions.push(<option value={key}>{value.name}</option>);
+                  payrollCutoffOptions.push({
+                    value : value.id,
+                    label : value.name,
+                  });
+                };
+              }
+          }
+        }
+
+
         return (
         <Wrapper>
           <ContainerWrapper>
             <ContainerBody>
               <Content col="12" title="Daily Time Record">
+                { this.props.dtr.isFilterLoaded? 
+                    <div className="dtr-filter"> 
+                      
+                      <Select
+                        name="year"
+                        value={this.state.selectedYear}
+                        className="year-dropdown"
+                        onChange={this.handleSelectYear}
+                        options={yearOptions}
+                        placeholder="Select Year"
+                      />
+
+                      { Validator.isValid( this.state.selectedYear?.value ) ?
+                          
+                          <Select
+                            name="month"
+                            value={this.state.selectedMonth}
+                            className="month-dropdown"
+                            onChange={this.handleSelectMonth}
+                            options={monthOptions}
+                            placeholder={"Select Payroll Cutoff"}
+                          /> 
+                        : 
+                          null
+                      }
+
+                      { Validator.isValid( this.state.selectedYear?.value ) && Validator.isValid( this.state.selectedMonth?.value ) ?
+                          
+                          <Select
+                            name="payroll_cutoff"
+                            value={this.state.selectedPayrollCutoff}
+                            className="payroll-cutoff-dropdown"
+                            onChange={this.handleSelectPayrollCutoff}
+                            options={payrollCutoffOptions}
+                            placeholder={"Select Payroll Cutoff"}
+                          />
+                        : 
+                          null
+                      }
+                    </div>
+                  : 
+                    null
+                }
+              { this.props.dtr.isDtrLoaded && Validator.isValid( this.state.selectedYear?.value ) && Validator.isValid( this.state.selectedMonth?.value ) && this.state.selectedPayrollCutoff?.value != undefined  ?
                 <Table responsive hover>
                     <thead>
                         <tr>
@@ -97,13 +281,16 @@ class DailyTimeRecord extends Component {
                     })}
                     </tbody>
                 </Table>
+                :
+                null  
+              }
               </Content>
             </ContainerBody>
           </ContainerWrapper>          
         </Wrapper>
         );
-        }
-        return <PageLoading/>;
+        // }
+        // return <PageLoading/>;
     }
 };
 
@@ -118,13 +305,16 @@ const DtrRequest = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-      dtr : state.dtr
+      dtr : state.dtr,
+      settings: state.settings
   }
 }
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchUser : () => dispatch( fetchUser() ),
-    viewEmployeeDtr : (id,from,to) => dispatch( viewEmployeeDtr(id,from,to) ),
+    viewEmployeeDtr : (user_id,from,to) => dispatch( viewEmployeeDtr(user_id,from,to) ),
+    getFilterForDtr : (user_id) => dispatch( getFilterForDtr(user_id) ),
+    setSelectedPayrollCutoff :   ( payrollCutoff ) => dispatch( setSelectedPayrollCutoff( payrollCutoff ) ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(DailyTimeRecord);

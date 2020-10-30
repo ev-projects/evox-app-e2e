@@ -56,3 +56,26 @@ table .center{
 .sh,.lh{
 	color: rgb(255, 194, 71) !important; 	
 }
+
+.dtr-filter {
+	width: 40%;
+	float:left;
+}
+
+
+.year-dropdown {
+	float: left;
+	width: 20% !important;
+	margin-right: 10px;
+}
+.month-dropdown {
+	float: left;
+	width: 25% !important;
+	margin-right: 10px;
+}
+.payroll-cutoff-dropdown {
+
+	float: left;
+	width: 40% !important;
+	margin-right: 10px;
+}

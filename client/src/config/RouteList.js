@@ -77,7 +77,7 @@ const RoutesList = () => {
         <ProtectedRoute exact path="/app/admin/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
 
 
-        <ProtectedRoute exact path="/app/dtr/:id/:from/:to" ><DailyTimeRecord/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/dtr/:id/" ><DailyTimeRecord/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>
       <Footer />
