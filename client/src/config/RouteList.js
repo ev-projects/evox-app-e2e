@@ -34,6 +34,7 @@ import DtrSummary from "../container/MyTeam/DtrSummary";
 import PayrollCutoff from "../container/Admin/PayrollCutoff";
 import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandlers";
 import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervisors";
+import MyTeamList from "../container/MyTeam/MyTeamList";
 
 const RoutesList = () => {
 
@@ -68,6 +69,8 @@ const RoutesList = () => {
 
         <ProtectedRoute exact path="/app/account/MyRequests"><MyRequests/></ProtectedRoute>
 
+        {/* For Supervisors */}
+        <ProtectedRoute exact path="/app/team/MyTeamList"><MyTeamList/></ProtectedRoute>
         <ProtectedRoute exact path="/app/team/MyTeamRequests"><MyTeamRequests/></ProtectedRoute>
         <ProtectedRoute exact path="/app/team/DtrSummary"><DtrSummary/></ProtectedRoute>
 

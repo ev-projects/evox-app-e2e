@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import moment from 'moment';
 import { fetchRequestList,fetchStatusNumbers } from '../../store/actions/requestListActions';
 import { InputDate,InputTime   } from '../../components/DatePickerComponent/DatePicker.js';
+import Paginate from "../../components/Template/Paginate";
 
 class MyRequests extends Component {
 
@@ -267,7 +268,7 @@ class MyRequests extends Component {
                     })}
                   </tbody>
                 </Table>
-                <Pagination className="justify-content-center" >{pagination}</Pagination>
+                <Paginate pagination={request_list} />
                 </div>) : (<div> Sorry, No Record Found </div>)}
                   </Tab>
                 </Tabs>    

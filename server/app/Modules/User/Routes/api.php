@@ -42,6 +42,9 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     
     # Gets the Temporary Schedules of the User indicated.
     Route::get('temporary_schedules', 'UserController@temporary_schedules');//->middleware('auth.apikey');
+    
+    # Gets the list of Teams of the User
+    Route::get('my_team_list', 'UserController@my_team_list');//->middleware('auth.apikey');
 
 });
 
