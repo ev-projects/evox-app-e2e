@@ -30,16 +30,17 @@ class MyRequests extends Component {
           }
       } 
   }
-  this.props.fetchRequestList( formData );
+  this.props.fetchRequestList( formData , this.props.statusNumbers );
   }
 
   componentWillMount(){
-    this.props.fetchRequestList();
+    var formData = { "url" : "my_requests" };
+    this.props.fetchRequestList(formData);
   }
 
   componentDidUpdate(){
     if(!this.props.isNumbersLoaded&&this.props.isListLoaded){
-      var formData = { "url" : "my_request" };
+      var formData = { "url" : "my_requests" };
       this.props.fetchStatusNumbers( formData , this.props.requestList );
     }
   }
@@ -53,7 +54,7 @@ class MyRequests extends Component {
     department_id: null,
     name: null,
     page: 1,
-    url: 'MyRequests'
+    url: 'my_requests'
   }
   
 
@@ -87,7 +88,7 @@ class MyRequests extends Component {
       pending = this.props.statusNumbers.pending===undefined?0:this.props.statusNumbers.pending;
       approved = this.props.statusNumbers.approved===undefined?0:this.props.statusNumbers.approved;
       canceled = this.props.statusNumbers.canceled===undefined?0:this.props.statusNumbers.canceled;
-      declined = this.props.statusNumbers.declined===undefined?0:this.props.statusNumbers.approved;
+      declined = this.props.statusNumbers.declined===undefined?0:this.props.statusNumbers.declined;
       all_status = pending + approved + canceled+ declined;
     }
 
@@ -315,7 +316,7 @@ class MyRequests extends Component {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchRequestList : ( params ) => dispatch( fetchRequestList(  params ) ), 
+      fetchRequestList : ( params , request_numbers ) => dispatch( fetchRequestList(  params , request_numbers ) ), 
       fetchStatusNumbers : ( params , requestList ) => dispatch( fetchStatusNumbers( params , requestList ) ),
     }
   }

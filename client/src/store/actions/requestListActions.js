@@ -6,7 +6,7 @@ import Formatter from "../../services/Formatter";
 
 
 // Fetch Request List
-export const fetchRequestList = ( data = null ) => {
+export const fetchRequestList = ( data = null , status_numbers = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -14,7 +14,7 @@ export const fetchRequestList = ( data = null ) => {
             params : data
         })
         .then(result => {
-            if (data === null){
+            if (status_numbers === null){
                 dispatch({
                     'type'      : 'FETCH_REQUEST_LIST_SUCCESS_INITIALLY', 
                     'requestList'  : result.data.content
@@ -22,7 +22,8 @@ export const fetchRequestList = ( data = null ) => {
             }else{
                 dispatch({
                     'type'      : 'FETCH_REQUEST_LIST_SUCCESS', 
-                    'requestList'  : result.data.content
+                    'requestList'  : result.data.content,
+                    'statusNumbers'  : status_numbers,
                 })
             }
             
@@ -53,6 +54,24 @@ export const fetchStatusNumbers = ( params , requestList ) => {
         });
     }
 }
+
+// actions for the bulk update of the requests
+export const bulkRequest = ( post_data ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/request/bulk-request/",
+            data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 
 

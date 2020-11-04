@@ -64,10 +64,7 @@ class RequestResource extends JsonResource
                       break;
                     default:
                   }
-
-                  $request->table_name = substr_replace(slug_to_text($request->table_name),"",-1);
                   $request->status = ucfirst($request->status);
-
             }
 
 

@@ -63,12 +63,12 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
      * @param $id
      * @return Overtime $overtime
      */
-    public function update(array $data, $id)
+    public function update(array $data, $id_or_overtime)
     {
         DB::beginTransaction();
         try {
 
-            $overtime = Overtime::findOrFail($id);
+            $overtime =   ( $id_or_overtime instanceof Overtime ) ? $id_or_overtime : Overtime::findOrFail($id_or_overtime);
             
             if( get_authenticated_user( $overtime->user_id ) ) {
             
@@ -257,8 +257,19 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
     {
         try {
             
-            $overtime = $this->update($data, $id);
-            $overtime->approve();
+            
+            # Fetch the Overtime base on the ID
+            $overtime = Overtime::findOrFail($id);
+
+            // Authenticate the User first if the Overtime submitter is under the user logged in's supervisee
+            if( is_under_supervisee( $overtime->user_id ) ) {
+
+                if(!empty($data)){
+                    $this->update($data, $overtime);
+                }
+
+                $overtime->approve();
+            }
 
             return $overtime;
 
@@ -280,8 +291,20 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
     {
         try {
             
-            $overtime = $this->update($data, $id);
-            $overtime->decline();
+             # Fetch the Overtime base on the ID
+             $overtime = Overtime::findOrFail($id);
+            
+            // Authenticate the User first if the Overtime submitter is under the user logged in's supervisee
+            if( is_under_supervisee( $overtime->user_id ) ) {
+
+                if(!empty($data)){
+                    $overtime = $this->update($data, $overtime);
+                }else{
+                    $overtime = Overtime::findOrFail($id);
+                }
+
+                $overtime->decline();
+            }
 
             return $overtime;
 

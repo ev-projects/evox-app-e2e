@@ -208,8 +208,9 @@ return [
     'find_payroll_cutoff_success' => 'The Payroll Cutoff is now shown!',
     
     'all_payroll_cutoff_success' => 'All the Payroll Cutoff is now shown!',
-        
+    
 
+    'bulk_request_update' => 'Requests are now updated',
     
     /**
      *  Schedule Forms

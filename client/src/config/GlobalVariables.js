@@ -14,6 +14,11 @@ global.payroll_cutoff = "/app/admin/PayrollCutoff/";
 global.assign_department_handlers = "/app/admin/AssignDepartmentHandlers/";
 global.assign_employee_supervisors = "/app/admin/AssignEmployeeSupervisors/";
 
+global.overtime = "/app/request/Overtime/";
+global.work_from_home = "/app/request/WorkFromHome/";
+global.alter_log = "/app/request/AlterLog/";
+global.change_schedule = "/app/request/ChangeSchedule/";
+global.rest_day_work = "/app/request/RestDayWork/";
 
 global.invalid_token_response = [
     'token_expired',

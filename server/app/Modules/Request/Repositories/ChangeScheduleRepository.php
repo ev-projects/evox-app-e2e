@@ -178,7 +178,9 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
             // Authenticate the User first if the Change Schedule Submitter is under the user logged in's supervisee
             if( is_under_supervisee( $change_schedule->user_id ) ) {
 
-                $this->update($data, $change_schedule);
+                if(!empty($data)){
+                    $this->update($data, $change_schedule);
+                }
 
                 $change_schedule->approve();
             }
@@ -212,7 +214,9 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
             // Authenticate the User first if the Change Schedule Submitter is under the user logged in's supervisee
             if( is_under_supervisee( $change_schedule->user_id ) ) {
 
-                $this->update($data, $change_schedule);
+                if(!empty($data)){
+                    $this->update($data, $change_schedule);
+                }
 
                 $change_schedule->decline();
             }

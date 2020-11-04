@@ -31,9 +31,21 @@ class RequestRepository implements RequestRepositoryInterface{
             $request_tables     = get_constant('REQUEST_TABLES');
             $request_tables_no  = count(get_constant('REQUEST_TABLES')) - 1;
             
+            # Get the Id of Team or User and add it to the query
+            if($data->url=='my_team_requests'){
+                $id = under_supervisee_id_list(Auth::user()->supervisee()->select('id')->get());
+                $list = implode(', ', $id); 
+                $id_filter = '
+                WHERE user_id IN ('.$list.')';          
+            }elseif($data->url=='my_requests'){
+                $id = Auth::user()->id;
+                $id_filter = '
+                WHERE user_id = '.$id.'';  
+            }
+
             # Construct the Query by Looping the Tables that will be fetch for request numbers
             foreach(get_constant('REQUEST_TABLES')  as $key => $value) {
-                $query .= ' SELECT status FROM '.  $value;
+                $query .= ' SELECT status FROM '.  $value . ' ' .$id_filter;
 
                 if($request_tables_no!=$key){
                     $query .= ' 
@@ -42,17 +54,7 @@ class RequestRepository implements RequestRepositoryInterface{
                 }
             }
 
-            # Get the Id of Team or User and add it to the query
-            if($data->url=='my_team_request'){
-                $id = under_supervisee_id_list(Auth::user()->supervisee()->select('id')->get());
-                $list = implode(', ', $id); 
-                $query .= '
-                WHERE user_id IN ('.$list.')';          
-            }elseif($data->url=='my_request'){
-                $id = Auth::user()->id;
-                $query .= '
-                WHERE user_id = '.$id.'';  
-            }
+            
 
             # Run the Query
             $status =  DB::select( DB::raw("SELECT request.status, COUNT(*) 

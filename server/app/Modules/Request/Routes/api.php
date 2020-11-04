@@ -24,7 +24,8 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
     # Request List Number
     Route::get('/request-numbers',     'RequestController@requestlistNumbers');
 
-
+    # Request List Number
+    Route::post('/bulk-request',     'RequestController@bulkRequest');
 
     # Find existing Request Collections
     Route::get('/', 'RequestController@find'); 

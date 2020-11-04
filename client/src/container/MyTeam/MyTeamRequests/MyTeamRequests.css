@@ -64,3 +64,12 @@
 .fa-times-circle{
     color: red  !important;
 }
+
+.display-block{
+    display: block !important   ;
+    width: 80px !important;
+}
+
+.input-feedback{
+    color: red !important;
+}

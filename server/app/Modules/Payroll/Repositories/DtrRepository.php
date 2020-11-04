@@ -396,6 +396,10 @@ class DtrRepository implements DtrRepositoryInterface{
                 # Gets the DTR related on the Alter Log.
                 $dtr = $alter_log->dtr()->first();
 
+                if ($dtr === null) {
+                    return get_constant('DTR_NOT_EXISTS');
+                }
+
                 // # Update the New Time in and out of the DTR.
                 $dtr->time_in =     $alter_log->new_time_in;
                 $dtr->time_out =    $alter_log->new_time_out;
@@ -439,6 +443,10 @@ class DtrRepository implements DtrRepositoryInterface{
                 # Gets the DTR related on the Alter Log.
                 $dtr = $alter_log->dtr()->first();
 
+                if ($dtr === null) {
+                    return get_constant('DTR_NOT_EXISTS');
+                }
+
                 // # Set the Time In/Out to Current Time in and out of the DTR.
                 $dtr->time_in =     $alter_log->current_time_in;
                 $dtr->time_out =    $alter_log->current_time_out;
@@ -481,7 +489,11 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Gets the DTR related on the Rest Day Work.
                 $dtr = $rest_day_work->dtr()->first();
-                
+
+                if ($dtr === null) {
+                    return get_constant('DTR_NOT_EXISTS');
+                }
+
                 # Updates the DTR properties
                 $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
                 $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
@@ -538,6 +550,10 @@ class DtrRepository implements DtrRepositoryInterface{
                 # Gets the DTR related on the Rest Day Work.
                 $dtr = $rest_day_work->dtr()->first();
                 
+                if ($dtr === null) {
+                    return get_constant('DTR_NOT_EXISTS');
+                }
+
                 # Updates the DTR properties
                 $dtr->start_datetime        =  null;
                 $dtr->end_datetime          =  null;

@@ -178,7 +178,9 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             // Authenticate the User first if the Alter Log Submitter is under the user logged in's supervisee
             if( is_under_supervisee( $alter_log->user_id ) ) {
 
-                $this->update($data, $alter_log);
+                if(!empty($data)){
+                    $this->update($data, $alter_log);
+                }
 
                 $alter_log->approve();
             }
@@ -212,7 +214,9 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             // Authenticate the User first if the Alter Log Submitter is under the user logged in's supervisee
             if( is_under_supervisee( $alter_log->user_id ) ) {
 
-                $this->update($data, $alter_log);
+                if(!empty($data)){ 
+                    $this->update($data, $alter_log);
+                }
 
                 $alter_log->decline();
             }

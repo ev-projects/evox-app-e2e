@@ -263,14 +263,14 @@ class User extends Authenticatable implements JWTSubject
                     'alter_logs.updated_at');
 
         #Team or Individual Request
-        if($request=='my_team_request'){
+        if($filter['url']=='my_team_requests'){
             $id = under_supervisee_id_list($this->supervisee()->select('id')->get());
 
             $change_schedules->whereIn('change_schedules.user_id',$id);
             $overtimes       ->whereIn('overtimes.user_id',$id);
             $rest_day_works  ->whereIn('rest_day_works.user_id',$id);
             $alter_logs      ->whereIn('alter_logs.user_id',$id);
-        }elseif($request=='my_request'){
+        }elseif($filter['url']=='my_requests'){
             $id = auth()->user()->id;
 
             $change_schedules->where('change_schedules.user_id',$id);

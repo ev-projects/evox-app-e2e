@@ -259,7 +259,9 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
             // Authenticate the User first if the Rest Day Work Submitter is under the user logged in's supervisee
             if( is_under_supervisee( $rest_day_work->user_id ) ) {
 
-                $this->update($data, $rest_day_work);
+                if(!empty($data)){
+                    $this->update($data, $rest_day_work);
+                }
 
                 $rest_day_work->approve();
             }
@@ -292,7 +294,10 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
             // Authenticate the User first if the Rest Day Work Submitter is under the user logged in's supervisee
             if( is_under_supervisee( $rest_day_work->user_id ) ) {
 
-                $this->update($data, $id);
+                if(!empty($data)){
+                    $this->update($data, $rest_day_work);
+                }
+
 
                 $rest_day_work->decline();
             }

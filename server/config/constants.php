@@ -81,7 +81,8 @@ return [
     'REQUEST_TABLES' => [
         'overtimes', 
         'alter_logs', 
-        'rest_day_works'
+        'rest_day_works',
+        'change_schedules'
     ],
 
     'REQUEST_TYPES' => [
