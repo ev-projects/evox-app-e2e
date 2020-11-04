@@ -15,6 +15,7 @@ import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js'
 import Formatter from '../../../services/Formatter';
 import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } from '../../../store/actions/scheduleActions';
 import Wrapper from "../../../components/Template/Wrapper/index.js";
+import BackButton from "../../../components/Template/BackButton/index.js";
 
 class AssignDefault extends Component {    
   constructor(props){
@@ -372,8 +373,10 @@ class AssignDefault extends Component {
      ) : null}
     <Col sm={7}>
       <Button variant="primary" type="submit">
-        Create
+        Update
       </Button>
+      &nbsp;
+      <BackButton {...this.props} />
     </Col>
   </ContainerWrapper>
   </form>

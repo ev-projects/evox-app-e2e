@@ -288,6 +288,52 @@ class UserRepository implements UserRepositoryInterface{
 
 
     /**
+     *  Responsible for fetching all the Supervisee of the User 
+     * @param $id
+     * @return User $user_collection
+     */
+    public function get_my_team_list( $id ){
+        try {
+            $user_collection = [];
+            if( get_authenticated_user( $id )  ) {
+
+                $user_collection = User::findOrFail( $id )->supervisee();
+                
+                if( is_valid( request()->get('department_id') ) ) {
+                    $user_collection->where('department_id', '=', request()->get('department_id'));
+                }
+
+                if( is_valid( request()->get('name') ) ) {
+                    $user_collection->whereRaw("(first_name LIKE '%".request()->get('name')."%' OR last_name LIKE '%".request()->get('name')."%')");
+                }
+
+                if( is_valid( request()->get('status') ) ) {
+                    $user_collection->where('is_active', '=', request()->get('status'));
+                }
+                
+                if( request()->get('page') == 'all' ){
+                    
+                    $user_collection->orderBy('first_name', 'asc')
+                                    ->orderBy('last_name', 'asc')
+                                    ->get();
+    
+                } else {
+                    $user_collection = $user_collection->orderBy('first_name', 'asc')
+                                                        ->orderBy('last_name', 'asc')
+                                                        ->paginate(15);
+                }
+            }
+            log_to_file('info', 'Success', [$user_collection]);
+            return $user_collection;
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+
+    /**
      *  Responsible for fetching all the Active Users
      * @param $id
      * @return User $user

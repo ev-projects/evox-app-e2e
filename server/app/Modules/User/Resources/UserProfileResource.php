@@ -58,9 +58,10 @@ class UserProfileResource extends JsonResource
 
             // Create Resource for Department Handled
             $departments_handled = [];
-            foreach( $this->departments_handled()->get()  as $departments){
+            foreach( $this->departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
                 array_push( $departments_handled, $departments );
             }
+
 
             return array_merge( 
                 $main_info, 

@@ -20,6 +20,8 @@ import payrollCutoffReducers from "./admin/payrollCutoffReducers"
 
 import lookupListReducers from "./lookup/lookupListReducers"
 
+import myTeamReducers from "./supervisor/myTeamReducers"
+
 import dtrReducer from "./dtr/dtrReducers";
 
 import dtrSummaryReducers from "./dtr/dtrSummaryReducers";
@@ -42,7 +44,11 @@ const rootReducer = combineReducers({
     restDayWork : restDayWorkReducers,
 
     payrollCutoff: payrollCutoffReducers,
+    
     requestList: requestListReducers,
+
+    myTeam : myTeamReducers,
+
     dtrSummary: dtrSummaryReducers,
 
     lookup:   lookupListReducers,

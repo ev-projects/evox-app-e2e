@@ -18,6 +18,8 @@ interface UserRepositoryInterface
 
     public function show( $id );
 
+    public function get_my_team_list( $id );
+
     public function get_all_active_users();
 
     public function assign_roles_to_user( $user_id, array $roles_array );

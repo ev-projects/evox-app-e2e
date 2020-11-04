@@ -92,44 +92,39 @@ const Header = (props) => {
                     </li>
                   </ul>
                 </li>
-                { 
-                  Authenticator.checkRole('supervisor') ?
-                <li className="nav-item has-treeview ">
-                  <a className="nav-link" >
-                    <i className="nav-icon fa fa-users" />
-                    <p>
-                      My Team
-                      <i className="right fa fa-chevron-left" />
-                    </p>
-                  </a>
-                  <ul className="nav nav-treeview">
-                  { 
-                  Authenticator.check('supervisor', 'supervisor_access') ?
-                    <li className="nav-item">
-                    <Link className="nav-link" to="/app/team/MyTeamRequests" >
-                    <i className="nav-icon fa fa-users" aria-hidden="true"></i>
-                    <p> My Team Request</p> 
-                  </Link>
-                    </li> 
-                        :
+                {Authenticator.check('supervisor', 'supervisor_access') ?
+                    <li className="nav-item has-treeview ">
+                      <a className="nav-link" >
+                        <i className="nav-icon fa fa-users" />
+                        <p>
+                          My Team
+                          <i className="right fa fa-chevron-left" />
+                        </p>
+                      </a>
+                      <ul className="nav nav-treeview">
+                        <li className="nav-item">
+                          <Link className="nav-link" to="/app/team/MyTeamList" >
+                            <i className="nav-icon fa fa-users" aria-hidden="true"></i>
+                            <p> My Team List</p> 
+                          </Link>
+                        </li> 
+                        <li className="nav-item">
+                          <Link className="nav-link" to="/app/team/MyTeamRequests" >
+                            <i className="nav-icon fa fa-users" aria-hidden="true"></i>
+                            <p> My Team Request</p> 
+                          </Link>
+                        </li> 
+                        <li className="nav-item">
+                          <Link className="nav-link" to="/app/team/DtrSummary" >
+                            <i className="nav-icon fa fa-file-text nav-icon" />
+                            <p>DTR Summary</p>
+                          </Link>
+                        </li>
+                      </ul>
+                    </li>
+                  :
                   null
                 }
-                { 
-                  Authenticator.check('supervisor', 'supervisor_access') ?
-                    <li className="nav-item">
-                      <Link className="nav-link" to="/app/team/DtrSummary" >
-                        <i className="nav-icon fa fa-file-text nav-icon" />
-                        <p>DTR Summary</p>
-                      </Link>
-                    </li>
-                   :
-                   null
-                 }
-                  </ul>
-                </li>
-                :
-                null
-              }
                 <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-list-alt" />

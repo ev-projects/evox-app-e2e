@@ -12,6 +12,7 @@ use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
+use App\Modules\User\Resources\UserListResourceCollection;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -67,6 +68,33 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_temporary_schedule'), 
                 ScheduleResource::collection( $user->temporarySchedules()->get() ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+
+    /**
+     * Returns the Temporary Schedules of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function my_team_list( $id ){   
+        try {
+
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+
+            $user_collection = $this->user->get_my_team_list( $id );
+
+            return success_response(
+                trans('messages.show_my_team_list'), 
+                new UserListResourceCollection( $user_collection ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
