@@ -128,12 +128,18 @@ class RequestController extends Controller
                         if($request->bulk_action =="approve"){
 
                             $overtime = $this->overtime->approve( $data , $request_bulk[0] );
-                            $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
+                            $dtr = $overtime->dtr()->first() ;
+                            if($dtr!=null){
+                                $this->dtr->compute_payroll_items( $dtr );
+                            }
 
                         }elseif($request->bulk_action =="deny"){
 
                             $overtime = $this->overtime->decline( $data , $request_bulk[0]);
-                            $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
+                            $dtr = $overtime->dtr()->first() ;
+                            if($dtr!=null){
+                                $this->dtr->compute_payroll_items( $dtr );
+                            }
 
                         }
                       break;

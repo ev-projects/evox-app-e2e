@@ -35,7 +35,11 @@ class MyTeamRequests extends Component {
       }
       this.props.bulkRequest( formData );
 
-        break;
+      // Fetch request
+      var formData = {  url: "my_team_requests" };
+      this.props.fetchRequestList( formData );
+      values.checkedList = [];
+      break;
 
       default:
         for (var key in values) {
