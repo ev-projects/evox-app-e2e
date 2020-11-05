@@ -91,6 +91,40 @@ class BhrRepository implements BhrRepositoryInterface{
 
 
     /**
+     *  Responsible for Fetching the User's Profile Picture
+     * @param string $bhr_user_number
+     * @return base64_encoded $profile_picture
+     */
+    public function get_profile_picture( string $bhr_user_number ){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
+        try {
+
+            # Call the API of BHR to fetch the User's Profile Picture
+            $profile_picture = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/photo/medium');
+
+            // Parse to base64_encode
+            $profile_picture = base64_encode($profile_picture);
+                
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $profile_picture, "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            return $profile_picture;
+
+        } catch (Exception $e) {
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+
+    
+
+
+    /**
      *  Responsible for Fetching Holidays from BHr and Syncing it on our Holiday Table. Conducts checking if holiday already exists.
      * @param string $start_date
      * @param string $end_date

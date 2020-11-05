@@ -60,7 +60,11 @@ if (! function_exists('bhr_api_call')) {
                 if( in_array( $method, array('POST', 'PUT') ) ){
                     $result = true;
                 } else {
-                    $result = json_decode($result->content);
+                    if( is_object( $result->content ) ) {
+                        $result = json_decode($result->content);
+                    } else {
+                        $result = $result->content;
+                    }
                 }
 
             // If not successful, manually throw exception.

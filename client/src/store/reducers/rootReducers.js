@@ -2,6 +2,9 @@
 
 // Declare all Reducers below....
 import userReducer from './user/userReducers';
+
+import profileReducer from './profile/profileReducer';
+
 import pageReducer from "./settings/pageReducers";
 import alertReducer from "./settings/alertReducers";
 import scheduleReducer from "./schedule/scheduleReducers";
@@ -31,7 +34,11 @@ import { combineReducers } from 'redux';
 const rootReducer = combineReducers({
     
     page : pageReducer,
+
     user : userReducer,
+
+    profile : profileReducer,
+    
     alert: alertReducer,
     dtr: dtrReducer,
     schedule: scheduleReducer,

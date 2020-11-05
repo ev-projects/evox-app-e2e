@@ -9,6 +9,7 @@ global.dashboard_url = "/app/Dashboard";
 global.template_list_url = "/app/schedule/template/";
 global.template_add = "/app/schedule/";
 global.daily_time_record_view = "/app/dtr/";
+global.profile_url = "/app/profile/";
 global.default_schedule = "/app/schedule/assign/";
 global.payroll_cutoff = "/app/admin/PayrollCutoff/";
 global.assign_department_handlers = "/app/admin/AssignDepartmentHandlers/";

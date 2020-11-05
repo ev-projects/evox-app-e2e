@@ -5,24 +5,62 @@ namespace App\Modules\User\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\Schedule\Resources\ScheduleResource;
 use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
+use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\UserListResourceCollection;
+use App\Modules\User\Resources\UserProfileResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     protected $user;
+    protected $bhr;
 
-    public function __construct(UserRepositoryInterface $user){
+    public function __construct(UserRepositoryInterface $user, 
+                                BhrRepositoryInterface $bhr){
         $this->user = $user;
+        $this->bhr = $bhr;
     }
+
+    /**
+     * Constructs the Profile Details of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function profile( $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+               
+            $user = $this->user->show( $id );
+
+            $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
+
+            return success_response(
+                trans('messages.show_profile_success'), 
+                [
+                    'user'  => new UserProfileResource( $user ), 
+                    'profile_picture'  => $profile_picture, 
+                ]
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+    
 
     /**
      * Returns the Default Schedule of the User by the User ID
@@ -108,19 +146,19 @@ class UserController extends Controller
      * @param string $user_id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function assign_roles_permissions( AssignUserRolePermissionRequest $request, $user_id ){   
+    public function assign_roles_permissions( AssignUserRolePermissionRequest $request, $id ){   
         try {
             log_activity( trans('messages.user_assign_roles_permissions_attempt') );
             
             $this->validate(new Request([
-                'user_id' => $user_id
+                'id' => $id
             ]), [
-                'user_id' => 'int'
+                'id' => 'int'
             ]);
 
-            $this->user->assign_roles_to_user( $user_id , $request->get('roles'), );
+            $this->user->assign_roles_to_user( $id , $request->get('roles'), );
 
-            $this->user->assign_permissions_to_user( $user_id ,$request->get('permissions') );
+            $this->user->assign_permissions_to_user( $id ,$request->get('permissions') );
             
             return success_response(
                 trans('messages.user_assign_roles_permissions_success'), 
@@ -133,6 +171,43 @@ class UserController extends Controller
 
 
     
+
+    /**
+     * Function for Change Password 
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function change_password( ChangePasswordRequest $request, $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+               
+            $user = $this->user->change_password( $id, $request->all() );
+
+            if( ! $user ) {
+                $message = trans('messages.current_password_not_match');
+
+                log_error([
+                    'user' => $user,
+                    'message' => $message
+                ]);
+                
+                return error_response( $message, [], JsonResponse::HTTP_NOT_FOUND);
+            }
+
+            return success_response(
+                trans('messages.change_password_success'), 
+                new UserProfileResource( $user )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 
     /**
      * Returns the Temporary Schedules of the User by the User ID

@@ -7,7 +7,7 @@ import "./BackButton.css";
 
 // Component for the Back Button 
 const BackButton = (props) => { 
-    console.log( props );
+    
     return ( props.location.previousPath != undefined ? 
         <Button type="button" className="btn btn-secondary" onClick={() => props.setRedirect( props.location.previousPath )} >Back</Button>
         :

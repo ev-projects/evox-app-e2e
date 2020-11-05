@@ -13,7 +13,7 @@ export const assignEmployeeSupervisorsActions = ( user_id, post_data ) => {
     return (dispatch, getState) => {
         API.call({
             method: "post",
-            url: "/user/assign_employees/" + user_id,
+            url: "/user/" + user_id + "/assign_employees/",
             data: post_data
         })
         .then(result => {

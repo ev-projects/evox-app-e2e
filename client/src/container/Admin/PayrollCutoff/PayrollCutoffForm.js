@@ -29,7 +29,7 @@ import RequestButtons from "../../../components/RequestComponent/RequestButtons/
 import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 
 
-class PayrollCutoff extends Component {
+class PayrollCutoffForm extends Component {
   
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = async (values) => {
@@ -185,7 +185,7 @@ const mapDispatchToProps = (dispatch) => {
         clearPayrollCutoffListInstance : () => dispatch( clearPayrollCutoffListInstance() ),
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(PayrollCutoff);
+export default connect(mapStateToProps, mapDispatchToProps)(PayrollCutoffForm);
 
 
 

@@ -8,6 +8,7 @@ use DebugBar\DebugBar;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -276,7 +277,11 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function show( $id ){
         try {
-            $user = User::findOrFail( $id );
+            $user = null;
+            
+            if( get_authenticated_user( $id )  ) {
+                $user = User::findOrFail( $id );
+            }
             log_to_file('info', 'Success', [$user]);
             return $user;
         } catch (Exception $e) {
@@ -351,21 +356,60 @@ class UserRepository implements UserRepositoryInterface{
 
 
     /**
+     *  Responsible for changing the password of the User
+     * @param $id
+     * @param array $data
+     * @return User $user
+     */
+    public function change_password( $id, $data ){
+        
+        try {
+            $user =  User::findOrFail( $id );
+            
+            if( get_authenticated_user( $user->id ) ) {
+
+                $credentials = [
+                    'username' => $user->username,
+                    'password'  => $data['current_password']
+                ];
+        
+                if( auth()->attempt( $credentials ) ){
+
+                    $user->password = Hash::make( $data['new_password'] );
+                    $user->save();
+
+                    log_to_file('info', 'Success', $user->id, 'user');
+                    return $user;
+                    
+                } else {
+
+                    return false;
+                }
+                
+            }
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+    }
+
+    /**
      *  Responsible for assigning Roles for the user.
      * @param $id
      * @return User $user
      */
-    public function assign_roles_to_user( $user_id , array $roles_array){
+    public function assign_roles_to_user( $id , array $roles_array){
         try {
             
-            if( is_under_supervisee( $user_id ) ) {
+            if( is_under_supervisee( $id ) ) {
 
-                $user =  User::findOrFail( $user_id );
+                $user =  User::findOrFail( $id );
 
                 $user->syncRoles( $roles_array );
             }
 
-            log_to_file('info', 'Success', [$user_id, $roles_array], 'assign');
+            log_to_file('info', 'Success', [$id, $roles_array], 'assign');
             return $user;
         } catch (Exception $e) {
             throw $e;
@@ -380,17 +424,17 @@ class UserRepository implements UserRepositoryInterface{
      * @param $id
      * @return User $user
      */
-    public function assign_permissions_to_user( $user_id, array $permissions_array ){
+    public function assign_permissions_to_user( $id, array $permissions_array ){
         try {
 
-            if( is_under_supervisee( $user_id ) ) {
+            if( is_under_supervisee( $id ) ) {
 
-                $user =  User::findOrFail( $user_id );
+                $user =  User::findOrFail( $id );
 
                 $user->syncPermissions( $permissions_array );
             }
             
-            log_to_file('info', 'Success', [$user_id, $permissions_array], 'assign');
+            log_to_file('info', 'Success', [$id, $permissions_array], 'assign');
             return $user;
         } catch (Exception $e) {
             throw $e;
@@ -405,10 +449,10 @@ class UserRepository implements UserRepositoryInterface{
      * @param $id
      * @return User $user
      */
-    public function assign_employees_to_user( $user_id, array $post_data ){
+    public function assign_employees_to_user( $id, array $post_data ){
         try {
 
-            $user =  User::findOrFail( $user_id );
+            $user =  User::findOrFail( $id );
 
             // If there is a Department in the post data, Sync the Users by detaching the exisitng department user first then sync the updated list.
             if( is_valid( $post_data['department_id'] ) ){
@@ -427,7 +471,7 @@ class UserRepository implements UserRepositoryInterface{
             }
             
             
-            log_to_file('info', 'Success', [$user_id, $post_data], 'assign');
+            log_to_file('info', 'Success', [$id, $post_data], 'assign');
             return $user;
         } catch (Exception $e) {
             throw $e;

@@ -36,6 +36,9 @@ Route::group(['prefix' => 'auth'], function () {
 
 # API Calls for user/{id}
 Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the list of Teams of the User
+    Route::get('profile', 'UserController@profile');//->middleware('auth.apikey');
 
     # Gets the Default Schedule of the User indicated.
     Route::get('default_schedule', 'UserController@default_schedule');//->middleware('auth.apikey');
@@ -46,21 +49,17 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     # Gets the list of Teams of the User
     Route::get('my_team_list', 'UserController@my_team_list');//->middleware('auth.apikey');
 
-});
-
-
-#####################################################################################################
-
-Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    # Gets the list of Teams of the User
+    Route::post('change_password', 'UserController@change_password');//->middleware('auth.apikey');
     
     # Gets the Payroll Cutoff of the ID indicated on the Parameter
-    Route::post('/assign_roles_permissions/{user_id}', 'UserController@assign_roles_permissions');
+    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions');
     
     # Gets the Payroll Cutoff of the ID indicated on the Parameter
-    Route::post('/assign_employees/{user_id}', 'UserController@assign_employees');
-
+    Route::post('/assign_employees/', 'UserController@assign_employees');
 
 });
+
 
 
 #####################################################################################################

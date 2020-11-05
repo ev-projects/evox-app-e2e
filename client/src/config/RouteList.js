@@ -35,6 +35,7 @@ import PayrollCutoff from "../container/Admin/PayrollCutoff";
 import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandlers";
 import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervisors";
 import MyTeamList from "../container/MyTeam/MyTeamList";
+import Profile from "../container/Profile";
 
 const RoutesList = () => {
 
@@ -81,6 +82,7 @@ const RoutesList = () => {
 
 
         <ProtectedRoute exact path="/app/dtr/:id/" ><DailyTimeRecord/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/profile/:id/" ><Profile/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>
       <Footer />

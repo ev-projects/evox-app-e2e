@@ -2,23 +2,28 @@ import React, { Component } from "react";
 import "./Header.css";
 import { connect } from 'react-redux'
 import { logOut } from '../../../store/actions/userActions'
-import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom"; 
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import moment from 'moment';
 import Authenticator from "../../../services/Authenticator";
+import Validator from "../../../services/Validator";
 
 
 const Header = (props) => {
   
-    const history = useHistory();
+    const { user, settings } = props;
 
-
-    const { user } = props;
     var name = 'Loading...';
     if(user.first_name!=null&&user.last_name!=null){
        name =  user.first_name + " " + user.last_name;
     }
+
+    var profile_picture_url = '/images/default-user-image.png';
+    if( Validator.isValid( settings.profile_picture ) ){
+      profile_picture_url =  settings.profile_picture
+    }
+
+    
 
     return (
       <div>
@@ -37,7 +42,7 @@ const Header = (props) => {
           <div className="sidebar">
             <div className="user-panel mt-3 pb-3 mb-3 d-flex">
               <div className="image">
-                <img src="/images/Carmela_Garcia.jpg" className="img-circle elevation-2" alt="User Image"/>
+                <img className="img-circle elevation-2"src={ "data:image/jpg;base64,"+profile_picture_url }  alt="User Image"/>
               </div>
               <div className="info">
                 <a href="/" className="d-block">{name}</a>
@@ -49,6 +54,12 @@ const Header = (props) => {
                   <Link className="nav-link" to="/app/Dashboard">
                     <i className="nav-icon fa fa-dashboard "/>
                     <p> Dashboard</p>
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to={ global.profile_url + user.id +'/' }>
+                    <i className="nav-icon fa fa-user"/>
+                    <p> My Profile</p>
                   </Link>
                 </li>
                 <li className="nav-item">
@@ -212,7 +223,8 @@ const Header = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-      user : state.user
+      user : state.user,
+      settings : state.settings
   }
 }
 

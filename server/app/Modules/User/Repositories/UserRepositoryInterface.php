@@ -22,11 +22,13 @@ interface UserRepositoryInterface
 
     public function get_all_active_users();
 
-    public function assign_roles_to_user( $user_id, array $roles_array );
+    public function change_password( $id, array $data);
 
-    public function assign_permissions_to_user( $user_id, array $permissions_array );
+    public function assign_roles_to_user( $id, array $roles_array );
 
-    public function assign_employees_to_user( $user_id, array $employee_id_array );
+    public function assign_permissions_to_user( $id, array $permissions_array );
+
+    public function assign_employees_to_user( $id, array $employee_id_array );
 
     public function list_via_role( $role );
 

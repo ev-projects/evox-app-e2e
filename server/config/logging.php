@@ -126,6 +126,14 @@ return [
             'path' => storage_path('logs/assign.log'),
             'level' => 'debug',
         ],
+
+        'user' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/user.log'),
+            'level' => 'debug',
+        ],
+
+
     ],
 
 ];

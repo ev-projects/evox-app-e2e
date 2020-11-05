@@ -215,7 +215,14 @@ const MyTeamListTable = (props) => {
                         <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
                       </Link>
                       &nbsp;&nbsp;&nbsp;
+                      <Link to={{
+                              pathname: global.profile_url + user.id,
+                              previousPath: props.location.pathname
+                            }}
+                          title="View Profile"
+                      >
                         <i className="fa fa-info ev-color" aria-hidden="true"></i>
+                      </Link>
                     </td>
                   </tr>         
                 })}

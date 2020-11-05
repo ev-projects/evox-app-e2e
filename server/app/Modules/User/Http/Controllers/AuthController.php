@@ -5,6 +5,7 @@ namespace App\Modules\User\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Resources\PayrollCutoffResource;
 use App\Modules\User\Resources\UserProfileResource;
@@ -14,10 +15,13 @@ use Illuminate\Http\JsonResponse;
 class AuthController extends Controller
 {
     protected $payroll;
+    protected $bhr;
     
 
-    public function __construct(PayrollRepository $payroll){
+    public function __construct(PayrollRepository $payroll,
+                                BhrRepositoryInterface $bhr){
         $this->payroll = $payroll;
+        $this->bhr = $bhr;
     }
     /**
      * Create a new AuthController instance.
@@ -60,7 +64,7 @@ class AuthController extends Controller
 
             $result = $this->get_default_payload( $result );
 
-            log_to_file('info', 'Success', $result);
+            log_to_file('info', 'Success', [], 'user');
             return success_response( trans('messages.login_success'), $result );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -77,7 +81,7 @@ class AuthController extends Controller
         try {
             log_activity( trans('messages.logout') );
 
-            log_to_file('info', 'Success', true);
+            log_to_file('info', 'Success', true, 'user');
 
             auth()->logout();
 
@@ -99,7 +103,7 @@ class AuthController extends Controller
 
             $result = $this->get_default_payload( [] );
 
-            log_to_file('info', 'Success', $result);
+            log_to_file('info', 'Success', [], 'user');
             
             return success_response( trans('messages.payload_success'), $result );
         } catch(Exception $e){
@@ -116,8 +120,10 @@ class AuthController extends Controller
         $result['constant'] = get_constant();
 
         $result['settings'] = [
-            'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll->get_payroll_cutoff()) 
+            'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll->get_payroll_cutoff()),
+            'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num )
         ];
+
 
         return $result;
     }

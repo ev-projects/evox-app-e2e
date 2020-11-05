@@ -53,6 +53,13 @@ return [
     'list_role_success' => 'Successfully shown all the Users base on Role!',
 
     /**
+     *  Profile
+     */
+    'show_profile_success' => 'Successfully shown the Profile Information!',
+    'change_password_success'    => 'Successfully changed the password!',
+    'current_password_not_match' => 'The password does not match on your current password!',
+
+    /**
      *  Department
      */
     'all_department_success' => 'Successfully fetched all Department!',
