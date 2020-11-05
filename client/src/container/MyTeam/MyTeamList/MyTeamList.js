@@ -162,17 +162,6 @@ const MyTeamListTable = (props) => {
     
       myTeamList = props.myTeam.myTeamList;
 
-      // for (let number = 1; number <= myTeamList.pagination.last_page; number++) {
-      //   pagination.push(
-      //     <Field>
-      //       {({ field, form }) => (
-      //         <div>
-      //           <Button type="submit" className="pagination_btn text-center" active={number === myTeamList.pagination.current_page} onClick={() => form.setFieldValue("page",number)}>{number}</Button>
-      //         </div>
-      //       )}
-      //     </Field>
-      //   );
-      // }
   }
 
 

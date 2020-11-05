@@ -12,6 +12,7 @@ import moment from 'moment';
 import { fetchRequestList,fetchStatusNumbers,bulkRequest } from '../../../store/actions/requestListActions';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import Paginate from "../../../components/Template/Paginate";
+import BackButton from "../../../components/Template/BackButton";
 
 class MyTeamRequests extends Component {
   onSubmitHandler = (values) => {
@@ -141,7 +142,7 @@ class MyTeamRequests extends Component {
       <Wrapper>
             <ContainerWrapper>   
             <ContainerBody>  
-                <Content col="12" title="My Team Request">
+                <Content col="12" title="My Team Request"  subtitle={ <BackButton {...this.props} /> }>
                 <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
                   <Tab eventKey="home" title="All Requests">
                   <ButtonGroup toggle className="mb-2">
@@ -372,7 +373,7 @@ class MyTeamRequests extends Component {
                         <td>{fifthColumn}</td>
                         <td> <Status status={item.status} /></td>
                         <td>{item.updated_by} / {item.updated_at}</td>
-                        <td> <Link className="nav-link" to={link}><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
+                        <td> <Link to={{ pathname: link, previousPath:  global.base_url +'team/MyTeamRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
                       </tr>         
                     })}
                   </tbody>

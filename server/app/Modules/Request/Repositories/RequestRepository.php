@@ -26,6 +26,14 @@ class RequestRepository implements RequestRepositoryInterface{
     {
         DB::beginTransaction();
         try {
+            $numbers = array(
+                "pending" => 0,
+                "approved" => 0,
+                "decline" => 0,
+                "canceled" => 0,
+            );
+
+
             # Initialize the variable
             $query = '';
             $request_tables     = get_constant('REQUEST_TABLES');
@@ -36,7 +44,13 @@ class RequestRepository implements RequestRepositoryInterface{
                 $id = under_supervisee_id_list(Auth::user()->supervisee()->select('id')->get());
                 $list = implode(', ', $id); 
                 $id_filter = '
-                WHERE user_id IN ('.$list.')';          
+                WHERE user_id IN ('.$list.')'; 
+                
+                # Return default status number if there is no assigned employee
+                if(count($id)<=0){
+                    return array( 'status_numbers' => $numbers  );
+                }
+                
             }elseif($data->url=='my_requests'){
                 $id = Auth::user()->id;
                 $id_filter = '
@@ -54,8 +68,6 @@ class RequestRepository implements RequestRepositoryInterface{
                 }
             }
 
-            
-
             # Run the Query
             $status =  DB::select( DB::raw("SELECT request.status, COUNT(*) 
                 FROM (
@@ -63,7 +75,7 @@ class RequestRepository implements RequestRepositoryInterface{
                 ) AS request
                 GROUP BY status") );
 
-            $numbers = array();
+            
             
             # Loop the result of query
             foreach ($status as $key => $value) {
