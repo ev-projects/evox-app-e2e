@@ -72,7 +72,7 @@ class Profile extends Component {
                                             <Row>
                                                 <div className="col-lg-4 text-center" >
                                                     <img src={ Validator.isValid( profile.profilePicture ) ? "data:image/jpg;base64,"+ profile.profilePicture : "/images/default-user-image.png"}
-                                                        style={{'width': '200px', 'height': '220px'}} />
+                                                        style={{'marginTop': '15px'}} />
                                                 </div>
                                                 <div className="col-lg-8" >
                                                     
