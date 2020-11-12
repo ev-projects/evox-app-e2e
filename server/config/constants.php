@@ -30,6 +30,7 @@ return [
         'department',
         'workEmail',
         'status',
+        'hireDate',
         'employmentHistoryStatus',
         'supervisorEId'
     ],

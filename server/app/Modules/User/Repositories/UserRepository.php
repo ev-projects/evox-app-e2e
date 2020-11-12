@@ -49,6 +49,7 @@ class UserRepository implements UserRepositoryInterface{
                 $user->middle_name = $bhr_user->middleName;
                 $user->last_name = $bhr_user->lastName;
                 $user->employment_status = $bhr_user->employmentHistoryStatus;
+                $user->date_hired = $bhr_user->hireDate;
                 $user->is_active = true;
                 
                 /** Fetch Department if existing */ 

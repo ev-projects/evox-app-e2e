@@ -147,24 +147,29 @@ class DailyTimeRecord extends Component {
           // Construction of Month Options to be rendered in the select. Checks first if there's a selected Year before proceeding.
           if( Validator.isValid( this.state.selectedYear?.value ) ) {
 
-              for (const [key, value] of Object.entries(this.props.dtr.filter[this.state.selectedYear.value])) {
-                // monthOptions.push(<option value={key}>{value.label}</option>);
+              var monthKeys = Object.keys(this.props.dtr.filter[this.state.selectedYear.value]).sort();
+
+              for (var i = 0; i < monthKeys.length; i++) {
                 monthOptions.push({
-                    value : key,
-                    label : value.label,
+                    value : monthKeys[i],
+                    label : this.props.dtr.filter[this.state.selectedYear.value][monthKeys[i]].label,
                 });
-              };
+              }
+
 
               // Construction of Payroll Cutoff Options to be rendered in the select. Checks first if there's a selected Year and Month before proceeding.
               if( Validator.isValid( this.state.selectedMonth?.value ) ) {
-                for (const [key, value] of Object.entries(this.props.dtr.filter[this.state.selectedYear.value][this.state.selectedMonth.value].data)) {
-                  // payrollCutoffOptions.push(<option value={key}>{value.name}</option>);
+
+                var payrollCutoffKeys = Object.keys(this.props.dtr.filter[this.state.selectedYear.value][this.state.selectedMonth.value].data).sort();
+  
+                for (var i = 0; i < payrollCutoffKeys.length; i++) {
                   payrollCutoffOptions.push({
-                    value : value.id,
-                    label : value.name,
+                      value : this.props.dtr.filter[this.state.selectedYear.value][this.state.selectedMonth.value].data[payrollCutoffKeys[i]].id,
+                      label : this.props.dtr.filter[this.state.selectedYear.value][this.state.selectedMonth.value].data[payrollCutoffKeys[i]].name,
                   });
-                };
+                }
               }
+              
           }
         }
 

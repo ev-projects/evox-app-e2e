@@ -184,6 +184,97 @@ class DtrRepository implements DtrRepositoryInterface{
 
 
     /**
+     *  Responsible for Applying the newly fetched Drupal DTR to the new DTR
+     * @param array $drupal_evox_dtr_array
+     * 
+     * @return Collection $dtr_collection
+     */
+    public function apply_drupal_evox_data_to_dtr( $drupal_evox_dtr_array )
+    {   
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "drupal_migration");
+
+            $result = [];
+
+            // Iterates the Array fetched from the Drupal Database
+            foreach( $drupal_evox_dtr_array as $drupal_evox_dtr) {
+
+                // Fetch the User via the emp_num field of the User
+                $user = User::where(['emp_num' => $drupal_evox_dtr->emp_num])->first();
+
+                // Checks if the user is existing
+                if( is_valid( $user ) ) {
+
+                    // Fetch the DTR of the User via the Date 
+                    $dtr = $user->dtr($drupal_evox_dtr->date, $drupal_evox_dtr->date)->first();
+    
+                    // Checks if the DTR is existing
+                    if( is_valid( $dtr ) ) {
+    
+                        # Update the DTR properties
+                        $dtr->start_datetime        =  $drupal_evox_dtr->start_datetime;
+                        $dtr->end_datetime          =  $drupal_evox_dtr->end_datetime;
+                        $dtr->start_flexy_datetime  =  $drupal_evox_dtr->start_flexy_datetime;
+                        $dtr->end_flexy_datetime    =  $drupal_evox_dtr->end_flexy_datetime;
+                        $dtr->break_time            =  $drupal_evox_dtr->break_time;
+    
+                        $dtr->time_in               =  $drupal_evox_dtr->time_in;
+                        $dtr->time_out              =  $drupal_evox_dtr->time_out;
+                        
+                        $dtr->is_rest_day           =  $drupal_evox_dtr->is_rest_day;
+                        $dtr->source_type_tagging   =  'default';
+                        $dtr->update();
+    
+                        // Delete the existing DTR Policies before saving the new ones.
+                        $dtr->policies()->delete();
+                        
+                        // Create the Policies of the DTR
+                        $dtr_collection = collect([
+                            (object) ['policy' => 'allow_late',         'value' => $drupal_evox_dtr->allow_late],
+                            (object) ['policy' => 'allow_undertime',    'value' => $drupal_evox_dtr->allow_undertime],
+                            (object) ['policy' => 'allow_night_diff',   'value' => $drupal_evox_dtr->allow_night_diff]
+                        ]);
+    
+                        // Save the DTR Policies base on the DTR Policies fetched .
+                        $this->save_dtr_policies( $dtr, $dtr_collection );
+    
+                        // Compute for the Items
+                        $this->compute_payroll_items( $dtr );
+    
+                        
+                        $result[] = $dtr;
+    
+                        log_to_file( 'info', 'Success', [$dtr->getAttributes()], "drupal_migration");
+
+                    } else {
+                        log_to_file( 'info', 'DTR not existing', [$drupal_evox_dtr], "drupal_migration");
+                    }
+
+                } else {
+                    log_to_file( 'info', 'User not existing', [$drupal_evox_dtr], "drupal_migration");
+                }
+                
+            }
+            
+            DB::commit();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+            return $result;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+
+    /**
      *  Responsible for Applying of Schedule to DTR.
      * @param User|user_id $user_or_user_id
      * @param Schedule $schedule
@@ -632,7 +723,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                             )
                                             ->orderBy('date', 'asc')
                                             ->get();
-
+            
             // Iterate the Fetched Holidays.
             foreach( $holiday_collection as $holiday ){
 
@@ -699,7 +790,7 @@ class DtrRepository implements DtrRepositoryInterface{
         try {
 
             $result = new Collection;
-
+            
             // Iterate the fetched Employee Leaves that was fetched from BHr.
             foreach( $bhr_leaves_array as $row ) {
 
@@ -721,9 +812,9 @@ class DtrRepository implements DtrRepositoryInterface{
                     
                     // Iterate each DTR in order to bind the Leave on each DTR.
                     foreach( $dtr_collection as $dtr ) {
-
+                        
                         # Setting the Amount of Leave from the Leave request for the Corresponding Date
-                        $amount = ( is_valid( $row->dates ) && is_valid( $row->dates->{$dtr->date} ) ) ? (float) $row->dates->{$dtr->date} : 0 ;
+                        $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
 
                         # Create the Leave Insert Value Array Structure
                         $leave_insert_values =  [
@@ -953,10 +1044,10 @@ class DtrRepository implements DtrRepositoryInterface{
     /**
      *  Responsible for saving the Dtr Policies inherited from the Schedule Policies.
      * @param Dtr $dtr
-     * @param Collection $schedule_policies_collection (SchedulePolicies)
+     * @param $schedule_policies_collection (SchedulePolicies)
      * @return bool
      */
-    protected function save_dtr_policies(Dtr $dtr, Collection $schedule_policies_collection){
+    protected function save_dtr_policies(Dtr $dtr, $schedule_policies_collection){
         DB::beginTransaction();
         try{
             $dtr_policies_array = [];

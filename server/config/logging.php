@@ -133,6 +133,12 @@ return [
             'level' => 'debug',
         ],
 
+        'drupal_migration' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/drupal_migration.log'),
+            'level' => 'debug',
+        ],
+
 
     ],
 

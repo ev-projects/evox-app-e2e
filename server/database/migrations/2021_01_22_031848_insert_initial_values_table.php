@@ -183,6 +183,139 @@ class InsertInitialValuesTable extends Migration
         // Insert Payroll Cutoffs
         $insert = array(
             array(
+                'name' => "January 2019",
+                'start_date' => "2018-12-19",
+                'end_date' => "2019-01-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "February 2019",
+                'start_date' => "2019-01-19",
+                'end_date' => "2019-02-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "March 2019",
+                'start_date' => "2019-02-19",
+                'end_date' => "2019-03-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "April 2019",
+                'start_date' => "2019-03-19",
+                'end_date' => "2019-04-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "May 2019",
+                'start_date' => "2019-04-19",
+                'end_date' => "2019-05-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "June 2019",
+                'start_date' => "2019-05-19",
+                'end_date' => "2019-06-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "July 2019",
+                'start_date' => "2019-06-19",
+                'end_date' => "2019-07-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "August 2019",
+                'start_date' => "2019-07-19",
+                'end_date' => "2019-08-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "September 2019",
+                'start_date' => "2019-08-19",
+                'end_date' => "2019-09-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "October 2019",
+                'start_date' => "2019-09-19",
+                'end_date' => "2019-10-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "November 2019",
+                'start_date' => "2019-10-19",
+                'end_date' => "2019-11-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "December 2019",
+                'start_date' => "2019-11-19",
+                'end_date' => "2019-12-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "January 2020",
+                'start_date' => "2019-12-19",
+                'end_date' => "2020-01-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "February 2020",
+                'start_date' => "2020-01-19",
+                'end_date' => "2020-02-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "March 2020",
+                'start_date' => "2020-02-19",
+                'end_date' => "2020-03-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "April 2020",
+                'start_date' => "2020-03-19",
+                'end_date' => "2020-04-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "May 2020",
+                'start_date' => "2020-04-19",
+                'end_date' => "2020-05-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "June 2020",
+                'start_date' => "2020-05-19",
+                'end_date' => "2020-06-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
+                'name' => "July 2020",
+                'start_date' => "2020-06-19",
+                'end_date' => "2020-07-18",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ),
+            array(
                 'name' => "August 2020",
                 'start_date' => "2020-07-19",
                 'end_date' => "2020-08-18",

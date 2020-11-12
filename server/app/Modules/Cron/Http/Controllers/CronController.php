@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
+use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Resources\DtrResource;
@@ -23,18 +24,21 @@ class CronController extends Controller
     protected $user;
     protected $dtr;
     protected $biometrics;
+    protected $drupal_evox;
     
 
     public function __construct(BhrRepositoryInterface $bhr, 
                                 PayrollRepository $payroll, 
                                 UserRepositoryInterface $user, 
                                 DtrRepositoryInterface $dtr, 
-                                BiometricsRepositoryInterface $biometrics){
+                                BiometricsRepositoryInterface $biometrics, 
+                                DrupalEvoxRepositoryInterface $drupal_evox){
         $this->bhr = $bhr;
         $this->payroll = $payroll;
         $this->user = $user;
         $this->dtr = $dtr;
         $this->biometrics = $biometrics;
+        $this->drupal_evox = $drupal_evox;
     }
 
 
@@ -181,7 +185,7 @@ class CronController extends Controller
             # Test Data for Debugging
             // $start_date = "2019-07-01";
             // $end_date = "2020-06-30";
-
+            
             // Sync the Holidays from BHr to EVOX within the Payroll Cutoff as Date Range.
             $this->bhr->sync_holidays( $start_date, $end_date );
 
@@ -224,6 +228,39 @@ class CronController extends Controller
             
             // Binding of the Leaves fetched from BHr within the Date Range to the DTR within the Date Range.
             $result = $this->dtr->bind_leaves_to_dtr( $bhr_leaves_array );
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $result,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    /**
+     * Syncs the DTR from Existing EVOX to this new EVOX 
+     *  1. Fetch DTR from EVOX base from the Start & End Date
+     *  3. Update/Generate the DTR for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_dtr($start_date = null, $end_date = null){
+        try {
+            
+            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
+            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
+                $start_datetime = Carbon::yesterday()->format('Y-m-d H:i:s');
+                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d H:i:s');
+            } else {
+                $start_datetime = Carbon::parse($start_date)->format('Y-m-d H:i:s');
+                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d H:i:s');
+            }   
+            
+            $drupal_evox_dtr_array = $this->drupal_evox->get_dtr( $start_datetime, $end_datetime );
+
+            $result = $this->dtr->apply_drupal_evox_data_to_dtr( $drupal_evox_dtr_array );
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 

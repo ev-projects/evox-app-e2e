@@ -41,8 +41,8 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
 
             $user = get_authenticated_user( $user_id );
 
-            // Gets all the Payroll Cutoff that started after the User's Created Date ( Sync date )
-            $payroll_cutoff_collection = PayrollCutoff::whereRaw("( end_date >= '". Carbon::parse($user->created_at)->format('Y-m-d') ."' )")->get();
+            // Gets all the Payroll Cutoff that started after the User's Date Hired
+            $payroll_cutoff_collection = PayrollCutoff::whereRaw("( end_date >= '". $user->date_hired ."' )")->get();
 
             foreach( $payroll_cutoff_collection as $payroll_cutoff ) {
                 $year = Carbon::parse($payroll_cutoff->end_date)->format('Y');

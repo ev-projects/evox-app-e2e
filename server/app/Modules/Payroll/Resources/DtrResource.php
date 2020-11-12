@@ -76,7 +76,7 @@ class DtrResource extends JsonResource
                 $attendance_status = $approved_leave_type;
 
             # If has a valid time in and out and has Schedule, set status to Present
-            } elseif( $this->hasCompleteTimelogs() && $this->hasSchedule() ) {
+            } elseif( $this->hasCompleteTimelogs() /*&& $this->hasSchedule()*/ ) {
                 $attendance_status = get_constant("ATTENDANCE_STATUS.present");
 
             # If set as Rest Day, set status as Rest Day.
