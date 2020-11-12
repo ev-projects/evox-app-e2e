@@ -51,6 +51,8 @@ class Computation
          *  Sets all the Variables needed before computation.
          */
 
+            $this->clear_properties();
+
             $this->dtr = $dtr;
             
             $this->policies = $dtr->policies()->get();
@@ -259,6 +261,23 @@ class Computation
             } else {
                 $this->actual_time_end_datetime = $this->expected_work_end_datetime;
             } 
+    }
+
+
+    /**
+     *  Reponsible for clearing out the Computation Properties
+     */
+    private function clear_properties(){
+
+        $this->dtr = null;
+        $this->timeoff_time = 0;
+        $this->timeoff_amount = 0;
+        $this->expected_work_start_datetime = 0;
+        $this->expected_work_end_datetime = 0;
+        $this->break_start_datetime = 0;
+        $this->break_end_datetime = 0;
+        $this->actual_time_start_datetime = 0;
+        $this->actual_time_end_datetime = 0;
     }
 
     ###############################################################################################
