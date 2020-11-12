@@ -431,6 +431,7 @@ class InsertInitialValuesTable extends Migration
                   'last_name' => 'Colina',
                   'employment_status' => "Full-Time",
                   'is_active' => true,
+                  'date_hired' =>         "2019-08-05",
                   'created_at' =>         date('Y-m-d H:i:s'),
                   'updated_at' =>         date('Y-m-d H:i:s')
             ),
@@ -445,6 +446,7 @@ class InsertInitialValuesTable extends Migration
                   'last_name' => 'Garcia',
                   'employment_status' => "Full-Time",
                   'is_active' => true,
+                  'date_hired' =>         "2016-06-06",
                   'created_at' =>         date('Y-m-d H:i:s'),
                   'updated_at' =>         date('Y-m-d H:i:s')
             ),
@@ -459,6 +461,7 @@ class InsertInitialValuesTable extends Migration
                   'last_name' => 'Ugaddan',
                   'employment_status' => "Full-Time",
                   'is_active' => true,
+                  'date_hired' =>         "2018-05-23",
                   'created_at' =>         date('Y-m-d H:i:s'),
                   'updated_at' =>         date('Y-m-d H:i:s')
             ),
