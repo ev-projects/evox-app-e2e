@@ -21,6 +21,8 @@ if (! function_exists('bhr_api_call')) {
             # Create the Response variable that handles the Curl Request
             $response = Curl::to( env('BHR_API_LINK') . $api_endpoint )
                             ->withHeader('Accept: application/json')
+                            ->withTimeout(300)
+                            ->withConnectTimeout(300)
                             ->returnResponseObject();
             
             # If there's a Data that needs to be sent, adds the Data on the Curl request.
@@ -60,7 +62,7 @@ if (! function_exists('bhr_api_call')) {
                 if( in_array( $method, array('POST', 'PUT') ) ){
                     $result = true;
                 } else {
-                    if( is_object( $result->content ) ) {
+                    if( is_object( json_decode($result->content) ) || is_array( json_decode($result->content) )   ) {
                         $result = json_decode($result->content);
                     } else {
                         $result = $result->content;

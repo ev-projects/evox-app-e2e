@@ -28,6 +28,7 @@ class CreateUsersTable extends Migration
             // $table->unsignedInteger('schedule_id')->nullable();
             $table->boolean('is_active')->default(false);
             $table->boolean('force_change_password')->default(false);
+            $table->date('date_hired')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

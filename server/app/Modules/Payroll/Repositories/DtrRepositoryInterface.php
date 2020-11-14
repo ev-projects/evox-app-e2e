@@ -13,6 +13,8 @@ interface DtrRepositoryInterface
 {
     public function generate_dtr( Collection $user_collection, array $date_array );
 
+    public function apply_drupal_evox_data_to_dtr( array $drupal_evox_dtr_array );
+
     
     public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
 
