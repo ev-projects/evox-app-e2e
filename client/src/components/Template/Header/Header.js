@@ -201,7 +201,12 @@ const Header = (props) => {
                             <p style={{'fontSize':13}}>Assign Employee Supervisors</p>
                           </Link> 
                         </li>
-                        
+                        <li className="nav-item">
+                          <Link className="nav-link" to={ global.assign_role }>
+                            <i className="nav-icon fa fa-users nav-icon" />
+                            <p style={{'fontSize':13}}>Assign Role  to User</p>
+                          </Link> 
+                        </li>
                       </ul>
                     </li>
                   :

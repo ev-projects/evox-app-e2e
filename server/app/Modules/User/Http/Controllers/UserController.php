@@ -19,6 +19,10 @@ use App\Modules\User\Resources\UserProfileResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
+use App\Modules\User\Models\User;
 
 class UserController extends Controller
 {
@@ -286,6 +290,54 @@ class UserController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+    /**
+     * Returns all the User List of Specific Department
+     * @param string $department_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get_user_by_string( $string_name ){ 
+        # Get user
+
+        $user = User::where('first_name', 'like', '%' . $string_name . '%')->orWhere('last_name', 'like', '%' . $string_name . '%')->select('id','first_name','middle_name','last_name','emp_num')->get();  
+        try {
+            log_activity( trans('messages.list_role_attempt') );
+            
+            return success_response(
+                trans('messages.list_role_success'), $user 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    # This function returns user role
+    public function get_user_role( $user_id ){   
+        try {
+            log_activity( trans('messages.list_role_attempt') );
+                    return success_response(
+                        trans('messages.list_role_success'),  User::find($user_id)->roles->pluck('name')
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    # This function returns roles
+    public function get_roles( ){   
+        try {
+            log_activity( trans('messages.list_role_attempt') );
+                    return success_response(
+                        trans('messages.list_role_success'),  Role::with('permissions')->get()
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    
 
 
 

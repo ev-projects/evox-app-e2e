@@ -34,6 +34,7 @@ import DtrSummary from "../container/MyTeam/DtrSummary";
 import PayrollCutoff from "../container/Admin/PayrollCutoff";
 import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandlers";
 import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervisors";
+import AssignRole from "../container/Admin/AssignRole";
 import MyTeamList from "../container/MyTeam/MyTeamList";
 import Profile from "../container/Profile";
 
@@ -79,8 +80,9 @@ const RoutesList = () => {
         <ProtectedRoute exact path="/app/admin/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
         <ProtectedRoute exact path="/app/admin/AssignDepartmentHandlers/"><AssignDepartmentHandlers /></ProtectedRoute>
         <ProtectedRoute exact path="/app/admin/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/admin/AssignRole/"><AssignRole /></ProtectedRoute>
 
-
+        
         <ProtectedRoute exact path="/app/dtr/:id/" ><DailyTimeRecord/></ProtectedRoute>
         <ProtectedRoute exact path="/app/profile/:id/" ><Profile/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />

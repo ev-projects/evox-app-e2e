@@ -446,6 +446,7 @@ class MyTeamRequests extends Component {
   }
 
   const mapStateToProps = (state) => {
+
     return {
       requestList     : state.requestList.instance,
       isListLoaded    : state.requestList.isListLoaded,

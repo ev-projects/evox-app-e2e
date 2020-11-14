@@ -291,10 +291,11 @@ class User extends Authenticatable implements JWTSubject
 
         # Name Filter
         if(isset($filter['name'])){
-            $change_schedules->where('a.first_name', 'like', '%' . $filter['name']. '%');
-            $overtimes       ->where('a.first_name', 'like', '%' . $filter['name']. '%');
-            $rest_day_works  ->where('a.first_name', 'like', '%' . $filter['name']. '%');
-            $alter_logs      ->where('a.first_name', 'like', '%' . $filter['name']. '%');
+            
+            $change_schedules->where('a.first_name', 'like', '%' . $filter['name']. '%')->orWhere('a.last_name', 'like', '%' . $filter['name']. '%'); 
+            $overtimes       ->where('a.first_name', 'like', '%' . $filter['name']. '%')->orWhere('a.last_name', 'like', '%' . $filter['name']. '%');
+            $rest_day_works  ->where('a.first_name', 'like', '%' . $filter['name']. '%')->orWhere('a.last_name', 'like', '%' . $filter['name']. '%');
+            $alter_logs      ->where('a.first_name', 'like', '%' . $filter['name']. '%')->orWhere('a.last_name', 'like', '%' . $filter['name']. '%');
         }
 
         # Date Filter
@@ -336,6 +337,10 @@ class User extends Authenticatable implements JWTSubject
 
 
   
+    # Fetch the User's DTR
+    public function get_user_by_string($str = null){
+        return $this->where('first_name', 'like', '%' . $str . '%')->orWhere('last_name', 'like', '%' . $str . '%');
+    }
 
 
     ########################################################################

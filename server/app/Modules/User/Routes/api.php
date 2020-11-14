@@ -58,6 +58,8 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     # Gets the Payroll Cutoff of the ID indicated on the Parameter
     Route::post('/assign_employees/', 'UserController@assign_employees');
 
+    Route::get('/role/', 'UserController@get_user_role');
+
 });
 
 
@@ -71,6 +73,20 @@ Route::group(['prefix' => 'role/{role}', 'middleware' => ['jwtauth', 'auth.apike
 
 
 });
+
+
+#####################################################################################################
+
+Route::group(['prefix' => 'admin-access/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the User List of Specific Role
+    Route::get('/search-user/{string_name}', 'UserController@get_user_by_string');
+
+    # Get the user roles
+    Route::get('/roles/', 'UserController@get_roles');
+
+});
+
 
 #####################################################################################################
 

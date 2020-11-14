@@ -14,6 +14,7 @@ global.default_schedule = "/app/schedule/assign/";
 global.payroll_cutoff = "/app/admin/PayrollCutoff/";
 global.assign_department_handlers = "/app/admin/AssignDepartmentHandlers/";
 global.assign_employee_supervisors = "/app/admin/AssignEmployeeSupervisors/";
+global.assign_role= "/app/admin/AssignRole/";
 
 global.overtime = "/app/request/Overtime/";
 global.work_from_home = "/app/request/WorkFromHome/";

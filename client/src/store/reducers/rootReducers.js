@@ -21,6 +21,8 @@ import redirectReducers from "./settings/redirectReducers";
 import requestListReducers from "./requests/requestListReducers";
 import payrollCutoffReducers from "./admin/payrollCutoffReducers"
 
+import assignRoleReducers from "./admin/assignRoleReducers"
+
 import lookupListReducers from "./lookup/lookupListReducers"
 
 import myTeamReducers from "./supervisor/myTeamReducers"
@@ -51,6 +53,8 @@ const rootReducer = combineReducers({
     restDayWork : restDayWorkReducers,
 
     payrollCutoff: payrollCutoffReducers,
+
+    assignRole: assignRoleReducers,
     
     requestList: requestListReducers,
 
