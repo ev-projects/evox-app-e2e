@@ -301,8 +301,18 @@ class CronController extends Controller
             $to_compute_items = $this->overtime->apply_drupal_evox_data_to_overtime( $drupal_evox_overtime_array );
 
             // Iterate the to-be-computed Overtime Instance
-            foreach( $to_compute_items as $overtime ){
-                $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
+            if( count($to_compute_items) > 0 ){
+                
+                foreach( $to_compute_items as $overtime ){
+
+                    // Fetch the DTR instance from the Overtime
+                    $dtr = $overtime->dtr()->first();
+
+                    // Compute only if the DTR is existing.
+                    if( $dtr != null ) {
+                        $this->dtr->compute_payroll_items( $dtr );
+                    }
+                }
             }
 
             return success_response(
