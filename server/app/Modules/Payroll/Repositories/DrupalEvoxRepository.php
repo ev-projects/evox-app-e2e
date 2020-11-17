@@ -119,7 +119,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                 $request_where_query[] = "U_D.field_employee_number_value IN (".implode( ',', $emp_num_array) .")";
             }
 
-            $request_where_query[] = " FROM_UNIXTIME(E.field_date_to_alter_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."' ";
+            $request_where_query[] = " FROM_UNIXTIME(A.created) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."' ";
             $request_where_query[] = "C.name = 'Overtime'";
             $request_where_query[] = "U_D.field_employee_number_value IS NOT NULL";
 
