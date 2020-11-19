@@ -17,6 +17,9 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
+use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
+use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
+
 class CronController extends Controller
 {
     protected $bhr;
@@ -32,13 +35,17 @@ class CronController extends Controller
                                 UserRepositoryInterface $user, 
                                 DtrRepositoryInterface $dtr, 
                                 BiometricsRepositoryInterface $biometrics, 
-                                DrupalEvoxRepositoryInterface $drupal_evox){
+                                DrupalEvoxRepositoryInterface $drupal_evox,
+                                RestDayWorkRepositoryInterface $rest_day_work,
+                                AlterLogRepositoryInterface $alter_log){
         $this->bhr = $bhr;
         $this->payroll = $payroll;
         $this->user = $user;
         $this->dtr = $dtr;
         $this->biometrics = $biometrics;
         $this->drupal_evox = $drupal_evox;
+        $this->rest_day_work    = $rest_day_work;
+        $this->alter_log        = $alter_log;
     }
 
 
@@ -273,4 +280,69 @@ class CronController extends Controller
     }
 
 
+    /**
+     * Syncs the Alter Logs from Existing EVOX to this new EVOX 
+     *  1. Fetch Alter Logs from EVOX base from the Start & End Date
+     *  3. Update/Generate the Alter Logs for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_alter_log($start_date = null, $end_date = null){
+        try {
+            
+            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
+            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
+                $start_datetime = Carbon::yesterday()->format('Y-m-d');
+                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d');
+            } else {
+                $start_datetime = Carbon::parse($start_date)->format('Y-m-d');
+                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d');
+            }   
+            
+            $drupal_evox_alter_log_array = $this->drupal_evox->get_alter_log( $start_datetime, $end_datetime );
+
+            $result = $this->alter_log->apply_drupal_evox_data_to_alter_log( $drupal_evox_alter_log_array );
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $result,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    /**
+     * Syncs the Rest Day Work from Existing EVOX to this new EVOX 
+     *  1. Fetch Rest Day Work from EVOX base from the Start & End Date
+     *  3. Update/Generate the Rest Day Work for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_rest_day_work($start_date = null, $end_date = null){
+        try {
+            
+            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
+            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
+                $start_datetime = Carbon::yesterday()->format('Y-m-d');
+                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d');
+            } else {
+                $start_datetime = Carbon::parse($start_date)->format('Y-m-d');
+                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d');
+            }   
+            
+            $drupal_evox_rest_day_work_array = $this->drupal_evox->get_rest_day_work( $start_datetime, $end_datetime );
+
+            $result = $this->rest_day_work->apply_drupal_evox_data_to_rest_day_work( $drupal_evox_rest_day_work_array );
+
+            
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $result,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
 }

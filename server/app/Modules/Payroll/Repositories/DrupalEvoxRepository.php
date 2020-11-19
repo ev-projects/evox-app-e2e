@@ -41,7 +41,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
     public function get_dtr( $start_datetime, $end_datetime, $emp_num_array = [] )
     {
         try {
-            $result = DB::connection('drupal_payroll')->select("
+            $result = DB::connection('drupal_payroll')->select("    
                         SELECT 
                             A.nid,
                             A.title as 'emp_num',
@@ -97,5 +97,109 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
     }
 
 
+    /**
+     *  Responsible for fetching the Alter Log data from the Drupal Evox
+     * 
+     * @param $start_datetime;
+     * @param $end_datetime;
+     * @param $emp_num_array (Optional);
+     * 
+     * @return array $result;
+     */
+    public function get_alter_log( $start_datetime, $end_datetime, $emp_num_array = [] )
+    {
+        try {
+            $result = DB::connection('drupal_portal')->select("
+                SELECT 
+                    A.nid,
+                    employee_num.field_empnum_value as 'employee_number',
+                    FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) as 'date',
+                    FROM_UNIXTIME( new_timein.field_time_in_value ) as 'new_time_in',
+                    FROM_UNIXTIME( new_timeout.field_time_out_value ) as 'new_time_out',
+                    FROM_UNIXTIME( old_time_in.field_old_time_in_value ) as 'old_time_in',
+                    FROM_UNIXTIME( old_time_out.field_old_time_out_value ) as 'old_time_out',
+                    employee_note.field_employee_note_value   as 'employee_note',
+                    supervisor_note.field_supervisor_note_value as 'supervisor_note',
+                    request_status.field_status_value as 'status',
+                    FROM_UNIXTIME( A.created ) as 'date_created',
+                    FROM_UNIXTIME( A.changed ) as 'date_updated'
+                    
+                FROM
+                    node AS A
+                    LEFT JOIN field_data_field_date_to_alter as alter_log_date					ON A.nid = alter_log_date.entity_id
+                    LEFT JOIN field_data_field_empnum as employee_num					        ON A.nid = employee_num.entity_id
+                    LEFT JOIN field_data_field_request_type as request_type                     ON A.nid = request_type.entity_id
+                    LEFT JOIN field_data_field_time_in as new_timein                            ON A.nid = new_timein.entity_id
+                    LEFT JOIN field_data_field_time_out as new_timeout                          ON A.nid = new_timeout.entity_id
+                    LEFT JOIN field_data_field_employee_note as employee_note                   ON A.nid = employee_note.entity_id
+                    LEFT JOIN field_data_field_supervisor_note as supervisor_note   			ON A.nid = supervisor_note.entity_id
+                    LEFT JOIN field_data_field_old_time_in as old_time_in   					ON A.nid = old_time_in.entity_id
+                    LEFT JOIN field_data_field_old_time_out as old_time_out   					ON A.nid = old_time_out.entity_id
+                    LEFT JOIN field_data_field_status as request_status   						ON A.nid = request_status.entity_id
+                WHERE
+                    request_type.field_request_type_tid = 509 AND
+                    employee_num.field_empnum_value IS NOT NULL AND 
+                    (FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) >=  '".$start_datetime."'  AND FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) <=  '".$end_datetime."')
+                    ". ((count($emp_num_array) > 0)? "AND A.title IN (".implode( ',', $emp_num_array) .")" : "") ."
+            ", [1]);
 
+            log_to_file('info', 'Success', [$result]);
+            return $result;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+    /**
+     *  Responsible for fetching the Rest Day Work from the Drupal Evox
+     * 
+     * @param $start_datetime;
+     * @param $end_datetime;
+     * @param $emp_num_array (Optional);
+     * 
+     * @return array $result;
+     */
+    public function get_rest_day_work( $start_datetime, $end_datetime, $emp_num_array = [] )
+    {
+ 
+        try {
+            $result = DB::connection('drupal_payroll')->select("
+            SELECT 
+            A.nid,
+            employee_num.field_empnum_value as 'employee_number',
+            FROM_UNIXTIME( rest_day_work_date.field_date_to_alter_value ) as 'date',
+            FROM_UNIXTIME( on_duty.field_rdw_on_duty_schedule_value ) as 'on_duty',
+            FROM_UNIXTIME( off_duty.field_rdw_off_duty_schedule_value ) as 'off_duty',
+            employee_note.field_employee_note_value   as 'employee_note',
+            supervisor_note.field_supervisor_note_value as 'supervisor_note',
+            request_status.field_status_value as 'status',
+            FROM_UNIXTIME( A.created ) as 'date_created',
+            FROM_UNIXTIME( A.changed ) as 'date_updated'
+            
+        FROM
+            node AS A
+            LEFT JOIN field_data_field_date_to_alter as rest_day_work_date	ON A.nid = alter_log_date.entity_id
+            LEFT JOIN field_data_field_empnum as employee_num				ON A.nid = employee_num.entity_id
+            LEFT JOIN field_data_field_request_type as request_type         ON A.nid = request_type.entity_id
+            LEFT JOIN field_data_field_rdw_on_duty_schedule as on_duty      ON A.nid = on_duty.entity_id
+            LEFT JOIN field_data_field_rdw_off_duty_schedule as off_duty    ON A.nid = off_duty.entity_id
+            LEFT JOIN field_data_field_employee_note as employee_note       ON A.nid = employee_note.entity_id
+            LEFT JOIN field_data_field_supervisor_note as supervisor_note   ON A.nid = supervisor_note.entity_id
+            LEFT JOIN field_data_field_status as request_status   			ON A.nid = request_status.entity_id
+        WHERE
+            request_type.field_request_type_tid = 598 AND
+            employee_num.field_empnum_value IS NOT NULL AND 
+            (FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) >=  '".$start_datetime."'  AND FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) <=  '".$end_datetime."')
+            ". ((count($emp_num_array) > 0)? "AND A.title IN (".implode( ',', $emp_num_array) .")" : "") ."
+            ", [1]);
+            log_to_file('info', 'Success', [$result]);
+            return $result;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
 }

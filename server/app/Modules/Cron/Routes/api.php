@@ -36,6 +36,13 @@ Route::group(['prefix' => 'cron', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('/sync_dtr',     'CronController@sync_dtr');
     Route::get('/sync_dtr/{start_date}/{end_date}',     'CronController@sync_dtr');
 
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/sync_alter_log',     'CronController@sync_alter_log');
+    Route::get('/sync_alter_log/{start_date}/{end_date}',     'CronController@sync_alter_log');
+
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/sync_rest_day_work',     'CronController@sync_rest_day_work');
+    Route::get('/sync_rest_day_work/{start_date}/{end_date}',     'CronController@sync_rest_day_work');
 
     # FOR TESTING PURPOSES 
 
