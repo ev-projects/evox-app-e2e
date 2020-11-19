@@ -21,4 +21,6 @@ interface OvertimeRepositoryInterface
     public function pending( $id );
 
     public function cancel( $id );
+    
+    public function apply_drupal_evox_data_to_overtime( array $drupal_evox_overtime_array );
 }

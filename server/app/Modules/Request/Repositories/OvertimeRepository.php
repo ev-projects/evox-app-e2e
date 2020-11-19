@@ -358,6 +358,94 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
         }
     }
 
+    
+
+    
+
+
+    /**
+     *  Responsible for Applying the newly fetched Drupal Overtimes to EVOX
+     * @param array $drupal_evox_overtime_array
+     * 
+     * @return array $to_compute_items
+     */
+    public function apply_drupal_evox_data_to_overtime( array $drupal_evox_overtime_array )
+    {   
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "drupal_migration");
+            
+            $users_not_existing = [];
+            $to_compute_items = [];
+
+            // Iterates the Array fetched from the Drupal Database
+            foreach( $drupal_evox_overtime_array as $drupal_evox_overtime) {
+
+                // Fetch the User via the emp_num field of the User
+                $user = User::where(['emp_num' => $drupal_evox_overtime->emp_num])->first();
+
+                // Checks if the user is existing
+                if( is_valid( $user ) ) {
+
+                    // Fetch if there's already an existing Overtime entry on that user with the same day.
+                    $overtime = $user->overtimes()->where(['date' => $drupal_evox_overtime->date])->first();
+                    
+                    // Checks if the Overtime is NOT existing, proceed on generating new data.
+                    if( $overtime == null ) {
+
+                        # Update the DTR properties
+                        $overtime                   = new Overtime();
+                        $overtime->user_id          =  $user->id;
+                        $overtime->date             =  $drupal_evox_overtime->date;
+                        $overtime->amount           =  $drupal_evox_overtime->amount;
+                        $overtime->type             =  $drupal_evox_overtime->type;
+                        $overtime->employee_note    =  $drupal_evox_overtime->note ?? null;
+                        $overtime->status           =  $drupal_evox_overtime->status;
+                        $overtime->updated_by       =  $user->id;
+                        $overtime->created_by       =  $user->id;
+                        $overtime->created_at       =  $drupal_evox_overtime->created_at;
+                        $overtime->updated_at       =  $drupal_evox_overtime->created_at;
+                        $overtime->save();
+
+                        // Saved the To compute Items
+                        if( in_array($overtime->status, array('approved','declined')) ) {
+                            $to_compute_items[] = $overtime;
+                        }
+
+                        log_to_file( 'info', 'Success', [$overtime->getAttributes()], "drupal_migration");
+
+                    } else {
+                        log_to_file( 'info', 'Overtime Entry already existing', [$drupal_evox_overtime], "drupal_migration");
+                    }
+
+                } else {
+                    log_to_file( 'info', 'User not existing', [$drupal_evox_overtime], "drupal_migration");
+                    $users_not_existing[$drupal_evox_overtime->emp_num] = $drupal_evox_overtime->emp_num;
+                }
+                
+            }
+            
+            DB::commit();
+
+            if( count( $users_not_existing ) > 0 ){
+                log_to_file( 'info', 'Employee Numbers that does not exist"', [$users_not_existing], "drupal_migration");
+            }
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+            return $to_compute_items;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
 
 
 

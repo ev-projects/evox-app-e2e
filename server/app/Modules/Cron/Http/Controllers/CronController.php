@@ -11,6 +11,8 @@ use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Resources\DtrResource;
+use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
+use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
 use App\Modules\User\Models\User;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
@@ -26,6 +28,8 @@ class CronController extends Controller
     protected $payroll;
     protected $user;
     protected $dtr;
+    protected $overtime;
+    protected $schedule;
     protected $biometrics;
     protected $drupal_evox;
     
@@ -34,6 +38,8 @@ class CronController extends Controller
                                 PayrollRepository $payroll, 
                                 UserRepositoryInterface $user, 
                                 DtrRepositoryInterface $dtr, 
+                                OvertimeRepositoryInterface $overtime,
+                                ScheduleRepositoryInterface $schedule,
                                 BiometricsRepositoryInterface $biometrics, 
                                 DrupalEvoxRepositoryInterface $drupal_evox,
                                 RestDayWorkRepositoryInterface $rest_day_work,
@@ -42,6 +48,8 @@ class CronController extends Controller
         $this->payroll = $payroll;
         $this->user = $user;
         $this->dtr = $dtr;
+        $this->overtime = $overtime;
+        $this->schedule = $schedule;
         $this->biometrics = $biometrics;
         $this->drupal_evox = $drupal_evox;
         $this->rest_day_work    = $rest_day_work;
@@ -213,7 +221,7 @@ class CronController extends Controller
     /**
      * Syncs the BHr's Submitted Leave Requests within the current Payroll Cutoff Date Range into the DTR affected.
      *  1. Fetch BHr Submitted Leave Requests
-     *  3. Bind Leaves to DTR
+     *  2. Bind Leaves to DTR
      * @return \Illuminate\Http\JsonResponse
      */
     public function sync_leaves($start_date = null, $end_date = null){
@@ -250,7 +258,7 @@ class CronController extends Controller
     /**
      * Syncs the DTR from Existing EVOX to this new EVOX 
      *  1. Fetch DTR from EVOX base from the Start & End Date
-     *  3. Update/Generate the DTR for the New EVOX using the details from the newly fetched from Existing EVOX
+     *  2. Update/Generate the DTR for the New EVOX using the details from the newly fetched from Existing EVOX
      * @return \Illuminate\Http\JsonResponse
      */
     public function sync_dtr($start_date = null, $end_date = null){
@@ -304,7 +312,55 @@ class CronController extends Controller
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
-                $result,
+                $to_compute_items,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+    
+     * Syncs the Overtime from Existing EVOX to this new EVOX 
+     *  1. Fetch Overtime Requests from EVOX base from the Start & End Date
+     *  2. Update/Generate the Request for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_overtime($start_date = null, $end_date = null){
+        try {
+            
+            // If Start Date and End Date is not set, Fetch the date yesterday
+            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
+                $start_datetime = Carbon::yesterday()->format('Y-m-d H:i:s');
+                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d H:i:s');
+            } else {
+                $start_datetime = Carbon::parse($start_date)->format('Y-m-d H:i:s');
+                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d H:i:s');
+            }   
+
+            // Fetch the Drupal Overtime Data
+            $drupal_evox_overtime_array = $this->drupal_evox->get_overtime( $start_datetime, $end_datetime);
+
+            // Apply the Drupal Overtime Data to EVOX 
+            $to_compute_items = $this->overtime->apply_drupal_evox_data_to_overtime( $drupal_evox_overtime_array );
+
+            // Iterate the to-be-computed Overtime Instance
+            if( count($to_compute_items) > 0 ){
+                
+                foreach( $to_compute_items as $overtime ){
+
+                    // Fetch the DTR instance from the Overtime
+                    $dtr = $overtime->dtr()->first();
+
+                    // Compute only if the DTR is existing.
+                    if( $dtr != null ) {
+                        $this->dtr->compute_payroll_items( $dtr );
+                    }
+                }
+            }
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $to_compute_items,
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){
@@ -338,11 +394,40 @@ class CronController extends Controller
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
-                $result,
+                $to_compute_items,
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+
+
+
+    /**
+     * Syncs the Default Schedule from Existing EVOX to this new EVOX 
+     *  1. Fetch Default Schedule from EVOX base from the Start & End Date
+     *  2. Update/Generate the Default Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_default_schedule($is_initial_sync = false){
+        try {
+
+            // Fetch the Drupal Default Schedule Data
+            $drupal_evox_default_schedule_array = $this->drupal_evox->get_default_schedule( $is_initial_sync );
+
+            // Apply the Drupal Default Schedule Data to EVOX 
+            $schedule_collection = $this->schedule->apply_drupal_evox_data_to_default_schedule( $drupal_evox_default_schedule_array );
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $schedule_collection,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 }
