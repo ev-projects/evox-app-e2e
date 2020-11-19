@@ -296,7 +296,6 @@ class CronController extends Controller
      */
     public function sync_alter_log($start_date = null, $end_date = null){
         try {
-            
             // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
                 $start_datetime = Carbon::yesterday()->format('Y-m-d');
@@ -307,14 +306,28 @@ class CronController extends Controller
             }   
             
             $drupal_evox_alter_log_array = $this->drupal_evox->get_alter_log( $start_datetime, $end_datetime );
+            
+            $to_compute_items = $this->alter_log->apply_drupal_evox_data_to_alter_log( $drupal_evox_alter_log_array );
 
-            $result = $this->alter_log->apply_drupal_evox_data_to_alter_log( $drupal_evox_alter_log_array );
+            if( count($to_compute_items) > 0 ){
+                
+                foreach( $to_compute_items as $alter_log ){
+
+                    // Fetch the DTR instance from the Overtime
+                    $dtr = $alter_log->dtr()->first();
+
+                    // Compute only if the DTR is existing.
+                    if( $dtr != null ) {
+                        $this->dtr->compute_payroll_items( $dtr );
+                    }
+                }
+            }
 
             return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
-                $to_compute_items,
-                JsonResponse::HTTP_CREATED
+                "Sync Alteration Log Success", 
+                $to_compute_items
             );
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -388,14 +401,25 @@ class CronController extends Controller
             
             $drupal_evox_rest_day_work_array = $this->drupal_evox->get_rest_day_work( $start_datetime, $end_datetime );
 
-            $result = $this->rest_day_work->apply_drupal_evox_data_to_rest_day_work( $drupal_evox_rest_day_work_array );
+            $to_compute_items = $this->rest_day_work->apply_drupal_evox_data_to_rest_day_work( $drupal_evox_rest_day_work_array );
 
-            
+            if( count($to_compute_items) > 0 ){
+                
+                foreach( $to_compute_items as $rest_day_work ){
+
+                    // Fetch the DTR instance from the Overtime
+                    $dtr = $rest_day_work->dtr()->first();
+
+                    // Compute only if the DTR is existing.
+                    if( $dtr != null ) {
+                        $this->dtr->compute_payroll_items( $dtr );
+                    }
+                }
+            }
 
             return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
-                $to_compute_items,
-                JsonResponse::HTTP_CREATED
+                "Sync Rest Day Work Success Log Success", 
+                $to_compute_items
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

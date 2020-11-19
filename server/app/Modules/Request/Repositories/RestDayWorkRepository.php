@@ -335,18 +335,18 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                 $user = User::where(['emp_num' => $drupal_evox_alter_log->employee_number])->first();
 
                 // Checks if the user is existing
-                if( is_valid( $user ) ) {
+                if(!is_null($user )) {
 
                     # Update the DTR properties
                     $rest_day_work                   = new RestDayWork();
                     $rest_day_work->user_id          =  $user->id;
                     $rest_day_work->date             =  $drupal_evox_alter_log->date;
 
-                    $rest_day_work->start_time          =  $drupal_evox_alter_log->on_duty;
-                    $rest_day_work->end_time         =  $drupal_evox_alter_log->off_duty;
+                    $rest_day_work->start_time       =  strtotime($drupal_evox_alter_log->on_duty);
+                    $rest_day_work->end_time         =  strtotime($drupal_evox_alter_log->off_duty);
 
                     $rest_day_work->employee_note    =  $drupal_evox_alter_log->employee_note ?? null;
-                    $rest_day_work->superviser_note  =  $drupal_evox_alter_log->superviser_note ?? null;
+                    $rest_day_work->approver_note    =  $drupal_evox_alter_log->superviser_note ?? null;
                     
                     $rest_day_work->status           =  $drupal_evox_alter_log->status;
                     $rest_day_work->created_by       =  $user->id;

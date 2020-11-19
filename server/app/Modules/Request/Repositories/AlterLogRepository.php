@@ -297,20 +297,18 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
 
                 // Fetch the User via the emp_num field of the User
                 $user = User::where(['emp_num' => $drupal_evox_alter_log->employee_number])->first();
-
                 // Checks if the user is existing
-                if( is_valid( $user ) ) {
-
+                if( !is_null($user ) ) {
                     # Update the DTR properties
                     $alter_log                   = new AlterLog();
                     $alter_log->user_id          =  $user->id;
                     $alter_log->date             =  $drupal_evox_alter_log->date;
 
-                    $alter_log->current_time_in  =  $drupal_evox_alter_log->old_time_in;
-                    $alter_log->current_time_out =  $drupal_evox_alter_log->old_time_out;
+                    $alter_log->current_time_in  =  strtotime($drupal_evox_alter_log->old_time_in);
+                    $alter_log->current_time_out =   strtotime($drupal_evox_alter_log->old_time_out);
 
                     $alter_log->employee_note    =  $drupal_evox_alter_log->employee_note ?? null;
-                    $alter_log->superviser_note  =  $drupal_evox_alter_log->superviser_note ?? null;
+                    $alter_log->approver_note    =  $drupal_evox_alter_log->superviser_note ?? null;
 
                     $alter_log->status           =  $drupal_evox_alter_log->status;
                     $alter_log->created_by       =  $user->id;
@@ -326,8 +324,8 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
                     log_to_file( 'info', 'Success', [$alter_log->getAttributes()], "drupal_migration");
 
                 } else {
-                    log_to_file( 'info', 'User not existing', [$drupal_evox_alter_log], "drupal_migration");
-                    $users_not_existing[$drupal_evox_alter_log->emp_num] = $drupal_evox_alter_log->emp_num;
+                    // log_to_file( 'info', 'User not existing', [$drupal_evox_alter_log], "drupal_migration");
+                    // $users_not_existing[$drupal_evox_alter_log->emp_num] = $drupal_evox_alter_log->emp_num;
                 }
 
             }
@@ -341,8 +339,8 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
             return $to_compute_items;
-
         } catch (Exception $e) {
+            
             DB::rollback();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");

@@ -166,7 +166,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
     {
  
         try {
-            $result = DB::connection('drupal_payroll')->select("
+            $result = DB::connection('drupal_portal')->select("
             SELECT 
             A.nid,
             employee_num.field_empnum_value as 'employee_number',
@@ -181,7 +181,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
             
         FROM
             node AS A
-            LEFT JOIN field_data_field_date_to_alter as rest_day_work_date	ON A.nid = alter_log_date.entity_id
+            LEFT JOIN field_data_field_date_to_alter as rest_day_work_date	ON A.nid = rest_day_work_date.entity_id
             LEFT JOIN field_data_field_empnum as employee_num				ON A.nid = employee_num.entity_id
             LEFT JOIN field_data_field_request_type as request_type         ON A.nid = request_type.entity_id
             LEFT JOIN field_data_field_rdw_on_duty_schedule as on_duty      ON A.nid = on_duty.entity_id
@@ -192,7 +192,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
         WHERE
             request_type.field_request_type_tid = 598 AND
             employee_num.field_empnum_value IS NOT NULL AND 
-            (FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) >=  '".$start_datetime."'  AND FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) <=  '".$end_datetime."')
+            (FROM_UNIXTIME( rest_day_work_date.field_date_to_alter_value ) >=  '".$start_datetime."'  AND FROM_UNIXTIME( rest_day_work_date.field_date_to_alter_value ) <=  '".$end_datetime."')
             ". ((count($emp_num_array) > 0)? "AND A.title IN (".implode( ',', $emp_num_array) .")" : "") ."
             ", [1]);
             log_to_file('info', 'Success', [$result]);
