@@ -367,7 +367,7 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
      *  Responsible for Applying the newly fetched Drupal Overtimes to EVOX
      * @param array $drupal_evox_overtime_array
      * 
-     * @return arrayu $to_compute_items
+     * @return array $to_compute_items
      */
     public function apply_drupal_evox_data_to_overtime( array $drupal_evox_overtime_array )
     {   

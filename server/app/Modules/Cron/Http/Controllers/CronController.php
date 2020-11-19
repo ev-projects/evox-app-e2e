@@ -12,6 +12,7 @@ use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
+use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
 use App\Modules\User\Models\User;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
@@ -24,6 +25,8 @@ class CronController extends Controller
     protected $payroll;
     protected $user;
     protected $dtr;
+    protected $overtime;
+    protected $schedule;
     protected $biometrics;
     protected $drupal_evox;
     
@@ -33,6 +36,7 @@ class CronController extends Controller
                                 UserRepositoryInterface $user, 
                                 DtrRepositoryInterface $dtr, 
                                 OvertimeRepositoryInterface $overtime,
+                                ScheduleRepositoryInterface $schedule,
                                 BiometricsRepositoryInterface $biometrics, 
                                 DrupalEvoxRepositoryInterface $drupal_evox){
         $this->bhr = $bhr;
@@ -40,6 +44,7 @@ class CronController extends Controller
         $this->user = $user;
         $this->dtr = $dtr;
         $this->overtime = $overtime;
+        $this->schedule = $schedule;
         $this->biometrics = $biometrics;
         $this->drupal_evox = $drupal_evox;
     }
@@ -209,7 +214,7 @@ class CronController extends Controller
     /**
      * Syncs the BHr's Submitted Leave Requests within the current Payroll Cutoff Date Range into the DTR affected.
      *  1. Fetch BHr Submitted Leave Requests
-     *  3. Bind Leaves to DTR
+     *  2. Bind Leaves to DTR
      * @return \Illuminate\Http\JsonResponse
      */
     public function sync_leaves($start_date = null, $end_date = null){
@@ -246,7 +251,7 @@ class CronController extends Controller
     /**
      * Syncs the DTR from Existing EVOX to this new EVOX 
      *  1. Fetch DTR from EVOX base from the Start & End Date
-     *  3. Update/Generate the DTR for the New EVOX using the details from the newly fetched from Existing EVOX
+     *  2. Update/Generate the DTR for the New EVOX using the details from the newly fetched from Existing EVOX
      * @return \Illuminate\Http\JsonResponse
      */
     public function sync_dtr($start_date = null, $end_date = null){
@@ -279,7 +284,7 @@ class CronController extends Controller
     /**
      * Syncs the Overtime from Existing EVOX to this new EVOX 
      *  1. Fetch Overtime Requests from EVOX base from the Start & End Date
-     *  3. Update/Generate the Request for the New EVOX using the details from the newly fetched from Existing EVOX
+     *  2. Update/Generate the Request for the New EVOX using the details from the newly fetched from Existing EVOX
      * @return \Illuminate\Http\JsonResponse
      */
     public function sync_overtime($start_date = null, $end_date = null){
@@ -324,6 +329,36 @@ class CronController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+
+
+
+
+    /**
+     * Syncs the Default Schedule from Existing EVOX to this new EVOX 
+     *  1. Fetch Default Schedule from EVOX base from the Start & End Date
+     *  2. Update/Generate the Default Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_default_schedule($is_initial_sync = false){
+        try {
+
+            // Fetch the Drupal Default Schedule Data
+            $drupal_evox_default_schedule_array = $this->drupal_evox->get_default_schedule( $is_initial_sync );
+
+            // Apply the Drupal Default Schedule Data to EVOX 
+            $schedule_collection = $this->schedule->apply_drupal_evox_data_to_default_schedule( $drupal_evox_default_schedule_array );
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $schedule_collection,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+    
 
 
 }

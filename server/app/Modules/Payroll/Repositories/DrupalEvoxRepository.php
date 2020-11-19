@@ -182,4 +182,217 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
         }
     }
 
+
+
+
+
+    
+    /**
+     *  Responsible for fetching the Default Schedule data from the Drupal Evox
+     * 
+     * @param $is_initial_sync
+     * @param $emp_num_array (Optional);
+     * 
+     * @return array $result;
+     */
+    public function get_default_schedule( $is_initial_sync, $emp_num_array = [] )
+    {
+        try {
+
+            $schedule_where_query = [];
+
+            if( count($emp_num_array) > 0 ){
+                $schedule_where_query[] = "C.field_employee_number_value IN (".implode( ',', $emp_num_array) .")";
+            }
+
+            // If not initial sync, gets the date span of yesterday and adds the checking for the changed Date from Yesterday
+            if( !$is_initial_sync ){
+                $start_datetime = Carbon::yesterday()->format('Y-m-d H:i:s');
+                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d H:i:s');
+                $schedule_where_query[] = "DATE_FORMAT(FROM_UNIXTIME( B_S.changed), '%Y-%m-%d %H:%i:%s') BETWEEN '". $start_datetime ."' AND '". $end_datetime ."'";
+            }
+
+            $schedule_where_query[] = "A.status = 1";
+            $schedule_where_query[] = "C.field_employee_number_value IS NOT NULL";
+
+            $query = "SELECT 
+                        A.uid,
+                        C.field_employee_number_value as emp_num,
+
+                        CASE
+                            WHEN D.field_standard_schedule_value = 1 THEN 'standard'
+                            WHEN E.field_flexy_sched_value = 1 THEN 'flexible'
+                            WHEN F.field_customize_value = 1 THEN 'customize'
+                        END as 'schedule_type',
+
+                        DATE_FORMAT(FROM_UNIXTIME( B_S.changed), '%Y-%m-%d %H:%i:%s') as last_changed,
+                        DATE_FORMAT(FROM_UNIXTIME( V_F.field_sched_valid_from_value), '%Y-%m-%d') as valid_from,
+                        
+                        # Standard
+                        (DATE_FORMAT(FROM_UNIXTIME(STD_ON.field_schedule_on_duty_value), '%H:%i')) as standard_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(STD_OFF.field_schedule_off_duty_value), '%H:%i'))  as standard_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(STD_BT.field_break_time_value), '%H:%i')) as standard_break_time,
+                        
+                        # Flexible
+                        (DATE_FORMAT(FROM_UNIXTIME(FLX_ON.field_flexy_on_duty_value), '%H:%i')) as flexy_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(FLX_OFF.field_flexy_off_duty_value), '%H:%i'))  as flexy_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(FLX_S.field_flexy_start_value), '%H:%i'))  as flexy_start_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(FLX_E.field_flexy_end_value), '%H:%i'))  as flexy_end_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(FLX_BT.field_flexy_break_time_value), '%H:%i')) as flexy_break_time,
+                        
+                        # Monday
+                        (DATE_FORMAT(FROM_UNIXTIME(CMON_ON.field_c_mon_on_duty_value ), '%H:%i')) as mon_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CMON_OFF.field_c_mon_off_duty_value), '%H:%i'))  as mon_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CMON_FLX_S.field_c_mon_flexy_start_value), '%H:%i'))  as mon_start_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CMON_FLX_E.field_c_mon_flexy_end_value), '%H:%i'))  as mon_end_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CMON_BT.field_c_mon_break_time_value), '%H:%i')) as mon_break_time,
+                        
+                        # Tuesday
+                        (DATE_FORMAT(FROM_UNIXTIME(CTUE_ON.field_c_tue_on_duty_value ), '%H:%i')) as tue_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CTUE_OFF.field_c_tue_off_duty_value), '%H:%i'))  as tue_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CTUE_FLX_S.field_c_tue_flexy_start_value), '%H:%i'))  as tue_start_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CTUE_FLX_E.field_c_tue_flexy_end_value), '%H:%i'))  as tue_end_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CTUE_BT.field_c_tue_break_time_value), '%H:%i')) as tue_break_time,
+                        
+                        # Wednesday
+                        (DATE_FORMAT(FROM_UNIXTIME(CWED_ON.field_c_wed_on_duty_value ), '%H:%i')) as wed_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CWED_OFF.field_c_wed_off_duty_value), '%H:%i'))  as wed_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CWED_FLX_S.field_c_wed_flexy_start_value), '%H:%i'))  as wed_start_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CWED_FLX_E.field_c_wed_flexy_end_value), '%H:%i'))  as wed_end_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CWED_BT.field_c_wed_break_time_value), '%H:%i')) as wed_break_time,
+                        
+                        # Thursday
+                        (DATE_FORMAT(FROM_UNIXTIME(CTHU_ON.field_c_thu_on_duty_value ), '%H:%i')) as thu_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CTHU_OFF.field_c_thu_off_duty_value), '%H:%i'))  as thu_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CTHU_FLX_S.field_c_thu_flexy_start_value), '%H:%i'))  as thu_start_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CTHU_FLX_E.field_c_thu_flexy_end_value), '%H:%i'))  as thu_end_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CTHU_BT.field_c_thu_break_time_value), '%H:%i')) as thu_break_time,
+                        
+                        # Friday
+                        (DATE_FORMAT(FROM_UNIXTIME(CFRI_ON.field_c_fri_on_duty_value ), '%H:%i')) as fri_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CFRI_OFF.field_c_fri_off_duty_value), '%H:%i'))  as fri_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CFRI_FLX_S.field_c_fri_flexy_start_value), '%H:%i'))  as fri_start_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CFRI_FLX_E.field_c_fri_flexy_end_value), '%H:%i'))  as fri_end_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CFRI_BT.field_c_fri_break_time_value), '%H:%i')) as fri_break_time,
+                        
+                        # Saturday
+                        (DATE_FORMAT(FROM_UNIXTIME(CSAT_ON.field_c_sat_on_duty_value ), '%H:%i')) as sat_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CSAT_OFF.field_c_sat_off_duty_value), '%H:%i'))  as sat_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CSAT_FLX_S.field_c_sat_flexy_start_value), '%H:%i'))  as sat_start_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CSAT_FLX_E.field_c_sat_flexy_end_value), '%H:%i'))  as sat_end_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CSAT_BT.field_c_sat_break_time_value), '%H:%i')) as sat_break_time,
+                        
+                        # Sunday
+                        (DATE_FORMAT(FROM_UNIXTIME(CSUN_ON.field_c_sun_on_duty_value ), '%H:%i')) as sun_start_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CSUN_OFF.field_c_sun_off_duty_value), '%H:%i'))  as sun_end_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CSUN_FLX_S.field_c_sun_flexy_start_value), '%H:%i'))  as sun_start_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CSUN_FLX_E.field_c_sun_flexy_end_value), '%H:%i'))  as sun_end_flexy_time,
+                        (DATE_FORMAT(FROM_UNIXTIME(CSUN_BT.field_c_sun_break_time_value), '%H:%i')) as sun_break_time,
+                    
+                        # Policies
+                        A_U.field_allow_undertime_value as allow_undertime,
+                        A_L.field_allow_late_value as allow_late,
+                        A_ND.field_allow_nd_value as allow_night_diff,
+                    
+                        # Work Days
+                        GROUP_CONCAT(WD.field_work_days_value) as work_days
+                        
+                    FROM
+                        users AS A
+                        LEFT JOIN profile AS B_P ON B_P.uid = A.uid AND B_P.type = 'personal'
+                        LEFT JOIN profile AS B_S ON B_S.uid = A.uid AND B_S.type = 'schedule'
+                        LEFT JOIN field_data_field_employee_number AS C ON C.entity_id = B_P.pid
+                        LEFT JOIN field_data_field_standard_schedule AS D ON D.entity_id = B_S.pid
+                        LEFT JOIN field_data_field_flexy_sched AS E ON E.entity_id = B_S.pid
+                        LEFT JOIN field_data_field_customize AS F ON F.entity_id = B_S.pid
+                        
+                        # Valid From
+                        LEFT JOIN field_data_field_sched_valid_from AS V_F ON V_F.entity_id = B_S.pid
+                        
+                        # Standard
+                        LEFT JOIN field_data_field_schedule_on_duty AS STD_ON ON STD_ON.entity_id = B_S.pid AND D.field_standard_schedule_value = 1
+                        LEFT JOIN field_data_field_schedule_off_duty AS STD_OFF ON STD_OFF.entity_id = B_S.pid AND D.field_standard_schedule_value = 1
+                        LEFT JOIN field_data_field_break_time AS STD_BT ON STD_BT.entity_id = B_S.pid AND D.field_standard_schedule_value = 1
+                        
+                        # Flexible
+                        LEFT JOIN field_data_field_flexy_on_duty AS FLX_ON ON FLX_ON.entity_id = B_S.pid AND E.field_flexy_sched_value = 1
+                        LEFT JOIN field_data_field_flexy_off_duty AS FLX_OFF ON FLX_OFF.entity_id = B_S.pid AND E.field_flexy_sched_value = 1
+                        LEFT JOIN field_data_field_flexy_start AS FLX_S ON FLX_S.entity_id = B_S.pid AND E.field_flexy_sched_value = 1
+                        LEFT JOIN field_data_field_flexy_end AS FLX_E ON FLX_E.entity_id = B_S.pid AND E.field_flexy_sched_value = 1
+                        LEFT JOIN field_data_field_flexy_break_time AS FLX_BT ON FLX_BT.entity_id = B_S.pid AND E.field_flexy_sched_value = 1
+                        
+                        # Monday
+                        LEFT JOIN field_data_field_c_mon_on_duty AS CMON_ON ON CMON_ON.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_mon_off_duty AS CMON_OFF ON CMON_OFF.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_mon_flexy_start AS CMON_FLX_S ON CMON_FLX_S.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_mon_flexy_end AS CMON_FLX_E ON CMON_FLX_E.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_mon_break_time AS CMON_BT ON CMON_BT.entity_id = B_S.pid AND F.field_customize_value = 1
+                        
+                        # Tuesday
+                        LEFT JOIN field_data_field_c_tue_on_duty AS CTUE_ON ON CTUE_ON.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_tue_off_duty AS CTUE_OFF ON CTUE_OFF.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_tue_flexy_start AS CTUE_FLX_S ON CTUE_FLX_S.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_tue_flexy_end AS CTUE_FLX_E ON CTUE_FLX_E.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_tue_break_time AS CTUE_BT ON CTUE_BT.entity_id = B_S.pid AND F.field_customize_value = 1
+                        
+                        # Wednesday
+                        LEFT JOIN field_data_field_c_wed_on_duty AS CWED_ON ON CWED_ON.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_wed_off_duty AS CWED_OFF ON CWED_OFF.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_wed_flexy_start AS CWED_FLX_S ON CWED_FLX_S.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_wed_flexy_end AS CWED_FLX_E ON CWED_FLX_E.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_wed_break_time AS CWED_BT ON CWED_BT.entity_id = B_S.pid AND F.field_customize_value = 1
+                        
+                        # Thursday
+                        LEFT JOIN field_data_field_c_thu_on_duty AS CTHU_ON ON CTHU_ON.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_thu_off_duty AS CTHU_OFF ON CTHU_OFF.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_thu_flexy_start AS CTHU_FLX_S ON CTHU_FLX_S.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_thu_flexy_end AS CTHU_FLX_E ON CTHU_FLX_E.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_thu_break_time AS CTHU_BT ON CTHU_BT.entity_id = B_S.pid AND F.field_customize_value = 1
+                        
+                        # Friday
+                        LEFT JOIN field_data_field_c_fri_on_duty AS CFRI_ON ON CFRI_ON.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_fri_off_duty AS CFRI_OFF ON CFRI_OFF.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_fri_flexy_start AS CFRI_FLX_S ON CFRI_FLX_S.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_fri_flexy_end AS CFRI_FLX_E ON CFRI_FLX_E.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_fri_break_time AS CFRI_BT ON CFRI_BT.entity_id = B_S.pid AND F.field_customize_value = 1
+                        
+                        # Saturday
+                        LEFT JOIN field_data_field_c_sat_on_duty AS CSAT_ON ON CSAT_ON.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_sat_off_duty AS CSAT_OFF ON CSAT_OFF.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_sat_flexy_start AS CSAT_FLX_S ON CSAT_FLX_S.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_sat_flexy_end AS CSAT_FLX_E ON CSAT_FLX_E.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_sat_break_time AS CSAT_BT ON CSAT_BT.entity_id = B_S.pid AND F.field_customize_value = 1
+                        
+                        # Sunday
+                        LEFT JOIN field_data_field_c_sun_on_duty AS CSUN_ON ON CSUN_ON.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_sun_off_duty AS CSUN_OFF ON CSUN_OFF.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_sun_flexy_start AS CSUN_FLX_S ON CSUN_FLX_S.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_sun_flexy_end AS CSUN_FLX_E ON CSUN_FLX_E.entity_id = B_S.pid AND F.field_customize_value = 1
+                        LEFT JOIN field_data_field_c_sun_break_time AS CSUN_BT ON CSUN_BT.entity_id = B_S.pid AND F.field_customize_value = 1
+                        
+                        # Policies
+                        LEFT JOIN field_data_field_allow_undertime AS A_U ON A_U.entity_id = B_S.pid 
+                        LEFT JOIN field_data_field_allow_late AS A_L ON A_L.entity_id = B_S.pid 
+                        LEFT JOIN field_data_field_allow_nd AS A_ND ON A_ND.entity_id = B_S.pid 
+
+                        # Work Days
+                        LEFT JOIN field_data_field_work_days AS WD ON WD.entity_id = B_S.pid AND WD.field_work_days_value <> '0'
+                    
+                    WHERE 
+                        1 = 1
+                        AND ". implode(' AND ', $schedule_where_query) . "
+                    GROUP BY A.uid, B_S.pid
+                HAVING schedule_type IS NOT NULL";
+                    
+            $result = DB::connection('drupal_portal')->select($query, [1]);
+            
+            log_to_file('info', 'Success', [$result]);
+            return $result;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
 }
