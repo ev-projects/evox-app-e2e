@@ -197,8 +197,11 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
             ", [1]);
             log_to_file('info', 'Success', [$result]);
             return $result;
-
-
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
     
     /**
      *  Responsible for fetching the Overtime data from the Drupal Evox
