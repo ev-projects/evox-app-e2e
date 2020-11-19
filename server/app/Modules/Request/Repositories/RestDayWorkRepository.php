@@ -312,6 +312,82 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
         }
     }
 
+   /**
+     *  Responsible for Applying the newly fetched Drupal Rest Day Work to EVOX
+     * @param array $drupal_evox_rest_day_work_array
+     * 
+     * @return arrayu $to_compute_items
+     */
+    public function apply_drupal_evox_data_to_rest_day_work( array $drupal_evox_alter_log_array )
+    {   
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "drupal_migration");
+
+            $users_not_existing = [];
+            $to_compute_items = [];
+
+            // Iterates the Array fetched from the Drupal Database
+            foreach( $drupal_evox_alter_log_array as $drupal_evox_alter_log) {
+
+                // Fetch the User via the emp_num field of the User
+                $user = User::where(['emp_num' => $drupal_evox_alter_log->employee_number])->first();
+
+                // Checks if the user is existing
+                if( is_valid( $user ) ) {
+
+                    # Update the DTR properties
+                    $rest_day_work                   = new RestDayWork();
+                    $rest_day_work->user_id          =  $user->id;
+                    $rest_day_work->date             =  $drupal_evox_alter_log->date;
+
+                    $rest_day_work->start_time          =  $drupal_evox_alter_log->on_duty;
+                    $rest_day_work->end_time         =  $drupal_evox_alter_log->off_duty;
+
+                    $rest_day_work->employee_note    =  $drupal_evox_alter_log->employee_note ?? null;
+                    $rest_day_work->superviser_note  =  $drupal_evox_alter_log->superviser_note ?? null;
+                    
+                    $rest_day_work->status           =  $drupal_evox_alter_log->status;
+                    $rest_day_work->created_by       =  $user->id;
+                    $rest_day_work->created_at       =  $drupal_evox_alter_log->date_created;
+                    $rest_day_work->updated_at       =  $drupal_evox_alter_log->date_updated;
+                    $rest_day_work->save();
+
+                    // Saved the To compute Items
+                    if( in_array($rest_day_work->status, array('approved','declined')) ) {
+                        $to_compute_items[] = $rest_day_work;
+                    }
+
+                    log_to_file( 'info', 'Success', [$rest_day_work->getAttributes()], "drupal_migration");
+
+                } else {
+                    log_to_file( 'info', 'User not existing', [$drupal_evox_alter_log], "drupal_migration");
+                    $users_not_existing[$drupal_evox_alter_log->emp_num] = $drupal_evox_alter_log->emp_num;
+                }
+
+            }
+
+            DB::commit();
+
+            if( count( $users_not_existing ) > 0 ){
+                log_to_file( 'info', 'Employee Numbers that does not exist"', [$users_not_existing], "drupal_migration");
+            }
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+            return $to_compute_items;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
 
     /**
      *  Responsible for updating the Request's Details and Declining the Rest Day Work Request with the ID given
