@@ -294,6 +294,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 
                 $schedule_id = $employee->defaultSchedule()->first()->id;
                 $schedule = $this->update( $data , $schedule_id );
+                log_to_file( 'info', ucfirst($data['source_type']).' Schedule UPDATED', [$schedule->getAttributes()], "assign");
 
             # If Source Type is 'temporary' and the User has an existing From & To Temporary Schedule, retrieve it and Update that Schedule
             } else if ( $data['source_type'] == 'temporary' 
@@ -308,10 +309,12 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                                 ])->first()->id;
 
                 $schedule = $this->update( $data , $schedule_id );
+                log_to_file( 'info', ucfirst($data['source_type']).' Schedule UPDATED', [$schedule->getAttributes()], "assign");
     
             # If not existing, Insert the new Schedule
             } else {
                 $schedule = $this->store( $data );
+                log_to_file( 'info', ucfirst($data['source_type']).' Schedule INSERTED', [$schedule->getAttributes()], "assign");
             }
             
             return $schedule;
@@ -407,70 +410,11 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 if( is_valid( $user ) ) {
                     
                     // Construct the Data to be inserted as Schedule
-                    $data = [
-                        'bind_to'           => 'user',
-                        'bind_id'           => $user->id,
-                        'source_type'       => 'default',
-                        'schedule_type'     => $drupal_evox_default_schedule->schedule_type,
-                        'valid_from'        => $drupal_evox_default_schedule->valid_from,
-                        'work_days'         => explode(',', $drupal_evox_default_schedule->work_days),
-                        'schedule_policies' => [
-                            'allow_undertime'   => $drupal_evox_default_schedule->allow_undertime,
-                            'allow_late'        => $drupal_evox_default_schedule->allow_late,
-                            'allow_night_diff'  => $drupal_evox_default_schedule->allow_night_diff,
-                        ]
-                    ];
-
-                    // Construct the Schedule Detail 
-                    switch( $drupal_evox_default_schedule->schedule_type ){
-                        case "standard":
-                            $data['schedule_details'] = [
-                                'all' => [
-                                    'start_time'    => $drupal_evox_default_schedule->standard_start_time,
-                                    'end_time'      => $drupal_evox_default_schedule->standard_end_time,
-                                    'break_time'    => $drupal_evox_default_schedule->standard_break_time,
-                                ]
-                            ];
-                            break;
-                        case "flexible":
-                            $data['schedule_details'] = [
-                                'all' => [
-                                    'start_time'          => $drupal_evox_default_schedule->flexy_start_time,
-                                    'end_time'            => $drupal_evox_default_schedule->flexy_end_time,
-                                    'start_flexy_time'    => $drupal_evox_default_schedule->flexy_start_flexy_time,
-                                    'end_flexy_time'      => $drupal_evox_default_schedule->flexy_end_flexy_time,
-                                    'break_time'          => $drupal_evox_default_schedule->flexy_break_time,
-                                ]
-                            ];
-                            break;
-                        case "customize":
-                            $customized_schedule_details = [];
-                            foreach( explode(',', $drupal_evox_default_schedule->work_days) as $work_day){
-                                 $customized_schedule_details[$work_day] = [
-                                    'start_time'          => $drupal_evox_default_schedule->{$work_day.'_start_time'},
-                                    'end_time'            => $drupal_evox_default_schedule->{$work_day.'_end_time'},
-                                    'start_flexy_time'    => $drupal_evox_default_schedule->{$work_day.'_start_flexy_time'},
-                                    'end_flexy_time'      => $drupal_evox_default_schedule->{$work_day.'_end_flexy_time'},
-                                    'break_time'          => $drupal_evox_default_schedule->{$work_day.'_break_time'}
-                                ];
-                            }
-                            $data['schedule_details'] = $customized_schedule_details;
-                            break;
-                    }
-
-                    // Checks if there's an existing Default Schedule of the User
-                    $schedule = $user->defaultSchedule()->first();
-
-                    // If Schedule exists, update the Schedule with the new data.
-                    if( is_valid( $schedule ) ){
-                        $schedule = $this->update( $data, $schedule );
-                        log_to_file( 'info', 'Default Schedule UPDATED', [$schedule->getAttributes()], "drupal_migration");
-
-                    // If Schedule does not exist, store the Schedule with the data passed.
-                    } else {
-                        $schedule = $this->store( $data );
-                        log_to_file( 'info', 'Default Schedule INSERTED', [$schedule->getAttributes()], "drupal_migration");
-                    }
+                    $data = $this->parse_drupal_evox_schedule( $drupal_evox_default_schedule, $user );
+                    
+                    // Assign the Default Schedule to the User
+                    $schedule = $this->assign_to_employee( $data, $user);
+                    log_to_file( 'info', 'Default Schedule UPDATED/INSERTED', [$schedule->getAttributes()], "drupal_migration");
 
                     $result[] = $schedule;
 
@@ -500,5 +444,135 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         }
     }
 
+
+
+
+    /**
+     *  Responsible for Applying the newly fetched Drupal Temporary Schedule to EVOX
+     * @param array $drupal_evox_temporary_schedule_array
+     * 
+     * @return array $to_compute_items
+     */
+    public function  apply_drupal_evox_data_to_temporary_schedule( array $drupal_evox_temporary_schedule_array ) {
+
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "drupal_migration");
+            
+            $result = [];
+
+            // Iterates the Array fetched from the Drupal Database
+            foreach( $drupal_evox_temporary_schedule_array as $drupal_evox_temporary_schedule) {
+                
+                // Fetch the User via the emp_num field of the User
+                $user = User::where(['emp_num' => $drupal_evox_temporary_schedule->emp_num])->first();
+
+                // Checks if the user is existing
+                if( is_valid( $user ) ) {
+
+                    // Construct the Data to be inserted as Schedule
+                    $data = $this->parse_drupal_evox_schedule( $drupal_evox_temporary_schedule, $user );
+
+                    // Assign the Temporary Schedule to the User
+                    $schedule = $this->assign_to_employee( $data, $user);
+                    log_to_file( 'info', 'Temporary Schedule UPDATED/INSERTED', [$schedule->getAttributes()], "drupal_migration");
+
+                    $result[] = $schedule;
+
+                } else {
+                    log_to_file( 'info', 'User not existing', [$drupal_evox_temporary_schedule], "drupal_migration");
+                    $users_not_existing[$drupal_evox_temporary_schedule->emp_num] = $drupal_evox_temporary_schedule->emp_num;
+                }
+                
+            }
+            
+            DB::commit();
+
+            if( count( $users_not_existing ) > 0 ){
+                log_to_file( 'info', 'Employee Numbers that does not exist"', [$users_not_existing], "drupal_migration");
+            }
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+            return $result;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+
+
+
+
+    /**
+     *  Responsible for parsing the Drupal Schedule to a $data variable that is being accepted by the update/store/assign_to_employee value
+     * @param object $drupal_evox_schedule
+     * 
+     * @return array $data
+     */
+    private function parse_drupal_evox_schedule( $drupal_evox_schedule, $user ){
+  
+        // Construct the Data to be inserted as Schedule
+        $data = [
+            'bind_to'           => 'user',
+            'bind_id'           => $user->id,
+            'source_type'       => 'temporary',
+            'schedule_type'     => $drupal_evox_schedule->schedule_type,
+            'valid_from'        => $drupal_evox_schedule->valid_from,
+            'valid_to'          => $drupal_evox_schedule->valid_to ?? null,
+            'work_days'         => explode(',', $drupal_evox_schedule->work_days),
+            'schedule_policies' => [
+                'allow_undertime'   => $drupal_evox_schedule->allow_undertime,
+                'allow_late'        => $drupal_evox_schedule->allow_late,
+                'allow_night_diff'  => $drupal_evox_schedule->allow_night_diff,
+            ]
+        ];
+
+        // Construct the Schedule Detail 
+        switch( $drupal_evox_schedule->schedule_type ){
+            case "standard":
+                $data['schedule_details'] = [
+                    'all' => [
+                        'start_time'    => $drupal_evox_schedule->standard_start_time,
+                        'end_time'      => $drupal_evox_schedule->standard_end_time,
+                        'break_time'    => $drupal_evox_schedule->standard_break_time,
+                    ]
+                ];
+                break;
+            case "flexible":
+                $data['schedule_details'] = [
+                    'all' => [
+                        'start_time'          => $drupal_evox_schedule->flexy_start_time,
+                        'end_time'            => $drupal_evox_schedule->flexy_end_time,
+                        'start_flexy_time'    => $drupal_evox_schedule->flexy_start_flexy_time,
+                        'end_flexy_time'      => $drupal_evox_schedule->flexy_end_flexy_time,
+                        'break_time'          => $drupal_evox_schedule->flexy_break_time,
+                    ]
+                ];
+                break;
+            case "customize":
+                $customized_schedule_details = [];
+                foreach( explode(',', $drupal_evox_schedule->work_days) as $work_day){
+                        $customized_schedule_details[$work_day] = [
+                        'start_time'          => $drupal_evox_schedule->{$work_day.'_start_time'},
+                        'end_time'            => $drupal_evox_schedule->{$work_day.'_end_time'},
+                        'start_flexy_time'    => $drupal_evox_schedule->{$work_day.'_start_flexy_time'},
+                        'end_flexy_time'      => $drupal_evox_schedule->{$work_day.'_end_flexy_time'},
+                        'break_time'          => $drupal_evox_schedule->{$work_day.'_break_time'}
+                    ];
+                }
+                $data['schedule_details'] = $customized_schedule_details;
+                break;
+        }
+
+        return $data;
+    }
 
 }

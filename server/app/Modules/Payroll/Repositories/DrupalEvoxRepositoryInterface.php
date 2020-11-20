@@ -12,4 +12,6 @@ interface DrupalEvoxRepositoryInterface
     public function get_overtime( $start_datetime, $end_datetime );
 
     public function get_default_schedule( $is_initial_sync );
+    
+    public function get_temporary_schedule( $is_initial_sync );
 }

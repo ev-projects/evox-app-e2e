@@ -17,4 +17,6 @@ interface ScheduleRepositoryInterface
     public function get_template_schedules();
 
     public function apply_drupal_evox_data_to_default_schedule( array $drupal_evox_default_schedule_array );
+
+    public function apply_drupal_evox_data_to_temporary_schedule( array $drupal_evox_temporary_schedule_array );
 }

@@ -50,6 +50,10 @@ Route::group(['prefix' => 'cron', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('/sync_default_schedule',                       'CronController@sync_default_schedule');
     Route::get('/sync_default_schedule/{is_initial_sync}',     'CronController@sync_default_schedule');
 
+    # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
+    Route::get('/sync_temporary_schedule',                       'CronController@sync_temporary_schedule');
+    Route::get('/sync_temporary_schedule/{is_initial_sync}',     'CronController@sync_temporary_schedule');
+
 
     # FOR TESTING PURPOSES 
 
