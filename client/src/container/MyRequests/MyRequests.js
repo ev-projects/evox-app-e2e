@@ -200,8 +200,9 @@ class MyRequests extends Component {
                     {request_list.data.map(function(item){
                         var fourthColumn = [];
                         var fifthColumn = [];
+                        var link= '';
                         switch( item.table_name ) { 
-                          case "Change Schedule":
+                          case "change_schedules":
 
                             var payroll_items = {allow_late:"Late", allow_undertime:"Undertime", allow_night_diff: "Night Differential"};
 
@@ -218,9 +219,9 @@ class MyRequests extends Component {
                               <p> Work Days: {item.fourth_column?.work_days.join()}</p>
                               </div>
                             ); 
-                            
+                            link =  global.change_schedule + item.id.toString();
                               break;
-                          case "Alter Log":
+                          case "alter_logs":
                             fourthColumn.push(
                               <div>
                                 New
@@ -235,8 +236,9 @@ class MyRequests extends Component {
                                 <p>Out: {item.fourth_column.current_time_out}</p>
                               </div>
                             );
+                            link =  global.alter_log + item.id.toString();
                               break;
-                          case "Rest Day Work":
+                          case "rest_day_works":
                             fourthColumn.push(
                               <span>From: {item.fifth_column}</span>
 
@@ -245,8 +247,9 @@ class MyRequests extends Component {
                               <span>To: {item.fourth_column}</span>
 
                             );
+                            link =  global.rest_day_work + item.id.toString();
                               break;
-                          case "Overtime":
+                          case "overtimes":
                               fifthColumn.push(
                                 <span>{item.fifth_column}</span>
 
@@ -255,6 +258,7 @@ class MyRequests extends Component {
                                 <span>{item.fourth_column}</span>
 
                               );
+                              link =  global.overtime + item.id.toString();
                               break;
                        }
                         return <tr>
@@ -264,7 +268,7 @@ class MyRequests extends Component {
                         <td>{fifthColumn}</td>
                         <td> <Status status={item.status} /></td>
                         <td>{item.updated_by} / {item.updated_at}</td>
-                        <td><i className="fa fa-eye" aria-hidden="true"></i>&nbsp;<i className="fa fa-check-circle" aria-hidden="true"></i>&nbsp;<i className="fa fa-times-circle" aria-hidden="true"></i></td>
+                        <td> <Link to={{ pathname: link, previousPath:  global.base_url +'team/MyTeamRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
                       </tr>         
                     })}
                   </tbody>
