@@ -480,7 +480,7 @@ class CronController extends Controller
 
     /**
      * Syncs the Default Schedule from Existing EVOX to this new EVOX 
-     *  1. Fetch Default Schedule from EVOX base from the Start & End Date
+     *  1. Fetch Default Schedule from EVOX base from the parameter
      *  2. Update/Generate the Default Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
      * @return \Illuminate\Http\JsonResponse
      */
@@ -502,5 +502,41 @@ class CronController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+
+
+
+
+    /**
+     * Syncs the Temporary Schedule from Existing EVOX to this new EVOX 
+     *  1. Fetch Temporary Schedule from EVOX base from the parameter
+     *  2. Update/Generate the Temporary Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_temporary_schedule($is_initial_sync = false){
+        try {
+
+            // Fetch the Drupal Temporary Schedule Data
+            $drupal_evox_temporary_schedule_array = $this->drupal_evox->get_temporary_schedule( $is_initial_sync );
+
+            // Apply the Drupal Temporary Schedule Data to EVOX 
+            $schedule_collection = $this->schedule->apply_drupal_evox_data_to_temporary_schedule( $drupal_evox_temporary_schedule_array );
+
+            // Apply the Schedule to the DTR related
+            foreach( $schedule_collection as $schedule ){
+                $dtr_collection = $this->dtr->apply_schedule_to_dtr( $schedule->bind_id, $schedule );
+            } 
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $schedule_collection,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+    
+
 
 }
