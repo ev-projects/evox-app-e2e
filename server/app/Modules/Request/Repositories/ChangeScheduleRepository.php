@@ -204,7 +204,7 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
             $users_not_existing = [];
             $to_compute_items = [];
 
-            // Iterates the Array fetched from the Drupal Database
+            # Iterates the Array fetched from the Drupal Database
             foreach( $drupal_evox_change_schedule_array as $drupal_evox_change_schedule) {
                 $user = User::where(['emp_num' => $drupal_evox_change_schedule->employee_number])->first();
 
@@ -213,7 +213,7 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
 
                     $work_days = explode(",", $drupal_evox_change_schedule->work_days);
 
-                    # structureof schedule for changeschedule
+                    # structure of schedule for changeschedule
                     $data = array(
                         'work_days' => $work_days,
                         'source_type' => 'change_schedule',
@@ -239,8 +239,6 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
                     $change_schedule->user_id        =  $user->id;
                     $change_schedule->date           =  $drupal_evox_change_schedule->date;
 
-                    $change_schedule                 = new ChangeSchedule();
-                    $change_schedule->user_id        = $user->id;
                     $change_schedule->schedule_id    = $schedule->id ;
                     $change_schedule->valid_from     = $drupal_evox_change_schedule->valid_from ;
                     $change_schedule->valid_to       = $drupal_evox_change_schedule->valid_to ;
