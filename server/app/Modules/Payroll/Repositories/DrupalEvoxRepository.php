@@ -244,6 +244,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     DATE_FORMAT(FROM_UNIXTIME(valid_from.field_sched_valid_from_value),'%Y-%m-%d') as valid_from,
                     DATE_FORMAT(FROM_UNIXTIME(valid_to.field_sched_valid_to_value),'%Y-%m-%d') as valid_to,
                     emp_number.field_employee_number_value as employee_number,
+                    status.field_status_value as status,
                     FROM_UNIXTIME( A.created ) as 'date_created',
                     FROM_UNIXTIME( A.changed ) as 'date_updated',
                     note.field_note_value as 'note',
@@ -254,8 +255,8 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     LEFT JOIN field_data_field_payroll_items as payroll_items ON A.nid = payroll_items.entity_id
                     LEFT JOIN field_data_field_sched_valid_from as valid_from ON A.nid = valid_from.entity_id
                     LEFT JOIN field_data_field_sched_valid_to as valid_to ON A.nid = valid_to.entity_id
-                    LEFT JOIN field_data_field_status as valid_to ON A.nid = valid_to.entity_id
                     LEFT JOIN field_data_field_note as note ON A.nid = note.entity_id
+                    LEFT JOIN field_data_field_status as status ON A.nid = status.entity_id
                     LEFT JOIN profile ON A.uid = profile.uid
                     LEFT JOIN field_data_field_employee_number as emp_number ON profile.pid = emp_number.entity_id
                     LEFT JOIN field_data_field_payroll_items as late_item ON A.nid = late_item.entity_id AND late_item.field_payroll_items_value = 'late'
@@ -268,8 +269,8 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     (
                         (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."') OR
                         (FROM_UNIXTIME(valid_to.field_sched_valid_to_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."') OR
-                        (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) > '". $start_datetime ."' AND FROM_UNIXTIME(valid_to.field_sched_valid_to_value) < '". $end_datetime ."')
-                    )
+                        (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) < '". $start_datetime ."' AND FROM_UNIXTIME(valid_to.field_sched_valid_to_value) > '". $end_datetime ."')
+                        )
                     GROUP BY A.nid"
         , [1]);
             log_to_file('info', 'Success', [$result]);
