@@ -327,7 +327,7 @@ class CronController extends Controller
             }
 
             return success_response(
-                "Sync Alteration Log Success", 
+                trans('messages.'.__FUNCTION__.'_success'), 
                 $to_compute_items
             );
 
@@ -421,7 +421,7 @@ class CronController extends Controller
             }
 
             return success_response(
-                "Sync Rest Day Work Success Log Success", 
+                trans('messages.'.__FUNCTION__.'_success'), 
                 $to_compute_items
             );
         } catch(Exception $e){
@@ -469,7 +469,7 @@ class CronController extends Controller
             }
 
             return success_response(
-                "Sync Rest Day Work Success Log Success", 
+                trans('messages.'.__FUNCTION__.'_success'), 
                 $to_compute_items
             );
         } catch(Exception $e){
