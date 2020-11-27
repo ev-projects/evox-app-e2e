@@ -223,56 +223,57 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
         $query_tables = Array(); 
         $query_column = Array(); 
         foreach($days as $value) {
-            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_on_duty.field_cst_".$value."_on_duty_value),'%H:%i') as " . $value . "_on_duty" );
-            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_off_duty.field_cst_".$value."_off_duty_value),'%H:%i') as " . $value . "_off_duty");
-            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_breaktime.field_cst_".$value."_breaktime_value),'%H:%i') as " . $value . "_breaktime");
-            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_flexy_start.field_cst_".$value."_flexy_start_value),'%H:%i') as " . $value . "_flexy_start");
-            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_flexy_end.field_cst_".$value."_flexy_end_value),'%H:%i') as " . $value . "_flexy_end");
+            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_on_duty.field_c_".$value."_on_duty_value),'%H:%i') as " . $value . "_on_duty" );
+            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_off_duty.field_c_".$value."_off_duty_value),'%H:%i') as " . $value . "_off_duty");
+            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_break_time.field_c_".$value."_break_time_value),'%H:%i') as " . $value . "_break_time");
+            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_flexy_start.field_c_".$value."_flexy_start_value),'%H:%i') as " . $value . "_flexy_start");
+            array_push($query_column, "DATE_FORMAT(FROM_UNIXTIME(" . $value . "_flexy_end.field_c_".$value."_flexy_end_value),'%H:%i') as " . $value . "_flexy_end");
 
-            array_push($query_tables, "LEFT JOIN field_data_field_cst_" .$value . "_on_duty  as "  .$value . "_on_duty  ON A.nid = " .$value . "_on_duty.entity_id " );
-            array_push($query_tables, "LEFT JOIN field_data_field_cst_" .$value . "_off_duty as "  .$value . "_off_duty  ON A.nid = " .$value . "_off_duty.entity_id" );
-            array_push($query_tables, "LEFT JOIN field_data_field_cst_" .$value . "_breaktime as " .$value . "_breaktime  ON A.nid = " .$value . "_breaktime.entity_id");
-            array_push($query_tables, "LEFT JOIN field_data_field_cst_" .$value . "_flexy_start as "  .$value . "_flexy_start  ON A.nid = " .$value . "_flexy_start.entity_id" );
-            array_push($query_tables, "LEFT JOIN field_data_field_cst_" .$value . "_flexy_end as " .$value . "_flexy_end ON A.nid  = " .$value . "_flexy_end.entity_id");
+            array_push($query_tables, "LEFT JOIN field_data_field_c_" .$value . "_on_duty  as "  .$value . "_on_duty  ON A.nid = " .$value . "_on_duty.entity_id " );
+            array_push($query_tables, "LEFT JOIN field_data_field_c_" .$value . "_off_duty as "  .$value . "_off_duty  ON A.nid = " .$value . "_off_duty.entity_id" );
+            array_push($query_tables, "LEFT JOIN field_data_field_c_" .$value . "_break_time as " .$value . "_break_time  ON A.nid = " .$value . "_break_time.entity_id");
+            array_push($query_tables, "LEFT JOIN field_data_field_c_" .$value . "_flexy_start as "  .$value . "_flexy_start  ON A.nid = " .$value . "_flexy_start.entity_id" );
+            array_push($query_tables, "LEFT JOIN field_data_field_c_" .$value . "_flexy_end as " .$value . "_flexy_end ON A.nid  = " .$value . "_flexy_end.entity_id");
         }
-
+   
         try {
             $result = DB::connection('drupal_portal')->select(
-            "
-            SELECT 
-                A.nid,
-                late_item.field_payroll_items_value as late,
-                undertime_item.field_payroll_items_value as undertime,
-                nightdiff_item.field_payroll_items_value as nightdiff,
-                GROUP_CONCAT(DISTINCT(work_days.field_work_days_value)),
-                DATE_FORMAT(FROM_UNIXTIME(valid_from.field_sched_valid_from_value),'%Y-%m-%d') as valid_from,
-                DATE_FORMAT(FROM_UNIXTIME(valid_to.field_sched_valid_to_value),'%Y-%m-%d') as valid_to,
-                emp_number.field_employee_number_value as employee_number,
-                FROM_UNIXTIME( A.created ) as 'date_created',
-                FROM_UNIXTIME( A.changed ) as 'date_updated',
-                note.field_note_value as 'note',
-                ".implode(",\n",$query_column)."
-            FROM
-                LEFT JOIN field_data_field_request_type as request_type ON A.nid = request_type.entity_id
-                LEFT JOIN field_data_field_payroll_items as payroll_items ON A.nid = payroll_items.entity_id
-                LEFT JOIN field_data_field_sched_valid_from as valid_from ON A.nid = valid_from.entity_id
-                LEFT JOIN field_data_field_sched_valid_to as valid_to ON A.nid = valid_to.entity_id
-                LEFT JOIN field_data_field_note as note ON A.nid = note.entity_id
-                LEFT JOIN profile ON A.uid = profile.uid
-                LEFT JOIN field_data_field_employee_number as emp_number ON profile.pid = emp_number.entity_id
-                LEFT JOIN field_data_field_payroll_items as late_item ON A.nid = late_item.entity_id AND late_item.field_payroll_items_value = 'late'
-                LEFT JOIN field_data_field_payroll_items as undertime_item ON A.nid = undertime_item.entity_id AND undertime_item.field_payroll_items_value = 'undertime'
-                LEFT JOIN field_data_field_payroll_items as nightdiff_item ON A.nid = nightdiff_item.entity_id AND nightdiff_item.field_payroll_items_value = 'nightdiff'
-                LEFT JOIN field_data_field_work_days AS work_days ON work_days.entity_id = A.nid AND work_days.field_work_days_value <>'0'
-                ".implode("\n",$query_tables)."
-            WHERE
-                request_type.field_request_type_tid = 597 AND
-                (
-                (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."') OR
-                (FROM_UNIXTIME(valid_to.field_sched_valid_to_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."') OR
-                (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) < '". $start_datetime ."' AND FROM_UNIXTIME(valid_to.field_sched_valid_to_value > '". $end_datetime ."')
-                )
-            "
+                "SELECT 
+                    A.nid,
+                    late_item.field_payroll_items_value as late,
+                    undertime_item.field_payroll_items_value as undertime,
+                    nightdiff_item.field_payroll_items_value as nightdiff,
+                    GROUP_CONCAT(DISTINCT(work_days.field_work_days_value)) as work_days,
+                    DATE_FORMAT(FROM_UNIXTIME(valid_from.field_sched_valid_from_value),'%Y-%m-%d') as valid_from,
+                    DATE_FORMAT(FROM_UNIXTIME(valid_to.field_sched_valid_to_value),'%Y-%m-%d') as valid_to,
+                    emp_number.field_employee_number_value as employee_number,
+                    FROM_UNIXTIME( A.created ) as 'date_created',
+                    FROM_UNIXTIME( A.changed ) as 'date_updated',
+                    note.field_note_value as 'note',
+                    ".implode(",\n",$query_column)."
+                FROM
+                    node AS A
+                    LEFT JOIN field_data_field_request_type as request_type ON A.nid = request_type.entity_id
+                    LEFT JOIN field_data_field_payroll_items as payroll_items ON A.nid = payroll_items.entity_id
+                    LEFT JOIN field_data_field_sched_valid_from as valid_from ON A.nid = valid_from.entity_id
+                    LEFT JOIN field_data_field_sched_valid_to as valid_to ON A.nid = valid_to.entity_id
+                    LEFT JOIN field_data_field_status as valid_to ON A.nid = valid_to.entity_id
+                    LEFT JOIN field_data_field_note as note ON A.nid = note.entity_id
+                    LEFT JOIN profile ON A.uid = profile.uid
+                    LEFT JOIN field_data_field_employee_number as emp_number ON profile.pid = emp_number.entity_id
+                    LEFT JOIN field_data_field_payroll_items as late_item ON A.nid = late_item.entity_id AND late_item.field_payroll_items_value = 'late'
+                    LEFT JOIN field_data_field_payroll_items as undertime_item ON A.nid = undertime_item.entity_id AND undertime_item.field_payroll_items_value = 'undertime'
+                    LEFT JOIN field_data_field_payroll_items as nightdiff_item ON A.nid = nightdiff_item.entity_id AND nightdiff_item.field_payroll_items_value = 'nightdiff'
+                    LEFT JOIN field_data_field_work_days AS work_days ON work_days.entity_id = A.nid AND work_days.field_work_days_value <>'0'
+                    ".implode("\n",$query_tables)."
+                WHERE
+                    request_type.field_request_type_tid = 597 AND
+                    (
+                        (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."') OR
+                        (FROM_UNIXTIME(valid_to.field_sched_valid_to_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."') OR
+                        (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) > '". $start_datetime ."' AND FROM_UNIXTIME(valid_to.field_sched_valid_to_value) < '". $end_datetime ."')
+                    )
+                    GROUP BY A.nid"
         , [1]);
             log_to_file('info', 'Success', [$result]);
             return $result;
@@ -281,6 +282,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
             throw $e;
         }
     }
+
 
     /**
      *  Responsible for fetching the Overtime data from the Drupal Evox
