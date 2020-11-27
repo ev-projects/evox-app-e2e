@@ -19,4 +19,6 @@ interface ChangeScheduleRepositoryInterface
     public function pending( $id );
 
     public function cancel( $id );
+    
+    public function apply_drupal_evox_data_to_change_schedule( array $drupal_evox_change_schedules );
 }
