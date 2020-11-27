@@ -13,7 +13,6 @@ use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
-use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
 use App\Modules\User\Models\User;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
@@ -44,7 +43,6 @@ class CronController extends Controller
                                 BiometricsRepositoryInterface $biometrics, 
                                 DrupalEvoxRepositoryInterface $drupal_evox,
                                 RestDayWorkRepositoryInterface $rest_day_work,
-                                ChangeScheduleRepositoryInterface $change_schedule,
                                 AlterLogRepositoryInterface $alter_log){
         $this->bhr = $bhr;
         $this->payroll = $payroll;
@@ -55,7 +53,6 @@ class CronController extends Controller
         $this->biometrics = $biometrics;
         $this->drupal_evox = $drupal_evox;
         $this->rest_day_work    = $rest_day_work;
-        $this->change_schedule  = $change_schedule;
         $this->alter_log        = $alter_log;
     }
 
@@ -430,52 +427,6 @@ class CronController extends Controller
     }
 
 
-
-
-    /**
-     * Syncs the Change Schedule from Existing EVOX to this new EVOX 
-     *  1. Fetch Change Schedule from EVOX base from the Start & End Date
-     *  3. Update/Generate the Change Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sync_change_schedule($start_date = null, $end_date = null){
-        try {
-            
-            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
-            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $start_datetime = Carbon::yesterday()->format('Y-m-d');
-                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d');
-            } else {
-                $start_datetime = Carbon::parse($start_date)->format('Y-m-d');
-                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d');
-            }   
-      
-            $drupal_evox_default_schedule_array = $this->drupal_evox->get_change_schedule( $start_datetime, $end_datetime );
-
-            $to_compute_items = $this->change_schedule->apply_drupal_evox_data_to_change_schedule( $drupal_evox_change_of_schedule );
-
-            if( count($to_compute_items) > 0 ){
-                
-                foreach( $to_compute_items as $change_of_schedule ){
-
-                    // Fetch the DTR instance from the Overtime
-                    $dtr = $change_of_schedule->dtr()->first();
-
-                    // Compute only if the DTR is existing.
-                    if( $dtr != null ) {
-                        $this->dtr->compute_payroll_items( $dtr );
-                    }
-                }
-            }
-
-            return success_response(
-                "Sync Rest Day Work Success Log Success", 
-                $to_compute_items
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
 
 
     /**

@@ -1,39 +1,69 @@
+body:not(.sidebar-mini-md) .content-wrapper, body:not(.sidebar-mini-md) .main-footer, body:not(.sidebar-mini-md) .main-header {
+  padding-left: 1.5%;
+}
 .navbar {
-    background-color: #222 !important;
-  }
-  
+  background-color: #343a40 !important;
+}
+
 a, .navbar-brand, .navbar-nav .nav-link {
-  color: #bbb !important;
+color: #bbb !important;
 }
 
 .nav-link:hover{
-  color: white !important;
+color: white !important;
 }
 
 .navbar{
-	border-bottom: 5px solid #82af13 !important;
+border-bottom: 5px solid #82af13 !important;
 }
 
 .header{
-  background: #82af13;
-  color: #fff;
+color: #82af13;
+
 }
-    
+  
 .header h1{
-  padding: 12px;
-  font-size: 16px;
+font-size: 1.2em;
 }
-    
+  
 .loader {
-  left: 50%;
-  margin-left: -4em;
+left: 50%;
+margin-left: -4em;
 }
 
 a.dropdown-item{
-  color: black !important;
+color: black !important;
 }
 
 a.dropdown-item:hover{
-  background-color: #82af13;
-  color: white !important;
+background-color: #82af13;
+color: white !important;
 }
+
+label:not(.form-check-label):not(.custom-file-label) {
+  font-weight: normal;
+  padding-right: 3%;
+}
+input[type=checkbox], input[type=radio] {
+  box-sizing: border-box;
+  padding: 0;
+  margin-right: 5px;
+}
+
+button[type=submit].btn-danger{
+  color: #fff;
+  background-color: #bd2130 !important;
+  border-color: #b21f2d;
+}
+
+button[type=submit].btn-secondary{
+  color: #fff;
+  background-color: #545b62;
+  border-color: #4e555b;
+}
+.nav-sidebar .nav-item>.nav-link {
+  position: relative;
+  cursor: pointer;
+  display: block;
+}
+.has-treeview.menu-open{background: rgba(255,255,255,.1) !important}

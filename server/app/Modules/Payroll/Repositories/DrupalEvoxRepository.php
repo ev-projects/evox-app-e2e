@@ -202,9 +202,6 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
             throw $e;
         }
     }
-    
-
-
 
     /**
      *  Responsible for fetching the Change Scbedule from the Drupal Evox
