@@ -67,7 +67,7 @@ class Profile extends Component {
                     { Object.keys(profile.details).length > 0 && !page.isReloading ?
                         <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
                             <Row>
-                                <Content col="5" title="User Profile"  subtitle={ <BackButton {...this.props}/>} >
+                                <Content col="8" title="User Profile"  subtitle={ <BackButton {...this.props}/>} >
                                         
                                             <Row>
                                                 <div className="col-lg-4 text-center" >

@@ -370,13 +370,13 @@ class MyTeamRequests extends Component {
                         <td> 
                         { item.status !="Canceled"  ? (<Field type="checkbox" name="checkedList" value={item.id.toString()+"."+item.table_name} />) : (<span></span>)}
                         </td>
-                        <td>{item.created_by} / {item.department_name}</td>
-                        <td>{item.table_name} / {item.created_at}</td>
+                        <td><b>{item.created_by}</b><br/> <small>{item.department_name}</small></td>
+                        <td><b>{item.table_name}</b><br/> <small>{item.created_at}</small></td>
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>
                         <td> <Status status={item.status} /></td>
-                        <td>{item.updated_by} / {item.updated_at}</td>
+                        <td>{item.updated_by} <br/><small>{item.updated_at}</small></td>
                         <td> <Link to={{ pathname: link, previousPath:  global.base_url +'team/MyTeamRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
                       </tr>         
                     })}
@@ -430,16 +430,16 @@ class MyTeamRequests extends Component {
     let pagination = [];
     switch( props.status ) { 
       case "Pending":
-          pagination.push( <Badge variant="secondary">{props.status}</Badge>);
+          pagination.push( <Badge variant="secondary"><span></span>{props.status}</Badge>);
           break;
       case "Canceled":
-          pagination.push(<Badge variant="dark">{props.status}</Badge>);
+          pagination.push(<Badge variant="dark"><span></span>{props.status}</Badge>);
           break;
       case "Approved":
-          pagination.push(<Badge variant="success">{props.status}</Badge>);
+          pagination.push(<Badge variant="success"><span></span>{props.status}</Badge>);
           break;
       case "Declined":
-          pagination.push(<Badge variant="danger">{props.status}</Badge>);
+          pagination.push(<Badge variant="danger"><span></span>{props.status}</Badge>);
       break;
    }
     return pagination;
