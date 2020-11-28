@@ -13,7 +13,7 @@ class syncBiotmetrixLogs extends Command
      *
      * @var string
      */
-    protected $signature = 'syn_biometrix_logs';
+    protected $signature = 'sync_biometrix_logs';
 
     /**
      * The console command description.

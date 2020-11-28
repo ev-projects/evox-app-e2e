@@ -15,7 +15,7 @@ class syncEvoxRestDayWork extends Command
      *
      * @var string
      */
-    protected $signature = 'sync_evox_restdaywork';
+    protected $signature = 'sync_evox_rest_day_work';
 
     /**
      * The console command description.
@@ -50,8 +50,8 @@ class syncEvoxRestDayWork extends Command
         try {
             
             // Fetch Yesterday Record
-                $start_datetime = Carbon::yesterday()->format('Y-m-d');
-                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d');
+            $start_datetime = Carbon::yesterday()->format('Y-m-d');
+            $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d');
            
             $drupal_evox_rest_day_work_array = $this->drupal_evox->get_rest_day_work( $start_datetime, $end_datetime );
 

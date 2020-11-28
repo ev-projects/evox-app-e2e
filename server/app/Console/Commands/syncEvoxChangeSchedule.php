@@ -15,7 +15,7 @@ class syncEvoxChangeSchedule extends Command
      *
      * @var string
      */
-    protected $signature = 'sync_evox_changeschedule';
+    protected $signature = 'sync_evox_changes_chedule';
 
     /**
      * The console command description.
