@@ -410,7 +410,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 if( is_valid( $user ) ) {
                     
                     // Construct the Data to be inserted as Schedule
-                    $data = $this->parse_drupal_evox_schedule( $drupal_evox_default_schedule, $user );
+                    $data = $this->parse_drupal_evox_schedule( $drupal_evox_default_schedule, $user, 'default' );
                     
                     // Assign the Default Schedule to the User
                     $schedule = $this->assign_to_employee( $data, $user);
@@ -472,7 +472,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 if( is_valid( $user ) ) {
 
                     // Construct the Data to be inserted as Schedule
-                    $data = $this->parse_drupal_evox_schedule( $drupal_evox_temporary_schedule, $user );
+                    $data = $this->parse_drupal_evox_schedule( $drupal_evox_temporary_schedule, $user, 'temporary'  );
 
                     // Assign the Temporary Schedule to the User
                     $schedule = $this->assign_to_employee( $data, $user);
@@ -517,13 +517,13 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
      * 
      * @return array $data
      */
-    private function parse_drupal_evox_schedule( $drupal_evox_schedule, $user ){
+    private function parse_drupal_evox_schedule( $drupal_evox_schedule, $user, $source_type ){
   
         // Construct the Data to be inserted as Schedule
         $data = [
             'bind_to'           => 'user',
             'bind_id'           => $user->id,
-            'source_type'       => 'temporary',
+            'source_type'       => $source_type,
             'schedule_type'     => $drupal_evox_schedule->schedule_type,
             'valid_from'        => $drupal_evox_schedule->valid_from,
             'valid_to'          => $drupal_evox_schedule->valid_to ?? null,
