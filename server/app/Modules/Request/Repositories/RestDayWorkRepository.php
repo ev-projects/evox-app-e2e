@@ -363,7 +363,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
 
                 } else {
                     log_to_file( 'info', 'User not existing', [$drupal_evox_alter_log], "drupal_migration");
-                    $users_not_existing[$drupal_evox_alter_log->emp_num] = $drupal_evox_alter_log->emp_num;
+                    $users_not_existing[$drupal_evox_alter_log->employee_number] = $drupal_evox_alter_log->employee_number;
                 }
 
             }
