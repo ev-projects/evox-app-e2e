@@ -226,11 +226,14 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
                     );
 
                     foreach ($work_days as $key => $value) {
-                        $data['schedule_details'][$value]['start_time'] = $drupal_evox_change_schedule->{$value . "_on_duty" };
-                        $data['schedule_details'][$value]['end_time'] = $drupal_evox_change_schedule->{$value . "_off_duty" };
-                        $data['schedule_details'][$value]['break_time'] = $drupal_evox_change_schedule->{$value . "_breaktime" };
-                        $data['schedule_details'][$value]['start_flexy_time'] =  $drupal_evox_change_schedule->{$value . "_flexy_start" };
-                        $data['schedule_details'][$value]['end_flexy_time'] = $drupal_evox_change_schedule->{$value . "_flexy_end" };
+                        if(is_valid($value)){
+                            $data['schedule_details'][$value]['start_time'] = $drupal_evox_change_schedule->{$value . "_on_duty" };
+                            $data['schedule_details'][$value]['end_time'] = $drupal_evox_change_schedule->{$value . "_off_duty" };
+                            $data['schedule_details'][$value]['break_time'] = $drupal_evox_change_schedule->{$value . "_breaktime" };
+                            $data['schedule_details'][$value]['start_flexy_time'] =  $drupal_evox_change_schedule->{$value . "_flexy_start" };
+                            $data['schedule_details'][$value]['end_flexy_time'] = $drupal_evox_change_schedule->{$value . "_flexy_end" };
+                        }
+
                     }
 
                     $schedule =  $schedule->store($data);
