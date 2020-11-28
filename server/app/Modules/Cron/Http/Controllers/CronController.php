@@ -503,4 +503,30 @@ class CronController extends Controller
         }
     }
 
+
+    /**
+     * Syncs the Temporary Schedule from Existing EVOX to this new EVOX 
+     *  1. Fetch Temporary Schedule from EVOX base from the Start & End Date
+     *  2. Update/Generate the Temporary Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_temporary_schedule($is_initial_sync = false){
+        try {
+
+            // Fetch the Drupal Temporary Schedule Data
+            $drupal_evox_temporary_schedule_array = $this->drupal_evox->get_temporary_schedule( $is_initial_sync );
+
+            // Apply the Drupal Temporary Schedule Data to EVOX 
+            $schedule_collection = $this->schedule->apply_drupal_evox_data_to_temporary_schedule( $drupal_evox_temporary_schedule_array );
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $schedule_collection,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 }
