@@ -54,7 +54,7 @@ class syncEvoxChangeSchedule extends Command
       
             $drupal_evox_default_schedule_array = $this->drupal_evox->get_change_schedule( $start_datetime, $end_datetime );
 
-            $to_compute_items = $this->change_schedule->apply_drupal_evox_data_to_change_schedule( $drupal_evox_change_of_schedule );
+            $to_compute_items = $this->change_schedule->apply_drupal_evox_data_to_change_schedule( $drupal_evox_default_schedule_array );
 
             if( count($to_compute_items) > 0 ){
                 
