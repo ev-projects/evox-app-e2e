@@ -83,60 +83,70 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/user_sync.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'bhrlog' => [
             'driver' => 'single',
             'path' => storage_path('logs/bhr.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'biometrics' => [
             'driver' => 'single',
             'path' => storage_path('logs/biometrics.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'dtr' => [
             'driver' => 'single',
             'path' => storage_path('logs/dtr.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'dtr_computation' => [
             'driver' => 'single',
             'path' => storage_path('logs/dtr_computation.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'dtr_summary' => [
             'driver' => 'single',
             'path' => storage_path('logs/dtr_summary.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'request' => [
             'driver' => 'single',
             'path' => storage_path('logs/request.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'assign' => [
             'driver' => 'single',
             'path' => storage_path('logs/assign.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'user' => [
             'driver' => 'single',
             'path' => storage_path('logs/user.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
         'drupal_migration' => [
             'driver' => 'single',
             'path' => storage_path('logs/drupal_migration.log'),
             'level' => 'debug',
+            'days' => 10
         ],
 
 

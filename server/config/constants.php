@@ -28,9 +28,10 @@ return [
         'middleName',
         'lastName',
         'department',
-        'workEmail',
+        'bestEmail',
         'status',
         'hireDate',
+        'terminationDate',
         'employmentHistoryStatus',
         'supervisorEId'
     ],
@@ -63,6 +64,11 @@ return [
         'zipcode',
         'bestEmail',
         'status'
+    ],
+
+
+    'BHR_USER_EMPLOYMENT_STATUS' => [
+        'terminated'    =>  'Terminated', 
     ],
 
     'USER_ROLES' => [
