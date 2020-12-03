@@ -38,9 +38,6 @@ const userReducer = (state = initState, action) => {
             break;
         /**  */
 
-        /**
-         *  Reload Actions
-         */
         case "FETCH_USER_SUCCESS":
             message = "Reload User Success!"
             return {
@@ -48,6 +45,32 @@ const userReducer = (state = initState, action) => {
                 payload : action.test,
             }
             break;
+
+        case "UPDATE_USER_DEPARTMENT_HANDLED":
+            const user_index = action.department.department_handlers.findIndex((user) => user.emp_num === state.emp_num)
+            const department_index = state.departments_handled.findIndex((department) => department.id === action.department.id)
+
+            // If User exist in the Department Handlers 
+            if( user_index >= 0 ){
+                
+                // If the Department is not yet on the Current User's Departments Handled state, proceed on pushing the new Department on the Current User's Departments Handled state
+                if( department_index == -1 ){   
+                    state.departments_handled.push(action.department);
+                    state.departments_handled.sort(function(a,b) {return (a.department_name > b.department_name) ? 1 : ((b.department_name > a.department_name) ? -1 : 0);} );
+                    
+                } 
+            } else {
+
+                // If the Department is already on the Current User's Departments Handled state, proceed on removing th Department on the Current User's Departments Handled state
+                if( department_index >= 0 ){
+                    state.departments_handled = state.departments_handled.filter(department => department.id != action.department.id)
+                }
+            }
+            return {
+                ...state
+            }
+            break;
+            
 
         case "FETCH_USER_FAILED":
             message = "Reload User Failed!"

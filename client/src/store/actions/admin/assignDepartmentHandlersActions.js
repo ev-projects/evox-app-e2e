@@ -25,6 +25,14 @@ export const assignDepartmentHandlers = ( department_id, post_data ) => {
                 'type'          : 'UPDATE_DEPARTMENT_LIST',
                 'department'    : result.data.content,
             })
+
+            
+            dispatch({
+                'type'          : 'UPDATE_USER_DEPARTMENT_HANDLED',
+                'department'    : result.data.content,
+            })
+
+
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
