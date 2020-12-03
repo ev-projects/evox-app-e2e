@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Carbon\Carbon;
 use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class syncEvoxDtr extends Command
 {

@@ -7,6 +7,8 @@ use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use Carbon\Carbon;
 use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class syncEvoxRestDayWork extends Command
 {

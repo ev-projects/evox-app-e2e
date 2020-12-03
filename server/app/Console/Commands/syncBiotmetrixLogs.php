@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
-
+use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class syncBiotmetrixLogs extends Command
 {
