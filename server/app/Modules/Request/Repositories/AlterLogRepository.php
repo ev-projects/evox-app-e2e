@@ -304,8 +304,11 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
                     $alter_log->user_id          =  $user->id;
                     $alter_log->date             =  $drupal_evox_alter_log->date;
 
-                    $alter_log->current_time_in  =  strtotime($drupal_evox_alter_log->old_time_in);
-                    $alter_log->current_time_out =   strtotime($drupal_evox_alter_log->old_time_out);
+                    $alter_log->current_time_in  =  $drupal_evox_alter_log->old_time_in;
+                    $alter_log->current_time_out =   $drupal_evox_alter_log->old_time_out;
+
+                    $alter_log->new_time_in      = $drupal_evox_alter_log->new_time_in;
+                    $alter_log->new_time_out     = $drupal_evox_alter_log->new_time_out;
 
                     $alter_log->employee_note    =  $drupal_evox_alter_log->employee_note ?? null;
                     $alter_log->approver_note    =  $drupal_evox_alter_log->superviser_note ?? null;

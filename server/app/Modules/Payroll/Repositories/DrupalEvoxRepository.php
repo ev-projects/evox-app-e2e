@@ -140,7 +140,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                 WHERE
                     request_type.field_request_type_tid = 509 AND
                     employee_num.field_empnum_value IS NOT NULL AND 
-                    (FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) >=  '".$start_datetime."'  AND FROM_UNIXTIME( alter_log_date.field_date_to_alter_value ) <=  '".$end_datetime."')
+                    (FROM_UNIXTIME( A.changed ) >=  '".$start_datetime."'  AND FROM_UNIXTIME( A.changed ) <=  '".$end_datetime."')
                     ". ((count($emp_num_array) > 0)? "AND A.title IN (".implode( ',', $emp_num_array) .")" : "") ."
             ", [1]);
 
