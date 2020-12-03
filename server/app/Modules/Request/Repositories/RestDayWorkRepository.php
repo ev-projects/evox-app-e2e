@@ -318,7 +318,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
      * 
      * @return arrayu $to_compute_items
      */
-    public function apply_drupal_evox_data_to_rest_day_work( array $drupal_evox_alter_log_array )
+    public function apply_drupal_evox_data_to_rest_day_work( array $drupal_evox_alter_rest_day_work )
     {   
         DB::beginTransaction();
         try {
@@ -329,10 +329,10 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
             $to_compute_items = [];
 
             // Iterates the Array fetched from the Drupal Database
-            foreach( $drupal_evox_alter_log_array as $drupal_evox_alter_log) {
+            foreach( $drupal_evox_alter_rest_day_work as $drupal_evox_rest_day_work) {
 
                 // Fetch the User via the emp_num field of the User
-                $user = User::where(['emp_num' => $drupal_evox_alter_log->employee_number])->first();
+                $user = User::where(['emp_num' => $drupal_evox_rest_day_work->employee_number])->first();
 
                 // Checks if the user is existing
                 if(!is_null($user )) {
@@ -340,18 +340,18 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                     # Update the DTR properties
                     $rest_day_work                   = new RestDayWork();
                     $rest_day_work->user_id          =  $user->id;
-                    $rest_day_work->date             =  $drupal_evox_alter_log->date;
+                    $rest_day_work->date             =  $drupal_evox_rest_day_work->date;
 
-                    $rest_day_work->start_time       =  strtotime($drupal_evox_alter_log->on_duty);
-                    $rest_day_work->end_time         =  strtotime($drupal_evox_alter_log->off_duty);
+                    $rest_day_work->start_time       =  $drupal_evox_rest_day_work->on_duty;
+                    $rest_day_work->end_time         =  $drupal_evox_rest_day_work->off_duty;
 
-                    $rest_day_work->employee_note    =  $drupal_evox_alter_log->employee_note ?? null;
-                    $rest_day_work->approver_note    =  $drupal_evox_alter_log->superviser_note ?? null;
+                    $rest_day_work->employee_note    =  $drupal_evox_rest_day_work->employee_note ?? null;
+                    $rest_day_work->approver_note    =  $drupal_evox_rest_day_work->superviser_note ?? null;
                     
-                    $rest_day_work->status           =  $drupal_evox_alter_log->status;
+                    $rest_day_work->status           =  $drupal_evox_rest_day_work->status;
                     $rest_day_work->created_by       =  $user->id;
-                    $rest_day_work->created_at       =  $drupal_evox_alter_log->date_created;
-                    $rest_day_work->updated_at       =  $drupal_evox_alter_log->date_updated;
+                    $rest_day_work->created_at       =  $drupal_evox_rest_day_work->date_created;
+                    $rest_day_work->updated_at       =  $drupal_evox_rest_day_work->date_updated;
                     $rest_day_work->save();
 
                     // Saved the To compute Items
@@ -362,8 +362,8 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                     log_to_file( 'info', 'Success', [$rest_day_work->getAttributes()], "drupal_migration");
 
                 } else {
-                    log_to_file( 'info', 'User not existing', [$drupal_evox_alter_log], "drupal_migration");
-                    $users_not_existing[$drupal_evox_alter_log->employee_number] = $drupal_evox_alter_log->employee_number;
+                    log_to_file( 'info', 'User not existing', [$drupal_evox_rest_day_work], "drupal_migration");
+                    $users_not_existing[$drupal_evox_rest_day_work->employee_number] = $drupal_evox_rest_day_work->employee_number;
                 }
 
             }
