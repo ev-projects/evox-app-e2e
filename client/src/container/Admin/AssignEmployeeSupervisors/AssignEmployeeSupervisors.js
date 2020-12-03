@@ -38,17 +38,19 @@ class AssignEmployeeSupervisors extends Component {
       employeeList : [],
 
       selectedSupervisor : null,
-      selectedDepartment : null,
+      selectedDepartment : "",
       selectedValues: []
     }
 
-    this.state = this.initialState;  
+    this.state = this.initialState;
+
+    this.handleSelectSupervisor = this.handleSelectSupervisor.bind(this);
+    this.handleSelectDepartment = this.handleSelectDepartment.bind(this);
   }
   
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = async (values) => {
     
-    console.log(values);
     // Setting of Form Data to be passed in the submission
     var formData ={};
 
@@ -89,18 +91,21 @@ class AssignEmployeeSupervisors extends Component {
 
   // Function for handling the onChange of Supervisor Dropdown
   handleSelectSupervisor = (event) =>{
+    const value = event.target.value;
 
     // Set the Department Handlers as Selected Value
     this.setState({
-        selectedSupervisor : event.target.value,
+        selectedSupervisor : value,
         departmentList     : JSON.parse(event.target.options[event.target.selectedIndex].getAttribute('departments_handled')),
-        selectedSupervisor: null
     });
 
-    if( Validator.isValid(event.target.value)  )  {
+
+    // Here lies 2 hours of debugging
+    // Take note on SelectedDepartment if you will manually deselect it, set it to "" (string) instead of null. 
+    if( Validator.isValid(value)  )  {
       this.setState({
         showDepartmentList : true,
-        selectedDepartment : null,
+        selectedDepartment : "",
         showEmployeeList : false,
         employeeList : [],
         selectedValues : [],
@@ -108,7 +113,7 @@ class AssignEmployeeSupervisors extends Component {
     } else {
       this.setState({
         showDepartmentList : false,
-        selectedDepartment : null,
+        selectedDepartment : "",
         showEmployeeList : false,
         employeeList : [],
         selectedValues : [],
@@ -173,7 +178,7 @@ class AssignEmployeeSupervisors extends Component {
   } else {
 
     this.setState({
-      selectedDepartment : null,
+      selectedDepartment : "",
       showEmployeeList : false,
       employeeList : [],
       selectedValues : [],
@@ -197,6 +202,12 @@ class AssignEmployeeSupervisors extends Component {
     await this.props.fetchDepartmentList();
 
   }
+
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   if (prevState.selectedSupervisor !== this.state.selectedSupervisor) {
+  //     console.log(1234)
+  //   }
+  // }
 
   render = () => {  
 
