@@ -93,7 +93,8 @@ class AssignEmployeeSupervisors extends Component {
     // Set the Department Handlers as Selected Value
     this.setState({
         selectedSupervisor : event.target.value,
-        departmentList     : JSON.parse(event.target.options[event.target.selectedIndex].getAttribute('departments_handled'))
+        departmentList     : JSON.parse(event.target.options[event.target.selectedIndex].getAttribute('departments_handled')),
+        selectedSupervisor: null
     });
 
     if( Validator.isValid(event.target.value)  )  {
