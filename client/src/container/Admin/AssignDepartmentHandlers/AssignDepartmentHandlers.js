@@ -111,7 +111,7 @@ class AssignDepartmentHandlers extends Component {
 
   componentWillMount = async() => {
 
-    await this.props.fetchUserList('supervisor');
+    await this.props.fetchUserList('supervisor', {page : 'all'});
     await this.props.fetchDepartmentList();
 
   }
@@ -265,7 +265,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchUserList             : ( role ) => dispatch( fetchUserList( role ) ),
+      fetchUserList             : ( role, params ) => dispatch( fetchUserList( role, params ) ),
       fetchDepartmentList       : () => dispatch( fetchDepartmentList() ),
       assignDepartmentHandlers  : ( department_id, post_data ) => dispatch( assignDepartmentHandlers( department_id, post_data ) ),
     }
