@@ -176,8 +176,8 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
             employee_note.field_employee_note_value   as 'employee_note',
             supervisor_note.field_supervisor_note_value as 'supervisor_note',
             request_status.field_status_value as 'status',
-            FROM_UNIXTIME( A.created ) as 'date_created',
-            FROM_UNIXTIME( A.changed ) as 'date_updated'
+            DATE_FORMAT(FROM_UNIXTIME( A.created ), '%Y-%m-%d %H:%i:%s')as 'date_created',
+            DATE_FORMAT(FROM_UNIXTIME( A.changed ), '%Y-%m-%d %H:%i:%s') as 'date_updated'
             
         FROM
             node AS A
@@ -192,7 +192,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
         WHERE
             request_type.field_request_type_tid = 598 AND
             employee_num.field_empnum_value IS NOT NULL AND 
-            (FROM_UNIXTIME( rest_day_work_date.field_date_to_alter_value ) >=  '".$start_datetime."'  AND FROM_UNIXTIME( rest_day_work_date.field_date_to_alter_value ) <=  '".$end_datetime."')
+            (FROM_UNIXTIME( A.changed ) >=  '".$start_datetime."'   AND FROM_UNIXTIME( A.changed ) <=  '".$end_datetime."')
             ". ((count($emp_num_array) > 0)? "AND A.title IN (".implode( ',', $emp_num_array) .")" : "") ."
             ", [1]);
             log_to_file('info', 'Success', [$result]);
