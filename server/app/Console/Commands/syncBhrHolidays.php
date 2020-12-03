@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Payroll\Resources\DtrResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
