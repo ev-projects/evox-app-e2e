@@ -122,8 +122,8 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     employee_note.field_employee_note_value   as 'employee_note',
                     supervisor_note.field_supervisor_note_value as 'supervisor_note',
                     request_status.field_status_value as 'status',
-                    FROM_UNIXTIME( A.created ) as 'date_created',
-                    FROM_UNIXTIME( A.changed ) as 'date_updated'
+                    DATE_FORMAT(FROM_UNIXTIME( A.created ), '%Y-%m-%d %H:%i:%s')as 'date_created',
+                    DATE_FORMAT(FROM_UNIXTIME( A.changed ), '%Y-%m-%d %H:%i:%s') as 'date_updated'
                     
                 FROM
                     node AS A
@@ -246,7 +246,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     emp_number.field_employee_number_value as employee_number,
                     status.field_status_value as status,
                     DATE_FORMAT(FROM_UNIXTIME( A.created ), '%Y-%m-%d %H:%i:%s')as 'date_created',
-                    DATE_FORMAT(FROM_UNIXTIME( A.changed ), '%Y-%m-%d %H:%i:%s') as 'date_updated'
+                    DATE_FORMAT(FROM_UNIXTIME( A.changed ), '%Y-%m-%d %H:%i:%s') as 'date_updated',
                     note.field_note_value as 'note',
                     ".implode(",\n",$query_column)."
                 FROM
