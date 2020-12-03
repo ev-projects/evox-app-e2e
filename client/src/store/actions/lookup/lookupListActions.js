@@ -12,11 +12,12 @@ import { setRedirect, clearRedirect } from '../redirectActions';
 
 
 // Fetch User List base on Role
-export const fetchUserList = ( role ) => {
+export const fetchUserList = ( role, params ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/role/"+ role +"/users"
+            url: "/role/"+ role +"/users",
+            params : params
         })
         .then(result => {
             

@@ -192,7 +192,7 @@ class AssignEmployeeSupervisors extends Component {
 
   componentWillMount = async() => {
 
-    await this.props.fetchUserList('supervisor');
+    await this.props.fetchUserList('supervisor', {page : 'all'});
     await this.props.fetchDepartmentList();
 
   }
@@ -380,7 +380,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchUserList             : ( role ) => dispatch( fetchUserList( role ) ),
+      fetchUserList             : ( role, params ) => dispatch( fetchUserList( role, params ) ),
       fetchDepartmentList       : () => dispatch( fetchDepartmentList() ),
       assignEmployeeSupervisorsActions  : ( user_id, post_data ) => dispatch( assignEmployeeSupervisorsActions( user_id, post_data ) ),
     }
