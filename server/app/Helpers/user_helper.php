@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\User\Models\User;
+
 if (! function_exists('get_authenticated_user')) {   
     /**
      * This function gets the Authenticated User from the $user_id Parameter. It's either fetch the user logged in or the user logged in's supervisee.
@@ -10,6 +12,12 @@ if (! function_exists('get_authenticated_user')) {
     function get_authenticated_user( $user_id ) 
     {
         try {
+
+            // If the current user has 'admin' role and 'full_access' privilege, always return true.
+            if(  auth()->user()->roles()->pluck('name')->contains('admin') &&
+                 auth()->user()->permissions()->pluck('name')->contains('full_access') ) {
+                return User::findOrFail( $user_id );
+            } 
             
             # If the User being requested is the current user being logged in, fetch the current User Instance.
             if( auth()->user()->id == $user_id ) {
@@ -39,6 +47,13 @@ if (! function_exists('is_under_supervisee')) {
     function is_under_supervisee( $user_id, $force_to_fail = true ) 
     {
         try {
+
+            // If the current user has 'admin' role and 'full_access' privilege, always return true.
+            if(  auth()->user()->roles()->pluck('name')->contains('admin') &&
+                 auth()->user()->permissions()->pluck('name')->contains('full_access') ) {
+                return true;
+            }
+
             if( $force_to_fail ) {
                 return auth()->user()->supervisee()->findOrFail( $user_id ) ? true : false;
             } else {
