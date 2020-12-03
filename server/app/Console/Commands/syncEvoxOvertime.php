@@ -7,6 +7,8 @@ use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
 use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class syncEvoxOvertime extends Command
 {

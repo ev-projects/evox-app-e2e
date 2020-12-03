@@ -6,6 +6,8 @@ use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use Illuminate\Console\Command;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 
 class syncEvoxAlterLog extends Command

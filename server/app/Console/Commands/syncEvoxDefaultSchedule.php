@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
 use Illuminate\Console\Command;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class syncEvoxDefaultSchedule extends Command
 {

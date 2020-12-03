@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class syncBhrHolidays extends Command
 {

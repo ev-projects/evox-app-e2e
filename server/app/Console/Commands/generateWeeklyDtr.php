@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class generateWeeklyDtr extends Command
 {

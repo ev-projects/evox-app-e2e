@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class syncEvoxChangeSchedule extends Command
 {
