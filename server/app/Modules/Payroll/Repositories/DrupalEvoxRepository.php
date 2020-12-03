@@ -245,8 +245,8 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     DATE_FORMAT(FROM_UNIXTIME(valid_to.field_sched_valid_to_value),'%Y-%m-%d') as valid_to,
                     emp_number.field_employee_number_value as employee_number,
                     status.field_status_value as status,
-                    FROM_UNIXTIME( A.created ) as 'date_created',
-                    FROM_UNIXTIME( A.changed ) as 'date_updated',
+                    DATE_FORMAT(FROM_UNIXTIME( A.created ), '%Y-%m-%d %H:%i:%s')as 'date_created',
+                    DATE_FORMAT(FROM_UNIXTIME( A.changed ), '%Y-%m-%d %H:%i:%s') as 'date_updated'
                     note.field_note_value as 'note',
                     ".implode(",\n",$query_column)."
                 FROM
@@ -266,11 +266,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     ".implode("\n",$query_tables)."
                 WHERE
                     request_type.field_request_type_tid = 597 AND
-                    (
-                        (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."') OR
-                        (FROM_UNIXTIME(valid_to.field_sched_valid_to_value) BETWEEN '". $start_datetime ."' AND '". $end_datetime ."') OR
-                        (FROM_UNIXTIME(valid_from.field_sched_valid_from_value) < '". $start_datetime ."' AND FROM_UNIXTIME(valid_to.field_sched_valid_to_value) > '". $end_datetime ."')
-                        )
+                    (FROM_UNIXTIME( A.changed ) >=  '".$start_datetime."'   AND FROM_UNIXTIME( A.changed ) <=  '".$end_datetime."')
                     GROUP BY A.nid"
         , [1]);
             log_to_file('info', 'Success', [$result]);
