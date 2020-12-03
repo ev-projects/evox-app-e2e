@@ -20,6 +20,45 @@ class BhrRepository implements BhrRepositoryInterface{
     ###############################################################################################
 
     
+
+    /**
+     *  Responsible for Fetching all the changed Users' number from BHr
+     * @return array $bhr_user_number_array { inserted && changed }
+     */
+    public function get_changed_users( $since_date_to_sync ){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
+        try {
+
+            $bhr_user_number_array = [];
+
+            $since_date_to_sync = date('Y-m-d', strtotime($since_date_to_sync)) . 'T00:00:00-00:00';
+
+            // Define the End Point for the API.
+            $end_point = 'employees/changed?since=' . $since_date_to_sync;
+
+            // Iterate the BHr Call Result
+            foreach( ( bhr_api_call('GET', $end_point) )->employees as $employee_sub_details ) {
+                $bhr_user_number_array[ $employee_sub_details->id ] = $employee_sub_details->id;
+            }
+             
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user_number_array, "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            return $bhr_user_number_array;
+
+        } catch (Exception $e) {
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+
+
+
     /**
      *  Responsible for Fetching ALL the BHR Users' Number
      * @return Collection $bhr_user_number_collection
@@ -106,7 +145,7 @@ class BhrRepository implements BhrRepositoryInterface{
             // Parse to base64_encode
             $profile_picture = base64_encode($profile_picture);
                 
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $profile_picture, "bhrlog");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
 
             return $profile_picture;

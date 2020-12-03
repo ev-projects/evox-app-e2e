@@ -10,6 +10,8 @@ interface BhrRepositoryInterface
 {
     public function get_all_bhr_user_numbers();
 
+    public function get_changed_users( $start_date );
+
     public function get_user( string $bhr_user_number, $for_sync = false );
 
     public function get_profile_picture( string $bhr_user_number );

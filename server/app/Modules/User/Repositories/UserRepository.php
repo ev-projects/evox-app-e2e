@@ -22,7 +22,7 @@ class UserRepository implements UserRepositoryInterface{
 
     
     /**
-     *  Responsible for Inserting the BHR Users to EVOX
+     *  Responsible for Inserting the BHR Users to EVOX, Attaching Default Roles and Permissions
      * @param object $bhr_user_number
      * @return User $user
      */
@@ -33,57 +33,52 @@ class UserRepository implements UserRepositoryInterface{
         DB::beginTransaction();
         try {  
 
+            /**
+             *  1. Insert the User
+             *  2. Attach Default Role to User
+             *  3. Attach Default Permissions to User
+             */
             $user = User::where('bhr_num', $bhr_user->id)->first();
-
+            
             // Check first if the User is already existing before creating new User.
-            if( $user == null&& is_valid( $bhr_user->workEmail ) ) {
+            if( $user == null ) {
 
-                $user = new User();
+                // If BHr User has E-mail and valid Employment history status, insert the user
+                if( is_valid( $bhr_user->bestEmail ) && is_valid( $bhr_user->employmentHistoryStatus )  ) {
 
-                $user->emp_num = $bhr_user->employeeNumber;
-                $user->bhr_num = $bhr_user->id;
-                $user->email = $bhr_user->workEmail;
-                $user->username = generate_username( $bhr_user );
-                $user->password = Hash::make( get_constant('DEFAULT_PASSWORD') );
-                $user->first_name = $bhr_user->firstName;
-                $user->middle_name = $bhr_user->middleName;
-                $user->last_name = $bhr_user->lastName;
-                $user->employment_status = $bhr_user->employmentHistoryStatus;
-                $user->date_hired = $bhr_user->hireDate;
-                $user->is_active = true;
-                
-                /** Fetch Department if existing */ 
-                    if( is_valid( $bhr_user->department ) ) {
-                        
-                        $department = Department::where('department_name', $bhr_user->department)->first();
-                        
-                        // If the Department is not existing, create it manually.
-                        if($department == null) {
-
-                            $department = new Department();
-                            $department->department_name = $bhr_user->department;
-                            $department->description = null;
-                            $department->created_at = date('Y-m-d H:i:s');
-                            $department->updated_at = date('Y-m-d H:i:s');
-                            $department->save();
-                        }
-
-                        // Set the Department ID
+                    # 1.
+                    $user = new User();
+                    $user->emp_num = $bhr_user->employeeNumber;
+                    $user->bhr_num = $bhr_user->id;
+                    $user->email = $bhr_user->bestEmail;
+                    $user->username = generate_username( $bhr_user );
+                    $user->password = Hash::make( get_constant('DEFAULT_PASSWORD') );
+                    $user->first_name = $bhr_user->firstName;
+                    $user->middle_name = $bhr_user->middleName;
+                    $user->last_name = $bhr_user->lastName;
+                    $user->employment_status = $bhr_user->employmentHistoryStatus;
+                    $user->date_hired = $bhr_user->hireDate;
+                    $user->is_active = ( $bhr_user->terminationDate != "0000-00-00" && $bhr_user->employmentHistoryStatus != get_constant('BHR_USER_EMPLOYMENT_STATUS.terminated') ) ? true : false;
+                    
+                    /** Fetch Department if existing. Insert new department if not.*/ 
+                    $department = $this->generate_department( $bhr_user->department );
+                    if( is_valid( $department ) ) {
                         $user->department_id = $department->id;
                     }
-                /** */
-                
 
-                // Save the User and it will generate the User ID
-                $user->save();
+                    // Save the User and it will generate the User ID
+                    $user->save();
 
-                
-                /**  Fetch the Employee Role to attach on the User  */
+                    
+                    # 2.
+                    //Fetch the Employee Role to attach on the User 
                     $employee_role = Role::findByName( get_constant('USER_ROLES.employee') );
 
                     // Assign the Employee Role
                     $user->assignRole( $employee_role );
 
+
+                    # 3.
                     // Total Permissions that are not synced yet on the User
                     $permissions_to_sync = [];
 
@@ -96,31 +91,88 @@ class UserRepository implements UserRepositoryInterface{
                     
                     // Assign the Employee's Permissions
                     $user->givePermissionTo( $permissions_to_sync );
-                /** */
+                    /** */
+                    
+                    log_to_file( 'info', 'User Inserted', [$user], 'user_sync');
+                    log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
+                    log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
 
-
-                # 2.
-                // Assign the User x Supervisor data for iteration afterwards
-                $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
+                    
+                } else {
                 
-                log_to_file( 'info', 'User Inserted', [$user], 'user_sync');
-
-                DB::commit();
-                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
-                log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
-
-                return $user;
+                    log_to_file( 'info', 'User not valid to Sync', [$bhr_user], 'user_sync');
+                    log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user, "user_sync");
+                    log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+                }
 
             } else {
                 
-                DB::commit();
                 log_to_file( 'info', 'User Existing', [$user], 'user_sync');
-
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
-    
-                return $user;
             }
+
+            DB::commit();
+            return $user;
+
+        } catch (Exception $e) {
+
+            DB::rollback();
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            throw $e;
+        }
+    }
+    
+    /**
+     *  Responsible for Updating the BHR Users to EVOX
+     * @param object $bhr_user_number
+     * @return User $user
+     */
+    public function update_bhr_user_to_evox(User $user, object $bhr_user){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
+
+        DB::beginTransaction();
+        try {  
+
+            // If BHr User has E-mail and valid Employment history status, insert the user
+            if( is_valid( $bhr_user->bestEmail ) && is_valid( $bhr_user->employmentHistoryStatus )  ) {
+
+                $user->emp_num = $bhr_user->employeeNumber;
+                $user->bhr_num = $bhr_user->id;
+                $user->email = $bhr_user->bestEmail;
+                $user->first_name = $bhr_user->firstName;
+                $user->middle_name = $bhr_user->middleName;
+                $user->last_name = $bhr_user->lastName;
+                $user->employment_status = $bhr_user->employmentHistoryStatus;
+                $user->date_hired = $bhr_user->hireDate;
+                $user->is_active = ( $bhr_user->terminationDate == "0000-00-00" && $bhr_user->employmentHistoryStatus != get_constant('BHR_USER_EMPLOYMENT_STATUS.terminated') ) ? true : false;
+                
+                /** Fetch Department if existing. Insert new department if not.*/ 
+                $department = $this->generate_department( $bhr_user->department );
+                if( is_valid( $department ) ) {
+                    $user->department_id = $department->id;
+                }
+
+                // Update the User 
+                $user->update();
+                
+                log_to_file( 'info', 'User Updated', [$user], 'user_sync');
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+                        
+            } else {
+            
+                log_to_file( 'info', 'User not valid to Sync', [$bhr_user], 'user_sync');
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user, "user_sync");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+            }
+            
+            DB::commit();
+            return $user;
 
         } catch (Exception $e) {
 
@@ -291,7 +343,30 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+    
 
+    /**
+     *  Responsible for fetching the User via Bhr User Number
+     * @param $id
+     * @return User $user
+     */
+    public function show_via_bhr_number( $bhr_user_number ){
+        try {
+            $user = User::where('bhr_num', '=', $bhr_user_number )->first();
+
+            if( is_valid( $user ) ) {
+                log_to_file('info', 'Success', [$user]);
+                return $user;
+            } else {
+                log_to_file('info', 'Fail', [$bhr_user_number]);
+                return null;
+            }
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
 
     /**
      *  Responsible for fetching all the Supervisee of the User 
@@ -538,6 +613,41 @@ class UserRepository implements UserRepositoryInterface{
     ##################################### Protected functions #####################################
     ###############################################################################################
 
+    /**
+     *  Fetch Department if existing. Insert new department if not.
+     * @param $department_name
+     * @return Department $department
+     */
+    
+    private function generate_department( $department_name ){
+
+        try{
+            /** Fetch Department if existing */ 
+            if( is_valid( $department_name ) ) {
+                    
+                $department = Department::where('department_name', $department_name)->first();
+                
+                // If the Department is not existing, create it manually.
+                if($department == null) {
+
+                    $department = new Department();
+                    $department->department_name = $department_name;
+                    $department->description = null;
+                    $department->created_at = date('Y-m-d H:i:s');
+                    $department->updated_at = date('Y-m-d H:i:s');
+                
+                    log_to_file( 'info', 'Department Generated', [$department], 'user_sync');
+                    $department->save();
+                }
+                
+                return $department;
+            } else {
+                return null;
+            }
+        } catch( Exception $e) {
+
+        }
+    }
 
     //....
 

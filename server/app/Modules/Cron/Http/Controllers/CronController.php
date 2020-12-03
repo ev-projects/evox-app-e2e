@@ -113,6 +113,75 @@ class CronController extends Controller
     }
 
 
+    /**
+     * Sync all the Users from BHr base from the last changed date
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sync_users($since_date_to_sync = null){
+        try {
+
+            /**
+             *  Steps:
+             *  1. Fetch all the list User's BHR Number which was recently changed base on the parameter
+             *  2. Iterate ever User and check if it's for Insert/Update (generate Department if existing)
+             *  3. Every iteration, save the Supervisor ID x User ID
+             *  4. After iteration, insert the Supervisor ID x User ID on the matrix table.
+             * 
+             */
+            $user_supervisor_pivot_array = [];
+
+            // If a $since_date_to_sync has parameter, use it as since date to sync. If not, use the date yesterday.
+            if( is_valid( $since_date_to_sync ) ){
+                $since_date_to_sync = date('Y-m-d', strtotime($since_date_to_sync)) . 'T00:00:00-00:00';
+            } else {
+                $since_date_to_sync = Carbon::yesterday()->format('Y-m-d') . 'T00:00:00-00:00';
+            }
+
+            # 1.
+            # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
+            $bhr_user_number_array = $this->bhr->get_changed_users( $since_date_to_sync );
+            
+            # 2.
+            # Iterate the actual BHR User Numbers array
+            foreach( $bhr_user_number_array as $bhr_user_number ){
+
+                // Fetch the User if it's already existing in the System
+                $user = $this->user->show_via_bhr_number( $bhr_user_number );
+                
+                # Fetch the BHr User Details
+                $bhr_user = $this->bhr->get_user( $bhr_user_number, true );
+                
+                # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
+                if( is_valid( $user ) ){
+                    $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
+                    
+                # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
+                } else {
+                    $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
+                }
+
+
+                # 3.
+                if( is_valid( $user ) ) {
+                    $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
+                }
+                        
+            }
+
+            # 4
+            $apply_user_supervisor_pivot_result = $this->user->apply_user_supervisor_pivot( $user_supervisor_pivot_array );
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $apply_user_supervisor_pivot_result,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
 
     /**
      * Generates the Weekly DTR for all the Employees

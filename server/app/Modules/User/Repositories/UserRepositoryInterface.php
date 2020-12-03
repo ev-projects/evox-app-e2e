@@ -2,11 +2,14 @@
 
 namespace App\Modules\User\Repositories;
 
+use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
 interface UserRepositoryInterface
 {
     public function insert_bhr_user_to_evox(object $bhr_user);
+
+    public function update_bhr_user_to_evox(User $user, object $bhr_user);
 
     public function apply_user_supervisor_pivot( array $user_supervisor_pivot_array );
 
@@ -17,6 +20,8 @@ interface UserRepositoryInterface
     public function destroy( $id );
 
     public function show( $id );
+
+    public function show_via_bhr_number( $bhr_user_number );
 
     public function get_my_team_list( $id );
 
