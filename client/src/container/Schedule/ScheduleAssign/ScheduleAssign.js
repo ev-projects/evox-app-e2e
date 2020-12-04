@@ -16,10 +16,29 @@ import Formatter from '../../../services/Formatter';
 import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } from '../../../store/actions/scheduleActions';
 import Wrapper from "../../../components/Template/Wrapper/index.js";
 import BackButton from "../../../components/Template/BackButton/index.js";
+import Validator from "../../../services/Validator.js";
 
 class AssignDefault extends Component {    
   constructor(props){
-    super(props)
+    super(props);
+    
+
+    this.initialState = {
+      isInitialDataLoaded: false,
+      from_date : null,
+      to_date : null,
+      work_day : [],
+      default_schedule : null,
+      templateList : [],
+      std_schedule_details : [],
+      flx_schedule_details : [],
+      cst_schedule_details : [],
+      schedule_policies : {},
+      creation_type : 'customize',
+      schedule_type : null
+    }
+
+    this.state = this.initialState;
   }
 
   onSubmitHandler = (values) => {
@@ -35,357 +54,397 @@ class AssignDefault extends Component {
 
   }
 
-  componentWillMount(){
-    this.props.listTemplate();
+  // Setting of Schedule Instance
+  setSchedule = ( schedule ) => {
 
-    this.props.getDefaultSchedule(this.props.params.userid);
-  }
+    this.setState({
+      isInitialDataLoaded: false
+    });
 
-  render = () => {
-  if( this.props.page_reloaded ){   
-    console.log(this.props);
-    var templateList = this.props.template_list;
-
-    var default_schedule = this.props.default_schedule;
-    var creation_type = 'customize';
-    if(this.props.template_data!=null){
-      default_schedule.work_days = this.props.template_data.work_days;
-      default_schedule.schedule_policies = this.props.template_data.schedule_policies;
-      default_schedule.schedule_details = this.props.template_data.schedule_details;
-      default_schedule.schedule_type = this.props.template_data.schedule_type
-      creation_type = 'template';
-    }
-
-    const from_date = default_schedule.valid_from!==undefined?new Date(default_schedule.valid_from):null;
-    const to_date = new Date();
-    to_date.setHours( to_date.getHours() + 9 );
-
-    const work_day = default_schedule.work_days!==undefined?default_schedule.work_days:[];
-
-    var allow_late = (default_schedule.schedule_policies?.allow_late!==undefined&&default_schedule.schedule_policies.allow_late==1)?default_schedule.schedule_policies.allow_late:0;
-    var allow_undertime = (default_schedule.schedule_policies?.allow_undertime!==undefined&&default_schedule.schedule_policies.allow_undertime==1)?default_schedule.schedule_policies.allow_undertime:0;
-    var allow_night_diff = (default_schedule.schedule_policies?.allow_night_diff!==undefined&&default_schedule.schedule_policies.allow_night_diff==1)?default_schedule.schedule_policies.allow_night_diff:0;
-
-    var schedule_policies =  {allow_late : allow_late , allow_undertime : allow_undertime, allow_night_diff: allow_night_diff };
+    var state = {};
     
-    var sched_type = default_schedule.schedule_type;
+    state.creation_type = Validator.isValid( schedule?.creation_type ) ? schedule.creation_type : 'customize';
 
-    var std_schedule_details = [];
-    var flx_schedule_details = [];
-    var cst_schedule_details = [];
 
-    if(sched_type=='standard'){
-      std_schedule_details = [{start_time: new Date("2020-01-01 " + default_schedule.schedule_details.all.start_time), end_time : new Date("2020-01-01 " + default_schedule.schedule_details.all.end_time), break_time:new Date("2020-01-01 " +default_schedule.schedule_details.all.break_time)}];
-    }else if(sched_type=='flexible'){
-      flx_schedule_details = [{start_time: new Date("2020-01-01 " + default_schedule.schedule_details.all.start_time), end_time : new Date("2020-01-01 " + default_schedule.schedule_details.all.end_time), start_flexy_time: new Date("2020-01-01 " + default_schedule.schedule_details.all.start_flexy_time), end_flexy_time : new Date("2020-01-01 " + default_schedule.schedule_details.all.end_flexy_time), break_time:new Date("2020-01-01 " +default_schedule.schedule_details.all.break_time)}];
-    }else if(sched_type=='customize'){
+    state.from_date = Validator.isValid( schedule?.valid_from ) ? new Date(schedule.valid_from) : (Validator.isValid( this.state.from_date ) ? this.state.from_date : null);
+    state.to_date = new Date();
+    state.to_date.setHours( state.to_date.getHours() + 9 );
+
+    state.work_day = Validator.isValid( schedule?.work_days ) ? schedule.work_days : [];
+
+    state.schedule_policies =  {
+      allow_late :      ( Validator.isValid( schedule.schedule_policies?.allow_late ) && schedule.schedule_policies.allow_late == 1 ) ? schedule.schedule_policies.allow_late : 0 , 
+      allow_undertime : ( Validator.isValid( schedule.schedule_policies?.allow_undertime ) && schedule.schedule_policies.allow_undertime == 1 ) ? schedule.schedule_policies.allow_undertime : 0, 
+      allow_night_diff: ( Validator.isValid( schedule.schedule_policies?.allow_night_diff ) && schedule.schedule_policies.allow_night_diff == 1 ) ? schedule.schedule_policies.allow_night_diff : 0 
+    };
+    
+    state.schedule_type = schedule.schedule_type;
+
+    if( state.schedule_type == 'standard' ){
+      state.std_schedule_details = [{
+        start_time  :   new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
+        end_time    :   new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
+        break_time  :   new Date("2020-01-01 " +schedule.schedule_details.all.break_time)
+      }];
+    
+    }else if( state.schedule_type == 'flexible' ){
+      state.flx_schedule_details = [{
+        start_time        : new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
+        end_time          : new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
+        start_flexy_time  : new Date("2020-01-01 " + schedule.schedule_details.all.start_flexy_time), 
+        end_flexy_time    : new Date("2020-01-01 " + schedule.schedule_details.all.end_flexy_time), 
+        break_time        : new Date("2020-01-01 " + schedule.schedule_details.all.break_time)
+      }];
+    
+    }else if( state.schedule_type == 'customize' ){
       var index = 0;
-      for (var key in default_schedule.schedule_details) {
-        var start_time =  new Date("2020-01-01 " + eval('default_schedule.schedule_details.' +key+'.start_time'));
-        var end_time = new Date("2020-01-01 " + eval('default_schedule.schedule_details.' +key+'.end_time'));
-        var start_flexy_time = new Date("2020-01-01 " + eval('default_schedule.schedule_details.' +key+'.start_flexy_time'));
-        var end_flexy_time = new Date("2020-01-01 " + eval('default_schedule.schedule_details.' +key+'.end_flexy_time'));
-        var break_time = new Date("2020-01-01 " +  eval('default_schedule.schedule_details.' +key+'.break_time'));
-        cst_schedule_details[index] = {start_time: start_time, end_time : end_time, start_flexy_time: start_flexy_time, end_flexy_time : end_flexy_time, break_time: break_time }; 
+      for (var key in schedule.schedule_details ) {
+        state.cst_schedule_details[index] = {
+          start_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.start_time')), 
+          end_time          :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_time')), 
+          start_flexy_time  :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.start_flexy_time')), 
+          end_flexy_time    :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_flexy_time')), 
+          break_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.break_time')) 
+        }; 
         index++;
       }
     }
 
-    return <Wrapper>
-    <Formik 
-      enableReinitialize
-      onSubmit={this.onSubmitHandler} 
-      validationSchema={validationSchema} 
-      initialValues={{
-        bind_to:'user', 
-        bind_id: this.props.params.userid,
-        sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
-        wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}},
-        from : from_date,
-        to : to_date,
-        std_schedule_details: std_schedule_details,
-        flx_schedule_details: flx_schedule_details,
-        cst_schedule_details: cst_schedule_details, 
-        creation_type : creation_type,
-        source_type: 'default',
-        schedule_policies : schedule_policies,
-        schedule_type : sched_type,
-        work_days:work_day 
-    }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-      <form onSubmit={handleSubmit}> 
-    <ContainerWrapper> 
-    <Col sm={7}>
-      <div>
-      <Form.Group className="white_bg">
-        <div className="header">
-          <h1>
-            Source Type
-          </h1>
-        </div>
-        <div className="body">
-          <label>          
-            <input 
-              type="radio"
-              checked={values.source_type === "default"}
-              onChange={() => {
-                setFieldValue('source_type', "default")
-              }}
-            /> 
-          Default &nbsp;</label>
-          <label>
-            <input 
-              type="radio"
-              checked={values.source_type === "temporary"}
-              onChange={() => { 
-                setFieldValue('source_type', "temporary")
-              }}
-            /> 
-          Temporary &nbsp;</label>
- 
-          <Form.Control.Feedback type="invalid">
-            &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
-            </Form.Control.Feedback>
-        </div>
-        </Form.Group>
-      </div>
-    </Col>
-    <Col sm={7}>
-      <div>
-      <Form.Group className="white_bg">
-      <div className="header">
-        <h1>
-            Schedule Scope
-        </h1>
-      </div>
-      <div className="body">
-        <Form.Row>
-          <Col sm={4}>
-          <Form.Label>Date From :</Form.Label>
-            <DatePicker 
-              className="form-control"
-              timeIntervals={60}
-              timeCaption="Time"
-              dateFormat="MMMM d, yyyy"
-              timeFormat="MMMM d, yyyy"
-              selected={values.from}              
-              onChange={date => setFieldValue('from', date)}
-            />           
-            <Form.Control.Feedback type="invalid">
-              &nbsp;<ErrorMessage component="div" name="from" className="input-feedback" />
-            </Form.Control.Feedback>
-            </Col>
-            { values.source_type === 'temporary' ? (
-            <Col sm={4}>
-            <Form.Label>Date To :</Form.Label>
-              <DatePicker 
-                className="form-control"
-                timeIntervals={60}
-                timeCaption="Time"
-                dateFormat="MMMM d, yyyy"
-                timeFormat="MMMM d, yyyy"
-                selected={values.to}              
-                onChange={date => setFieldValue('to', date)}
-              />           
-              <Form.Control.Feedback type="invalid">
-                &nbsp;<ErrorMessage component="div" name="to" className="input-feedback" />
-              </Form.Control.Feedback>
-            </Col>
-            ) : null}
-          </Form.Row>
-          </div>
-        </Form.Group>
-      </div>
-    </Col>    
-    <Col sm={7}>
-      <div>
-      <Form.Group className="white_bg">
-        <div className="header">
-          <h1>
-            Creation Type
-          </h1>
-        </div>
-        <div className="body">
-          <label>          
-            <input 
-              type="radio"
-              checked={values.creation_type === "customize"}
-              onChange={() => {
-                setFieldValue('creation_type', "customize")
-              }}
-            /> 
-          Customize &nbsp;</label>
-          <label>
-            <input 
-              type="radio"
-              checked={values.creation_type === "template"}
-              onChange={() => { 
-                setFieldValue('creation_type', "template")
-              }}
-            /> 
-          Template &nbsp;</label>
-          <Form.Control.Feedback type="invalid">
-            &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
-            </Form.Control.Feedback>
-           { values.creation_type  === "template" ? (<div>
-          <Form.Label>Custom Select</Form.Label>
-          <Form.Control as="select" onChange={e => this.loadTemplateSched(e.target.value)} >
-            <option >Please Select Template</option>
-            {templateList.map((day, index) => {
-                 return <option value={day.id}>{day.name}</option>;
-            })}
-          </Form.Control>
-            </div>) : null}
-        </div>  
-        </Form.Group>
-      </div>
-    </Col>      
-    <Col sm={7}>
-      <Form.Group className="white_bg">
-        <div className="header">
-          <h1>
-            Schedule Policy
-          </h1>
-        </div>
-        <div className="body">
-          <ScheduleType/> 
-        </div>
-      </Form.Group>
-    </Col>
-    <Col sm={7}>
-    <Form.Group className="white_bg">
-      <div className="header">
-        <h1>
-          Schedule Type
-        </h1>
-      </div>
-      <div className="body">
-        <FieldArray name="std_schedule_details" render={arrayHelpers => (
-          <label>          
-            <input 
-              type="radio"
-              name="schedule_type"
-              checked={values.schedule_type === "standard"}
-              onChange={() => {
-                setFieldValue('std_schedule_details', []);
-                arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
-                setFieldValue('schedule_type', 'standard')
-              }}
-            /> 
-          Standard &nbsp;</label>
-        )}/>
-         <FieldArray name="flx_schedule_details" render={arrayHelpers => (
-          <label>
-            <input 
-              type="radio"
-              name="schedule_type"
-              checked={values.schedule_type === "flexible"}
-              onChange={() => { 
-                setFieldValue('flx_schedule_details', []);
+    state.isInitialDataLoaded = true;
 
-                arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
-                setFieldValue('schedule_type', 'flexible');
-              }}
-            /> 
-          Flexible &nbsp;</label>
-          )}
-          />
-          <FieldArray name="cst_schedule_details" render={arrayHelpers => (
-          <label>
-            <input 
-              type="radio"
-              name="schedule_type"
-              checked={values.schedule_type === "customize"}
-              onChange={() => {
-                setFieldValue('cst_schedule_details', []);
-                for (var i = 0; i < values.work_days.length; i++) {
-                  arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
-                }
-                setFieldValue('schedule_type', 'customize')
-              }}
-            /> 
-          Customize &nbsp;</label>      
-        )}
-        />  
-        <Form.Control.Feedback type="invalid">
-        &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
-        </Form.Control.Feedback>
-      </div>
-      </Form.Group>
-    </Col>
-    <Col sm={7} >
-      <Form.Group className="white_bg">
-        <div className="header">
-          <h1>
-            Work Days
-          </h1>
-        </div>
-        <div className="body">
-          <WorkDays/>
-        </div>
-      </Form.Group>
-    </Col>
-            
-    { values.schedule_type  === '' ? (
-       null
-    ) : values.schedule_type  === 'standard' ? ( 
-    <Col sm={7} >
-      <Form.Group className="white_bg">
-        <div className="header">
-            <h1>
-              Standard Form
-            </h1>
-        </div>
-        <div className="body">
-          <StandardSchedDetailsForm/>
-        </div>
-      </Form.Group>
-    </Col>
-    ) : values.schedule_type=== 'flexible' ? (
-    <Col sm={7} >
-      <Form.Group className="white_bg">
-        <div className="header">
-            <h1>
-              Flexible Form
-            </h1>
-        </div>
-        <div className="body">
-          <FlexibleSchedDetailsForm/>
-        </div>
-      </Form.Group>
-    </Col>
-    ): values.schedule_type === 'customize' ? (
-        <Col sm={7} >
-          <Form.Group className="white_bg">
-          <div className="header">
-            <h1>
-              Customize Schedule
-            </h1>
-          </div>
-          <div className="body">
-            {values.sorted_weekday.map((day, index) => {
-                  if(values.work_days.includes(day)==true){
-                  return <Scheduledetails day={day} index={values.work_days.indexOf(day)} />
-                  }
-            })}
-          </div>
-          </Form.Group>
-        </Col>
-     ) : null}
-    <Col sm={7}>
-      <Button variant="primary" type="submit">
-        Update
-      </Button>
-      &nbsp;
-      <BackButton {...this.props} />
-    </Col>
-  </ContainerWrapper>
-  </form>
-  )}
- 
-  </Formik>
-  </Wrapper>;
+    this.setState(state);
+  }
+
+  componentWillMount(){
+    this.props.listTemplate();
+    this.props.getDefaultSchedule(this.props.params.userid);
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+
+    // Detect if there's a change for the default schedule properties. Trigger the setting of Schedule if changed.
+    if (nextProps.default_schedule !== this.props.default_schedule &&
+        nextProps.page_reloaded == true) {
+          this.setSchedule( nextProps.default_schedule );
     }
-    return <PageLoading/>;
+
+    // Detect if there's a change for the template list properties. Set the update template list state if changed.
+    if (nextProps.template_list !== this.props.template_list) {
+          this.setState({
+            templateList: nextProps.template_list
+          });
+    }
+
+    // Detect if there's a change for the template data properties. Trigger the setting of Schedule base on the Template if changed.
+    if (nextProps.template_data !== this.props.template_data) {
+        this.setSchedule({
+          work_days :  nextProps.template_data.work_days,
+          schedule_policies :  nextProps.template_data.schedule_policies,
+          schedule_details :  nextProps.template_data.schedule_details,
+          schedule_type :  nextProps.template_data.schedule_type,
+          creation_type : 'template'
+        });
+    }
+  }
+
+  render = () => {
+
+    return ( this.state.isInitialDataLoaded ) ? 
+          <Wrapper>
+              <Formik 
+                enableReinitialize
+                onSubmit={this.onSubmitHandler} 
+                validationSchema={validationSchema} 
+                initialValues={{
+                  bind_to:'user', 
+                  bind_id: this.props.params.userid,
+                  sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
+                  wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}},
+                  from : this.state.from_date,
+                  to : this.state.to_date,
+                  std_schedule_details: this.state.std_schedule_details,
+                  flx_schedule_details: this.state.flx_schedule_details,
+                  cst_schedule_details: this.state.cst_schedule_details, 
+                  creation_type : this.state.creation_type,
+                  source_type: 'default',
+                  schedule_policies : this.state.schedule_policies,
+                  schedule_type : this.state.schedule_type,
+                  work_days: this.state.work_day 
+              }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                <form onSubmit={handleSubmit}> 
+              <ContainerWrapper> 
+              <Col sm={7}>
+                <div>
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h1>
+                      Source Type
+                    </h1>
+                  </div>
+                  <div className="body">
+                    <label>          
+                      <input 
+                        type="radio"
+                        checked={values.source_type === "default"}
+                        onChange={() => {
+                          setFieldValue('source_type', "default")
+                        }}
+                      /> 
+                    Default &nbsp;</label>
+                    <label>
+                      <input 
+                        type="radio"
+                        checked={values.source_type === "temporary"}
+                        onChange={() => { 
+                          setFieldValue('source_type', "temporary")
+                        }}
+                      /> 
+                    Temporary &nbsp;</label>
+          
+                    <Form.Control.Feedback type="invalid">
+                      &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
+                      </Form.Control.Feedback>
+                  </div>
+                  </Form.Group>
+                </div>
+              </Col>
+              <Col sm={7}>
+                <div>
+                <Form.Group className="white_bg">
+                <div className="header">
+                  <h1>
+                      Schedule Scope
+                  </h1>
+                </div>
+                <div className="body">
+                  <Form.Row>
+                    <Col sm={4}>
+                    <Form.Label>Date From :</Form.Label>
+                      <DatePicker 
+                        className="form-control"
+                        timeIntervals={60}
+                        timeCaption="Time"
+                        dateFormat="MMMM d, yyyy"
+                        timeFormat="MMMM d, yyyy"
+                        selected={values.from}              
+                        onChange={date => setFieldValue('from', date)}
+                      />           
+                      <Form.Control.Feedback type="invalid">
+                        &nbsp;<ErrorMessage component="div" name="from" className="input-feedback" />
+                      </Form.Control.Feedback>
+                      </Col>
+                      { values.source_type === 'temporary' ? (
+                      <Col sm={4}>
+                      <Form.Label>Date To :</Form.Label>
+                        <DatePicker 
+                          className="form-control"
+                          timeIntervals={60}
+                          timeCaption="Time"
+                          dateFormat="MMMM d, yyyy"
+                          timeFormat="MMMM d, yyyy"
+                          selected={values.to}              
+                          onChange={date => setFieldValue('to', date)}
+                        />           
+                        <Form.Control.Feedback type="invalid">
+                          &nbsp;<ErrorMessage component="div" name="to" className="input-feedback" />
+                        </Form.Control.Feedback>
+                      </Col>
+                      ) : null}
+                    </Form.Row>
+                    </div>
+                  </Form.Group>
+                </div>
+              </Col>    
+              <Col sm={7}>
+                <div>
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h1>
+                      Creation Type
+                    </h1>
+                  </div>
+                  <div className="body">
+                    <label>          
+                      <input 
+                        type="radio"
+                        checked={values.creation_type === "customize"}
+                        onChange={() => {
+                          setFieldValue('creation_type', "customize")
+                        }}
+                      /> 
+                    Customize &nbsp;</label>
+                    <label>
+                      <input 
+                        type="radio"
+                        checked={values.creation_type === "template"}
+                        onChange={() => { 
+                          setFieldValue('creation_type', "template")
+                        }}
+                      /> 
+                    Template &nbsp;</label>
+                    <Form.Control.Feedback type="invalid">
+                      &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
+                      </Form.Control.Feedback>
+                    { values.creation_type  === "template" ? (<div>
+                    <Form.Label>Custom Select</Form.Label>
+                    <Form.Control as="select" onChange={e => this.loadTemplateSched(e.target.value)} >
+                      <option >Please Select Template</option>
+                      {this.state.templateList.map((day, index) => {
+                          return <option value={day.id}>{day.name}</option>;
+                      })}
+                    </Form.Control>
+                      </div>) : null}
+                  </div>  
+                  </Form.Group>
+                </div>
+              </Col>      
+              <Col sm={7}>
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h1>
+                      Schedule Policy
+                    </h1>
+                  </div>
+                  <div className="body">
+                    <ScheduleType/> 
+                  </div>
+                </Form.Group>
+              </Col>
+              <Col sm={7}>
+              <Form.Group className="white_bg">
+                <div className="header">
+                  <h1>
+                    Schedule Type
+                  </h1>
+                </div>
+                <div className="body">
+                  <FieldArray name="std_schedule_details" render={arrayHelpers => (
+                    <label>          
+                      <input 
+                        type="radio"
+                        name="schedule_type"
+                        checked={values.schedule_type === "standard"}
+                        onChange={() => {
+                          setFieldValue('std_schedule_details', []);
+                          arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
+                          setFieldValue('schedule_type', 'standard')
+                        }}
+                      /> 
+                    Standard &nbsp;</label>
+                  )}/>
+                  <FieldArray name="flx_schedule_details" render={arrayHelpers => (
+                    <label>
+                      <input 
+                        type="radio"
+                        name="schedule_type"
+                        checked={values.schedule_type === "flexible"}
+                        onChange={() => { 
+                          setFieldValue('flx_schedule_details', []);
+
+                          arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
+                          setFieldValue('schedule_type', 'flexible');
+                        }}
+                      /> 
+                    Flexible &nbsp;</label>
+                    )}
+                    />
+                    <FieldArray name="cst_schedule_details" render={arrayHelpers => (
+                    <label>
+                      <input 
+                        type="radio"
+                        name="schedule_type"
+                        checked={values.schedule_type === "customize"}
+                        onChange={() => {
+                          setFieldValue('cst_schedule_details', []);
+                          for (var i = 0; i < values.work_days.length; i++) {
+                            arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
+                          }
+                          setFieldValue('schedule_type', 'customize')
+                        }}
+                      /> 
+                    Customize &nbsp;</label>      
+                  )}
+                  />  
+                  <Form.Control.Feedback type="invalid">
+                  &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
+                  </Form.Control.Feedback>
+                </div>
+                </Form.Group>
+              </Col>
+              <Col sm={7} >
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h1>
+                      Work Days
+                    </h1>
+                  </div>
+                  <div className="body">
+                    <WorkDays/>
+                  </div>
+                </Form.Group>
+              </Col>
+                      
+              { values.schedule_type  === '' ? (
+                null
+              ) : values.schedule_type  === 'standard' ? ( 
+              <Col sm={7} >
+                <Form.Group className="white_bg">
+                  <div className="header">
+                      <h1>
+                        Standard Schedule
+                      </h1>
+                  </div>
+                  <div className="body">
+                    <StandardSchedDetailsForm/>
+                  </div>
+                </Form.Group>
+              </Col>
+              ) : values.schedule_type=== 'flexible' ? (
+              <Col sm={7} >
+                <Form.Group className="white_bg">
+                  <div className="header">
+                      <h1>
+                        Flexible Schedule
+                      </h1>
+                  </div>
+                  <div className="body">
+                    <FlexibleSchedDetailsForm/>
+                  </div>
+                </Form.Group>
+              </Col>
+              ): values.schedule_type === 'customize' ? (
+                  <Col sm={7} >
+                    <Form.Group className="white_bg">
+                    <div className="header">
+                      <h1>
+                        Customize Schedule
+                      </h1>
+                    </div>
+                    <div className="body">
+                      {values.sorted_weekday.map((day, index) => {
+                            if(values.work_days.includes(day)==true){
+                            return <Scheduledetails day={day} index={values.work_days.indexOf(day)} />
+                            }
+                      })}
+                    </div>
+                    </Form.Group>
+                  </Col>
+              ) : null}
+              <Col sm={7}>
+                <Button variant="primary" type="submit">
+                  Update
+                </Button>
+                &nbsp;
+                <BackButton {...this.props} />
+              </Col>
+            </ContainerWrapper>
+            </form>
+            )}
+          
+          </Formik>
+        </Wrapper>
+        :
+        <PageLoading/>;;
    
   }
 }
