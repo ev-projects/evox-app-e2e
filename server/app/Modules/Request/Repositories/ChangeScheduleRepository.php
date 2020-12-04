@@ -210,7 +210,7 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
                 $user = User::where(['emp_num' => $drupal_evox_change_schedule->employee_number])->first();
 
                 if(!is_null($user )) {
-                    
+
                     $change_schedule = $user->change_schedule($drupal_evox_change_schedule->valid_from,$drupal_evox_change_schedule->valid_to)->first();
                     
                     if($change_schedule==null){
@@ -234,6 +234,7 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
                                 'allow_late' =>         ($drupal_evox_change_schedule->late == "late" )?1:0,
                                 'allow_undertime' =>    ($drupal_evox_change_schedule->undertime == "undertime" )?1:0
                             ],
+                            'schedule_details' => []
                         ];
     
                         foreach ($work_days as $key => $value) {
