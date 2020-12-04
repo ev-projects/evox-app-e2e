@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Switch, Component } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoutes";
 import API from "../services/API";
+import { connect } from 'react-redux'
 
 // Templated Components
 import Header from "../components/Template/Header";
@@ -37,14 +38,13 @@ import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervis
 import AssignRole from "../container/Admin/AssignRole";
 import MyTeamList from "../container/MyTeam/MyTeamList";
 import Profile from "../container/Profile";
+import Validator from "../services/Validator";
 
-const RoutesList = () => {
+const RoutesList = (props) => {
 
   // Register all the Routes that will be used in the Application (excluding the Login)
   const DefaultContainer = () => (
     <div>
-      <Header />
-      <Sidebar />
       <Switch>
         <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
         <ProtectedRoute exact path="/app/schedule" ><TemplateCreate /></ProtectedRoute>
@@ -103,6 +103,11 @@ const RoutesList = () => {
 
   return (
     <div>
+      <div style={{'display' : ( Validator.isValid( props.user.first_name ) ) ? 'block':'none'}}>
+        <Header />
+        <Sidebar />
+        <div>&nbsp;</div>
+      </div>
       <Switch>
         <Route exact path={["/", "/login"]} component={LoginContainer} />
         <Route component={DefaultContainer} />
@@ -111,4 +116,12 @@ const RoutesList = () => {
   );
 }
 
-export default RoutesList;
+
+const mapStateToProps = (state) => {
+  return {
+      user : state.user,
+      settings : state.settings
+  }
+}
+
+export default connect(mapStateToProps, null)(RoutesList);
