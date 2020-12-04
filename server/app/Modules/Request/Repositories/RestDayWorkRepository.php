@@ -337,30 +337,31 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                 // Checks if the user is existing
                 if(!is_null($user )) {
 
-                    # Update the DTR properties
-                    $rest_day_work                   = new RestDayWork();
-                    $rest_day_work->user_id          =  $user->id;
-                    $rest_day_work->date             =  $drupal_evox_rest_day_work->date;
+                    $rest_day_work = $user->rest_day_works()->where(['date' => $drupal_evox_rest_day_work->date])->first();
+                    # Insert Alter Log
+                    if( $rest_day_work == null ) {
+                        $rest_day_work                   = new RestDayWork();
+                        $rest_day_work->user_id          =  $user->id;
+                        $rest_day_work->date             =  $drupal_evox_rest_day_work->date;
 
-                    $rest_day_work->start_time       =  $drupal_evox_rest_day_work->on_duty;
-                    $rest_day_work->end_time         =  $drupal_evox_rest_day_work->off_duty;
+                        $rest_day_work->start_time       =  $drupal_evox_rest_day_work->on_duty;
+                        $rest_day_work->end_time         =  $drupal_evox_rest_day_work->off_duty;
 
-                    $rest_day_work->employee_note    =  $drupal_evox_rest_day_work->employee_note ?? null;
-                    $rest_day_work->approver_note    =  $drupal_evox_rest_day_work->superviser_note ?? null;
-                    
-                    $rest_day_work->status           =  $drupal_evox_rest_day_work->status;
-                    $rest_day_work->created_by       =  $user->id;
-                    $rest_day_work->created_at       =  $drupal_evox_rest_day_work->date_created;
-                    $rest_day_work->updated_at       =  $drupal_evox_rest_day_work->date_updated;
-                    $rest_day_work->save();
+                        $rest_day_work->employee_note    =  $drupal_evox_rest_day_work->employee_note ?? null;
+                        $rest_day_work->approver_note    =  $drupal_evox_rest_day_work->superviser_note ?? null;
+                        
+                        $rest_day_work->status           =  $drupal_evox_rest_day_work->status;
+                        $rest_day_work->created_by       =  $user->id;
+                        $rest_day_work->created_at       =  $drupal_evox_rest_day_work->date_created;
+                        $rest_day_work->updated_at       =  $drupal_evox_rest_day_work->date_updated;
+                        $rest_day_work->save();
 
-                    // Saved the To compute Items
-                    if( in_array($rest_day_work->status, array('approved','declined')) ) {
-                        $to_compute_items[] = $rest_day_work;
+                        // Saved the To compute Items
+                        if( in_array($rest_day_work->status, array('approved','declined')) ) {
+                            $to_compute_items[] = $rest_day_work;
+                        }
+                        log_to_file( 'info', 'Success', [$rest_day_work->getAttributes()], "drupal_migration");
                     }
-
-                    log_to_file( 'info', 'Success', [$rest_day_work->getAttributes()], "drupal_migration");
-
                 } else {
                     log_to_file( 'info', 'User not existing', [$drupal_evox_rest_day_work], "drupal_migration");
                     $users_not_existing[$drupal_evox_rest_day_work->employee_number] = $drupal_evox_rest_day_work->employee_number;

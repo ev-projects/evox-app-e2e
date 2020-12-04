@@ -205,68 +205,73 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
             $to_compute_items = [];
 
             # Iterates the Array fetched from the Drupal Database
-            $index = 0;
             foreach( $drupal_evox_change_schedules_array as $drupal_evox_change_schedule) {
 
                 $user = User::where(['emp_num' => $drupal_evox_change_schedule->employee_number])->first();
 
                 if(!is_null($user )) {
-                    $work_days = explode(",", $drupal_evox_change_schedule->work_days);
+                    
+                    $change_schedule = $user->change_schedule($drupal_evox_change_schedule->valid_from,$drupal_evox_change_schedule->valid_to)->first();
+                    
+                    if($change_schedule==null){
+                        $work_days = explode(",", $drupal_evox_change_schedule->work_days);
 
-                    $schedule = new ScheduleRepository();
-
-                    $work_days = explode(",", $drupal_evox_change_schedule->work_days);
-
-                    # structure of schedule for changeschedule
-                    $data = [
-                        'work_days'         => $work_days,
-                        'source_type'       => 'change_schedule',
-                        'schedule_type'     => 'customize',
-                        'valid_from'        => $drupal_evox_change_schedule->valid_from,
-                        'valid_to'          => $drupal_evox_change_schedule->valid_to,
-                        'bind_to'           => 'user',
-                        'bind_id'           => $user->id,
-                        'schedule_policies' =>[
-                            'allow_night_diff' =>   ($drupal_evox_change_schedule->nightdiff == "nightdiff" )?1:0,
-                            'allow_late' =>         ($drupal_evox_change_schedule->late == "late" )?1:0,
-                            'allow_undertime' =>    ($drupal_evox_change_schedule->undertime == "undertime" )?1:0
-                        ],
-                    ];
-
-                    foreach ($work_days as $key => $value) {
-                        if(is_valid($value)){
-                        $data['schedule_details'][$value]['start_time'] = time_to_seconds($drupal_evox_change_schedule->{$value . "_on_duty" });
-                        $data['schedule_details'][$value]['end_time'] = time_to_seconds($drupal_evox_change_schedule->{$value . "_off_duty" });
-                        $data['schedule_details'][$value]['break_time'] = time_to_seconds($drupal_evox_change_schedule->{$value . "_break_time" });
-                        $data['schedule_details'][$value]['start_flexy_time'] =  time_to_seconds($drupal_evox_change_schedule->{$value . "_flexy_start" });
-                        $data['schedule_details'][$value]['end_flexy_time'] = time_to_seconds($drupal_evox_change_schedule->{$value . "_flexy_end" });
+                        $schedule = new ScheduleRepository();
+    
+                        $work_days = explode(",", $drupal_evox_change_schedule->work_days);
+    
+                        # structure of schedule for changeschedule
+                        $data = [
+                            'work_days'         => $work_days,
+                            'source_type'       => 'change_schedule',
+                            'schedule_type'     => 'customize',
+                            'valid_from'        => $drupal_evox_change_schedule->valid_from,
+                            'valid_to'          => $drupal_evox_change_schedule->valid_to,
+                            'bind_to'           => 'user',
+                            'bind_id'           => $user->id,
+                            'schedule_policies' =>[
+                                'allow_night_diff' =>   ($drupal_evox_change_schedule->nightdiff == "nightdiff" )?1:0,
+                                'allow_late' =>         ($drupal_evox_change_schedule->late == "late" )?1:0,
+                                'allow_undertime' =>    ($drupal_evox_change_schedule->undertime == "undertime" )?1:0
+                            ],
+                        ];
+    
+                        foreach ($work_days as $key => $value) {
+                            if(is_valid($value)){
+                            $data['schedule_details'][$value]['start_time'] = $drupal_evox_change_schedule->{$value . "_on_duty" };
+                            $data['schedule_details'][$value]['end_time'] = $drupal_evox_change_schedule->{$value . "_off_duty" };
+                            $data['schedule_details'][$value]['break_time'] = $drupal_evox_change_schedule->{$value . "_break_time" };
+                            $data['schedule_details'][$value]['start_flexy_time'] =  $drupal_evox_change_schedule->{$value . "_flexy_start" };
+                            $data['schedule_details'][$value]['end_flexy_time'] = $drupal_evox_change_schedule->{$value . "_flexy_end" };
+                            }
                         }
+                        $schedule =  $schedule->store($data);
+    
+                        $change_schedule                 = new ChangeSchedule();
+                        $change_schedule->user_id        =  $user->id;
+    
+                        $change_schedule->schedule_id    = $schedule->id ;
+                        $change_schedule->valid_from     = $drupal_evox_change_schedule->valid_from ;
+                        $change_schedule->valid_to       = $drupal_evox_change_schedule->valid_to ;
+                        $change_schedule->employee_note  = $drupal_evox_change_schedule->note ;
+                        $change_schedule->status         = $drupal_evox_change_schedule->status;
+                        $change_schedule->updated_by     = $user->id;
+                        $change_schedule->created_by     = $user->id;
+                        
+                        $change_schedule->created_at          =  $drupal_evox_change_schedule->date_created;
+                        $change_schedule->updated_at          =  $drupal_evox_change_schedule->date_updated;
+    
+                        
+                        $change_schedule->save();
+    
+                        // Saved the To compute Items
+                        if( in_array($change_schedule->status, array('approved','declined')) ) {
+                            $to_compute_items[] = $change_schedule;
+                        }
+    
+                        log_to_file( 'info', 'Success', [$change_schedule->getAttributes()], "drupal_migration");
                     }
-                    $schedule =  $schedule->store($data);
-
-                    $change_schedule                 = new ChangeSchedule();
-                    $change_schedule->user_id        =  $user->id;
-
-                    $change_schedule->schedule_id    = $schedule->id ;
-                    $change_schedule->valid_from     = $drupal_evox_change_schedule->valid_from ;
-                    $change_schedule->valid_to       = $drupal_evox_change_schedule->valid_to ;
-                    $change_schedule->employee_note  = $drupal_evox_change_schedule->note ;
-                    $change_schedule->status         = $drupal_evox_change_schedule->status;
-                    $change_schedule->updated_by     = $user->id;
-                    $change_schedule->created_by     = $user->id;
                     
-                    $change_schedule->created_at          =  $drupal_evox_change_schedule->date_created;
-                    $change_schedule->updated_at          =  $drupal_evox_change_schedule->date_updated;
-
-                    
-                    $change_schedule->save();
-
-                    // Saved the To compute Items
-                    if( in_array($change_schedule->status, array('approved','declined')) ) {
-                        $to_compute_items[] = $change_schedule;
-                    }
-
-                    log_to_file( 'info', 'Success', [$change_schedule->getAttributes()], "drupal_migration");
 
                 } else {
                     log_to_file( 'info', 'User not existing', [$drupal_evox_change_schedule], "drupal_migration");
