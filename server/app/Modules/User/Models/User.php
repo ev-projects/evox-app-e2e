@@ -138,6 +138,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Overtime::class, 'user_id', 'id');
     }
 
+    # Fetch the User's AlterLog Requests
+    public function alter_log(){
+        return $this->hasMany(AlterLog::class, 'user_id', 'id');
+    }
+
     # Fetch the User's Rest Day Work Requests
     public function rest_day_works(){
         return $this->hasMany(RestDayWork::class, 'user_id', 'id');
@@ -172,6 +177,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')
                     ->where("status","approved")
                     ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')");  
+    }
+
+    # Fetch the  Change Schedule
+    public function change_schedule($start_date, $end_date){
+        return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')
+                    ->whereRaw("    ( valid_from BETWEEN '".$start_date."' AND '".$end_date."') OR 
+                                    ( valid_to BETWEEN '".$start_date."' AND '".$end_date."') OR
+                                    ( valid_to >= '".$start_date."' AND valid_from <= '".$end_date."')");  
     }
 
     # Fetch the User's DTR

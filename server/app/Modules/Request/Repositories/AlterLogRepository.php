@@ -295,34 +295,40 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             // Iterates the Array fetched from the Drupal Database
             foreach( $drupal_evox_alter_log_array as $drupal_evox_alter_log) {
 
+
                 // Fetch the User via the emp_num field of the User
                 $user = User::where(['emp_num' => $drupal_evox_alter_log->employee_number])->first();
                 // Checks if the user is existing
                 if( !is_null($user ) ) {
-                    # Update the DTR properties
-                    $alter_log                   = new AlterLog();
-                    $alter_log->user_id          =  $user->id;
-                    $alter_log->date             =  $drupal_evox_alter_log->date;
+                    $alter_log = $user->alter_log()->where(['date' => $drupal_evox_alter_log->date])->first();
 
-                    $alter_log->current_time_in  =  $drupal_evox_alter_log->old_time_in;
-                    $alter_log->current_time_out =   $drupal_evox_alter_log->old_time_out;
+                    # Insert Alter Log
+                    if( $alter_log == null ) {
+                        $alter_log                   = new AlterLog();
+                        $alter_log->user_id          =  $user->id;
+                        $alter_log->date             =  $drupal_evox_alter_log->date;
 
-                    $alter_log->new_time_in      = $drupal_evox_alter_log->new_time_in;
-                    $alter_log->new_time_out     = $drupal_evox_alter_log->new_time_out;
+                        $alter_log->current_time_in  =  $drupal_evox_alter_log->old_time_in;
+                        $alter_log->current_time_out =   $drupal_evox_alter_log->old_time_out;
 
-                    $alter_log->employee_note    =  $drupal_evox_alter_log->employee_note ?? null;
-                    $alter_log->approver_note    =  $drupal_evox_alter_log->superviser_note ?? null;
+                        $alter_log->new_time_in      = $drupal_evox_alter_log->new_time_in;
+                        $alter_log->new_time_out     = $drupal_evox_alter_log->new_time_out;
 
-                    $alter_log->status           =  $drupal_evox_alter_log->status;
-                    $alter_log->created_by       =  $user->id;
-                    $alter_log->created_at       =  $drupal_evox_alter_log->date_created;
-                    $alter_log->updated_at       =  $drupal_evox_alter_log->date_updated;
-                    $alter_log->save();
+                        $alter_log->employee_note    =  $drupal_evox_alter_log->employee_note ?? null;
+                        $alter_log->approver_note    =  $drupal_evox_alter_log->superviser_note ?? null;
 
-                    // Saved the To compute Items
-                    if( in_array($alter_log->status, array('approved','declined')) ) {
-                        $to_compute_items[] = $alter_log;
+                        $alter_log->status           =  $drupal_evox_alter_log->status;
+                        $alter_log->created_by       =  $user->id;
+                        $alter_log->created_at       =  $drupal_evox_alter_log->date_created;
+                        $alter_log->updated_at       =  $drupal_evox_alter_log->date_updated;
+                        $alter_log->save();
+
+                        // Saved the To compute Items
+                        if( in_array($alter_log->status, array('approved','declined')) ) {
+                            $to_compute_items[] = $alter_log;
+                        }
                     }
+                    
 
                     log_to_file( 'info', 'Success', [$alter_log->getAttributes()], "drupal_migration");
 
