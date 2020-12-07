@@ -121,7 +121,12 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     old_time_out.field_old_time_out_value as 'old_time_out',
                     employee_note.field_employee_note_value   as 'employee_note',
                     supervisor_note.field_supervisor_note_value as 'supervisor_note',
-                    request_status.field_status_value as 'status',
+                    CASE 
+                        WHEN request_status.field_status_value = 'approved' THEN 'approved'
+                        WHEN request_status.field_status_value = 'denied' THEN 'declined'
+                        WHEN request_status.field_status_value = 'cancel' THEN 'canceled'
+                        WHEN request_status.field_status_value = 'pending' THEN 'pending'
+                    END as status,
                     DATE_FORMAT(FROM_UNIXTIME( A.created ), '%Y-%m-%d %H:%i:%s')as 'date_created',
                     DATE_FORMAT(FROM_UNIXTIME( A.changed ), '%Y-%m-%d %H:%i:%s') as 'date_updated'
                     
@@ -175,7 +180,12 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
             off_duty.field_rdw_off_duty_schedule_value as 'off_duty',
             employee_note.field_employee_note_value   as 'employee_note',
             supervisor_note.field_supervisor_note_value as 'supervisor_note',
-            request_status.field_status_value as 'status',
+            CASE 
+                WHEN request_status.field_status_value = 'approved' THEN 'approved'
+                WHEN request_status.field_status_value = 'denied' THEN 'declined'
+                WHEN request_status.field_status_value = 'cancel' THEN 'canceled'
+                WHEN request_status.field_status_value = 'pending' THEN 'pending'
+            END as status,
             DATE_FORMAT(FROM_UNIXTIME( A.created ), '%Y-%m-%d %H:%i:%s')as 'date_created',
             DATE_FORMAT(FROM_UNIXTIME( A.changed ), '%Y-%m-%d %H:%i:%s') as 'date_updated'
             
@@ -244,7 +254,12 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     DATE_FORMAT(FROM_UNIXTIME(valid_from.field_sched_valid_from_value),'%Y-%m-%d') as valid_from,
                     DATE_FORMAT(FROM_UNIXTIME(valid_to.field_sched_valid_to_value),'%Y-%m-%d') as valid_to,
                     emp_number.field_employee_number_value as employee_number,
-                    status.field_status_value as status,
+                    CASE 
+                        WHEN status.field_status_value = 'approved' THEN 'approved'
+                        WHEN status.field_status_value = 'denied' THEN 'declined'
+                        WHEN status.field_status_value = 'cancel' THEN 'canceled'
+                        WHEN status.field_status_value = 'pending' THEN 'pending'
+                    END as status,
                     DATE_FORMAT(FROM_UNIXTIME( A.created ), '%Y-%m-%d %H:%i:%s')as 'date_created',
                     DATE_FORMAT(FROM_UNIXTIME( A.changed ), '%Y-%m-%d %H:%i:%s') as 'date_updated',
                     note.field_note_value as 'note',
