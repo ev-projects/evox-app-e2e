@@ -87,12 +87,12 @@ const Sidebar = (props) => {
                             <p>Add Template</p>
                           </Link>
                         </li>
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                           <Link className="nav-link" to={ global.default_schedule + user.id  }>
                             <i className="nav-icon fa fa-calendar-check-o nav-icon" />
                             <p>Default Schedule</p>
                           </Link>
-                        </li>
+                        </li> */}
                       </ul>
                     </li>
                     :
