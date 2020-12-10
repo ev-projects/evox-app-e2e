@@ -300,7 +300,13 @@ class User extends Authenticatable implements JWTSubject
             $alter_logs      ->where('alter_logs.status',$filter['status']);
         }
 
-
+         # Department Filter
+         if(isset($filter['department_id'])){
+            $change_schedules->where('a.department_id', $filter['department_id']);
+            $overtimes       ->where('a.department_id', $filter['department_id']);
+            $rest_day_works  ->where('a.department_id', $filter['department_id']);
+            $alter_logs      ->where('a.department_id', $filter['department_id']);
+        }
 
         # Name Filter
         if(isset($filter['name'])){
@@ -321,14 +327,7 @@ class User extends Authenticatable implements JWTSubject
             $alter_logs      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
         }
   
-        # Department Filter
-        if(isset($filter['department_id'])){
-            $change_schedules->where('a.department_id', $filter['department_id']);
-            $overtimes       ->where('a.department_id', $filter['department_id']);
-            $rest_day_works  ->where('a.department_id', $filter['department_id']);
-            $alter_logs      ->where('a.department_id', $filter['department_id']);
-        }
-        
+
 
       
         $query = $alter_logs->union($change_schedules)
