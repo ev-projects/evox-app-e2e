@@ -23,8 +23,8 @@ class MyTeamRequests extends Component {
     this.initialState = {
         filters: {
           status:           this.props.filters?.status ?? null,
-          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : null,
-          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : null,
+          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : (( this.props.settings?.current_payroll_cutoff?.start_date ) ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
+          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : (( this.props.settings?.current_payroll_cutoff?.end_date ) ? new Date( this.props.settings.current_payroll_cutoff.end_date ) : null),
           department_id:    this.props.filters?.department_id ?? null,
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
@@ -94,14 +94,21 @@ class MyTeamRequests extends Component {
 
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
     if( ! this.props.isListLoaded ) {
-      this.props.fetchRequestList( this.state.filters );
+
+      var filters = {
+        ...this.state.filters,
+        valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
+        valid_to:   Validator.isValid(this.state.filters.valid_to) ? this.state.filters.valid_to.toISOString().substring(0, 10) : null
+      };
+
+      this.props.fetchRequestList( filters );
     }
   }
 
   componentDidUpdate(){
     if( !this.props.isNumbersLoaded && this.props.isListLoaded ){
       var formData = {  url: "my_team_requests" };
-      this.props.fetchStatusNumbers( formData , this.props.requestList );
+      this.props.fetchStatusNumbers( formData, this.props.requestList );
     }
   }
 
@@ -471,6 +478,7 @@ class MyTeamRequests extends Component {
       isNumbersLoaded : state.myTeamRequestList.isNumbersLoaded,
       statusNumbers   : state.myTeamRequestList.statusNumbers,
       filters         : state.myTeamRequestList.filters,
+      settings        : state.settings
     }
   }
   const mapDispatchToProps = (dispatch) => {

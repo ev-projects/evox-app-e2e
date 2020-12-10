@@ -12,6 +12,7 @@ import moment from 'moment';
 import { fetchRequestList,fetchStatusNumbers } from '../../store/actions/filters/requestListActions';
 import { InputDate,InputTime   } from '../../components/DatePickerComponent/DatePicker.js';
 import Paginate from "../../components/Template/Paginate";
+import Validator from "../../services/Validator";
 
 class MyRequests extends Component {
 
@@ -21,8 +22,8 @@ class MyRequests extends Component {
     this.initialState = {
         filters: {
           status:           this.props.filters?.status ?? null,
-          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : null,
-          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : null,
+          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : (( this.props.settings?.current_payroll_cutoff?.start_date ) ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
+          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : (( this.props.settings?.current_payroll_cutoff?.end_date ) ? new Date( this.props.settings.current_payroll_cutoff.end_date ) : null),
           department_id:    this.props.filters?.department_id ?? null,
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
@@ -60,7 +61,14 @@ class MyRequests extends Component {
 
     // Fetch the my Request list upon mounting of the component if the My Request List is not yet initially loaded.
     if( ! this.props.isListLoaded ) {
-      this.props.fetchRequestList( this.state.filters );
+
+      var filters = {
+        ...this.state.filters,
+        valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
+        valid_to:   Validator.isValid(this.state.filters.valid_to) ? this.state.filters.valid_to.toISOString().substring(0, 10) : null
+      };
+
+      this.props.fetchRequestList( filters );
     }
 
   }
@@ -336,6 +344,7 @@ class MyRequests extends Component {
       isNumbersLoaded : state.myRequestList.isNumbersLoaded,
       statusNumbers   : state.myRequestList.statusNumbers,
       filters         : state.myRequestList.filters,
+      settings        : state.settings
     }
   }
   const mapDispatchToProps = (dispatch) => {
