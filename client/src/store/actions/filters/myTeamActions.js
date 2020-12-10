@@ -7,8 +7,14 @@ import Formatter from "../../../services/Formatter";
 
 // Fetch Request List
 export const fetchMyTeamList = ( user_id, params = null ) => {
-    console.log(params);
+    
     return (dispatch, getState) => {
+
+        dispatch({
+            'type'     : 'SET_MY_TEAM_LIST_FILTERS', 
+            'filters'  : params
+        })
+
         API.call({
             method: "get",
             url: "/user/" + user_id + "/my_team_list",
@@ -18,7 +24,7 @@ export const fetchMyTeamList = ( user_id, params = null ) => {
             
             dispatch({
                 'type'      : 'FETCH_MY_TEAM_LIST_SUCCESS', 
-                'myTeamList'  : result.data.content
+                'list'  : result.data.content
             })
         })
         .catch(e => {

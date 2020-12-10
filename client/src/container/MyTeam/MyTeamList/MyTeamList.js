@@ -14,10 +14,28 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
-import { fetchMyTeamList } from '../../../store/actions/supervisor/myTeamActions';
+import { fetchMyTeamList } from '../../../store/actions/filters/myTeamActions';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
+import Validator from "../../../services/Validator";
 
 class MyTeamList extends Component {
+
+  
+    constructor(props){
+      super(props);
+
+      this.initialState = {
+          filters: {
+            status:         this.props.myTeamList?.filters?.status,
+            department_id:  this.props.myTeamList?.filters?.department_id,
+            name:           this.props.myTeamList?.filters?.name,
+            page:           this.props.myTeamList?.filters?.page,
+            url:           'MyTeam'
+        }
+      }
+      
+      this.state = this.initialState; 
+    }
 
   onSubmitHandler = (values) => {
 
@@ -39,25 +57,14 @@ class MyTeamList extends Component {
 
   componentWillMount(){
     
-    var urlData = {
-      url: this.props.params.url,
-      page : 1
-    };
-
-    // Fetch the my Team List upon mounting of the component
-    this.props.fetchMyTeamList( this.props.user.id, urlData);
+    // Fetch the my Team List upon mounting of the component if the My Team List is not yet initially loaded.
+    if( ! Validator.isValid( this.props.myTeamList.list ) ) {
+      this.props.fetchMyTeamList( this.props.user.id, this.state.filters);
+    }
   }
 
 
   render = () => {  
-
-    const initialValue = {
-      status: null,
-      department_id: null,
-      name: null,
-      page: 1,
-      url: 'MyTeam'
-    }
 
     var total = [];
     var validationSchema = Yup.object().shape({});
@@ -66,7 +73,7 @@ class MyTeamList extends Component {
           enableReinitialize
           onSubmit={this.onSubmitHandler} 
           validationSchema={validationSchema} 
-          initialValues={initialValue}>
+          initialValues={this.state.filters}>
           {
           ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
           <form onSubmit={handleSubmit}>
@@ -155,20 +162,20 @@ const MyTeamListTable = (props) => {
   const { values, handleChange, setFieldValue } = useFormikContext();
 
   var pagination = [];
-  var myTeamList = [];
+  var list = [];
 
   // If there's a loaded myTeam props, Generate the Pagination component.
-  if( props.myTeam.myTeamList != null && props.myTeam.myTeamList.data.length > 0 ){
+  if( props.myTeamList.list != null && props.myTeamList.list.data.length > 0 ){
     
-      myTeamList = props.myTeam.myTeamList;
+      list = props.myTeamList.list;
 
   }
 
 
   // If there's a loaded myTeam props already, then proceed on rendering for the Page.
-  return ( props.myTeam.myTeamList != null && props.myTeam.myTeamList.data.length > 0   ? 
+  return ( props.myTeamList.list != null && props.myTeamList.list.data.length > 0   ? 
           <div>
-            Record Displayed: { props.myTeam.myTeamList != null && props.myTeam.myTeamList.data.length > 0  ? props.myTeam.myTeamList.pagination.total : 0 }
+            Record Displayed: { props.myTeamList.list != null && props.myTeamList.list.data.length > 0  ? props.myTeamList.list.pagination.total : 0 }
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -179,7 +186,7 @@ const MyTeamListTable = (props) => {
                 </tr>
               </thead>
               <tbody>
-                { myTeamList.data.map((user) => {
+                { list.data.map((user) => {
                     return <tr>
                     <td>{user.full_name}</td>
                     <td>{user.department} </td>
@@ -217,7 +224,7 @@ const MyTeamListTable = (props) => {
                 })}
               </tbody>
             </Table>
-            <Paginate pagination={props.myTeam.myTeamList.pagination} />
+            <Paginate pagination={props.myTeamList.list.pagination} />
         </div>
         :
         <div> Sorry, No Record Found </div>
@@ -243,7 +250,7 @@ const Status = (props) => {
   const mapStateToProps = (state) => {
     return {
       user  :  state.user,
-      myTeam  : state.myTeam
+      myTeamList  : state.myTeamList
 
     }
   }
