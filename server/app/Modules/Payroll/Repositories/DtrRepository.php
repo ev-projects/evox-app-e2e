@@ -1014,6 +1014,8 @@ class DtrRepository implements DtrRepositoryInterface{
                                         ". $biometrics->getDutyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
                                         OR 
                                         ". $biometrics->getFlexyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
+                                        OR 
+                                         date = '".date("Y-m-d" , datetime_to_timestamp( $biometrics->CheckTime ))."'
                                         )
                                         AND ". $biometrics->getTimeType() . " IS NULL"
                                 )->first();
