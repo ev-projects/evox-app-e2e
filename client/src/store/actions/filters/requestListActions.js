@@ -1,27 +1,50 @@
 import axios from "axios";
-import API from "../../services/API";
+import API from "../../../services/API";
 import { trackPromise } from "react-promise-tracker";
-import Formatter from "../../services/Formatter";
+import Formatter from "../../../services/Formatter";
 
 
 
 // Fetch Request List
-export const fetchRequestList = ( data = null , status_numbers = null ) => {
+export const fetchRequestList = ( params = null , status_numbers = null ) => {
+
     return (dispatch, getState) => {
+
+        var dispatch_commands = {};
+
+        if( params.url == "my_team_requests" ){
+            dispatch_commands = {
+                set_filters          : 'SET_MY_TEAM_REQUEST_LIST_FILTERS',
+                fetch_list_initially : 'FETCH_MY_TEAM_REQUEST_LIST_SUCCESS_INITIALLY',
+                fetch_list           : 'FETCH_MY_TEAM_REQUEST_LIST_SUCCESS'
+            }
+        } else {
+            dispatch_commands = {
+                set_filters          : 'SET_MY_REQUEST_LIST_FILTERS',
+                fetch_list_initially : 'FETCH_MY_REQUEST_LIST_SUCCESS_INITIALLY',
+                fetch_list           : 'FETCH_MY_REQUEST_LIST_SUCCESS'
+            }
+        }
+
+        dispatch({
+            'type'     : dispatch_commands.set_filters, 
+            'filters'  : params
+        });
+
         API.call({
             method: "get",
             url: "/request/request-list",
-            params : data
+            params : params
         })
         .then(result => {
             if (status_numbers === null){
                 dispatch({
-                    'type'      : 'FETCH_REQUEST_LIST_SUCCESS_INITIALLY', 
-                    'requestList'  : result.data.content
+                    'type'          : dispatch_commands.fetch_list_initially, 
+                    'requestList'   : result.data.content
                 })
             }else{
                 dispatch({
-                    'type'      : 'FETCH_REQUEST_LIST_SUCCESS', 
+                    'type'      : dispatch_commands.fetch_list, 
                     'requestList'  : result.data.content,
                     'statusNumbers'  : status_numbers,
                 })
@@ -37,6 +60,19 @@ export const fetchRequestList = ( data = null , status_numbers = null ) => {
 //  fetch the request status numbers
 export const fetchStatusNumbers = ( params , requestList ) => {
     return (dispatch, getState) => {
+        
+        var dispatch_commands = {};
+
+        if( params.url == "my_team_requests" ){
+            dispatch_commands = {
+                fetch_status_numbers          : 'FETCH_MY_TEAM_REQUEST_STATUS_NUMBERS',
+            }
+        } else {
+            dispatch_commands = {
+                fetch_status_numbers          : 'FETCH_MY_REQUEST_STATUS_NUMBERS',
+            }
+        }
+
         API.call({
             method: "get",
             url: "/request/request-numbers",
@@ -44,7 +80,7 @@ export const fetchStatusNumbers = ( params , requestList ) => {
         })
         .then(result => {
             dispatch({
-                'type'      : 'FETCH_REQUEST_STATUS_NUMBERS', 
+                'type'      : dispatch_commands.fetch_status_numbers, 
                 'statusNumbers'  : result.data.content.status_numbers,
                 'requestList'  : requestList,
             })

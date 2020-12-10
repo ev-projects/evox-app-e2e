@@ -9,11 +9,32 @@ import * as Yup from 'yup';
 import PageLoading from "../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
-import { fetchRequestList,fetchStatusNumbers } from '../../store/actions/requestListActions';
+import { fetchRequestList,fetchStatusNumbers } from '../../store/actions/filters/requestListActions';
 import { InputDate,InputTime   } from '../../components/DatePickerComponent/DatePicker.js';
 import Paginate from "../../components/Template/Paginate";
 
 class MyRequests extends Component {
+
+  constructor(props){
+    super(props);
+
+    this.initialState = {
+        filters: {
+          status:           this.props.filters?.status ?? null,
+          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : null,
+          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : null,
+          department_id:    this.props.filters?.department_id ?? null,
+          name:             this.props.filters?.name ?? null,
+          page:             this.props.filters?.page ?? 1,
+          checkedList:      this.props.filters?.checkedList ?? [],
+          isAll:            this.props.filters?.isAll ?? false,
+          action:           this.props.filters?.action ?? null,
+          bulk_action:      this.props.filters?.bulk_action ?? null,
+          url:              'my_requests'
+      }
+    }
+    this.state = this.initialState; 
+  }
 
   onSubmitHandler = (values) => {
     var formData = {};
@@ -30,17 +51,22 @@ class MyRequests extends Component {
             break;
           }
       } 
-  }
-  this.props.fetchRequestList( formData , this.props.statusNumbers );
+    }
+    
+    this.props.fetchRequestList( formData , this.props.statusNumbers );
   }
 
   componentWillMount(){
-    var formData = { "url" : "my_requests" };
-    this.props.fetchRequestList(formData);
+
+    // Fetch the my Request list upon mounting of the component if the My Request List is not yet initially loaded.
+    if( ! this.props.isListLoaded ) {
+      this.props.fetchRequestList( this.state.filters );
+    }
+
   }
 
   componentDidUpdate(){
-    if(!this.props.isNumbersLoaded&&this.props.isListLoaded){
+    if( !this.props.isNumbersLoaded && this.props.isListLoaded ){
       var formData = { "url" : "my_requests" };
       this.props.fetchStatusNumbers( formData , this.props.requestList );
     }
@@ -48,16 +74,6 @@ class MyRequests extends Component {
 
 
   render = () => {  
-  const initialValue = {
-    status: null,
-    valid_from: null,
-    valid_to: null,
-    department_id: null,
-    name: null,
-    page: 1,
-    url: 'my_requests'
-  }
-  
 
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
@@ -97,12 +113,13 @@ class MyRequests extends Component {
       enableReinitialize
       onSubmit={this.onSubmitHandler} 
       validationSchema={validationSchema} 
-      initialValues={initialValue}>
+      initialValues={this.state.filters}>
       {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
       <Wrapper>
-            <ContainerWrapper>       
+            <ContainerWrapper> 
+            <ContainerBody>        
                 <Content col="12" title="My Requests">
                 <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
                   <Tab eventKey="home" title="All Requests">
@@ -278,6 +295,7 @@ class MyRequests extends Component {
                     </Tab>
                   </Tabs>    
                   </Content>
+                </ContainerBody>
               </ContainerWrapper>
             </Wrapper>
         </form>
@@ -313,10 +331,11 @@ class MyRequests extends Component {
 
   const mapStateToProps = (state) => {
     return {
-      requestList     : state.requestList.instance,
-      isListLoaded    : state.requestList.isListLoaded,
-      isNumbersLoaded : state.requestList.isNumbersLoaded,
-      statusNumbers   : state.requestList.statusNumbers
+      requestList     : state.myRequestList.instance,
+      isListLoaded    : state.myRequestList.isListLoaded,
+      isNumbersLoaded : state.myRequestList.isNumbersLoaded,
+      statusNumbers   : state.myRequestList.statusNumbers,
+      filters         : state.myRequestList.filters,
     }
   }
   const mapDispatchToProps = (dispatch) => {

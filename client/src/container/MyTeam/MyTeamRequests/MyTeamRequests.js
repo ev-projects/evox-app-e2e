@@ -4,56 +4,84 @@ import { connect,dispatch } from 'react-redux';
 import "./MyTeamRequests.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../../components/Template/Wrapper";
-import { Formik,FieldArray,Field,ErrorMessage,getIn,Form  } from 'formik';
+import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
-import { fetchRequestList,fetchStatusNumbers,bulkRequest } from '../../../store/actions/requestListActions';
+import { fetchRequestList,fetchStatusNumbers,bulkRequest } from '../../../store/actions/filters/requestListActions';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import Paginate from "../../../components/Template/Paginate";
 import BackButton from "../../../components/Template/BackButton";
+import Validator from "../../../services/Validator";
 
 class MyTeamRequests extends Component {
+
+  constructor(props){
+    super(props);
+
+    this.initialState = {
+        filters: {
+          status:           this.props.filters?.status ?? null,
+          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : null,
+          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : null,
+          department_id:    this.props.filters?.department_id ?? null,
+          name:             this.props.filters?.name ?? null,
+          page:             this.props.filters?.page ?? 1,
+          checkedList:      this.props.filters?.checkedList ?? [],
+          isAll:            this.props.filters?.isAll ?? false,
+          action:           this.props.filters?.action ?? null,
+          bulk_action:      this.props.filters?.bulk_action ?? null,
+          url:              'my_team_requests'
+      }
+    }
+    this.state = this.initialState; 
+  }
+
   onSubmitHandler = (values) => {
-    var formData = {};
+    
+    var formData = { url: "my_team_requests"  };
 
     switch(values.action) {
       case "bulk_action":
         for (var key in values) {
-          if( values[key] != null && values[key] != ""  ) {
-              switch( key ) {
-                case "valid_from":
-                case "valid_to":
-                case "page":
-                break;
-                default:
-                  formData[key] = values[key];
-                break;
-              }
-          } 
-      }
-      this.props.bulkRequest( formData );
+            if( values[key] != null && values[key] != ""  ) {
+                switch( key ) {
+                  case "valid_from":
+                  case "valid_to":
+                    formData[key] = moment( values[key] ).format("YYYY-MM-DD")
+                    break;
+                  default:
+                    formData[key] = values[key];
+                    break;
+                }
+            } 
+        }
+        this.props.bulkRequest( formData );
 
-      // Fetch request
-      var formData = {  url: "my_team_requests" };
-      this.props.fetchRequestList( formData );
-      values.checkedList = [];
-      break;
+        // Fetch request
+        this.props.fetchRequestList( formData );
 
-      default:
+        values.checkedList = [];
+        values.action = '';
+        console.log(this.state)
+        console.log(this.props)
+      
+        break;
+
+    default:
         for (var key in values) {
           if( values[key] != null && values[key] != ""  ) {
               switch( key ) {
                 case "valid_from":
                 case "valid_to":
                   formData[key] = moment( values[key] ).format("YYYY-MM-DD")
-                break;
+                  break;
                 case "checked":
-                break;
+                  break;
                 default:
                   formData[key] = values[key];
-                break;
+                  break;
               }
           } 
           
@@ -63,18 +91,22 @@ class MyTeamRequests extends Component {
   }
 
   componentWillMount(){
-    var formData = {  url: "my_team_requests" };
-    this.props.fetchRequestList( formData );
+
+    // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
+    if( ! this.props.isListLoaded ) {
+      this.props.fetchRequestList( this.state.filters );
+    }
   }
 
   componentDidUpdate(){
-    if(!this.props.isNumbersLoaded&&this.props.isListLoaded){
+    if( !this.props.isNumbersLoaded && this.props.isListLoaded ){
       var formData = {  url: "my_team_requests" };
       this.props.fetchStatusNumbers( formData , this.props.requestList );
     }
   }
 
   render = () => {  
+
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
 
@@ -95,20 +127,6 @@ class MyTeamRequests extends Component {
 
     if(this.props.isListLoaded){
 
-    const initialValue = {
-      status: null,
-      valid_from: null,
-      valid_to: null,
-      department_id: null,
-      name: null,
-      page: 1,
-      checkedList: [],
-      isAll: false,
-      action: null,
-      bulk_action: null,
-      url: 'my_team_requests'
-    }
-   
     let pagination = [];  
     for (let number = 1; number <= request_list.last_page; number++) {
       pagination.push(
@@ -139,7 +157,7 @@ class MyTeamRequests extends Component {
       enableReinitialize
       onSubmit={this.onSubmitHandler} 
       validationSchema={validationSchema} 
-      initialValues={initialValue}>
+      initialValues={this.state.filters}>
       {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
@@ -448,10 +466,11 @@ class MyTeamRequests extends Component {
   const mapStateToProps = (state) => {
 
     return {
-      requestList     : state.requestList.instance,
-      isListLoaded    : state.requestList.isListLoaded,
-      isNumbersLoaded : state.requestList.isNumbersLoaded,
-      statusNumbers   : state.requestList.statusNumbers
+      requestList     : state.myTeamRequestList.instance,
+      isListLoaded    : state.myTeamRequestList.isListLoaded,
+      isNumbersLoaded : state.myTeamRequestList.isNumbersLoaded,
+      statusNumbers   : state.myTeamRequestList.statusNumbers,
+      filters         : state.myTeamRequestList.filters,
     }
   }
   const mapDispatchToProps = (dispatch) => {

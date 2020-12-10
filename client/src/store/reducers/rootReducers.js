@@ -18,18 +18,20 @@ import overtimeReducers from "./requests/overtimeReducers";
 import restDayWorkReducers from "./requests/restDayWorkReducers"
 import redirectReducers from "./settings/redirectReducers";
 
-import requestListReducers from "./requests/requestListReducers";
 import payrollCutoffReducers from "./admin/payrollCutoffReducers"
 
 import assignRoleReducers from "./admin/assignRoleReducers"
 
 import lookupListReducers from "./lookup/lookupListReducers"
 
-import myTeamReducers from "./supervisor/myTeamReducers"
-
 import dtrReducer from "./dtr/dtrReducers";
 
 import dtrSummaryReducers from "./dtr/dtrSummaryReducers";
+
+import myRequestListReducers from "./filters/myRequestListReducers";
+import myTeamListReducers from "./filters/myTeamListReducers";
+import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
+
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 
@@ -56,9 +58,11 @@ const rootReducer = combineReducers({
 
     assignRole: assignRoleReducers,
     
-    requestList: requestListReducers,
 
-    myTeam : myTeamReducers,
+    myRequestList       : myRequestListReducers,
+    myTeamList          : myTeamListReducers,
+    myTeamRequestList   : myTeamRequestListReducers,
+    
 
     dtrSummary: dtrSummaryReducers,
 

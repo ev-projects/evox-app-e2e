@@ -25,6 +25,7 @@ class Dashboard extends Component {
                   </ContainerHeader>
                  
                   <ContainerBody>
+                    <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
                       <Row>
                       
                         <div className="col-lg-4" >
@@ -34,6 +35,7 @@ class Dashboard extends Component {
                         <Row>
                             
                         </Row>
+                    </div>
                   </ContainerBody>
               </ContainerWrapper>
             </Wrapper>
