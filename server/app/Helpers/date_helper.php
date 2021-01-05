@@ -105,7 +105,7 @@ if (! function_exists('seconds_to_hour')) {
     function seconds_to_hour( $seconds = 0 ) 
     {
         try {
-            return $seconds/3600;
+            return clean_number($seconds/3600);
         }catch(Exception $e){
             throw $e;
         }

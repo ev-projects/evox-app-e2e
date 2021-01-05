@@ -34,3 +34,19 @@ if (! function_exists('clean')) {
 }
 
 
+
+if (! function_exists('clean_number')) {   
+    /**
+     * This function cleans the parameter number and sets it to 2 decimal places and remove trailing zeros.
+     *
+     * @param  number
+     * @return float
+     */
+    function clean_number($number, $precision = 2) {
+        return round($number, $precision) + 0;
+    }
+}
+
+
+
+
