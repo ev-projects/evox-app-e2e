@@ -71,20 +71,22 @@ class Overtime extends Component {
 
         // If action is NULL, it means it's either store/update
         case null:
-            switch( values.method ) {
+            if (window.confirm("Are you sure you want to submit/update this request?")) {
+                switch( values.method ) {
 
-              case "store":
-                  this.props.addOvertime( formData );
-                  break;
-        
-              case "update":
-                  formData.append('_method', 'PUT')
-                  this.props.updateOvertime( values.id, formData );
-                  break;
+                  case "store":
+                      this.props.addOvertime( formData );
+                      break;
+            
+                  case "update":
+                      formData.append('_method', 'PUT')
+                      this.props.updateOvertime( values.id, formData );
+                      break;
 
-              default:
-                  break;
+                  default:
+                      break;
 
+                }
             }
             break;
 
@@ -92,8 +94,10 @@ class Overtime extends Component {
         case "approve":
         case "decline":
         case "cancel":
-            formData.append('_method', 'PUT')
-            this.props.updateOvertimeStatus( values.id, formData, values.action );
+            if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
+              formData.append('_method', 'PUT')
+              this.props.updateOvertimeStatus( values.id, formData, values.action );
+            }
             break;
     }
   }
@@ -159,7 +163,7 @@ class Overtime extends Component {
       
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
 
-      return <Wrapper>
+      return <Wrapper previousPath={this.props.location.previousPath}>
         <Formik 
           enableReinitialize
           onSubmit={this.onSubmitHandler} 

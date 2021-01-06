@@ -177,7 +177,7 @@ class ChangeSchedule extends Component {
 		/** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
 		if( (method == 'store') || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
 
-			return <Wrapper>
+			return <Wrapper previousPath={this.props.location.previousPath}>
 				<Formik 
 					enableReinitialize
 					onSubmit={this.onSubmitHandler} 
