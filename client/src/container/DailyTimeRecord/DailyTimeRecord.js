@@ -9,6 +9,7 @@ import "./DailyTimeRecord.css";
 import { Container,Row,Col,Table,Image,Card,Spinner, Form,Button,InputGroup,FormControl } from 'react-bootstrap';
 import  BackButton from '../../components/Template/BackButton'
 
+import moment from 'moment';
 import Select from "react-select";
 import { connect } from 'react-redux';
 import DtrFormatter from '../../services/DtrFormatter';
@@ -254,9 +255,23 @@ class DailyTimeRecord extends Component {
                               }
                           })};
 
-                          return <tr className={"center "+dtr.attendance_status.slug+"-bg-color"}>
+                          let dtr_type = dtr.attendance_status.slug;
+                          let status = <div><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
+
+                          // If the attendance status is absent but has a holiday, set the dtr_type and status to holiday
+                          if( dtr.attendance_status.slug == 'absent' && dtr.holidays.length > 0){
+                              dtr_type = "holiday";
+                              status = <div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
+                          } 
+                          
+                          // If the DTR date is beyond the current date, don't show the DTR row by returning null.
+                          if( moment().diff(moment(dtr.date)) < 0 ) {
+                            return null;
+                          }
+
+                          return <tr className={"center "+dtr_type+"-bg-color"}>
                                   <td>{DtrFormatter.displayDate(dtr.date)}</td> 
-                                  <td><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></td>
+                                  <td>{status}</td>
                                   <td><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
                                   <td><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
                                   <td><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
