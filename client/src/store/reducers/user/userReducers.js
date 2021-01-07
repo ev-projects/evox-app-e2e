@@ -28,7 +28,10 @@ const userReducer = (state = initState, action) => {
          */
         case "LOGOUT_SUCCESS":
             message = "Login Success!"
-            return initState;
+            return {
+                ...initState,
+                clearLoginParameters : true
+            };
             break;
         case "LOGOUT_FAILED":
             message = "Login Failed!"
