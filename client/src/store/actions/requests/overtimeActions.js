@@ -21,6 +21,11 @@ export const addOvertime = ( post_data ) => {
         })
         .then(result => {
             dispatch( Formatter.alert_success( result ));
+            
+            dispatch({
+                'type'      : 'SET_REDIRECT',
+                'link'      : global.dashboard_url
+            })
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
