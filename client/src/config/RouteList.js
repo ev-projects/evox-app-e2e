@@ -39,6 +39,7 @@ import AssignRole from "../container/Admin/AssignRole";
 import MyTeamList from "../container/MyTeam/MyTeamList";
 import Profile from "../container/Profile";
 import Validator from "../services/Validator";
+import RequestEmailApproval from "../container/RequestEmailApproval";
 
 const RoutesList = (props) => {
 
@@ -54,20 +55,15 @@ const RoutesList = (props) => {
 
 
         {/* Requests */}
-        <ProtectedRoute exact path="/app/request/AlterLog/"><AlterLog onApproval={false}/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/request/AlterLog/:id"><AlterLog onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/AlterLog/:id?"><AlterLog onApproval={false}/></ProtectedRoute>
 
-        <ProtectedRoute exact path="/app/request/ChangeSchedule/"><ChangeSchedule onApproval={false}/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/request/ChangeSchedule/:id"><ChangeSchedule onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/ChangeSchedule/:id?"><ChangeSchedule onApproval={false}/></ProtectedRoute>
 
-        <ProtectedRoute exact path="/app/request/Overtime/"><Overtime onApproval={false}/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/request/Overtime/:id"><Overtime onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/Overtime/:id?"><Overtime onApproval={false}/></ProtectedRoute>
         
-        <ProtectedRoute exact path="/app/request/RestDayWork/"><RestDayWork onApproval={false}/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/request/RestDayWork/:id"><RestDayWork onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/RestDayWork/:id?"><RestDayWork onApproval={false}/></ProtectedRoute>
 
-        <ProtectedRoute exact path="/app/request/WorkFromHome/"><WorkFromHome onApproval={false}/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/request/WorkFromHome/:id"><WorkFromHome onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/request/WorkFromHome/:id?"><WorkFromHome onApproval={false}/></ProtectedRoute>
 
         <ProtectedRoute exact path="/app/account/MyRequests"><MyRequests/></ProtectedRoute>
 
@@ -110,6 +106,7 @@ const RoutesList = (props) => {
       </div>
       <Switch>
         <Route exact path={["/", "/login"]} component={LoginContainer} />
+        <Route exact path="/request/approval/:hashCode/:status?" component={RequestEmailApproval} />
         <Route component={DefaultContainer} />
       </Switch>
     </div>

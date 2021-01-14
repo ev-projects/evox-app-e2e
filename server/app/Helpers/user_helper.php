@@ -48,6 +48,11 @@ if (! function_exists('is_under_supervisee')) {
     {
         try {
 
+            // If there's an API call which is not has an authenticated user, return false.
+            if( !is_valid( auth()->user() )){
+                return false;
+            }
+
             // If the current user has 'admin' role and 'full_access' privilege, always return true.
             if(  auth()->user()->roles()->pluck('name')->contains('admin') &&
                  auth()->user()->permissions()->pluck('name')->contains('full_access') ) {

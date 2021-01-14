@@ -1,5 +1,10 @@
 <?php
 
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Request\Models\Overtime;
+use App\Modules\Request\Models\RestDayWork;
+
 if (! function_exists('parse_emp_num_for_biometrics')) {   
     /**
      * This function adds the 2 trailing Character "20" since it's the data for the Biometrics.
@@ -66,6 +71,42 @@ if (! function_exists('slug_to_text')) {
     {
         try {
             return ucwords(str_replace("_", " ",$string));
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+
+
+if (! function_exists('parse_request_to_hash_code')) {   
+    /**
+     * This function parses the given Request to a hashed string code of requests' table, request id, and user ID of the approver
+     *
+     * @param  (Overtime|RestDayWork|AlterLog|ChangeSchedule) $request
+     * @return  string
+     */
+    function parse_request_to_hash_code( $request ) 
+    {
+        try {
+            return encrypt( $request->getTable().'|'.$request->id.'|'.auth()->user()->id);
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+if (! function_exists('parse_hash_code_to_request_detail_array')) {   
+    /**
+     * This function parses the given Hash Code to a the request detail array
+     *
+     * @param  (Overtime|RestDayWork|AlterLog|ChangeSchedule) $request
+     * @return  string
+     */
+    function parse_hash_code_to_request_detail_array( $hash_code ) 
+    {   
+        try {
+            return explode('|', decrypt( $hash_code ));;
         }catch(Exception $e){
             throw $e;
         }

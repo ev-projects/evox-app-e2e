@@ -13,6 +13,13 @@ use Illuminate\Http\Request;
 |
 */
 
+# API Call for Request Approval
+Route::group(['prefix' => 'request/approval', 'middleware' => ['auth.apikey']], function () {
+
+        # Change Status of the Request
+        Route::post('/', 'RequestController@change_request_status_via_hash_code'); //->middleware('permission:update_overtime')
+
+});
 
 # API Call for Requests
 Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
