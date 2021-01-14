@@ -176,8 +176,10 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
             A.nid,
             employee_num.field_empnum_value as 'employee_number',
             DATE_FORMAT(FROM_UNIXTIME( rest_day_work_date.field_date_to_alter_value), '%Y-%m-%d')as 'date',
-            on_duty.field_rdw_on_duty_schedule_value as 'on_duty',
-            off_duty.field_rdw_off_duty_schedule_value as 'off_duty',
+            
+            (DATE_FORMAT(FROM_UNIXTIME(on_duty.field_rdw_on_duty_schedule_value), '%H:%i')) as on_duty,
+            (DATE_FORMAT(FROM_UNIXTIME(off_duty.field_rdw_off_duty_schedule_value), '%H:%i')) as off_duty,
+
             employee_note.field_employee_note_value   as 'employee_note',
             supervisor_note.field_supervisor_note_value as 'supervisor_note',
             CASE 
