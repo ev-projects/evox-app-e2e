@@ -346,8 +346,8 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                     $rest_day_work->user_id          =  $user->id;
                     $rest_day_work->date             =  $drupal_evox_rest_day_work->date;
 
-                    $rest_day_work->start_time       =  $drupal_evox_rest_day_work->on_duty;
-                    $rest_day_work->end_time         =  $drupal_evox_rest_day_work->off_duty;
+                    $rest_day_work->start_time       =  time_to_seconds( $drupal_evox_rest_day_work->on_duty );
+                    $rest_day_work->end_time         =  time_to_seconds( $drupal_evox_rest_day_work->off_duty );
 
                     $rest_day_work->employee_note    =  $drupal_evox_rest_day_work->employee_note ?? null;
                     $rest_day_work->approver_note    =  $drupal_evox_rest_day_work->superviser_note ?? null;
