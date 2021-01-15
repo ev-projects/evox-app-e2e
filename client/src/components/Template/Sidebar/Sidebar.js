@@ -149,12 +149,6 @@ const Sidebar = (props) => {
                         </Link> 
                       </li>
                       <li className="nav-item">
-                        <Link className="nav-link" to={ global.base_url +'request/WorkFromHome/' }>
-                          <i className="nav-icon fa fa-list nav-icon" />
-                          <p>Work From Home</p>
-                        </Link>
-                      </li>
-                      <li className="nav-item">
                         <Link className="nav-link" to={ global.base_url +'request/RestDayWork/' }>
                           <i className="nav-icon fa fa-plus nav-icon" />
                           <p>Rest Day Work</p>
