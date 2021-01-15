@@ -67,9 +67,10 @@
 
 .display-block{
     display: block !important   ;
-    width: 80px !important;
+    width: 100px!important;
 }
 
 .input-feedback{
     color: red !important;
 }
+

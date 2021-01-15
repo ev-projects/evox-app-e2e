@@ -300,8 +300,6 @@ class MyTeamRequests extends Component {
                       </div>
                       <ErrorMessage component="div" name="bulk_action" className="input-feedback" />
                     </Col> 
-                    <Col lg="6"> 
-                    </Col>
                     <Col lg="2"> 
                     <div className="form-group">
                         <label>&nbsp;</label>  
