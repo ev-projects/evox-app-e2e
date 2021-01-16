@@ -305,8 +305,9 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
                     # Insert Alter Log
                     if( $alter_log == null ) {
                         $alter_log                   = new AlterLog();
-                        $alter_log->user_id          =  $user->id;
                     }
+
+                    $alter_log->user_id          =  $user->id;
                     
                     $alter_log->date             =  $drupal_evox_alter_log->date;
 
