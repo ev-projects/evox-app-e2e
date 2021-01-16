@@ -311,17 +311,15 @@ class User extends Authenticatable implements JWTSubject
         # Name Filter
         if(isset($filter['name'])){
             
-            $change_schedules->where('a.first_name', 'like', '%' . $filter['name']. '%')->orWhere('a.last_name', 'like', '%' . $filter['name']. '%'); 
-            $overtimes       ->where('a.first_name', 'like', '%' . $filter['name']. '%')->orWhere('a.last_name', 'like', '%' . $filter['name']. '%');
-            $rest_day_works  ->where('a.first_name', 'like', '%' . $filter['name']. '%')->orWhere('a.last_name', 'like', '%' . $filter['name']. '%');
-            $alter_logs      ->where('a.first_name', 'like', '%' . $filter['name']. '%')->orWhere('a.last_name', 'like', '%' . $filter['name']. '%');
+            $change_schedules->where('a.first_name', 'like', '%' . $filter['name']. '%'); 
+            $overtimes       ->where('a.first_name', 'like', '%' . $filter['name']. '%');
+            $rest_day_works  ->where('a.first_name', 'like', '%' . $filter['name']. '%');
+            $alter_logs      ->where('a.first_name', 'like', '%' . $filter['name']. '%');
         }
 
         # Date Filter
         if(isset($filter['valid_from'])&&isset($filter['valid_to'])){
-            $change_schedules->whereBetween("valid_from", array($filter['valid_from'], $filter['valid_to']))
-            ->orwhereBetween("valid_to", array($filter['valid_from'], $filter['valid_to']))
-            ->orwhereRaw('valid_from < '.$filter['valid_from'].' AND valid_to > '.$filter['valid_to']);
+            $change_schedules->whereBetween("valid_from", array($filter['valid_from'], $filter['valid_to']));
             $rest_day_works       ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
             $overtimes       ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
             $alter_logs      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
