@@ -372,10 +372,10 @@ class MyTeamRequests extends Component {
                               break;
                           case "rest_day_works":
                             fourthColumn.push(
-                              <span>From: {item.fifth_column}</span>
+                              <span>From: {item.fourth_column}</span>
                             );
                             fifthColumn.push(
-                              <span>To: {item.fourth_column}</span>
+                              <span>To: {item.fifth_column}</span>
                             );
 
                               link =  global.rest_day_work + item.id.toString();

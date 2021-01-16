@@ -32,12 +32,29 @@ const  ProtectedRoute = (props) => {
 
           // If NOT Authenticated, Redirect to Login
           } else {
+            
+            // Set the URL being accessed as the urlQueryString to be passed on the login which will make the redirect after the login towards the pathname.
+            let urlQueryString =  "";
+            if( Validator.isValid( props.location?.pathname ) ){
+              urlQueryString = props.location?.pathname;
+            }
 
             // If page is currently being loaded and not fully rendering, don't redirect yet on Login
             if( !page.isReloading ){
-              return (
-                <Redirect to={{pathname: global.login_url,state: {from: props.location}}}/>
-              );
+
+              // If has clear login parameters props set to true, remove the search object from the Redirect components
+              if( props.user.clearLoginParameters ) {
+                return (
+                  <Redirect to={{pathname: global.login_url, state: {from: props.location}}}/>
+                );
+
+              // If clear login parameters is not set, add the Url Query String when being redirected on the login url.
+              } else {
+                return (
+                  <Redirect to={{pathname: global.login_url, state: {from: props.location}, search: "?redirect="+urlQueryString }}/>
+                );
+              }
+              
             }
 
           }
