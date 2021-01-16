@@ -224,7 +224,7 @@ class DailyTimeRecord extends Component {
                     null
                 }
               { this.props.dtr.isDtrLoaded && Validator.isValid( this.state.selectedYear?.value ) && Validator.isValid( this.state.selectedMonth?.value ) && this.state.selectedPayrollCutoff?.value != undefined  ?
-                <Table responsive hover>
+                <Table responsive hover dtr-table>
                     <thead>
                         <tr>
                             <th><i className="fa fa-calendar"></i> Date</th>
@@ -280,7 +280,7 @@ class DailyTimeRecord extends Component {
                                   <td>{dtr?.payroll_items?.night_diff}</td>
                                   <td>{dtr?.payroll_items?.overtime}</td>
                                   <td>{dtr?.payroll_items?.overtime_night_diff}</td>
-                                  <td>{<DtrRequest requests={dtr.requests}/>}</td>
+                                  <td className="left">{<DtrRequest requests={dtr.requests}/>}</td>
                                   <td>
                                       {
                                         ( this.props.params.id == this.props.user.id 
@@ -296,7 +296,7 @@ class DailyTimeRecord extends Component {
                                               }}
                                         >
                                         <i className="fa fa-edit" 
-                                           style={{color : "white" }}></i>
+                                           style={{color : "#82af13" }}></i>
                                         </Link>
                                         :
                                         null
@@ -323,7 +323,7 @@ class DailyTimeRecord extends Component {
 const DtrRequest = (props) => { 
   return <ul style={{ listStyle: 'none'}}>
       {props.requests.map((request, index) => {
-          return <li>{Formatter.slug_to_title( request.request_type )} - {Formatter.slug_to_title( request.status )}</li> 
+          return <li><span className={Formatter.slug_to_title( request.status )}></span>{Formatter.slug_to_title( request.request_type )} - {Formatter.slug_to_title( request.status )}</li> 
       })}
   </ul>;
 }
