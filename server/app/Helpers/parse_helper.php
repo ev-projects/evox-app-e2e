@@ -42,14 +42,14 @@ if (! function_exists('parse_emp_num_for_evox')) {
 
 
 
-if (! function_exists('parse_to_slug')) {   
+if (! function_exists('text_to_slug')) {   
     /**
      * This function parses the given string into a slug human-readable format.
      *
      * @param  string $string
      * @param  string
      */
-    function parse_to_slug( $string ) 
+    function text_to_slug( $string ) 
     {
         try {
             return preg_replace('/\s+/', '_', strtolower($string));
@@ -84,12 +84,13 @@ if (! function_exists('parse_request_to_hash_code')) {
      * This function parses the given Request to a hashed string code of requests' table, request id, and user ID of the approver
      *
      * @param  (Overtime|RestDayWork|AlterLog|ChangeSchedule) $request
+     * @param   User $recepient
      * @return  string
      */
-    function parse_request_to_hash_code( $request ) 
+    function parse_request_to_hash_code( $request, $recepient ) 
     {
         try {
-            return encrypt( $request->getTable().'|'.$request->id.'|'.auth()->user()->id);
+            return encrypt( $request->getTable().'|'.$request->id.'|'.$recepient->id);
         }catch(Exception $e){
             throw $e;
         }
