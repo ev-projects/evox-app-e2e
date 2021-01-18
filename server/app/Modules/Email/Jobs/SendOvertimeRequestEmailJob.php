@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Mail;
 use App\Modules\User\Models\User;
+use Exception;
 
 class SendOvertimeRequestEmailJob implements ShouldQueue
 {
@@ -34,10 +35,17 @@ class SendOvertimeRequestEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        foreach( $this->overtime->user()->first()->supervisors()->get() as $recepient ){
-            Mail::send( new OvertimeRequestEmail( $recepient, $this->overtime ) );
+        try {
+            foreach( $this->overtime->user()->first()->supervisors()->get() as $recepient ){
+                Mail::send( new OvertimeRequestEmail( $recepient, $this->overtime ) );
+                
+                log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->overtime], "emails");
+            }
             
-            log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->overtime], "emails");
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            throw $e;
         }
     }
 }
