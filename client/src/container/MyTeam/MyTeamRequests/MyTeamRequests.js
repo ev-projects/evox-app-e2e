@@ -14,6 +14,7 @@ import { InputDate,InputTime   } from '../../../components/DatePickerComponent/D
 import Paginate from "../../../components/Template/Paginate";
 import BackButton from "../../../components/Template/BackButton";
 import Validator from "../../../services/Validator";
+import Formatter from "../../../services/Formatter";
 
 class MyTeamRequests extends Component {
 
@@ -394,7 +395,7 @@ class MyTeamRequests extends Component {
                         { item.status !="Canceled"  ? (<Field type="checkbox" name="checkedList" value={item.id.toString()+"."+item.table_name} />) : (<span></span>)}
                         </td>
                         <td><b>{item.created_by}</b><br/> <small>{item.department_name}</small></td>
-                        <td><b>{item.table_name}</b><br/> <small>{item.created_at}</small></td>
+                        <td><b>{ Formatter.slug_to_title( item.table_name.slice(0, -1) )}</b><br/> <small>{item.created_at}</small></td>
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>

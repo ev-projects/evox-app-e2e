@@ -55,10 +55,10 @@ class DtrSummary extends Component {
     for (var key in this.props.dtrSummary.instance.column) {
       column.push(
         <React.Fragment>
-        <th>{key.toUpperCase()}</th>
-        <th>{key.toUpperCase()} ND</th>
-        <th>{key.toUpperCase()} OT</th>
-        <th>{key.toUpperCase()} ND w/ OT</th>
+        <th class={key.toUpperCase()}>{key.toUpperCase()}</th>
+        <th class={key.toUpperCase()}>{key.toUpperCase()} ND</th>
+        <th class={key.toUpperCase()}>{key.toUpperCase()} OT</th>
+        <th class={key.toUpperCase()}>{key.toUpperCase()} ND w/ OT</th>
         </React.Fragment>
       ); 
     }
@@ -75,7 +75,7 @@ class DtrSummary extends Component {
 			  <ContainerWrapper>       
 				  <Content col="12" title="DTR Summary">
 				  <Row>  
-                    <Col> 
+                    <Col className="col-2"> 
                       <div className="form-group">
                         <label>Date From:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
@@ -87,7 +87,7 @@ class DtrSummary extends Component {
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
                     </Col>
-                    <Col> 
+                    <Col className="col-2"> 
                     <div className="form-group">
                           <label>Department:</label>
                           <select
@@ -109,7 +109,7 @@ class DtrSummary extends Component {
 
                     
                     </Col> 
-                    <Col> 
+                    <Col className="col-2"> 
                       <div className="form-group">
                           <label>Name:</label>
                           <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
@@ -127,23 +127,23 @@ class DtrSummary extends Component {
 
                       { this.props.dtrSummary.isListLoaded? (<div className="dtr-table">
                          
-  <table class="table">
+  <table class="table dtrSummary">
     <thead class="thead-light">
       <tr>
-        <th scope="col"># ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Department</th>
+        <th scope="col" class="th-id"># ID</th>
+        <th scope="col" class="th-name">Name</th>
+        <th scope="col" class="th-dept">Department</th>
         <th scope="col">Leaves</th>
         <th scope="col">UL</th>
         <th scope="col">Late</th>
-        <th scope="col">Undertime</th>
-        <th scope="col">Night Diff</th>
-        <th scope="col">Overtime</th>
-        <th scope="col">OT with ND</th>
-        <th scope="col">RD</th>
-        <th scope="col">RD ND</th>
-        <th scope="col">RD OT</th>
-        <th scope="col">RD OT with ND</th>
+        <th scope="col">UT</th>
+        <th scope="col">NSD</th>
+        <th scope="col">OT</th>
+        <th scope="col">OTND</th>
+        <th scope="col" class="rd">RD</th>
+        <th scope="col" class="rd">RD ND</th>
+        <th scope="col" class="rd">RD OT</th>
+        <th scope="col" class="rd">RD OTND</th>
         {column}
       </tr>
     </thead>

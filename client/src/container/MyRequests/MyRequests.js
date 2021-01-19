@@ -13,6 +13,7 @@ import { fetchRequestList,fetchStatusNumbers } from '../../store/actions/filters
 import { InputDate,InputTime   } from '../../components/DatePickerComponent/DatePicker.js';
 import Paginate from "../../components/Template/Paginate";
 import Validator from "../../services/Validator";
+import Formatter from "../../services/Formatter";
 
 class MyRequests extends Component {
 
@@ -291,7 +292,7 @@ class MyRequests extends Component {
                               break;
                        }
                         return <tr>
-                        <td><b>{item.table_name}</b> <br/><small>{item.created_at}</small></td>
+                        <td><b>{ Formatter.slug_to_title( item.table_name.slice(0, -1) ) }</b> <br/><small>{item.created_at}</small></td>
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>
