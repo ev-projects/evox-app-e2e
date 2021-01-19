@@ -116,21 +116,16 @@ class DtrSummary extends Component {
                       </div>
                     
                     </Col> 
-					          <Col>   
+					          <Col className="btns">   
                     	<div className="form-group">
-						<label> </label>
-							<Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}>Submit</Button>
-                      </div>
-                    </Col>
-                    <Col>   
-                    	<div className="form-group">
-						<label> </label>
-							<Button variant="primary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button>
+						          <label> </label>
+							          <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}>Submit</Button>&nbsp;&nbsp;
+                        <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button>
                       </div>
                     </Col>
                     </Row>
 
-                      { this.props.dtrSummary.isListLoaded? (<div>
+                      { this.props.dtrSummary.isListLoaded? (<div className="dtr-table">
                          
   <table class="table">
     <thead class="thead-light">

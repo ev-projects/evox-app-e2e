@@ -191,22 +191,26 @@ class MyRequests extends Component {
                       &nbsp;Declined 
                     </ToggleButton>
                   </ButtonGroup>
-                  <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
-                    Filter
-                  </Button>
-                  <Row>  
-                    <Col size="2"> 
+                  
+                  <Row className="date-range">  
+                    <Col size="2" className="mb-2 col-2"> 
                       <div className="form-group">
                         <label>Date From:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
                       </div>
                     </Col> 
-                    <Col size="2">   
+                    <Col size="2" className="mb-2 col-2">   
                     <div className="form-group">
                         <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
                     </Col>
+                    <Col size="2" className="mb-2 col-2 col-btn">   
+                    <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
+                    Filter
+                  </Button>
+                    </Col>
+                    
                     </Row>
                     { request_list.data.length > 0  ? (<div>
                       Record Displayed: { record_number }

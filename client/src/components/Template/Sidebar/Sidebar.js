@@ -137,7 +137,7 @@ const Sidebar = (props) => {
                     <a className="nav-link">
                       <i className="nav-icon fa fa-list-alt" />
                       <p> 
-                        Request
+                        Request Form
                         <i className="right fa fa-chevron-left" />
                       </p>
                     </a>
@@ -147,12 +147,6 @@ const Sidebar = (props) => {
                           <i className="nav-icon fa fa-clock-o nav-icon" />
                           <p>Overtime</p>
                         </Link> 
-                      </li>
-                      <li className="nav-item">
-                        <Link className="nav-link" to={ global.base_url +'request/WorkFromHome/' }>
-                          <i className="nav-icon fa fa-list nav-icon" />
-                          <p>Work From Home</p>
-                        </Link>
                       </li>
                       <li className="nav-item">
                         <Link className="nav-link" to={ global.base_url +'request/RestDayWork/' }>

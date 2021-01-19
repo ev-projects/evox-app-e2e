@@ -235,20 +235,20 @@ class MyTeamRequests extends Component {
                     </ToggleButton>
                   </ButtonGroup>
                   
-                  <Row>  
-                    <Col > 
+                  <Row  className="filters">  
+                    <Col className="col-2"> 
                       <div className="form-group">
                         <label>Date From:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
                       </div>
                     </Col> 
-                    <Col >   
+                    <Col className="col-2">   
                     <div className="form-group">
                         <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
                     </Col>
-                    <Col> 
+                    <Col className="col-3"> 
                       <div className="form-group">
                           <label>Department:</label>
                           <select
@@ -265,13 +265,13 @@ class MyTeamRequests extends Component {
                           </select>
                       </div>
                     </Col> 
-                    <Col > 
+                    <Col className="col-3"> 
                       <div className="form-group">
                           <label>Name:</label>
                           <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     </Col> 
-                    <Col lg="2">
+                    <Col className="col-2">
                     <div className="form-group">
                           <label>&nbsp;</label>
                           <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
@@ -281,7 +281,7 @@ class MyTeamRequests extends Component {
                     </Col>
                     </Row>
                     <hr/>
-                    <Row>
+                    <Row className="bulk-action">
                       <Col lg="4"> 
                       <div className="form-group">
                           <label>Action:</label>
@@ -300,8 +300,6 @@ class MyTeamRequests extends Component {
                       </div>
                       <ErrorMessage component="div" name="bulk_action" className="input-feedback" />
                     </Col> 
-                    <Col lg="6"> 
-                    </Col>
                     <Col lg="2"> 
                     <div className="form-group">
                         <label>&nbsp;</label>  

@@ -23,3 +23,11 @@
 .quickpunch .date,.quickpunch .label {
     color: #d4d4d4;
 }
+
+.btns{padding-top: 32px}
+.dtr-table{overflow: scroll; }
+.dtr-table .table td,.dtr-table .table th,
+.table-responsive .table td,.table-responsive  .table th,
+{
+    border: 1px solid #dee2e6;
+}
