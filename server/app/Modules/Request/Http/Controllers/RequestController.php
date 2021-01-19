@@ -5,6 +5,8 @@ namespace App\Modules\Request\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Email\Mail\OvertimeRequestEmail;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Request\Http\Requests\RequestFilterRequest;
 use App\Modules\Request\Repositories\RequestRepositoryInterface;
 use App\Modules\Request\Resources\OvertimeResource;
@@ -29,6 +31,7 @@ use App\Modules\Request\Resources\RequestApprovalChangeStatusResource;
 use App\Modules\Request\Resources\RestDayWorkResource;
 use App\Modules\User\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class RequestController extends Controller
 {
@@ -43,7 +46,8 @@ class RequestController extends Controller
                                     RestDayWorkRepositoryInterface $rest_day_work,
                                     AlterLogRepositoryInterface $alter_log,
                                     ChangeScheduleRepositoryInterface $change_schedule,
-                                    DtrRepositoryInterface $dtr){
+                                    DtrRepositoryInterface $dtr,
+                                    EmailRepositoryInterface $email){
 
         $this->overtime         = $overtime;
         $this->request          = $request;
@@ -51,6 +55,7 @@ class RequestController extends Controller
         $this->alter_log        = $alter_log;
         $this->change_schedule  = $change_schedule;
         $this->dtr              = $dtr;
+        $this->email            = $email;
     }
 
     /**
@@ -230,10 +235,10 @@ class RequestController extends Controller
             # Get the request detail from the hashed code.
             # [0] - Table name
             # [1] - Table ID
-            # [2] - User ID
+            # [2] - Recepient ID
             $request_detail_array = parse_hash_code_to_request_detail_array( $request->get('hash_code') );
 
-            # Initialize User login for this request
+            # Initialize Recepient login for this request
             auth()->login( User::find( $request_detail_array[2] ) );
 
             # Check for what request table name is being accesed.

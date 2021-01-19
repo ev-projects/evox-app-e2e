@@ -167,6 +167,7 @@ return [
         App\Modules\Payroll\Providers\PayrollServiceProvider::class,
         App\Modules\Schedule\Providers\ScheduleServiceProvider::class,
         App\Modules\User\Providers\UserServiceProvider::class,
+        App\Modules\Email\Providers\EmailServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Modules\Department\Providers\DepartmentServiceProvider::class,
     ],
