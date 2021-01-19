@@ -3,9 +3,11 @@
 namespace App\Modules\Email\Repositories;
 
 use App\Modules\Department\Models\Department;
+use App\Modules\Email\Jobs\SendAlterLogRequestEmailJob;
 use App\Modules\Email\Jobs\SendOvertimeRequestEmailJob;
 use App\Modules\Email\Jobs\SendRestDayWorkRequestEmailJob;
 use App\Modules\Email\Mail\OvertimeRequestEmail;
+use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\User\Models\User;
@@ -100,4 +102,43 @@ class EmailRepository implements EmailRepositoryInterface{
             throw $e;
         }
     }
+
+
+    public function sendAlterLogRequestEmail( AlterLog $alter_log ){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendAlterLogRequestEmailJob::dispatch( $alter_log )
+                                       ->delay( Carbon::now()->addSeconds(5) );
+            
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            return true;
+            
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
+            throw $e;
+        }
+    }
+
+    public function sendAlterLogRequestChangeStatusEmail( AlterLog $alter_log ){
+        try {
+                
+            
+        } catch (Exception $e) {
+
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            throw $e;
+        }
+    }
+
 }

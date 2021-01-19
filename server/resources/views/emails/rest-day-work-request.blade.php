@@ -7,7 +7,7 @@
         <div style="margin-top:5px;height:85px;width:100%;background-color: #E6E6E6;display:inline-flex;font-size:12.5px">
           <div style="width:50%;padding-top:10px;padding-left:10px;">
             <strong>{{ $user->getFullName() }}</strong> <br/>
-            {{ $user->emp_num }} <br/>
+            #{{ $user->emp_num }} <br/>
             <strong>{{ $department->getCompleteName() }}</strong>
           </div>
           <div style="width:50%;">
@@ -15,10 +15,11 @@
             <a target="_blank" style="background:#A0CD32;padding: 5px 10px 5px 10px;margin: 25px 15px 36.5px 0px;border-radius: 0px;color: #fff;cursor: pointer;font-size: 14px;float:right;text-decoration:none;text-align:center;" href="{{ $approval_link .'/approved' }}">Approve</a>
           </div>
         </div>
+        <br/>
+        <br/>
         <div style="padding: 0px 25px 10px 25px;">
           <p><strong>Dear {{ $recepient->getFullName() }},</strong><br></p>
-          <p>I would like to request to work overtime on the selected dates below. Thank you!</p>
-
+          <p>I would like to request to work on my rest day on the selected dates below:</p>
         </div>
         <div style="padding: 0px 25px 0px 25px;">
           <table width="100%" style="margin-left:auto;margin-right:auto;">
@@ -30,8 +31,8 @@
         <div style="margin-bottom:30px;height:80px;padding: 0px 25px 10px 25px;">
           <table width="100%" style="margin-left:auto;margin-right:auto;background-color:#E6E6E6;">
             <tr><td colspan="4" style="padding:5px 10px;">SCHEDULE:</td><tr>
-            <tr><td align="left" style="padding:5px 0px 5px 10px;width:14%">On duty:</td><td style="padding: 5px 10px;background-color:white;width:34%;">{{ seconds_to_time($rest_day_work->start_time) }}</td><td style="width:2%;"></td>
-                <td align="left" style="padding: 5px 0px 5px 10px;width:15%">Off duty:</td><td style="padding: 5px 10px;background-color:white;width:34%;">{{ seconds_to_time($rest_day_work->end_time) }}</td><td style="width:1%;"></td><tr>
+            <tr><td align="left" style="padding:5px 0px 5px 10px;width:14%">On Duty:</td><td style="padding: 5px 10px;background-color:white;width:34%;">{{ seconds_to_time($rest_day_work->start_time) }}</td><td style="width:2%;"></td>
+                <td align="left" style="padding: 5px 0px 5px 10px;width:15%">Off Duty:</td><td style="padding: 5px 10px;background-color:white;width:34%;">{{ seconds_to_time($rest_day_work->end_time) }}</td><td style="width:1%;"></td><tr>
             <tr><td colspan="4" style="padding:5px 10px;"></td><tr>
           </table>
         </div>
