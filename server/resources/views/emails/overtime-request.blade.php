@@ -25,7 +25,7 @@
         <div style="margin-bottom:30px;padding: 0px 25px 0px 25px;">
           <table width="100%" style="margin-left:auto;margin-right:auto;">
             <tr ><td colspan="4" style="padding:5px 10px;background-color: #EAEBED;">Request type: <strong>{{ slug_to_text($overtime->type) }}</strong></td><tr>
-            <tr ><td colspan="4" style="padding:5px 10px;background-color: #EAEBED;">Request date: <strong>{{ ($overtime->date) }}</strong></td><tr>
+            <tr ><td colspan="4" style="padding:5px 10px;background-color: #EAEBED;">Request date: <strong>{{ date_to_text($overtime->date, 'D, d M Y') }}</strong></td><tr>
             <tr ><td colspan="4" style="padding:5px 10px;background-color: #EAEBED;">Hours requested: <strong>{{ seconds_to_hour($overtime->amount) }}</strong></td><tr>
             <tr ><td colspan="4" style="padding:5px 10px;background-color: #EAEBED;">Note: <strong>{{ ($overtime->employee_note) }}</strong></td><tr>
           </table>

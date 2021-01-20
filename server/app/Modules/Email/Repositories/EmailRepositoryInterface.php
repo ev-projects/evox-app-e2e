@@ -3,6 +3,7 @@
 namespace App\Modules\Email\Repositories;
 
 use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\User\Models\User;
@@ -21,4 +22,8 @@ interface EmailRepositoryInterface
     public function sendAlterLogRequestEmail( AlterLog $alter_log );
 
     public function sendAlterLogRequestChangeStatusEmail( AlterLog $alter_log );
+
+    public function sendChangeScheduleRequestEmail( ChangeSchedule $change_schedule );
+
+    public function sendChangeScheduleRequestChangeStatusEmail( ChangeSchedule $change_schedule );
 }

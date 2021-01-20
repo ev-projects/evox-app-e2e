@@ -320,3 +320,22 @@ if (! function_exists('get_month_date_range')) {
         }
     }
 }
+
+
+
+if (! function_exists('date_to_text')) {   
+    /**
+     * This function parses date to a text format ( Month day, Year)
+     *
+     * @param  date $date
+     * @return Carbon Formatted string
+     */
+    function date_to_text( $date, $format = 'F d, Y' ) 
+    {
+        try {
+            return Carbon::parse($date)->format($format);
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
