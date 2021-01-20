@@ -375,4 +375,9 @@ class RequestController extends Controller
         }
     }
 
+
+    // public function test_send_mail(){
+        
+    // }
+
 }

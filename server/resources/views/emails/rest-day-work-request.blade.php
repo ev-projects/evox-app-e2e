@@ -24,7 +24,7 @@
         <div style="padding: 0px 25px 0px 25px;">
           <table width="100%" style="margin-left:auto;margin-right:auto;">
             <tr ><td colspan="4" style="padding:5px 10px;background-color: #E6E6E6;">Request type: <strong>{{ slug_to_text( get_constant('REQUEST_TYPES.rest_day_work')) }}</strong></td><tr>
-            <tr ><td colspan="4" style="padding:5px 10px;background-color: #E6E6E6;">Request Date: <strong>{{ ($rest_day_work->date) }}</strong></td><tr>
+            <tr ><td colspan="4" style="padding:5px 10px;background-color: #E6E6E6;">Request Date: <strong>{{ date_to_text($rest_day_work->date, 'D, d M Y') }}</strong></td><tr>
             <tr ><td colspan="4" style="padding:5px 10px;background-color: #EAEBED;">Note: <strong>{{ ($rest_day_work->employee_note) }}</strong></td><tr>
            </table>
         </div>
