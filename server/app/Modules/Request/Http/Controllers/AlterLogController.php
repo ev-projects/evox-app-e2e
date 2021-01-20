@@ -5,6 +5,7 @@ namespace App\Modules\Request\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Request\Http\Requests\AlterLogRequest;
 use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
 
@@ -22,10 +23,14 @@ class AlterLogController extends Controller
 {   
     private $alter_log;
     private $dtr;
+    private $email;
 
-    public function __construct(AlterLogRepositoryInterface $alter_log,DtrRepositoryInterface $dtr){
+    public function __construct(AlterLogRepositoryInterface $alter_log,
+                                DtrRepositoryInterface $dtr,
+                                EmailRepositoryInterface $email){
         $this->alter_log = $alter_log;
         $this->dtr = $dtr;
+        $this->email = $email;
     }
 
     /**
@@ -37,6 +42,8 @@ class AlterLogController extends Controller
             log_activity( trans('messages.create_alter_log_attempt') );
 
             $alter_log = $this->alter_log->store( $request->all());
+            
+            $this->email->sendAlterLogRequestEmail( $alter_log );
             
             return success_response(
                 trans('messages.create_alter_log_success'), 
