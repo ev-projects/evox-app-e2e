@@ -250,12 +250,8 @@ const validationSchema = Yup.object().shape({
     current_time_out:         Yup.string().nullable(),
     new_time_in:              Yup.date().required("This field is required").nullable().max( Yup.ref('new_time_out') , 'Please select a valid Time-In.'),
     new_time_out:             Yup.date().required("This field is required").nullable().min( Yup.ref('new_time_in') , 'Please select a valid Time-Out.'),
-    employee_note:            Yup.string().nullable().when('method', (method, schema) => 
-                                                              ( ['store','update'].includes( method )  ? schema.required("This field is required") : schema)
-                                                          ),
-    approver_note:            Yup.string().nullable().when('method', (method, schema) => 
-                                                              ( ['approval'].includes( method )  ? schema.required("This field is required") : schema)
-                                                          )
+    employee_note:            Yup.string().nullable(),
+    approver_note:            Yup.string().nullable()
 });
 
 const mapStateToProps = (state) => {

@@ -275,14 +275,8 @@ const validationSchema = Yup.object().shape({
     date:           Yup.string().required("This field is required").nullable(),
     amount:         Yup.date().required("This field is required").nullable().min( DateFormatter.get_specific_datetime( null, '00:00:59' ) , 'Please select valid time.'),
     type:           Yup.string().required("This field is required").nullable(),
-    employee_note:  Yup.string().nullable().when('isManager', {
-      is: undefined,
-      then:   Yup.string().required("This field is required").nullable()
-    }),
-    approver_note:  Yup.string().nullable().when('isManager', {
-      is: true,
-      then:   Yup.string().required("This field is required").nullable()
-    })
+    employee_note:  Yup.string().nullable(),
+    approver_note:  Yup.string().nullable()
   });
 
 const mapStateToProps = (state) => {

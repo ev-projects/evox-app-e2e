@@ -285,12 +285,8 @@ const validationSchema = Yup.object().shape({
 
     valid_from:      		Yup.date().required("This field is required").nullable().max( Yup.ref('valid_to') , 'Please select a Valid From date.'),
     valid_to:     			Yup.date().required("This field is required").nullable().min( Yup.ref('valid_from') , 'Please select a Valid To date.'),
-    employee_note:  		Yup.string().nullable().when('method', (method, schema) => 
-                                              ( ['store','update'].includes( method )  ? schema.required("This field is required") : schema)
-                                          ),
-    approver_note:  		Yup.string().nullable().when('method', (method, schema) => 
-                                              ( ['approval'].includes( method )  ? schema.required("This field is required") : schema)
-										  ),
+    employee_note:  		Yup.string().nullable(),
+    approver_note:  		Yup.string().nullable(),
 	cst_schedule_details: Yup.array().of(
 			Yup.object().shape({
 				start_time: 		Yup.date().required("This field is required").nullable().max( Yup.ref('end_time') , 'Please select a valid On-Duty.'),
