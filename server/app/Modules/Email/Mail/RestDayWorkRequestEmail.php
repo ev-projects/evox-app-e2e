@@ -54,9 +54,9 @@ class RestDayWorkRequestEmail extends Mailable
 
         # Send on BCC Email Address depending on the App environment
         if( App::environment('production') ) {
-            $this->cc( get_constant('BCC_EMAIL_ADDRESS') );
+            $this->bcc( get_constant('BCC_EMAIL_ADDRESS') );
         } else {
-            $this->cc( get_constant('BCC_EMAIL_ADDRESS_FOR_NON_PROD') );
+            $this->bcc( get_constant('BCC_EMAIL_ADDRESS_FOR_NON_PROD') );
         }
         
         $this->subject( "Request for " . slug_to_text( get_constant('REQUEST_TYPES.rest_day_work') ) )
