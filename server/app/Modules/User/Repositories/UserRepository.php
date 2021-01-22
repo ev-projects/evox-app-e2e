@@ -149,7 +149,7 @@ class UserRepository implements UserRepositoryInterface{
                 if(strlen($bhr_user->employeeNumber)==2){
                     $bhr_user->employeeNumber = "0" + $bhr_user->employeeNumber;
                 }
-                
+                $user->emp_num = $bhr_user->employeeNumber;
                 $user->bhr_num = $bhr_user->id;
                 $user->email = $bhr_user->bestEmail;
                 $user->first_name = $bhr_user->firstName;
