@@ -5,6 +5,7 @@ namespace App\Modules\Request\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Http\Requests\OvertimeRequest;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
@@ -16,11 +17,14 @@ class OvertimeController extends Controller
 {   
     protected $overtime;
     protected $dtr;
+    protected $email;
 
     public function __construct(OvertimeRepositoryInterface $overtime,
-                                DtrRepositoryInterface $dtr){
+                                DtrRepositoryInterface $dtr,
+                                EmailRepositoryInterface $email){
         $this->overtime = $overtime;
         $this->dtr = $dtr;
+        $this->email = $email;
     }
 
     /**
@@ -31,9 +35,13 @@ class OvertimeController extends Controller
         try {
             log_activity( trans('messages.create_overtime_attempt') );
             
+            $overtime = $this->overtime->store( $request->all() );
+
+            $this->email->sendOvertimeRequestEmail( $overtime );
+
             return success_response(
                 trans('messages.create_overtime_success'), 
-                new OvertimeResource( $this->overtime->store( $request->all() )),
+                new OvertimeResource( $overtime ),
                 JsonResponse::HTTP_CREATED
             );
 

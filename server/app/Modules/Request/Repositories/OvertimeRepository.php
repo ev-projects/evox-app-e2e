@@ -397,7 +397,6 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
                     }
 
                         # Update the DTR properties
-                        $overtime                   = new Overtime();
                         $overtime->user_id          =  $user->id;
                         $overtime->date             =  $drupal_evox_overtime->date;
                         $overtime->amount           =  $drupal_evox_overtime->amount;

@@ -310,24 +310,24 @@ class User extends Authenticatable implements JWTSubject
 
         # Name Filter
         if(isset($filter['name'])){
-            
-            $change_schedules->where('a.first_name', 'like', '%' . $filter['name']. '%'); 
-            $overtimes       ->where('a.first_name', 'like', '%' . $filter['name']. '%');
-            $rest_day_works  ->where('a.first_name', 'like', '%' . $filter['name']. '%');
-            $alter_logs      ->where('a.first_name', 'like', '%' . $filter['name']. '%');
+            $change_schedules->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%")'); 
+            $overtimes       ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%")'); 
+            $rest_day_works  ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%")'); 
+            $alter_logs      ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%")'); 
         }
 
         # Date Filter
         if(isset($filter['valid_from'])&&isset($filter['valid_to'])){
-            $change_schedules->whereBetween("valid_from", array($filter['valid_from'], $filter['valid_to']));
-            $rest_day_works       ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
-            $overtimes       ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
-            $alter_logs      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
+            $change_schedules->where(function($query) use ($filter) {
+                $query->whereBetween("valid_from", array($filter['valid_from'], $filter['valid_to'])); 
+                $query->orwhereBetween("valid_to", array($filter['valid_from'], $filter['valid_to'])); 
+            }); 
+
+            $rest_day_works ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
+            $overtimes      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
+            $alter_logs     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
         }
   
-
-
-      
         $query = $alter_logs->union($change_schedules)
         ->union($overtimes)
         ->union($rest_day_works)

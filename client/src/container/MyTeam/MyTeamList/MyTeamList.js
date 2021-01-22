@@ -148,7 +148,7 @@ const MyTeamListFilter = (props) => {
                 </div>
               </Col> 
               <Col size="2"> 
-                <div style={{ 'marginTop' : '25px'}}>
+                <div style={{ 'marginTop' : '30px'}}>
                   <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
                     Filter
                   </Button>
@@ -190,8 +190,8 @@ const MyTeamListTable = (props) => {
                     return <tr>
                     <td>{user.full_name}</td>
                     <td>{user.department} </td>
-                    <td> <Status status={user.is_active} /></td>
-                    <td>
+                    <td className="emp-status"> <Status status={user.is_active} /></td>
+                    <td className="actions">
                       <Link to={{
                               pathname: global.daily_time_record_view + user.id,
                               previousPath: props.location.pathname,

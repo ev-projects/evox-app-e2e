@@ -13,6 +13,7 @@ import { fetchRequestList,fetchStatusNumbers } from '../../store/actions/filters
 import { InputDate,InputTime   } from '../../components/DatePickerComponent/DatePicker.js';
 import Paginate from "../../components/Template/Paginate";
 import Validator from "../../services/Validator";
+import Formatter from "../../services/Formatter";
 
 class MyRequests extends Component {
 
@@ -191,22 +192,26 @@ class MyRequests extends Component {
                       &nbsp;Declined 
                     </ToggleButton>
                   </ButtonGroup>
-                  <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
-                    Filter
-                  </Button>
-                  <Row>  
-                    <Col size="2"> 
+                  
+                  <Row className="date-range">  
+                    <Col size="2" className="mb-2 col-2"> 
                       <div className="form-group">
                         <label>Date From:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
                       </div>
                     </Col> 
-                    <Col size="2">   
+                    <Col size="2" className="mb-2 col-2">   
                     <div className="form-group">
                         <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
                     </Col>
+                    <Col size="2" className="mb-2 col-2 col-btn">   
+                    <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
+                    Filter
+                  </Button>
+                    </Col>
+                    
                     </Row>
                     { request_list.data.length > 0  ? (<div>
                       Record Displayed: { record_number }
@@ -287,7 +292,7 @@ class MyRequests extends Component {
                               break;
                        }
                         return <tr>
-                        <td><b>{item.table_name}</b> <br/><small>{item.created_at}</small></td>
+                        <td><b>{ Formatter.slug_to_title( item.table_name.slice(0, -1) ) }</b> <br/><small>{item.created_at}</small></td>
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>

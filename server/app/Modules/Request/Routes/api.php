@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
+// Route::get('/test_send_mail', 'RequestController@test_send_mail'); 
+
 # API Call for Request Approval
 Route::group(['prefix' => 'request/approval', 'middleware' => ['auth.apikey']], function () {
 
