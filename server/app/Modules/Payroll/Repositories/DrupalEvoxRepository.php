@@ -176,8 +176,10 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
             A.nid,
             employee_num.field_empnum_value as 'employee_number',
             DATE_FORMAT(FROM_UNIXTIME( rest_day_work_date.field_date_to_alter_value), '%Y-%m-%d')as 'date',
-            on_duty.field_rdw_on_duty_schedule_value as 'on_duty',
-            off_duty.field_rdw_off_duty_schedule_value as 'off_duty',
+            
+            (DATE_FORMAT(FROM_UNIXTIME(on_duty.field_rdw_on_duty_schedule_value), '%H:%i')) as on_duty,
+            (DATE_FORMAT(FROM_UNIXTIME(off_duty.field_rdw_off_duty_schedule_value), '%H:%i')) as off_duty,
+
             employee_note.field_employee_note_value   as 'employee_note',
             supervisor_note.field_supervisor_note_value as 'supervisor_note',
             CASE 
@@ -253,7 +255,7 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     GROUP_CONCAT(DISTINCT(work_days.field_work_days_value)) as work_days,
                     DATE_FORMAT(FROM_UNIXTIME(valid_from.field_sched_valid_from_value),'%Y-%m-%d') as valid_from,
                     DATE_FORMAT(FROM_UNIXTIME(valid_to.field_sched_valid_to_value),'%Y-%m-%d') as valid_to,
-                    emp_number.field_employee_number_value as employee_number,
+                    empno_table.field_employee_number_value as employee_number,
                     CASE 
                         WHEN status.field_status_value = 'approved' THEN 'approved'
                         WHEN status.field_status_value = 'denied' THEN 'declined'
@@ -278,6 +280,10 @@ class DrupalEvoxRepository implements DrupalEvoxRepositoryInterface{
                     LEFT JOIN field_data_field_payroll_items as undertime_item ON A.nid = undertime_item.entity_id AND undertime_item.field_payroll_items_value = 'undertime'
                     LEFT JOIN field_data_field_payroll_items as nightdiff_item ON A.nid = nightdiff_item.entity_id AND nightdiff_item.field_payroll_items_value = 'nightdiff'
                     LEFT JOIN field_data_field_work_days AS work_days ON work_days.entity_id = A.nid AND work_days.field_work_days_value <>'0'
+                    LEFT JOIN profile AS U_C ON U_C.uid = A.uid AND U_C.type = 'personal'
+                    LEFT JOIN field_data_field_employee_number AS empno_table ON empno_table.entity_id = U_C.pid 
+
+
                     ".implode("\n",$query_tables)."
                 WHERE
                     request_type.field_request_type_tid = 597 AND

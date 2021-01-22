@@ -14,6 +14,7 @@ import { InputDate,InputTime   } from '../../../components/DatePickerComponent/D
 import Paginate from "../../../components/Template/Paginate";
 import BackButton from "../../../components/Template/BackButton";
 import Validator from "../../../services/Validator";
+import Formatter from "../../../services/Formatter";
 
 class MyTeamRequests extends Component {
 
@@ -235,20 +236,20 @@ class MyTeamRequests extends Component {
                     </ToggleButton>
                   </ButtonGroup>
                   
-                  <Row>  
-                    <Col > 
+                  <Row  className="filters">  
+                    <Col className="col-2"> 
                       <div className="form-group">
                         <label>Date From:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
                       </div>
                     </Col> 
-                    <Col >   
+                    <Col className="col-2">   
                     <div className="form-group">
                         <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
                     </Col>
-                    <Col> 
+                    <Col className="col-3"> 
                       <div className="form-group">
                           <label>Department:</label>
                           <select
@@ -265,13 +266,13 @@ class MyTeamRequests extends Component {
                           </select>
                       </div>
                     </Col> 
-                    <Col > 
+                    <Col className="col-3"> 
                       <div className="form-group">
                           <label>Name:</label>
                           <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     </Col> 
-                    <Col lg="2">
+                    <Col className="col-2">
                     <div className="form-group">
                           <label>&nbsp;</label>
                           <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
@@ -281,7 +282,7 @@ class MyTeamRequests extends Component {
                     </Col>
                     </Row>
                     <hr/>
-                    <Row>
+                    <Row className="bulk-action">
                       <Col lg="4"> 
                       <div className="form-group">
                           <label>Action:</label>
@@ -370,10 +371,10 @@ class MyTeamRequests extends Component {
                               break;
                           case "rest_day_works":
                             fourthColumn.push(
-                              <span>From: {item.fifth_column}</span>
+                              <span>From: {item.fourth_column}</span>
                             );
                             fifthColumn.push(
-                              <span>To: {item.fourth_column}</span>
+                              <span>To: {item.fifth_column}</span>
                             );
 
                               link =  global.rest_day_work + item.id.toString();
@@ -394,7 +395,7 @@ class MyTeamRequests extends Component {
                         { item.status !="Canceled"  ? (<Field type="checkbox" name="checkedList" value={item.id.toString()+"."+item.table_name} />) : (<span></span>)}
                         </td>
                         <td><b>{item.created_by}</b><br/> <small>{item.department_name}</small></td>
-                        <td><b>{item.table_name}</b><br/> <small>{item.created_at}</small></td>
+                        <td><b>{ Formatter.slug_to_title( item.table_name.slice(0, -1) )}</b><br/> <small>{item.created_at}</small></td>
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>

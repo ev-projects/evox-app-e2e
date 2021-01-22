@@ -33,7 +33,7 @@ class ChangeScheduleRequest extends FormRequest
         return [
             'valid_from'    =>  'required|date|date_format:"Y-m-d"|unique_dates:change_schedules',
             'valid_to'      =>  'required|date|after_or_equal:valid_from|date_format:"Y-m-d"',
-            'employee_note'  => 'required|string|max:255',
+            'employee_note'  => 'string|max:255',
             'approver_note'  => 'string|max:255'
         ]
         ;}

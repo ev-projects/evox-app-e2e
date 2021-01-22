@@ -226,18 +226,18 @@ class DailyTimeRecord extends Component {
                 <Table responsive hover dtr-table>
                     <thead>
                         <tr>
-                            <th><i className="fa fa-calendar"></i> Date</th>
-                            <th><i className="fa fa-calendar"></i> Status</th>
-                            <th><i className="fa fa-calendar"></i> Schedule</th>
-                            <th><i className="fa fa-clock-o"></i> Clock In</th>
-                            <th><i className="fa fa-clock-o"></i> Clock Out</th>
-                            <th><i className="fa fa-hourglass-end"></i> Late</th>
-                            <th><i className="fa fa-hourglass-start"></i> Undertime</th>
-                            <th><i className="fa fa-moon-o"></i> NightDiff</th>
-                            <th><i className="fa fa-hourglass"></i> Overtime</th>
-                            <th><i className="fa fa-hourglass"></i> OT w/ Nightdiff</th>
-                            <th><i className="fa fa-list"></i> Requests</th>
-                            <th><i></i></th>
+                            <th className="dtr-date">Date</th>
+                            <th className="dtr-status">Status</th>
+                            <th className="dtr-schedule">Schedule</th>
+                            <th className="dtr-log">Clock In</th>
+                            <th className="dtr-log">Clock Out</th>
+                            <th className="dtr-item">Late</th>
+                            <th className="dtr-item">Undertime</th>
+                            <th className="dtr-item">NightDiff</th>
+                            <th className="dtr-item">Overtime</th>
+                            <th className="dtr-item">OT w/ ND</th>
+                            <th className="dtr-requests">Requests STATUS</th>
+                            <th className="dtr-actions"><i></i></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -255,18 +255,18 @@ class DailyTimeRecord extends Component {
                           })};
 
                           return <tr className={"center "+dtr.attendance_status.slug+"-bg-color"}>
-                                  <td>{DtrFormatter.displayDate(dtr.date)}</td> 
-                                  <td><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></td>
-                                  <td><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
-                                  <td><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
-                                  <td><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
-                                  <td>{dtr?.payroll_items?.late}</td>
-                                  <td>{dtr?.payroll_items?.undertime}</td>
-                                  <td>{dtr?.payroll_items?.night_diff}</td>
-                                  <td>{dtr?.payroll_items?.overtime}</td>
-                                  <td>{dtr?.payroll_items?.overtime_night_diff}</td>
-                                  <td className="left">{<DtrRequest requests={dtr.requests}/>}</td>
-                                  <td>
+                                  <td className="dtr-date">{DtrFormatter.displayDate(dtr.date)}</td> 
+                                  <td className="dtr-status"><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></td>
+                                  <td className="dtr-schedule"><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
+                                  <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
+                                  <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
+                                  <td className="dtr-item">{dtr?.payroll_items?.late}</td>
+                                  <td className="dtr-item">{dtr?.payroll_items?.undertime}</td>
+                                  <td className="dtr-item">{dtr?.payroll_items?.night_diff}</td>
+                                  <td className="dtr-item">{dtr?.payroll_items?.overtime}</td>
+                                  <td className="dtr-item">{dtr?.payroll_items?.overtime_night_diff}</td>
+                                  <td className="requests-list">{<DtrRequest requests={dtr.requests}/>}</td>
+                                  <td className="dtr-actions">
                                       {
                                         ( this.props.params.id == this.props.user.id 
                                           && alter_log_status != "approved" ) ?
@@ -281,7 +281,7 @@ class DailyTimeRecord extends Component {
                                               }}
                                         >
                                         <i className="fa fa-edit" 
-                                           style={{color : "#82af13" }}></i>
+                                           style={{color : "#ffffff" }}></i>
                                         </Link>
                                         :
                                         null
@@ -308,7 +308,7 @@ class DailyTimeRecord extends Component {
 const DtrRequest = (props) => { 
   return <ul style={{ listStyle: 'none'}}>
       {props.requests.map((request, index) => {
-          return <li><span className={Formatter.slug_to_title( request.status )}></span>{Formatter.slug_to_title( request.request_type )} - {Formatter.slug_to_title( request.status )}</li> 
+          return <li className={Formatter.slug_to_title( request.status )}><span className="circ"></span>{Formatter.slug_to_title( request.request_type )} - <span>{Formatter.slug_to_title( request.status )}</span></li> 
       })}
   </ul>;
 }

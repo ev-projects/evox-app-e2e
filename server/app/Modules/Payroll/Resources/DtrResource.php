@@ -128,7 +128,7 @@ class DtrResource extends JsonResource
                     'source_type_tagging' => $this->source_type_tagging,
                     'attendance_status' => [
                         'name' => $attendance_status,
-                        'slug' => parse_to_slug( $attendance_status )
+                        'slug' => text_to_slug( $attendance_status )
                     ]
                 ), 
                 array('payroll_items' => $payroll_items),

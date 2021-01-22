@@ -5,6 +5,7 @@ namespace App\Modules\Request\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Http\Requests\ChangeScheduleRequest;
 use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
@@ -21,10 +22,14 @@ class ChangeScheduleController extends Controller
 {   
     private $change_schedule;
     private $dtr;
+    private $email;
 
-    public function __construct(ChangeScheduleRepositoryInterface $change_schedule,DtrRepositoryInterface $dtr){
+    public function __construct(ChangeScheduleRepositoryInterface $change_schedule,
+                                DtrRepositoryInterface $dtr,
+                                EmailRepositoryInterface $email){
         $this->change_schedule = $change_schedule;
         $this->dtr = $dtr;
+        $this->email = $email;
     }
 
     /**
@@ -36,7 +41,9 @@ class ChangeScheduleController extends Controller
             log_activity( trans('messages.create_change_schedule_attempt') );
 
             $change_schedule = $this->change_schedule->store( $request->all());
-            
+
+            $this->email->sendChangeScheduleRequestEmail( $change_schedule );
+
             return success_response(
                 trans('messages.create_change_schedule_success'), 
                 new ChangeScheduleResource($change_schedule),

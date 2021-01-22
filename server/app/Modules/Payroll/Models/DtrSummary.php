@@ -18,26 +18,7 @@ class DtrSummary
      */
     function __construct()
     {
-        $this->summary = [
-            get_constant('DTR_TYPE.regular') =>  [
-                get_constant('PAYROLL_ITEMS.late')                   => 0,
-                get_constant('PAYROLL_ITEMS.undertime')              => 0,
-                get_constant('PAYROLL_ITEMS.rendered_hours')         => 0,
-                get_constant('PAYROLL_ITEMS.night_diff')             => 0,
-                get_constant('PAYROLL_ITEMS.overtime')               => 0,
-                get_constant('PAYROLL_ITEMS.overtime_night_diff')    => 0,
-                get_constant('PAYROLL_ITEMS.on_leave')               => 0,
-                get_constant('PAYROLL_ITEMS.unpaid_leave')           => 0,
-            ], 
-            get_constant('DTR_TYPE.rest_day') =>  [
-                get_constant('PAYROLL_ITEMS.rendered_hours')         => 0,
-                get_constant('PAYROLL_ITEMS.night_diff')             => 0,
-                get_constant('PAYROLL_ITEMS.overtime')               => 0,
-                get_constant('PAYROLL_ITEMS.overtime_night_diff')    => 0,
-            ]
-        ];
-
-     
+       $this->clear_properties();
     }
 
 
@@ -55,21 +36,21 @@ class DtrSummary
     {
         try {
 
+            $this->clear_properties();
 
             # Iterates the DTR Collection
             foreach ( $dtr_collection as $dtr ) {
+                # Get the DTR Type of the Current DTR Instance
+                $dtr_type = $dtr->getDtrType();
 
                 # Checks if the DTR has Valid Timelogs and proper Schedule.
-                if( $dtr->hasValidTimelogs() && $dtr->hasSchedule() ) {
+                if( $dtr->validLog() && $dtr->hasSchedule() ) {
 
                     # Gets all the Payroll Items of the current DTR Instance.
                     $payroll_items_collection = $dtr->payroll_items()->get();
                    ;
                     # Group the Payroll Items base on Tagging.
                     $grouped_payroll_items_array = grouped_payroll_items( $payroll_items_collection );
-
-                    # Get the DTR Type of the Current DTR Instance
-                    $dtr_type = $dtr->getDtrType();
 
                     # Fetches the Previous DTR of the current DTR Instance and also it's DTR Type.
                     $previous_dtr       = $dtr->previous_dtr()->first();
@@ -167,7 +148,7 @@ class DtrSummary
                         }
                     }
 
-                }elseif(!$dtr->hasValidTimelogs() && $dtr->hasSchedule() && $dtr->leaves()->count() < 0  ){
+                }elseif( !$dtr->validLog() && $dtr->hasSchedule() && $dtr->leaves()->count() <= 0 && !$this->check_if_holiday( $dtr_type ) ){
                     $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] +=  1;
                 }elseif( $dtr->on_leave() )  {
                     $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->leaves()->first()->amount;
@@ -267,5 +248,31 @@ class DtrSummary
     {
         return ( $dtr_type == get_constant('DTR_TYPE.rest_day') ) ? true : false;
     }
+
+    /**
+     *  Reponsible for clearing out the DTR Summary Properties
+     */
+    private function clear_properties(){
+
+        $this->summary = [
+            get_constant('DTR_TYPE.regular') =>  [
+                get_constant('PAYROLL_ITEMS.late')                   => 0,
+                get_constant('PAYROLL_ITEMS.undertime')              => 0,
+                get_constant('PAYROLL_ITEMS.rendered_hours')         => 0,
+                get_constant('PAYROLL_ITEMS.night_diff')             => 0,
+                get_constant('PAYROLL_ITEMS.overtime')               => 0,
+                get_constant('PAYROLL_ITEMS.overtime_night_diff')    => 0,
+                get_constant('PAYROLL_ITEMS.on_leave')               => 0,
+                get_constant('PAYROLL_ITEMS.unpaid_leave')           => 0,
+            ], 
+            get_constant('DTR_TYPE.rest_day') =>  [
+                get_constant('PAYROLL_ITEMS.rendered_hours')         => 0,
+                get_constant('PAYROLL_ITEMS.night_diff')             => 0,
+                get_constant('PAYROLL_ITEMS.overtime')               => 0,
+                get_constant('PAYROLL_ITEMS.overtime_night_diff')    => 0,
+            ]
+        ];
+    }
+
 
 }

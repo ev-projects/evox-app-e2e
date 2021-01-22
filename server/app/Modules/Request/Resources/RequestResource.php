@@ -28,8 +28,17 @@ class RequestResource extends JsonResource
                         $request->fifth_column = slug_to_text( $request->fifth_column );
                       break;
                     case 'rest_day_works':
-                        $request->fourth_column = timestamp_to_datetime( $request->fourth_column  );
-                        $request->fifth_column = timestamp_to_datetime( $request->fifth_column );
+                      $from =  strtotime($request->date_requested) + $request->fourth_column  ;
+                      $to = strtotime($request->date_requested) + $request->fifth_column  ;
+
+                      # Update the date if date from is greater than date to
+                      if($from>$to){
+                        $to += get_constant("TIMESTAMP.day");
+                      }
+
+                        $request->fourth_column =timestamp_to_datetime( $from );
+                        $request->fifth_column =  timestamp_to_datetime( $to );
+
                       break;
                     case 'change_schedules':
                         $schedule = Schedule::find($request->fourth_column);

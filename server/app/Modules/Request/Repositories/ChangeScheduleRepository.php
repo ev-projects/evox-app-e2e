@@ -213,12 +213,10 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
 
                     $change_schedule = $user->change_schedule($drupal_evox_change_schedule->valid_from,$drupal_evox_change_schedule->valid_to)->first();
                     
-                    if($change_schedule==null){
-                        $work_days = explode(",", $drupal_evox_change_schedule->work_days);
+                    $work_days = explode(",", $drupal_evox_change_schedule->work_days);
 
-                        $schedule = new ScheduleRepository();
     
-                        $work_days = explode(",", $drupal_evox_change_schedule->work_days);
+                    $work_days = explode(",", $drupal_evox_change_schedule->work_days);
     
                         # structure of schedule for changeschedule
                         $data = [
@@ -246,11 +244,17 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
                             $data['schedule_details'][$value]['end_flexy_time'] = $drupal_evox_change_schedule->{$value . "_flexy_end" };
                             }
                         }
-                        $schedule =  $schedule->store($data);
+                        
+                        $schedule = new ScheduleRepository();
+
+                        if($change_schedule==null){
+                            $schedule =  $schedule->store($data);
+                            $change_schedule = new ChangeSchedule();
+                        }else{
+                            $schedule =  $schedule->update($data,$change_schedule->schedule_id);
+                        }
     
-                        $change_schedule                 = new ChangeSchedule();
                         $change_schedule->user_id        =  $user->id;
-    
                         $change_schedule->schedule_id    = $schedule->id ;
                         $change_schedule->valid_from     = $drupal_evox_change_schedule->valid_from ;
                         $change_schedule->valid_to       = $drupal_evox_change_schedule->valid_to ;
@@ -271,7 +275,6 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
                         }
     
                         log_to_file( 'info', 'Success', [$change_schedule->getAttributes()], "drupal_migration");
-                    }
                     
 
                 } else {
