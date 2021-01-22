@@ -393,9 +393,10 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
                     
                     // Checks if the Overtime is NOT existing, proceed on generating new data.
                     if( $overtime == null ) {
+                        $overtime                   = new Overtime();
+                    }
 
                         # Update the DTR properties
-                        $overtime                   = new Overtime();
                         $overtime->user_id          =  $user->id;
                         $overtime->date             =  $drupal_evox_overtime->date;
                         $overtime->amount           =  $drupal_evox_overtime->amount;
@@ -414,10 +415,6 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
                         }
 
                         log_to_file( 'info', 'Success', [$overtime->getAttributes()], "drupal_migration");
-
-                    } else {
-                        log_to_file( 'info', 'Overtime Entry already existing', [$drupal_evox_overtime], "drupal_migration");
-                    }
 
                 } else {
                     log_to_file( 'info', 'User not existing', [$drupal_evox_overtime], "drupal_migration");

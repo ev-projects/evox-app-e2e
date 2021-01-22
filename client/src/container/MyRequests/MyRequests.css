@@ -13,7 +13,7 @@
 .request_list_btn  .badge {
     padding: 3px 6px !important;
 }
-td b{text-transform: uppercase;}
+
 .badge{padding: 5px 10px !important;}
 .badge-success{background: #edf2dc !important; color: #333 !important; font-weight: normal !important;}
 .badge-success span{background: #81b014  !important;}

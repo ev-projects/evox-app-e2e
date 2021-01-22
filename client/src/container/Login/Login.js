@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
 import { logIn } from '../../store/actions/userActions'
+import { showAlert } from '../../store/actions/settings/alertActions'
 import { Redirect } from "react-router-dom";
 import Validator from "../../services/Validator";
 import { Form,Button,Container,Col,Card,InputGroup,FormControl,Image } from 'react-bootstrap';
@@ -16,12 +17,26 @@ class Login extends Component {
     this.props.logIn(values)
   }
 
+    
+  componentWillMount() {
+    // If there's a redirect parameter in the Login page, prompt a Alert to inform that they need to login to access the link.
+    if ( Validator.isValid( this.props.location?.search ) && new URLSearchParams(this.props.location.search).get('redirect') != null) {
+        this.props.showAlert( "Please login to access the link.", 3000 );
+    }
+}
+
   render = () => {  
 
     const { user } = this.props
+
+    // Check if there's a redirect link and if so, use that redirect link instead of the default dashboard link.
+    let redirect_link = global.dashboard_url;
+    if( Validator.isValid( this.props.location?.search ) ){
+      redirect_link = new URLSearchParams(this.props.location.search).get('redirect');
+    }
     
     if( Validator.isValid( localStorage.getItem("access_token") ) && Validator.isValid(user.emp_num) ) {
-      return <Redirect to={global.dashboard_url} />
+      return <Redirect to={redirect_link} />
     } 
 
     return (
@@ -106,7 +121,8 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      logIn: ( credentials ) => dispatch( logIn(credentials) )
+      logIn: ( credentials ) => dispatch( logIn(credentials) ),
+      showAlert: ( message, timeout ) => dispatch( showAlert( message, timeout ) ),
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

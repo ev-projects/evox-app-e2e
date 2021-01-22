@@ -239,22 +239,15 @@ class RestDayWork extends Component {
     return <PageLoading/>;
   }
 }
-
-
 /** Form Validation */
 
 const validationSchema = Yup.object().shape({
-
     date:           Yup.string().required("This field is required").nullable(),
-    start_time:     Yup.date().required("This field is required").nullable().max( Yup.ref('end_time') , 'Please select a valid On-Duty.'),
-    end_time:       Yup.date().required("This field is required").nullable().min( Yup.ref('start_time') , 'Please select a valid Off-Duty.'),
+    start_time:     Yup.date().required("This field is required").nullable(),
+    end_time:       Yup.date().required("This field is required").nullable(),
     break_time:     Yup.date().required("This field is required").nullable().max( DateFormatter.get_specific_datetime( null, '01:00:01' ) , 'Please select valid break time.'),
-    employee_note:  Yup.string().nullable().when('method', (method, schema) => 
-                                              ( ['store','update'].includes( method )  ? schema.required("This field is required") : schema)
-                                          ),
-    approver_note:  Yup.string().nullable().when('method', (method, schema) => 
-                                              ( ['approval'].includes( method )  ? schema.required("This field is required") : schema)
-                                          )
+    employee_note:  Yup.string().nullable(),
+    approver_note:  Yup.string().nullable()
 });
 
 const mapStateToProps = (state) => {

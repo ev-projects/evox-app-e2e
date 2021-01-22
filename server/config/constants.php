@@ -78,6 +78,21 @@ return [
 
     'DEFAULT_PASSWORD'  => '{ev2010}',
 
+
+    
+    'EASTVANTAGE_DEV_EMAIL' => 'eastvantage.dev@gmail.com',
+
+
+    'BCC_EMAIL_ADDRESS' => [
+        'carmela.garcia@eastvantage.com'
+    ],
+
+    'BCC_EMAIL_ADDRESS_FOR_NON_PROD' => [
+        'aaron.colina@eastvantage.com',
+        'carmela.garcia@eastvantage.com',
+        'mel.ugaddan@eastvantage.com'
+    ],    
+
     'LEAVE_REQUEST_STATUS' => [
         'requested', 
         'approved', 
@@ -183,6 +198,8 @@ return [
     
     'LOG_START' => ' [ CALL START ] ',
     'LOG_END' => ' [ CALL END ] ',
+    'LOG_QUEUED' => ' [ QUEUED ] ',
+    'LOG_SENT_SUCCESS'   => ' Sent Successfuly To: ',
     'LOG_ROLLBACK' => ' Rolling back all the Previous Transactions... ',
     'LOG_GAP' => '##################################################################################',
 ];

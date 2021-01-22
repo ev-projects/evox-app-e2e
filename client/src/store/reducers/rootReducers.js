@@ -16,6 +16,9 @@ import alterLogReducers from "./requests/alterLogReducers";
 import changeScheduleReducers from "./requests/changeScheduleReducers";
 import overtimeReducers from "./requests/overtimeReducers";
 import restDayWorkReducers from "./requests/restDayWorkReducers"
+
+import requestApprovalReducers from "./approvals/requestApprovalReducers";
+
 import redirectReducers from "./settings/redirectReducers";
 
 import payrollCutoffReducers from "./admin/payrollCutoffReducers"
@@ -53,6 +56,7 @@ const rootReducer = combineReducers({
     changeSchedule: changeScheduleReducers,
     overtime : overtimeReducers,
     restDayWork : restDayWorkReducers,
+    requestApproval : requestApprovalReducers,
 
     payrollCutoff: payrollCutoffReducers,
 

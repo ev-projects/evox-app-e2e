@@ -71,20 +71,22 @@ class Overtime extends Component {
 
         // If action is NULL, it means it's either store/update
         case null:
-            switch( values.method ) {
+            if (window.confirm("Are you sure you want to submit/update this request?")) {
+                switch( values.method ) {
 
-              case "store":
-                  this.props.addOvertime( formData );
-                  break;
-        
-              case "update":
-                  formData.append('_method', 'PUT')
-                  this.props.updateOvertime( values.id, formData );
-                  break;
+                  case "store":
+                      this.props.addOvertime( formData );
+                      break;
+            
+                  case "update":
+                      formData.append('_method', 'PUT')
+                      this.props.updateOvertime( values.id, formData );
+                      break;
 
-              default:
-                  break;
+                  default:
+                      break;
 
+                }
             }
             break;
 
@@ -92,8 +94,10 @@ class Overtime extends Component {
         case "approve":
         case "decline":
         case "cancel":
-            formData.append('_method', 'PUT')
-            this.props.updateOvertimeStatus( values.id, formData, values.action );
+            if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
+              formData.append('_method', 'PUT')
+              this.props.updateOvertimeStatus( values.id, formData, values.action );
+            }
             break;
     }
   }
@@ -159,7 +163,7 @@ class Overtime extends Component {
       
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
 
-      return <Wrapper>
+      return <Wrapper previousPath={this.props.location.previousPath}>
         <Formik 
           enableReinitialize
           onSubmit={this.onSubmitHandler} 
@@ -271,14 +275,8 @@ const validationSchema = Yup.object().shape({
     date:           Yup.string().required("This field is required").nullable(),
     amount:         Yup.date().required("This field is required").nullable().min( DateFormatter.get_specific_datetime( null, '00:00:59' ) , 'Please select valid time.'),
     type:           Yup.string().required("This field is required").nullable(),
-    employee_note:  Yup.string().nullable().when('isManager', {
-      is: undefined,
-      then:   Yup.string().required("This field is required").nullable()
-    }),
-    approver_note:  Yup.string().nullable().when('isManager', {
-      is: true,
-      then:   Yup.string().required("This field is required").nullable()
-    })
+    employee_note:  Yup.string().nullable(),
+    approver_note:  Yup.string().nullable()
   });
 
 const mapStateToProps = (state) => {

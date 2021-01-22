@@ -151,6 +151,14 @@ return [
             'permission' => 0666,
         ],
 
+        'emails' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/emails.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+
         'drupal_migration' => [
             'driver' => 'single',
             'path' => storage_path('logs/drupal_migration.log'),

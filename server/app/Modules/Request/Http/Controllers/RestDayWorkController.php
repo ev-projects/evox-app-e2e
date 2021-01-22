@@ -5,6 +5,7 @@ namespace App\Modules\Request\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Http\Requests\RestDayWorkRequest;
 use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
@@ -16,11 +17,14 @@ class RestDayWorkController extends Controller
 {   
     protected $rest_day_work;
     protected $dtr;
+    protected $email;
 
     public function __construct(RestDayWorkRepositoryInterface $rest_day_work,
-                                DtrRepositoryInterface $dtr){
+                                DtrRepositoryInterface $dtr,
+                                EmailRepositoryInterface $email){
         $this->rest_day_work = $rest_day_work;
         $this->dtr = $dtr;
+        $this->email = $email;
     }
 
     /**
@@ -31,9 +35,13 @@ class RestDayWorkController extends Controller
         try {
             log_activity( trans('messages.create_rest_day_work_attempt') );
             
+            $rest_day_work = $this->rest_day_work->store( $request->all() );
+
+            $this->email->sendRestDayWorkRequestEmail( $rest_day_work );
+
             return success_response(
                 trans('messages.create_rest_day_work_success'), 
-                new RestDayWorkResource( $this->rest_day_work->store( $request->all() )),
+                new RestDayWorkResource( $rest_day_work ),
                 JsonResponse::HTTP_CREATED
             );
 

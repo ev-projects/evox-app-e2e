@@ -5,6 +5,8 @@ namespace App\Modules\Request\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Email\Mail\OvertimeRequestEmail;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Request\Http\Requests\RequestFilterRequest;
 use App\Modules\Request\Repositories\RequestRepositoryInterface;
 use App\Modules\Request\Resources\OvertimeResource;
@@ -18,9 +20,18 @@ use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
 use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
 use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-
+use App\Modules\Request\Http\Requests\RequestApprovalChangeStatusRequest;
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Request\Models\Overtime;
+use App\Modules\Request\Models\RestDayWork;
+use App\Modules\Request\Resources\AlterLogResource;
+use App\Modules\Request\Resources\ChangeScheduleResource;
+use App\Modules\Request\Resources\RequestApprovalChangeStatusResource;
+use App\Modules\Request\Resources\RestDayWorkResource;
 use App\Modules\User\Models\User;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class RequestController extends Controller
 {
@@ -35,7 +46,8 @@ class RequestController extends Controller
                                     RestDayWorkRepositoryInterface $rest_day_work,
                                     AlterLogRepositoryInterface $alter_log,
                                     ChangeScheduleRepositoryInterface $change_schedule,
-                                    DtrRepositoryInterface $dtr){
+                                    DtrRepositoryInterface $dtr,
+                                    EmailRepositoryInterface $email){
 
         $this->overtime         = $overtime;
         $this->request          = $request;
@@ -43,6 +55,7 @@ class RequestController extends Controller
         $this->alter_log        = $alter_log;
         $this->change_schedule  = $change_schedule;
         $this->dtr              = $dtr;
+        $this->email            = $email;
     }
 
     /**
@@ -205,5 +218,166 @@ class RequestController extends Controller
         }
     }
 
+
+
+    /**
+     * Shows a list of Request.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function change_request_status_via_hash_code(RequestApprovalChangeStatusRequest $request){
+        try {
+            
+            $result = [
+                'request'    => null,
+                'is_changed' => false,
+            ];
+
+            # Get the request detail from the hashed code.
+            # [0] - Table name
+            # [1] - Table ID
+            # [2] - Recepient ID
+            $request_detail_array = parse_hash_code_to_request_detail_array( $request->get('hash_code') );
+
+            # Initialize Recepient login for this request
+            auth()->login( User::find( $request_detail_array[2] ) );
+
+            # Check for what request table name is being accesed.
+            switch( $request_detail_array[0] ){
+
+                case "overtimes":
+                    
+                    # Fetch the request
+                    $result['request'] = Overtime::find( $request_detail_array[1] );
+
+                    # Check if the status is not yet 'approved'. If not, proceed on changing the request to 'approved'.
+                    if( $request->get('status') == get_constant('REQUEST_STATUS.approved')
+                        && $result['request'] ->status != get_constant('REQUEST_STATUS.approved')  ) {
+                        $result = [
+                            'request'    => $this->overtime->approve([], $result['request']->id ),
+                            'is_changed' => true,
+                        ];
+
+                    # Check if the status is not yet 'declined'. If not, proceed on changing the request to 'declined'.
+                    } else if( $request->get('status') == get_constant('REQUEST_STATUS.declined')
+                        && $result['request'] ->status != get_constant('REQUEST_STATUS.declined')  ) {
+                        $result = [
+                            'request'    => $this->overtime->decline([], $result['request']->id ),
+                            'is_changed' => true,
+                        ];
+                    } 
+
+                    # Apply the Overtime to the DTR related depending on the action that was conducted on the overtime.
+                    $this->dtr->compute_payroll_items( $result['request']->dtr()->first() );
+                    break;
+
+
+                case "rest_day_works":
+
+                    # Fetch the request
+                    $result['request'] = RestDayWork::find( $request_detail_array[1] );
+
+                    # Check if the status is not yet 'approved'. If not, proceed on changing the request to 'approved'.
+                    if( $request->get('status') == get_constant('REQUEST_STATUS.approved')
+                        && $result['request'] ->status != get_constant('REQUEST_STATUS.approved')  ) {
+                        $result = [
+                            'request'    => $this->rest_day_work->approve([], $result['request']->id ),
+                            'is_changed' => true,
+                        ];
+
+                        # Apply the newly approved Rest Day Work to the DTRs related.
+                        $this->dtr->apply_rest_day_work_to_dtr( $result['request'] );
+
+                    # Check if the status is not yet 'declined'. If not, proceed on changing the request to 'declined'.
+                    } else if( $request->get('status') == get_constant('REQUEST_STATUS.declined')
+                        && $result['request'] ->status != get_constant('REQUEST_STATUS.declined')  ) {
+                        $result = [
+                            'request'    => $this->rest_day_work->decline([], $result['request']->id ),
+                            'is_changed' => true,
+                        ];
+
+                        # Removed the newly declined Rest Day Work to the DTRs related.
+                        $this->dtr->remove_rest_day_from_dtr( $result['request'] );
+                    } 
+                    break;
+
+
+                case "alter_logs":
+
+                    # Fetch the request
+                    $result['request'] = AlterLog::find( $request_detail_array[1] );
+
+                    # Check if the status is not yet 'approved'. If not, proceed on changing the request to 'approved'.
+                    if( $request->get('status') == get_constant('REQUEST_STATUS.approved')
+                        && $result['request'] ->status != get_constant('REQUEST_STATUS.approved')  ) {
+                        $result = [
+                            'request'    => $this->alter_log->approve([], $result['request']->id ),
+                            'is_changed' => true,
+                        ];
+
+                        # Apply the newly approved Alter Log to the DTR related.
+                        $this->dtr->apply_alter_log_to_dtr( $result['request'] );
+
+                    # Check if the status is not yet 'declined'. If not, proceed on changing the request to 'declined'.
+                    } else if( $request->get('status') == get_constant('REQUEST_STATUS.declined')
+                        && $result['request'] ->status != get_constant('REQUEST_STATUS.declined')  ) {
+                        $result = [
+                            'request'    => $this->alter_log->decline([], $result['request']->id ),
+                            'is_changed' => true,
+                        ];
+
+                        # Removed the newly declined Alter Log to the DTRs related.
+                        $this->dtr->remove_alter_log_from_dtr( $result['request'] );
+                    } 
+                    break;
+
+
+                case "change_schedules":
+
+                    # Fetch the request
+                    $result['request'] = ChangeSchedule::find( $request_detail_array[1] );
+
+                    # Check if the status is not yet 'approved'. If not, proceed on changing the request to 'approved'.
+                    if( $request->get('status') == get_constant('REQUEST_STATUS.approved')
+                        && $result['request'] ->status != get_constant('REQUEST_STATUS.approved')  ) {
+                        $result = [
+                            'request'    => $this->change_schedule->approve([], $result['request']->id ),
+                            'is_changed' => true,
+                        ];
+
+                        # Apply the newly approved Change Schedule to the DTRs related.
+                        $this->dtr->apply_schedule_to_dtr( $result['request']->user_id, $result['request']->schedule()->first() );
+
+                    # Check if the status is not yet 'declined'. If not, proceed on changing the request to 'declined'.
+                    } else if( $request->get('status') == get_constant('REQUEST_STATUS.declined')
+                        && $result['request'] ->status != get_constant('REQUEST_STATUS.declined')  ) {
+                        $result = [
+                            'request'    => $this->change_schedule->decline([], $result['request']->id ),
+                            'is_changed' => true,
+                        ];
+
+                        # Removed the newly declined Alter Log to the DTRs related.
+                        $this->dtr->remove_schedule_to_dtr( $result['request']->user_id, $result['request']->schedule()->first() );
+                    } 
+                    break;
+                
+            }
+
+            # Trigger the logout since the transaction is done.
+            auth()->logout();
+            
+            return success_response(
+                trans('messages.change_request_status_via_hash_code_success'), 
+                new RequestApprovalChangeStatusResource( $result['request'], $result['is_changed'] )
+            );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    // public function test_send_mail(){
+        
+    // }
 
 }

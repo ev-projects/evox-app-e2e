@@ -137,7 +137,7 @@ const Sidebar = (props) => {
                     <a className="nav-link">
                       <i className="nav-icon fa fa-list-alt" />
                       <p> 
-                        Request
+                        Request Form
                         <i className="right fa fa-chevron-left" />
                       </p>
                     </a>

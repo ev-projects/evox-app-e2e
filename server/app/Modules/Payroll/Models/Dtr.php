@@ -53,6 +53,15 @@ class Dtr extends Model
         return ( $this->hasCompleteTimelogs() && $this->time_out > $this->time_in ) ? true : false;
     }
 
+    /**
+     * 
+     *  Check if the current DTR has a value
+     * @return bool 
+     */
+    public function validLog()
+    {
+        return ( !is_null( $this->time_in ) && !is_null( $this->time_out ) ) ? true : false;
+    }
 
     /**
      * 
