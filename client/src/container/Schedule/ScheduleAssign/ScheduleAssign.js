@@ -97,6 +97,7 @@ class AssignDefault extends Component {
       }];
     
     }else if( state.schedule_type == 'customize' ){
+      state.cst_schedule_details = [];
       var index = 0;
       for (var key in schedule.schedule_details ) {
         state.cst_schedule_details[index] = {
