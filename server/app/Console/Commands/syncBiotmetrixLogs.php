@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -29,9 +30,10 @@ class syncBiotmetrixLogs extends Command
      *
      * @return void
      */
-    public function __construct(BiometricsRepositoryInterface $biometrics)
+    public function __construct(DtrRepositoryInterface $dtr, BiometricsRepositoryInterface $biometrics)
     {
         $this->biometrics = $biometrics;
+        $this->dtr = $dtr;
         parent::__construct();
     }
 
