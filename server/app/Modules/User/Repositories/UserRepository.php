@@ -50,7 +50,7 @@ class UserRepository implements UserRepositoryInterface{
                     $user = new User();
 
                     if(strlen($bhr_user->employeeNumber)==2){
-                        $bhr_user->employeeNumber = "0" + $bhr_user->employeeNumber;
+                        $bhr_user->employeeNumber = "0" . $bhr_user->employeeNumber;
                     }
 
                     $user->emp_num = $bhr_user->employeeNumber;
@@ -147,8 +147,9 @@ class UserRepository implements UserRepositoryInterface{
             if( is_valid( $bhr_user->bestEmail ) && is_valid( $bhr_user->employmentHistoryStatus )  ) {
 
                 if(strlen($bhr_user->employeeNumber)==2){
-                    $bhr_user->employeeNumber = "0" + $bhr_user->employeeNumber;
+                    $bhr_user->employeeNumber = "0" . $bhr_user->employeeNumber;
                 }
+                
                 $user->emp_num = $bhr_user->employeeNumber;
                 $user->bhr_num = $bhr_user->id;
                 $user->email = $bhr_user->bestEmail;

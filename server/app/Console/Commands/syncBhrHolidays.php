@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -30,12 +31,14 @@ class syncBhrHolidays extends Command
      *
      * @return void
      */
-    public function __construct(PayrollRepository $payroll,DtrRepositoryInterface $dtr)
+    public function __construct(BhrRepositoryInterface $bhr,PayrollRepository $payroll,DtrRepositoryInterface $dtr)
     {
         $this->payroll = $payroll;
         $this->dtr = $dtr;
+        $this->bhr = $bhr;
         parent::__construct();
     }
+
 
     /**
      * Execute the console command.
