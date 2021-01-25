@@ -181,7 +181,7 @@ class DailyTimeRecord extends Component {
             <ContainerBody>
               <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> }>
                 { this.props.dtr.isFilterLoaded? 
-                    <div className="dtr-filter"> 
+                    <div className="dtr-filter col-6 col-md-12 col-sm-12 "> 
                       
                       <Select
                         name="year"

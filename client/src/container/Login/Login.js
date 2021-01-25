@@ -46,7 +46,7 @@ class Login extends Component {
       config={{ delay: 400, duration: 400 }}
     >
       {props => (
-        <div>
+        <div className="login-wrapper">
           <Container style={props} className="min-vh-80 d-flex flex-column justify-content-center">
               <Col md={5}>
                   <Card>
@@ -85,8 +85,8 @@ class Login extends Component {
                           </div>
                       </Card.Body>
                   </Card>
-                  <div className="powered_by">Powered by &nbsp;
-                    <Image src={process.env.PUBLIC_URL +"/images/eastvantage_logo.png"} fluid />
+                  <div className="powered_by">
+                    <a href="https://eastvantage.com/privacy-policy" target="_blank">Privacy Policy</a> | <a href="https://eastvantage.com/terms-and-condition" target="_blank">Terms & Condition</a> | Powered by <Image src={process.env.PUBLIC_URL +"/images/eastvantage_logo.png"} fluid />
                   </div>
               </Col>
           </Container>

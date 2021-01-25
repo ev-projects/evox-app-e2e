@@ -194,19 +194,19 @@ class MyRequests extends Component {
                   </ButtonGroup>
                   
                   <Row className="date-range">  
-                    <Col size="2" className="mb-2 col-2"> 
+                    <Col className="col-4 col-mb-4 col-sm-6"> 
                       <div className="form-group">
                         <label>Date From:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
                       </div>
                     </Col> 
-                    <Col size="2" className="mb-2 col-2">   
+                    <Col className="col-4 col-mb-4 col-sm-6">  
                     <div className="form-group">
                         <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
                     </Col>
-                    <Col size="2" className="mb-2 col-2 col-btn">   
+                    <Col size="2" className="col-4 col-btn">   
                     <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
                     Filter
                   </Button>
