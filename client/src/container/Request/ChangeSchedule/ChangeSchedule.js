@@ -168,7 +168,7 @@ class ChangeSchedule extends Component {
 			source_type: 'change_schedule',
 			schedule_type : 'customize',
 			bind_to : 'user',
-			bind_id :  this.props.user.id.toString(),
+			bind_id :  this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(),
 		}
 
 

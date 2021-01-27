@@ -346,8 +346,8 @@ class MyTeamRequests extends Component {
                             }
                             fifthColumn.push(
                               <div>
-                              <p> Rest Days: {item.fourth_column?.rest_day.join()}</p>
-                              <p> Work Days: {item.fourth_column?.work_days.join()}</p>
+                              <p> Rest Days: {item.fourth_column?.rest_day?.join()}</p>
+                              <p> Work Days: {item.fourth_column?.work_days?.join()}</p>
                               </div>
                             ); 
                             link =  global.change_schedule + item.id.toString();
