@@ -7,14 +7,15 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import { updateSchedule, getTemplateSchedule, getDefaultSchedule } from '../../../store/actions/scheduleActions'
+import { updateSchedule, getTemplateSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
-import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 
 import PageNotFound from "../../PageNotFound";
 import PageLoading from "../../PageLoading";
 import Wrapper from "../../../components/Template/Wrapper";
+import BackButton from "../../../components/Template/BackButton";
 
 class Schedule extends Component {    
   state = {}
@@ -64,7 +65,7 @@ class Schedule extends Component {
       }
     }
 
-    return <Wrapper>
+    return <Wrapper previousPath={this.props.location.previousPath} >
     <Formik 
       onSubmit={this.onSubmitHandler} 
       validationSchema={validationSchema} 
@@ -107,7 +108,7 @@ class Schedule extends Component {
             </h1>
           </div>
           <div className="body">
-            <ScheduleType/> 
+            <SchedulePolicy/> 
           </div>
         </Form.Group>
       </Col>
@@ -232,8 +233,9 @@ class Schedule extends Component {
       ) : null}
       <Col sm={7}>
         <Button variant="primary" type="submit">
-          Create
-        </Button>
+          Update
+        </Button>&nbsp; 
+        <BackButton {...this.props}/>
       </Col>
     </ContainerWrapper>
     </form>

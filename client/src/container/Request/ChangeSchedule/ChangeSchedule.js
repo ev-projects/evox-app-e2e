@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import "./ChangeSchedule.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleType,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 
 /** Form Manipulation */
@@ -212,7 +212,7 @@ class ChangeSchedule extends Component {
 										<Col size="12">
 											<div className="form-group">
 												<label for="valid_to">Payroll Policy:</label>
-												<ScheduleType/>
+												<SchedulePolicy/>
 											</div>
 										</Col> 
 									</Row>

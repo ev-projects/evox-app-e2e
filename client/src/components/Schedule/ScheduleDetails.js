@@ -7,7 +7,7 @@ import "./Schedule.css";
 
 var day = {mon:"Monday", tue:"Tuesday", wed : "Wednesday" , thu: "Thursday", fri: "Friday", sat : "Saturday", sun : "Sunday"};
 
-const ScheduleType = (props) => {
+const SchedulePolicy = (props) => {
     return (<Field>
         {({ field, form }) => (
     <div>
@@ -415,6 +415,6 @@ export {
   onSelectTimeHandlerFlexi,
   StandardSchedDetailsForm,
   FlexibleSchedDetailsForm,
-  ScheduleType,
+  SchedulePolicy,
   WorkDays
 }

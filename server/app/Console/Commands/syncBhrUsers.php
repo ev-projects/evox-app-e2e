@@ -82,6 +82,10 @@ class syncBhrUsers extends Command
                 # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
                 } else {
                     $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
+
+                    # Added generating of Schedule for the newly inserted user using the User's department default schedule
+                    $schedule = $user->department()->first()->defaultSchedule()->first();
+                    $this->schedule->replicate_schedule_to_user( $schedule, $user );
                 }
 
 

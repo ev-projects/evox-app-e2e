@@ -26,7 +26,7 @@ export const addTemplateSchedule = ( post_data ) => {
 }
 
 
-export const getDefaultSchedule = (employee_id) => {
+export const getDefaultSchedule = (bind_to, bind_id) => {
     
     return (dispatch, getState) => {
 
@@ -35,7 +35,7 @@ export const getDefaultSchedule = (employee_id) => {
         
         API.call({
             method: "get",
-            url: "/user/"+employee_id+"/default_schedule/",
+            url: "/"+bind_to+"/"+bind_id+"/default_schedule/",
         })
         .then(result => {
 

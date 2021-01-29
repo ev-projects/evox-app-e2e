@@ -12,7 +12,7 @@ import PageNotFound from "../../PageNotFound";
 
 import { addTemplateSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
-import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, ScheduleType, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../../components/Template/Wrapper";
@@ -66,7 +66,7 @@ class Schedule extends Component {
               </h1>
             </div>
             <div className="body">
-              <ScheduleType/> 
+              <SchedulePolicy/> 
             </div>
           </Form.Group>
         </Col>
