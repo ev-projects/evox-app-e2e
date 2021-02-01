@@ -149,8 +149,9 @@ class DtrSummary extends Component {
     </thead>
     <tbody>
     {this.props.dtrSummary.instance.summary.map((list, index) => {
-      for (var key in this.props.dtrSummary.instance.column) {
         var holiday = [];
+
+      for (var key in this.props.dtrSummary.instance.column) {
 
         if(eval("list.summary").hasOwnProperty(key)===true){
           holiday.push(

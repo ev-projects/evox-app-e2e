@@ -55,10 +55,14 @@ table .center{
 .lh < .center{
 	background-color: black !important;
 }
-.sh,.lh{
+
+.sh{
 	color: rgb(255, 194, 71) !important; 	
 }
 
+.lh{
+	color: #3853ca!important; 
+}
 
 .year-dropdown {
 	float: left;

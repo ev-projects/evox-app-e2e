@@ -79,33 +79,37 @@ class Computation
         if( $this->dtr->hasValidTimelogs() && $this->dtr->hasSchedule() ) {
 
 
-            /**
-             *   COMPUTE for Late
-             */
-            # Checks if the 'allow_late' policy is activated.
-            if( $this->check_allowed_policy('allow_late') ) {
-                $late_payroll_item = $this->compute_late();
-                
-                # If the $late_payroll_item is valid, add it on $payroll_items array.
-                if( is_valid( $late_payroll_item ) ) {
-                    $payroll_items[] = $late_payroll_item;
+            
+            # Check if the current date is Holiday
+            if($this->dtr->holidays()->get()->count() < 1) {
+
+                /**
+                 *   COMPUTE for Late
+                 */
+                # Checks if the 'allow_late' policy is activated.
+                if( $this->check_allowed_policy('allow_late') ) {
+                    $late_payroll_item = $this->compute_late();
+                    
+                    # If the $late_payroll_item is valid, add it on $payroll_items array.
+                    if( is_valid( $late_payroll_item ) ) {
+                        $payroll_items[] = $late_payroll_item;
+                    }
                 }
-            }
-
-
-            /**
-             *   COMPUTE for Undertime
-             */
-            # Checks if the 'allow_undertime' policy is activated.
-            if( $this->check_allowed_policy('allow_undertime') ) {
-                $undertime_payroll_item = $this->compute_undertime();
-                
-                # If the $undertime_payroll_item is valid, add it on $payroll_items array.
-                if( is_valid( $undertime_payroll_item ) ) {
-                    $payroll_items[] = $undertime_payroll_item;
+                /**
+                 *   COMPUTE for Undertime
+                 */
+                # Checks if the 'allow_undertime' policy is activated.
+                if( $this->check_allowed_policy('allow_undertime') ) {
+                    $undertime_payroll_item = $this->compute_undertime();
+                    
+                    # If the $undertime_payroll_item is valid, add it on $payroll_items array.
+                    if( is_valid( $undertime_payroll_item ) ) {
+                        $payroll_items[] = $undertime_payroll_item;
+                    }
                 }
-            }
 
+            }
+            
 
             /**
              *   COMPUTE for Night Diff.
