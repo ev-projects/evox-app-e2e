@@ -84,7 +84,7 @@ return [
 
 
     'BCC_EMAIL_ADDRESS' => [
-        'carmela.garcia@eastvantage.com'
+        'eastvantage.dev@gmail.com'
     ],
 
     'BCC_EMAIL_ADDRESS_FOR_NON_PROD' => [
