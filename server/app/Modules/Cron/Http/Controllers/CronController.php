@@ -22,6 +22,7 @@ use Illuminate\Http\JsonResponse;
 
 use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
 use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class CronController extends Controller
 {
@@ -119,6 +120,7 @@ class CronController extends Controller
      */
     public function sync_users($since_date_to_sync = null){
         try {
+
             /**
              *  Steps:
              *  1. Fetch all the list User's BHR Number which was recently changed base on the parameter
@@ -158,11 +160,21 @@ class CronController extends Controller
                 } else {
                     $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
 
-                    # Added generating of Schedule for the newly inserted user using the User's department default schedule
-                    $schedule = $user->department()->first()->defaultSchedule()->first();
-                    $this->schedule->replicate_schedule_to_user( $schedule, $user );
-                }
+                    if( is_valid( $user ) ) {
+                        # Added generating of Schedule for the newly inserted user using the User's department default schedule
+                        $schedule = $user->department()->first()->defaultSchedule()->first();
+                        $this->schedule->replicate_schedule_to_user( $schedule, $user );
+                        
+                        # Checks if the Date Hired is less than or equal to the nearest saturday date.
+                        $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
+                        if( Carbon::parse( $user->date_hired )->lte( $nearest_saturday_date ) ){
 
+                            # Generate DTR from the Date Hired up to the Saturday of this week.
+                            $date_array = generate_date_array($user->date_hired, $nearest_saturday_date );
+                            $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
+                        }
+                    }
+                }
 
                 # 3.
                 if( is_valid( $user ) ) {
