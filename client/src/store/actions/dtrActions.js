@@ -41,6 +41,34 @@ export const getFilterForDtr = (user_id) => {
     }
 }
 
+
+// Fetch Request List
+export const getUserDtrSummary = ( id , from , to ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr_summary/"+id+"/" + from +"/" + to,
+        })
+        .then(result => { 
+        
+                dispatch({
+                    'type'      : 'FETCH_USER_DTR_SUMMARY_SUCCESS', 
+                    'dtrSummary'  : {
+                        data : result.data.content.summary[0].summary, 
+                        column : result.data.content.column
+                    },
+                    'employeeInfo' : result.data.content.summary[0].employee_info,
+                })
+
+            
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
 // Set Selected Payroll Cutoff instance
 export const setSelectedPayrollCutoff = ( payrollCutoff ) => {
     return (dispatch, getState) => {

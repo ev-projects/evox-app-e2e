@@ -7,7 +7,6 @@ import Formatter from "../../services/Formatter";
 
 // Fetch Request List
 export const fetchDtrSummary = ( data = null ) => {
-    console.log(data);
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -26,6 +25,9 @@ export const fetchDtrSummary = ( data = null ) => {
         });
     }
 }
+
+
+
 
 
 export const exportDtrSummary = ( data = null ) => {

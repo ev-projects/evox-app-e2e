@@ -7,7 +7,7 @@ const RequestSubtitle = ( props ) => {
     
     return ( props.method == "approval" && props.user != undefined  ?
       <div style={{float:''}}>
-        <span>Name: { props.user.full_name }</span> <br/>
+        <span>Name: {   (props.user.full_name==undefined ? props.user.name : props.user.full_name ) }</span> <br/>
         <span>Department: { props.user.department }</span>
       </div> 
       : null 
