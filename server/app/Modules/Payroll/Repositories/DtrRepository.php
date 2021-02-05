@@ -899,7 +899,13 @@ class DtrRepository implements DtrRepositoryInterface{
                     $dtr = $this->apply_biometrics_to_dtr( $biometrics );
                     
                     if( is_valid( $dtr ) ){
+                        
                         $result->push( $dtr );
+
+                        // If the DTR has Valid Time Logs, trigger the computation for Payroll items.
+                        if( $dtr->hasValidTimelogs() ) {
+                            $this->compute_payroll_items( $dtr );
+                        }
                     }
                 } 
             }
@@ -998,7 +1004,7 @@ class DtrRepository implements DtrRepositoryInterface{
     /**
      *  Responsible for Applying the Biometrics Parameter to their Respective DTR
      * @param Biometrics $biometrics
-     * @return bool
+     * @return Dtr $result
      */
     protected function apply_biometrics_to_dtr( Biometrics $biometrics )
     {
