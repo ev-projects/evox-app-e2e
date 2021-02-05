@@ -7,6 +7,7 @@ use App\Modules\User\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 
 class syncBhrUsers extends Command
@@ -82,6 +83,21 @@ class syncBhrUsers extends Command
                 # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
                 } else {
                     $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
+
+                    if( is_valid( $user ) ) {
+                        # Added generating of Schedule for the newly inserted user using the User's department default schedule
+                        $schedule = $user->department()->first()->defaultSchedule()->first();
+                        $this->schedule->replicate_schedule_to_user( $schedule, $user );
+                        
+                        # Checks if the Date Hired is less than or equal to the nearest saturday date.
+                        $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
+                        if( Carbon::parse( $user->date_hired )->lte( $nearest_saturday_date ) ){
+
+                            # Generate DTR from the Date Hired up to the Saturday of this week.
+                            $date_array = generate_date_array($user->date_hired, $nearest_saturday_date );
+                            $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
+                        }
+                    }
                 }
 
 

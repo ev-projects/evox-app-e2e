@@ -63,7 +63,7 @@ class UserRepository implements UserRepositoryInterface{
                     $user->last_name = $bhr_user->lastName;
                     $user->employment_status = $bhr_user->employmentHistoryStatus;
                     $user->date_hired = $bhr_user->hireDate;
-                    $user->is_active = ( $bhr_user->terminationDate != "0000-00-00" && $bhr_user->employmentHistoryStatus != get_constant('BHR_USER_EMPLOYMENT_STATUS.terminated') ) ? true : false;
+                    $user->is_active = true;
                     
                     /** Fetch Department if existing. Insert new department if not.*/ 
                     $department = $this->generate_department( $bhr_user->department );

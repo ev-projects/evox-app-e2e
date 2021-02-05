@@ -237,19 +237,19 @@ class MyTeamRequests extends Component {
                   </ButtonGroup>
                   
                   <Row  className="filters">  
-                    <Col className="col-2 col-md-4 col-sm-6"> 
+                    <Col className="col-lg-2 col-2 col-md-4 col-sm-6"> 
                       <div className="form-group">
                         <label>Date From:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
                       </div>
                     </Col> 
-                    <Col className="col-2 col-md-4 col-sm-6">   
+                    <Col className="col-lg-2 col-2 col-md-4 col-sm-6">   
                     <div className="form-group">
                         <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
                     </Col>
-                    <Col className="col-2 col-md-5 col-sm-5"> 
+                    <Col className="col-lg-2 col-2 col-md-5 col-sm-5"> 
                       <div className="form-group">
                           <label>Department:</label>
                           <select
@@ -266,13 +266,13 @@ class MyTeamRequests extends Component {
                           </select>
                       </div>
                     </Col> 
-                    <Col className="col-2 col-md-5 col-sm-4">
+                    <Col className="col-lg-2 col-2 col-md-5 col-sm-4">
                       <div className="form-group">
                           <label>Name:</label>
                           <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     </Col> 
-                    <Col className="col-2 col-md-2 col-sm-3">
+                    <Col className="col-lg-2 col-2 col-md-2 col-sm-3">
                     <div className="form-group">
                           <label>&nbsp;</label>
                           <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
@@ -346,8 +346,8 @@ class MyTeamRequests extends Component {
                             }
                             fifthColumn.push(
                               <div>
-                              <p> Rest Days: {item.fourth_column?.rest_day.join()}</p>
-                              <p> Work Days: {item.fourth_column?.work_days.join()}</p>
+                              <p> Rest Days: {item.fourth_column?.rest_day?.join()}</p>
+                              <p> Work Days: {item.fourth_column?.work_days?.join()}</p>
                               </div>
                             ); 
                             link =  global.change_schedule + item.id.toString();

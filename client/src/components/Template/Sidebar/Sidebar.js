@@ -70,15 +70,21 @@ const Sidebar = (props) => {
                       <a className="nav-link" >
                         <i className="nav-icon fa fa-calendar-o" />
                         <p>
-                          Schedule
+                          Manage Schedule
                           <i className="right fa fa-chevron-left" />
                         </p>
                       </a>
                       <ul className="nav nav-treeview">
                         <li className="nav-item">
-                          <Link className="nav-link" to={ global.template_list_url }>
+                          <Link className="nav-link" to={ global.template_list }>
                             <i className="nav-icon fa fa-list nav-icon" />
                             <p>Template List</p>
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to={ global.schedule_assign_department }>
+                            <i className="nav-icon fa fa-calendar-check-o nav-icon" />
+                            <p style={{'fontSize':13}}>Assign Department Schedule</p>
                           </Link>
                         </li>
                         <li className="nav-item">

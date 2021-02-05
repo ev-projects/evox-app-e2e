@@ -40,6 +40,7 @@ import MyTeamList from "../container/MyTeam/MyTeamList";
 import Profile from "../container/Profile";
 import Validator from "../services/Validator";
 import RequestEmailApproval from "../container/RequestEmailApproval";
+import ScheduleAssignDepartment from "../container/Schedule/ScheduleAssignDepartment";
 
 const RoutesList = (props) => {
 
@@ -49,7 +50,8 @@ const RoutesList = (props) => {
       <Switch>
         <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
         <ProtectedRoute exact path="/app/schedule" ><TemplateCreate /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/assign/:userid" ><ScheduleAssign /></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/assign/user/:user_id" ><ScheduleAssign /></ProtectedRoute>
+        <ProtectedRoute path="/app/schedule/assign/department/" ><ScheduleAssignDepartment /></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
         <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
 

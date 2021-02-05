@@ -203,7 +203,7 @@ const MyTeamListTable = (props) => {
                       </Link>
                       &nbsp;&nbsp;&nbsp;
                       <Link to={{
-                              pathname: global.default_schedule + user.id,
+                              pathname: global.schedule_assign_user + user.id,
                               previousPath: props.location.pathname
                             }}
                           title="View Schedule"

@@ -2,6 +2,9 @@
 
 namespace App\Modules\Schedule\Repositories;
 
+use App\Modules\Schedule\Models\Schedule;
+use App\Modules\User\Models\User;
+
 interface ScheduleRepositoryInterface
 {
     public function store( array $data );
@@ -15,6 +18,8 @@ interface ScheduleRepositoryInterface
     public function assign( array $data );
     
     public function get_template_schedules();
+
+    public function replicate_schedule_to_user( Schedule $schedule, User $user );
 
     public function apply_drupal_evox_data_to_default_schedule( array $drupal_evox_default_schedule_array );
 

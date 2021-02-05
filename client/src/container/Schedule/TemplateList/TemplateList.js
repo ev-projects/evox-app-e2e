@@ -1,5 +1,5 @@
 import React, { Component,useState  } from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { Modal,Button,Container,Col,Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import DatePicker from "react-datepicker";
@@ -19,12 +19,15 @@ class Schedule extends Component {
 
   onSubmitHandler = (props,index) => {
     this.setState({ modal_bool: !this.state.modal_bool , modal_name: props.name, modal_id : props.id, index : index}) 
+    this.onDeleteHandler(props.id, index);
   }
 
-  onDeleteHandler = (id) => {
-    this.props.deleteSchedule(id);
-    this.props.templateList.splice(this.state.index, 1);
-    this.toggleModal();
+  onDeleteHandler = (id, index) => {
+    if (window.confirm("Are you sure you want to delete this template schedule?")) {
+      this.props.deleteSchedule(id);
+      this.props.templateList.splice(index, 1);
+      this.toggleModal();
+    }
   }
 
   toggleModal = () => {
@@ -49,8 +52,11 @@ class Schedule extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.props.templateList.map((day, index) => {
-                return <tr><td>{index + 1}</td> <td>{day.name}</td> <td><Button variant="success" href={`${global.template_list_url}${day.id}`}> <i class="fa fa-edit"></i> Edit </Button>  <Button variant="danger" onClick={ () => this.onSubmitHandler(day,index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
+              {this.props.templateList.map((schedule, index) => {
+                return <tr><td>{index + 1}</td> <td>{schedule.name}</td> <td><Link className="btn btn-primary" to={{
+                  pathname: global.template_list + schedule.id,
+                  previousPath: this.props.location.pathname
+                }}> <i class="fa fa-edit"></i> Edit </Link> <Button variant="danger" style={{'padding': '10px 15px'}} onClick={ () => this.onSubmitHandler(schedule, index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
               })}
               </tbody>
           </Table>

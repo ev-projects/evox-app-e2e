@@ -388,18 +388,19 @@ class Dtr extends Model
         $default_schedule = $user->defaultSchedule()->first();
 
         # Fetch the Temporary Schedule for the current User within the Date
-        $temporary_schedule = $user->temporarySchedules( $this->date, $this->date)
+        $temporary_schedule = $user->temporarySchedules( $this->date )
                                     ->orderBy('updated_at', 'DESC')
                                     ->get()
                                     ->first();
 
-        $change_schedule = $user->changeSchedules($this->date, $this->date)
+        # Fetch the Change Schedule for the current User within the Date
+        $change_schedule = $user->changeSchedules( $this->date )
                                 ->orderBy('updated_at', 'DESC')
                                 ->get()
                                 ->first();
 
         if($change_schedule != null){
-            $change_schedule = Schedule::find($change_schedule->schedule_id);
+            $change_schedule = $change_schedule->schedule()->first();
         }
 
 
@@ -408,6 +409,11 @@ class Dtr extends Model
         $schedule = ( is_valid( $temporary_schedule ) ? $temporary_schedule : 
                         ( is_valid( $change_schedule ) ? $change_schedule : $default_schedule ) );
 
+        # If Temporary and Change Schedule exists, and Change Schedule is more latest than Temporary, use the Change Schedule as the Best Schedule
+        if( is_valid( $temporary_schedule ) && is_valid( $change_schedule ) && $change_schedule->updated_at->gt($temporary_schedule->updated_at) ) {
+            $schedule = $change_schedule;
+        }
+        
         return $schedule;
     }
 

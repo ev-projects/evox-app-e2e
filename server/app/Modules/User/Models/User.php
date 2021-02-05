@@ -129,7 +129,7 @@ class User extends Authenticatable implements JWTSubject
     public function defaultSchedule(){
         return $this->hasOne(Schedule::class, 'bind_id', 'id')->where([
             'bind_to' => 'user',
-            'source_type' => 'default'
+            'source_type' => get_constant('DTR_SOURCE_TYPE_TAGGING.default')
         ]);
     }
 
@@ -153,7 +153,7 @@ class User extends Authenticatable implements JWTSubject
 
         $temporary_schedule_condition = [
             'bind_to' => 'user',
-            'source_type' => 'temporary'
+            'source_type' => get_constant('DTR_SOURCE_TYPE_TAGGING.temporary')
         ];
 
         # If the Start and End Date is valid, fetch the Temporary Schedule that exists between the Date Range.
@@ -164,7 +164,7 @@ class User extends Authenticatable implements JWTSubject
         # If the Start Date is valid and End Date is NOT Valid, fetch the Temporary Schedule that scopes the Start Date
         } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
             return $this->hasMany(Schedule::class, 'bind_id', 'id')->where($temporary_schedule_condition)
-                                                                   ->whereRaw("( valid_from >= '".$start_date."' AND  valid_to <= '".$start_date."')");
+                                                                   ->whereRaw("('". $start_date . "' BETWEEN valid_from AND valid_to)");
 
         # If the Start and End Date is NOT valid, fetch the all other Temporary Schedules.
         } else {
@@ -173,12 +173,29 @@ class User extends Authenticatable implements JWTSubject
     }
 
     # Fetch the User's Schedule (Source type is Change Schedule)
-    public function changeSchedules($start_date, $end_date){
-        return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')
-                    ->where("status","approved")
-                    ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')");  
+    public function changeSchedules($start_date = null, $end_date = null){
+        
+        $change_schedule_condition = [
+            'status' => get_constant('REQUEST_STATUS.approved')
+        ];
+
+        # If the Start and End Date is valid, fetch the Change Schedule that exists between the Date Range.
+        if( is_valid( $start_date ) && is_valid( $end_date ) ){
+            return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')->where($change_schedule_condition)
+                                                                         ->whereRaw("( valid_from BETWEEN '".$start_date."' AND '".$end_date."' OR valid_to BETWEEN '".$start_date."' AND '".$end_date."')");
+
+        # If the Start Date is valid and End Date is NOT Valid, fetch the Change Schedule that scopes the Start Date
+        } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
+            return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')->where($change_schedule_condition)
+                                                                         ->whereRaw("('". $start_date . "' BETWEEN valid_from AND valid_to)");
+
+        # If the Start and End Date is NOT valid, fetch the all other Change Schedules.
+        } else {
+            return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')->where($change_schedule_condition);
+        }
     }
 
+    # This is a duplicate function.
     # Fetch the  Change Schedule
     public function change_schedule($start_date, $end_date){
         return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')

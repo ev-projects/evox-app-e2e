@@ -2,6 +2,7 @@
 
 namespace App\Modules\Schedule\Repositories;
 
+use App\Modules\Department\Models\Department;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Schedule\Models\ScheduleDetail;
 use App\Modules\Schedule\Models\SchedulePolicy;
@@ -75,8 +76,9 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             $schedule->name             = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : $schedule->name;    # Reuse the Schedule Name if no new input was found.
 
-            $schedule->bind_to          = ( isset( $data['bind_to'] ) && is_valid( $data['bind_to'] ) ) ? $data['bind_to'] : null;
-            $schedule->bind_id          = ( isset( $data['bind_id'] ) && is_valid( $data['bind_id'] ) ) ? $data['bind_id'] : null;
+            # Disabled the saving of Bind To and Bind ID since we dont need to update the bindings during update functions.
+            // $schedule->bind_to          = ( isset( $data['bind_to'] ) && is_valid( $data['bind_to'] ) ) ? $data['bind_to'] : null;
+            // $schedule->bind_id          = ( isset( $data['bind_id'] ) && is_valid( $data['bind_id'] ) ) ? $data['bind_id'] : null;
 
             $schedule->source_type      = ( isset( $data['source_type'] ) && is_valid( $data['source_type'] ) ) ? $data['source_type'] : null;
             $schedule->schedule_type    = ( isset( $data['schedule_type'] ) && is_valid( $data['schedule_type'] ) ) ? $data['schedule_type'] : null;
@@ -158,14 +160,22 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         try {
 
             $schedule = null;
-
+            
             # If the Bind To is pointed for User.
             if( $data['bind_to'] == 'user' ) {
 
                 # Gets the Employee from the Logged-in User's Supervisee by Employee Number.
-                $employee = get_authenticated_user( $data['bind_id'] );
+                $user = get_authenticated_user( $data['bind_id'] );
                 
-                $schedule = $this->assign_to_employee( $data, $employee );
+                $schedule = $this->assign_to_user( $data, $user );
+
+            # If the Bind To is pointed for Department.
+            } elseif( $data['bind_to'] == 'department' ) {
+
+                # Gets the Department from the Bind ID..
+                $department = Department::findOrFail(  $data['bind_id']);
+                
+                $schedule = $this->assign_to_department( $data, $department );
             }
 
             return $schedule;
@@ -283,27 +293,27 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     /**
      *  Responsible for Assigning the Schedule for a User.
      * @param array (schedule Post Variables) $data
-     * @param Employee $employee
+     * @param User $user
      * @return Schedule $schedule
      */
-    protected function assign_to_employee( array $data, User $employee){
+    protected function assign_to_user( array $data, User $user){
         try{
 
             # If Source Type is 'default' and the User has an existing Default Schedule, update the Schedule
-            if ( $data['source_type'] == 'default' && $employee->defaultSchedule()->count() > 0 ) {
+            if ( $data['source_type'] == 'default' && $user->defaultSchedule()->count() > 0 ) {
                 
-                $schedule_id = $employee->defaultSchedule()->first()->id;
+                $schedule_id = $user->defaultSchedule()->first()->id;
                 $schedule = $this->update( $data , $schedule_id );
                 log_to_file( 'info', ucfirst($data['source_type']).' Schedule UPDATED', [$schedule->getAttributes()], "assign");
 
             # If Source Type is 'temporary' and the User has an existing From & To Temporary Schedule, retrieve it and Update that Schedule
             } else if ( $data['source_type'] == 'temporary' 
-                &&  $employee->temporarySchedules()->where([
+                &&  $user->temporarySchedules()->where([
                         ['valid_from', $data['valid_from']],
                         ['valid_to', $data['valid_to']]
                     ])->count() > 0) {
 
-                $schedule_id =  $employee->temporarySchedules()->where([
+                $schedule_id =  $user->temporarySchedules()->where([
                                     ['valid_from', $data['valid_from']],
                                     ['valid_to', $data['valid_to']]
                                 ])->first()->id;
@@ -311,6 +321,34 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 $schedule = $this->update( $data , $schedule_id );
                 log_to_file( 'info', ucfirst($data['source_type']).' Schedule UPDATED', [$schedule->getAttributes()], "assign");
     
+            # If not existing, Insert the new Schedule
+            } else {
+                $schedule = $this->store( $data );
+                log_to_file( 'info', ucfirst($data['source_type']).' Schedule INSERTED', [$schedule->getAttributes()], "assign");
+            }
+            
+            return $schedule;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     *  Responsible for Assigning the Schedule for a Department.
+     * @param array (schedule Post Variables) $data
+     * @param Department $department
+     * @return Schedule $schedule
+     */
+    protected function assign_to_department( array $data, Department $department){
+        try{
+            
+            # If the Department has an existing Default Schedule, update the Schedule
+            if ( $department->defaultSchedule()->count() > 0 ) {
+                
+                $schedule_id = $department->defaultSchedule()->first()->id;
+                $schedule = $this->update( $data , $schedule_id );
+                log_to_file( 'info', ucfirst($data['source_type']).' Schedule UPDATED', [$schedule->getAttributes()], "assign");
+
             # If not existing, Insert the new Schedule
             } else {
                 $schedule = $this->store( $data );
@@ -386,6 +424,64 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
 
     /**
+     *  Responsible for Replicating an existing Schedule and apply it to a specific user.
+     * @param Schedule|null $schedule
+     * @param User $user
+     * 
+     * @return array $to_compute_items
+     */
+    public function replicate_schedule_to_user( $schedule, User $user ) {
+
+        DB::beginTransaction();
+        try {
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "assign");
+
+            $new_schedule = null;
+
+            if( is_valid( $schedule ) ) {
+                
+                // Replicate the Schedule parameter into a new Schedule and change the bindings and names specifically for the user.
+                $new_schedule = $schedule->replicate();
+                $new_schedule->bind_to =  'user';
+                $new_schedule->bind_id =  $user->id;
+                $new_schedule->name =  generate_schedule_name( $new_schedule->toArray() );
+                $new_schedule->save();
+
+                // Iterate the Schedule Details into a new Schedule details and change the schedule ID with the newly generated Schedule
+                foreach( $schedule->schedule_details()->get() as $schedule_detail ){
+                    $new_schedule_detail = $schedule_detail->replicate();
+                    $new_schedule_detail->schedule_id = $new_schedule->id;
+                    $new_schedule_detail->save();
+                }
+
+                // Iterate the Schedule Policy into a new Schedule details and change the schedule ID with the newly generated Schedule
+                foreach( $schedule->schedule_policies()->get() as $schedule_policy ){
+                    $new_schedule_policy = $schedule_policy->replicate();
+                    $new_schedule_policy->schedule_id = $new_schedule->id;
+                    $new_schedule_policy->save();
+                }
+            }
+            
+            DB::commit();
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "assign");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "assign");
+            return $new_schedule;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "assign");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "assign");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+
+
+    /**
      *  Responsible for Applying the newly fetched Drupal Default Schedule to EVOX
      * @param array $drupal_evox_default_schedule_array
      * 
@@ -413,7 +509,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                     $data = $this->parse_drupal_evox_schedule( $drupal_evox_default_schedule, $user, 'default' );
                     
                     // Assign the Default Schedule to the User
-                    $schedule = $this->assign_to_employee( $data, $user);
+                    $schedule = $this->assign_to_user( $data, $user);
                     log_to_file( 'info', 'Default Schedule UPDATED/INSERTED', [$schedule->getAttributes()], "drupal_migration");
 
                     $result[] = $schedule;
@@ -475,7 +571,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                     $data = $this->parse_drupal_evox_schedule( $drupal_evox_temporary_schedule, $user, 'temporary'  );
 
                     // Assign the Temporary Schedule to the User
-                    $schedule = $this->assign_to_employee( $data, $user);
+                    $schedule = $this->assign_to_user( $data, $user);
                     log_to_file( 'info', 'Temporary Schedule UPDATED/INSERTED', [$schedule->getAttributes()], "drupal_migration");
 
                     $result[] = $schedule;

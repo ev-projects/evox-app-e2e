@@ -113,7 +113,7 @@ class ScheduleController extends Controller
 
     /**
      * Assigns a Schedule to a Specific Module (User or Department).
-     *  - Automatically Applies the Schedule to the DTR within the Valid From & Valid To Scope.
+     *  - If bind to is for user, automatically applies the Schedule to the DTR within the Valid From & Valid To Scope.
      * @return \Illuminate\Http\JsonResponse
      */
     public function assign(AssignScheduleRequest $request ) {
@@ -122,6 +122,7 @@ class ScheduleController extends Controller
 
             $schedule = $this->schedule->assign( $request->all() );
 
+            // If the bind to is for user, apply the newly assigned schedule to the DTR related
             if( $request->bind_to == 'user' ) {
                 $dtr_collection = $this->dtr->apply_schedule_to_dtr( $request->bind_id, $schedule );
             }

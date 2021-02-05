@@ -85,39 +85,42 @@ class DtrRepository implements DtrRepositoryInterface{
             
             foreach( $user_collection as $user ) {
 
-                # Fetch the Default Schedule for the current User.
-                $default_schedule = $user->defaultSchedule()->first();
+                // # Fetch the Default Schedule for the current User.
+                // $default_schedule = $user->defaultSchedule()->first();
     
-                # Fetch the Temporary Schedules for the current User within the Date Range
-                $temporary_schedule_collection = $user->temporarySchedules( $start_date, $end_date )->get();
+                // # Fetch the Temporary Schedules for the current User within the Date Range
+                // $temporary_schedule_collection = $user->temporarySchedules( $start_date, $end_date )->get();
 
-                $change_schedule_collection = $user->changeSchedules( $start_date, $end_date )->get(); 
+                // $change_schedule_collection = $user->changeSchedules( $start_date, $end_date )->get(); 
 
                 
                 foreach( $user->dtr( $start_date, $end_date )->get() as $dtr ) {
                     $date = $dtr->date;
 
-                    # Gets the Latest Temporary Schedule that the current $date is in scope.
-                    $temporary_schedule = $temporary_schedule_collection->filter(function ( $schedule ) use ( $date ) {
-                        return ( $date >= $schedule->valid_from && $date <= $schedule->valid_to) ;
-                    })
-                    ->sortByDesc('updated_at')
-                    ->first();
+                    // # Gets the Latest Temporary Schedule that the current $date is in scope.
+                    // $temporary_schedule = $temporary_schedule_collection->filter(function ( $schedule ) use ( $date ) {
+                    //     return ( $date >= $schedule->valid_from && $date <= $schedule->valid_to) ;
+                    // })
+                    // ->sortByDesc('updated_at')
+                    // ->first();
 
-                    # Gets the Change Schedule that the current $date is in scope
-                    $change_schedule = $change_schedule_collection->filter(function ( $schedule ) use ( $date ) {
-                        return ( $date >= $schedule->valid_from && $date <= $schedule->valid_to) ;
-                    })
-                    ->first();
+                    // # Gets the Change Schedule that the current $date is in scope
+                    // $change_schedule = $change_schedule_collection->filter(function ( $schedule ) use ( $date ) {
+                    //     return ( $date >= $schedule->valid_from && $date <= $schedule->valid_to) ;
+                    // })
+                    // ->first();
 
-                    if($change_schedule!=null){
-                        $change_schedule = Schedule::find($change_schedule->schedule_id);
-                    }
+                    // if($change_schedule!=null){
+                    //     $change_schedule = Schedule::find($change_schedule->schedule_id);
+                    // }
 
-                    # Setting the Schedule that would be used for that specific Day.
-                    # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
-                    $schedule = ( is_valid( $temporary_schedule ) ? $temporary_schedule : 
-                                    ( is_valid( $change_schedule ) ? $change_schedule : $default_schedule ) );
+                    // # Setting the Schedule that would be used for that specific Day.
+                    // # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
+                    // $schedule = ( is_valid( $temporary_schedule ) ? $temporary_schedule : 
+                    //                 ( is_valid( $change_schedule ) ? $change_schedule : $default_schedule ) );
+                    
+                    # Uses this getBestSchedule to check what is the best Schedule for the given Date of specific user.
+                    $schedule = $dtr->getBestSchedule();
                     
                     # Fetch Rest Day Work of the DTR Instance.
                     $rest_day_work = $dtr->rest_day_work()->first();
@@ -314,13 +317,14 @@ class DtrRepository implements DtrRepositoryInterface{
                     # Default Flag value
                     $to_update_flag = true;
         
-                    # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
-        
-                    # If the Schedule Instance is Change Schedule AND the current DTR tagging was already set as Temporary/Rest Day Work, sets the Update Flag to FALSE
-                    if( $schedule->isChangeSchedule() && ($dtr->isTemporary() || $dtr->isRestDayWork()) ) {
-                        $to_update_flag = false;
-                        $result['not_updated'][] = $dtr;
-                    }
+                    # Heirarchy: (Temporary Schedule | Change Schedule) > Default Schedule
+                    
+                    // ## Removed this code since we're not applyng the Schedule Heirarchy when we apply a specific schedule.
+                    // # If the Schedule Instance is Change Schedule AND the current DTR tagging was already set as Temporary/Rest Day Work, sets the Update Flag to FALSE
+                    // if( $schedule->isChangeSchedule() && ($dtr->isTemporary() || $dtr->isRestDayWork()) ) {
+                    //     $to_update_flag = false;
+                    //     $result['not_updated'][] = $dtr;
+                    // }
         
                     # If the Schedule Instance is Default AND the current DTR tagging was already set as Temporary/Change Schedule/Rest Day Work, sets the Update Flag to FALSE
                     if( $schedule->isDefault() && ($dtr->isTemporary() || $dtr->isChangeSchedule() || $dtr->isRestDayWork()) ) {
@@ -417,8 +421,6 @@ class DtrRepository implements DtrRepositoryInterface{
                 foreach( $dtr_collection as $dtr ) {
                     
                     // Gets the Best Schedule for the DTR
-                    # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
-        
                     $best_schedule = $dtr->getBestSchedule();
                         
                     # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
@@ -897,7 +899,13 @@ class DtrRepository implements DtrRepositoryInterface{
                     $dtr = $this->apply_biometrics_to_dtr( $biometrics );
                     
                     if( is_valid( $dtr ) ){
+                        
                         $result->push( $dtr );
+
+                        // If the DTR has Valid Time Logs, trigger the computation for Payroll items.
+                        if( $dtr->hasValidTimelogs() ) {
+                            $this->compute_payroll_items( $dtr );
+                        }
                     }
                 } 
             }
@@ -996,7 +1004,7 @@ class DtrRepository implements DtrRepositoryInterface{
     /**
      *  Responsible for Applying the Biometrics Parameter to their Respective DTR
      * @param Biometrics $biometrics
-     * @return bool
+     * @return Dtr $result
      */
     protected function apply_biometrics_to_dtr( Biometrics $biometrics )
     {

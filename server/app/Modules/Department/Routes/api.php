@@ -25,6 +25,9 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
     Route::get('/{id}', 'DepartmentController@find');
 
     # Gets the Department of the ID indicated on the Parameter
+    Route::get('/{id}/default_schedule', 'DepartmentController@default_schedule');
+
+    # Gets the Department of the ID indicated on the Parameter
     Route::post('/assign_handlers/{id}', 'DepartmentController@assign_handlers');
 
 });
