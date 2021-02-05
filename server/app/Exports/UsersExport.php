@@ -26,8 +26,8 @@ class UsersExport implements FromCollection,WithHeadings
             $row['employee_id'] = $value['employee_info']['employee_id'];
             $row['name'] = $value['employee_info']['name'];
             $row['department'] = $value['employee_info']['department'];
-            $row['leaves'] = 0;
-            $row['ul'] = 0;
+            $row['leaves'] = $value['summary']['reg']['vl_sl'];
+            $row['ul'] = $value['summary']['reg']['ul'];
             $row['late'] = $value['summary']['reg']['late'];
             $row['undertime'] = $value['summary']['reg']['undertime'];
             $row['night_diff'] = $value['summary']['reg']['night_diff'];
