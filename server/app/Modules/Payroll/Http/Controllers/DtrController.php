@@ -143,6 +143,21 @@ class DtrController extends Controller
         return Excel::download( $this->dtr_summary_export , 'dtrsummary.csv');
        
     }
+
+
+    /**
+     * Returns the raw DTR Logs of the User
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logs_list($request) {
+
+        $user_collection = $this->user->get_users_under_supervisee( $request );
+     
+        $result = $this->dtr->get_dtr_logs( $user_collection, $request->valid_from, $request->valid_to);
+        
+        return $result;
+    }
+
     
 
     /**
