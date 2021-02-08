@@ -2,17 +2,18 @@ import React, { Component, useState, useEffect  } from "react";
 import DatePicker from "react-datepicker";
 import { Container,Col,Tabs,Tab,Badge,Table,Button,Pagination,FormControl,Row,ToggleButton,ButtonGroup } from 'react-bootstrap';
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
-import "./DtrSummary.css";
+import "./DtrLogs.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
-import { fetchDtrSummary,exportDtrSummary } from '../../../store/actions/dtr/dtrSummaryActions';
+import { fetchDtrLogs, exportDtrLogs } from '../../../store/actions/dtr/dtrLogsAction';
 import { Form  } from 'react-bootstrap';
+import Paginate from "../../../components/Template/Paginate/index.js";
 
-class DtrSummary extends Component {
+class DtrLogs extends Component {
 
   constructor(props){
     super(props);
@@ -27,6 +28,7 @@ class DtrSummary extends Component {
       }
     }; 
   }
+
 	onSubmitHandler = (values) => {
     var formData = {};
 
@@ -47,27 +49,15 @@ class DtrSummary extends Component {
 	  }
     
     if(values.export){
-      this.props.exportDtrSummary( formData );
+      this.props.exportDtrLogs( formData );
     }else{
-	  this.props.fetchDtrSummary( formData );
-
+      this.props.fetchDtrLogs( formData );
     }
+
 	}
   
 
 	render = () => {  
-
-    var column = [];
-    for (var key in this.props.dtrSummary.instance.column) {
-      column.push(
-        <React.Fragment>
-        <th class={key.toUpperCase()}>{key.toUpperCase()}</th>
-        <th class={key.toUpperCase()}>{key.toUpperCase()} ND</th>
-        <th class={key.toUpperCase()}>{key.toUpperCase()} OT</th>
-        <th class={key.toUpperCase()}>{key.toUpperCase()} ND w/ OT</th>
-        </React.Fragment>
-      ); 
-    }
 
     return(<Formik 
 		enableReinitialize
@@ -79,7 +69,7 @@ class DtrSummary extends Component {
 		<form onSubmit={handleSubmit}>
 		<Wrapper>
 			  <ContainerWrapper>       
-				  <Content col="12" title="DTR Summary">
+				  <Content col="12" title="DTR Logs">
 				  <Row>  
                     <Col className="col-2"> 
                       <div className="form-group">
@@ -126,85 +116,73 @@ class DtrSummary extends Component {
                     	<div className="form-group">
 						          <label> </label>
 							          <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}>Submit</Button>&nbsp;&nbsp;
-                        <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button>
+                        {/* <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button> */}
                       </div>
                     </Col>
                     </Row>
 
-                      { this.props.dtrSummary.isListLoaded? (<div className="dtr-table">
-                         
-  <table class="table dtrSummary">
-    <thead class="thead-light">
-      <tr>
-        <th scope="col" class="th-id"># ID</th>
-        <th scope="col" class="th-name">Name</th>
-        <th scope="col" class="th-dept">Department</th>
-        <th scope="col">Leaves</th>
-        <th scope="col">UL</th>
-        <th scope="col">Late</th>
-        <th scope="col">UT</th>
-        <th scope="col">NSD</th>
-        <th scope="col">OT</th>
-        <th scope="col">OTND</th>
-        <th scope="col" class="rd">RD</th>
-        <th scope="col" class="rd">RD ND</th>
-        <th scope="col" class="rd">RD OT</th>
-        <th scope="col" class="rd">RD OTND</th>
-        {column}
-      </tr>
-    </thead>
-    <tbody>
-    {this.props.dtrSummary.instance.summary.map((list, index) => {
-        var holiday = [];
-
-      for (var key in this.props.dtrSummary.instance.column) {
-
-        if(eval("list.summary").hasOwnProperty(key)===true){
-          holiday.push(
-            <React.Fragment>
-              <td>{ eval("list.summary."+key+".rendered_hours") }</td>
-              <td>{ eval("list.summary."+key+".night_diff") }</td>
-              <td>{ eval("list.summary."+key+".overtime") }</td>
-              <td>{ eval("list.summary."+key+".overtime_night_diff")}</td>
-              </React.Fragment>
-          ); 
-        }else{
-          holiday.push(
-            <React.Fragment>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            <td>0</td>
-            </React.Fragment>
-          ); 
-        }
-    }
-
-  return <tr >
-          <td>{list.employee_info.employee_id}</td>
-          <td>{list.employee_info.name}</td>
-          <td>{list.employee_info.department}</td> 
-          <td>{list.summary.reg.vl_sl}</td>
-          <td>{list.summary.reg.ul}</td>
-          <td>{list.summary.reg.late}</td>
-          <td>{list.summary.reg.undertime}</td>
-          <td>{list.summary.reg.night_diff}</td>
-          <td>{list.summary.reg.overtime}</td>
-          <td>{list.summary.reg.overtime_night_diff}</td>
-          <td>{list.summary.rd.rendered_hours}</td>
-          <td>{list.summary.rd.night_diff}</td>
-          <td>{list.summary.rd.overtime}</td>
-          <td>{list.summary.rd.overtime_night_diff}</td>
-          {holiday}
-        </tr>
-  })}
-
-  </tbody>
-</table>
-</div>) : (<div> No Record to be displayed</div>)}    
+                      { this.props.dtrLogs?.isListLoaded? (
+                        <div className="dtr-table">
+                            <table class="table dtrSummary">
+                              <thead class="thead-light">
+                                <tr>
+                                  <th scope="col" class="th-id"># ID</th>
+                                  <th scope="col" class="th-name">Name</th>
+                                  <th scope="col" class="th-dept">Department</th>
+                                  <th scope="col">Date</th>
+                                  <th scope="col">Time In</th>
+                                  <th scope="col">Time Out</th>
+                                  <th scope="col">On Duty</th>
+                                  <th scope="col">Off Duty</th>
+                                  <th scope="col">On Flexy Duty</th>
+                                  <th scope="col">Off Flexy Duty</th>
+                                  <th scope="col">Break</th>
+                                  <th scope="col">Rendered Time</th>
+                                  <th scope="col">SL</th>
+                                  <th scope="col">VL</th>
+                                  <th scope="col">UL</th>
+                                  <th scope="col">Late</th>
+                                  <th scope="col">Undertime</th>
+                                  <th scope="col">ND</th>
+                                  <th scope="col">OT</th>
+                                  <th scope="col">OT ND</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                  {this.props.dtrLogs?.instance?.data?.map((list, index) => {
+                                    console.log(list, index)
+                                    return <tr >
+                                            <td>{list.emp_num}</td>
+                                            <td>{list.full_name}</td>
+                                            <td>{list.department}</td> 
+                                            <td>{list.date}</td>
+                                            <td>{list.time_in}</td>
+                                            <td>{list.time_out}</td>
+                                            <td>{list.start_datetime}</td>
+                                            <td>{list.end_datetime}</td>
+                                            <td>{list.start_flexy_datetime}</td>
+                                            <td>{list.end_flexy_datetime}</td>
+                                            <td>{list.break_time}</td>
+                                            <td>{list.payroll_items?.rendered_hours}</td>
+                                            <td>{list.payroll_items?.sl}</td>
+                                            <td>{list.payroll_items?.vl}</td>
+                                            <td>{list.payroll_items?.ul}</td>
+                                            <td>{list.payroll_items?.late}</td>
+                                            <td>{list.payroll_items?.undertime}</td>
+                                            <td>{list.payroll_items?.night_diff}</td>
+                                            <td>{list.payroll_items?.overtime}</td>
+                                            <td>{list.payroll_items?.overtime_night_diff}</td>
+                                          </tr>
+                                    })
+                                  }
+                              </tbody>
+                            </table>
+                            <Paginate pagination={this.props.dtrLogs?.instance?.pagination} />
+                        </div>) 
+                        : 
+                        (<div> No Record to be displayed</div>)}    
 				  </Content>
 			  </ContainerWrapper>
-	
 			</Wrapper>
 		</form>
 		)}
@@ -218,22 +196,23 @@ class DtrSummary extends Component {
   const validationSchema = Yup.object().shape({
     valid_from:      		Yup.date().required("This field is required").nullable().max( Yup.ref('valid_to') , 'Please select a Valid From date.'),
     valid_to:     			Yup.date().required("This field is required").nullable().min( Yup.ref('valid_from') , 'Please select a Valid To date.'),
-    department_id:  		Yup.string().required("This field is required").nullable()
+    department_id:  		Yup.string().required("This field is required").nullable(),
+    name:  		          Yup.string().nullable()
 
 });
   
   const mapStateToProps = (state) => {
     return {
-      dtrSummary  : state.dtrSummary,
+      dtrLogs   : state.dtrLogs,
       settings  : state.settings
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-    fetchDtrSummary : ( params ) => dispatch( fetchDtrSummary(  params ) ),
-    exportDtrSummary : ( params ) => dispatch( exportDtrSummary( params ) ),
+    fetchDtrLogs : ( params ) => dispatch( fetchDtrLogs(  params ) ),
+    exportDtrLogs : ( params ) => dispatch( exportDtrLogs( params ) ),
     }
   }
-  export default connect(mapStateToProps, mapDispatchToProps)(DtrSummary);
+  export default connect(mapStateToProps, mapDispatchToProps)(DtrLogs);
 
   

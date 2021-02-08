@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class syncBhrLeaves extends Command
 {

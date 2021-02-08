@@ -167,6 +167,24 @@ if (! function_exists('timestamp_to_date')) {
 }
 
 
+if (! function_exists('timestamp_to_time')) {   
+    /**
+     * This function returns a converted Timestamp to Time
+     *
+     * @param  timestamp timestamp
+     * @return datetime
+     */
+    function timestamp_to_time( $timestamp ) 
+    {
+        try {
+            return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp) : null;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+
 if (! function_exists('merge_date_and_time')) {   
     /**
      * This function returns a Merged Date and Time variable.

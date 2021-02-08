@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
-class UsersExport implements FromCollection,WithHeadings
+class DtrSummaryExport implements FromCollection,WithHeadings
 {
     public $data;
     private $dtr;

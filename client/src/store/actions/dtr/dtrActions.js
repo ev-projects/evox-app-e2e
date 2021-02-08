@@ -1,7 +1,7 @@
 import axios from "axios";
-import API from "../../services/API";
+import API from "../../../services/API";
 import { trackPromise } from "react-promise-tracker";
-import Formatter from "../../services/Formatter";
+import Formatter from "../../../services/Formatter";
 
 export const viewEmployeeDtr = (user_id,from,to) => {
     return (dispatch, getState) => {

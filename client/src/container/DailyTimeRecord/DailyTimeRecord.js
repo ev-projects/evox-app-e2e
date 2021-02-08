@@ -1,5 +1,5 @@
 
-import { viewEmployeeDtr, getFilterForDtr, setSelectedPayrollCutoff,getUserDtrSummary } from '../../store/actions/dtrActions';
+import { viewEmployeeDtr, getFilterForDtr, setSelectedPayrollCutoff,getUserDtrSummary } from '../../store/actions/dtr/dtrActions';
 import { fetchUser } from '../../store/actions/userActions'
 import { setRedirect } from '../../store/actions/redirectActions';
 
