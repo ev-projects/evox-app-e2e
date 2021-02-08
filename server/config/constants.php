@@ -173,6 +173,14 @@ return [
         ]
     ],
 
+    'DTR_SUMMARY_COLUMN' => [
+        "rd" => "Rest Day",
+        "lh" => "Legal Holiday",
+        "dlh" => "Double Legal Holiday",
+        "sh" => "Special Holiday",
+        "dsh" => "Double Special Holiday",
+        "slh" => "Special and Legal Holiday"
+    ],
 
     'DTR_SOURCE_TYPE_TAGGING' => [
         "default" => "default",

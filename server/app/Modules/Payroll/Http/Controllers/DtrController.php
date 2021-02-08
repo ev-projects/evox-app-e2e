@@ -94,6 +94,39 @@ class DtrController extends Controller
         }
     }
 
+
+    public function dtr_summary_block( $user_id, $start_date, $end_date ){
+        try {
+            $user_collection = Collection::make();
+
+            $this->validate(new Request([
+                'user_id' => $user_id,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ]), [
+                'user_id' => 'int',
+                'start_date' => 'date_format:Y-m-d',
+                'end_date' => 'date_format:Y-m-d',
+            ]);
+            
+            $user_collection->push(  get_authenticated_user( $user_id )  );
+
+            
+
+            $result = $this->dtr->compute_dtr_summary( $user_collection, $start_date, $end_date);
+
+            # ADD THE SUMMARY COLUMNS NAME
+            $result["column_names"] = get_constant('DTR_SUMMARY_COLUMN');
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                $result 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     public function summary_list($filter) {
         $user_collection = Collection::make();
         $under_supervisee =  Auth::user()->supervisee() ; 

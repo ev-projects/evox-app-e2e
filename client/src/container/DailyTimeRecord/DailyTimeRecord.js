@@ -75,7 +75,6 @@ class DailyTimeRecord extends Component {
 
         this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
 
-
         this.props.setSelectedPayrollCutoff( payrollCutoff );
       }
     }
@@ -132,7 +131,6 @@ class DailyTimeRecord extends Component {
 
       
   }
-
     render(){
         var yearOptions = [];
         var monthOptions = [];
@@ -186,7 +184,6 @@ class DailyTimeRecord extends Component {
           }
         }
 
-        console.log(this.props);
         return (
         <Wrapper>
           <ContainerWrapper>
@@ -240,60 +237,7 @@ class DailyTimeRecord extends Component {
               { this.props.dtr.isDtrLoaded && Validator.isValid( this.state.selectedYear?.value ) && Validator.isValid( this.state.selectedMonth?.value ) && this.state.selectedPayrollCutoff?.value != undefined  ?
                 <React.Fragment>
                   { this.props.dtr.isDtrSummaryLoaded? 
-                  <Row>
-                    <Col>
-                      <Toast >
-                        <Toast.Header>
-                          <strong className="mr-auto">LATE</strong> 
-                        </Toast.Header>
-                        <Toast.Body>{this.props.dtr.dtrSummary.data.reg.late} hr</Toast.Body>
-                      </Toast>
-                    </Col>
-                    <Col>
-                      <Toast >
-                        <Toast.Header>
-                          <strong className="mr-auto">UNDERTIME</strong>
-                        </Toast.Header>
-                        <Toast.Body>{this.props.dtr.dtrSummary.data.reg.undertime} hr</Toast.Body>
-                      </Toast>
-                      </Col>
-                  <Col>
-                  <Toast >
-                    <Toast.Header>
-                      <strong className="mr-auto">NIGHT DIFF</strong>
-                    </Toast.Header>
-                    <Toast.Body>{this.props.dtr.dtrSummary.data.reg.night_diff} hr</Toast.Body>
-                  </Toast>
-                  </Col>
-                  <Col>
-                  <Toast >
-                    <Toast.Header>
-                      <strong className="mr-auto">OVERTIME</strong>
-                    </Toast.Header>
-                    <Toast.Body>{this.props.dtr.dtrSummary.data.reg.overtime} hr</Toast.Body>
-                  </Toast>
-                  </Col>
-                  <Col>
-                  <Toast >
-                    <Toast.Header>
-                      <strong className="mr-auto">OT w/ ND</strong>
-                    </Toast.Header>
-                    <Toast.Body>{this.props.dtr.dtrSummary.data.reg.overtime_night_diff} hr</Toast.Body>
-                  </Toast>
-                  </Col>
-                  <Col>
-                  <Toast >
-                    <Toast.Header>
-                      <strong className="mr-auto">ABSENT</strong>
-                    </Toast.Header>
-                    <Toast.Body>{this.props.dtr.dtrSummary.data.reg.ul} day/s</Toast.Body>
-                  </Toast>
-                  </Col>
-                   {holidaycolumn.map((dtr_type, index) => {
-                   return (<DtrSummaryHolidays holiday={dtr_type} nd={eval('dtrSummaryData?.' + dtr_type+'?.night_diff')}  ot={eval('dtrSummaryData?.' + dtr_type+'?.overtime')}
-                   rd={eval('dtrSummaryData?.' + dtr_type+'?.rendered_hours')} ot_nd={eval('dtrSummaryData?.' + dtr_type+'?.overtime_night_diff')}/>);
-                    })}
-                  </Row>
+                    <DtrSummaryBlock computations={this.props.dtr.dtrSummary}  />
                   : 
                   null
               } 
@@ -398,11 +342,12 @@ class DailyTimeRecord extends Component {
 const DtrSummaryHolidays = ( props  ) => { 
   return (<React.Fragment>
   <Col>
+    {props.column_name}
       <Toast >
         <Toast.Header>
           <strong className="mr-auto">DAY</strong> 
         </Toast.Header>
-        <Toast.Body>{props.rd}</Toast.Body>
+        <Toast.Body>{props.data.rendered_hours}</Toast.Body>
       </Toast>
     </Col>
     <Col>
@@ -410,7 +355,7 @@ const DtrSummaryHolidays = ( props  ) => {
       <Toast.Header>
         <strong className="mr-auto">OT</strong> 
       </Toast.Header>
-      <Toast.Body>{props.ot}</Toast.Body>
+      <Toast.Body>{props.data.overtime}</Toast.Body>
     </Toast>
   </Col>
   <Col>
@@ -418,7 +363,7 @@ const DtrSummaryHolidays = ( props  ) => {
     <Toast.Header>
       <strong className="mr-auto">ND</strong> 
     </Toast.Header>
-    <Toast.Body>{props.nd}</Toast.Body>
+    <Toast.Body>{props.data.night_diff}</Toast.Body>
   </Toast>
 </Col>
 <Col>
@@ -426,9 +371,77 @@ const DtrSummaryHolidays = ( props  ) => {
   <Toast.Header>
     <strong className="mr-auto">OT W/ ND</strong> 
   </Toast.Header>
-  <Toast.Body>{props.ot_nd}</Toast.Body>
+  <Toast.Body>{props.data.overtime_night_diff}</Toast.Body>
 </Toast>
 </Col>
+</React.Fragment>);
+}
+
+
+// Component for the DTR Request List
+const DtrSummaryBlock = ( props  ) => { 
+  console.log();
+  var holidaycolumn = [];
+  var data = props.computations.data.reg;
+      
+  for (var key in props.computations.column) {
+    holidaycolumn.push(key);
+  }
+
+  return (<React.Fragment>
+                <Row>
+                    <Col>
+                      <Toast >
+                        <Toast.Header>
+                          <strong className="mr-auto">LATE</strong> 
+                        </Toast.Header>
+                        <Toast.Body>{data.late}hr</Toast.Body>
+                      </Toast>
+                    </Col>
+                    <Col>
+                      <Toast >
+                        <Toast.Header>
+                          <strong className="mr-auto">UNDERTIME</strong>
+                        </Toast.Header>
+                        <Toast.Body>{data.undertime} hr</Toast.Body>
+                      </Toast>
+                      </Col>
+                  <Col>
+                  <Toast >
+                    <Toast.Header>
+                      <strong className="mr-auto">NIGHT DIFF</strong>
+                    </Toast.Header>
+                    <Toast.Body>{data.night_diff} hr</Toast.Body>
+                  </Toast>
+                  </Col>
+                  <Col>
+                  <Toast >
+                    <Toast.Header>
+                      <strong className="mr-auto">OVERTIME</strong>
+                    </Toast.Header>
+                    <Toast.Body>{data.overtime} hr</Toast.Body>
+                  </Toast>
+                  </Col>
+                  <Col>
+                  <Toast >
+                    <Toast.Header>
+                      <strong className="mr-auto">OT w/ ND</strong>
+                    </Toast.Header>
+                    <Toast.Body>{data.overtime_night_diff}  hr</Toast.Body>
+                  </Toast>
+                  </Col>
+                  <Col>
+                  <Toast >
+                    <Toast.Header>
+                      <strong className="mr-auto">ABSENT</strong>
+                    </Toast.Header>
+                    <Toast.Body>{data.ul} day/s</Toast.Body>
+                  </Toast>
+                  </Col>
+                  {holidaycolumn.map((dtr_type, index) => {
+                   return (<DtrSummaryHolidays column_name={eval('props.computations.column_names?.' + dtr_type)} data={eval('props.computations.data?.' + dtr_type)}/>);
+                    })}
+                  </Row>
 </React.Fragment>);
 }
 

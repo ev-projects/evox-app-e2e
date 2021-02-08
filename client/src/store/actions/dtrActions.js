@@ -47,17 +47,19 @@ export const getUserDtrSummary = ( id , from , to ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr_summary/"+id+"/" + from +"/" + to,
+            url: "/dtr_summary/block/"+id+"/" + from +"/" + to,
         })
         .then(result => { 
-        
+            
                 dispatch({
                     'type'      : 'FETCH_USER_DTR_SUMMARY_SUCCESS', 
                     'dtrSummary'  : {
                         data : result.data.content.summary[0].summary, 
-                        column : result.data.content.column
+                        column : result.data.content.column,
+                        column_names : result.data.content.column_names
                     },
                     'employeeInfo' : result.data.content.summary[0].employee_info,
+                    
                 })
 
             
