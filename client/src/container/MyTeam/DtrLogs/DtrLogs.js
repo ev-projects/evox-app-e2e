@@ -77,7 +77,7 @@ class DtrLogs extends Component {
                         <InputDate name="valid_from" value={values.valid_from}/>
                       </div>
                     </Col> 
-                    <Col>   
+                    <Col  className="col-2">   
                       <div className="form-group">
                         <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
