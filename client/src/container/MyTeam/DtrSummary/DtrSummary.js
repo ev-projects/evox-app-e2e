@@ -9,11 +9,24 @@ import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
-import { fetchDtrSummary,exportDtrSummary } from '../../../store/actions/dtrSummaryActions';
+import { fetchDtrSummary,exportDtrSummary } from '../../../store/actions/dtr/dtrSummaryActions';
 import { Form  } from 'react-bootstrap';
 
 class DtrSummary extends Component {
 
+  constructor(props){
+    super(props);
+    
+    this.state = {
+      initialState : {
+        valid_from: ( this.props.settings?.current_payroll_cutoff?.start_date ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
+        valid_to:   ( this.props.settings?.current_payroll_cutoff?.end_date ? new Date( this.props.settings.current_payroll_cutoff.end_date) : null),
+        department_id: null,
+        name: null,
+        export: false,
+      }
+    }; 
+  }
 	onSubmitHandler = (values) => {
     var formData = {};
 
@@ -43,13 +56,6 @@ class DtrSummary extends Component {
   
 
 	render = () => {  
-	const initialValue = {
-		valid_from: null,
-		valid_to: null,
-		department_id: null,
-    name: null,
-    export: false,
-  }
 
     var column = [];
     for (var key in this.props.dtrSummary.instance.column) {
@@ -67,7 +73,7 @@ class DtrSummary extends Component {
 		enableReinitialize
 		onSubmit={this.onSubmitHandler} 
 		validationSchema={validationSchema} 
-		initialValues={initialValue}>
+		initialValues={this.state.initialState}>
 		{
 		({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
 		<form onSubmit={handleSubmit}>
@@ -219,6 +225,7 @@ class DtrSummary extends Component {
   const mapStateToProps = (state) => {
     return {
       dtrSummary  : state.dtrSummary,
+      settings  : state.settings
     }
   }
   const mapDispatchToProps = (dispatch) => {

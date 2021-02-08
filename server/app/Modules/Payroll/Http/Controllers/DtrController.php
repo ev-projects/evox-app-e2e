@@ -104,30 +104,13 @@ class DtrController extends Controller
         }
     }
 
-    public function summary_list($filter) {
-        $user_collection = Collection::make();
-        $under_supervisee =  Auth::user()->supervisee() ; 
+    public function summary_list( $request ) {
+
+        $user_collection = $this->user->get_users_under_supervisee( $request );
         
-        if(isset($filter->department_id)){
-            $under_supervisee->where('department_id',$filter->department_id );
-        }
+        $result = $this->dtr->compute_dtr_summary( $user_collection,  $request->valid_from, $request->valid_to);
         
-        if(isset($filter->name)){
-            $under_supervisee->where('first_name', 'like', '%' . $filter->name. '%');;
-        }
-
-        $employees =  $under_supervisee->get();
-
-        foreach( $employees as $user ) {
-            $user_collection->push(  $user  );
-        }
-
-        $start_date = $filter->valid_from;
-        $end_date = $filter->valid_to;
-     
-        $result = $this->dtr->compute_dtr_summary( $user_collection, $start_date, $end_date);
-
-        return  $result ;
+        return $result;
     }
 
         /**
@@ -157,7 +140,7 @@ class DtrController extends Controller
         $result = $this->summary_list($request);
 
         $this->dtr_summary_export->data = $result ;
-         return Excel::download( $this->dtr_summary_export , 'dtrsummary.csv');
+        return Excel::download( $this->dtr_summary_export , 'dtrsummary.csv');
        
     }
     
