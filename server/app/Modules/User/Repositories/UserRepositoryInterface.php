@@ -4,6 +4,7 @@ namespace App\Modules\User\Repositories;
 
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 interface UserRepositoryInterface
 {
@@ -26,6 +27,8 @@ interface UserRepositoryInterface
     public function get_my_team_list( $id );
 
     public function get_all_active_users();
+
+    public function get_users_under_supervisee( Request $request);
 
     public function change_password( $id, array $data);
 

@@ -139,6 +139,8 @@ return [
 
     'PAYROLL_ITEMS' => [
         "on_leave" => "vl_sl",
+        "vacation_leave" => "vl",
+        "sick_leave" => "sl",
         "unpaid_leave" => "ul",
         "late" => "late" ,
         "undertime" => "undertime" ,

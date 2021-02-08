@@ -41,6 +41,7 @@ import Profile from "../container/Profile";
 import Validator from "../services/Validator";
 import RequestEmailApproval from "../container/RequestEmailApproval";
 import ScheduleAssignDepartment from "../container/Schedule/ScheduleAssignDepartment";
+import DtrLogs from "../container/MyTeam/DtrLogs";
 
 const RoutesList = (props) => {
 
@@ -73,6 +74,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path="/app/team/MyTeamList"><MyTeamList/></ProtectedRoute>
         <ProtectedRoute exact path="/app/team/MyTeamRequests"><MyTeamRequests/></ProtectedRoute>
         <ProtectedRoute exact path="/app/team/DtrSummary"><DtrSummary/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/team/DtrLogs"><DtrLogs/></ProtectedRoute>
 
         {/* Settings */}
         <ProtectedRoute exact path="/app/admin/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>

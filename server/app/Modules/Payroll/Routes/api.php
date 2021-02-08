@@ -39,6 +39,15 @@ Route::group(['prefix' => 'dtr_summary', 'middleware' => ['jwtauth', 'auth.apike
     Route::get('export', 'DtrController@export_team_dtr_summary');
 });
 
+# API Call for DTR Summary
+Route::group(['prefix' => 'dtr_logs', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the DTR Summary of the User indicated. 
+    Route::get('team', 'DtrController@team_dtr_logs');
+
+    Route::get('export', 'DtrController@export_team_dtr_logs');
+});
+
 
 
 # API Call for Payroll

@@ -5,7 +5,7 @@ import "./QuickPunch.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { biometrixLog } from '../../store/actions/quickpunchActions'
+import { biometrixLog } from '../../store/actions/dtr/quickpunchActions'
 import * as Yup from 'yup';
 
 

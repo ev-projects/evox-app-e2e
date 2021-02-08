@@ -225,9 +225,9 @@ class User extends Authenticatable implements JWTSubject
         $column = array('id','status','created_at','created_by','updated_by');
 
         $change_schedules    =   DB::table('change_schedules')
-        ->Leftjoin('users as a', 'a.id', '=', 'change_schedules.created_by')
+        ->Leftjoin('users as a', 'a.id', '=', 'change_schedules.user_id')
         ->Leftjoin('users as b', 'b.id', '=', 'change_schedules.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
         ->select(  
                     'change_schedules.id',
                     'change_schedules.status',
@@ -244,7 +244,7 @@ class User extends Authenticatable implements JWTSubject
         $overtimes    =   DB::table('overtimes')
         ->Leftjoin('users as a', 'a.id', '=', 'overtimes.user_id')
         ->Leftjoin('users as b', 'b.id', '=', 'overtimes.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
         ->select(  
                     'overtimes.id',
                     'overtimes.status',
@@ -261,7 +261,7 @@ class User extends Authenticatable implements JWTSubject
         $rest_day_works    =   DB::table('rest_day_works')
         ->Leftjoin('users as a', 'a.id', '=', 'rest_day_works.user_id')
         ->Leftjoin('users as b', 'b.id', '=', 'rest_day_works.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
         ->select(  
                     'rest_day_works.id',
                     'rest_day_works.status',
@@ -278,7 +278,7 @@ class User extends Authenticatable implements JWTSubject
         $alter_logs    =   DB::table('alter_logs')
         ->Leftjoin('users as a', 'a.id', '=', 'alter_logs.user_id')
         ->Leftjoin('users as b', 'b.id', '=', 'alter_logs.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
         ->select(  
                     'alter_logs.id',
                     'alter_logs.status',

@@ -16,16 +16,26 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Exports\UsersExport;
+use App\Exports\DtrSummaryExport;
+use App\Modules\Payroll\Resources\DtrLogResourceCollection;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DtrController extends Controller
 {    
     private $dtr;
-    public function __construct(DtrRepositoryInterface $dtr, BiometricsRepositoryInterface $biometrics, UsersExport $export){
+    private $biometrics;
+    private $dtr_summary_export;
+    private $user;
+
+    public function __construct(DtrRepositoryInterface $dtr, 
+                                BiometricsRepositoryInterface $biometrics, 
+                                DtrSummaryExport $dtr_summary_export,
+                                UserRepositoryInterface $user){
         $this->dtr = $dtr;
         $this->biometrics = $biometrics;
-        $this->export = $export;
+        $this->dtr_summary_export = $dtr_summary_export;
+        $this->user = $user;
     }
 
     /**
@@ -145,6 +155,36 @@ class DtrController extends Controller
     public function export_team_dtr_summary( Request $request ){
 
         $result = $this->summary_list($request);
+
+        $this->dtr_summary_export->data = $result ;
+         return Excel::download( $this->dtr_summary_export , 'dtrsummary.csv');
+       
+    }
+    
+
+    /**
+     * Returns the DTR Logs User's Team.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function team_dtr_logs(  Request $request  ){
+        try {
+            
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                new DtrLogResourceCollection( $this->logs_list($request) )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+        /**
+     * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export_team_dtr_logs( Request $request ){
+
+        $result = $this->logs_list($request);
 
         $this->export->data = $result ;
          return Excel::download( $this->export , 'dtrsummary.csv');
