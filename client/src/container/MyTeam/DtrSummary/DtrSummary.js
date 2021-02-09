@@ -146,16 +146,13 @@ class DtrSummary extends Component {
         <th scope="col">NSD</th>
         <th scope="col">OT</th>
         <th scope="col">OTND</th>
-        <th scope="col" class="rd">RD</th>
-        <th scope="col" class="rd">RD ND</th>
-        <th scope="col" class="rd">RD OT</th>
-        <th scope="col" class="rd">RD OTND</th>
         {column}
       </tr>
     </thead>
     <tbody>
     {this.props.dtrSummary.instance.summary.map((list, index) => {
         var holiday = [];
+        console.log(this.props.dtrSummary.instance.column);
 
       for (var key in this.props.dtrSummary.instance.column) {
 
@@ -191,10 +188,7 @@ class DtrSummary extends Component {
           <td>{list.summary.reg.night_diff}</td>
           <td>{list.summary.reg.overtime}</td>
           <td>{list.summary.reg.overtime_night_diff}</td>
-          <td>{list.summary.rd.rendered_hours}</td>
-          <td>{list.summary.rd.night_diff}</td>
-          <td>{list.summary.rd.overtime}</td>
-          <td>{list.summary.rd.overtime_night_diff}</td>
+
           {holiday}
         </tr>
   })}

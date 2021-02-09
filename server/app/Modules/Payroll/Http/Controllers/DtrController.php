@@ -121,7 +121,11 @@ class DtrController extends Controller
             
             $user_collection->push(  get_authenticated_user( $user_id )  );
 
-            
+            # Limit the date that will be fetched by yesterday
+            $current_date = date("Y-m-d", strtotime("yesterday") ) ;
+            if( $end_date > $current_date ){
+                $end_date = $current_date;
+            }
 
             $result = $this->dtr->compute_dtr_summary( $user_collection, $start_date, $end_date);
 

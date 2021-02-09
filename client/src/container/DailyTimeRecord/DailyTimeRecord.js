@@ -278,9 +278,11 @@ class DailyTimeRecord extends Component {
 
                           // If the attendance status is absent but has a holiday, set the dtr_type and status to holiday
                           if( dtr.attendance_status.slug == 'absent' && dtr.holidays.length > 0){
-                              dtr_type = "holiday";
+                              dtr_type = dtr.holidays[0].type;
                               status = <div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
-                          } 
+                          } else if ( dtr.rest_day == 1 ){
+                              dtr_type = "rest_day";
+                          }
                           
                           // If the DTR date is beyond the current date, don't show the DTR row by returning null.
                           if( moment().diff(moment(dtr.date)) < 0 ) {
@@ -341,32 +343,37 @@ class DailyTimeRecord extends Component {
 // Component for the DTR Request List
 const DtrSummaryHolidays = ( props  ) => { 
   return (<React.Fragment>
-  <Col>
-    {props.column_name}
+    <div className="holidays">
+    <h5>{props.column_name}</h5>
+    <Row>
+    
+  <Col className="col-3">
+    
       <Toast >
         <Toast.Header>
-          <strong className="mr-auto">DAY</strong> 
+          DAY
         </Toast.Header>
         <Toast.Body>{props.data.rendered_hours}</Toast.Body>
       </Toast>
     </Col>
-    <Col>
-    <Toast >
-      <Toast.Header>
-        <strong className="mr-auto">OT</strong> 
-      </Toast.Header>
-      <Toast.Body>{props.data.overtime}</Toast.Body>
-    </Toast>
-  </Col>
-  <Col>
+    <Col className="col-3">
   <Toast >
     <Toast.Header>
-      <strong className="mr-auto">ND</strong> 
+      ND
     </Toast.Header>
     <Toast.Body>{props.data.night_diff}</Toast.Body>
   </Toast>
 </Col>
-<Col>
+    <Col className="col-3">
+    <Toast >
+      <Toast.Header>
+       OT
+      </Toast.Header>
+      <Toast.Body>{props.data.overtime}</Toast.Body>
+    </Toast>
+  </Col>
+  
+<Col className="col-3">
 <Toast >
   <Toast.Header>
     <strong className="mr-auto">OT W/ ND</strong> 
@@ -374,6 +381,8 @@ const DtrSummaryHolidays = ( props  ) => {
   <Toast.Body>{props.data.overtime_night_diff}</Toast.Body>
 </Toast>
 </Col>
+</Row>
+</div>
 </React.Fragment>);
 }
 
@@ -389,51 +398,51 @@ const DtrSummaryBlock = ( props  ) => {
   }
 
   return (<React.Fragment>
-                <Row>
-                    <Col>
+                <Row className="SummaryBlock">
+                    <Col className="late col-1">
                       <Toast >
                         <Toast.Header>
-                          <strong className="mr-auto">LATE</strong> 
+                          LATE
                         </Toast.Header>
                         <Toast.Body>{data.late}hr</Toast.Body>
                       </Toast>
                     </Col>
-                    <Col>
+                    <Col className="ut col-1">
                       <Toast >
                         <Toast.Header>
-                          <strong className="mr-auto">UNDERTIME</strong>
+                          UNDERTIME
                         </Toast.Header>
                         <Toast.Body>{data.undertime} hr</Toast.Body>
                       </Toast>
                       </Col>
-                  <Col>
+                  <Col className="nsd col-1">
                   <Toast >
                     <Toast.Header>
-                      <strong className="mr-auto">NIGHT DIFF</strong>
+                      NIGHT DIFF
                     </Toast.Header>
                     <Toast.Body>{data.night_diff} hr</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col>
+                  <Col className="ot col-1">
                   <Toast >
                     <Toast.Header>
-                      <strong className="mr-auto">OVERTIME</strong>
+                      OVERTIME
                     </Toast.Header>
                     <Toast.Body>{data.overtime} hr</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col>
+                  <Col className="otnd col-1">
                   <Toast >
                     <Toast.Header>
-                      <strong className="mr-auto">OT w/ ND</strong>
+                      OTND
                     </Toast.Header>
                     <Toast.Body>{data.overtime_night_diff}  hr</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col>
+                  <Col className="ul col-1">
                   <Toast >
                     <Toast.Header>
-                      <strong className="mr-auto">ABSENT</strong>
+                      ABSENT
                     </Toast.Header>
                     <Toast.Body>{data.ul} day/s</Toast.Body>
                   </Toast>

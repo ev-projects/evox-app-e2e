@@ -66,6 +66,17 @@ class DtrSummary
 
                     # Add the day type of the column
                     $this->column[ $dtr_type ] =  $dtr_type ;
+
+                    # Rest day tagging scenario
+                    if( !$this->check_if_holiday( $next_dtr_type ) &&  $dtr_type == get_constant('DTR_TYPE.rest_day')){
+                        $next_dtr_type =  get_constant('DTR_TYPE.rest_day');
+                    }
+
+                    if( !$this->check_if_holiday( $previous_dtr_type ) &&  $dtr_type == get_constant('DTR_TYPE.rest_day')){
+                        $previous_dtr_type =  get_constant('DTR_TYPE.rest_day');
+                    }
+
+                   
                     $this->column[ $next_dtr_type ] =  $next_dtr_type ;
                     $this->column[ $previous_dtr_type ] =  $previous_dtr_type ;
 

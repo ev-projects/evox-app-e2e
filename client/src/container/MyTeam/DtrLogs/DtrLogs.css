@@ -34,7 +34,7 @@
 .dtrSummary thead th{font-size: 12px; width: 65px}
 .dtrSummary tbody td,.dtrSummary thead th{border:1px solid #ccc;text-align: center;padding: 5px; width: 50px; vertical-align: middle;font-size: 12px}
 
-.dtrSummary thead th.rd{background-color: #868686;color: white;}
+.dtrSummary thead th.RD{background-color: #868686;color: white;}
 .dtrSummary thead th.SH{background-color: #ffc247;color: white;}
 .dtrSummary thead th.LH{background-color: #3853ca;color: white;}
 .dtrSummary thead th.th-dept{width: 100px}

@@ -165,7 +165,6 @@ return [
     'DTR_TYPE' => [
         "regular" => "reg",
         "rest_day" => "rd",
-        "rest_day" => "rd",
         "holiday" => [
             "legal" => "lh",
             "double_legal" => "dlh",
