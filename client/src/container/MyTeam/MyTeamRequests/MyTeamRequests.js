@@ -320,7 +320,7 @@ class MyTeamRequests extends Component {
                     <tr>
                       <th><Field type="checkbox" name="isAll"  onClick={() =>  { selectAllChecklist(setFieldValue,values,request_list.data)}} /></th>
                       <th>Name / Department</th>
-                      <th>Request Type / Date</th> 
+                      <th>Request Type / Date / Note</th> 
                       <th>Date Requested</th>
                       <th  colspan="2"> Request Information</th>
                       <th>Status</th>
@@ -355,14 +355,14 @@ class MyTeamRequests extends Component {
                           case "alter_logs":
                               fourthColumn.push(
                                 <div>
-                                  New
+                                  <span className="alter-logs-new">New</span>
                                   <p>In: {item.fifth_column.new_time_in}</p>
                                   <p>Out: {item.fifth_column.new_time_out}</p>
                                 </div>
                               );
                               fifthColumn.push(
                                 <div>
-                                  Old
+                                  <span className="alter-logs-old">Old</span>
                                   <p>In: {item.fourth_column.current_time_in}</p>
                                   <p>Out: {item.fourth_column.current_time_out}</p>
                                 </div>
@@ -395,7 +395,7 @@ class MyTeamRequests extends Component {
                         { item.status !="Canceled"  ? (<Field type="checkbox" name="checkedList" value={item.id.toString()+"."+item.table_name} />) : (<span></span>)}
                         </td>
                         <td><b>{item.created_by}</b><br/> <small>{item.department_name}</small></td>
-                        <td><b>{ Formatter.slug_to_title( item.table_name.slice(0, -1) )}</b><br/> <small>{item.created_at}</small></td>
+                        <td><b>{ Formatter.slug_to_title( item.table_name.slice(0, -1) )}</b><br/> <small>{item.created_at}</small>  <br/><br/> { item.employee_note ? <small><b>NOTE: </b>{item.employee_note}</small> : null} </td>
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>
