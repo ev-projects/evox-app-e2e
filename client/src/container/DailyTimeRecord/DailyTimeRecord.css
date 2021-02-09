@@ -46,7 +46,7 @@ table .center{
 	background: #efefef !important;
 }
 
-.holiday-bg-color{
+.sh-bg-color{
 	background: #fff9de !important;
 }
 
@@ -80,3 +80,30 @@ table .center{
 	width: 40% !important;
 	margin-right: 10px;
 }
+.SummaryBlock{margin-bottom: 20px; }
+.SummaryBlock .col-1 {
+    padding: 0 5px !important;
+}
+.SummaryBlock button{display: none}
+.SummaryBlock .toast-header{font-size: 10px; text-align: center;}
+.SummaryBlock .toast-header {
+    font-size: 10px;
+    text-align: center;
+    
+    background-position: center 10px;
+    background-repeat: no-repeat;
+    padding-top: 40px;
+}
+.SummaryBlock .late .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-late.png);}
+.SummaryBlock .ut .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ut.png);}
+.SummaryBlock .nsd .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-nd.png);}
+.SummaryBlock .ul .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-absent.png);}
+.SummaryBlock .ot .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
+.SummaryBlock .otnd .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
+
+.SummaryBlock .holidays {
+    border: 1px #eee solid;
+    margin-right: 5px;
+}
+.SummaryBlock .toast{box-shadow: none !important; text-align: center;}
+.SummaryBlock .holidays .col-3 .toast{border:0; box-shadow: none !important;}
