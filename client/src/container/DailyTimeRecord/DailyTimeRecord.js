@@ -179,7 +179,7 @@ class DailyTimeRecord extends Component {
         return (
         <Wrapper>
           <ContainerWrapper>
-            <ContainerBody> 
+          <ContainerBody className="dtr-wrapper">
               <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> } subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
               <Button type="button" className="btn btn-secondary float-right"><Link to={{
                               pathname: global.schedule_assign_user + this.props.params.id,
@@ -239,8 +239,7 @@ class DailyTimeRecord extends Component {
                   : 
                   null
               } 
-
-                <Table responsive hover dtr-table>
+                  <Table className="responsive hover dtr-table">
                     <thead>
                         <tr>
                             <th className="dtr-date">Date</th>
@@ -250,9 +249,9 @@ class DailyTimeRecord extends Component {
                             <th className="dtr-log">Clock Out</th>
                             <th className="dtr-item">Late</th>
                             <th className="dtr-item">Undertime</th>
-                            <th className="dtr-item">NightDiff</th>
-                            <th className="dtr-item">Overtime</th>
-                            <th className="dtr-item">OT w/ ND</th>
+                            <th className="dtr-item">NSD</th>
+                            <th className="dtr-item">OT</th>
+                            <th className="dtr-item">OTND</th>
                             <th className="dtr-requests">Requests STATUS</th>
                             <th className="dtr-actions"><i></i></th>
                         </tr>
@@ -281,6 +280,7 @@ class DailyTimeRecord extends Component {
                         } else if ( dtr.is_rest_day == 1 ){
                             dtr_type = "rest_day";
                         }
+                        
                           
                           // If the DTR date is beyond the current date, don't show the DTR row by returning null.
                           if( moment().diff(moment(dtr.date)) < 0 ) {
@@ -342,7 +342,7 @@ class DailyTimeRecord extends Component {
 const DtrSummaryHolidays = ( props  ) => { 
   return (<React.Fragment>
     <div className="holidays">
-    <h5>{props.column_name}</h5>
+    <h5><span className="ion-ios-calendar-outline"></span>{props.column_name}</h5>
     <Row>
     
   <Col className="col-3">
@@ -374,7 +374,7 @@ const DtrSummaryHolidays = ( props  ) => {
 <Col className="col-3">
 <Toast >
   <Toast.Header>
-    <strong className="mr-auto">OT W/ ND</strong> 
+    <strong className="mr-auto">OTND</strong> 
   </Toast.Header>
   <Toast.Body>{props.data.overtime_night_diff}</Toast.Body>
 </Toast>
@@ -385,8 +385,9 @@ const DtrSummaryHolidays = ( props  ) => {
 }
 
 
-// Component for the DTR Request List
+// Component for the DTR Summary Block
 const DtrSummaryBlock = ( props  ) => { 
+  console.log();
   var holidaycolumn = [];
   var data = props.computations.data.reg;
       
@@ -399,9 +400,9 @@ const DtrSummaryBlock = ( props  ) => {
                     <Col className="late col-1">
                       <Toast >
                         <Toast.Header>
-                          LATE
+                          <span>LATE</span>
                         </Toast.Header>
-                        <Toast.Body>{data.late}hr</Toast.Body>
+                        <Toast.Body>{data.late}</Toast.Body>
                       </Toast>
                     </Col>
                     <Col className="ut col-1">
@@ -409,7 +410,7 @@ const DtrSummaryBlock = ( props  ) => {
                         <Toast.Header>
                           UNDERTIME
                         </Toast.Header>
-                        <Toast.Body>{data.undertime} hr</Toast.Body>
+                        <Toast.Body>{data.undertime}</Toast.Body>
                       </Toast>
                       </Col>
                   <Col className="nsd col-1">
@@ -417,15 +418,15 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Header>
                       NIGHT DIFF
                     </Toast.Header>
-                    <Toast.Body>{data.night_diff} hr</Toast.Body>
+                    <Toast.Body>{data.night_diff}</Toast.Body>
                   </Toast>
                   </Col>
                   <Col className="ot col-1">
                   <Toast >
                     <Toast.Header>
-                      OVERTIME
+                      OT
                     </Toast.Header>
-                    <Toast.Body>{data.overtime} hr</Toast.Body>
+                    <Toast.Body>{data.overtime}</Toast.Body>
                   </Toast>
                   </Col>
                   <Col className="otnd col-1">
@@ -433,7 +434,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Header>
                       OTND
                     </Toast.Header>
-                    <Toast.Body>{data.overtime_night_diff}  hr</Toast.Body>
+                    <Toast.Body>{data.overtime_night_diff}</Toast.Body>
                   </Toast>
                   </Col>
                   <Col className="ul col-1">
@@ -441,7 +442,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Header>
                       ABSENT
                     </Toast.Header>
-                    <Toast.Body>{data.ul} day/s</Toast.Body>
+                    <Toast.Body>{data.ul}</Toast.Body>
                   </Toast>
                   </Col>
                   {holidaycolumn.map((dtr_type, index) => {
