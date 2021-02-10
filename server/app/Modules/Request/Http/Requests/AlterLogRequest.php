@@ -35,10 +35,11 @@ class AlterLogRequest extends FormRequest
         return [
             'date'                               => ['required', 'date_format:Y-m-d',  
                                                      Rule::unique('alter_logs', 'date')->where(function ($query) {
-                                                            return $query->where('user_id', auth()->user()->id);
+                                                            return $query->where('user_id', request()->get('user_id') ?? auth()->user()->id);
                                                      })->ignore( $this->route('id') ?? 'null' )
                                                        ->whereNull('deleted_at')
                                                     ],
+            'user_id'                            => 'required|exists:users,id',
             'current_time_in'                    => 'date_format:Y-m-d H:i:s',
             'current_time_out'                   => 'date_format:Y-m-d H:i:s',
             'new_time_in'                        => 'required|date_format:Y-m-d H:i:s',

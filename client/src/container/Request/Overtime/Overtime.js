@@ -144,7 +144,8 @@ class Overtime extends Component {
         method:           method,
         isManager :       isManager,
         id:               this.props.instance.id != undefined ? this.props.instance.id : null, 
-        date:             this.props.instance.date != undefined ? new Date( this.props.instance.date ) : null, 
+        date:             this.props.instance.date != undefined ? new Date( this.props.instance.date ) : null,         
+        user_id:          this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(), 
         amount:           this.props.instance.amount != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.amount+":00" ) : null,  
         type:             this.props.instance.type != undefined ? this.props.instance.type : null, 
         employee_note:    this.props.instance.employee_note != undefined ? this.props.instance.employee_note : null,
@@ -283,7 +284,8 @@ const mapStateToProps = (state) => {
   return {
     constant          : state.constant,
     instance          : state.overtime.instance,
-    isInstanceLoaded  : state.overtime.isInstanceLoaded
+    isInstanceLoaded  : state.overtime.isInstanceLoaded,
+		user			        : state.user
   }
 }
 const mapDispatchToProps = (dispatch) => {

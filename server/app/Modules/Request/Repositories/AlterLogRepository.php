@@ -38,19 +38,19 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
         DB::beginTransaction();
         try {   
             $alter_log = new AlterLog();
-            $alter_log->user_id             = auth()->user()->id;
-            $alter_log->date                = $data['date'];
+            $alter_log->user_id             = ( isset( $data['user_id'] ) && is_valid( $data['user_id'] ) ) ? $data['user_id'] : auth()->user()->id;
+            $alter_log->date                = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
             $alter_log->current_time_in     = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['current_time_in']) : null ;
             $alter_log->current_time_out    = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) : null ;
-            $alter_log->new_time_in         = strtotime($data['new_time_in']);
-            $alter_log->new_time_out        = strtotime($data['new_time_out']);
+            $alter_log->new_time_in         = ( isset( $data['new_time_in'] ) && is_valid( $data['new_time_in'] ) ) ? strtotime($data['new_time_in']) : null ;
+            $alter_log->new_time_out        = ( isset( $data['new_time_out'] ) && is_valid( $data['new_time_out'] ) ) ? strtotime($data['new_time_out']) : null ;
             $alter_log->employee_note       = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : null;
             $alter_log->updated_by          = auth()->user()->id;
             $alter_log->created_by          = auth()->user()->id;
             $alter_log->save();
             
             DB::commit();
-            log_to_file('info', 'Success', [$alter_log]);
+            log_to_file('info', 'Success', [$alter_log], 'request');
             return $alter_log;
         } catch (Exception $e) {
             DB::rollback();
@@ -91,7 +91,7 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
 
                 $alter_log->pending();
 
-                log_to_file('info', 'Success', [$alter_log]);
+                log_to_file('info', 'Success', [$alter_log], 'request');
                 return $alter_log;
             }
             
@@ -126,7 +126,7 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
                 $alter_log->delete();
 
                 DB::commit();
-                log_to_file('info', 'Success', [$alter_log]);
+                log_to_file('info', 'Success', [$alter_log], 'request');
                 return true;
 
             }
@@ -151,7 +151,7 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
 
             if( get_authenticated_user( $alter_log->user_id ) ) {
                 
-                log_to_file('info', 'Success', [$alter_log]);
+                log_to_file('info', 'Success', [$alter_log], 'request');
                 return $alter_log;
             }
 
