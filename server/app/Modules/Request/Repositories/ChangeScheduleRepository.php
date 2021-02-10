@@ -52,7 +52,7 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
             $change_schedule->save();
             
             DB::commit();
-            log_to_file('info', 'Success', [$change_schedule]);
+            log_to_file('info', 'Success', [$change_schedule], 'request');
             return $change_schedule;
         } catch (Exception $e) {
             DB::rollback();
@@ -92,7 +92,7 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
 
                 $change_schedule->pending();
 
-                log_to_file('info', 'Success', [$change_schedule]);
+                log_to_file('info', 'Success', [$change_schedule], 'request');
                 return $change_schedule;
             }
         } catch (Exception $e) {
@@ -126,7 +126,7 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
                 $change_schedule->delete();
 
                 DB::commit();
-                log_to_file('info', 'Success', [$change_schedule]);
+                log_to_file('info', 'Success', [$change_schedule], 'request');
                 return true;
 
             }
@@ -151,7 +151,7 @@ class ChangeScheduleRepository implements ChangeScheduleRepositoryInterface{
 
             if( get_authenticated_user( $change_schedule->user_id ) ) {
                 
-                log_to_file('info', 'Success', [$change_schedule]);
+                log_to_file('info', 'Success', [$change_schedule], 'request');
                 return $change_schedule;
             }
 

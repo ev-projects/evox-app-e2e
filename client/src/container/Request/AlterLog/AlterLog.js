@@ -128,7 +128,8 @@ class AlterLog extends Component {
         action:             null,
         method:             method,
         id:                 this.props.instance.id != undefined ? this.props.instance.id : null, 
-        date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : ( this.props.location.date != undefined ? new Date(  this.props.location.date ) : null ), 
+        date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : ( this.props.location.date != undefined ? new Date(  this.props.location.date ) : null ),
+        user_id:            this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(), 
         current_time_in:    this.props.instance.current_time_in != undefined ? new Date( this.props.instance.current_time_in ) : ( this.props.location.current_time_in != undefined ? new Date(  this.props.location.current_time_in ) : null ), 
         current_time_out:   this.props.instance.current_time_out != undefined ? new Date( this.props.instance.current_time_out ) : ( this.props.location.current_time_out != undefined ? new Date(  this.props.location.current_time_out ) : null ), 
         new_time_in:        this.props.instance.new_time_in != undefined ? new Date( this.props.instance.new_time_in ) : ( this.props.location.current_time_in != undefined ? new Date(  this.props.location.current_time_in ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
@@ -258,7 +259,8 @@ const mapStateToProps = (state) => {
   return {
     constant          : state.constant,
     instance          : state.alterLog.instance,
-    isInstanceLoaded  : state.alterLog.isInstanceLoaded
+    isInstanceLoaded  : state.alterLog.isInstanceLoaded,
+		user			        : state.user
   }
 }
 const mapDispatchToProps = (dispatch) => {

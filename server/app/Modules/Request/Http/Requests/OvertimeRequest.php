@@ -35,10 +35,11 @@ class OvertimeRequest extends FormRequest
         return [
             'date'                               => ['required', 'date_format:Y-m-d',  
                                                      Rule::unique('overtimes', 'date')->where(function ($query) {
-                                                            return $query->where('user_id', auth()->user()->id);
+                                                            return $query->where('user_id', request()->get('user_id') ?? auth()->user()->id);
                                                      })->ignore( $this->route('id') ?? 'null' )
                                                        ->whereNull('deleted_at')
                                                     ],
+            'user_id'                            => 'required|exists:users,id',
             'type'                               => 'required|string|in:'.get_imploded_constant('OVERTIME_TYPE'),
             'amount'                             => 'required|date_format:H:i',
             'employee_note'                      => 'string|max:255',

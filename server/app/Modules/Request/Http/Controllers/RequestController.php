@@ -118,7 +118,7 @@ class RequestController extends Controller
      */
     public function requestlistNumbers(Request $request){
         try {
-            log_activity( trans('messages.request_display_attempt') );
+            log_activity( trans('messages.request_number_display_attempt') );
             return success_response(
                 trans('messages.request_display_success'), $this->request->get_status_numbers( $request)
             );
@@ -129,7 +129,7 @@ class RequestController extends Controller
 
     public function bulkRequest(Request $request){
         try {
-            log_activity( trans('messages.request_display_attempt') );
+            log_activity( trans('messages.bulk_request_change_status_attempt') );
             $data = array();
             foreach ( $request->checkedList as $value ) {
                 $request_bulk = explode(".", $value);
@@ -227,6 +227,8 @@ class RequestController extends Controller
     public function change_request_status_via_hash_code(RequestApprovalChangeStatusRequest $request){
         try {
             
+            log_activity( trans('messages.change_request_status_attempt') );
+
             $result = [
                 'request'    => null,
                 'is_changed' => false,
@@ -366,7 +368,7 @@ class RequestController extends Controller
             auth()->logout();
             
             return success_response(
-                trans('messages.change_request_status_via_hash_code_success'), 
+                trans('messages.change_request_status_success'), 
                 new RequestApprovalChangeStatusResource( $result['request'], $result['is_changed'] )
             );
 

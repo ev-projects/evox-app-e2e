@@ -30,7 +30,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
 
             $rest_day_work = new RestDayWork();
 
-            $rest_day_work->user_id         = auth()->user()->id;
+            $rest_day_work->user_id         = ( isset( $data['user_id'] ) && is_valid( $data['user_id'] ) ) ? $data['user_id'] : auth()->user()->id;
             $rest_day_work->date            = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
             $rest_day_work->start_time      = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] ) : 0;
             $rest_day_work->end_time        = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] )   : 0;
@@ -42,7 +42,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
             $rest_day_work->save();
             
             DB::commit();
-            log_to_file('info', 'Success', [$rest_day_work]);
+            log_to_file('info', 'Success', [$rest_day_work], 'request');
             return $rest_day_work;
 
         } catch (Exception $e) {
@@ -84,7 +84,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
 
                 $rest_day_work->pending();
 
-                log_to_file('info', 'Success', [$rest_day_work]);
+                log_to_file('info', 'Success', [$rest_day_work], 'request');
                 return $rest_day_work;
             }
 
@@ -117,7 +117,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                 $rest_day_work->delete();
 
                 DB::commit();
-                log_to_file('info', 'Success', [$rest_day_work]);
+                log_to_file('info', 'Success', [$rest_day_work], 'request');
                 return true;
 
             }
@@ -143,7 +143,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
 
             if( get_authenticated_user( $rest_day_work->user_id ) ) {
                 
-                log_to_file('info', 'Success', [$rest_day_work]);
+                log_to_file('info', 'Success', [$rest_day_work], 'request');
                 return $rest_day_work;
             }
 
@@ -233,7 +233,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                                                     ->whereRaw( implode(' AND ', $query_array) , $wildcard_array)
                                                     ->get();
 
-            log_to_file('info', 'Success', [$rest_day_work_collection]);
+            log_to_file('info', 'Success', [$rest_day_work_collection], 'request');
             return RestDayWorkResource::collection( $rest_day_work_collection );
 
         } catch (Exception $e) {
