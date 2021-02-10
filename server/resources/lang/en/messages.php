@@ -192,10 +192,18 @@ return [
     'cancel_rest_day_work_attempt' => 'Canceling of Rest Day Work Request Attempt',
     'cancel_rest_day_work_success' => 'The Rest Day Work Request is now Canceled!',
 
+    'change_request_status_attempt' => 'Change Request Status from E-mail Attempt',
+    'change_request_status_success' => 'Change Request Status from E-mail Success',
+    
+    'bulk_request_change_status_attempt' => 'Bulk Request Change Status Attempt',
+    'bulk_request_update' => 'Requests are now updated',
+    
+
     'quickpunch_in_success' => 'Log In Successful',
     'quickpunch_out_success' => 'Log Out Successful',
 
-    'request_attempt' => 'Request List Attempt',
+    'request_display_attempt' => 'Request List Attempt',
+    'request_number_display_attempt' => 'Request Number List Attempt',
     'request_display_success' => 'List of Request are now displayed',
 
 
@@ -215,9 +223,6 @@ return [
     'find_payroll_cutoff_success' => 'The Payroll Cutoff is now shown!',
     
     'all_payroll_cutoff_success' => 'All the Payroll Cutoff is now shown!',
-    
-
-    'bulk_request_update' => 'Requests are now updated',
     
     /**
      *  Schedule Forms
