@@ -125,3 +125,27 @@ export const fetchUser = () => {
         });
     }
 }
+
+
+// Get User Info ( Name and Department )
+export const getUserInfo = ( id ) => {
+    return (dispatch, getState) => {
+
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/info",
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_USER_INFO', 
+                'userInfo'   : result.data.content
+            })
+
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
+        });
+    }
+}
+

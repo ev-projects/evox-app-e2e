@@ -366,7 +366,21 @@ class User extends Authenticatable implements JWTSubject
         return   $result ;
     }
 
+    
 
+    /**
+     *  Gets user info for displaying page or block
+     */
+    public function getUserInfo()
+    {
+        return [    "full_name" => $this->getFullName() , 
+                    "department" => $this->department()->first()->department_name   ];
+    }
+
+
+    
+
+  
   
     # Fetch the User's DTR
     public function get_user_by_string($str = null){

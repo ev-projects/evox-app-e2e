@@ -218,6 +218,12 @@ return [
     
 
     'bulk_request_update' => 'Requests are now updated',
+
+
+    /**
+     *  User Messages 
+     */
+    'get_user_info_success' => 'User Info is now displayed',
     
     /**
      *  Schedule Forms

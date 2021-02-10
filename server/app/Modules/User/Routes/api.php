@@ -36,6 +36,9 @@ Route::group(['prefix' => 'auth'], function () {
 
 # API Calls for user/{id}
 Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+
+     # Gets user info ( Name and Department )
+     Route::get('info', 'UserController@user_info');
     
     # Gets the list of Teams of the User
     Route::get('profile', 'UserController@profile');//->middleware('auth.apikey');

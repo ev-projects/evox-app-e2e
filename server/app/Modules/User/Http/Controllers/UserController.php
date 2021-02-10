@@ -143,7 +143,35 @@ class UserController extends Controller
         }
     }
 
-    
+    /**
+     * Returns the Temporary Schedules of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function user_info( $id ){   
+        try {
+
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+
+            if( is_under_supervisee( $id ) ){
+                $user_info = User::find( $id );
+                $user_info =  $user_info->getUserInfo();
+            }
+ 
+            return success_response(
+                trans('messages.get_user_info_success'), 
+                $user_info
+            );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 
     /**
      * Returns the Temporary Schedules of the User by the User ID

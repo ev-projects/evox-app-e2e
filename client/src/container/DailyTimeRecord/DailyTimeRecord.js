@@ -135,14 +135,7 @@ class DailyTimeRecord extends Component {
         var yearOptions = [];
         var monthOptions = [];
         var payrollCutoffOptions = [];
-        
-        var holidaycolumn = [];
-        var dtrSummaryData = this.props.dtr.dtrSummary.data;
-       
-        for (var key in this.props.dtr.dtrSummary.column) {
-          holidaycolumn.push(key);
-        }
-        
+
         const method = (this.props.user.id==this.props.params.id) ? 'store' : 'approval';
 
         // Construction of Year Options to be rendered in the select.
@@ -183,13 +176,18 @@ class DailyTimeRecord extends Component {
               
           }
         }
-
         return (
         <Wrapper>
           <ContainerWrapper>
-            <ContainerBody>
-          
+            <ContainerBody> 
               <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> } subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
+              <Button type="button" className="btn btn-secondary float-right"><Link to={{
+                              pathname: global.schedule_assign_user + this.props.params.id,
+                            }}
+                          title="View Schedule"
+                      >
+                        Update Schedule
+                </Link></Button>
                 { this.props.dtr.isFilterLoaded? 
                     <div className="dtr-filter col-6 col-md-12 col-sm-12 "> 
                       
@@ -277,12 +275,12 @@ class DailyTimeRecord extends Component {
                           let status = <div><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
 
                           // If the attendance status is absent but has a holiday, set the dtr_type and status to holiday
-                          if( dtr.attendance_status.slug == 'absent' && dtr.holidays.length > 0){
-                              dtr_type = dtr.holidays[0].type;
-                              status = <div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
-                          } else if ( dtr.rest_day == 1 ){
-                              dtr_type = "rest_day";
-                          }
+                          if( dtr.holidays.length > 0){
+                            dtr_type = dtr.holidays[0].type;
+                            status = <div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
+                        } else if ( dtr.is_rest_day == 1 ){
+                            dtr_type = "rest_day";
+                        }
                           
                           // If the DTR date is beyond the current date, don't show the DTR row by returning null.
                           if( moment().diff(moment(dtr.date)) < 0 ) {
@@ -389,7 +387,6 @@ const DtrSummaryHolidays = ( props  ) => {
 
 // Component for the DTR Request List
 const DtrSummaryBlock = ( props  ) => { 
-  console.log();
   var holidaycolumn = [];
   var data = props.computations.data.reg;
       

@@ -7,6 +7,7 @@ const initState = {
     isFilterLoaded : false,
     isDtrSummaryLoaded : false,
     dtrSummary : { column : null , data : null},
+    column_name : null,
     employeeInfo : null,
     list: [],
     filter: [],
@@ -36,12 +37,14 @@ const dtrReducer = (state = initState, action) => {
             }
             break;
 
+   
             case "FETCH_USER_DTR_SUMMARY_SUCCESS":
             result = {
                 ...state,
                 dtrSummary : action.dtrSummary,
                 isDtrSummaryLoaded : true,
-                employeeInfo : action.employeeInfo,
+                column_name : action.column_names,
+                employeeInfo : action.employeeInfo
                 
             }
             break;
