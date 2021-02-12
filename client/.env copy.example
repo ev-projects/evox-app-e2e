@@ -6,3 +6,9 @@ REACT_APP_API_BASE_URL=http://127.0.0.1:8000/api
 
 # API Key that will be included as header every call in API
 REACT_APP_API_KEY=70Tr5sr2vBY9B8uSyf1CRAt9BeUBQmBEyN03kQiQCULKlxgoD5ETQOIgIW1RknLH
+
+# GOOGLE Analytics ID
+REACT_APP_GOOGLE_ANALYTICS_ID=UA-140684773-2
+
+# GOOGLE Analytics Link
+REACT_APP_GOOGLE_ANALYTICS_LINK=https://www.googletagmanager.com/gtag/js?id=${REACT_APP_GOOGLE_ANALYTICS_ID}
