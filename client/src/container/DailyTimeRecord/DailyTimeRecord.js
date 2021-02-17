@@ -351,7 +351,7 @@ const DtrSummaryHolidays = ( props  ) => {
         <Toast.Header>
           DAY
         </Toast.Header>
-        <Toast.Body>{props.data.rendered_hours}</Toast.Body>
+        <Toast.Body>{props.data?.rendered_hours}</Toast.Body>
       </Toast>
     </Col>
     <Col className="col-3">
@@ -359,7 +359,7 @@ const DtrSummaryHolidays = ( props  ) => {
     <Toast.Header>
       ND
     </Toast.Header>
-    <Toast.Body>{props.data.night_diff}</Toast.Body>
+    <Toast.Body>{props.data?.night_diff}</Toast.Body>
   </Toast>
 </Col>
     <Col className="col-3">
@@ -367,7 +367,7 @@ const DtrSummaryHolidays = ( props  ) => {
       <Toast.Header>
        OT
       </Toast.Header>
-      <Toast.Body>{props.data.overtime}</Toast.Body>
+      <Toast.Body>{props.data?.overtime}</Toast.Body>
     </Toast>
   </Col>
   
@@ -376,7 +376,7 @@ const DtrSummaryHolidays = ( props  ) => {
   <Toast.Header>
     <strong className="mr-auto">OTND</strong> 
   </Toast.Header>
-  <Toast.Body>{props.data.overtime_night_diff}</Toast.Body>
+  <Toast.Body>{props.data?.overtime_night_diff}</Toast.Body>
 </Toast>
 </Col>
 </Row>

@@ -26,8 +26,7 @@ const myRequestListReducers = (state = initState, action) => {
                 ...state,
                 instance : action.requestList,
                 isListLoaded : true,
-                isNumbersLoaded : false,
-                statusNumbers: null,
+
             };
             break;
 
@@ -35,16 +34,12 @@ const myRequestListReducers = (state = initState, action) => {
             return {
                 ...state,
                 instance : action.requestList,
-                isListLoaded : true,
-                isNumbersLoaded : true,
-                statusNumbers: action.statusNumbers,
+                isListLoaded : true
             };
             break;
         case "FETCH_MY_REQUEST_STATUS_NUMBERS":
             return {
                 ...state,
-                instance : action.requestList,
-                isListLoaded : true,
                 isNumbersLoaded : true,
                 statusNumbers:  action.statusNumbers,
             };

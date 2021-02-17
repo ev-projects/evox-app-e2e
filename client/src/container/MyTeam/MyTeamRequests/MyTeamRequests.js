@@ -60,13 +60,11 @@ class MyTeamRequests extends Component {
         }
         this.props.bulkRequest( formData );
 
-        // Fetch request
         this.props.fetchRequestList( formData );
 
         values.checkedList = [];
         values.action = '';
-        console.log(this.state)
-        console.log(this.props)
+
       
         break;
 
@@ -87,30 +85,30 @@ class MyTeamRequests extends Component {
           } 
           
       }
-      this.props.fetchRequestList( formData , this.props.statusNumbers );
+      this.props.fetchStatusNumbers( formData );
+      this.props.fetchRequestList( formData );
     }
   }
 
-  componentWillMount(){
+  componentDidMount(){
+    var filters = {
+      ...this.state.filters,
+      valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
+      valid_to  : Validator.isValid(this.state.filters.valid_to) ? this.state.filters.valid_to.toISOString().substring(0, 10) : null
+    };
 
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
     if( ! this.props.isListLoaded ) {
-
-      var filters = {
-        ...this.state.filters,
-        valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
-        valid_to:   Validator.isValid(this.state.filters.valid_to) ? this.state.filters.valid_to.toISOString().substring(0, 10) : null
-      };
-
       this.props.fetchRequestList( filters );
+    }
+
+    if( ! this.props.isNumbersLoaded ) {
+      this.props.fetchStatusNumbers( filters );
     }
   }
 
   componentDidUpdate(){
-    if( !this.props.isNumbersLoaded && this.props.isListLoaded ){
-      var formData = {  url: "my_team_requests" };
-      this.props.fetchStatusNumbers( formData, this.props.requestList );
-    }
+
   }
 
   render = () => {  
@@ -119,7 +117,6 @@ class MyTeamRequests extends Component {
   var record_number = this.props.requestList.record_number;
 
   const required_field = "This field is required";
-
   const validationSchema = Yup.object().shape({
     checkedList: Yup.string().nullable().when('action', {
       is: 'bulk_action',
@@ -470,7 +467,6 @@ class MyTeamRequests extends Component {
   }
 
   const mapStateToProps = (state) => {
-
     return {
       requestList     : state.myTeamRequestList.instance,
       isListLoaded    : state.myTeamRequestList.isListLoaded,
@@ -482,8 +478,8 @@ class MyTeamRequests extends Component {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchRequestList : ( params , request_numbers ) => dispatch( fetchRequestList(  params , request_numbers ) ), 
-      fetchStatusNumbers : ( params , requestList ) => dispatch( fetchStatusNumbers( params , requestList ) ),
+      fetchRequestList : ( params ) => dispatch( fetchRequestList(  params ) ), 
+      fetchStatusNumbers : ( params ) => dispatch( fetchStatusNumbers( params) ),
       bulkRequest : ( post_data ) => dispatch( bulkRequest( post_data ) ),
     }
   }

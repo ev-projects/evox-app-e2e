@@ -18,32 +18,17 @@ const myTeamRequestListReducers = (state = initState, action) => {
          *  Logout Actions
          */
 
-        // Apply the Instance that was recently fetched
-        case "FETCH_MY_TEAM_REQUEST_LIST_SUCCESS_INITIALLY":
-
-            return {
-                ...state,
-                instance : action.requestList,
-                isListLoaded : true,
-                isNumbersLoaded : false,
-                statusNumbers: null,
-            };
-            break;
 
         case "FETCH_MY_TEAM_REQUEST_LIST_SUCCESS":
             return {
                 ...state,
                 instance : action.requestList,
-                isListLoaded : true,
-                isNumbersLoaded : true,
-                statusNumbers: action.statusNumbers,
+                isListLoaded : true
             };
             break;
         case "FETCH_MY_TEAM_REQUEST_STATUS_NUMBERS":
             return {
                 ...state,
-                instance : action.requestList,
-                isListLoaded : true,
                 isNumbersLoaded : true,
                 statusNumbers:  action.statusNumbers,
             };
