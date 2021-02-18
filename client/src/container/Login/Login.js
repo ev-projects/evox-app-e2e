@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import { logIn } from '../../store/actions/userActions'
 import { showAlert } from '../../store/actions/settings/alertActions'
@@ -79,6 +80,9 @@ class Login extends Component {
                                       <Button className="login_btn" variant="primary" type="submit">
                                           Submit
                                       </Button>
+                                      <Link className="forgot-password-link" to="/recover/password" >
+                                        Forgot Password?
+                                      </Link>
                                   </form>
                                   )}
                               </Formik>

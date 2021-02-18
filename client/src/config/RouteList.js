@@ -42,6 +42,7 @@ import Validator from "../services/Validator";
 import RequestEmailApproval from "../container/RequestEmailApproval";
 import ScheduleAssignDepartment from "../container/Schedule/ScheduleAssignDepartment";
 import DtrLogs from "../container/MyTeam/DtrLogs";
+import ForgotPasswordRequest from "../container/ForgotPasswordRequest";
 
 const RoutesList = (props) => {
 
@@ -111,6 +112,7 @@ const RoutesList = (props) => {
       <Switch>
         <Route exact path={["/", "/login"]} component={LoginContainer} />
         <Route exact path="/request/approval/:hashCode/:status?" component={RequestEmailApproval} />
+        <Route exact path="/recover/password" component={ForgotPasswordRequest} />
         <Route component={DefaultContainer} />
       </Switch>
     </div>

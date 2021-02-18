@@ -37,6 +37,7 @@ export const fetchProfile = ( id ) => {
 
 
 export const changePassword = ( id, formData ) => {
+
     return (dispatch, getState) => {
         API.call({
             method: "post",
@@ -46,11 +47,18 @@ export const changePassword = ( id, formData ) => {
         .then(result => {
 
             dispatch( Formatter.alert_success( result, 3000 ));
-
+            
             dispatch({
                 'type'              : 'CLOSE_ALL_FORM'
             })
-            // window.location.reload(true);
+
+            if( formData.reset_password ){
+
+                dispatch({
+                    'type'      : 'TOGGLE_FORCE_CHANGE_PASSWORD'
+                })
+                
+            }
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

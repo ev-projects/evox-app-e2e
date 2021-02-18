@@ -467,6 +467,28 @@ class UserRepository implements UserRepositoryInterface{
 
 
 
+    /**
+     *  Responsible for applying the temporary password generated to the User base from the email.
+     * @param $email
+     * @param $temporary_password
+     * @return User $user
+     */
+    public function apply_temporary_password( $email, $temporary_password ){
+        
+        try {
+            $user =  User::where( 'email', $email )->first();
+            $user->password = Hash::make( $temporary_password );
+            $user->force_change_password = true;
+            $user->save();
+
+            log_to_file('info', 'Success', $user->id, 'user');
+            return $user;
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+    }
 
     /**
      *  Responsible for changing the password of the User
@@ -489,6 +511,12 @@ class UserRepository implements UserRepositoryInterface{
                 if( auth()->attempt( $credentials ) ){
 
                     $user->password = Hash::make( $data['new_password'] );
+
+                    // If there's a data reset_password, set the force_change_password to false since the password is already reset.
+                    if( isset( $data['reset_password'] ) && $data['reset_password'] ) {
+                        $user->force_change_password = false;
+                    }
+
                     $user->save();
 
                     log_to_file('info', 'Success', $user->id, 'user');
