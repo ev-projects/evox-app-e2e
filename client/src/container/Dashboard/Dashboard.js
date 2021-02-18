@@ -28,12 +28,25 @@ class Dashboard extends Component {
                     <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
                       <Row>
                             <div className="col-lg-8 col-md-7 col-sm-12">
-                            <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training</p>
+                                <Row>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training</p>
                             <p>&nbsp;</p>
                             <a href="https://www.eastvantage.com/newsletter/2020/october/EVSafe.mp4" target="_blank"><img src="https://www.eastvantage.com/newsletter/2020/october/EVSafe.jpg" width="100%" /></a>
                         
                             <p>&nbsp;</p>
                               <p><a className="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Please fill out this Covid Safety Declaration form</a></p>
+                            
+                                    </div>
+                                    <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <h2 align="center">2021 February IT schedule</h2>
+                                    <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%"/>
+                                      <ul><li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
+                                      <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
+                                      <li>For urgent/emergency concerns reach out to: James (+63 917 8102 593)</li></ul>
+                                    </div>
+
+                                </Row>
                             </div>
                         <div className="col-lg-4 col-md-5 col-sm-12">
                             <QuickPunch/>

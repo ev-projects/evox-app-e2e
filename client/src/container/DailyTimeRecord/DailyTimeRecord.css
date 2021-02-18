@@ -1,20 +1,24 @@
 /*
  * Dashboard css File
 */
+.dtr-wrapper{}
 table .center{
 	text-align: center;
 }
-
+.dtr-table th{padding: 10px 3px !important; border: 1px solid #eaeaea !important;vertical-align: middle  !important; text-align: center;}
+.dtr-filter{padding: 0 !important; margin: 0 0 20px 0}
+.dtr-table tr{background: #fff}
+.dtr-table td{border: 1px solid #eaeaea;padding: 3px 3px !important}
 .body {
 }
-
+.dtr-schedule .col{width: 50%; padding: 0}
 .month {
     font-size: 12px;
     line-height: 10px;
 }
 
 .day{
-	font-size: 1.5em;
+	font-size: 2em;
     color: #82af13;
     font-weight: bold;
     line-height: 100%;
@@ -45,13 +49,20 @@ table .center{
 .rest_day-bg-color{
 	background: #efefef !important;
 }
-
-.sh-bg-color{
-	background: #fff9de !important;
+.sh-bg-color{background: #fbf8ec !important}
+.lh-bg-color{
+	background: #e9f3fb !important;
 }
 
 
+.dtr-log .justify-content-center {
+    color: #000;
+    font-size: 16px;
+    margin: 0;
+}
 
+.month.justify-content-center{color:#999;font-size: 12px}
+.dtr-item{font-size:16px !important}
 .lh < .center{
 	background-color: black !important;
 }
@@ -65,34 +76,34 @@ table .center{
 }
 
 .year-dropdown {
-	float: left;
-	width: 20% !important;
-	margin-right: 10px;
+float: left;
 }
 .month-dropdown {
-	float: left;
-	width: 25% !important;
-	margin-right: 10px;
+float: left;
+
 }
 .payroll-cutoff-dropdown {
+float: left;
 
-	float: left;
-	width: 40% !important;
-	margin-right: 10px;
 }
-.SummaryBlock{margin-bottom: 20px; }
+.SummaryBlock{margin-bottom: 20px;padding: 0 10px}
 .SummaryBlock .col-1 {
-    padding: 0 5px !important;
+    padding: 0 3px !important;
+    max-width: 7%;
+    flex: 0 0 7%;
 }
 .SummaryBlock button{display: none}
-.SummaryBlock .toast-header{font-size: 10px; text-align: center;}
+
 .SummaryBlock .toast-header {
-    font-size: 10px;
+    font-size: 12px;
     text-align: center;
-    
     background-position: center 10px;
     background-repeat: no-repeat;
-    padding-top: 40px;
+    padding-top: 50px;
+    display: block;
+    padding-left: 0;
+    padding-right: 0;
+    border:0;
 }
 .SummaryBlock .late .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-late.png);}
 .SummaryBlock .ut .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ut.png);}
@@ -101,9 +112,68 @@ table .center{
 .SummaryBlock .ot .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
 .SummaryBlock .otnd .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
 
+
+
+.SummaryBlock .toast{box-shadow: none !important; text-align: center;}
+.SummaryBlock .toast-body {
+    padding: 0 0 5px 0;
+    background: none;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+}
 .SummaryBlock .holidays {
     border: 1px #eee solid;
-    margin-right: 5px;
+    margin: 0 3px;
+    width: 18%;
+    padding: 5px 10px 0;
+    overflow: hidden;
 }
-.SummaryBlock .toast{box-shadow: none !important; text-align: center;}
+
+.SummaryBlock .holidays .col-3{margin: 0; padding:0;}
 .SummaryBlock .holidays .col-3 .toast{border:0; box-shadow: none !important;}
+.SummaryBlock .holidays h5 {
+    font-size: 16px;
+    color: #666;
+    position: relative;
+    text-transform: uppercase;
+    top: -7px;
+    margin-bottom: 3px;
+}
+.SummaryBlock .holidays h5 span{
+    font-size: 30px;
+    position: relative;
+    top: 4px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.SummaryBlock .holidays .col-3 .toast{background: none;}
+.SummaryBlock .holidays .toast-header{padding-top: 0}
+
+.btn-updatesched{
+    position: relative;
+    top: -23px;}
+
+.btn-updatesched a{
+    color: #fff !important;
+    text-decoration: none;
+}
+@media (min-width: 576px){
+  .SummaryBlock .col-sm-2 {
+    margin: 0 !important;
+    padding: 0 3px;
+}
+  .dtr-schedule .col{width: 100%; padding: 0}
+.SummaryBlock .holidays.col-sm-4{margin-top:5px;}
+}
+
+@media (max-width: 576px){
+  .SummaryBlock .toast-header {font-size: 11px;}
+  .dtr-schedule .col{width: 100%; padding: 0}
+.SummaryBlock .col-4 {
+    margin: 0 !important;
+    padding: 0 3px;
+}
+.SummaryBlock .holidays.col-sm-4{margin-top:5px;}
+}
