@@ -181,6 +181,8 @@ class DailyTimeRecord extends Component {
           <ContainerWrapper>
           <ContainerBody className="dtr-wrapper">
               <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> } subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
+              
+              { method=="approval"? 
               <Button type="button" className="btn btn-secondary float-right"><Link to={{
                               pathname: global.schedule_assign_user + this.props.params.id,
                             }}
@@ -188,6 +190,9 @@ class DailyTimeRecord extends Component {
                       >
                         Update Schedule
                 </Link></Button>
+                : 
+                null
+            } 
                 { this.props.dtr.isFilterLoaded? 
                     <div className="dtr-filter col-6 col-md-12 col-sm-12 "> 
                       

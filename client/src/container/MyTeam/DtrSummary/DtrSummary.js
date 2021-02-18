@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect  } from "react";
 import DatePicker from "react-datepicker";
-import { Container,Col,Tabs,Tab,Badge,Table,Button,Pagination,FormControl,Row,ToggleButton,ButtonGroup } from 'react-bootstrap';
+import { Container,Col,Tabs,Tab,Badge,Table,Button,Pagination,FormControl,Row,ToggleButton,ButtonGroup,Dropdown } from 'react-bootstrap';
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 import "./DtrSummary.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
@@ -30,25 +30,52 @@ class DtrSummary extends Component {
 	onSubmitHandler = (values) => {
     var formData = {};
 
-		for (var key in values) {
-		  if( values[key] != null && values[key] != ""  ) {
-			  switch( key ) {
-				case "valid_from":
-				case "valid_to":
-				  formData[key] = moment( values[key] ).format("YYYY-MM-DD")
+    for (var key in values) {
+      if( values[key] != null && values[key] != ""  ) {
+        switch( key ) {
+          case "valid_from":
+          case "valid_to":
+          formData[key] = moment( values[key] ).format("YYYY-MM-DD")
         break;
-        case "export":
-				break;
-				default:
-				  formData[key] = values[key];
-				break;
-			  }
-		  } 
-	  }
+          case "export":
+        break;
+        default:
+          formData[key] = values[key];
+        break;
+        }
+      } 
+    }
     
-    if(values.export){
+    if(values.export == "department"){
       this.props.exportDtrSummary( formData );
-    }else{
+    }else if(values.export == "all"){
+
+      var formData = {};
+      
+      for (var key in values) {
+        if( values[key] != null && values[key] != ""  ) {
+          switch( key ) {
+            case "valid_from":
+            case "valid_to":
+            formData[key] = moment( values[key] ).format("YYYY-MM-DD")
+          break;
+            case "export":
+            case "department_id":
+            case "name":
+          break;
+          default:
+            formData[key] = values[key];
+          break;
+          }
+        } 
+      }
+    
+      
+      this.props.exportDtrSummary( formData );
+    }
+    else{
+
+
 	  this.props.fetchDtrSummary( formData );
 
     }
@@ -126,8 +153,19 @@ class DtrSummary extends Component {
                     	<div className="form-group">
 						          <label> </label>
 							          <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}>Submit</Button>&nbsp;&nbsp;
-                        <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button>
+                        <Dropdown className="export-drop-down">
+                          <Dropdown.Toggle variant="success" id="dropdown-basic">
+                          Export
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu>
+                            <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
+                            <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
                       </div>
+
+                     
                     </Col>
                     </Row>
 
@@ -212,9 +250,11 @@ class DtrSummary extends Component {
   const validationSchema = Yup.object().shape({
     valid_from:      		Yup.date().required("This field is required").nullable().max( Yup.ref('valid_to') , 'Please select a Valid From date.'),
     valid_to:     			Yup.date().required("This field is required").nullable().min( Yup.ref('valid_from') , 'Please select a Valid To date.'),
-    department_id:  		Yup.string().required("This field is required").nullable()
-
-});
+    department_id:  		Yup.string().nullable().when('export', {
+      is: 'department',
+      then:   Yup.string().required("This field is required").nullable()
+    }),
+  });
   
   const mapStateToProps = (state) => {
     return {
