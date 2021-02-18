@@ -33,10 +33,7 @@ class DtrSummaryExport implements FromCollection,WithHeadings
             $row['night_diff'] = $value['summary']['reg']['night_diff'];
             $row['overtime'] = $value['summary']['reg']['overtime'];
             $row['overtime_night_diff'] = $value['summary']['reg']['overtime_night_diff'];
-            $row['rd'] = $value['summary']['rd']['rendered_hours'];
-            $row['rd_nd'] = $value['summary']['rd']['night_diff'];
-            $row['rd_ot']  = $value['summary']['rd']['overtime'];
-            $row['rd_nd_ot']  = $value['summary']['rd']['overtime_night_diff'];
+   
 
             # For Holiday
             foreach($this->data['column'] as $key) {
@@ -77,10 +74,6 @@ class DtrSummaryExport implements FromCollection,WithHeadings
             'Night Diff',
             'Overtime',
             'OT with ND',
-            'RD',
-            'RD ND',
-            'RD OT',
-            'RD OT W/ ND',
         ];
 
         # Addition Header for the Holiday
