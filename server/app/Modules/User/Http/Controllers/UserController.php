@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\Schedule\Resources\ScheduleResource;
 use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
+use App\Modules\User\Http\Requests\ForgotPasswordRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\UserListResourceCollection;
@@ -28,11 +30,14 @@ class UserController extends Controller
 {
     protected $user;
     protected $bhr;
+    protected $email;
 
     public function __construct(UserRepositoryInterface $user, 
-                                BhrRepositoryInterface $bhr){
+                                BhrRepositoryInterface $bhr,
+                                EmailRepositoryInterface $email){
         $this->user = $user;
         $this->bhr = $bhr;
+        $this->email = $email;
     }
 
     /**
@@ -211,7 +216,8 @@ class UserController extends Controller
      */
     public function change_password( ChangePasswordRequest $request, $id ){   
         try {
-            
+            log_activity( trans('messages.change_password_attempt') );
+
             $this->validate(new Request([
                 'id' => $id
             ]), [
@@ -234,6 +240,31 @@ class UserController extends Controller
             return success_response(
                 trans('messages.change_password_success'), 
                 new UserProfileResource( $user )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    
+
+    /**
+     * Constructs the Profile Details of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function forgot_password_request( ForgotPasswordRequest $request ){   
+        try {
+            log_activity( trans('messages.forgot_password_request_attempt') );
+
+            $temporary_password = str_random(8);
+
+            $user = $this->user->apply_temporary_password( $request->get('email'), $temporary_password );
+            
+            $this->email->sendForgotPasswordRequestEmail( $user, $temporary_password );
+
+            return success_response(
+                trans('messages.forgot_password_request_success')
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

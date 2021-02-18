@@ -149,3 +149,37 @@ export const getUserInfo = ( id ) => {
     }
 }
 
+
+// Actions for the Login
+export const forgotPasswordRequest = ( email ) => {
+
+    return (dispatch, getState) => {
+
+        dispatch({'type': 'REQUEST_START'});
+
+        trackPromise( axios({
+            method: "post",
+            url: process.env.REACT_APP_API_BASE_URL + "/forgot_password_request",
+            headers: { 
+                "Content-Type": "application/json",
+                'X-Authorization' : process.env.REACT_APP_API_KEY 
+            },
+            data: { email : email }
+        }) )
+        .then(result => {
+
+            dispatch( Formatter.alert_success( result, 5000 )  );
+
+            dispatch({
+                'type'      : 'SET_REDIRECT',
+                'link'      : global.login_url
+            })
+            
+        })
+        .catch(e => {
+            // Please take note that I used e.response here since I am not using the API.call function. That function already handles the 'e' to get it's response.
+            // I'm doing it manually for the manual AXIOS calls only.
+            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
+        });
+    }
+}
