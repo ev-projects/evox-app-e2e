@@ -177,3 +177,8 @@ float: left;
 }
 .SummaryBlock .holidays.col-sm-4{margin-top:5px;}
 }
+
+.SummaryBlock .col-lg-1 {
+    flex: 0 0 7.333333%;
+    max-width: 7.333333%;
+}
