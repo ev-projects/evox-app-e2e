@@ -90,9 +90,14 @@ float: left;
     width: 100% !important;
     float: none;
     margin-bottom: 20px;
-    overflow: hidden;
+
 }
-.SummaryBlock{margin-bottom: 20px;padding: 0 10px}
+.SummaryBlock {
+    margin-bottom: 20px;
+    padding: 0 10px;
+    width: 100%;
+    padding-top: 20px;
+}
 .SummaryBlock .col-1 {
     padding: 0 3px !important;
     max-width: 7%;
