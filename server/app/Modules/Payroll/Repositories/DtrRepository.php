@@ -964,6 +964,50 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
+    
+
+    /**
+     *  Responsible for Computing the DTR Payroll Items Summary base from the User Collection and the Date Range.
+     * @param Collection $user_collection
+     * @param string $start_date
+     * @param string $end_date
+     * @return Dtr $dtr_collection ( Collection )
+     */
+    public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date ){
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
+        
+        try{
+            // Get the DTR Collection via the User ID from the collection and the date between the start_date and end_date. Added sorting for the Emp number, First and Last name, then DTR's date.
+            $dtr_collection = Dtr::whereIn('user_id', $user_collection->pluck('id')->toArray())
+                                   ->whereBetween("date", array($start_date, $end_date))
+                                   ->join('users', 'users.id','=','dtrs.user_id')
+                                   ->orderBy('users.emp_num','asc')
+                                   ->orderBy('users.first_name','asc')
+                                   ->orderBy('users.last_name','asc')
+                                   ->orderBy('dtrs.date','asc')
+                                   ->select('dtrs.*');
+
+                // If the parameter 'page' value is 'all', Get the whole DTR Collection
+                if( request()->get('page') == 'all' ){
+                    $dtr_collection = $dtr_collection->get();
+                    
+                // If the parameter 'page' value is numeric, fetch the paginated list with offset.
+                } else {
+                    $dtr_collection = $dtr_collection->paginate(30);
+                }
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$dtr_collection], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+
+            return $dtr_collection;
+        } catch (Exception $e) {
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            throw $e;
+        }
+    }
+
 
 
     /**

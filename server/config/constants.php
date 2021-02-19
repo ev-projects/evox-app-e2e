@@ -139,6 +139,8 @@ return [
 
     'PAYROLL_ITEMS' => [
         "on_leave" => "vl_sl",
+        "vacation_leave" => "vl",
+        "sick_leave" => "sl",
         "unpaid_leave" => "ul",
         "late" => "late" ,
         "undertime" => "undertime" ,
@@ -163,7 +165,6 @@ return [
     'DTR_TYPE' => [
         "regular" => "reg",
         "rest_day" => "rd",
-        "rest_day" => "rd",
         "holiday" => [
             "legal" => "lh",
             "double_legal" => "dlh",
@@ -173,6 +174,14 @@ return [
         ]
     ],
 
+    'DTR_SUMMARY_COLUMN' => [
+        "rd" => "Rest Day",
+        "lh" => "Legal Holiday",
+        "dlh" => "Double Legal Holiday",
+        "sh" => "Special Holiday",
+        "dsh" => "Double Special Holiday",
+        "slh" => "Special and Legal Holiday"
+    ],
 
     'DTR_SOURCE_TYPE_TAGGING' => [
         "default" => "default",

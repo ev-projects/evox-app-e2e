@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect  } from "react";
 import DatePicker from "react-datepicker";
-import { Container,Col,Tabs,Tab,Badge,Table,Button,Pagination,FormControl,Row,ToggleButton,ButtonGroup } from 'react-bootstrap';
+import { Container,Col,Tabs,Tab,Badge,Table,Button,Pagination,FormControl,Row,ToggleButton,ButtonGroup,Dropdown } from 'react-bootstrap';
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 import "./DtrSummary.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
@@ -9,33 +9,73 @@ import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
-import { fetchDtrSummary,exportDtrSummary } from '../../../store/actions/dtrSummaryActions';
+import { fetchDtrSummary,exportDtrSummary } from '../../../store/actions/dtr/dtrSummaryActions';
 import { Form  } from 'react-bootstrap';
 
 class DtrSummary extends Component {
 
+  constructor(props){
+    super(props);
+    
+    this.state = {
+      initialState : {
+        valid_from: ( this.props.settings?.current_payroll_cutoff?.start_date ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
+        valid_to:   ( this.props.settings?.current_payroll_cutoff?.end_date ? new Date( this.props.settings.current_payroll_cutoff.end_date) : null),
+        department_id: null,
+        name: null,
+        export: false,
+      }
+    }; 
+  }
 	onSubmitHandler = (values) => {
     var formData = {};
 
-		for (var key in values) {
-		  if( values[key] != null && values[key] != ""  ) {
-			  switch( key ) {
-				case "valid_from":
-				case "valid_to":
-				  formData[key] = moment( values[key] ).format("YYYY-MM-DD")
+    for (var key in values) {
+      if( values[key] != null && values[key] != ""  ) {
+        switch( key ) {
+          case "valid_from":
+          case "valid_to":
+          formData[key] = moment( values[key] ).format("YYYY-MM-DD")
         break;
-        case "export":
-				break;
-				default:
-				  formData[key] = values[key];
-				break;
-			  }
-		  } 
-	  }
+          case "export":
+        break;
+        default:
+          formData[key] = values[key];
+        break;
+        }
+      } 
+    }
     
-    if(values.export){
+    if(values.export == "department"){
       this.props.exportDtrSummary( formData );
-    }else{
+    }else if(values.export == "all"){
+
+      var formData = {};
+      
+      for (var key in values) {
+        if( values[key] != null && values[key] != ""  ) {
+          switch( key ) {
+            case "valid_from":
+            case "valid_to":
+            formData[key] = moment( values[key] ).format("YYYY-MM-DD")
+          break;
+            case "export":
+            case "department_id":
+            case "name":
+          break;
+          default:
+            formData[key] = values[key];
+          break;
+          }
+        } 
+      }
+    
+      
+      this.props.exportDtrSummary( formData );
+    }
+    else{
+
+
 	  this.props.fetchDtrSummary( formData );
 
     }
@@ -43,13 +83,6 @@ class DtrSummary extends Component {
   
 
 	render = () => {  
-	const initialValue = {
-		valid_from: null,
-		valid_to: null,
-		department_id: null,
-    name: null,
-    export: false,
-  }
 
     var column = [];
     for (var key in this.props.dtrSummary.instance.column) {
@@ -67,7 +100,7 @@ class DtrSummary extends Component {
 		enableReinitialize
 		onSubmit={this.onSubmitHandler} 
 		validationSchema={validationSchema} 
-		initialValues={initialValue}>
+		initialValues={this.state.initialState}>
 		{
 		({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
 		<form onSubmit={handleSubmit}>
@@ -81,7 +114,7 @@ class DtrSummary extends Component {
                         <InputDate name="valid_from" value={values.valid_from}/>
                       </div>
                     </Col> 
-                    <Col>   
+                    <Col  className="col-2">   
                       <div className="form-group">
                         <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
@@ -120,8 +153,19 @@ class DtrSummary extends Component {
                     	<div className="form-group">
 						          <label> </label>
 							          <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}>Submit</Button>&nbsp;&nbsp;
-                        <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button>
+                        <Dropdown className="export-drop-down">
+                          <Dropdown.Toggle variant="success" id="dropdown-basic">
+                          Export
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu>
+                            <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
+                            <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
                       </div>
+
+                     
                     </Col>
                     </Row>
 
@@ -140,16 +184,13 @@ class DtrSummary extends Component {
         <th scope="col">NSD</th>
         <th scope="col">OT</th>
         <th scope="col">OTND</th>
-        <th scope="col" class="rd">RD</th>
-        <th scope="col" class="rd">RD ND</th>
-        <th scope="col" class="rd">RD OT</th>
-        <th scope="col" class="rd">RD OTND</th>
         {column}
       </tr>
     </thead>
     <tbody>
     {this.props.dtrSummary.instance.summary.map((list, index) => {
         var holiday = [];
+        console.log(this.props.dtrSummary.instance.column);
 
       for (var key in this.props.dtrSummary.instance.column) {
 
@@ -185,10 +226,7 @@ class DtrSummary extends Component {
           <td>{list.summary.reg.night_diff}</td>
           <td>{list.summary.reg.overtime}</td>
           <td>{list.summary.reg.overtime_night_diff}</td>
-          <td>{list.summary.rd.rendered_hours}</td>
-          <td>{list.summary.rd.night_diff}</td>
-          <td>{list.summary.rd.overtime}</td>
-          <td>{list.summary.rd.overtime_night_diff}</td>
+
           {holiday}
         </tr>
   })}
@@ -212,13 +250,16 @@ class DtrSummary extends Component {
   const validationSchema = Yup.object().shape({
     valid_from:      		Yup.date().required("This field is required").nullable().max( Yup.ref('valid_to') , 'Please select a Valid From date.'),
     valid_to:     			Yup.date().required("This field is required").nullable().min( Yup.ref('valid_from') , 'Please select a Valid To date.'),
-    department_id:  		Yup.string().required("This field is required").nullable()
-
-});
+    department_id:  		Yup.string().nullable().when('export', {
+      is: 'department',
+      then:   Yup.string().required("This field is required").nullable()
+    }),
+  });
   
   const mapStateToProps = (state) => {
     return {
       dtrSummary  : state.dtrSummary,
+      settings  : state.settings
     }
   }
   const mapDispatchToProps = (dispatch) => {

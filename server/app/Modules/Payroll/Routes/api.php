@@ -33,10 +33,21 @@ Route::group(['prefix' => 'dtr_summary', 'middleware' => ['jwtauth', 'auth.apike
     # Gets the DTR Summary of the team.
     Route::get('/{user_id}/{start_date}/{end_date}', 'DtrController@dtr_summary');
 
+    Route::get('block/{user_id}/{start_date}/{end_date}', 'DtrController@dtr_summary_block');
+
     # Gets the DTR Summary of the User indicated. 
-    Route::get('team', 'DtrController@team_dtr_summary');
+    Route::get('team', 'DtrController@team_dtr_summary'); 
 
     Route::get('export', 'DtrController@export_team_dtr_summary');
+});
+
+# API Call for DTR Summary
+Route::group(['prefix' => 'dtr_logs', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the DTR Summary of the User indicated. 
+    Route::get('team', 'DtrController@team_dtr_logs');
+
+    Route::get('export', 'DtrController@export_team_dtr_logs');
 });
 
 

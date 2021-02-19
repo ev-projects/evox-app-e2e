@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
+use Illuminate\Http\Request;
 
 class UserRepository implements UserRepositoryInterface{
     
@@ -437,8 +438,57 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+    
 
 
+
+    /**
+     *  Responsible for fetching all the Active Users under supervisee
+     * @param Request $request
+     * @return User $user_collection ( Collection )
+     */
+    public function get_users_under_supervisee( Request $request ){
+        try {
+            $user_collection =  auth()->user()->supervisee(); 
+
+            if( is_valid( $request->department_id ) ){
+                $user_collection->where('department_id',$request->department_id );
+            }
+            
+            if( is_valid( $request->name ) ){
+                $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
+            }
+
+            return $user_collection->get();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
+
+    /**
+     *  Responsible for applying the temporary password generated to the User base from the email.
+     * @param $email
+     * @param $temporary_password
+     * @return User $user
+     */
+    public function apply_temporary_password( $email, $temporary_password ){
+        
+        try {
+            $user =  User::where( 'email', $email )->first();
+            $user->password = Hash::make( $temporary_password );
+            $user->force_change_password = true;
+            $user->save();
+
+            log_to_file('info', 'Success', $user->id, 'user');
+            return $user;
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+    }
 
     /**
      *  Responsible for changing the password of the User
@@ -461,6 +511,12 @@ class UserRepository implements UserRepositoryInterface{
                 if( auth()->attempt( $credentials ) ){
 
                     $user->password = Hash::make( $data['new_password'] );
+
+                    // If there's a data reset_password, set the force_change_password to false since the password is already reset.
+                    if( isset( $data['reset_password'] ) && $data['reset_password'] ) {
+                        $user->force_change_password = false;
+                    }
+
                     $user->save();
 
                     log_to_file('info', 'Success', $user->id, 'user');

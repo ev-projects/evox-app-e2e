@@ -225,13 +225,14 @@ class User extends Authenticatable implements JWTSubject
         $column = array('id','status','created_at','created_by','updated_by');
 
         $change_schedules    =   DB::table('change_schedules')
-        ->Leftjoin('users as a', 'a.id', '=', 'change_schedules.created_by')
+        ->Leftjoin('users as a', 'a.id', '=', 'change_schedules.user_id')
         ->Leftjoin('users as b', 'b.id', '=', 'change_schedules.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
         ->select(  
                     'change_schedules.id',
                     'change_schedules.status',
                     'change_schedules.created_at',
+                    'change_schedules.employee_note',
                     DB::raw('CONCAT(a.first_name," ", a.last_name) as user_id'), 
                     DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'),
                     'change_schedules.schedule_id as fourth_column',
@@ -244,11 +245,12 @@ class User extends Authenticatable implements JWTSubject
         $overtimes    =   DB::table('overtimes')
         ->Leftjoin('users as a', 'a.id', '=', 'overtimes.user_id')
         ->Leftjoin('users as b', 'b.id', '=', 'overtimes.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
         ->select(  
                     'overtimes.id',
                     'overtimes.status',
                     'overtimes.created_at',
+                    'overtimes.employee_note',
                     DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'),  
                     DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
                     'overtimes.amount as fourth_column',
@@ -261,11 +263,12 @@ class User extends Authenticatable implements JWTSubject
         $rest_day_works    =   DB::table('rest_day_works')
         ->Leftjoin('users as a', 'a.id', '=', 'rest_day_works.user_id')
         ->Leftjoin('users as b', 'b.id', '=', 'rest_day_works.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
         ->select(  
                     'rest_day_works.id',
                     'rest_day_works.status',
                     'rest_day_works.created_at',
+                    'rest_day_works.employee_note',
                     DB::raw('CONCAT(a.first_name," ", a.last_name) as user_id'), 
                     DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
                     'rest_day_works.start_time as fourth_column',
@@ -278,11 +281,12 @@ class User extends Authenticatable implements JWTSubject
         $alter_logs    =   DB::table('alter_logs')
         ->Leftjoin('users as a', 'a.id', '=', 'alter_logs.user_id')
         ->Leftjoin('users as b', 'b.id', '=', 'alter_logs.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'b.department_id')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
         ->select(  
                     'alter_logs.id',
                     'alter_logs.status',
                     'alter_logs.created_at',
+                    'alter_logs.employee_note',
                     DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
                     DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
                     'alter_logs.id As fourth_column',
@@ -362,7 +366,21 @@ class User extends Authenticatable implements JWTSubject
         return   $result ;
     }
 
+    
 
+    /**
+     *  Gets user info for displaying page or block
+     */
+    public function getUserInfo()
+    {
+        return [    "full_name" => $this->getFullName() , 
+                    "department" => $this->department()->first()->department_name   ];
+    }
+
+
+    
+
+  
   
     # Fetch the User's DTR
     public function get_user_by_string($str = null){

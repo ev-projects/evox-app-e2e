@@ -127,7 +127,8 @@ class RestDayWork extends Component {
         action:             null,
         method:             method,
         id:                 this.props.instance.id != undefined ? this.props.instance.id : null, 
-        date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : null, 
+        date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : null,
+        user_id:            this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(), 
         start_time:         this.props.instance.start_time != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.start_time+":00" ) : null,
         end_time:           this.props.instance.end_time != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.end_time+":00" ): null,
         break_time:         this.props.instance.break_time != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.break_time+":00" ) : null,
@@ -255,6 +256,7 @@ const mapStateToProps = (state) => {
     constant          : state.constant,
     instance          : state.restDayWork.instance,
     isInstanceLoaded  : state.restDayWork.isInstanceLoaded,
+		user			        : state.user
   }
 }
 const mapDispatchToProps = (dispatch) => {

@@ -9,6 +9,7 @@ const initState = {
     templateSched: '',
     templateList : [],
     defaultSchedule: [],
+    userInfo : null
 }
 
 const scheduleReducer = (state = initState, action) => {
@@ -21,6 +22,7 @@ const scheduleReducer = (state = initState, action) => {
         case "FETCH_DEFAULT_SCHEDULE_SUCCESS":
             message = "Default Schedule"
             return {
+                ...state,
                 defaultSchedule : action.schedule,
                 templateList : state.templateList,
                 isScheduleLoaded : true,
@@ -29,6 +31,7 @@ const scheduleReducer = (state = initState, action) => {
         case "FETCH_TEMPLATE_DEFAULT_SCHEDULE_SUCCESS":
             message = "Template Schedule"
             return {
+                ...state,
                 defaultSchedule : state.defaultSchedule,
                 templateList : state.templateList,
                 templateData : action.templatedata,
@@ -39,6 +42,7 @@ const scheduleReducer = (state = initState, action) => {
         case "FETCH_TEMPLATE_SCHEDULE_SUCCESS":
             message = "Template Schedule"
             return {
+                ...state,
                 ...action.templatedata,
                 isScheduleLoaded : true
             };
@@ -46,8 +50,15 @@ const scheduleReducer = (state = initState, action) => {
         case "FETCH_TEMPLATES_SCHEDULE_SUCCESS":
             message = "List of Template Schedule"
             return {
+                ...state,
                 templateList : action.template,
                 isTemplateListLoaded : true
+            };
+            break;
+        case "FETCH_USER_INFO":
+            return {
+                ...state,
+                userInfo : action.userInfo
             };
             break;
 

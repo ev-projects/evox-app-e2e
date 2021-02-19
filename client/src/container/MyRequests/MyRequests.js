@@ -55,14 +55,14 @@ class MyRequests extends Component {
       } 
     }
     
-    this.props.fetchRequestList( formData , this.props.statusNumbers );
+    this.props.fetchRequestList( formData );
+    this.props.fetchStatusNumbers( formData );
   }
 
-  componentWillMount(){
+  componentDidMount(){
 
     // Fetch the my Request list upon mounting of the component if the My Request List is not yet initially loaded.
     if( ! this.props.isListLoaded ) {
-
       var filters = {
         ...this.state.filters,
         valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
@@ -70,16 +70,11 @@ class MyRequests extends Component {
       };
 
       this.props.fetchRequestList( filters );
+      this.props.fetchStatusNumbers( filters );
     }
 
   }
 
-  componentDidUpdate(){
-    if( !this.props.isNumbersLoaded && this.props.isListLoaded ){
-      var formData = { "url" : "my_requests" };
-      this.props.fetchStatusNumbers( formData , this.props.requestList );
-    }
-  }
 
 
   render = () => {  
@@ -218,7 +213,7 @@ class MyRequests extends Component {
                 <Table striped bordered hover>
                   <thead>
                     <tr>
-                      <th>Request Type / Date</th>
+                      <th>Request Type / Date / Note</th>
                       <th>Date Requested</th>
                       <th  colspan="2"> Request Information</th>
                       <th>Status</th>
@@ -254,14 +249,14 @@ class MyRequests extends Component {
                           case "alter_logs":
                             fourthColumn.push(
                               <div>
-                                New
+                              <span className="alter-logs-new">New</span>
                                 <p>In: {item.fifth_column.new_time_in}</p>
                                 <p>Out: {item.fifth_column.new_time_out}</p>
                               </div>
                             );
                             fifthColumn.push(
                               <div>
-                                Old
+                                <span className="alter-logs-old">Old</span>
                                 <p>In: {item.fourth_column.current_time_in}</p>
                                 <p>Out: {item.fourth_column.current_time_out}</p>
                               </div>
@@ -292,7 +287,7 @@ class MyRequests extends Component {
                               break;
                        }
                         return <tr>
-                        <td><b>{ Formatter.slug_to_title( item.table_name.slice(0, -1) ) }</b> <br/><small>{item.created_at}</small></td>
+                        <td><b>{ Formatter.slug_to_title( item.table_name.slice(0, -1) ) }</b> <br/><small>{item.created_at}</small> <br/><br/> { item.employee_note ? <small><b>NOTE: </b>{item.employee_note}</small> : null} </td>
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>
@@ -354,8 +349,8 @@ class MyRequests extends Component {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchRequestList : ( params , request_numbers ) => dispatch( fetchRequestList(  params , request_numbers ) ), 
-      fetchStatusNumbers : ( params , requestList ) => dispatch( fetchStatusNumbers( params , requestList ) ),
+      fetchRequestList : ( params  ) => dispatch( fetchRequestList(  params  ) ), 
+      fetchStatusNumbers : ( params  ) => dispatch( fetchStatusNumbers( params  ) ),
     }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(MyRequests);

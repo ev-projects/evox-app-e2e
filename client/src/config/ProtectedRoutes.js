@@ -4,6 +4,8 @@ import withRouter from '../services/HandleRoute';
 
 import Validator from "../services/Validator";
 import { connect } from 'react-redux';
+import ChangePasswordForm from "../components/ChangePasswordForm";
+import { ContainerBody, ContainerWrapper } from "../components/GridComponent/AdminLte";
 
 /**
  *
@@ -22,11 +24,26 @@ const  ProtectedRoute = (props) => {
 
           // If User has Emp Num (Which means Auth is Successful), show the Actual Component.
           if ( Validator.isValid(user.emp_num) ) {
-            
-            const childrenWithProps = React.Children.map(props.children, child =>
-              // Add the parameter for the 
-              React.cloneElement(child, { params: props.computedMatch.params, ...props })
-            );
+
+            let childrenWithProps;
+
+            // If the user is forced to change password ( through forgot password process ), mandatorily show the Change Password Form before any components.
+            if( Validator.isValid( user.force_change_password ) ) {
+
+              childrenWithProps = <ContainerWrapper>
+                                    <ContainerBody>
+                                      <ChangePasswordForm forceChangePassword={true} />
+                                    </ContainerBody>
+                                 </ContainerWrapper>;
+
+            // If the user is NOT forced to change password, show the actual component being accessed.
+            } else {
+              
+              childrenWithProps = React.Children.map(props.children, child =>
+                React.cloneElement(child, { params: props.computedMatch.params, ...props })
+              );
+
+            }
 
             return <div>{childrenWithProps}</div>;
 

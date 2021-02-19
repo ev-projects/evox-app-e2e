@@ -57,23 +57,66 @@ class RequestRepository implements RequestRepositoryInterface{
                 WHERE user_id = '.$id.'';  
             }
 
-            # Construct the Query by Looping the Tables that will be fetch for request numbers
-            foreach(get_constant('REQUEST_TABLES')  as $key => $value) {
-                $query .= ' SELECT status FROM '.  $value . ' ' .$id_filter;
-
-                if($request_tables_no!=$key){
-                    $query .= ' 
-                    UNION ALL
-                    ';
-                }
+            # Date filter
+            $date_filter = "";
+            $change_sched_date = "";
+            if( isset($data->valid_from)&&isset($data->valid_to) ){
+                $date_filter = "AND date BETWEEN '".$data->valid_from."' AND '".$data->valid_to."' ";
+                $change_sched_date = "AND ( (valid_from  BETWEEN '".$data->valid_from."' AND '".$data->valid_to."' ) 
+                OR (valid_to BETWEEN '".$data->valid_from."' AND '".$data->valid_to."') )";
             }
 
+            # Department
+            $filter_department = "";
+            if( isset($data->department_id) ){
+                $filter_department = "AND users.department_id = ".$data->department_id;
+            }
+
+            # Filter Name
+            $filter_name = "";
+            if( isset($data->name) ){
+                $filter_name = 'AND (users.first_name like "%'.$data->name.'%" OR users.last_name like "%'.$data->name.'%")';
+            }
+
+
+            # Construct the Query by Looping the Tables that will be fetch for request numbers
+            $query .= ' 
+            SELECT request.status, COUNT(*) 
+            FROM (
+                        SELECT status FROM overtimes 
+                            LEFT JOIN users ON users.id = overtimes.user_id
+                            '.$id_filter.'
+                            '.$date_filter.'
+                            '.$filter_department.'
+                            '.$filter_name.'
+                        UNION  ALL
+                        SELECT status FROM alter_logs 
+                            LEFT JOIN users ON users.id = alter_logs.user_id
+                            '.$id_filter.'
+                            '.$date_filter.'
+                            '.$filter_department.'
+                            '.$filter_name.'
+                        UNION  ALL
+                        SELECT status FROM rest_day_works 
+                            LEFT JOIN users ON users.id = rest_day_works.user_id
+                            '.$id_filter.'
+                            '.$date_filter.'
+                            '.$filter_department.'
+                            '.$filter_name.'
+                        UNION  ALL
+                        SELECT status FROM change_schedules 
+                            LEFT JOIN users ON users.id = change_schedules.user_id
+                            '.$id_filter.'
+                            '.$change_sched_date.'
+                            '.$filter_department.'
+                            '.$filter_name.'
+            ) AS request
+            GROUP BY status
+                    ';
+
+
             # Run the Query
-            $status =  DB::select( DB::raw("SELECT request.status, COUNT(*) 
-                FROM (
-                ".$query."
-                ) AS request
-                GROUP BY status") );
+            $status =  DB::select( DB::raw( $query ) );
 
             
             

@@ -33,9 +33,15 @@ return [
     'payload' => 'Payload',
     'payload_success' => 'Payload successfully loaded!',
 
+    'forgot_password_request_attempt' => 'Attempting to request for Forgot Password Assistance',
+    'forgot_password_request_success' => 'Password successfully reset. Please check your e-mail for further instructions.',
+
     'user_not_authorized' => 'The User/Property of the User being accessed is not Authorized.',
     'user_not_under_supervisee' => 'The User/Property of the User being accessed is not under your Supervisee.',
     'user_instance_invalid' => 'The User instance is invalid.',
+
+    'change_password_attempt'    => 'Attempt to change password',
+    'change_password_success'    => 'Successfully changed the password!',
 
     /**
      *  User Assigning
@@ -56,7 +62,6 @@ return [
      *  Profile
      */
     'show_profile_success' => 'Successfully shown the Profile Information!',
-    'change_password_success'    => 'Successfully changed the password!',
     'current_password_not_match' => 'The password does not match on your current password!',
 
     /**
@@ -192,10 +197,18 @@ return [
     'cancel_rest_day_work_attempt' => 'Canceling of Rest Day Work Request Attempt',
     'cancel_rest_day_work_success' => 'The Rest Day Work Request is now Canceled!',
 
+    'change_request_status_attempt' => 'Change Request Status from E-mail Attempt',
+    'change_request_status_success' => 'Change Request Status from E-mail Success',
+    
+    'bulk_request_change_status_attempt' => 'Bulk Request Change Status Attempt',
+    'bulk_request_update' => 'Requests are now updated',
+    
+
     'quickpunch_in_success' => 'Log In Successful',
     'quickpunch_out_success' => 'Log Out Successful',
 
-    'request_attempt' => 'Request List Attempt',
+    'request_display_attempt' => 'Request List Attempt',
+    'request_number_display_attempt' => 'Request Number List Attempt',
     'request_display_success' => 'List of Request are now displayed',
 
 
@@ -218,6 +231,12 @@ return [
     
 
     'bulk_request_update' => 'Requests are now updated',
+
+
+    /**
+     *  User Messages 
+     */
+    'get_user_info_success' => 'User Info is now displayed',
     
     /**
      *  Schedule Forms

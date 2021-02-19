@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+    
+
+# Request for Forgot Password
+Route::post('/forgot_password_request', 'UserController@forgot_password_request')->middleware('auth.apikey'); //->middleware('permission:update_overtime')
 
 # API calls for Authentication
 Route::group(['prefix' => 'auth'], function () {
@@ -30,12 +34,16 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('payload', 'AuthController@payload')->middleware('jwtauth', 'auth.apikey');
 
 
+
 });
 
 #####################################################################################################
 
 # API Calls for user/{id}
 Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+
+     # Gets user info ( Name and Department )
+     Route::get('info', 'UserController@user_info');
     
     # Gets the list of Teams of the User
     Route::get('profile', 'UserController@profile');//->middleware('auth.apikey');

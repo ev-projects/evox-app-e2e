@@ -49,6 +49,14 @@ const userReducer = (state = initState, action) => {
             }
             break;
 
+        case "TOGGLE_FORCE_CHANGE_PASSWORD":
+
+            return {
+                ...state,
+                force_change_password : false,
+            }
+            break;
+
         case "UPDATE_USER_DEPARTMENT_HANDLED":
             const user_index = action.department.department_handlers.findIndex((user) => user.emp_num === state.emp_num)
             const department_index = state.departments_handled.findIndex((department) => department.id === action.department.id)

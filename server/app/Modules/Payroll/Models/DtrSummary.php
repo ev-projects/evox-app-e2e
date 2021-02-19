@@ -19,6 +19,13 @@ class DtrSummary
     function __construct()
     {
        $this->clear_properties();
+
+       $this->column = array(
+           "reg"    => "reg" ,
+           "rd"     => "rd" ,
+           "lh"     => "lh" ,
+           "sh"     => "sh" ,
+       );
     }
 
 
@@ -64,7 +71,16 @@ class DtrSummary
                     $next_dtr_type  = ( is_valid( $next_dtr ) ) ? $next_dtr->getDtrType() : "reg";;
                     $previous_dtr_type      = ( is_valid( $previous_dtr ) ) ? $previous_dtr->getDtrType() : "reg";;
 
-                    # Add the day type of the column
+
+                    # Rest day tagging scenario
+                    if( !$this->check_if_holiday( $next_dtr_type ) &&  $dtr_type == get_constant('DTR_TYPE.rest_day')){
+                        $next_dtr_type =  get_constant('DTR_TYPE.rest_day');
+                    }
+
+                    if( !$this->check_if_holiday( $previous_dtr_type ) &&  $dtr_type == get_constant('DTR_TYPE.rest_day')){
+                        $previous_dtr_type =  get_constant('DTR_TYPE.rest_day');
+                    }
+
                     $this->column[ $dtr_type ] =  $dtr_type ;
                     $this->column[ $next_dtr_type ] =  $next_dtr_type ;
                     $this->column[ $previous_dtr_type ] =  $previous_dtr_type ;
@@ -80,8 +96,7 @@ class DtrSummary
                         }
                     }
 
-                    # Unset  the regular column
-                    unset( $this->column[ "reg" ] );
+               
                     
                     $this->compute_payroll_items_to_summary( $dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.regular') ] );
                     
@@ -123,7 +138,8 @@ class DtrSummary
                     
                 }
             }
-
+            # Unset  the regular column
+            unset( $this->column[  get_constant('DTR_TYPE.regular') ] );
             return $this->summary;
 
         } catch(Exception $e) {

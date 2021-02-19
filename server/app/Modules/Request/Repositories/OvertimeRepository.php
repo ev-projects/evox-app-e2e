@@ -30,7 +30,7 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
 
             $overtime = new Overtime();
 
-            $overtime->user_id      = auth()->user()->id;
+            $overtime->user_id      = ( isset( $data['user_id'] ) && is_valid( $data['user_id'] ) ) ? $data['user_id'] : auth()->user()->id;
             $overtime->date         = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
             $overtime->amount       = ( isset( $data['amount'] ) && is_valid( $data['amount'] ) ) ? time_to_seconds( $data['amount'] ) : 0;
             $overtime->type         = ( isset( $data['type'] ) && is_valid( $data['type'] ) ) ? $data['type'] : null;
@@ -46,7 +46,7 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
             $overtime->save();
             
             DB::commit();
-            log_to_file('info', 'Success', [$overtime]);
+            log_to_file('info', 'Success', [$overtime], 'request');
             return $overtime;
 
         } catch (Exception $e) {
@@ -91,7 +91,7 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
 
                 $overtime->pending();
 
-                log_to_file('info', 'Success', [$overtime]);
+                log_to_file('info', 'Success', [$overtime], 'request');
                 return $overtime;
             }
 
@@ -124,7 +124,7 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
                 $overtime->delete();
 
                 DB::commit();
-                log_to_file('info', 'Success', [$overtime]);
+                log_to_file('info', 'Success', [$overtime], 'request');
                 return true;
 
             }
@@ -148,7 +148,7 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
 
             $overtime = Overtime::find($id);
 
-            log_to_file('info', 'Success', [$overtime]);
+            log_to_file('info', 'Success', [$overtime], 'request');
             return $overtime;
 
         } catch (Exception $e) {
@@ -237,7 +237,7 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
                                             ->whereRaw( implode(' AND ', $query_array) , $wildcard_array)
                                             ->get();
 
-            log_to_file('info', 'Success', [$overtime_collection]);
+            log_to_file('info', 'Success', [$overtime_collection], 'request');
             return OvertimeResource::collection( $overtime_collection );
 
         } catch (Exception $e) {

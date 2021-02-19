@@ -1,7 +1,7 @@
 import axios from "axios";
-import API from "../../services/API";
+import API from "../../../services/API";
 import { trackPromise } from "react-promise-tracker";
-import Formatter from "../../services/Formatter";
+import Formatter from "../../../services/Formatter";
 
 export const viewEmployeeDtr = (user_id,from,to) => {
     return (dispatch, getState) => {
@@ -40,6 +40,36 @@ export const getFilterForDtr = (user_id) => {
         });
     }
 }
+
+
+// Fetch Request List
+export const getUserDtrSummary = ( id , from , to ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr_summary/block/"+id+"/" + from +"/" + to,
+        })
+        .then(result => { 
+            
+                dispatch({
+                    'type'      : 'FETCH_USER_DTR_SUMMARY_SUCCESS', 
+                    'dtrSummary'  : {
+                        data : result.data.content.summary[0].summary, 
+                        column : result.data.content.column,
+                        column_names : result.data.content.column_names
+                    },
+                    'employeeInfo' : result.data.content.summary[0].employee_info,
+                    
+                })
+
+            
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 // Set Selected Payroll Cutoff instance
 export const setSelectedPayrollCutoff = ( payrollCutoff ) => {

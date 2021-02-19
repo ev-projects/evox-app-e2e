@@ -13,7 +13,7 @@
     }
 
 .card-body{
-    box-shadow: 0 1px 3px 1px rgba(0,0,0,0.25) !important;
+    box-shadow: 0 1px 1px 1px rgba(0,0,0,0.25) !important;
     border-bottom: 5px solid #82af13 !important;
     border-top: 5px solid #82af13 !important;
 }
@@ -51,7 +51,7 @@ button:focus {
 
 body{
 	background-color: #f4f4f4 !important;
-	background-image: url(https://evox.eastvantage.com/sites/all/themes/evox_style/img/bg.jpg);
+	background-image: url(https://eastvantage.com/evox/icn/bg.jpg);
     background-repeat: no-repeat;
     background-position: bottom right;
     background-attachment: fixed;
@@ -81,4 +81,11 @@ input:focus
 
 .min-vh-80{
 	min-height: 80vh!important;
+}
+
+.forgot-password-link{
+	/* color: black !important; */
+	float: right;
+    padding-top: 10px;
+	color: #495057 !important;
 }

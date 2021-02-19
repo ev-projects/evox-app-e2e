@@ -10,13 +10,19 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 import PageNotFound from "../../PageNotFound";
 import PageLoading from "../../PageLoading";
-import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
+import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
 import Formatter from '../../../services/Formatter';
+
 import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } from '../../../store/actions/scheduleActions';
+import { getUserInfo } from '../../../store/actions/userActions'
+
 import Wrapper from "../../../components/Template/Wrapper/index.js";
 import BackButton from "../../../components/Template/BackButton/index.js";
 import Validator from "../../../services/Validator.js";
+
+
+import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 
 class AssignDefault extends Component {    
   constructor(props){
@@ -119,6 +125,7 @@ class AssignDefault extends Component {
   }
 
   componentWillMount(){
+    this.props.getUserInfo( this.props.params.user_id );
     this.props.listTemplate();
     this.props.getDefaultSchedule(this.state.bind_to, this.props.params.user_id);
   }
@@ -152,8 +159,13 @@ class AssignDefault extends Component {
 
   render = () => {
 
+    const method = (this.props.user.id==this.props.params.user_id) ? 'store' : 'approval';
+
     return ( this.state.isInitialDataLoaded ) ? 
           <Wrapper>
+            <ContainerWrapper>
+            <ContainerBody>
+            <Content col="12" title="Assign Schedule" subtitle={<RequestSubtitle method={method} user={this.props.user_info} />} >
               <Formik 
                 enableReinitialize
                 onSubmit={this.onSubmitHandler} 
@@ -175,7 +187,6 @@ class AssignDefault extends Component {
                   work_days: this.state.work_day 
               }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
                 <form onSubmit={handleSubmit}> 
-              <ContainerWrapper> 
               <Col sm={7}>
                 <div>
                 <Form.Group className="white_bg">
@@ -440,11 +451,13 @@ class AssignDefault extends Component {
                 &nbsp;
                 <BackButton {...this.props} />
               </Col>
-            </ContainerWrapper>
             </form>
             )}
-          
           </Formik>
+          </Content>
+
+           </ContainerBody>
+          </ContainerWrapper>
         </Wrapper>
         :
         <PageLoading/>;;
@@ -514,12 +527,14 @@ const mapStateToProps = (state) => {
         template_list : state.schedule.templateList,
         default_schedule : state.schedule.defaultSchedule,
         template_data : state.schedule.templateData,
+        user_info : state.schedule.userInfo,
         
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
       listTemplate : () => dispatch( listTemplate() ),
+      getUserInfo : (id) => dispatch( getUserInfo(id) ),
       scheduleAssign : (post_data) => dispatch( scheduleAssign(post_data) ),
       getDefaultSchedule : (bind_to, bind_id) => dispatch( getDefaultSchedule(bind_to, bind_id) ),
       getTemplateSchedule : (template_id,type) => dispatch( getTemplateSchedule(template_id,type) ),

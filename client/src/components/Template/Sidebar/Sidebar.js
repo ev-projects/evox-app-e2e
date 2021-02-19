@@ -134,6 +134,12 @@ const Sidebar = (props) => {
                               <p>DTR Summary</p>
                             </Link>
                           </li>
+                          <li className="nav-item">
+                            <Link className="nav-link" to="/app/team/DtrLogs" >
+                              <i className="nav-icon fa fa-bars nav-icon" />
+                              <p>DTR Logs</p>
+                            </Link>
+                          </li>
                         </ul>
                       </li>
                     :

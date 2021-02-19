@@ -12,6 +12,7 @@ import Wrapper from "../../components/Template/Wrapper";
 import QuickPunch from "../QuickPunch";
 import BackButton from "../../components/Template/BackButton";
 import Validator from "../../services/Validator";
+import ChangePasswordForm from "../../components/ChangePasswordForm";
 
 class Profile extends Component {
     constructor(props){
@@ -58,8 +59,9 @@ class Profile extends Component {
     }
 
     render(){
+
       const { profile, user, page } = this.props;
-        console.log(profile)
+
         return (
             <Wrapper >
                <ContainerWrapper>
@@ -132,98 +134,6 @@ class Profile extends Component {
     }
 };
 
-
-const ChangePasswordForm = ( context ) => {
-
-    async function onSubmitHandler (values) {
-
-        var formData = {};
-        
-        for (var key in values) {
-            if( values[key] != null && values[key] != ""  ) {
-                switch( key ) {
-                    default:
-                    formData[key] = values[key];
-                    break;
-                }
-            } 
-        }
-
-        // If action is NULL, it means it's either store/update
-        if (window.confirm("Are you sure you want to change your password?")) {
-            await context.props.changePassword( context.props.profile.details.id, formData );
-        }
-      
-    }
-  
-    const initialValue = {
-        current_password: null,
-        new_password: null,
-        confirm_new_password: null,
-    }
-  
-    var validationSchema = Yup.object().shape({
-        current_password:            Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable(),         
-        new_password:            Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable(),
-        confirm_new_password:    Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable()/*.match( Yup.ref('new_password'), 'Passwords do not match')*/,
-    });
-
-    return  <Content col="5" title="Change Password"  >
-                <Formik 
-                    enableReinitialize
-                    onSubmit={onSubmitHandler} 
-                    validationSchema={validationSchema} 
-                    initialValues={initialValue}>
-                    {
-                    ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-                    <form onSubmit={handleSubmit}>
-                        <Row>  
-                            <Col size="12">         
-                                <label> Current Password: </label> 
-                                <InputGroup>   
-                                    <FormControl class="form-control"  type="password" variant="primary" name="current_password" onChange={handleChange} value={values.current_password} />
-                                    <Form.Control.Feedback type="invalid">
-                                        <ErrorMessage component="div" name={"current_password"} className="input-feedback" />
-                                    </Form.Control.Feedback> 
-                                </InputGroup> 
-                            </Col> 
-                        </Row>   
-                        <Row>  
-                            <Col size="12">        
-                                <label> New Password: </label>   
-                                <InputGroup> 
-                                    <FormControl class="form-control" type="password" variant="primary" name="new_password" onChange={handleChange} value={values.new_password} />
-                                    <Form.Control.Feedback type="invalid">
-                                        <ErrorMessage component="div" name={"new_password"} className="input-feedback" />
-                                    </Form.Control.Feedback> 
-                                </InputGroup> 
-                            </Col> 
-                        </Row> 
-                        <Row>  
-                            <Col size="12">      
-                                <label> Confirm New Password: </label>     
-                                <InputGroup> 
-                                    <FormControl class="form-control"  type="password" variant="primary" name="confirm_new_password" onChange={handleChange} value={values.confirm_new_password} />
-                                    <Form.Control.Feedback type="invalid">
-                                        <ErrorMessage component="div" name={"confirm_new_password"} className="input-feedback" />
-                                    </Form.Control.Feedback> 
-                                </InputGroup> 
-                            </Col> 
-                        </Row> 
-                        <br/>
-                        <Row>  
-                            <Col size="12"> 
-                            <Button type="submit" className="btn btn-secondary" >Update</Button>&nbsp;
-                            <Button type="button" className="btn btn-secondary" onClick={()=> {context.setShowChangePasswordForm(false)}} >Cancel</Button>
-                            </Col> 
-                        </Row> 
-                    </form>
-                    )}
-                    
-                </Formik>
-        </Content>;
-}
-
 const mapStateToProps = (state) => {
   return {
       profile : state.profile,
@@ -233,8 +143,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchProfile : ( id ) => dispatch( fetchProfile( id) ),
-    changePassword: ( id, formData) => dispatch( changePassword( id, formData) )
+    fetchProfile : ( id ) => dispatch( fetchProfile( id) )
 
   }
 }

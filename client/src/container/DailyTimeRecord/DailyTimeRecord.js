@@ -1,12 +1,12 @@
 
-import { viewEmployeeDtr, getFilterForDtr, setSelectedPayrollCutoff } from '../../store/actions/dtrActions';
+import { viewEmployeeDtr, getFilterForDtr, setSelectedPayrollCutoff,getUserDtrSummary } from '../../store/actions/dtr/dtrActions';
 import { fetchUser } from '../../store/actions/userActions'
 import { setRedirect } from '../../store/actions/redirectActions';
 
 import React, { Component } from "react";
 import "./DailyTimeRecord.css";
 
-import { Container,Row,Col,Table,Image,Card,Spinner, Form,Button,InputGroup,FormControl } from 'react-bootstrap';
+import { Container,Row,Col,Table,Image,Card,Spinner, Form,Button,InputGroup,FormControl,Toast  } from 'react-bootstrap';
 import  BackButton from '../../components/Template/BackButton'
 
 import moment from 'moment';
@@ -15,7 +15,8 @@ import { connect } from 'react-redux';
 import DtrFormatter from '../../services/DtrFormatter';
 import { Link } from "react-router-dom"; 
 import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../components/GridComponent/AdminLte.js';
-import PageLoading from "../PageLoading";
+import RequestSubtitle from "../../components/RequestComponent/RequestButtons/RequestSubtitle";
+
 import Formatter from '../../services/Formatter';
 import Wrapper from '../../components/Template/Wrapper';
 import Validator from '../../services/Validator';
@@ -32,6 +33,7 @@ class DailyTimeRecord extends Component {
           selectedPayrollCutoff: {},
           
           isCurrentPayrollCutoffLoaded : false,
+          isDtrSummaryLoaded : true
         }
         
         this.state = this.initialState; 
@@ -41,7 +43,6 @@ class DailyTimeRecord extends Component {
 
     // Function for handling the onChange of Select Year
     handleSelectYear = ( selected ) => {
-
       this.setState({
           selectedYear: Validator.isValid( selected ) ? selected : null,
           selectedMonth: {},
@@ -72,6 +73,8 @@ class DailyTimeRecord extends Component {
 
         this.props.viewEmployeeDtr(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
 
+        this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
+
         this.props.setSelectedPayrollCutoff( payrollCutoff );
       }
     }
@@ -98,6 +101,8 @@ class DailyTimeRecord extends Component {
 
       await this.props.viewEmployeeDtr(this.props.params.id , payrollCutoff.start_date, payrollCutoff.end_date);
 
+      await this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
+      
       await this.props.setSelectedPayrollCutoff( payrollCutoff );
     }
 
@@ -110,7 +115,6 @@ class DailyTimeRecord extends Component {
     }
 
     componentWillReceiveProps = async(nextProps) => {
-      
       // If the 'settings' props is not yet loaded OR the settings prop is already loaded but the isCurrentPayrollCutoffLoaded is FALSE, set the default selected data.
       if( nextProps.settings != this.props.settings  ||
           ( nextProps.settings == this.props.settings && !this.state.isCurrentPayrollCutoffLoaded )) {
@@ -127,12 +131,12 @@ class DailyTimeRecord extends Component {
 
       
   }
-
     render(){
-      
         var yearOptions = [];
         var monthOptions = [];
         var payrollCutoffOptions = [];
+
+        const method = (this.props.user.id==this.props.params.id) ? 'store' : 'approval';
 
         // Construction of Year Options to be rendered in the select.
         for (const [key, value] of Object.entries(this.props.dtr.filter)) {
@@ -143,7 +147,6 @@ class DailyTimeRecord extends Component {
           });
         };
 
-        
         if( Object.keys(this.props.dtr.filter).length > 0 ) {
           // Construction of Month Options to be rendered in the select. Checks first if there's a selected Year before proceeding.
           if( Validator.isValid( this.state.selectedYear?.value ) ) {
@@ -173,20 +176,28 @@ class DailyTimeRecord extends Component {
               
           }
         }
-
-
         return (
         <Wrapper>
           <ContainerWrapper>
-            <ContainerBody>
-              <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> }>
+          <ContainerBody className="dtr-wrapper">
+              <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> } subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
+              <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
+                              pathname: global.schedule_assign_user + this.props.params.id,
+                            }}
+                          title="View Schedule"
+                      >
+                        Update Schedule
+                </Link></Button>
+                : 
+                null
+            } 
                 { this.props.dtr.isFilterLoaded? 
-                    <div className="dtr-filter col-6 col-md-12 col-sm-12 "> 
+                    <div className="dtr-filter col-lg-12 col-md-12 col-sm-12 "> 
                       
                       <Select
                         name="year"
                         value={this.state.selectedYear}
-                        className="year-dropdown"
+                        className="year-dropdown col-lg-2 col-md-4 col-sm-4 col-12"
                         onChange={this.handleSelectYear}
                         options={yearOptions}
                         placeholder="Select Year"
@@ -197,7 +208,7 @@ class DailyTimeRecord extends Component {
                           <Select
                             name="month"
                             value={this.state.selectedMonth}
-                            className="month-dropdown"
+                            className="month-dropdown  col-lg-2 col-md-4 col-sm-4 col-12"
                             onChange={this.handleSelectMonth}
                             options={monthOptions}
                             placeholder={"Select Payroll Cutoff"}
@@ -211,7 +222,7 @@ class DailyTimeRecord extends Component {
                           <Select
                             name="payroll_cutoff"
                             value={this.state.selectedPayrollCutoff}
-                            className="payroll-cutoff-dropdown"
+                            className="payroll-cutoff-dropdown  col-lg-2 col-md-4 col-sm-4 col-12"
                             onChange={this.handleSelectPayrollCutoff}
                             options={payrollCutoffOptions}
                             placeholder={"Select Payroll Cutoff"}
@@ -222,9 +233,16 @@ class DailyTimeRecord extends Component {
                     </div>
                   : 
                     null
-                }
+                } 
+                
               { this.props.dtr.isDtrLoaded && Validator.isValid( this.state.selectedYear?.value ) && Validator.isValid( this.state.selectedMonth?.value ) && this.state.selectedPayrollCutoff?.value != undefined  ?
-                <Table responsive hover dtr-table>
+                <React.Fragment>
+                  { this.props.dtr.isDtrSummaryLoaded? 
+                    <DtrSummaryBlock computations={this.props.dtr.dtrSummary}  />
+                  : 
+                  null
+              } 
+                  <Table className="responsive hover dtr-table">
                     <thead>
                         <tr>
                             <th className="dtr-date">Date</th>
@@ -234,9 +252,9 @@ class DailyTimeRecord extends Component {
                             <th className="dtr-log">Clock Out</th>
                             <th className="dtr-item">Late</th>
                             <th className="dtr-item">Undertime</th>
-                            <th className="dtr-item">NightDiff</th>
-                            <th className="dtr-item">Overtime</th>
-                            <th className="dtr-item">OT w/ ND</th>
+                            <th className="dtr-item">NSD</th>
+                            <th className="dtr-item">OT</th>
+                            <th className="dtr-item">OTND</th>
                             <th className="dtr-requests">Requests STATUS</th>
                             <th className="dtr-actions"><i></i></th>
                         </tr>
@@ -259,10 +277,13 @@ class DailyTimeRecord extends Component {
                           let status = <div><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
 
                           // If the attendance status is absent but has a holiday, set the dtr_type and status to holiday
-                          if( dtr.attendance_status.slug == 'absent' && dtr.holidays.length > 0){
-                              dtr_type = "holiday";
-                              status = <div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
-                          } 
+                          if( dtr.holidays.length > 0){
+                            dtr_type = dtr.holidays[0].type;
+                            status = <div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
+                        } else if ( dtr.is_rest_day == 1 ){
+                            dtr_type = "rest_day";
+                        }
+                        
                           
                           // If the DTR date is beyond the current date, don't show the DTR row by returning null.
                           if( moment().diff(moment(dtr.date)) < 0 ) {
@@ -306,6 +327,7 @@ class DailyTimeRecord extends Component {
                     })}
                     </tbody>
                 </Table>
+                </React.Fragment> 
                 :
                 null  
               }
@@ -320,6 +342,120 @@ class DailyTimeRecord extends Component {
 };
 
 // Component for the DTR Request List
+const DtrSummaryHolidays = ( props  ) => { 
+  return (<React.Fragment>
+    <div className="holidays col-lg-2 col-sm-4 col-12">
+    <h5><span className="ion-ios-calendar-outline"></span>{props.column_name}</h5>
+    <Row>
+    
+  <Col className="col-3">
+    
+      <Toast >
+        <Toast.Header>
+          DAY
+        </Toast.Header>
+        <Toast.Body>{props.data?.rendered_hours}</Toast.Body>
+      </Toast>
+    </Col>
+    <Col className="col-3">
+  <Toast >
+    <Toast.Header>
+      ND
+    </Toast.Header>
+    <Toast.Body>{props.data?.night_diff}</Toast.Body>
+  </Toast>
+</Col>
+    <Col className="col-3">
+    <Toast >
+      <Toast.Header>
+       OT
+      </Toast.Header>
+      <Toast.Body>{props.data?.overtime}</Toast.Body>
+    </Toast>
+  </Col>
+  
+<Col className="col-3">
+<Toast >
+  <Toast.Header>
+    <strong className="mr-auto">OTND</strong> 
+  </Toast.Header>
+  <Toast.Body>{props.data?.overtime_night_diff}</Toast.Body>
+</Toast>
+</Col>
+</Row>
+</div>
+</React.Fragment>);
+}
+
+
+// Component for the DTR Summary Block
+const DtrSummaryBlock = ( props  ) => { 
+  console.log();
+  var holidaycolumn = [];
+  var data = props.computations.data.reg;
+      
+  for (var key in props.computations.column) {
+    holidaycolumn.push(key);
+  }
+
+  return (<React.Fragment>
+                <Row className="SummaryBlock">
+                    <Col className="late col-lg-1 col-sm-2 col-4">
+                      <Toast >
+                        <Toast.Header>
+                          <span>LATE</span>
+                        </Toast.Header>
+                        <Toast.Body>{data.late}</Toast.Body>
+                      </Toast>
+                    </Col>
+                    <Col className="ut col-lg-1 col-sm-2 col-4">
+                      <Toast >
+                        <Toast.Header>
+                          UNDERTIME
+                        </Toast.Header>
+                        <Toast.Body>{data.undertime}</Toast.Body>
+                      </Toast>
+                      </Col>
+                  <Col className="nsd col-lg-1 col-sm-2 col-4">
+                  <Toast >
+                    <Toast.Header>
+                      NIGHT DIFF
+                    </Toast.Header>
+                    <Toast.Body>{data.night_diff}</Toast.Body>
+                  </Toast>
+                  </Col>
+                  <Col className="ot col-lg-1 col-sm-2 col-4">
+                  <Toast >
+                    <Toast.Header>
+                      OT
+                    </Toast.Header>
+                    <Toast.Body>{data.overtime}</Toast.Body>
+                  </Toast>
+                  </Col>
+                  <Col className="otnd col-lg-1 col-sm-2 col-4">
+                  <Toast >
+                    <Toast.Header>
+                      OTND
+                    </Toast.Header>
+                    <Toast.Body>{data.overtime_night_diff}</Toast.Body>
+                  </Toast>
+                  </Col>
+                  <Col className="ul col-lg-1 col-sm-2 col-4">
+                  <Toast >
+                    <Toast.Header>
+                      ABSENT
+                    </Toast.Header>
+                    <Toast.Body>{data.ul}</Toast.Body>
+                  </Toast>
+                  </Col>
+                  {holidaycolumn.map((dtr_type, index) => {
+                   return (<DtrSummaryHolidays column_name={eval('props.computations.column_names?.' + dtr_type)} data={eval('props.computations.data?.' + dtr_type)}/>);
+                    })}
+                  </Row>
+</React.Fragment>);
+}
+
+// Component for the DTR Request List
 const DtrRequest = (props) => { 
   return <ul style={{ listStyle: 'none'}}>
       {props.requests.map((request, index) => {
@@ -327,6 +463,9 @@ const DtrRequest = (props) => {
       })}
   </ul>;
 }
+
+
+
 
 
 const mapStateToProps = (state) => {
@@ -339,6 +478,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchUser : () => dispatch( fetchUser() ),
     viewEmployeeDtr : (user_id,from,to) => dispatch( viewEmployeeDtr(user_id,from,to) ),
+    getUserDtrSummary : (user_id,from,to , isInitialLoad) => dispatch( getUserDtrSummary(user_id,from,to , isInitialLoad) ),
     getFilterForDtr : (user_id) => dispatch( getFilterForDtr(user_id) ),
     setSelectedPayrollCutoff :   ( payrollCutoff ) => dispatch( setSelectedPayrollCutoff( payrollCutoff ) ),
     setRedirect           : ( link ) => dispatch( setRedirect( link ) ),

@@ -41,6 +41,8 @@ import Profile from "../container/Profile";
 import Validator from "../services/Validator";
 import RequestEmailApproval from "../container/RequestEmailApproval";
 import ScheduleAssignDepartment from "../container/Schedule/ScheduleAssignDepartment";
+import DtrLogs from "../container/MyTeam/DtrLogs";
+import ForgotPasswordRequest from "../container/ForgotPasswordRequest";
 
 const RoutesList = (props) => {
 
@@ -73,6 +75,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path="/app/team/MyTeamList"><MyTeamList/></ProtectedRoute>
         <ProtectedRoute exact path="/app/team/MyTeamRequests"><MyTeamRequests/></ProtectedRoute>
         <ProtectedRoute exact path="/app/team/DtrSummary"><DtrSummary/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/team/DtrLogs"><DtrLogs/></ProtectedRoute>
 
         {/* Settings */}
         <ProtectedRoute exact path="/app/admin/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
@@ -109,6 +112,7 @@ const RoutesList = (props) => {
       <Switch>
         <Route exact path={["/", "/login"]} component={LoginContainer} />
         <Route exact path="/request/approval/:hashCode/:status?" component={RequestEmailApproval} />
+        <Route exact path="/recover/password" component={ForgotPasswordRequest} />
         <Route component={DefaultContainer} />
       </Switch>
     </div>
