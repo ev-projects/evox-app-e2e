@@ -181,6 +181,7 @@ class DailyTimeRecord extends Component {
           <ContainerWrapper>
           <ContainerBody className="dtr-wrapper">
               <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> } subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
+              { method=="approval"? 
               <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
                               pathname: global.schedule_assign_user + this.props.params.id,
                             }}
@@ -349,12 +350,11 @@ const DtrSummaryHolidays = ( props  ) => {
     <Row>
     
   <Col className="col-3">
-    
       <Toast >
         <Toast.Header>
           DAY
         </Toast.Header>
-        <Toast.Body>{props.data?.rendered_hours}</Toast.Body>
+        <Toast.Body>{( props.data?.rendered_hours !== undefined ) ? props.data?.rendered_hours: "0"}</Toast.Body>
       </Toast>
     </Col>
     <Col className="col-3">
@@ -362,7 +362,7 @@ const DtrSummaryHolidays = ( props  ) => {
     <Toast.Header>
       ND
     </Toast.Header>
-    <Toast.Body>{props.data?.night_diff}</Toast.Body>
+    <Toast.Body> {( props.data?.night_diff !== undefined ) ? props.data?.night_diff: "0"}</Toast.Body>
   </Toast>
 </Col>
     <Col className="col-3">
@@ -370,7 +370,7 @@ const DtrSummaryHolidays = ( props  ) => {
       <Toast.Header>
        OT
       </Toast.Header>
-      <Toast.Body>{props.data?.overtime}</Toast.Body>
+      <Toast.Body> {( props.data?.overtime !== undefined ) ? props.data?.overtime: "0"}</Toast.Body>
     </Toast>
   </Col>
   
@@ -379,7 +379,7 @@ const DtrSummaryHolidays = ( props  ) => {
   <Toast.Header>
     <strong className="mr-auto">OTND</strong> 
   </Toast.Header>
-  <Toast.Body>{props.data?.overtime_night_diff}</Toast.Body>
+  <Toast.Body>  {( props.data?.overtime_night_diff !== undefined ) ? props.data?.overtime_night_diff: "0"}</Toast.Body>
 </Toast>
 </Col>
 </Row>
