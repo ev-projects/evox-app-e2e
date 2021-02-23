@@ -20,7 +20,7 @@ import { getUserInfo } from '../../../store/actions/userActions'
 import Wrapper from "../../../components/Template/Wrapper/index.js";
 import BackButton from "../../../components/Template/BackButton/index.js";
 import Validator from "../../../services/Validator.js";
-
+import moment from 'moment';
 
 import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 
@@ -50,10 +50,11 @@ class AssignDefault extends Component {
   }
 
   onSubmitHandler = (values) => {
+
     // Format the data that will be past on the API
     values.schedule_details = Formatter.format_schedule_details(values);
-    values.valid_from = values.from.toISOString().substring(0, 10);
-    values.valid_to = values.to.toISOString().substring(0, 10);
+    values.valid_from = moment( values.from ).format("YYYY-MM-DD");
+    values.valid_to = moment( values.to ).format("YYYY-MM-DD");
     this.props.scheduleAssign(values)
   }
 

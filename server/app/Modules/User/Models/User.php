@@ -331,11 +331,13 @@ class User extends Authenticatable implements JWTSubject
 
         # Name Filter
         if(isset($filter['name'])){
-            $change_schedules->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%")'); 
-            $overtimes       ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%")'); 
-            $rest_day_works  ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%")'); 
-            $alter_logs      ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%")'); 
+            $change_schedules->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+            $overtimes       ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+            $rest_day_works  ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+            $alter_logs      ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
         }
+        
+        
 
         # Date Filter
         if(isset($filter['valid_from'])&&isset($filter['valid_to'])){

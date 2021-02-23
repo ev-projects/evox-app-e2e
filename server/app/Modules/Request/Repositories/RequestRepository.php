@@ -75,9 +75,9 @@ class RequestRepository implements RequestRepositoryInterface{
             # Filter Name
             $filter_name = "";
             if( isset($data->name) ){
-                $filter_name = 'AND (users.first_name like "%'.$data->name.'%" OR users.last_name like "%'.$data->name.'%")';
+                $filter_name = 'AND (users.first_name like "%'.$data->name.'%" OR users.last_name like "%'.$data->name.'%" OR CONCAT(users.first_name, " ", users.last_name) LIKE "%' . $data->name. '%" )';
             }
-
+            
 
             # Construct the Query by Looping the Tables that will be fetch for request numbers
             $query .= ' 
