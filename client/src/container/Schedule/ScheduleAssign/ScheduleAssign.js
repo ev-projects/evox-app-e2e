@@ -476,11 +476,15 @@ const validation_var = Yup.string().required(required_field).nullable();
 
 const validationSchema = Yup.object().shape({
 
-  from: validation_var,
-  to: Yup.string().nullable().when('source_type', {
-        is: 'update',
-        then:   validation_var
+  from: Yup.date().nullable().when('source_type', {
+    is: 'temporary',
+    then:   Yup.date().nullable().max( Yup.ref('to') , 'Please select a Date From date.')
   }),
+  to: Yup.date().nullable().when('source_type', {
+        is: 'temporary',
+        then:   Yup.date().nullable().min( Yup.ref('from') , 'Please select a Date To date.')
+  }),
+
   schedule_type: Yup
     .string()
     .min(3)

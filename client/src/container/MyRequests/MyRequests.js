@@ -82,7 +82,11 @@ class MyRequests extends Component {
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
 
-  const validationSchema = Yup.object().shape({});
+  const validationSchema = Yup.object().shape({
+
+    valid_from: Yup.date().nullable().max( Yup.ref('valid_to') , 'Please select a Valid From date.'),
+    valid_to: Yup.date().nullable().min( Yup.ref('valid_from') , 'Please select a Valid To date.'),
+  });
   if(this.props.isListLoaded){
     let pagination = [];
     for (let number = 1; number <= request_list.last_page; number++) {
