@@ -246,6 +246,35 @@ class UserController extends Controller
         }
     }
 
+
+    
+
+    /**
+     * Function for Ticking the DPA field of the User
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function tick_dpa( $id ){   
+        try {
+            log_activity( trans('messages.tick_dpa_attempt') );
+
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+               
+            $user = $this->user->tick_dpa( $id );
+
+            return success_response(
+                trans('messages.tick_dpa_success'), 
+                new UserProfileResource( $user )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     
 
     /**

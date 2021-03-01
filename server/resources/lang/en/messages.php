@@ -43,6 +43,12 @@ return [
     'change_password_attempt'    => 'Attempt to change password',
     'change_password_success'    => 'Successfully changed the password!',
 
+    'tick_dpa_attempt'    => 'Attempt to tick the DPA of the User',
+    'tick_dpa_success'    => 'Thank you for watching the video! ',
+
+    
+
+
     /**
      *  User Assigning
      */

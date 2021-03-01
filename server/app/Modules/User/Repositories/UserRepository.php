@@ -4,6 +4,7 @@ namespace App\Modules\User\Repositories;
 
 use App\Modules\Department\Models\Department;
 use App\Modules\User\Models\User;
+use Carbon\Carbon;
 use DebugBar\DebugBar;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -526,6 +527,33 @@ class UserRepository implements UserRepositoryInterface{
 
                     return false;
                 }
+                
+            }
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+    }
+
+    /**
+     *  Responsible for ticking the DPA field of the User
+     * @param $id
+     * @return User $user
+     */
+    public function tick_dpa( $id ){
+        
+        try {
+            $user =  User::findOrFail( $id );
+            
+            # allow the tick only if the User in the ID is the user currently logged in
+            if( auth()->user()->id == $user->id ) {
+
+                $user->dpa_ticked_at = Carbon::now()->format('Y-m-d H:i:s');
+                $user->save();
+
+                log_to_file('info', 'Successfully ticked DPA of User', $user->id, 'user');
+                return $user;
                 
             }
 

@@ -1,3 +1,5 @@
+
+import moment from 'moment';
 /**
  *  A dedicated Reducer for User State
  */
@@ -54,6 +56,14 @@ const userReducer = (state = initState, action) => {
             return {
                 ...state,
                 force_change_password : false,
+            }
+            break;
+
+        case "TICK_DPA":
+
+            return {
+                ...state,
+                dpa_ticked_at : moment().format("YYYY-MM-DD HH:mm:ss"),
             }
             break;
 

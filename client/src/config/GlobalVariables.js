@@ -5,6 +5,7 @@
 
 global.login_url = "/login";
 global.base_url = "/app/";
+global.dpa_url = "/app/dpa";
 global.dashboard_url = "/app/Dashboard";
 global.template_add = "/app/schedule/";
 global.template_list = "/app/schedule/template/";

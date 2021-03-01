@@ -27,6 +27,7 @@
     "react-dom": "^16.13.1",
     "react-loader-spinner": "^3.1.14",
     "react-multi-select-component": "^3.0.4",
+    "react-player": "^2.9.0",
     "react-promise-tracker": "^2.1.0",
     "react-redux": "^7.2.1",
     "react-router": "^3.2.6",

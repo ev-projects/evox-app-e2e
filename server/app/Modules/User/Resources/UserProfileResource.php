@@ -40,6 +40,7 @@ class UserProfileResource extends JsonResource
             'employment_status' => $this->employment_status,
             'is_active' => $this->is_active,
             'force_change_password' => $this->force_change_password,
+            'dpa_ticked_at' => $this->dpa_ticked_at,
             'full_name' => $this->getFullName()
         );
 
