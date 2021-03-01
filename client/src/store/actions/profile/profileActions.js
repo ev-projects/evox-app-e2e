@@ -66,3 +66,25 @@ export const changePassword = ( id, formData ) => {
     }
 }
 
+
+export const tickDpa = ( id ) => {
+
+    return (dispatch, getState) => {
+        
+        API.call({
+            method: "post",
+            url: "/user/" + id + "/tick_dpa"
+        })
+        .then(result => {
+
+            dispatch( Formatter.alert_success( result, 3000 ));
+
+            dispatch({'type'      : 'TICK_DPA' });
+            
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+

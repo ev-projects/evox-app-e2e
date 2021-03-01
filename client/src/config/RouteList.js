@@ -43,6 +43,7 @@ import RequestEmailApproval from "../container/RequestEmailApproval";
 import ScheduleAssignDepartment from "../container/Schedule/ScheduleAssignDepartment";
 import DtrLogs from "../container/MyTeam/DtrLogs";
 import ForgotPasswordRequest from "../container/ForgotPasswordRequest";
+import DPAForm from "../container/DPAForm";
 
 const RoutesList = (props) => {
 
@@ -86,6 +87,7 @@ const RoutesList = (props) => {
         
         <ProtectedRoute exact path="/app/dtr/:id/" ><DailyTimeRecord/></ProtectedRoute>
         <ProtectedRoute exact path="/app/profile/:id/" ><Profile/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/dpa/" ><DPAForm/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>
       <Footer />

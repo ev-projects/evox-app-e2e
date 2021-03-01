@@ -34,6 +34,8 @@ interface UserRepositoryInterface
 
     public function change_password( $id, array $data);
 
+    public function tick_dpa( $id );
+
     public function assign_roles_to_user( $id, array $roles_array );
 
     public function assign_permissions_to_user( $id, array $permissions_array );
