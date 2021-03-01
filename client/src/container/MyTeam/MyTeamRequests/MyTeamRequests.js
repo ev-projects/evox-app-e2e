@@ -179,6 +179,7 @@ class MyTeamRequests extends Component {
                       defaultActiveKey={values.request_type}
                       onSelect={(key) =>  {
                         setFieldValue("request_type", key)
+                        setFieldValue("page", 1);
                         handleSubmit()
                         }
                       }
@@ -194,14 +195,13 @@ class MyTeamRequests extends Component {
                   <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
                   </Tab>
                 </Tabs>    
-
                   <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status==null}
-                      onClick={() => setFieldValue("status", null)}
+                      onClick={() =>{ setFieldValue("status", null); handleSubmit();} }
                     >
                       <Badge variant="light">{all_status}</Badge>
                        &nbsp;All Status
@@ -213,7 +213,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="pending"}
-                      onClick={() => setFieldValue("status", "pending")}
+                      onClick={() =>  { setFieldValue("status", "pending"); handleSubmit();}}
                     >
                       <Badge className="pending" variant="light">{pending}</Badge>
                        &nbsp;Pending
@@ -225,7 +225,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="approved"}
-                      onClick={() => setFieldValue("status", "approved")}
+                      onClick={() =>{ setFieldValue("status", "approved"); handleSubmit();}}
                     >
                       <Badge className="approved" variant="light">{approved}</Badge>
                       &nbsp;Approved 
@@ -237,7 +237,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="canceled"}
-                      onClick={() => setFieldValue("status", "canceled")}
+                      onClick={() =>  { setFieldValue("status", "canceled"); handleSubmit();}}
                     >
                       <Badge className="canceled" variant="light">{canceled}</Badge>
                       &nbsp;Canceled 
@@ -249,7 +249,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="declined"}
-                      onClick={() => setFieldValue("status", "declined")}
+                      onClick={() => { setFieldValue("status", "declined"); handleSubmit();}}
                     >
                       <Badge className="denied" variant="light">{declined}</Badge>
                       &nbsp;Declined 
