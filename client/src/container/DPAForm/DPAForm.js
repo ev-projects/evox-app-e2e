@@ -86,6 +86,8 @@ class DPAForm extends Component {
                           <div className="col-lg-12 col-md-12 col-sm-12">
                             <h2></h2>
                             <p>
+                              All employees are required to watch the Data Privacy webinar below. Please tick the checkbox that will appear once the video ends to confirm your attendance. <br/>
+                              <br/>
                               A 30-minute orientation for all Eastvantage employees that provides information on Data Privacy and Data
                               Protection. In this orientation, you are given an overview of data protection principles, Eastvantage's role
                               as a Personal Information Controller, Eastvantage's role as a Personal Information Processor, and your role
