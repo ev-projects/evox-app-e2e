@@ -351,18 +351,29 @@ class User extends Authenticatable implements JWTSubject
             $alter_logs     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
         }
   
-        $query = $alter_logs->union($change_schedules)
-        ->union($overtimes)
-        ->union($rest_day_works)
-        ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ")
-        ;
+        if(isset($filter['request_type'])){
+            if($filter['request_type']=='all'){
+                $query = $alter_logs->union($change_schedules)
+                ->union($overtimes)
+                ->union($rest_day_works)
+                ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+            }elseif($filter['request_type']=='alteration'){
+                $query = $alter_logs->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+            }elseif($filter['request_type']=='overtime'){
+                $query = $overtimes->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+            }elseif($filter['request_type']=='rest_day_work'){
+                $query = $rest_day_works->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+            }elseif($filter['request_type']=='change_schedule'){
+                $query = $change_schedules->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+            }
+               
+        }
+        
 
 
-        $query_number = $alter_logs->count();
         
         $result = array(
-            "query" =>  $query->paginate(10),
-            "request_count" => $query_number,
+            "query" =>  $query->paginate(10)
         );
      
         return   $result ;

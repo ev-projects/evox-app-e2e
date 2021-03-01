@@ -32,6 +32,7 @@ class MyRequests extends Component {
           isAll:            this.props.filters?.isAll ?? false,
           action:           this.props.filters?.action ?? null,
           bulk_action:      this.props.filters?.bulk_action ?? null,
+          request_type:     this.props.filters?.request_type ?? 'all',
           url:              'my_requests'
       }
     }
@@ -129,8 +130,26 @@ class MyRequests extends Component {
             <ContainerWrapper> 
             <ContainerBody>        
                 <Content col="12" title="My Requests">
-                <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
-                  <Tab eventKey="home" title="All Requests">
+                <Tabs defaultActiveKey="home" 
+                      id="uncontrolled-tab-example"
+                      defaultActiveKey={values.request_type}
+                      onSelect={(key) =>  {
+                        setFieldValue("request_type", key)
+                        handleSubmit()
+                        }
+                      }
+                      >
+                  <Tab eventKey="all" title="All Requests" type="submit">
+                  </Tab>
+                  <Tab eventKey="alteration" title="Alteration" type="submit">
+                  </Tab>
+                  <Tab eventKey="overtime" title="Overtime" type="submit">
+                  </Tab>
+                  <Tab eventKey="rest_day_work" title="Rest Day Work" type="submit">
+                  </Tab>
+                  <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
+                  </Tab>
+                </Tabs>    
                   <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
@@ -304,8 +323,7 @@ class MyRequests extends Component {
                   </Table>
                   <Paginate pagination={request_list} />
                   </div>) : (<div> Sorry, No Record Found </div>)}
-                    </Tab>
-                  </Tabs>    
+                  
                   </Content>
                 </ContainerBody>
               </ContainerWrapper>

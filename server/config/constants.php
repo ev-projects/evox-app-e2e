@@ -122,7 +122,13 @@ return [
         'canceled' => 'canceled'
     ],
 
-
+    'REQUEST_TYPE' => [
+        'all' => 'all', 
+        'alteration' => 'alteration', 
+        'overtime' => 'overtime', 
+        'rest_day_work' => 'rest_day_work',
+        'change_schedule' => 'change_schedule'
+    ],
 
     'UNPAID_LEAVE_TYPES' => [
         "Unpaid Leave",
@@ -158,6 +164,11 @@ return [
 
 
     'OVERTIME_TYPE' => [
+        "pre" => "pre_overtime",
+        "post" => "post_overtime"
+    ],
+
+    'request_status' => [
         "pre" => "pre_overtime",
         "post" => "post_overtime"
     ],

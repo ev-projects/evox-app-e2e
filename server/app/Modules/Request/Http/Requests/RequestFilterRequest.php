@@ -33,6 +33,7 @@ class RequestFilterRequest extends FormRequest
             'status'                =>  'string|in:'.get_imploded_constant('REQUEST_STATUS'),
             'valid_from'            => 'date_format:Y-m-d',
             'valid_to'              => 'date_format:Y-m-d',
+            'request_type'          => 'string|in:'.get_imploded_constant('REQUEST_TYPE'),
             'show_owned'            => 'bool',
         ];
     }
