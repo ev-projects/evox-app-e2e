@@ -50,8 +50,6 @@ class AssignDefault extends Component {
   }
 
   onSubmitHandler = (values) => {
-
-    // Format the data that will be past on the API
     values.schedule_details = Formatter.format_schedule_details(values);
     values.valid_from = moment( values.from ).format("YYYY-MM-DD");
     values.valid_to = moment( values.to ).format("YYYY-MM-DD");
@@ -478,11 +476,16 @@ const validationSchema = Yup.object().shape({
 
   from: Yup.date().nullable().when('source_type', {
     is: 'temporary',
-    then:   Yup.date().nullable().max( Yup.ref('to') , 'Please select a Date From date.')
+    then:   Yup.date().nullable()
   }),
   to: Yup.date().nullable().when('source_type', {
         is: 'temporary',
-        then:   Yup.date().nullable().min( Yup.ref('from') , 'Please select a Date To date.')
+        then:   Yup.date()
+        .required("end time cannot be empty")
+        .test("is-equal-greater", "End time should be greater", function(value) {
+          var { from } = this.parent;
+          return moment( moment( value).format("YYYY-MM-DD") ).isSameOrAfter(moment( from).format("YYYY-MM-DD")) ;
+        })
   }),
 
   schedule_type: Yup
