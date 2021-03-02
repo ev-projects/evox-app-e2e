@@ -210,8 +210,13 @@ class Computation
             }elseif( $this->dtr->isTimedInBetweenSchedule() ){
 
                 $this->expected_work_start_datetime  =   $this->dtr->time_in;
+
                 $this->expected_work_end_datetime    =   $this->dtr->time_in + $this->dtr->getRequiredTime();
-            
+
+                if( $this->dtr->end_flexy_datetime < $this->dtr->time_in + $this->dtr->getRequiredTime() ){
+                    $this->expected_work_end_datetime    =   $this->dtr->end_flexy_datetime;
+                }
+
             # If the Time-In is AFTER or EQUAL the Start-Flexy-Datetime
             } elseif ( $this->dtr->isTimedInAfterSchedule() ){
                 
