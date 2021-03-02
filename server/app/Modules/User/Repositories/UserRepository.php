@@ -46,7 +46,7 @@ class UserRepository implements UserRepositoryInterface{
             if( $user == null ) {
 
                 // If BHr User has E-mail and valid Employment history status, insert the user
-                if( is_valid( $bhr_user->bestEmail ) && is_valid( $bhr_user->employmentHistoryStatus )  ) {
+                if( is_valid( $bhr_user->bestEmail ) /*&& is_valid( $bhr_user->employmentHistoryStatus ) */ ) {
 
                     # 1.
                     $user = new User();
@@ -146,7 +146,7 @@ class UserRepository implements UserRepositoryInterface{
         try {  
 
             // If BHr User has E-mail and valid Employment history status, insert the user
-            if( is_valid( $bhr_user->bestEmail ) && is_valid( $bhr_user->employmentHistoryStatus )  ) {
+            if( is_valid( $bhr_user->bestEmail ) /*&& is_valid( $bhr_user->employmentHistoryStatus ) */ ) {
 
                 if(strlen($bhr_user->employeeNumber)==2){
                     $bhr_user->employeeNumber = "0" . $bhr_user->employeeNumber;
