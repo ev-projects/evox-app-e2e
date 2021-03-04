@@ -118,8 +118,14 @@ const Sidebar = (props) => {
                         <ul className="nav nav-treeview">
                           <li className="nav-item">
                             <Link className="nav-link" to="/app/team/MyTeamList" >
-                              <i className="nav-icon fa fa-users" aria-hidden="true"></i>
+                              <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
                               <p> My Team List</p> 
+                            </Link>
+                          </li> 
+                          <li className="nav-item">
+                            <Link className="nav-link" to="/app/team/DPAList" >
+                              <i className="nav-icon fa fa-list-alt" aria-hidden="true"></i>
+                              <p> DPA List</p> 
                             </Link>
                           </li> 
                           <li className="nav-item">

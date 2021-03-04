@@ -25,6 +25,8 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 use App\Modules\User\Models\User;
+use App\Modules\User\Resources\DpaUserListResource;
+use App\Modules\User\Resources\DpaUserListResourceCollection;
 
 class UserController extends Controller
 {
@@ -177,6 +179,21 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Shows an existing Department
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get_dpa_list( Request $request){
+        try {
+            $user_collection = $this->user->get_dpa_list( $request );
+            return success_response(
+                trans('messages.get_dpa_list_success'), 
+                new DpaUserListResourceCollection( $user_collection )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
 
     /**
      * Returns the Temporary Schedules of the User by the User ID

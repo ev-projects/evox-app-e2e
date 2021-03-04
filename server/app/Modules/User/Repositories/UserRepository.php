@@ -466,6 +466,59 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+    
+
+
+
+    /**
+     *  Responsible for fetching all the DPA Userl ist
+     * @param Request $request
+     * @return User $user_collection ( Collection )
+     */
+    public function get_dpa_list( Request $request ){
+        try {
+            // Fetch the Users under the supervisee and join to their department for the sorting via Department Name
+            $user_collection = User::whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
+                                    ->join('departments', 'departments.id','=','users.department_id')
+                                    ->orderBy('departments.department_name','asc')
+                                    ->orderBy('users.emp_num','desc')
+                                    ->select('users.*');
+
+            // For the Department ID Filtering
+            if( is_valid( $request->department_id ) ){
+                $user_collection->where('department_id',$request->department_id );
+            }
+            
+            // For the Employee Name filtering
+            if( is_valid( $request->name ) ){
+                $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
+            }
+
+            // For DPA data filtering.
+            if( !is_null( $request->submitted_dpa ) ){
+
+                //  If true, fetch all the dpa_ticked_at that's not NULL
+                if( $request->submitted_dpa == 1 ){
+                    $user_collection->whereNotNull('dpa_ticked_at');
+
+                //  If true, fetch all the dpa_ticked_at that's NULL
+                } else {
+                    $user_collection->whereNull('dpa_ticked_at');
+                }
+            }
+            
+            // For Active User filtering
+            if( !is_null( $request->is_active ) ){
+                $user_collection->where('is_active',$request->is_active );
+            }
+
+            return $user_collection->paginate(50);
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
 
 
     /**
