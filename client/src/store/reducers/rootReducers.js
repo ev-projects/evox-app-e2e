@@ -33,6 +33,7 @@ import dtrSummaryReducers from "./dtr/dtrSummaryReducers";
 import dtrLogsReducers from "./dtr/dtrLogsReducers";
 
 import myRequestListReducers from "./filters/myRequestListReducers";
+import dpaListReducers from "./filters/dpaListReducers";
 import myTeamListReducers from "./filters/myTeamListReducers";
 import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
 
@@ -63,8 +64,8 @@ const rootReducer = combineReducers({
 
     assignRole: assignRoleReducers,
     
-
     myRequestList       : myRequestListReducers,
+    dpaList             : dpaListReducers,
     myTeamList          : myTeamListReducers,
     myTeamRequestList   : myTeamRequestListReducers,
     
