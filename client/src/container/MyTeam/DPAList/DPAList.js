@@ -196,7 +196,6 @@ const DPAListTable = (props) => {
                   <th>Department</th> 
                   <th>Date Submitted</th> 
                   <th>Status</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -207,35 +206,6 @@ const DPAListTable = (props) => {
                     <td>{user.department} </td>
                     <td>{user.dpa_ticked_at} </td>
                     <td className="emp-status"> <Status status={user.is_active} /></td>
-                    <td className="actions">
-                      <Link to={{
-                              pathname: global.daily_time_record_view + user.id,
-                              previousPath: props.location.pathname,
-                              resetInitialState: true
-                            }}
-                          title="View DTR"
-                      >
-                        <i className="fa fa-clock-o ev-color" aria-hidden="true"></i>
-                      </Link>
-                      &nbsp;&nbsp;&nbsp;
-                      <Link to={{
-                              pathname: global.schedule_assign_user + user.id,
-                              previousPath: props.location.pathname
-                            }}
-                          title="View Schedule"
-                      >
-                        <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
-                      </Link>
-                      &nbsp;&nbsp;&nbsp;
-                      <Link to={{
-                              pathname: global.profile_url + user.id,
-                              previousPath: props.location.pathname
-                            }}
-                          title="View Profile"
-                      >
-                        <i className="fa fa-info ev-color" aria-hidden="true"></i>
-                      </Link>
-                    </td>
                   </tr>         
                 })}
               </tbody>
