@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
 use Exception;
@@ -32,10 +34,14 @@ class syncBhrUsers extends Command
      * @return void
      */
     public function __construct(BhrRepositoryInterface $bhr,
-                                UserRepositoryInterface $user)
+                                UserRepositoryInterface $user,
+                                ScheduleRepositoryInterface $schedule,
+                                DtrRepositoryInterface $dtr )
     {
         $this->bhr = $bhr;
         $this->user = $user;
+        $this->schedule = $schedule;
+        $this->dtr = $dtr;
 
         parent::__construct();
     }
