@@ -30,9 +30,13 @@ interface UserRepositoryInterface
 
     public function get_users_under_supervisee( Request $request);
 
+    public function get_dpa_list( Request $request);
+
     public function apply_temporary_password( $email, $temporary_password );
 
     public function change_password( $id, array $data);
+
+    public function tick_dpa( $id );
 
     public function assign_roles_to_user( $id, array $roles_array );
 

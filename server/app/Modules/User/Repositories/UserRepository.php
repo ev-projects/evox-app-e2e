@@ -4,6 +4,7 @@ namespace App\Modules\User\Repositories;
 
 use App\Modules\Department\Models\Department;
 use App\Modules\User\Models\User;
+use Carbon\Carbon;
 use DebugBar\DebugBar;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -45,7 +46,7 @@ class UserRepository implements UserRepositoryInterface{
             if( $user == null ) {
 
                 // If BHr User has E-mail and valid Employment history status, insert the user
-                if( is_valid( $bhr_user->bestEmail ) && is_valid( $bhr_user->employmentHistoryStatus )  ) {
+                if( is_valid( $bhr_user->bestEmail ) /*&& is_valid( $bhr_user->employmentHistoryStatus ) */ ) {
 
                     # 1.
                     $user = new User();
@@ -145,7 +146,7 @@ class UserRepository implements UserRepositoryInterface{
         try {  
 
             // If BHr User has E-mail and valid Employment history status, insert the user
-            if( is_valid( $bhr_user->bestEmail ) && is_valid( $bhr_user->employmentHistoryStatus )  ) {
+            if( is_valid( $bhr_user->bestEmail ) /*&& is_valid( $bhr_user->employmentHistoryStatus ) */ ) {
 
                 if(strlen($bhr_user->employeeNumber)==2){
                     $bhr_user->employeeNumber = "0" . $bhr_user->employeeNumber;
@@ -465,6 +466,59 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+    
+
+
+
+    /**
+     *  Responsible for fetching all the DPA Userl ist
+     * @param Request $request
+     * @return User $user_collection ( Collection )
+     */
+    public function get_dpa_list( Request $request ){
+        try {
+            // Fetch the Users under the supervisee and join to their department for the sorting via Department Name
+            $user_collection = User::whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
+                                    ->join('departments', 'departments.id','=','users.department_id')
+                                    ->orderBy('departments.department_name','asc')
+                                    ->orderBy('users.emp_num','desc')
+                                    ->select('users.*');
+
+            // For the Department ID Filtering
+            if( is_valid( $request->department_id ) ){
+                $user_collection->where('department_id',$request->department_id );
+            }
+            
+            // For the Employee Name filtering
+            if( is_valid( $request->name ) ){
+                $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
+            }
+
+            // For DPA data filtering.
+            if( !is_null( $request->submitted_dpa ) ){
+
+                //  If true, fetch all the dpa_ticked_at that's not NULL
+                if( $request->submitted_dpa == 1 ){
+                    $user_collection->whereNotNull('dpa_ticked_at');
+
+                //  If true, fetch all the dpa_ticked_at that's NULL
+                } else {
+                    $user_collection->whereNull('dpa_ticked_at');
+                }
+            }
+            
+            // For Active User filtering
+            if( !is_null( $request->is_active ) ){
+                $user_collection->where('is_active',$request->is_active );
+            }
+
+            return $user_collection->paginate(50);
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
 
 
     /**
@@ -526,6 +580,33 @@ class UserRepository implements UserRepositoryInterface{
 
                     return false;
                 }
+                
+            }
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+    }
+
+    /**
+     *  Responsible for ticking the DPA field of the User
+     * @param $id
+     * @return User $user
+     */
+    public function tick_dpa( $id ){
+        
+        try {
+            $user =  User::findOrFail( $id );
+            
+            # allow the tick only if the User in the ID is the user currently logged in
+            if( auth()->user()->id == $user->id ) {
+
+                $user->dpa_ticked_at = Carbon::now()->format('Y-m-d H:i:s');
+                $user->save();
+
+                log_to_file('info', 'Successfully ticked DPA of User', $user->id, 'user');
+                return $user;
                 
             }
 

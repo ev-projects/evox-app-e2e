@@ -16,6 +16,7 @@ import BackButton from "../../../components/Template/BackButton";
 import Validator from "../../../services/Validator";
 import Formatter from "../../../services/Formatter";
 
+
 class MyTeamRequests extends Component {
 
   constructor(props){
@@ -32,6 +33,7 @@ class MyTeamRequests extends Component {
           checkedList:      this.props.filters?.checkedList ?? [],
           isAll:            this.props.filters?.isAll ?? false,
           action:           this.props.filters?.action ?? null,
+          request_type:     this.props.filters?.request_type ?? 'all',
           bulk_action:      this.props.filters?.bulk_action ?? null,
           url:              'my_team_requests'
       }
@@ -40,7 +42,7 @@ class MyTeamRequests extends Component {
   }
 
   onSubmitHandler = (values) => {
-    
+    console.log(values);
     var formData = { url: "my_team_requests"  };
 
     switch(values.action) {
@@ -90,7 +92,9 @@ class MyTeamRequests extends Component {
     }
   }
 
+
   componentDidMount(){
+    
     var filters = {
       ...this.state.filters,
       valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
@@ -170,15 +174,34 @@ class MyTeamRequests extends Component {
             <ContainerWrapper>   
             <ContainerBody>  
                 <Content col="12" title="My Team Request"  subtitle={ <BackButton {...this.props} /> }>
-                <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
-                  <Tab eventKey="home" title="All Requests">
+                <Tabs defaultActiveKey="home" 
+                      id="uncontrolled-tab-example"
+                      defaultActiveKey={values.request_type}
+                      onSelect={(key) =>  {
+                        setFieldValue("request_type", key)
+                        setFieldValue("page", 1);
+                        handleSubmit()
+                        }
+                      }
+                      >
+                  <Tab eventKey="all" title="All Requests" type="submit">
+                  </Tab>
+                  <Tab eventKey="alteration" title="Alteration" type="submit">
+                  </Tab>
+                  <Tab eventKey="overtime" title="Overtime" type="submit">
+                  </Tab>
+                  <Tab eventKey="rest_day_work" title="Rest Day Work" type="submit">
+                  </Tab>
+                  <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
+                  </Tab>
+                </Tabs>    
                   <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status==null}
-                      onClick={() => setFieldValue("status", null)}
+                      onClick={() =>{ setFieldValue("status", null); handleSubmit();} }
                     >
                       <Badge variant="light">{all_status}</Badge>
                        &nbsp;All Status
@@ -190,7 +213,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="pending"}
-                      onClick={() => setFieldValue("status", "pending")}
+                      onClick={() =>  { setFieldValue("status", "pending"); handleSubmit();}}
                     >
                       <Badge className="pending" variant="light">{pending}</Badge>
                        &nbsp;Pending
@@ -202,7 +225,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="approved"}
-                      onClick={() => setFieldValue("status", "approved")}
+                      onClick={() =>{ setFieldValue("status", "approved"); handleSubmit();}}
                     >
                       <Badge className="approved" variant="light">{approved}</Badge>
                       &nbsp;Approved 
@@ -214,7 +237,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="canceled"}
-                      onClick={() => setFieldValue("status", "canceled")}
+                      onClick={() =>  { setFieldValue("status", "canceled"); handleSubmit();}}
                     >
                       <Badge className="canceled" variant="light">{canceled}</Badge>
                       &nbsp;Canceled 
@@ -226,7 +249,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="declined"}
-                      onClick={() => setFieldValue("status", "declined")}
+                      onClick={() => { setFieldValue("status", "declined"); handleSubmit();}}
                     >
                       <Badge className="denied" variant="light">{declined}</Badge>
                       &nbsp;Declined 
@@ -406,8 +429,6 @@ class MyTeamRequests extends Component {
                 <Paginate pagination={request_list} />
                 {/* <Pagination className="justify-content-center" >{pagination}</Pagination> */}
                 </div>) : (<div> Sorry, No Record Found </div>)}
-                  </Tab>
-                </Tabs>    
                 </Content>
             </ContainerBody>  
             </ContainerWrapper>

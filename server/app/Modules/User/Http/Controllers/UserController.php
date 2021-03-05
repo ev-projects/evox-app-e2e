@@ -25,6 +25,8 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 use App\Modules\User\Models\User;
+use App\Modules\User\Resources\DpaUserListResource;
+use App\Modules\User\Resources\DpaUserListResourceCollection;
 
 class UserController extends Controller
 {
@@ -177,6 +179,21 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Shows an existing Department
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get_dpa_list( Request $request){
+        try {
+            $user_collection = $this->user->get_dpa_list( $request );
+            return success_response(
+                trans('messages.get_dpa_list_success'), 
+                new DpaUserListResourceCollection( $user_collection )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
 
     /**
      * Returns the Temporary Schedules of the User by the User ID
@@ -239,6 +256,35 @@ class UserController extends Controller
 
             return success_response(
                 trans('messages.change_password_success'), 
+                new UserProfileResource( $user )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    
+
+    /**
+     * Function for Ticking the DPA field of the User
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function tick_dpa( $id ){   
+        try {
+            log_activity( trans('messages.tick_dpa_attempt') );
+
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+               
+            $user = $this->user->tick_dpa( $id );
+
+            return success_response(
+                trans('messages.tick_dpa_success'), 
                 new UserProfileResource( $user )
             );
         } catch(Exception $e){

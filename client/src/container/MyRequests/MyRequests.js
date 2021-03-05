@@ -32,6 +32,7 @@ class MyRequests extends Component {
           isAll:            this.props.filters?.isAll ?? false,
           action:           this.props.filters?.action ?? null,
           bulk_action:      this.props.filters?.bulk_action ?? null,
+          request_type:     this.props.filters?.request_type ?? 'all',
           url:              'my_requests'
       }
     }
@@ -82,7 +83,11 @@ class MyRequests extends Component {
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
 
-  const validationSchema = Yup.object().shape({});
+  const validationSchema = Yup.object().shape({
+
+    valid_from: Yup.date().nullable().max( Yup.ref('valid_to') , 'Please select a Valid From date.'),
+    valid_to: Yup.date().nullable().min( Yup.ref('valid_from') , 'Please select a Valid To date.'),
+  });
   if(this.props.isListLoaded){
     let pagination = [];
     for (let number = 1; number <= request_list.last_page; number++) {
@@ -125,15 +130,33 @@ class MyRequests extends Component {
             <ContainerWrapper> 
             <ContainerBody>        
                 <Content col="12" title="My Requests">
-                <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
-                  <Tab eventKey="home" title="All Requests">
-                  <ButtonGroup toggle className="mb-2">
+                <Tabs defaultActiveKey="home" 
+                      id="uncontrolled-tab-example"
+                      defaultActiveKey={values.request_type}
+                      onSelect={(key) =>  {
+                        setFieldValue("request_type", key)
+                        handleSubmit()
+                        }
+                      }
+                      >
+                  <Tab eventKey="all" title="All Requests" type="submit">
+                  </Tab>
+                  <Tab eventKey="alteration" title="Alteration" type="submit">
+                  </Tab>
+                  <Tab eventKey="overtime" title="Overtime" type="submit">
+                  </Tab>
+                  <Tab eventKey="rest_day_work" title="Rest Day Work" type="submit">
+                  </Tab>
+                  <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
+                  </Tab>
+                </Tabs>    
+                <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status==null}
-                      onClick={() => setFieldValue("status", null)}
+                      onClick={() =>{ setFieldValue("status", null); handleSubmit();} }
                     >
                       <Badge variant="light">{all_status}</Badge>
                        &nbsp;All Status
@@ -145,7 +168,7 @@ class MyRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="pending"}
-                      onClick={() => setFieldValue("status", "pending")}
+                      onClick={() =>  { setFieldValue("status", "pending"); handleSubmit();}}
                     >
                       <Badge className="pending" variant="light">{pending}</Badge>
                        &nbsp;Pending
@@ -157,7 +180,7 @@ class MyRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="approved"}
-                      onClick={() => setFieldValue("status", "approved")}
+                      onClick={() =>{ setFieldValue("status", "approved"); handleSubmit();}}
                     >
                       <Badge className="approved" variant="light">{approved}</Badge>
                       &nbsp;Approved 
@@ -169,7 +192,7 @@ class MyRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="canceled"}
-                      onClick={() => setFieldValue("status", "canceled")}
+                      onClick={() =>  { setFieldValue("status", "canceled"); handleSubmit();}}
                     >
                       <Badge className="canceled" variant="light">{canceled}</Badge>
                       &nbsp;Canceled 
@@ -181,7 +204,7 @@ class MyRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="declined"}
-                      onClick={() => setFieldValue("status", "declined")}
+                      onClick={() => { setFieldValue("status", "declined"); handleSubmit();}}
                     >
                       <Badge className="denied" variant="light">{declined}</Badge>
                       &nbsp;Declined 
@@ -300,8 +323,7 @@ class MyRequests extends Component {
                   </Table>
                   <Paginate pagination={request_list} />
                   </div>) : (<div> Sorry, No Record Found </div>)}
-                    </Tab>
-                  </Tabs>    
+                  
                   </Content>
                 </ContainerBody>
               </ContainerWrapper>

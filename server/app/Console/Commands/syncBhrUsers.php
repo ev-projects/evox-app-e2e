@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
 use Exception;
@@ -32,10 +34,14 @@ class syncBhrUsers extends Command
      * @return void
      */
     public function __construct(BhrRepositoryInterface $bhr,
-                                UserRepositoryInterface $user)
+                                UserRepositoryInterface $user,
+                                ScheduleRepositoryInterface $schedule,
+                                DtrRepositoryInterface $dtr )
     {
         $this->bhr = $bhr;
         $this->user = $user;
+        $this->schedule = $schedule;
+        $this->dtr = $dtr;
 
         parent::__construct();
     }
@@ -60,8 +66,8 @@ class syncBhrUsers extends Command
             $user_supervisor_pivot_array = [];
 
             // Use the date yesterday.
-            $since_date_to_sync = Carbon::yesterday()->format('Y-m-d') . 'T00:00:00-00:00';
-
+            $since_date_to_sync = Carbon::today()->subDays(7)->format('Y-m-d') . 'T00:00:00-00:00';
+            
             # 1.
             # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
             $bhr_user_number_array = $this->bhr->get_changed_users( $since_date_to_sync );
@@ -85,10 +91,18 @@ class syncBhrUsers extends Command
                     $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
 
                     if( is_valid( $user ) ) {
+
+                        # Fetch the Department of the User.
+                        $department =  $user->department()->first();
+
                         # Added generating of Schedule for the newly inserted user using the User's department default schedule
-                        $schedule = $user->department()->first()->defaultSchedule()->first();
-                        $this->schedule->replicate_schedule_to_user( $schedule, $user );
-                        
+                        if( is_valid( $department ) ) {
+
+                            $schedule = $department->defaultSchedule()->first();
+                            $this->schedule->replicate_schedule_to_user( $schedule, $user );
+                            
+                        }
+
                         # Checks if the Date Hired is less than or equal to the nearest saturday date.
                         $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
                         if( Carbon::parse( $user->date_hired )->lte( $nearest_saturday_date ) ){

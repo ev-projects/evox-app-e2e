@@ -79,8 +79,7 @@ class RequestResource extends JsonResource
 
 
             $result = array(
-                'result' => $this->resource['query'],
-                'record_number' => $this->resource['request_count'], 
+                'result' => $this->resource['query']
             );
         }
         return $result;

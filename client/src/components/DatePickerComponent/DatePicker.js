@@ -83,13 +83,18 @@ const InputDate = (props) => {
 }
 
 
-const CustomTimeInput = ({ value, onChange }) => (
-  <input
+
+const CustomTimeInput = ({ value, onChange }) => {
+  return(<input
     value={value}
-    onChange={e => onChange(e.target.value)}
+    onChange={ (e) =>{
+                      if(e.target.value.includes(":")){
+                        onChange(e.target.value); 
+                      }
+    }}
     style={{ border: "solid 1px green", textAlign : "center", fontSize : "17.5px" }}
-  />
-);
+  />);
+  }
 
 /** This is component for Date */
 const InputDateTime = (props) => {

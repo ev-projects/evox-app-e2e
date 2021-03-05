@@ -20,7 +20,7 @@ import { getUserInfo } from '../../../store/actions/userActions'
 import Wrapper from "../../../components/Template/Wrapper/index.js";
 import BackButton from "../../../components/Template/BackButton/index.js";
 import Validator from "../../../services/Validator.js";
-
+import moment from 'moment';
 
 import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 
@@ -50,10 +50,9 @@ class AssignDefault extends Component {
   }
 
   onSubmitHandler = (values) => {
-    // Format the data that will be past on the API
     values.schedule_details = Formatter.format_schedule_details(values);
-    values.valid_from = values.from.toISOString().substring(0, 10);
-    values.valid_to = values.to.toISOString().substring(0, 10);
+    values.valid_from = moment( values.from ).format("YYYY-MM-DD");
+    values.valid_to = moment( values.to ).format("YYYY-MM-DD");
     this.props.scheduleAssign(values)
   }
 
@@ -475,11 +474,20 @@ const validation_var = Yup.string().required(required_field).nullable();
 
 const validationSchema = Yup.object().shape({
 
-  from: validation_var,
-  to: Yup.string().nullable().when('source_type', {
-        is: 'update',
-        then:   validation_var
+  from: Yup.date().nullable().when('source_type', {
+    is: 'temporary',
+    then:   Yup.date().nullable()
   }),
+  to: Yup.date().nullable().when('source_type', {
+        is: 'temporary',
+        then:   Yup.date()
+        .required("end time cannot be empty")
+        .test("is-equal-greater", "End time should be greater", function(value) {
+          var { from } = this.parent;
+          return moment( moment( value).format("YYYY-MM-DD") ).isSameOrAfter(moment( from).format("YYYY-MM-DD")) ;
+        })
+  }),
+
   schedule_type: Yup
     .string()
     .min(3)

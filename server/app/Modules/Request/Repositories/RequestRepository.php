@@ -75,41 +75,78 @@ class RequestRepository implements RequestRepositoryInterface{
             # Filter Name
             $filter_name = "";
             if( isset($data->name) ){
-                $filter_name = 'AND (users.first_name like "%'.$data->name.'%" OR users.last_name like "%'.$data->name.'%")';
+                $filter_name = 'AND (users.first_name like "%'.$data->name.'%" OR users.last_name like "%'.$data->name.'%" OR CONCAT(users.first_name, " ", users.last_name) LIKE "%' . $data->name. '%" )';
             }
+            
 
+            # Filter Request type
+            if(isset($data->request_type)){
+                if($data->request_type=='all'){
+                    $filter = ' SELECT status FROM overtimes 
+                    LEFT JOIN users ON users.id = overtimes.user_id
+                    '.$id_filter.'
+                    '.$date_filter.'
+                    '.$filter_department.'
+                    '.$filter_name.'
+                    UNION  ALL
+                    SELECT status FROM alter_logs 
+                        LEFT JOIN users ON users.id = alter_logs.user_id
+                    '.$id_filter.'
+                    '.$date_filter.'
+                    '.$filter_department.'
+                    '.$filter_name.'
+                    UNION  ALL
+                    SELECT status FROM rest_day_works 
+                        LEFT JOIN users ON users.id = rest_day_works.user_id
+                    '.$id_filter.'
+                    '.$date_filter.'
+                    '.$filter_department.'
+                    '.$filter_name.'
+                    UNION  ALL
+                    SELECT status FROM change_schedules 
+                        LEFT JOIN users ON users.id = change_schedules.user_id
+                    '.$id_filter.'
+                    '.$change_sched_date.'
+                    '.$filter_department.'
+                    '.$filter_name.'';
+        
+                }elseif($data->request_type=='alteration'){
+                    $filter = 'SELECT status FROM alter_logs 
+                    LEFT JOIN users ON users.id = alter_logs.user_id
+                    '.$id_filter.'
+                    '.$date_filter.'
+                    '.$filter_department.'
+                    '.$filter_name.'';
+                }elseif($data->request_type=='overtime'){
+                    $filter = 'SELECT status FROM overtimes 
+                    LEFT JOIN users ON users.id = overtimes.user_id
+                    '.$id_filter.'
+                    '.$date_filter.'
+                    '.$filter_department.'
+                    '.$filter_name.'';
+                }elseif($data->request_type=='rest_day_work'){
+                    $filter = 'SELECT status FROM rest_day_works 
+                    LEFT JOIN users ON users.id = rest_day_works.user_id
+                    '.$id_filter.'
+                    '.$date_filter.'
+                    '.$filter_department.'
+                    '.$filter_name.'';
+                }elseif($data->request_type=='change_schedule'){
+                    $filter ='SELECT status FROM change_schedules 
+                    LEFT JOIN users ON users.id = change_schedules.user_id
+                    '.$id_filter.'
+                    '.$change_sched_date.'
+                    '.$filter_department.'
+                    '.$filter_name.'';
+                }
+                   
+            }
 
             # Construct the Query by Looping the Tables that will be fetch for request numbers
             $query .= ' 
             SELECT request.status, COUNT(*) 
             FROM (
-                        SELECT status FROM overtimes 
-                            LEFT JOIN users ON users.id = overtimes.user_id
-                            '.$id_filter.'
-                            '.$date_filter.'
-                            '.$filter_department.'
-                            '.$filter_name.'
-                        UNION  ALL
-                        SELECT status FROM alter_logs 
-                            LEFT JOIN users ON users.id = alter_logs.user_id
-                            '.$id_filter.'
-                            '.$date_filter.'
-                            '.$filter_department.'
-                            '.$filter_name.'
-                        UNION  ALL
-                        SELECT status FROM rest_day_works 
-                            LEFT JOIN users ON users.id = rest_day_works.user_id
-                            '.$id_filter.'
-                            '.$date_filter.'
-                            '.$filter_department.'
-                            '.$filter_name.'
-                        UNION  ALL
-                        SELECT status FROM change_schedules 
-                            LEFT JOIN users ON users.id = change_schedules.user_id
-                            '.$id_filter.'
-                            '.$change_sched_date.'
-                            '.$filter_department.'
-                            '.$filter_name.'
+                       '.$filter .'
             ) AS request
             GROUP BY status
                     ';

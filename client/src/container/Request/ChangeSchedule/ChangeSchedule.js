@@ -289,10 +289,10 @@ const validationSchema = Yup.object().shape({
     approver_note:  		Yup.string().nullable(),
 	cst_schedule_details: Yup.array().of(
 			Yup.object().shape({
-				start_time: 		Yup.date().required("This field is required").nullable().max( Yup.ref('end_time') , 'Please select a valid On-Duty.'),
-				end_time: 			Yup.date().required("This field is required").nullable().min( Yup.ref('start_time') , 'Please select a valid Off-Duty.'),
-				start_flexy_time: 	Yup.date().required("This field is required").nullable().min( Yup.ref('start_time') , 'Please select a valid Flexi Start.'),
-				end_flexy_time: 	Yup.date().required("This field is required").nullable().min( Yup.ref('start_flexy_time') , 'Please select a valid Flexi End.'),
+				start_time: 		Yup.date().required("This field is required").nullable(),
+				end_time: 			Yup.date().required("This field is required").nullable(),
+				start_flexy_time: 	Yup.date().required("This field is required").nullable(),
+				end_flexy_time: 	Yup.date().required("This field is required").nullable(),
 				break_time: 		Yup.date().required("This field is required").nullable().max( DateFormatter.get_specific_datetime( null, '01:00:59' ) , 'Please select valid break time.'),
 			})
 	   )
