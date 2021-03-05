@@ -168,11 +168,6 @@ return [
         "post" => "post_overtime"
     ],
 
-    'request_status' => [
-        "pre" => "pre_overtime",
-        "post" => "post_overtime"
-    ],
-
     'DTR_TYPE' => [
         "regular" => "reg",
         "rest_day" => "rd",
