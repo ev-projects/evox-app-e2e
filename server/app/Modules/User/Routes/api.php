@@ -43,6 +43,9 @@ Route::group(['prefix' => 'auth'], function () {
 # API Calls for user/{id}
 Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
+    # Register a User
+    Route::post('register', 'UserController@register');
+
     # Get the Role of the user
     Route::get('get_dpa_list', 'UserController@get_dpa_list');
 

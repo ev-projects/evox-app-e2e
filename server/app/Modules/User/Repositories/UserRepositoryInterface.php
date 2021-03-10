@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 
 interface UserRepositoryInterface
 {
+
+    public function register_user( Request $request );
+
     public function insert_bhr_user_to_evox(object $bhr_user);
 
     public function update_bhr_user_to_evox(User $user, object $bhr_user);

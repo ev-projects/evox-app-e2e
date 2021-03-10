@@ -14,6 +14,7 @@ use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
+use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\UserListResourceCollection;
@@ -436,6 +437,24 @@ class UserController extends Controller
                     return success_response(
                         trans('messages.list_role_success'),  Role::with('permissions')->get()
                     );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    # This function registers User to the system
+    public function register( RegisterUserRequest $request){
+    
+        try {
+            log_activity( trans('messages.register_user_attempt') );
+
+            $data = $this->user->register_user( $request );
+            
+            return success_response(
+                trans('messages.register_user_success'),  
+                new UserProfileResource( $data['user'] )
+            );
 
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

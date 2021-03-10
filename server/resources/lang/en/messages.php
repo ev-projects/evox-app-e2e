@@ -46,6 +46,9 @@ return [
     'tick_dpa_attempt'    => 'Attempt to tick the DPA of the User',
     'tick_dpa_success'    => 'Thank you for watching the video! ',
 
+    'register_user_attempt'    => 'Attempt to Register a User',
+    'register_user_success'    => 'Successfully registered a User!',
+
     
 
 

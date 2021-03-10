@@ -73,8 +73,12 @@ return [
 
     'USER_ROLES' => [
         'employee'    =>  'employee', 
-        'supervisor'  =>  'supervisor'
+        'supervisor'  =>  'supervisor',
+        'admin'       =>  'admin',
+        'client'      =>  'client',
     ],
+
+    'REGISTERED_USER' => 'Registered User',
 
     'DEFAULT_PASSWORD'  => '{ev2010}',
 

@@ -22,7 +22,99 @@ class UserRepository implements UserRepositoryInterface{
     ###################################### Public functions #######################################
     ###############################################################################################
 
+    /**
+     *  Responsible for Registering a User w/ specific departments being handled and roles/permissions
+     * @param Request $request
+     * @return array [ $user, $temporary_password ]
+     */
+    public function register_user( $request ){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
+
+        DB::beginTransaction();
+        try {  
+            /**
+             *  1. Insert the User
+             *  2. Attach the Role/s to User
+             *  3. Attach the Role's Permissions to User
+             *  3. Attach the Departments Handled to User
+             */
+
+            // Generate Temporary Password for the User
+            $temporary_password = str_random(8);
+
+            # 1.
+            $user = new User();
+
+            $user->emp_num = null;
+            $user->bhr_num = null;
+            $user->email = $request->email;
+            $user->username = $request->email;
+            $user->password = Hash::make( $temporary_password );
+            $user->first_name = $request->first_name;
+            $user->middle_name = null;
+            $user->last_name = $request->last_name;
+            $user->employment_status = get_constant('REGISTERED_USER');
+            $user->force_change_password = true;
+            $user->date_hired = null;
+            $user->is_active = true;
+
+            // Save the User and it will generate the User ID
+            $user->save();
+
+            
+            # 2.
+            // Iterate the roles to be assigned to the User
+            foreach( $request->roles as $role_name ){
+
+                //Fetch the Role to attach on the User 
+                $role = Role::findByName( $role_name );
+
+                // Assign the Role
+                $user->assignRole( $role );
     
+                # 3.
+                // Total Permissions that are not synced yet on the User
+                $permissions_to_sync = [];
+    
+                // Iterate and filter out all the Permissions that are already existing for the User.
+                foreach( $role->permissions()->get() as $permission ){
+                    if( ! $user->hasDirectPermission( $permission ) ) {
+                        $permissions_to_sync[] = $permission;
+                    }
+                }
+                
+                // Assign the User's Permissions
+                $user->givePermissionTo( $permissions_to_sync );
+            }
+
+            # 4.
+            // Attach the Departments Handled to User
+            $user->departments_handled()->sync( $request->departments_handled );
+            
+            log_to_file( 'info', 'User Registered Successfully', [$user], 'user_sync');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            DB::commit();
+            return [
+                'user' => $user,
+                'temporary_password' => $temporary_password,
+            ];
+
+        } catch (Exception $e) {
+
+            DB::rollback();
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            throw $e;
+        }
+    }
+    
+
+
     /**
      *  Responsible for Inserting the BHR Users to EVOX, Attaching Default Roles and Permissions
      * @param object $bhr_user_number
