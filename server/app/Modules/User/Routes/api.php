@@ -44,7 +44,7 @@ Route::group(['prefix' => 'auth'], function () {
 Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
     # Register a User
-    Route::post('register', 'UserController@register');
+    Route::post('register', 'UserController@register')->middleware('role:admin');
 
     # Get the Role of the user
     Route::get('get_dpa_list', 'UserController@get_dpa_list');
@@ -80,10 +80,10 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::post('change_password', 'UserController@change_password');//->middleware('auth.apikey');
     
     # Assign Roles & Permissions Post request
-    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions');
+    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions')->middleware('role:admin');
     
     # Assign Employees Post Request
-    Route::post('/assign_employees/', 'UserController@assign_employees');
+    Route::post('/assign_employees/', 'UserController@assign_employees')->middleware('role:admin');
 
 });
 

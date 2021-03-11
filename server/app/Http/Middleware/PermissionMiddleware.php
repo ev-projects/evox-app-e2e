@@ -17,7 +17,7 @@ class PermissionMiddleware
     public function handle($request, Closure $next, $permission)
     {
         if (! $request->user()->getDirectPermissions()->contains('name', $permission) ) {
-           abort(403, "No permission to do this action.");
+           return error_response( trans('messages.permission_not_allowed') );
         }
     
         return $next($request);

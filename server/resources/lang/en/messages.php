@@ -49,6 +49,8 @@ return [
     'register_user_attempt'    => 'Attempt to Register a User',
     'register_user_success'    => 'Successfully registered a User!',
 
+    'role_not_allowed'          => 'No specific role to do this action!',
+    'permission_not_allowed'    => "No permission to do this action!",
     
 
 
