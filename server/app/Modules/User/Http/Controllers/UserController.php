@@ -450,6 +450,8 @@ class UserController extends Controller
             log_activity( trans('messages.register_user_attempt') );
 
             $data = $this->user->register_user( $request );
+
+            $this->email->sendRegisteredUserEmail( $data['user'], $data['temporary_password'] );
             
             return success_response(
                 trans('messages.register_user_success'),  

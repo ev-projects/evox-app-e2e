@@ -7,6 +7,7 @@ use App\Modules\Email\Jobs\SendAlterLogRequestEmailJob;
 use App\Modules\Email\Jobs\SendChangeScheduleRequestEmailJob;
 use App\Modules\Email\Jobs\SendForgotPasswordRequestEmailJob;
 use App\Modules\Email\Jobs\SendOvertimeRequestEmailJob;
+use App\Modules\Email\Jobs\SendRegisteredUserEmailJob;
 use App\Modules\Email\Jobs\SendRestDayWorkRequestEmailJob;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\ChangeSchedule;
@@ -30,6 +31,29 @@ class EmailRepository implements EmailRepositoryInterface{
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
+
+    public function sendRegisteredUserEmail( User $user, $temporary_password ){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendRegisteredUserEmailJob::dispatch( $user, $temporary_password )
+                                            ->delay( Carbon::now()->addSeconds(5) );
+            
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            return true;
+            
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
+            throw $e;
+        }
+    }
 
     public function sendForgotPasswordRequestEmail( User $user, $temporary_password ){
         try {
