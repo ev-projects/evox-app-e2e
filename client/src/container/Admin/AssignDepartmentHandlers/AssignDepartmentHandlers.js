@@ -15,7 +15,7 @@ import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
 
-import { fetchUserList, fetchDepartmentList } from '../../../store/actions/lookup/lookupListActions';
+import { fetchUserList, fetchDepartmentList, fetchDepartmentHandlersList } from '../../../store/actions/lookup/lookupListActions';
 import { assignDepartmentHandlers } from '../../../store/actions/admin/assignDepartmentHandlersActions'
 
 import { setRedirect } from '../../../store/actions/redirectActions';
@@ -82,23 +82,17 @@ class AssignDepartmentHandlers extends Component {
 
 
   // Function for handling the onChange of Department Dropdown
-  handleSelectDepartment = (event) =>{
+  handleSelectDepartment = async (event) =>{
+
+    let department_id = event.target.value;
+
+    // Fetch the Department Handlers List
+    await this.props.fetchDepartmentHandlersList( department_id )
 
     // Set the Department Handlers as Selected Value
     this.setState({
-        selectedDepartment : event.target.value,
-        selectedValues: JSON.parse(event.target.options[event.target.selectedIndex].getAttribute('department_handlers'))
+        selectedDepartment : department_id
     });
-
-    if( Validator.isValid(event.target.value)  )  {
-      this.setState({
-        showSupervisorList : true
-      });
-    } else {
-      this.setState({
-        showSupervisorList : false
-      });
-    }
 
   }
 
@@ -109,6 +103,40 @@ class AssignDepartmentHandlers extends Component {
     });
   }
 
+  componentWillReceiveProps = async(nextProps) => {
+
+    // If the Department Handlers is updated, set the State for the selectedValues in the Department Handlers
+    if( nextProps.department_handlers != this.props.department_handlers ) {
+
+      if( Validator.isValid( this.state.selectedDepartment )  )  {
+
+        let department_handlers = [];
+        if( nextProps.department_handlers != undefined ) {
+            for (var i = 0; i < nextProps.department_handlers.length; i++) {
+              department_handlers.push({
+                label  : nextProps.department_handlers[i].full_name,
+                value  : nextProps.department_handlers[i].id
+              })
+            }
+        }
+
+        // Set the Department Handlers as Selected Value
+        this.setState({
+            selectedValues: department_handlers,
+            showSupervisorList : true
+        }); 
+        
+      } else {
+
+          this.setState({
+            showSupervisorList : false
+          });
+
+      }
+    }
+
+  }
+  
   componentWillMount = async() => {
 
     await this.props.fetchUserList('supervisor', {page : 'all'});
@@ -171,19 +199,8 @@ class AssignDepartmentHandlers extends Component {
                                             { !this.state.reloadingDepartmentList ? 
                                                 this.props.department.map((value, index) => {
 
-                                                    let department_handlers = [];
-
-                                                    if( value.department_handlers != undefined ) {
-                                                        for (var i = 0; i < value.department_handlers.length; i++) {
-                                                          department_handlers.push({
-                                                            label  : value.department_handlers[i].full_name,
-                                                            value  : value.department_handlers[i].id
-                                                          })
-                                                        }
-                                                    }
                                                     return <option 
                                                             value={value.id} 
-                                                            department_handlers={JSON.stringify( department_handlers )}
                                                             >
                                                               {value.department_name}
                                                             </option>;
@@ -245,9 +262,6 @@ class AssignDepartmentHandlers extends Component {
                             </form>
                         )}
                         </Formik>
-                         {/* :
-                         null  
-                       } */}
                       </Content>
                 </ContainerBody>
             </ContainerWrapper>
@@ -260,14 +274,16 @@ class AssignDepartmentHandlers extends Component {
 const mapStateToProps = (state) => {
   return {
     department             : state.lookup.department,
+    department_handlers    : state.lookup.department_handlers,
     supervisor             : state.lookup.supervisor
   }
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchUserList             : ( role, params ) => dispatch( fetchUserList( role, params ) ),
-      fetchDepartmentList       : () => dispatch( fetchDepartmentList() ),
-      assignDepartmentHandlers  : ( department_id, post_data ) => dispatch( assignDepartmentHandlers( department_id, post_data ) ),
+      fetchUserList                     : ( role, params ) => dispatch( fetchUserList( role, params ) ),
+      fetchDepartmentList               : () => dispatch( fetchDepartmentList() ),
+      fetchDepartmentHandlersList       : ( id ) => dispatch( fetchDepartmentHandlersList( id ) ),
+      assignDepartmentHandlers          : ( department_id, post_data ) => dispatch( assignDepartmentHandlers( department_id, post_data ) ),
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(AssignDepartmentHandlers);

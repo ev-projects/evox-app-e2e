@@ -1,4 +1,3 @@
-
 import API from "../../../services/API";
 import Formatter from "../../../services/Formatter";
 
@@ -20,18 +19,10 @@ export const assignDepartmentHandlers = ( department_id, post_data ) => {
 
             dispatch( Formatter.alert_success( result, 3000 ));
 
-            
-            dispatch({
-                'type'          : 'UPDATE_DEPARTMENT_LIST',
-                'department'    : result.data.content,
-            })
-
-            
             dispatch({
                 'type'          : 'UPDATE_USER_DEPARTMENT_HANDLED',
                 'department'    : result.data.content,
             })
-
 
         })
         .catch(e => {

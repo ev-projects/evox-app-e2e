@@ -81,5 +81,49 @@ export const fetchDepartmentList = () => {
 }
 
 
+// Fetch the Department Handlers List via Department ID
+export const fetchDepartmentHandlersList = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/department/" + id + "/department_handlers"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_DEPARTMENT_HANDLERS_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+// Fetch the Department Users List via Department ID
+export const fetchDepartmentUsersList = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/department/" + id + "/users"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_DEPARTMENT_USERS_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
 
 
