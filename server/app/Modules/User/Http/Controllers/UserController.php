@@ -28,6 +28,7 @@ use Spatie\Permission\Models\Permission;
 use App\Modules\User\Models\User;
 use App\Modules\User\Resources\DpaUserListResource;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
+use App\Modules\User\Resources\RoleResource;
 
 class UserController extends Controller
 {
@@ -435,7 +436,8 @@ class UserController extends Controller
         try {
             log_activity( trans('messages.list_role_attempt') );
                     return success_response(
-                        trans('messages.list_role_success'),  Role::with('permissions')->get()
+                        trans('messages.list_role_success'),  
+                        RoleResource::collection( Role::with('permissions')->get() ) 
                     );
 
         } catch(Exception $e){

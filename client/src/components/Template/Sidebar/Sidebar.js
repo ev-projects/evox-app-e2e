@@ -213,7 +213,13 @@ const Sidebar = (props) => {
                           <li className="nav-item">
                             <Link className="nav-link" to={ global.assign_role }>
                               <i className="nav-icon fa fa-users nav-icon" />
-                              <p style={{'fontSize':13}}>Assign Role  to User</p>
+                              <p style={{'fontSize':13}}>Assign Role to User</p>
+                            </Link> 
+                          </li>
+                          <li className="nav-item">
+                            <Link className="nav-link" to={ global.register_user }>
+                              <i className="nav-icon fa fa-user-plus nav-icon" />
+                              <p style={{'fontSize':13}}>Register User</p>
                             </Link> 
                           </li>
                         </ul>

@@ -3,28 +3,6 @@ import API from "../../../services/API";
 import Formatter from "../../../services/Formatter";
 
 
-
-// Fetch Roles
-export const fetchRoles = (  ) => {
-
-    return (dispatch, getState) => {
-        API.call({
-            method: "get",
-            url: "/admin-access/roles",
-        })
-        .then(result => {
-            dispatch({
-                'type'      : 'FETCH_ROLES', 
-                'roles'  : result.data.content
-            })
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    }
-}
-
-
 // Fetch User Role
 export const fetchUserRole = ( id ) => {
 
@@ -50,7 +28,7 @@ export const fetchUser = ( name_string ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/admin-access/search-user/" + name_string,
+            url: "/user/search-user/" + name_string,
         })
         .then(result => {
             dispatch({
@@ -74,6 +52,7 @@ export const assignRole = ( id , post_data ) => {
         })
         .then(result => {
            
+            dispatch( Formatter.alert_success( result, 3000 ));
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

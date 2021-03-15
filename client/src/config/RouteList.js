@@ -45,6 +45,7 @@ import DtrLogs from "../container/MyTeam/DtrLogs";
 import ForgotPasswordRequest from "../container/ForgotPasswordRequest";
 import DPAForm from "../container/DPAForm";
 import DPAList from "../container/MyTeam/DPAList";
+import RegisterUser from "../container/Admin/RegisterUser";
 
 const RoutesList = (props) => {
 
@@ -85,6 +86,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path="/app/admin/AssignDepartmentHandlers/"><AssignDepartmentHandlers /></ProtectedRoute>
         <ProtectedRoute exact path="/app/admin/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
         <ProtectedRoute exact path="/app/admin/AssignRole/"><AssignRole /></ProtectedRoute>
+        <ProtectedRoute exact path="/app/admin/RegisterUser/"><RegisterUser /></ProtectedRoute>
 
         
         <ProtectedRoute exact path="/app/dtr/:id/" ><DailyTimeRecord/></ProtectedRoute>

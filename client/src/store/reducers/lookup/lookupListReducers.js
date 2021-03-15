@@ -55,6 +55,14 @@ const lookupListReducers = (state = initState, action) => {
             }
             break
 
+        // Apply the List that was recently fetched
+        case "FETCH_ROLE_LIST_SUCCESS":
+            result = {
+                ...state,
+                roles  : action.list
+            }
+            break
+
         // // Apply the List that was recently fetched
         // case "FETCH_DEPARTMENT_USER_LIST_SUCCESS":
         //     result = {

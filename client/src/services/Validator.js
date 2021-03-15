@@ -26,6 +26,17 @@ class Validator {
       return false;
     }
   }
+
+  /**
+   * Validates if the value is existing from the Object Array via the field name
+   */
+  inObjectArray = ( array, field, value ) => {
+    if ( array != undefined && array.find( object => object[field] == value )) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 export default new Validator();

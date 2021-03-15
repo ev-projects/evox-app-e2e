@@ -33,7 +33,7 @@ class RegisterUserRequest extends FormRequest
             'last_name'                 => 'required|string',
             'email'                     => 'required|string|unique:users,email',
             'departments_handled'       => 'required|array',
-            'departments_handled.*'     => 'required|string|exists:departments,id',
+            'departments_handled.*'     => 'required|exists:departments,id',
             'roles'                     => 'required|array',
             'roles.*'                   => 'required|exists:roles,name',
             // 'permissions'               => 'required|array',

@@ -43,6 +43,12 @@ Route::group(['prefix' => 'auth'], function () {
 # API Calls for user/{id}
 Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
+    # Gets the User List of Specific Role
+    Route::get('/search-user/{string_name}', 'UserController@get_user_by_string');
+
+    # Get the user roles
+    Route::get('/roles/', 'UserController@get_roles');
+
     # Register a User
     Route::post('register', 'UserController@register')->middleware('role:admin');
 
@@ -98,20 +104,6 @@ Route::group(['prefix' => 'role/{role}', 'middleware' => ['jwtauth', 'auth.apike
 
 
 });
-
-
-#####################################################################################################
-
-Route::group(['prefix' => 'admin-access/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-    
-    # Gets the User List of Specific Role
-    Route::get('/search-user/{string_name}', 'UserController@get_user_by_string');
-
-    # Get the user roles
-    Route::get('/roles/', 'UserController@get_roles');
-
-});
-
 
 #####################################################################################################
 

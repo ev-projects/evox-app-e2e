@@ -10,7 +10,9 @@ import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
-import { fetchUser,fetchRoles,fetchUserRole,assignRole } from '../../../store/actions/admin/assignRoleActions'
+import { fetchUser,fetchUserRole,assignRole } from '../../../store/actions/admin/assignRoleActions'
+import { fetchRoleList } from '../../../store/actions/lookup/lookupListActions';
+
 
 class AssignRole extends Component {
 	constructor(props) {
@@ -45,15 +47,13 @@ class AssignRole extends Component {
 
 	// Load the roles with permissions
 	componentWillMount(){
-		this.props.fetchRoles();
+		this.props.fetchRoleList();
 	}
 
 
 	render = () => {  
 
-	if(this.props.isRolesLoaded){
-		this.state.roles = this.props.roles;
-	}
+	this.state.roles = this.props.roles ? this.props.roles : [];
 
 	if(this.props.isUserListLoaded){
 		this.state.userLists = this.props.userLists;
@@ -146,8 +146,9 @@ class AssignRole extends Component {
 		userLists     			: state.assignRole.userLists, 
 		isUserListLoaded     	: state.assignRole.isUserListLoaded,
 
-		isRolesLoaded     		: state.assignRole.isRolesLoaded,
-		roles     				: state.assignRole.roles,
+		// isRolesLoaded     		: state.assignRole.isRolesLoaded,
+		// roles     				: state.assignRole.roles,
+		roles             		: state.lookup.roles,
 
 		userRole     			: state.assignRole.userRole,
 		isUserRolesLoaded     	: state.assignRole.isUserRolesLoaded,
@@ -157,7 +158,7 @@ class AssignRole extends Component {
   const mapDispatchToProps = (dispatch) => {
 	  return {
 		fetchUser       	: ( name_string  ) => dispatch( fetchUser( name_string ) ),
-		fetchRoles       	: (   ) => dispatch( fetchRoles(  ) ),
+		fetchRoleList      : () => dispatch( fetchRoleList() ),
 		fetchUserRole       : ( user_id ) => dispatch( fetchUserRole( user_id ) ),
 		assignRole       	: ( user_id , post_data ) => dispatch( assignRole( user_id , post_data ) ),
 	  } 
