@@ -28,7 +28,13 @@ class UserProfileResource extends JsonResource
     public function toArray($request){    
 
         $department = $this->department()->first();
-        $birthdate = new Carbon($this->birthdate);
+        
+        if($this->birthdate!=null){
+            $birthdate = new Carbon($this->birthdate);
+            $birthdate = $birthdate->format('M, d');
+        }else{
+            $birthdate = '';
+        }
 
 
         $main_info = array(
@@ -43,7 +49,7 @@ class UserProfileResource extends JsonResource
             'last_name' => $this->last_name,
             'employment_status' => $this->employment_status,
             'date_hired' => $this->date_hired,
-            'birthdate' => $birthdate->format('M, d'),
+            'birthdate' =>$birthdate,
             'nickname' => $this->nickname,
             'is_active' => $this->is_active,
             'force_change_password' => $this->force_change_password,
