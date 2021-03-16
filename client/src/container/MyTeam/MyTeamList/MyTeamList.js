@@ -212,7 +212,7 @@ const MyTeamListTable = (props) => {
                       </Link>
                       &nbsp;&nbsp;&nbsp;
                       <Link to={{
-                              pathname: global.profile_url + user.id,
+                              pathname: global.personal_information + user.id,
                               previousPath: props.location.pathname
                             }}
                           title="View Profile"

@@ -98,7 +98,15 @@ class PersonalInformation extends Component {
                                                                 <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.full_name}  />
                                                             </InputGroup> 
                                                         </Col> 
-                                                    </Row>                                                     
+                                                    </Row>  
+                                                    <Row>  
+                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
+                                                            <label> Job Title: </label>    
+                                                            <InputGroup>
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.job_title}  />
+                                                            </InputGroup> 
+                                                        </Col> 
+                                                    </Row>                                                       
                                                     <Row>  
                                                         <Col size="12" style={{'marginBottom': '5px'}}>  
                                                             <label> Work Email: </label>    

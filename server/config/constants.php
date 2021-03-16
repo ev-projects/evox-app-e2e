@@ -69,7 +69,8 @@ return [
     ],
 
     'BHR_USER_PERSONAL' => [
-        'mobilePhone'
+        'mobilePhone',
+        'jobTitle'
     ],
 
     'BHR_USER_EMPLOYMENT_STATUS' => [

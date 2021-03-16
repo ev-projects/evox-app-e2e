@@ -74,6 +74,7 @@ class UserController extends Controller
                     'user'  => new UserProfileResource( $user ), 
                     'profile_picture'  => $profile_picture, 
                     'mobile_phone'  => $mobile_phone->mobilePhone,
+                    'job_title'  => $mobile_phone->jobTitle,
                 ]
             );
         } catch(Exception $e){
@@ -98,12 +99,14 @@ class UserController extends Controller
 
             $job_information = $this->bhr->get_user_job_information( $user->bhr_num , 'jobInfo' );
 
+            $info = $this->bhr->get_user_bhr_field( $user->bhr_num  );
             return success_response(
                 trans('messages.show_profile_success'), 
                 [
                     'profile_picture'  => $profile_picture, 
                     'job_information'  => new JobInformationResource( $job_information ) ,
-                    'employment_status'  =>new EmploymentStatusResource( $employment_status )
+                    'employment_status'  =>new EmploymentStatusResource( $employment_status ),
+                    'job_title'  => $info->jobTitle
                 ]
             );
 

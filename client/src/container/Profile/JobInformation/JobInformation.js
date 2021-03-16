@@ -55,7 +55,6 @@ class JobInformation extends Component {
 
     render(){
       const { profile, user, page } = this.props;
-      console.log(profile.job_information);
 
         return (
             <Wrapper >
@@ -91,6 +90,14 @@ class JobInformation extends Component {
                                                             </InputGroup> 
                                                         </Col> 
                                                     </Row> 
+                                                    <Row>  
+                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
+                                                            <label> Job Title: </label>    
+                                                            <InputGroup>
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.job_title}  />
+                                                            </InputGroup> 
+                                                        </Col> 
+                                                    </Row>  
                                                     <Row>  
                                                         <Col size="12" style={{'marginBottom': '5px'}}>  
                                                             <label> Department: </label>    

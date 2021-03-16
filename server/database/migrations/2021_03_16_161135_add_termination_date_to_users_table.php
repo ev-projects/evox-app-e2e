@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddBirthdayAndNicknameToUsersTable extends Migration
+class AddTerminationDateToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,10 +14,7 @@ class AddBirthdayAndNicknameToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            Schema::table('users', function($table) {
-                $table->date('birthdate')->nullable()->after('date_hired');
-                $table->char('nickname',100)->nullable()->after('last_name');
-            });
+            $table->date('termination_date')->nullable()->after('date_hired');
         });
     }
 
@@ -29,8 +26,7 @@ class AddBirthdayAndNicknameToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-                $table->dropColumn('birthdate');
-                $table->dropColumn('nickname');
+            $table->dropColumn('termination_date');
         });
     }
 }

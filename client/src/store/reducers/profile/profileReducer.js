@@ -7,7 +7,8 @@ const initState = {
     profilePicture : [],
     job_information: [],
     closeAllForm: false,
-    mobile_phone : ''
+    mobile_phone : '',
+    job_title : ''
 }
 
 const profileReducer = (state = initState, action) => {
@@ -20,7 +21,8 @@ const profileReducer = (state = initState, action) => {
                 ...state,
                 details : action.user,
                 profilePicture : action.profilePicture,
-                mobile_phone : action.mobile_phone
+                mobile_phone : action.mobile_phone,
+                job_title : action.job_title
             }
             break;
 
@@ -29,7 +31,8 @@ const profileReducer = (state = initState, action) => {
                 ...state,
                 profilePicture : action.profilePicture,
                 job_information : action.job_information,
-                employment_status : action.employment_status
+                employment_status : action.employment_status,
+                job_title : action.job_title
             }
                 break;
         /**  */

@@ -23,7 +23,8 @@ export const fetchPersonalInformation = ( id ) => {
                 'type'              : 'FETCH_PROFILE',
                 'user'              : result.data.content.user,
                 'profilePicture'    : result.data.content.profile_picture,
-                'mobile_phone'      : result.data.content.mobile_phone 
+                'mobile_phone'      : result.data.content.mobile_phone,
+                'job_title'         : result.data.content.job_title
             })
 
             // Sets the Reloading to False
@@ -48,11 +49,13 @@ export const fetchJobInformation= ( id ) => {
             url: "/user/" + id + "/job_information"
         })
         .then(result => {
+            console.log(result.data.content);
             dispatch({
                 'type'              : 'FETCH_JOB_INFORMATION',
                 'job_information'   : result.data.content.job_information,
                 'employment_status' : result.data.content.employment_status,
-                'profilePicture'    : result.data.content.profile_picture
+                'profilePicture'    : result.data.content.profile_picture,
+                'job_title'         : result.data.content.job_title
             })
 
             // Sets the Reloading to False

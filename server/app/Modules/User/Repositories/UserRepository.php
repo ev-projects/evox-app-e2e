@@ -155,10 +155,15 @@ class UserRepository implements UserRepositoryInterface{
                     $user->first_name = $bhr_user->firstName;
                     $user->middle_name = $bhr_user->middleName;
                     $user->last_name = $bhr_user->lastName;
+                    $user->nickname = $bhr_user->nickname; 
+                    $user->birthdate = $bhr_user->dateOfBirth;
                     $user->employment_status = $bhr_user->employmentHistoryStatus;
                     $user->date_hired = $bhr_user->hireDate;
                     $user->is_active = true;
-                    
+
+                    if($bhr_user->terminationDate!="0000-00-00"){
+                        $user->termination_date = $bhr_user->terminationDate;
+                    }
                     /** Fetch Department if existing. Insert new department if not.*/ 
                     $department = $this->generate_department( $bhr_user->department );
                     if( is_valid( $department ) ) {
@@ -255,7 +260,10 @@ class UserRepository implements UserRepositoryInterface{
                 $user->birthdate = $bhr_user->dateOfBirth;
                 $user->date_hired = $bhr_user->hireDate;
                 $user->is_active = ( $bhr_user->terminationDate == "0000-00-00" && $bhr_user->employmentHistoryStatus != get_constant('BHR_USER_EMPLOYMENT_STATUS.terminated') ) ? true : false;
-                
+
+                if($bhr_user->terminationDate!="0000-00-00"){
+                    $user->termination_date = $bhr_user->terminationDate;
+                }
                 /** Fetch Department if existing. Insert new department if not.*/ 
                 $department = $this->generate_department( $bhr_user->department );
                 if( is_valid( $department ) ) {
