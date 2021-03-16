@@ -7,7 +7,7 @@ import Formatter from "../../../services/Formatter";
  *  A dedicated repository of Actions for Profile
  */
 
-export const fetchProfile = ( id ) => {
+export const fetchPersonalInformation = ( id ) => {
     return (dispatch, getState) => {
         
         // Sets the Reloading to True
@@ -22,7 +22,8 @@ export const fetchProfile = ( id ) => {
             dispatch({
                 'type'              : 'FETCH_PROFILE',
                 'user'              : result.data.content.user,
-                'profilePicture'    : result.data.content.profile_picture
+                'profilePicture'    : result.data.content.profile_picture,
+                'mobile_phone'      : result.data.content.mobile_phone 
             })
 
             // Sets the Reloading to False
@@ -35,6 +36,34 @@ export const fetchProfile = ( id ) => {
     }
 }
 
+
+export const fetchJobInformation= ( id ) => {
+    return (dispatch, getState) => {
+        
+        // Sets the Reloading to True
+        dispatch({'type': 'RELOAD_START'});
+
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/job_information"
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'FETCH_JOB_INFORMATION',
+                'job_information'   : result.data.content.job_information,
+                'employment_status' : result.data.content.employment_status,
+                'profilePicture'    : result.data.content.profile_picture
+            })
+
+            // Sets the Reloading to False
+            dispatch({'type': 'RELOAD_END'});
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
 
 export const changePassword = ( id, formData ) => {
 

@@ -4,7 +4,10 @@
 
 const initState = {
     details : {},
-    closeAllForm: false
+    profilePicture : [],
+    job_information: [],
+    closeAllForm: false,
+    mobile_phone : ''
 }
 
 const profileReducer = (state = initState, action) => {
@@ -16,10 +19,19 @@ const profileReducer = (state = initState, action) => {
             return {
                 ...state,
                 details : action.user,
-                profilePicture : action.profilePicture
+                profilePicture : action.profilePicture,
+                mobile_phone : action.mobile_phone
             }
             break;
 
+        case "FETCH_JOB_INFORMATION":
+            return {
+                ...state,
+                profilePicture : action.profilePicture,
+                job_information : action.job_information,
+                employment_status : action.employment_status
+            }
+                break;
         /**  */
 
         case "CLOSE_ALL_FORM":

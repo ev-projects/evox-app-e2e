@@ -380,6 +380,22 @@ class User extends Authenticatable implements JWTSubject
     }
 
     
+    public function personal(){
+        return [    
+            "first_name" => $this->first_name , 
+            "middle_name" => $this->middle_name , 
+            "last_name" => $this->last_name , 
+            "emp_num" => $this->emp_num , 
+            "email" => $this->email , 
+            "department" => $this->department()->first()->department_name   
+        ];
+    }
+
+    public function job_description(){
+        return [    
+            "first_name" => $this->first_name 
+        ];
+    }
 
     /**
      *  Gets user info for displaying page or block

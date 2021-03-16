@@ -18,7 +18,11 @@ use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\UserListResourceCollection;
-use App\Modules\User\Resources\UserProfileResource;
+use App\Modules\User\Resources\UserProfileResource; 
+
+use App\Modules\User\Resources\EmploymentStatusResource; 
+use App\Modules\User\Resources\JobInformationResource; 
+
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -62,11 +66,14 @@ class UserController extends Controller
 
             $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
 
+            $mobile_phone = $this->bhr->get_user_bhr_field( $user->bhr_num  );
+
             return success_response(
                 trans('messages.show_profile_success'), 
                 [
                     'user'  => new UserProfileResource( $user ), 
                     'profile_picture'  => $profile_picture, 
+                    'mobile_phone'  => $mobile_phone->mobilePhone,
                 ]
             );
         } catch(Exception $e){
@@ -74,6 +81,38 @@ class UserController extends Controller
         }
     }
     
+
+    public function job_information( $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+            $user = $this->user->show( $id );
+               
+            $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
+
+            $employment_status = $this->bhr->get_user_job_information( $user->bhr_num , 'employmentStatus' );
+
+            $job_information = $this->bhr->get_user_job_information( $user->bhr_num , 'jobInfo' );
+
+            return success_response(
+                trans('messages.show_profile_success'), 
+                [
+                    'profile_picture'  => $profile_picture, 
+                    'job_information'  => new JobInformationResource( $job_information ) ,
+                    'employment_status'  =>new EmploymentStatusResource( $employment_status )
+                ]
+            );
+
+            
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 
     /**
      * Returns the Default Schedule of the User by the User ID

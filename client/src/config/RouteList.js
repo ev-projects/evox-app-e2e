@@ -37,7 +37,8 @@ import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandler
 import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervisors";
 import AssignRole from "../container/Admin/AssignRole";
 import MyTeamList from "../container/MyTeam/MyTeamList";
-import Profile from "../container/Profile";
+import JobInformation from "../container/Profile/JobInformation";
+import PersonalInformation from "../container/Profile/PersonalInformation";
 import Validator from "../services/Validator";
 import RequestEmailApproval from "../container/RequestEmailApproval";
 import ScheduleAssignDepartment from "../container/Schedule/ScheduleAssignDepartment";
@@ -90,7 +91,8 @@ const RoutesList = (props) => {
 
         
         <ProtectedRoute exact path="/app/dtr/:id/" ><DailyTimeRecord/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/profile/:id/" ><Profile/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/profile/PersonalInformation/:id/" ><PersonalInformation/></ProtectedRoute>
+        <ProtectedRoute exact path="/app/profile/JobInformation/:id/" ><JobInformation/></ProtectedRoute>
         <ProtectedRoute exact path="/app/dpa/" ><DPAForm/></ProtectedRoute>
         <Route exact path="*" component={PageNotFound} />
       </Switch>

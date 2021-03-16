@@ -29,6 +29,8 @@ return [
         'lastName',
         'department',
         'bestEmail',
+        'dateOfBirth',
+        'nickname',
         'status',
         'hireDate',
         'terminationDate',
@@ -66,6 +68,9 @@ return [
         'status'
     ],
 
+    'BHR_USER_PERSONAL' => [
+        'mobilePhone'
+    ],
 
     'BHR_USER_EMPLOYMENT_STATUS' => [
         'terminated'    =>  'Terminated', 

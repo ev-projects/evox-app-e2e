@@ -3,6 +3,8 @@
 namespace App\Modules\User\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
+
 
 class UserProfileResource extends JsonResource
 {
@@ -26,6 +28,8 @@ class UserProfileResource extends JsonResource
     public function toArray($request){    
 
         $department = $this->department()->first();
+        $birthdate = new Carbon($this->birthdate);
+
 
         $main_info = array(
             'id' => $this->id,
@@ -38,6 +42,9 @@ class UserProfileResource extends JsonResource
             'middle_name' => $this->middle_name,
             'last_name' => $this->last_name,
             'employment_status' => $this->employment_status,
+            'date_hired' => $this->date_hired,
+            'birthdate' => $birthdate->format('M, d'),
+            'nickname' => $this->nickname,
             'is_active' => $this->is_active,
             'force_change_password' => $this->force_change_password,
             'dpa_ticked_at' => $this->dpa_ticked_at,
