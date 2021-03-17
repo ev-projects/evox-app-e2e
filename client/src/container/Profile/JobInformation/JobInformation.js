@@ -64,17 +64,21 @@ class JobInformation extends Component {
                         <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
                             <Row>
                                 <Content col="12" title="Job Information"  subtitle={ <BackButton {...this.props}/>} >
-                                {!Authenticator.check('client') ?
+
+                                <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
+                                    pathname: global.links.job_information + this.props.params.id,
+                                    }}
+                                    title="Job Information"
+                                >
+                                    Job Information
+                                </Link></Button>     
                                 <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
                                     pathname: global.links.personal_information + this.props.params.id,
                                     }}
                                     title="Personal Information"
                                 >
                                     Personal Information
-                                </Link></Button>
-                                :
-                                    null
-                                }
+                                </Link></Button>                          
                                             <Row>
                                                 <div className="col-lg-4 text-center" >
                                                     <img src={ Validator.isValid( profile.profilePicture ) ? "data:image/jpg;base64,"+ profile.profilePicture : "/images/default-user-image.png"}

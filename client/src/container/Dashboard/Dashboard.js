@@ -18,7 +18,7 @@ class Dashboard extends Component {
       const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
         return (
-            <Wrapper  {...this.props} >
+            <Wrapper>
                <ContainerWrapper>
                   <ContainerHeader>
                       
@@ -29,21 +29,31 @@ class Dashboard extends Component {
                       <Row>
                             <div className="col-lg-8 col-md-7 col-sm-12">
                                 <Row>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">
-                                    <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training</p>
-                            <p>&nbsp;</p>
-                            <a href="https://www.eastvantage.com/newsletter/2020/october/EVSafe.mp4" target="_blank"><img src="https://www.eastvantage.com/newsletter/2020/october/EVSafe.jpg" width="100%" /></a>
-                        
-                            <p>&nbsp;</p>
-                              <p><a className="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Please fill out this Covid Safety Declaration form</a></p>
-                            
+                                    <div class="block col-lg-12 col-md-12 col-sm-12"><h3>Company Announcements</h3>
+                                      <div class="row">
+                                        <div class="col-lg-6 col-md-12 col-sm-12">
+                                          <a href="https://www.eastvantage.com/newsletter/2020/october/EVSafe.mp4" target="_blank">
+                                          <img src="https://www.eastvantage.com/newsletter/2020/october/EVSafe.jpg" width="100%" /></a>
+                                          <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training</p>
+                                          <p><a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Please fill out this Covid Safety Declaration form</a></p>
+                                        </div>
+                                        <div class="col-lg-6 col-md-12 col-sm-12">
+                                          <a href="https://evox2.eastvantage.com/app/dpa" target="_blank">
+                                          <img src="https://www.eastvantage.com/webinar/DPA.jpg" width="100%" /></a>
+                                          <p>All employees are required to watch the Data Privacy webinar. Please tick the checkbox that will appear once the video ends to confirm your attendance.</p>
+                                          <p><a class="btn-primary" href="https://evox2.eastvantage.com/app/dpa" target="_blank">Click here to go to Data Privacy webinar</a></p>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div className="col-lg-12 col-md-12 col-sm-12">
-                                    <h2 align="center">IT schedule</h2>
-                                    <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%"/>
-                                      <ul><li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
-                                      <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
-                                      <li>For urgent/emergency concerns reach out to: James (+63 917 8102 593)</li></ul>
+
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                      <h2 align="center">IT schedule</h2>
+                                      <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
+                                      <ul>
+                                        <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
+                                        <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
+                                        <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
+                                      </ul>
                                     </div>
 
                                 </Row>

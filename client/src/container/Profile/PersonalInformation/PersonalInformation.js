@@ -84,39 +84,63 @@ class PersonalInformation extends Component {
                                 :
                                     null
                                 }
+                                <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
+                                    pathname: global.links.personal_information + this.props.params.id,
+                                    }}
+                                    title="Personal Information"
+                                >
+                                    Personal Information
+                                </Link></Button>
                                             <Row>
-                                                <div className="col-lg-4 text-center" >
+                                            <div className="profile-header"> 
+                                               
+                                                <div className="col-4 picture" >
                                                     <img src={ Validator.isValid( profile.profilePicture ) ? "data:image/jpg;base64,"+ profile.profilePicture : "/images/default-user-image.png"}
                                                         style={{'marginTop': '15px', 'width' :'170px', 'height': '170px'}} />
                                                 </div>
-                                                <div className="col-lg-8" >
-                                                    
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> Name: </label>    
-                                                            <InputGroup>
+                                                <div className="information" >
+                                                    <InputGroup>
                                                                 <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.full_name}  />
-                                                            </InputGroup> 
-                                                        </Col> 
-                                                    </Row>  
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> Job Title: </label>    
-                                                            <InputGroup>
+                                                            </InputGroup>
+                                                             <InputGroup>
                                                                 <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.job_title}  />
                                                             </InputGroup> 
-                                                        </Col> 
-                                                    </Row>                                                       
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> Work Email: </label>    
                                                             <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.email}  />
-                                                            </InputGroup> 
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.department}  />
+                                                            </InputGroup>  
+                                                </div>
+                                                
+                                                 
+                                            </div>
+                                            </Row>
+
+                                           
+                                            <Row>
+
+                                               
+                                                <div className="col-lg-8" >
+                                                    
+                                                       <h4>Basic Information</h4>
+                                                       <Row>  
+                                                        <Col size="12">  
+                                                            <label> Employee Number: </label>    
+                                                           
+                                                        <InputGroup>
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.emp_num}  />
+                                                            </InputGroup>
                                                         </Col> 
-                                                    </Row> 
+                                                    </Row>
                                                     <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
+                                                        <Col size="12">  
+                                                            <label> Department: </label>    
+                                                           
+                                                        <InputGroup>
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.department}  />
+                                                            </InputGroup>
+                                                        </Col> 
+                                                    </Row>
+                                                    <Row>  
+                                                        <Col size="12">  
                                                             <label> Status: </label>    
                                                             { profile.details.is_active != null ?
                                                             <InputGroup>
@@ -133,8 +157,16 @@ class PersonalInformation extends Component {
                                                             null
                                                             }
                                                         </Col> 
-                                                    </Row> 
-                                                    <Row>  
+                                                    </Row>
+                                                       <Row>
+                                                       <Col size="12" style={{'marginBottom': '5px'}}>
+                                                       <label> Full Name: </label> 
+                                                        <InputGroup>
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.full_name}  />
+                                                            </InputGroup>
+                                                        </Col>     
+                                                       </Row>
+                                                        <Row>  
                                                         <Col size="12" style={{'marginBottom': '5px'}}>  
                                                             <label> Nick Name: </label>    
                                                             <InputGroup>
@@ -142,6 +174,10 @@ class PersonalInformation extends Component {
                                                             </InputGroup> 
                                                         </Col> 
                                                     </Row> 
+                                                                                                           
+                                                     
+                                                    
+                                                   
                                                     <Row>  
                                                         <Col size="12" style={{'marginBottom': '5px'}}>  
                                                             <label> Birth Date: </label>    
@@ -149,7 +185,9 @@ class PersonalInformation extends Component {
                                                                 <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.birthdate}  />
                                                             </InputGroup> 
                                                         </Col> 
-                                                    </Row> 
+                                                    </Row>
+                                                    <hr /> 
+                                                    <h4>Contact Information</h4>
                                                     {!Authenticator.check('client') ?
                                                     <Row>  
                                                         <Col size="12" style={{'marginBottom': '5px'}}>  
@@ -164,17 +202,26 @@ class PersonalInformation extends Component {
                                                   }
                                                 </div>
                                             </Row>
-                                            <br/>
+                                            <Row>  
+                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
+                                                            <label> Work Email: </label>    
+                                                            <InputGroup>
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.email}  />
+                                                            </InputGroup> 
+                                                        </Col> 
+                                                    </Row>
+                                                    <hr />
                                             <Row>
                                                 <div className="col-lg-12" >
                                                     { profile.details.id == user.id ?
-                                                        <Button type="button" className="btn btn-secondary" onClick={()=> {this.setShowChangePasswordForm(true)}} ><i className="fa fa-edit" /> Change Password</Button>
+                                                        <Button type="button" className="btn btn-secondary" onClick={()=> {this.setShowChangePasswordForm(true)}} >Change Password</Button>
                                                         :
                                                         null
                                                     }
                                                     
                                                 </div>
                                             </Row>
+
                                 </Content>
                                 {
                                     this.state.showChangePasswordForm ? 

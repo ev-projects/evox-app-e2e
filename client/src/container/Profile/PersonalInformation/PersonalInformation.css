@@ -1,0 +1,20 @@
+.profile-header{width: 100%}
+.profile-header .picture{
+    float: left;
+    display: inline-block;
+    overflow: hidden;
+    flex: none;
+    width: 150px;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.profile-header img {
+    margin-top: 15px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+.profile-header .information{float: left;}
+.profile-header input{border:0 !important; background-color: transparent !important;}
