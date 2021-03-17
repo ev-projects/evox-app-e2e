@@ -78,7 +78,7 @@ class DPAForm extends Component {
       const { user } = this.props;
 
         return (
-            <Wrapper>
+            <Wrapper {...this.props} >
                <ContainerWrapper>
                   <ContainerBody>
                     <Content col="6" title="Webinar: Data Privacy"  >
@@ -143,7 +143,7 @@ class DPAForm extends Component {
                                     I confirm that I attended the training class listed above. I listened, read, and understood the training, and I understand that as an employee, it is my responsibility to abide by Eastvantage policy and procedures, in accordance with the training. If I have questions about the training, materials presented or Eastvantage policy and procedures, I understand it is my responsibility to seek clarification from the Human Resources Department.
                                     <br/>
                                     <br/>
-                                    <Button type="button" className="btn btn-secondary"  type="submit">Submit</Button>
+                                    <Button type="button" className="btn btn-secondary"  type="submit"><i className="fa fa-location-arrow" /> Submit</Button>
                                                                   
                                   </p>
                                   : null

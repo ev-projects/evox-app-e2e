@@ -76,7 +76,7 @@ class DPAList extends Component {
           {
           ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
           <form onSubmit={handleSubmit}>
-          <Wrapper>
+          <Wrapper {...this.props} >
                 <ContainerWrapper>   
                 <ContainerBody>  
                     <Content col="12" title="DPA List">
@@ -162,7 +162,7 @@ const DPAListFilter = (props) => {
               <Col size="2"> 
                 <div style={{ 'marginTop' : '30px'}}>
                   <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
-                    Filter
+                    <i className="fa fa-filter" /> Filter
                   </Button>
                 </div>
               </Col> 

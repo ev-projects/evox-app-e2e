@@ -235,7 +235,7 @@ class AssignEmployeeSupervisors extends Component {
 
     // Show the form if the Department and Supervisor list has already loaded.
     return ( this.props.supervisor != undefined ? 
-        <Wrapper previousPath={this.props.location.previousPath} role={'admin'} permission={'full_access'}>
+        <Wrapper {...this.props} >
               <ContainerWrapper>
                   <ContainerBody>
                       <Content col="6" title="Assign Employee Supervisors" >
@@ -357,7 +357,7 @@ class AssignEmployeeSupervisors extends Component {
                                 { /** Show the Assign Button if there is a data on Selected Department. */
                                   Validator.isValid( this.state.selectedDepartment ) ?
                                     <Row>   
-                                      <Button type="submit" style={{'width': '80%'}} className="btn btn-primary">Assign</Button>
+                                      <Button type="submit" style={{'width': '80%'}} className="btn btn-primary"><i class="fa fa-tag" /> Assign</Button>
                                     </Row> 
                                     :
                                     null 

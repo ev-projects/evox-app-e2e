@@ -67,7 +67,7 @@ class DtrLogs extends Component {
 		{
 		({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
 		<form onSubmit={handleSubmit}>
-		<Wrapper>
+		<Wrapper {...this.props} >
 			  <ContainerWrapper>       
 				  <Content col="12" title="DTR Logs">
 				  <Row>  
@@ -115,7 +115,7 @@ class DtrLogs extends Component {
 					          <Col className="btns">   
                     	<div className="form-group">
 						          <label> </label>
-							          <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}>Submit</Button>&nbsp;&nbsp;
+							          <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
                         {/* <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button> */}
                       </div>
                     </Col>

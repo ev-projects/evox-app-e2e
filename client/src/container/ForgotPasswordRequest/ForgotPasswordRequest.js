@@ -15,6 +15,7 @@ import { forgotPasswordRequest } from '../../store/actions/userActions';
 import { setRedirect, clearRedirect } from '../../store/actions/redirectActions';
 import PageLoading from "../PageLoading";
 import Formatter from "../../services/Formatter";
+import BackButton from "../../components/Template/BackButton";
 
 class ForgotPasswordRequest extends Component {
 
@@ -78,13 +79,11 @@ class ForgotPasswordRequest extends Component {
 
 
 
-                                    <Button style={{'padding': '10px 15px'}}  type="submit" >
-                                      Submit
+                                    <Button type="submit" >
+                                      <i className="fa fa-location-arrow" />  Submit
                                     </Button>
                                     &nbsp;
-                                    <Link className="btn btn-primary back-to-login-btn" to="/login">
-                                      Back
-                                    </Link>
+                                    <BackButton  style={{'float': 'right'}} {...this.props} />
                                   </form>
                                   )}
                               </Formik>

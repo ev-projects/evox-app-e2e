@@ -166,7 +166,7 @@ class AssignDepartmentHandlers extends Component {
 
     // Show the form if the Department and Supervisor list has already loaded.
     return (this.props.department != undefined && this.props.supervisor != undefined ? 
-        <Wrapper previousPath={this.props.location.previousPath} role={'admin'} permission={'full_access'}>
+        <Wrapper {...this.props} >
               <ContainerWrapper>
                   <ContainerBody>
                       <Content col="6" title="Assign Department Handlers" >
@@ -238,7 +238,7 @@ class AssignDepartmentHandlers extends Component {
                                 Validator.isValid( this.state.selectedValues ) && this.state.selectedValues.length != 0 ?
                                   <Col size="5">
                                     <Row>   
-                                      <Button type="submit" style={{'width': '80%'}} className="btn btn-primary">Assign</Button>
+                                      <Button type="submit" style={{'width': '80%'}} className="btn btn-primary"><i class="fa fa-tag" /> Assign</Button>
                                     </Row> 
                                     <Row>   
                                       <div className="form-group" style={{'width': '100%', 'paddingTop': '10px'}}>

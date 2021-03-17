@@ -528,13 +528,17 @@ class UserRepository implements UserRepositoryInterface{
 
 
     /**
-     *  Responsible for fetching all the Active Users
+     *  Responsible for fetching all the Active and Non Client Users
      * @param $id
      * @return User $user
      */
     public function get_all_active_users(){
         try {
-            $users = User::where('is_active', 1)->get();
+            $users = User::where('is_active', 1)
+                         ->whereHas('roles', function( $query ) {
+                             $query->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
+                         })
+                         ->get();
             return $users;
         } catch (Exception $e) {
             throw $e;

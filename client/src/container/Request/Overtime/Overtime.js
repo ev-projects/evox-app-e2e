@@ -102,13 +102,6 @@ class Overtime extends Component {
     }
   }
 
-
-
-  // Set the goBack Function for instance of going back the previous page from the history.
-  goBack = () => {
-    this.props.setRedirect( this.props.location.previousPath );
-  }
-
   // Set the setAction Function for Setting of the Approval Action to be proceeded
   setAction = (action) => {
     this.setState({'action':action});
@@ -164,7 +157,7 @@ class Overtime extends Component {
       
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
 
-      return <Wrapper previousPath={this.props.location.previousPath}>
+      return <Wrapper {...this.props} >
         <Formik 
           enableReinitialize
           onSubmit={this.onSubmitHandler} 

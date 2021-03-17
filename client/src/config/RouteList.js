@@ -54,46 +54,131 @@ const RoutesList = (props) => {
   const DefaultContainer = () => (
     <div>
       <Switch>
-        <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/schedule" ><TemplateCreate /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/assign/user/:user_id" ><ScheduleAssign /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/assign/department/" ><ScheduleAssignDepartment /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
 
+        { /* General Links */ }
+        <ProtectedRoute exact path={global.links.dashboard} >
+          <Dashboard role={['employee', 'supervisor', 'client']} permission={['employee_access', 'supervisor_access', 'client_access']} />
+        </ProtectedRoute>
 
-        {/* Requests */}
-        <ProtectedRoute exact path="/app/request/AlterLog/:id?"><AlterLog onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path={global.links.dpa} >
+          <DPAForm  role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
 
-        <ProtectedRoute exact path="/app/request/ChangeSchedule/:id?"><ChangeSchedule onApproval={false}/></ProtectedRoute>
-
-        <ProtectedRoute exact path="/app/request/Overtime/:id?"><Overtime onApproval={false}/></ProtectedRoute>
-        
-        <ProtectedRoute exact path="/app/request/RestDayWork/:id?"><RestDayWork onApproval={false}/></ProtectedRoute>
-
-        <ProtectedRoute exact path="/app/request/WorkFromHome/:id?"><WorkFromHome onApproval={false}/></ProtectedRoute>
-
-        <ProtectedRoute exact path="/app/account/MyRequests"><MyRequests/></ProtectedRoute>
-
-        {/* For Supervisors */}
-        <ProtectedRoute exact path="/app/team/DPAList"><DPAList/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/team/MyTeamList"><MyTeamList/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/team/MyTeamRequests"><MyTeamRequests/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/team/DtrSummary"><DtrSummary/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/team/DtrLogs"><DtrLogs/></ProtectedRoute>
-
-        {/* Settings */}
-        <ProtectedRoute exact path="/app/admin/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/admin/AssignDepartmentHandlers/"><AssignDepartmentHandlers /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/admin/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/admin/AssignRole/"><AssignRole /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/admin/RegisterUser/"><RegisterUser /></ProtectedRoute>
 
         
-        <ProtectedRoute exact path="/app/dtr/:id/" ><DailyTimeRecord/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/profile/PersonalInformation/:id/" ><PersonalInformation/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/profile/JobInformation/:id/" ><JobInformation/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/dpa/" ><DPAForm/></ProtectedRoute>
+        { /* Employee Links */ }
+        <ProtectedRoute exact path={global.links.dtr+":id"} >
+          <DailyTimeRecord role={['employee', 'supervisor', 'client']} permission={['employee_access', 'supervisor_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.personal_information+":id"} >
+          <PersonalInformation role={['employee', 'supervisor', 'client']} permission={['employee_access', 'supervisor_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.job_information+":id"} >
+          <JobInformation role={['employee', 'supervisor', 'client']} permission={['employee_access', 'supervisor_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.my_request}>
+          <MyRequests role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+
+        
+
+        { /* Request Links */ }
+        <ProtectedRoute exact path={global.links.overtime+":id?"}>
+          <Overtime onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.alter_log+":id?"}>
+          <AlterLog onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.change_schedule+":id?"}>
+          <ChangeSchedule onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+        
+        <ProtectedRoute exact path={global.links.rest_day_work+":id?"}>
+          <RestDayWork onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.work_from_home+":id?"}>
+          <WorkFromHome onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+
+        
+
+        { /* Team Links */ }
+        <ProtectedRoute exact path={global.links.dpa_list}>
+          <DPAList role={['supervisor']} permission={['supervisor_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.my_team_list}>
+          <MyTeamList role={['supervisor', 'client']} permission={['supervisor_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.my_team_requests}>
+          <MyTeamRequests role={['supervisor']} permission={['supervisor_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_summary}>
+          <DtrSummary role={['supervisor']} permission={['supervisor_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_logs}>
+          <DtrLogs role={['supervisor', 'client']} permission={['supervisor_access', 'client_access']} />
+        </ProtectedRoute>
+
+
+        
+
+        { /* Schedule Links */ }
+        <ProtectedRoute exact path={global.links.template_add} >
+          <TemplateCreate role={['supervisor']} permission={['supervisor_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.template_list+":templateid"} >
+          <TemplateEdit  role={['supervisor']} permission={['supervisor_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.template_list} >
+          <TemplateList  role={['supervisor']} permission={['supervisor_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.schedule_assign_user+":user_id"} >
+          <ScheduleAssign role={['supervisor']} permission={['supervisor_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.schedule_assign_department} >
+          <ScheduleAssignDepartment role={['supervisor']} permission={['supervisor_access']}/>
+        </ProtectedRoute>
+
+
+        
+
+        {/* Admin Links */}
+        <ProtectedRoute exact path={global.links.payroll_cutoff}>
+          <PayrollCutoff role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.assign_department_handlers}>
+          <AssignDepartmentHandlers  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.assign_employee_supervisors}>
+          <AssignEmployeeSupervisors  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.assign_role}>
+          <AssignRole  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.register_user}>
+          <RegisterUser  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+        
         <Route exact path="*" component={PageNotFound} />
       </Switch>
       <Footer />
@@ -104,7 +189,7 @@ const RoutesList = (props) => {
   const LoginContainer = () => (
     <div className="container">
       <Route exact path="/" component={Login} />
-      <Route path="/login" component={Login} />
+      <Route path={global.links.login} component={Login} />
     </div>
   );
 
@@ -118,9 +203,9 @@ const RoutesList = (props) => {
         <div>&nbsp;</div>
       </div>
       <Switch>
-        <Route exact path={["/", "/login"]} component={LoginContainer} />
-        <Route exact path="/request/approval/:hashCode/:status?" component={RequestEmailApproval} />
-        <Route exact path="/recover/password" component={ForgotPasswordRequest} />
+        <Route exact path={["/", global.links.login ]} component={LoginContainer} />
+        <Route exact path={global.links.request_approval+":hashCode/:status?"} component={RequestEmailApproval} />
+        <Route exact path={global.links.recover_password} component={ForgotPasswordRequest} />
         <Route component={DefaultContainer} />
       </Switch>
     </div>

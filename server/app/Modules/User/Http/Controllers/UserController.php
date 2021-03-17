@@ -66,15 +66,15 @@ class UserController extends Controller
 
             $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
 
-            $mobile_phone = $this->bhr->get_user_bhr_field( $user->bhr_num  );
+            $info = $this->bhr->get_user_bhr_field( $user->bhr_num  );
 
             return success_response(
                 trans('messages.show_profile_success'), 
                 [
                     'user'  => new UserProfileResource( $user ), 
                     'profile_picture'  => $profile_picture, 
-                    'mobile_phone'  => $mobile_phone->mobilePhone,
-                    'job_title'  => $mobile_phone->jobTitle,
+                    'mobile_phone'  => is_valid( $info ) ? $info->mobilePhone : null,
+                    'job_title'  => is_valid( $info ) ? $info->jobTitle : null,
                 ]
             );
         } catch(Exception $e){
@@ -106,7 +106,7 @@ class UserController extends Controller
                     'profile_picture'  => $profile_picture, 
                     'job_information'  => new JobInformationResource( $job_information ) ,
                     'employment_status'  =>new EmploymentStatusResource( $employment_status ),
-                    'job_title'  => $info->jobTitle
+                    'job_title'  => is_valid( $info ) ? $info->jobTitle : null
                 ]
             );
 

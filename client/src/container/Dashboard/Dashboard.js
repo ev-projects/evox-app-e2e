@@ -18,7 +18,7 @@ class Dashboard extends Component {
       const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
         return (
-            <Wrapper>
+            <Wrapper  {...this.props} >
                <ContainerWrapper>
                   <ContainerHeader>
                       

@@ -144,8 +144,8 @@ class PayrollCutoffForm extends Component {
                     </Row> 
                     <Row>  
                         <Col size="12"> 
-                        <Button type="submit" className="btn btn-secondary" >Save</Button>&nbsp;
-                        <Button type="button" className="btn btn-secondary" onClick={this.props.hideForm} >Cancel</Button>
+                        <Button type="submit" className="btn btn-secondary" ><i class="fa fa-location-arrow" /> Submit</Button>&nbsp;
+                        <Button type="button" className="btn btn-secondary" onClick={this.props.hideForm} ><i class="fa fa-window-close" /> Cancel</Button>
                         </Col> 
                     </Row> 
                     </form>

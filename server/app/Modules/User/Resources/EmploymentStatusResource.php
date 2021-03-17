@@ -26,14 +26,15 @@ class EmploymentStatusResource extends JsonResource
     public function toArray($request){    
         
         $job_info = [];
-        foreach ( $this->employment_status as $array) {
-            array_push($job_info, [
-                "date" => $array->date,
-                "emp_status" => $array->employmentStatus,
-                "comment" => $array->comment
-            ]);
+        if( is_valid( $this->employment_status ) ) {
+            foreach ( $this->employment_status as $array) {
+                array_push($job_info, [
+                    "date" => $array->date,
+                    "emp_status" => $array->employmentStatus,
+                    "comment" => $array->comment
+                ]);
+            }
         }
-
         return $job_info;
     }
 }

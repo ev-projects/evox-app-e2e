@@ -66,7 +66,7 @@ class JobInformation extends Component {
                                 <Content col="12" title="Job Information"  subtitle={ <BackButton {...this.props}/>} >
                                 {!Authenticator.check('client') ?
                                 <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
-                                    pathname: global.personal_information + this.props.params.id,
+                                    pathname: global.links.personal_information + this.props.params.id,
                                     }}
                                     title="Personal Information"
                                 >

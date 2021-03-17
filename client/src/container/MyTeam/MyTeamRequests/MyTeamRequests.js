@@ -170,10 +170,10 @@ class MyTeamRequests extends Component {
       {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
-      <Wrapper>
+      <Wrapper {...this.props} >
             <ContainerWrapper>   
             <ContainerBody>  
-                <Content col="12" title="My Team Request"  subtitle={ <BackButton {...this.props} /> }>
+                <Content col="12" title="My Team Request">
                 <Tabs defaultActiveKey="home" 
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
@@ -294,9 +294,9 @@ class MyTeamRequests extends Component {
                     </Col> 
                     <Col className="col-lg-2 col-2 col-md-2 col-sm-3">
                     <div className="form-group">
-                          <label>&nbsp;</label>
-                          <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
-                          Filter
+                        <label>&nbsp;</label>
+                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
+                          <i className="fa fa-filter" /> Filter
                         </Button>
                     </div>
                     </Col>
@@ -325,7 +325,7 @@ class MyTeamRequests extends Component {
                     <div className="form-group">
                         <label>&nbsp;</label>  
                         <Button className="display-block"  variant="primary" type="submit" onClick={() => setFieldValue("action", "bulk_action")} >
-                          Update
+                          <i className="fa fa-edit" /> Update
                         </Button>
                     </div>
                     <ErrorMessage component="div" name="checkedList" className="input-feedback" />
@@ -370,7 +370,7 @@ class MyTeamRequests extends Component {
                               <p> Work Days: {item.fourth_column?.work_days?.join()}</p>
                               </div>
                             ); 
-                            link =  global.change_schedule + item.id.toString();
+                            link =  global.links.change_schedule + item.id.toString();
                               break;
                           case "alter_logs":
                               fourthColumn.push(
@@ -387,7 +387,7 @@ class MyTeamRequests extends Component {
                                   <p>Out: {item.fourth_column.current_time_out}</p>
                                 </div>
                               );
-                              link =  global.alter_log + item.id.toString();
+                              link =  global.links.alter_log + item.id.toString();
                               break;
                           case "rest_day_works":
                             fourthColumn.push(
@@ -397,7 +397,7 @@ class MyTeamRequests extends Component {
                               <span>To: {item.fifth_column}</span>
                             );
 
-                              link =  global.rest_day_work + item.id.toString();
+                              link =  global.links.rest_day_work + item.id.toString();
                               break;
                           case "overtimes":
                               fifthColumn.push(
@@ -407,7 +407,7 @@ class MyTeamRequests extends Component {
                                 <span>{item.fourth_column}</span>
 
                               );
-                              link =  global.overtime + item.id.toString();
+                              link =  global.links.overtime + item.id.toString();
                               break;
                        }
                         return <tr>
@@ -421,7 +421,7 @@ class MyTeamRequests extends Component {
                         <td>{fifthColumn}</td>
                         <td> <Status status={item.status} /></td>
                         <td>{item.updated_by} <br/><small>{item.updated_at}</small></td>
-                        <td> <Link to={{ pathname: link, previousPath:  global.base_url +'team/MyTeamRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
+                        <td> <Link to={{ pathname: link, previousPath:  global.links.base +'team/MyTeamRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
                       </tr>         
                     })}
                   </tbody>

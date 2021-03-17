@@ -3,30 +3,51 @@
  *  All the static data that are not too often to change should be stored here.
  */
 
-global.login_url = "/login";
-global.base_url = "/app/";
-global.dpa_url = "/app/dpa";
-global.dashboard_url = "/app/Dashboard";
-global.template_add = "/app/schedule/";
-global.template_list = "/app/schedule/template/";
-global.schedule_assign_department = "/app/schedule/assign/department";
-global.schedule_assign_user = "/app/schedule/assign/user/";
-global.daily_time_record_view = "/app/dtr/";
-global.personal_information = "/app/profile/PersonalInformation/";
-global.job_information = "/app/profile/JobInformation/";
-global.payroll_cutoff = "/app/admin/PayrollCutoff/";
-global.assign_department_handlers = "/app/admin/AssignDepartmentHandlers/";
-global.assign_employee_supervisors = "/app/admin/AssignEmployeeSupervisors/";
-global.assign_role= "/app/admin/AssignRole/";
-global.register_user= "/app/admin/RegisterUser/";
+global.links = {
 
-global.overtime = "/app/request/Overtime/";
-global.work_from_home = "/app/request/WorkFromHome/";
-global.alter_log = "/app/request/AlterLog/";
-global.change_schedule = "/app/request/ChangeSchedule/";
-global.rest_day_work = "/app/request/RestDayWork/";
+    // Outside Links
+    login                           :  "/login",
+    request_approval                :  "/request/approval/",
+    recover_password                :  "/recover/password/",
 
-global.my_request = "/app/account/MyRequests";
+    // General Links
+    base                            :  "/app/",
+    dpa                             :  "/app/dpa",
+    dashboard                       :  "/app/Dashboard",
+
+    // Employee Links
+    dtr                             :  "/app/dtr/",
+    personal_information            :  "/app/profile/PersonalInformation/",
+    job_information                 :  "/app/profile/JobInformation/",
+    my_request                      :  "/app/account/MyRequests",
+
+    // Request Links
+    overtime                        :  "/app/request/Overtime/",
+    alter_log                       :  "/app/request/AlterLog/",
+    change_schedule                 :  "/app/request/ChangeSchedule/",
+    rest_day_work                   :  "/app/request/RestDayWork/",
+    work_from_home                  :  "/app/request/WorkFromHome/",
+
+    // Team Links
+    dpa_list                        :  "/app/team/DPAList",
+    my_team_list                    :  "/app/team/MyTeamList",
+    my_team_requests                :  "/app/team/MyTeamRequests",
+    dtr_summary                     :  "/app/team/DtrSummary",
+    dtr_logs                        :  "/app/team/DtrLogs",
+
+    // Schedule Links
+    template_add                    :  "/app/schedule/",
+    template_list                   :  "/app/schedule/template/",
+    schedule_assign_department      :  "/app/schedule/assign/department",
+    schedule_assign_user            :  "/app/schedule/assign/user/",
+
+    // Admin Links
+    payroll_cutoff                  :  "/app/admin/PayrollCutoff/",
+    assign_department_handlers      :  "/app/admin/AssignDepartmentHandlers/",
+    assign_employee_supervisors     :  "/app/admin/AssignEmployeeSupervisors/",
+    assign_role                     :  "/app/admin/AssignRole/",
+    register_user                   :  "/app/admin/RegisterUser/",
+};
 
 global.invalid_token_response = [
     'token_expired',

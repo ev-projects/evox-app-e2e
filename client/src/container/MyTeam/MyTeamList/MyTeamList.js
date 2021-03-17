@@ -17,6 +17,7 @@ import moment from 'moment';
 import { fetchMyTeamList } from '../../../store/actions/filters/myTeamActions';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import Validator from "../../../services/Validator";
+import Authenticator from "../../../services/Authenticator";
 
 class MyTeamList extends Component {
 
@@ -77,7 +78,7 @@ class MyTeamList extends Component {
           {
           ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
           <form onSubmit={handleSubmit}>
-          <Wrapper>
+          <Wrapper {...this.props} >
                 <ContainerWrapper>   
                 <ContainerBody>  
                     <Content col="12" title="My Team List">
@@ -150,7 +151,7 @@ const MyTeamListFilter = (props) => {
               <Col size="2"> 
                 <div style={{ 'marginTop' : '30px'}}>
                   <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
-                    Filter
+                    <i className="fa fa-filter" /> Filter
                   </Button>
                 </div>
               </Col> 
@@ -193,8 +194,7 @@ const MyTeamListTable = (props) => {
                     <td className="emp-status"> <Status status={user.is_active} /></td>
                     <td className="actions">
                       <Link to={{
-                              pathname: global.daily_time_record_view + user.id,
-                              previousPath: props.location.pathname,
+                              pathname: global.links.dtr + user.id,
                               resetInitialState: true
                             }}
                           title="View DTR"
@@ -202,18 +202,22 @@ const MyTeamListTable = (props) => {
                         <i className="fa fa-clock-o ev-color" aria-hidden="true"></i>
                       </Link>
                       &nbsp;&nbsp;&nbsp;
+                      { ! Authenticator.check( 'client', 'client_access' ) ? 
+                        <span>
+                          <Link to={{
+                                  pathname: global.links.schedule_assign_user + user.id
+                                }}
+                              title="View Schedule"
+                          >
+                            <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
+                          </Link>
+                          &nbsp;&nbsp;&nbsp;
+                        </span>
+                        : 
+                        null
+                      }
                       <Link to={{
-                              pathname: global.schedule_assign_user + user.id,
-                              previousPath: props.location.pathname
-                            }}
-                          title="View Schedule"
-                      >
-                        <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
-                      </Link>
-                      &nbsp;&nbsp;&nbsp;
-                      <Link to={{
-                              pathname: global.personal_information + user.id,
-                              previousPath: props.location.pathname
+                              pathname: global.links.personal_information + user.id
                             }}
                           title="View Profile"
                       >

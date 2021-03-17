@@ -136,21 +136,28 @@ class BhrRepository implements BhrRepositoryInterface{
      * @param string $bhr_user_number
      * @return base64_encoded $profile_picture
      */
-    public function get_profile_picture( string $bhr_user_number ){
+    public function get_profile_picture( string $bhr_user_number = null ){
 
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
 
-            # Call the API of BHR to fetch the User's Profile Picture
-            $profile_picture = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/photo/medium');
+            $result = null;
 
-            // Parse to base64_encode
-            $profile_picture = base64_encode($profile_picture);
-                
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            if( is_valid($bhr_user_number) ){
 
-            return $profile_picture;
+                # Call the API of BHR to fetch the User's Profile Picture
+                $profile_picture = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/photo/medium');
+
+                // Parse to base64_encode
+                $result = base64_encode($profile_picture);
+                    
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            } else {
+                log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
+            }
+
+            return $result;
 
         } catch (Exception $e) {
             
@@ -168,19 +175,25 @@ class BhrRepository implements BhrRepositoryInterface{
      * @param boolean $for_sync
      * @return Object $bhr_user
      */
-    public function get_user_bhr_field( string $bhr_user_number ){
+    public function get_user_bhr_field( string $bhr_user_number = null  ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
 
-            $fields =  get_imploded_constant('BHR_USER_PERSONAL' );
+            $result = null;
 
-            # Call the API of BHR to fetch the User's details in BHR
-            $bhr_user = bhr_api_call('GET', 'employees/'.$bhr_user_number.'?fields='. $fields   );
-                
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user, "bhrlog");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            if( is_valid($bhr_user_number) ){
+                $fields =  get_imploded_constant('BHR_USER_PERSONAL' );
 
-            return $bhr_user;
+                # Call the API of BHR to fetch the User's details in BHR
+                $result = bhr_api_call('GET', 'employees/'.$bhr_user_number.'?fields='. $fields   );
+                    
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "bhrlog");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            } else {
+                log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
+            }
+
+            return $result;
 
         } catch (Exception $e) {
             
@@ -199,16 +212,22 @@ class BhrRepository implements BhrRepositoryInterface{
      * @param boolean $for_sync
      * @return Object $bhr_user
      */
-    public function get_user_job_information( string $bhr_user_number , string $field_name ){
+    public function get_user_job_information( string $bhr_user_number = null , string $field_name ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
 
-            $bhr_user = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/tables/'.$field_name  );
-                
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user, "bhrlog");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            $result = null;
 
-            return $bhr_user;
+            if( is_valid($bhr_user_number) ){
+                $result = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/tables/'.$field_name  );
+                    
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "bhrlog");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            } else {
+                log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
+            }
+
+            return $result;
 
         } catch (Exception $e) {
             

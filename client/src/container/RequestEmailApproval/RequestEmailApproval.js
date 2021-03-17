@@ -62,8 +62,8 @@ class RequestEmailApproval extends Component {
                           }
                           <br/>
                           <br/>
-                          { ( Validator.isValid( localStorage.getItem("access_token") ) && Validator.isValid(user.emp_num) ) ?
-                            <Link className="btn btn-primary back-to-dashboard-btn" to="/app/Dashboard">
+                          { ( Validator.isValid( localStorage.getItem("access_token") ) && Validator.isValid(user.id) ) ?
+                            <Link className="btn btn-primary back-to-dashboard-btn" to={global.links.dashboard}>
                               Back to Dashboard
                             </Link>
                             :
