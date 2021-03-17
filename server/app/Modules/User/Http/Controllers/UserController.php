@@ -91,6 +91,7 @@ class UserController extends Controller
             ]), [
                 'id' => 'int'
             ]);
+
             $user = $this->user->show( $id );
                
             $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
@@ -103,6 +104,7 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_profile_success'), 
                 [
+                    'user'  => new UserProfileResource( $user ),
                     'profile_picture'  => $profile_picture, 
                     'job_information'  => new JobInformationResource( $job_information ) ,
                     'employment_status'  =>new EmploymentStatusResource( $employment_status ),

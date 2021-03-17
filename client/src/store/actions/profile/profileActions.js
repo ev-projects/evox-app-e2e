@@ -52,6 +52,7 @@ export const fetchJobInformation= ( id ) => {
             console.log(result.data.content);
             dispatch({
                 'type'              : 'FETCH_JOB_INFORMATION',
+                'user'              : result.data.content.user,
                 'job_information'   : result.data.content.job_information,
                 'employment_status' : result.data.content.employment_status,
                 'profilePicture'    : result.data.content.profile_picture,

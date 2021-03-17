@@ -86,7 +86,7 @@ class JobInformation extends Component {
                                                         <Col size="12" style={{'marginBottom': '5px'}}>  
                                                             <label> Name: </label>    
                                                             <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={user.full_name}  />
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.full_name}   />
                                                             </InputGroup> 
                                                         </Col> 
                                                     </Row> 
@@ -102,7 +102,8 @@ class JobInformation extends Component {
                                                         <Col size="12" style={{'marginBottom': '5px'}}>  
                                                             <label> Department: </label>    
                                                             <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={user.department}  />
+                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.department
+}  />
                                                             </InputGroup> 
                                                         </Col> 
                                                     </Row> 

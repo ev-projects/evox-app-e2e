@@ -29,6 +29,7 @@ const profileReducer = (state = initState, action) => {
         case "FETCH_JOB_INFORMATION":
             return {
                 ...state,
+                details : action.user,
                 profilePicture : action.profilePicture,
                 job_information : action.job_information,
                 employment_status : action.employment_status,
