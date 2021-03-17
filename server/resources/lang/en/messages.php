@@ -22,7 +22,8 @@ return [
     /**
      *  User Authentication
      */
-    'user_not_found' => 'Sorry, Unrecognized Username or Password',
+    'user_not_found' => 'Sorry, Unrecognized Username or Password.',
+    'user_not_active' => 'Sorry, your account is suspended. Please email helpdesk@eastvantage.com to activate your account.',
     
     'login' => 'Login',
     'login_success' => 'Logged in successfully!',

@@ -53,6 +53,11 @@ class AuthController extends Controller
                 return error_response( trans('messages.user_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
             }
 
+            // Attempt to check if the User is active. If not active, return User not active.
+            if ( ! auth()->user()->is_active ) {
+                return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
+            }
+
             log_activity( trans('messages.login') );
 
             // Set the User that was fetched into Session
