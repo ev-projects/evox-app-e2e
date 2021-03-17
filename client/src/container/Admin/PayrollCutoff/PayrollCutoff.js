@@ -101,7 +101,7 @@ class PayrollCutoff extends Component {
       {
         name: 'ID',
         selector: 'id',
-        width : '10%',
+        width : '5%',
       },
       {
         name: 'Name',
@@ -124,25 +124,25 @@ class PayrollCutoff extends Component {
       },
       {
         cell: (row) => <div>
-          <Button type="button" className="btn btn-secondary" onClick={() => { this.showForm( row.id ) }} >Edit</Button> &nbsp;
-          <Button type="button" className="btn btn-secondary"  onClick={() => { this.deleteItem( row.id ) }} >Delete</Button>
+          <Button type="button" className="btn btn-primary" onClick={() => { this.showForm( row.id ) }} >Edit</Button> &nbsp;
+          <Button type="button" className="btn btn-danger"  onClick={() => { this.deleteItem( row.id ) }} >Delete</Button>
         </div>,
         ignoreRowClick: true,
         allowOverflow: true,
         button: true,
-        width : '20%',
+        width : '25%',
       }
     ]);
     
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
     
-      return <Wrapper previousPath={this.props.location.previousPath} role={'admin'} permission={'full_access'}>
+      return <Wrapper  {...this.props} >
         <ContainerWrapper>
             <ContainerBody>
               <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
                 <Row>  
-                  <Content col="6" title="Payroll Cut-Off List"  subtitle={<Button type="button" className="btn btn-secondary" onClick={()=> {this.showForm(); Authenticator.check();}}>Add</Button>} >
+                  <Content col="6" title="Payroll Cut-Off List"  subtitle={<Button type="button" className="btn btn-secondary" onClick={()=> {this.showForm(); Authenticator.check();}}><i class="fa fa-plus" /> Add</Button>} >
                       <Col size="12"> 
                       
                       <DataTable

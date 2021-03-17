@@ -31,12 +31,12 @@ class Login extends Component {
     const { user } = this.props
 
     // Check if there's a redirect link and if so, use that redirect link instead of the default dashboard link.
-    let redirect_link = global.dashboard_url;
+    let redirect_link = global.links.dashboard;
     if( Validator.isValid( this.props.location?.search ) ){
       redirect_link = new URLSearchParams(this.props.location.search).get('redirect');
     }
     
-    if( Validator.isValid( localStorage.getItem("access_token") ) && Validator.isValid(user.emp_num) ) {
+    if( Validator.isValid( localStorage.getItem("access_token") ) && Validator.isValid(user.id) ) {
       return <Redirect to={redirect_link} />
     } 
 
@@ -78,9 +78,9 @@ class Login extends Component {
                                           </Form.Control.Feedback>
                                       </InputGroup>
                                       <Button className="login_btn" variant="primary" type="submit">
-                                          Submit
+                                        <i class="fa fa-sign-in" /> Log In
                                       </Button>
-                                      <Link className="forgot-password-link" to="/recover/password" >
+                                      <Link className="forgot-password-link" to={global.links.recover_password} >
                                         Forgot Password?
                                       </Link>
                                   </form>

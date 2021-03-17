@@ -8,7 +8,6 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import PageNotFound from "../../PageNotFound";
 
 import { addTemplateSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
@@ -33,7 +32,7 @@ class Schedule extends Component {
   }
 
   render = () => {
-    return <Wrapper>
+    return <Wrapper {...this.props} >
     <Formik 
       onSubmit={this.onSubmitHandler} 
       validationSchema={validationSchema} 
@@ -192,7 +191,7 @@ class Schedule extends Component {
         ) : null}
         <Col sm={7}>
           <Button variant="primary" type="submit">
-            Create
+            <i className="fa fa-location-arrow" /> Submit
           </Button>
         </Col>
       </ContainerWrapper>

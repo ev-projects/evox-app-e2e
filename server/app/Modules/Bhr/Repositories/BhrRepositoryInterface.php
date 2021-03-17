@@ -16,6 +16,10 @@ interface BhrRepositoryInterface
 
     public function get_profile_picture( string $bhr_user_number );
 
+    public function get_user_bhr_field( string $bhr_user_number );
+
+    public function get_user_job_information( string $bhr_user_number , string $field_name );
+
     public function sync_holidays( string $start_date, string $end_date );
     
     public function get_holidays( string $start_date, string $end_date );

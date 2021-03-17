@@ -20,6 +20,7 @@ import RequestSubtitle from "../../components/RequestComponent/RequestButtons/Re
 import Formatter from '../../services/Formatter';
 import Wrapper from '../../components/Template/Wrapper';
 import Validator from '../../services/Validator';
+import Authenticator from '../../services/Authenticator';
 
 class DailyTimeRecord extends Component {
 
@@ -132,6 +133,7 @@ class DailyTimeRecord extends Component {
       
   }
     render(){
+      
         var yearOptions = [];
         var monthOptions = [];
         var payrollCutoffOptions = [];
@@ -177,21 +179,26 @@ class DailyTimeRecord extends Component {
           }
         }
         return (
-        <Wrapper>
+        <Wrapper {...this.props} >
           <ContainerWrapper>
           <ContainerBody className="dtr-wrapper">
-              <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> } subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
-              { method=="approval"? 
-              <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
-                              pathname: global.schedule_assign_user + this.props.params.id,
-                            }}
-                          title="View Schedule"
-                      >
-                        Update Schedule
-                </Link></Button>
+              <Content col="12" title="Daily Time Record" subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
+              
+              <BackButton style={{'float': 'right'}} {...this.props}/>
+              { ! Authenticator.check( 'client', 'client_access' ) && method=="approval" ? 
+                <Button type="button" className="btn-update-sched btn btn-secondary float-right">
+                  <Link to={{
+                        pathname: global.links.schedule_assign_user + this.props.params.id,
+                        previousPath: this.props.location.pathname
+                      }}
+                    title="View Schedule"
+                  >
+                  <i className="fa fa-calendar-check-o" />  Update Schedule
+                  </Link>
+                </Button>
                 : 
                 null
-            } 
+              } 
                 { this.props.dtr.isFilterLoaded? 
                     <div className="dtr-filter col-lg-12 col-md-12 col-sm-12 "> 
                       
@@ -310,7 +317,7 @@ class DailyTimeRecord extends Component {
                                         <Link className="btn btn-primary" 
                                               title="Alter Log"
                                               to={{
-                                                pathname: global.base_url +'request/AlterLog/' + (( alter_log_id != null ) ? alter_log_id : ""),
+                                                pathname: global.links.base +'request/AlterLog/' + (( alter_log_id != null ) ? alter_log_id : ""),
                                                 previousPath: this.props.location.pathname, 
                                                 date: dtr.date,
                                                 current_time_in: dtr.time_in,

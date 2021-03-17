@@ -57,11 +57,6 @@ export const updatePayrollCutoff = ( id, post_data ) => {
         .then(result => {
             dispatch( Formatter.alert_success( result, 3000 ));
             
-            // dispatch({
-            //     'type'      : 'SET_REDIRECT',
-            //     'link'      : global.payroll_cutoff
-            // })
-            // window.location.reload(false);
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
@@ -79,12 +74,6 @@ export const deletePayrollCutoff = ( id ) => {
         })
         .then(result => {
             dispatch( Formatter.alert_success( result, 3000 ));
-            
-            // dispatch({
-            //     'type'      : 'SET_REDIRECT',
-            //     'link'      : global.payroll_cutoff
-            // })
-            // window.location.reload(false);
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

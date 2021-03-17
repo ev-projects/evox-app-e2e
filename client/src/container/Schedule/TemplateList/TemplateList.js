@@ -40,7 +40,7 @@ class Schedule extends Component {
 
   render = () => {
     if(this.props.isTemplateListLoaded){
-      return <Wrapper>
+      return <Wrapper  {...this.props} >
         <ContainerWrapper>   
           <Content col="12" title="List of Template Schedules">
           <Table striped bordered hover>
@@ -54,8 +54,7 @@ class Schedule extends Component {
             <tbody>
               {this.props.templateList.map((schedule, index) => {
                 return <tr><td>{index + 1}</td> <td>{schedule.name}</td> <td><Link className="btn btn-primary" to={{
-                  pathname: global.template_list + schedule.id,
-                  previousPath: this.props.location.pathname
+                  pathname: global.links.template_list + schedule.id
                 }}> <i class="fa fa-edit"></i> Edit </Link> <Button variant="danger" style={{'padding': '10px 15px'}} onClick={ () => this.onSubmitHandler(schedule, index)} > <i class="fa fa-trash"></i> Delete </Button> </td></tr>;
               })}
               </tbody>

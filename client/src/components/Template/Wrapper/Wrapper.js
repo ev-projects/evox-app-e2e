@@ -7,10 +7,12 @@ import { ContainerWrapper,ContainerBody,Row,Col } from '../../../components/Grid
 import { clearRedirect } from '../../../store/actions/redirectActions';
 import Validator from "../../../services/Validator";
 import Authenticator from "../../../services/Authenticator";
+import PageNotFound from "../../../container/PageNotFound";
+import PageNotAllowed from "../../../container/PageNotAllowed";
 
 const Wrapper = (props) => {
   
-  let link = ( props.previousPath != undefined ) ? props.previousPath : ( props.redirect.link != undefined ) ? props.redirect.link : null;
+  let link = ( props.location?.previousPath != undefined ) ? props.location?.previousPath : ( props.redirect.link != undefined ) ? props.redirect.link : null;
   
   // Check if a role is needed to be authenticated
   const role = props?.role ? props.role : null;
@@ -50,11 +52,7 @@ const Wrapper = (props) => {
       allow_to_show ? 
         <div>{props.children}</div>
       : 
-        <ContainerWrapper>
-          <ContainerBody>
-              <h1>You have no access on this page!</h1>
-            </ContainerBody>
-        </ContainerWrapper>
+        <PageNotAllowed />
     ) 
   }
 

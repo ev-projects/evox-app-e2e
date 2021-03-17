@@ -26,16 +26,18 @@ class JobInformationResource extends JsonResource
     public function toArray($request){    
         
         $job_info = [];
-        foreach ( $this->job_info as $array) {
+        if( is_valid( $this->job_info ) ) {
+            foreach ( $this->job_info as $array) {
 
-            if($array->date!= "0000-00-00"){
-                array_push($job_info, [
-                    "date" => $array->date,
-                    "location" => $array->location,
-                    "department" => $array->department,
-                    "jobTitle" => $array->jobTitle,
-                    "reportsTo" => $array->reportsTo
-                ]);
+                if($array->date!= "0000-00-00"){
+                    array_push($job_info, [
+                        "date" => $array->date,
+                        "location" => $array->location,
+                        "department" => $array->department,
+                        "jobTitle" => $array->jobTitle,
+                        "reportsTo" => $array->reportsTo
+                    ]);
+                }
             }
         }
         return $job_info;

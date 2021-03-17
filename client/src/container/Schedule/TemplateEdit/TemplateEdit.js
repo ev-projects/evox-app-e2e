@@ -12,7 +12,6 @@ import Formatter from '../../../services/Formatter'
 import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 
-import PageNotFound from "../../PageNotFound";
 import PageLoading from "../../PageLoading";
 import Wrapper from "../../../components/Template/Wrapper";
 import BackButton from "../../../components/Template/BackButton";
@@ -65,7 +64,7 @@ class Schedule extends Component {
       }
     }
 
-    return <Wrapper previousPath={this.props.location.previousPath} >
+    return <Wrapper {...this.props} >
     <Formik 
       onSubmit={this.onSubmitHandler} 
       validationSchema={validationSchema} 
@@ -233,7 +232,7 @@ class Schedule extends Component {
       ) : null}
       <Col sm={7}>
         <Button variant="primary" type="submit">
-          Update
+          <i className="fa fa-edit" /> Update
         </Button>&nbsp; 
         <BackButton {...this.props}/>
       </Col>

@@ -23,7 +23,7 @@ const  ProtectedRoute = (props) => {
           const { page } = props;
 
           // If User has Emp Num (Which means Auth is Successful), show the Actual Component.
-          if ( Validator.isValid(user.emp_num) ) {
+          if ( Validator.isValid(user.id) ) {
 
             let childrenWithProps;
 
@@ -62,13 +62,13 @@ const  ProtectedRoute = (props) => {
               // If has clear login parameters props set to true, remove the search object from the Redirect components
               if( props.user.clearLoginParameters ) {
                 return (
-                  <Redirect to={{pathname: global.login_url, state: {from: props.location}}}/>
+                  <Redirect to={{pathname: global.links.login, state: {from: props.location}}}/>
                 );
 
               // If clear login parameters is not set, add the Url Query String when being redirected on the login url.
               } else {
                 return (
-                  <Redirect to={{pathname: global.login_url, state: {from: props.location}, search: "?redirect="+urlQueryString }}/>
+                  <Redirect to={{pathname: global.links.login, state: {from: props.location}, search: "?redirect="+urlQueryString }}/>
                 );
               }
               

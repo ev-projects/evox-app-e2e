@@ -12,6 +12,7 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../..
 
 import { fetchUser,fetchUserRole,assignRole } from '../../../store/actions/admin/assignRoleActions'
 import { fetchRoleList } from '../../../store/actions/lookup/lookupListActions';
+import Formatter from "../../../services/Formatter";
 
 
 class AssignRole extends Component {
@@ -74,7 +75,7 @@ class AssignRole extends Component {
 	  {
 	  ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
 		<form onSubmit={handleSubmit}>
-		        <Wrapper previousPath={this.props.location.previousPath} role={'admin'} permission={'full_access'}>
+		        <Wrapper {...this.props} >
               <ContainerWrapper>
                   <ContainerBody>
                       <Content col="6" title="Assign Role to a User" >
@@ -89,35 +90,39 @@ class AssignRole extends Component {
 									)}
 								</Field>
 							</div>
-							{ this.state.userLists?.length > 0  ? (<div>
-							<div className="form-group">
-								<label>Select User:</label>
-								<select
-									className="form-control" 
-									name="selectedUser"
-									value={values.selectedUser}
-									onChange={(e) => { this.handleChange(e); this.props.fetchUserRole(e.target.value); }}
-									style={{ display: 'block' }}
-								>
-								<option    label="Select Name" />
-								{ this.state.userLists.map(function(user){
-									return  <option value={user.id} label={user.emp_num + ' - ' + user.first_name + ' ' + user.last_name} />
-								})}
-								</select>
-							</div>
-							 </div>) : (<div> Sorry, No Record Found </div>)}
+							{ this.state.userLists?.length > 0  ? (
+								<div>
+									<div className="form-group">
+										<label>Select User:</label>
+										<select
+											className="form-control" 
+											name="selectedUser"
+											value={values.selectedUser}
+											onChange={(e) => { this.handleChange(e); this.props.fetchUserRole(e.target.value); }}
+											style={{ display: 'block' }}
+										>
+										<option    label="Select Name" />
+										{ this.state.userLists.map(function(user){
+											return  <option value={user.id} label={user.emp_num + ' - ' + user.first_name + ' ' + user.last_name} />
+										})}
+										</select>
+									</div>
+								</div>) 
+								: 
+								(<div> Sorry, No Record Found </div>)
+							}
 								
-							 {  this.state.selectedUser != null ? (<div>
+							 {  this.state.userLists?.length > 0  && this.state.selectedUser != null ? (<div>
 							 <div className="form-group">
 								<label>Select Role:</label>
 								{ this.state.roles.map(function(role){
 									return 	<label style={{ display: 'block' }}>
-												<Field type="checkbox" label="Admin" name="role" value={role.name} /> &nbsp; {role.name}
+												<Field type="checkbox" label="Admin" name="role" value={role.name} /> &nbsp; { Formatter.slug_to_title(role.name) }
 											</label>;
 								})}
 							</div>
 							<Button className="display-block" variant="primary" type="submit">
-								Update
+								<i class="fa fa-tag" /> Assign
 							</Button>	
 							</div>) : null}
 								

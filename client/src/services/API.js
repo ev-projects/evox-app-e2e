@@ -121,7 +121,7 @@ class API  {
         && global.invalid_token_response.includes( e.response.data.error.content.code )){
       localStorage.removeItem("access_token");
       alert( e.response.data.error.message )
-      history.push(global.login_url)
+      history.push(global.links.login)
       window.location.reload(true);
 
     // If the Response is NOT FALSE, return the response.

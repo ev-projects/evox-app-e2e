@@ -96,9 +96,9 @@ const ChangePasswordForm = ( context ) => {
                         <br/>
                         <Row>  
                             <Col size="12"> 
-                            <Button type="submit" className="btn btn-secondary" >Update</Button>&nbsp;
+                            <Button type="submit" className="btn btn-primary" ><i className="fa fa-edit" /> Update</Button>&nbsp;
                             { ! context.forceChangePassword ? 
-                                <Button type="button" className="btn btn-secondary" onClick={()=> {context.setShowChangePasswordForm(false)}} >Cancel</Button> 
+                                <Button type="button" className="btn btn-secondary" onClick={()=> {context.setShowChangePasswordForm(false)}} ><i className="fa fa-ban" /> Cancel</Button> 
                                 : 
                                 null 
                             }

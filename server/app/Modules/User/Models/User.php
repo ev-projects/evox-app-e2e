@@ -23,7 +23,7 @@ use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\WorkFromHome;
 use DB;
-
+use Illuminate\Database\Eloquent\Collection;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -110,8 +110,16 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the User's Supervisee 
     public function supervisee()
-    {
-        return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
+    {   
+        // If the User has Client Role, get all the Users from his/her departments handled.
+        if( auth()->user()->hasRole( get_constant('USER_ROLES.client') )  ) { 
+            return User::whereIn('users.department_id', $this->departments_handled()->get()->pluck('id')->toArray());
+            
+        // If not, fetch the default users handled via the users_supervisors pivot table
+        } else {
+            return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
+        }
+            
     }
 
     # Fetch the User's Department

@@ -160,7 +160,7 @@ class RegisterUser extends Component {
 
 
 	return(
-    <Wrapper previousPath={this.props.location.previousPath} role={'admin'} permission={'full_access'}>
+    <Wrapper {...this.props} >
       <Formik 
         enableReinitialize
         onSubmit={this.onSubmitHandler} 
@@ -274,8 +274,8 @@ class RegisterUser extends Component {
                               </Row> 
                               <Row>  
                                 <Col size="6"> 
-                                  <Button className="display-block" variant="primary" type="submit">
-                                    Register
+                                  <Button variant="primary" type="submit">
+                                    <i class="fa fa-user-plus" /> Register
                                   </Button>	
                                 </Col>
                               </Row> 

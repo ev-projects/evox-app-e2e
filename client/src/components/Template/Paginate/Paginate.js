@@ -16,10 +16,25 @@ const Paginate = (context) => {
       return <Field>
               {({ field, form }) => (
                 <div className="page">
-                  <Button type="submit" className="pagination_btn text-center" active={page === context.pagination.current_page} onClick={() => form.setFieldValue("page",page)}>{label}</Button>
+                  <Button type="submit" className="pagination_btn text-center" active={page === context.pagination.current_page} onClick={() => form.setFieldValue("page",page)}>{ generateLabel(label) }</Button>
                 </div>
               )}
             </Field>
+    }
+
+    function generateLabel ( label ){
+      switch( label ){
+        case 'Prev':
+            return (<span><i className="fa fa-angle-left" /> {label}</span>);
+        case 'Next':
+            return (<span>{label} <i className="fa fa-angle-right" /></span>);
+        case 'First':
+            return (<span><i className="fa fa-angle-double-left" /> {label}</span>);
+        case 'Last':
+            return (<span>{label} <i className="fa fa-angle-double-right" /></span>);
+        default:
+            return (<span>{label}</span>);
+      }
     }
 
     const max_pages = 10;
@@ -44,8 +59,8 @@ const Paginate = (context) => {
 
       // If the Current Page is more than 1, show the First and Prev button
       if( context.pagination.current_page > 1 ){
-        paginate.push( generatePage ( 1, '<< First' ) );
-        paginate.push( generatePage ( (context.pagination.current_page - 1), '< Prev' ) );
+        paginate.push( generatePage ( 1, 'First' ) );
+        paginate.push( generatePage ( (context.pagination.current_page - 1), 'Prev' ) );
       }
 
       // Show the Pages 
@@ -58,8 +73,8 @@ const Paginate = (context) => {
         
       // If the Current Page is less than the last page, show the First and Prev button
       if( context.pagination.current_page < context.pagination.last_page ){
-        paginate.push( generatePage ( (context.pagination.current_page + 1), 'Next >' ) );
-        paginate.push( generatePage ( context.pagination.last_page, 'Last >>' ) );
+        paginate.push( generatePage ( (context.pagination.current_page + 1), 'Next' ) );
+        paginate.push( generatePage ( context.pagination.last_page, 'Last' ) );
       }
         
     }

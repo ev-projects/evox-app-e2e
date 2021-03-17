@@ -92,11 +92,6 @@ class RestDayWork extends Component {
     }
   }
   
-  // Set the goBack Function for instance of going back the previous page from the history.
-  goBack = () => {
-    this.props.setRedirect( this.props.location.previousPath );
-  }
-
   componentWillMount(){
       
       // Clear the Instance of Rest Day Work before rendering new Instance (If applicable)
@@ -146,7 +141,7 @@ class RestDayWork extends Component {
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     if( (method == 'store') || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
 
-      return <Wrapper previousPath={this.props.location.previousPath}>
+      return <Wrapper {...this.props} >
         <Formik 
         enableReinitialize
         onSubmit={this.onSubmitHandler}

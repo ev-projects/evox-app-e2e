@@ -1,4 +1,4 @@
-.page-not-found-box {
+.page-not-allowed-box {
     text-align: center;
     background: #f4f4f4;
     -webkit-box-shadow: 2px 2px 10px 2px #404040; /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
@@ -6,13 +6,13 @@
     box-shadow:         2px 2px 10px 2px #404040; /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
 }
 
-.page-not-found-code {
+.page-not-allowed-code {
     font-size: 90px;
 }
 
-.page-not-found-oops {
+.page-not-allowed-oops {
     font-size: 50px;
 }
-.page-not-found-message {
+.page-not-allowed-message {
     font-size: 20px;
 }

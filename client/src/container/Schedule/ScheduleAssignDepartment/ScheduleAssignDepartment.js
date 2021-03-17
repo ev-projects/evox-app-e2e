@@ -8,7 +8,6 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
 import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
-import PageNotFound from "../../PageNotFound";
 import PageLoading from "../../PageLoading";
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 
@@ -165,7 +164,7 @@ class ScheduleAssignDepartment extends Component {
 
   render = () => {
     
-    return <Wrapper>
+    return <Wrapper {...this.props} >
               <Formik 
                 enableReinitialize
                 onSubmit={this.onSubmitHandler} 
@@ -412,7 +411,7 @@ class ScheduleAssignDepartment extends Component {
                 ) : null}
                 <Col sm={7}>
                   <Button variant="primary" type="submit">
-                    Update
+                  <i className="fa fa-edit" /> Update
                   </Button>
                   &nbsp;
                   <BackButton {...this.props} />

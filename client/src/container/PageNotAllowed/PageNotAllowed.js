@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import "./PageNotFound.css";
+import "./PageNotAllowed.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 
-class PageNotFound extends Component {
+class PageNotAllowed extends Component {
   render() {
     return  <ContainerWrapper>
                 <ContainerHeader>
-                  <div className="page-not-found-box">
-                    <span className="page-not-found-code"> 404 </span>
+                  <div className="page-not-allowed-box">
+                    <span className="page-not-allowed-code"> 403 </span>
                     <br/>
-                    <span className="page-not-found-message">We can't seem to find the page you're looking for.</span>
+                    <span className="page-not-allowed-oops"> Oops!</span><br/>
+                    <span className="page-not-allowed-message">You can't access this page! </span>
                     <br/>
                     <br/>
                         <Link className="btn btn-primary" to={ global.links.dashboard }>
@@ -25,7 +26,7 @@ class PageNotFound extends Component {
   }
 }
 
-export default PageNotFound;
+export default PageNotAllowed;
 
 
 

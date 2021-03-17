@@ -8,7 +8,6 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
 import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
-import PageNotFound from "../../PageNotFound";
 import PageLoading from "../../PageLoading";
 import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
@@ -161,7 +160,7 @@ class AssignDefault extends Component {
     const method = (this.props.user.id==this.props.params.user_id) ? 'store' : 'approval';
 
     return ( this.state.isInitialDataLoaded ) ? 
-          <Wrapper>
+          <Wrapper {...this.props} >
             <ContainerWrapper>
             <ContainerBody>
             <Content col="12" title="Assign Schedule" subtitle={<RequestSubtitle method={method} user={this.props.user_info} />} >
@@ -445,7 +444,7 @@ class AssignDefault extends Component {
               ) : null}
               <Col sm={7}>
                 <Button variant="primary" type="submit">
-                  Update
+                <i className="fa fa-edit" /> Update
                 </Button>
                 &nbsp;
                 <BackButton {...this.props} />

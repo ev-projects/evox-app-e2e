@@ -75,7 +75,7 @@ class PersonalInformation extends Component {
                                 <Content col="12" title="Personal Information"  subtitle={ <BackButton {...this.props}/>} >
                                 {!Authenticator.check('client') ?
                                 <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
-                                    pathname: global.job_information + this.props.params.id,
+                                    pathname: global.links.job_information + this.props.params.id,
                                     }}
                                     title="Job Information"
                                 >
@@ -168,7 +168,7 @@ class PersonalInformation extends Component {
                                             <Row>
                                                 <div className="col-lg-12" >
                                                     { profile.details.id == user.id ?
-                                                        <Button type="button" className="btn btn-secondary" onClick={()=> {this.setShowChangePasswordForm(true)}} >Change Password</Button>
+                                                        <Button type="button" className="btn btn-secondary" onClick={()=> {this.setShowChangePasswordForm(true)}} ><i className="fa fa-edit" /> Change Password</Button>
                                                         :
                                                         null
                                                     }
