@@ -1,3 +1,14 @@
+.request-tab {
+    position: relative;
+    top: 12px;
+    left: 21px;
+    z-index: 100;
+}
+.request-tab .nav-tabs{border: 0 !important;}
+.request-tab a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px}
+.request-tab a.active {
+     background-color: #82af13  !important; color: #fff !important;
+}
 .request_list_btn{
     background-color:white !important;
     color: black !important;
@@ -6,8 +17,27 @@
     border-color: gray !important;
     border-radius: 25px !important;
 }
-
-
+.filters {margin-top:0; width: 55%; float: right;}
+.filters .date-range label {
+    float: left;
+    font-size: 12px;
+    padding: 10px;
+    text-transform: uppercase;
+    background: #ccc;
+}
+.filters .col{padding: 0px !important; margin:0 10px 0 0 !important;}
+.filters .date-range > div > div{width: 37.5%; float: left; margin-right: 5px}
+.filters .date-range {
+    width: 45% !important;
+    flex: 0 48%;
+}
+.filters .dept {
+    width: 27%;
+    flex: 10%;
+}
+.filters .search-name{width: 25%;flex: 10%;}
+.filters .filter-butto{ width: 15%;flex: 5%; }
+.filters select, .filters input[type="textfield"]{font-size:11px;}
 .denied{
     background-color: red !important;
     color: white !important;

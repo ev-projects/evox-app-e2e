@@ -1,24 +1,53 @@
 import React, { Component } from "react";
 import "./Dashboard.css";
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
+import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import { fetchUser } from '../../store/actions/userActions' ;
 
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../components/Template/Wrapper";
 import QuickPunch from "../../container/QuickPunch";
+import ReactPlayer from 'react-player/lazy';
+import * as yup from "yup";
 
 class Dashboard extends Component {
     constructor(props){
       super(props)
+      this.state = {
+          url: 'https://www.eastvantage.com/newsletter/2020/october/EVSafe.mp4',
+          pip: false,
+          playing:  false,
+          controls: true,
+          light: false,
+          volume: 0.35,
+          muted: false,
+          played: 0,
+          loaded: 0,
+          duration: 0,
+          config: { 
+            file: { 
+              attributes: {
+                onContextMenu: e => e.preventDefault(),
+                controlsList: 'nodownload' 
+              } 
+            } 
+          },
+          playbackRate: 1.0,
+          loop: false,
+          width: '100%',
+          height: '65%'
+      } 
     }
     
     render(){
+      const { width, height, url, playing, controls, light, volume, muted, config, loop, playbackRate, pip, showSubmitForm } = this.state
+     
       const { user } = this.props;
       const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
         return (
-            <Wrapper>
+            <Wrapper {...this.props} >
                <ContainerWrapper>
                   <ContainerHeader>
                       
@@ -32,16 +61,40 @@ class Dashboard extends Component {
                                     <div class="block col-lg-12 col-md-12 col-sm-12"><h3>Company Announcements</h3>
                                       <div class="row">
                                         <div class="col-lg-6 col-md-12 col-sm-12">
-                                          <a href="https://www.eastvantage.com/newsletter/2020/october/EVSafe.mp4" target="_blank">
-                                          <img src="https://www.eastvantage.com/newsletter/2020/october/EVSafe.jpg" width="100%" /></a>
-                                          <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training</p>
-                                          <p><a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Please fill out this Covid Safety Declaration form</a></p>
+                                        <ReactPlayer 
+                                  ref={this.ref}
+                                  width={width}
+                                  height={height}
+                                  url={url}
+                                  pip={pip}
+                                  playing={playing}
+                                  controls={controls}
+                                  light={light}
+                                  loop={loop}
+                                  playbackRate={playbackRate}
+                                  volume={volume}
+                                  muted={muted}
+                                  config={config}
+                                  onReady={()=>{ /*console.log('onReady Call back')*/ }}
+                                  onStart={()=>{ /*console.log('onStart Call back')*/ }}
+                                  onPause={()=>{ /*console.log('onPause Call back')*/ }}
+                                  onProgress={this.handleProgress}
+                                  onEnded={()=>{ this.toggleSubmitForm(true) }}
+                                  onError={()=>{ /*console.log('onError Call back')*/ }}
+                              />
+                                          
+                                          <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Cclick the link below to fill out the form </p>
+                                          <p><a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a></p>
                                         </div>
                                         <div class="col-lg-6 col-md-12 col-sm-12">
                                           <a href="https://evox2.eastvantage.com/app/dpa" target="_blank">
                                           <img src="https://www.eastvantage.com/webinar/DPA.jpg" width="100%" /></a>
-                                          <p>All employees are required to watch the Data Privacy webinar. Please tick the checkbox that will appear once the video ends to confirm your attendance.</p>
-                                          <p><a class="btn-primary" href="https://evox2.eastvantage.com/app/dpa" target="_blank">Click here to go to Data Privacy webinar</a></p>
+                                          <p>All employees are required to watch the Data Privacy webinar. Please tick the checkbox that will appear once the video ends to confirm your attendance. <br />Click the link below to go to the page.</p>
+                                          <p>
+                                            <Link className="btn-primary" to={global.links.dpa} >
+                                              Data Privacy Webinar
+                                            </Link>
+                                          </p>
                                         </div>
                                       </div>
                                     </div>

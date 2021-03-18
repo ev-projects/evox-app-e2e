@@ -171,10 +171,9 @@ class MyTeamRequests extends Component {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
       <Wrapper {...this.props} >
-            <ContainerWrapper>   
-            <ContainerBody>  
-                <Content col="12" title="My Team Request">
-                <Tabs defaultActiveKey="home" 
+            <ContainerWrapper>
+            <h2>My Team Request</h2> 
+            <div className="request-tab"><Tabs defaultActiveKey="home" 
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
                       onSelect={(key) =>  {
@@ -194,7 +193,12 @@ class MyTeamRequests extends Component {
                   </Tab>
                   <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
                   </Tab>
-                </Tabs>    
+                </Tabs>
+            </div>
+            
+            <ContainerBody>  
+                <Content col="12">
+                    
                   <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
@@ -257,21 +261,17 @@ class MyTeamRequests extends Component {
                   </ButtonGroup>
                   
                   <Row  className="filters">  
-                    <Col className="col-lg-2 col-2 col-md-4 col-sm-6"> 
+                    <Col className="date-range"> 
                       <div className="form-group">
-                        <label>Date From:</label>
+                        <label>Date Range:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
-                      </div>
-                    </Col> 
-                    <Col className="col-lg-2 col-2 col-md-4 col-sm-6">   
-                    <div className="form-group">
-                        <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
-                    </Col>
-                    <Col className="col-lg-2 col-2 col-md-5 col-sm-5"> 
-                      <div className="form-group">
-                          <label>Department:</label>
+                    </Col> 
+                    
+                    <Col className="dept"> 
+                      <div className="form-group ">
+                          
                           <select
                           className="form-control" 
                             name="department_id"
@@ -286,15 +286,14 @@ class MyTeamRequests extends Component {
                           </select>
                       </div>
                     </Col> 
-                    <Col className="col-lg-2 col-2 col-md-5 col-sm-4">
+                    <Col className="search-name">
                       <div className="form-group">
-                          <label>Name:</label>
+                          
                           <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     </Col> 
-                    <Col className="col-lg-2 col-2 col-md-2 col-sm-3">
+                    <Col className="filter-button">
                     <div className="form-group">
-                        <label>&nbsp;</label>
                         <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
                           <i className="fa fa-filter" /> Filter
                         </Button>
@@ -303,7 +302,7 @@ class MyTeamRequests extends Component {
                     </Row>
                     <hr/>
                     <Row className="bulk-action">
-                      <Col className="col-4 col-md-6 col-sm-8"> 
+                      <Col className="col-3 col-md-6 col-sm-8"> 
                       <div className="form-group">
                           <label>Action:</label>
                           <select
