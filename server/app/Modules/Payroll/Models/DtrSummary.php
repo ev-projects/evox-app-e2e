@@ -105,7 +105,7 @@ class DtrSummary
                         if( is_valid( $next_dtr ) ) {
                             $this->compute_payroll_items_to_summary( $next_dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.overlapped') ] );
                         }else{
-                            $this->compute_payroll_items_to_summary( get_constant('PAYROLL_ITEM_TAGS.regular') , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.overlapped') ] );
+                            $this->compute_payroll_items_to_summary( get_constant('DTR_TYPE.regular') , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.overlapped') ] );
                         }    
                     } 
                     
@@ -114,7 +114,7 @@ class DtrSummary
                         if( is_valid( $previous_dtr ) ) {
                             $this->compute_payroll_items_to_summary( $previous_dtr_type , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.underlapped') ] );
                         }else{
-                            $this->compute_payroll_items_to_summary( get_constant('PAYROLL_ITEM_TAGS.regular') , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.underlapped') ] );
+                            $this->compute_payroll_items_to_summary( get_constant('DTR_TYPE.regular') , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.underlapped') ] );
                         }                   
                     }
                    
