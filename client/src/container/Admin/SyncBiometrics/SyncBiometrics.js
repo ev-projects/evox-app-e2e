@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./SyncUserUpdates.css";
+import "./SyncBiometrics.css";
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import BackButton from "../../../components/Template/BackButton";
@@ -10,14 +10,16 @@ import * as Yup from 'yup';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import moment from 'moment';
 import Validator from "../../../services/Validator";
-import { syncBhrUsers } from '../../../store/actions/admin/syncActions'
+import { syncBiometrics } from '../../../store/actions/admin/syncActions'
 
-class SyncUserUpdates extends Component {
+
+class SyncBiometrics extends Component {
     constructor(props){
       super(props)
       this.initialState = {
         filters: {
-          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : (( this.props.settings?.current_payroll_cutoff?.start_date ) ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null)
+          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : (( this.props.settings?.current_payroll_cutoff?.start_date ) ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
+          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : (( this.props.settings?.current_payroll_cutoff?.end_date ) ? new Date( this.props.settings.current_payroll_cutoff.end_date ) : null),
         }
       }
 
@@ -27,12 +29,11 @@ class SyncUserUpdates extends Component {
     onSubmitHandler = (values) => {
       var formData = {};
 
-
       for (var key in values) {
-      
         if( values[key] != null ) {
             switch( key ) {
                 case "valid_from":
+                case "valid_to":
                       formData[key] =  moment( values[key] ).format("YYYY-MM-DD");
                     break;
                 default:
@@ -41,45 +42,49 @@ class SyncUserUpdates extends Component {
             }
         }
     }
-      this.props.syncBhrUsers(formData);
+    
+
+      this.props.syncBiometrics(formData);
     }
 
     componentDidMount(){
-      var filters = {
-        ...this.state.filters,
-        valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null
-      };
-  
+ 
     }
 
     render(){
       const { sync } = this.props;
-      console.log(this.props);
+
       const validationSchema = Yup.object().shape({
-        valid_from: Yup.date().required("This field is required"),
+        valid_from: Yup.date().nullable().max( Yup.ref('valid_to') , 'Please select a Valid From date.'),
+        valid_to: Yup.date().nullable().min( Yup.ref('valid_from') , 'Please select a Valid To date.')
       });
     
       return(
         <Wrapper>
           <Formik 
-          enableReinitialize
-          onSubmit={this.onSubmitHandler} 
-          validationSchema={validationSchema} 
-          initialValues={this.state.filters}>
-          {
-          ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-            <form onSubmit={handleSubmit}>
-              <ContainerWrapper>
-                <ContainerBody>
-                    <Content col="12" title="Sync BHR User Updates"  subtitle={ <BackButton {...this.props}/>} >
+            enableReinitialize
+            onSubmit={this.onSubmitHandler} 
+            validationSchema={validationSchema} 
+            initialValues={this.state.filters}>
+            {
+            ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+              <form onSubmit={handleSubmit}>
+                <ContainerWrapper>
+                  <ContainerBody>
+                    <Content col="12" title="Sync Biometrics"  subtitle={ <BackButton {...this.props}/>} >
                         <Row>
                           <Col className="col-sm"> 
                             <div className="form-group">
-                              <label>Changes From:</label>
+                              <label>Date From:</label>
                               <InputDate name="valid_from" value={values.valid_from}/>
                             </div>
                           </Col> 
-
+                          <Col className="col-sm">   
+                            <div className="form-group">
+                              <label>Date To:</label>
+                              <InputDate name="valid_to" value={values.valid_to}/>
+                            </div>
+                          </Col>
                           <Col className="col-sm"> 
                           <div className="form-group">
                                 <label>&nbsp;</label>  
@@ -90,27 +95,28 @@ class SyncUserUpdates extends Component {
                           </Col>
                           <Col className="col-sm">
                           </Col> 
-                          <Col className="col-sm">
-                          </Col> 
                         </Row>
-                        { sync?.users?.length > 0 ?
+                        <Row>
+                        { sync?.biometrics?.length > 0 ?
                           <Table striped bordered hover>
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Employee No</th>
-                              <th>Name</th>
-                              <th>Action</th>
+                              <th>Employee Name & #</th>
+                              <th>Date</th>
+                              <th>Time In</th>
+                              <th>Time Out</th>
                             </tr>
                           </thead>
                           <tbody>
 
-                            { sync?.users?.map(function (user, i) {
+                            { sync?.biometrics?.map(function (biometric, i) {
                                                                 return  (<tr>
                                                                 <td>{i+1}</td>
-                                                                <td>{user.emp_num}</td>
-                                                                <td>{user.name}</td>
-                                                                <td>{user.action}</td>
+                                                                <td>{biometric.user?.full_name} - {biometric.user?.emp_num}</td>
+                                                                <td>{biometric.date}</td>
+                                                                <td>{biometric.time_in}</td> 
+                                                                <td>{biometric.time_out}</td> 
                                                                 </tr>)
                                                             }) 
                                                         }
@@ -120,14 +126,16 @@ class SyncUserUpdates extends Component {
                           null
                           } 
                         
-                      </Content>
-                </ContainerBody>
-              </ContainerWrapper>
-            </form>
-        )}
+
+                        </Row>
+                    </Content>
+                  </ContainerBody>
+                </ContainerWrapper>
+              </form>
+      )}
     
-          </Formik>
-      </Wrapper>);
+      </Formik>
+            </Wrapper>);
     }
 };
 
@@ -139,7 +147,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    syncBhrUsers       : (data) => dispatch( syncBhrUsers(data) )
+    syncBiometrics       : (data) => dispatch( syncBiometrics(data) )
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(SyncUserUpdates);
+export default connect(mapStateToProps, mapDispatchToProps)(SyncBiometrics);

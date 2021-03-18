@@ -25,7 +25,7 @@ import payrollCutoffReducers from "./admin/payrollCutoffReducers"
 
 import assignRoleReducers from "./admin/assignRoleReducers" 
 import registerUserReducers from "./admin/registerUserReducers"
-import syncBhrReducers from "./admin/syncBhrReducers"
+import syncReducers from "./admin/syncReducers"
 import lookupListReducers from "./lookup/lookupListReducers"
 
 import dtrReducer from "./dtr/dtrReducers";
@@ -63,9 +63,9 @@ const rootReducer = combineReducers({
 
     payrollCutoff: payrollCutoffReducers,
 
-    assignRole: assignRoleReducers,
-    registerUser: registerUserReducers,  
-    syncBhrReducers: syncBhrReducers,  
+    assignRole          : assignRoleReducers,
+    registerUser        : registerUserReducers,  
+    sync                : syncReducers,  
     myRequestList       : myRequestListReducers,
     dpaList             : dpaListReducers,
     myTeamList          : myTeamListReducers,

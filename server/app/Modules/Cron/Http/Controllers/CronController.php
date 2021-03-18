@@ -10,6 +10,7 @@ use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollRepository;
+use App\Modules\Payroll\Resources\DtrBiometricsResource;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
@@ -274,7 +275,7 @@ class CronController extends Controller
 
             $biometrics_collection = $this->biometrics->get_biometrics( $start_datetime, $end_datetime );
             
-            $result = DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrics_collection ) );
+            $result = DtrBiometricsResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrics_collection ) );
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 

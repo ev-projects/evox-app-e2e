@@ -44,3 +44,21 @@ export const syncBhrUsers = ( data ) => {
 }
 
 
+
+export const syncBiometrics = ( data ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/cron/sync_realtime_biometrics/"+ data.valid_from +"/"+ data.valid_to+"",
+        })
+        .then(result => {
+            dispatch({
+                'type'     : 'SYNC_BIOMETRICS', 
+                'content'  : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}

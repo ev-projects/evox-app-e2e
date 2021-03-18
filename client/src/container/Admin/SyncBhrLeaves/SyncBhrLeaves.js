@@ -10,7 +10,7 @@ import * as Yup from 'yup';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import moment from 'moment';
 import Validator from "../../../services/Validator";
-import { syncBhrLeaves } from '../../../store/actions/admin/bhrSyncActions'
+import { syncBhrLeaves } from '../../../store/actions/admin/syncActions'
 
 
 class SyncBhrLeaves extends Component {
@@ -52,27 +52,28 @@ class SyncBhrLeaves extends Component {
     }
 
     render(){
-      const { data } = this.props;
+      const { sync } = this.props;
+
+      console.log(this.props);
+
       const validationSchema = Yup.object().shape({
         valid_from: Yup.date().nullable().max( Yup.ref('valid_to') , 'Please select a Valid From date.'),
         valid_to: Yup.date().nullable().min( Yup.ref('valid_from') , 'Please select a Valid To date.')
       });
     
-      return(<Formik 
-        enableReinitialize
-        onSubmit={this.onSubmitHandler} 
-        validationSchema={validationSchema} 
-        initialValues={this.state.filters}>
-        {
-        ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-        <form onSubmit={handleSubmit}>
-            <Wrapper>
-               <ContainerWrapper>
-                  <ContainerHeader>
-                  </ContainerHeader>
-                  <ContainerBody>
-                    <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
-                        <Content col="12" title="Sync BHR Leaves"  subtitle={ <BackButton {...this.props}/>} >
+      return(
+        <Wrapper>
+          <Formik 
+          enableReinitialize
+          onSubmit={this.onSubmitHandler} 
+          validationSchema={validationSchema} 
+          initialValues={this.state.filters}>
+          {
+          ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+            <form onSubmit={handleSubmit}>
+              <ContainerWrapper>
+                <ContainerBody>
+                      <Content col="12" title="Sync BHR Leaves"  subtitle={ <BackButton {...this.props}/>} >
                         <Row>
                           <Col className="col-sm"> 
                             <div className="form-group">
@@ -98,7 +99,7 @@ class SyncBhrLeaves extends Component {
                           </Col> 
                         </Row>
                         <Row>
-                        { data.isSuccessful ?
+                        { sync?.leaves?.length > 0 ?
                           <Table striped bordered hover>
                           <thead>
                             <tr>
@@ -112,14 +113,14 @@ class SyncBhrLeaves extends Component {
                           </thead>
                           <tbody>
 
-                            {data.data.map(function (data, i) {
+                            { sync?.leaves?.map(function (leave, i) {
                                                                 return  (<tr>
                                                                 <td>{i+1}</td>
-                                                                <td>{data.date}</td>
-                                                                <td>{data.employee_no}</td> 
-                                                                <td>{data.employee_name}</td>
-                                                                <td>{data.leave_type}</td>
-                                                                <td>{data.status}</td>
+                                                                <td>{leave.date}</td>
+                                                                <td>{leave.employee_no}</td> 
+                                                                <td>{leave.employee_name}</td>
+                                                                <td>{leave.leave_type}</td>
+                                                                <td>{leave.status}</td>
                                                                 </tr>)
                                                             }) 
                                                         }
@@ -131,21 +132,20 @@ class SyncBhrLeaves extends Component {
                         
 
                         </Row>
-                        </Content>
-                    </div>
-                  </ContainerBody>
+                      </Content>
+                </ContainerBody>
               </ContainerWrapper>
-            </Wrapper>
             </form>
-      )}
+        )}
     
-      </Formik>);
+        </Formik>
+      </Wrapper>);
     }
 };
 
 const mapStateToProps = (state) => {
   return {
-      data            : state.syncBhrReducers,
+      sync            : state.sync,
       settings        : state.settings
   }
 }

@@ -255,35 +255,63 @@ const Sidebar = (props) => {
                               <p>Payroll Cutoff</p>
                             </Link> 
                           </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={ global.links.sync_bhr_user_updates }>
-                              <i className="nav-icon fa fa-users nav-icon" />
-                              <p style={{'fontSize':13}}>Sync BHR User Updates</p>
-                            </Link> 
+                          <li className="nav-item has-treeview ">
+                            <a className="nav-link">
+                              <i className="nav-icon fa fa-exchange" />
+                              <p>
+                                Sync
+                                <i className="right fa fa-chevron-left" />
+                              </p>
+                            </a>
+                            <ul className="nav nav-treeview">
+                              <li className="nav-item">
+                                <Link className="nav-link" to={ global.links.sync_biometrics }>
+                                  <i className="nav-icon fa fa-bars nav-icon" />
+                                  <p>Biometrics</p>
+                                </Link> 
+                              </li>
+                              <li className="nav-item">
+                                <Link className="nav-link" to={ global.links.sync_bhr_user_updates }>
+                                  <i className="nav-icon fa fa-user nav-icon" />
+                                  <p style={{'fontSize':13}}>BHR User Updates</p>
+                                </Link> 
+                              </li>
+                              <li className="nav-item">
+                                <Link className="nav-link" to={ global.links.sync_bhr_leaves }>
+                                  <i className="nav-icon fa fa-calendar-o nav-icon" />
+                                  <p style={{'fontSize':13}}>BHR Leaves</p>
+                                </Link> 
+                              </li>
+                            </ul>
                           </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={ global.links.sync_bhr_leaves }>
-                              <i className="nav-icon fa fa-users nav-icon" />
-                              <p style={{'fontSize':13}}>Sync BHR Leaves</p>
-                            </Link> 
-                          </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={ global.links.assign_department_handlers }>
-                              <i className="nav-icon fa fa-users nav-icon" />
-                              <p style={{'fontSize':13}}>Assign Department Handlers</p>
-                            </Link> 
-                          </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={ global.links.assign_employee_supervisors }>
-                              <i className="nav-icon fa fa-users nav-icon" />
-                              <p style={{'fontSize':13}}>Assign Employee Supervisors</p>
-                            </Link> 
-                          </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={ global.links.assign_role }>
-                              <i className="nav-icon fa fa-users nav-icon" />
-                              <p style={{'fontSize':13}}>Assign Role to User</p>
-                            </Link> 
+                          <li className="nav-item has-treeview ">
+                            <a className="nav-link">
+                              <i className="nav-icon fa fa-tags" />
+                              <p>
+                                Assign
+                                <i className="right fa fa-chevron-left" />
+                              </p>
+                            </a>
+                            <ul className="nav nav-treeview">
+                              <li className="nav-item">
+                                <Link className="nav-link" to={ global.links.assign_department_handlers }>
+                                  <i className="nav-icon fa fa-building-o nav-icon" />
+                                  <p style={{'fontSize':13}}>Department Handlers</p>
+                                </Link> 
+                              </li>
+                              <li className="nav-item">
+                                <Link className="nav-link" to={ global.links.assign_employee_supervisors }>
+                                  <i className="nav-icon fa fa-users nav-icon" />
+                                  <p style={{'fontSize':13}}>Employee Supervisors</p>
+                                </Link> 
+                              </li>
+                              <li className="nav-item">
+                                <Link className="nav-link" to={ global.links.assign_role }>
+                                  <i className="nav-icon fa fa-user-o nav-icon" />
+                                  <p style={{'fontSize':13}}>Role to User</p>
+                                </Link> 
+                              </li>
+                            </ul>
                           </li>
                           <li className="nav-item">
                             <Link className="nav-link" to={ global.links.register_user }>

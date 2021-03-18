@@ -45,6 +45,7 @@ global.links = {
     payroll_cutoff                  :  "/app/admin/PayrollCutoff/",
     assign_department_handlers      :  "/app/admin/AssignDepartmentHandlers/",
     assign_employee_supervisors     :  "/app/admin/AssignEmployeeSupervisors/",
+    sync_biometrics                 :  "/app/admin/SyncBiometrics/",
     sync_bhr_leaves                 :  "/app/admin/SyncBhrLeaves/",
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
     assign_role                     :  "/app/admin/AssignRole/",

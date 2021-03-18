@@ -49,6 +49,7 @@ import ForgotPasswordRequest from "../container/ForgotPasswordRequest";
 import DPAForm from "../container/DPAForm";
 import DPAList from "../container/MyTeam/DPAList";
 import RegisterUser from "../container/Admin/RegisterUser";
+import SyncBiometrics from "../container/Admin/SyncBiometrics/SyncBiometrics";
 
 const RoutesList = (props) => {
 
@@ -171,6 +172,10 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.assign_employee_supervisors}>
           <AssignEmployeeSupervisors  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.sync_biometrics}>
+          <SyncBiometrics  role={['admin']} permission={['full_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.sync_bhr_leaves}>
