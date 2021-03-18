@@ -17,10 +17,13 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 
 class DtrRepository implements DtrRepositoryInterface{
-    
-    function __construct(){
+    protected $user;
+
+    function __construct(UserRepositoryInterface $user){
+        $this->user = $user;
         $this->computation = new Computation();
         $this->dtr_summary = new DtrSummary();
     }
@@ -792,13 +795,13 @@ class DtrRepository implements DtrRepositoryInterface{
         try {
 
             $result = new Collection;
-            
+            $processed_data = array();
             // Iterate the fetched Employee Leaves that was fetched from BHr.
             foreach( $bhr_leaves_array as $row ) {
 
                 // Proceed only if the Status of the Leave Request is in the LEAVE REQUEST STATUS constant Array
                 if( in_array( $row->status->status, get_constant('LEAVE_REQUEST_STATUS') ) )   {
-
+                    $user = $this->user->show_via_bhr_number( $row->employeeId );
                     // Get the DTR related on the Leave Request's Date Range
                     $dtr_collection = Dtr::select('dtrs.*')
                                             ->join('users', 'dtrs.user_id', '=', 'users.id')
@@ -833,6 +836,15 @@ class DtrRepository implements DtrRepositoryInterface{
                         # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
                         $leave_insert_array[] = implode(",", $leave_insert_values);
                     }
+                
+                    $processed_data[] = [
+                        "date" => $row->start .' - '.  $row->end,
+                        "employee_no" =>  $user->emp_num,
+                        "employee_name" => $user->first_name . ' ' . $user->last_name ,
+                        "leave_type" =>( is_valid( $row->type ) && isset( $row->type->name ) ) ? $row->type->name: 'null',
+                        "status" => ( is_valid( $row->status->status ) ) ? $row->status->status : 'null',
+                        "amount" =>   ( is_valid( $row->amount->amount ) ) ? $row->amount->amount : 'null',
+                    ];
                 }
             }
                                     
@@ -867,7 +879,7 @@ class DtrRepository implements DtrRepositoryInterface{
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             DB::commit();
-            return $result;
+            return $processed_data;
 
         } catch (Exception $e) {
             DB::rollback();

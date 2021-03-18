@@ -67,7 +67,7 @@ class syncBhrUsers extends Command
 
             // Use the date yesterday.
             $since_date_to_sync = Carbon::today()->subDays(1)->format('Y-m-d') . 'T00:00:00-00:00';
-            
+
             # 1.
             # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
             $bhr_user_number_array = $this->bhr->get_changed_users( $since_date_to_sync );

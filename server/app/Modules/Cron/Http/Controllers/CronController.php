@@ -144,8 +144,9 @@ class CronController extends Controller
             
             # 2.
             # Iterate the actual BHR User Numbers array
+            $processed_user = array();
             foreach( $bhr_user_number_array as $bhr_user_number ){
-
+                $action = '';
                 // Fetch the User if it's already existing in the System
                 $user = $this->user->show_via_bhr_number( $bhr_user_number );
                 
@@ -155,7 +156,8 @@ class CronController extends Controller
                 # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
                 if( is_valid( $user ) ){
                     $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
-                    
+                    $action = 'Update';
+
                 # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
                 } else {
                     $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
@@ -182,12 +184,20 @@ class CronController extends Controller
                             $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                         }
                     }
+                    $action = 'New User';
                 }
 
                 # 3.
                 if( is_valid( $user ) ) {
                     $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
                 }
+
+                $processed_user[] = array(
+                    'emp_num' =>  $user->emp_num ,
+                    'name' =>  $user->first_name.' '.$user->last_name   ,
+                    'action' =>  $action
+                );
+
                         
             }
 
@@ -196,7 +206,7 @@ class CronController extends Controller
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
-                $apply_user_supervisor_pivot_result,
+                $processed_user,
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){

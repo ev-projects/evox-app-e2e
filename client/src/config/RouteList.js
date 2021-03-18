@@ -35,6 +35,8 @@ import DtrSummary from "../container/MyTeam/DtrSummary";
 import PayrollCutoff from "../container/Admin/PayrollCutoff";
 import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandlers";
 import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervisors";
+import SyncBhrLeaves from "../container/Admin/SyncBhrLeaves"; 
+import SyncUserUpdates from "../container/Admin/SyncUserUpdates"; 
 import AssignRole from "../container/Admin/AssignRole";
 import MyTeamList from "../container/MyTeam/MyTeamList";
 import JobInformation from "../container/Profile/JobInformation";
@@ -169,6 +171,14 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.assign_employee_supervisors}>
           <AssignEmployeeSupervisors  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.sync_bhr_leaves}>
+          <SyncBhrLeaves  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute> 
+
+        <ProtectedRoute exact path={global.links.sync_bhr_user_updates}>
+          <SyncUserUpdates  role={['admin']} permission={['full_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.assign_role}>

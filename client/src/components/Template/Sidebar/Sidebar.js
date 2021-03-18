@@ -256,6 +256,18 @@ const Sidebar = (props) => {
                             </Link> 
                           </li>
                           <li className="nav-item">
+                            <Link className="nav-link" to={ global.links.sync_bhr_user_updates }>
+                              <i className="nav-icon fa fa-users nav-icon" />
+                              <p style={{'fontSize':13}}>Sync BHR User Updates</p>
+                            </Link> 
+                          </li>
+                          <li className="nav-item">
+                            <Link className="nav-link" to={ global.links.sync_bhr_leaves }>
+                              <i className="nav-icon fa fa-users nav-icon" />
+                              <p style={{'fontSize':13}}>Sync BHR Leaves</p>
+                            </Link> 
+                          </li>
+                          <li className="nav-item">
                             <Link className="nav-link" to={ global.links.assign_department_handlers }>
                               <i className="nav-icon fa fa-users nav-icon" />
                               <p style={{'fontSize':13}}>Assign Department Handlers</p>
