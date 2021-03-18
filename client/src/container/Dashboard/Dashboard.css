@@ -81,3 +81,5 @@ td.actions .fa{font-size: 18px}
 .filters{margin-top: 30px}
 .evbuddy{background:    #fff; font-size: 12px; padding: 20px 10px}
 a.btn-primary{padding: 10px 15px; color: #fff !important;}
+
+.card-header .back-button{position: fixed; top: 7%; right:2%;z-index: 1000}

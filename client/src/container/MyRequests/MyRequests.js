@@ -128,9 +128,9 @@ class MyRequests extends Component {
       <form onSubmit={handleSubmit}>
       <Wrapper {...this.props} >
             <ContainerWrapper> 
-            <ContainerBody>        
-                <Content col="12" title="My Requests">
-                <Tabs defaultActiveKey="home" 
+            <h2>My Requests</h2> 
+            <div className="request-tab">
+             <Tabs defaultActiveKey="home" 
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
                       onSelect={(key) =>  {
@@ -149,7 +149,11 @@ class MyRequests extends Component {
                   </Tab>
                   <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
                   </Tab>
-                </Tabs>    
+                </Tabs> 
+                </div>  
+            <ContainerBody>        
+                <Content col="12">
+                
                 <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
@@ -211,20 +215,16 @@ class MyRequests extends Component {
                     </ToggleButton>
                   </ButtonGroup>
                   
-                  <Row className="date-range">  
-                    <Col className="col-lg-2 col-4"> 
+                  <Row className="filters">  
+                    <Col className="date-range"> 
                       <div className="form-group">
-                        <label>Date From:</label>
+                        <label>Date Range:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
-                      </div>
-                    </Col> 
-                    <Col className="col-lg-2  col-4">  
-                    <div className="form-group">
-                        <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
-                    </Col>
-                    <Col className="col-lg-2  col-4 col-btn">   
+                    </Col> 
+                    
+                    <Col className="filter-button">   
                     <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
                       <i className="fa fa-filter" /> Filter
                     </Button>
