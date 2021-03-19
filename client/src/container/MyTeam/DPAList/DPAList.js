@@ -79,11 +79,13 @@ class DPAList extends Component {
           <Wrapper {...this.props} >
                 <ContainerWrapper>   
                 <ContainerBody>  
-                    <Content col="12" title="DPA List">
-                      <DPAListFilter {...this.props} />
+                <h2 className="page-title">DPA List</h2>
+                <DPAListFilter {...this.props} />
+                <div className="content-table">
+                      
                       <DPAListTable  {...this.props} />
                       
-                    </Content>
+                 </div>  
                 </ContainerBody>  
                 </ContainerWrapper>
               </Wrapper>
@@ -109,36 +111,36 @@ const DPAListFilter = (props) => {
       },
     ];
 
-    return  <Row>  
+    return  <Row className="filters filter-dtr">  
               <Col size="4"> 
-                    <label>Status:</label>
+                    
                     <select
                     className="form-control" 
                       name="is_active"
                       value={values.is_active}
                       onChange={handleChange}
                     >
-                      <option label="Select Status..." />
+                      <option label="Select Employee Status" />
                       <option value="1" label="Active" />
                       <option value="0" label="Inactive" />
                     </select>
               </Col>
               <Col size="4"> 
-                    <label>Submitted DPA:</label>
+                    
                     <select
                     className="form-control" 
                       name="submitted_dpa"
                       value={values.submitted_dpa}
                       onChange={handleChange}
                     >
-                      <option label="Select..." />
+                      <option label="Select DPA status" />
                       <option value="1" label="Yes" />
                       <option value="0" label="No" />
                     </select>
               </Col> 
               <Col size="2"> 
                 <div className="form-group">
-                    <label>Department:</label>
+                   
                     <select
                     className="form-control" 
                       name="department_id"
@@ -146,7 +148,7 @@ const DPAListFilter = (props) => {
                       onChange={handleChange}
                       style={{ display: 'block' }}
                     >
-                    <option label="Select a Department..." />
+                    <option label="Select Department" />
                     {props.user.departments_handled.map(function(item){
                       return <option value={item.id} label={item.department_name} />;
                     })}
@@ -155,16 +157,16 @@ const DPAListFilter = (props) => {
               </Col> 
               <Col size="2"> 
                 <div className="form-group">
-                    <label>Name:</label>
-                    <input type="textfield" className="form-control" variant="primary" placeholder="Enter Name..." name="name" onChange={handleChange} value={values.name} />
+                    
+                    <input type="textfield" className="form-control" variant="primary" placeholder="Enter name" name="name" onChange={handleChange} value={values.name} />
                 </div>
               </Col> 
               <Col size="2"> 
-                <div style={{ 'marginTop' : '30px'}}>
+                
                   <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
                     <i className="fa fa-filter" /> Filter
                   </Button>
-                </div>
+                
               </Col> 
             </Row>;
 }
@@ -213,7 +215,7 @@ const DPAListTable = (props) => {
             <Paginate pagination={props.dpaList.list.pagination} />
         </div>
         :
-        <div> Sorry, No Record Found </div>
+        <div className="pd20">Sorry, no record found</div>
       )
 }
 

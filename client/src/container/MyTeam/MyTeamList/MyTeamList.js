@@ -80,12 +80,13 @@ class MyTeamList extends Component {
           <form onSubmit={handleSubmit}>
           <Wrapper {...this.props} >
                 <ContainerWrapper>   
-                <ContainerBody>  
-                    <Content col="12" title="My Team List">
-                      <MyTeamListFilter {...this.props} />
-                      <MyTeamListTable  {...this.props} />
-                      
-                    </Content>
+                <ContainerBody>
+                <h2 className="page-title"> Employee list</h2>
+                <MyTeamListFilter {...this.props} />
+                <div className="content-table">
+                 <MyTeamListTable  {...this.props} />
+                </div>
+                   
                 </ContainerBody>  
                 </ContainerWrapper>
               </Wrapper>
@@ -111,23 +112,22 @@ const MyTeamListFilter = (props) => {
       },
     ];
 
-    return  <Row>  
+    return  <Row className="filters filter-dtr">  
               <Col size="4"> 
-                    <label>Status:</label>
+                    
                     <select
                     className="form-control" 
                       name="status"
                       value={values.status}
                       onChange={handleChange}
                     >
-                      <option label="Select Status..." />
+                      <option label="Select Employee Status..." />
                       <option value="1" label="Active" />
                       <option value="0" label="Inactive" />
                     </select>
               </Col> 
               <Col size="2"> 
                 <div className="form-group">
-                    <label>Department:</label>
                     <select
                     className="form-control" 
                       name="department_id"
@@ -135,7 +135,7 @@ const MyTeamListFilter = (props) => {
                       onChange={handleChange}
                       style={{ display: 'block' }}
                     >
-                    <option label="Select a Department..." />
+                    <option label="Select Department" />
                     {props.user.departments_handled.map(function(item){
                       return <option value={item.id} label={item.department_name} />;
                     })}
@@ -144,16 +144,16 @@ const MyTeamListFilter = (props) => {
               </Col> 
               <Col size="2"> 
                 <div className="form-group">
-                    <label>Name:</label>
-                    <input type="textfield" className="form-control" variant="primary" placeholder="Enter Name..." name="name" onChange={handleChange} value={values.name} />
+                   
+                    <input type="textfield" className="form-control" variant="primary" placeholder="Enter Name" name="name" onChange={handleChange} value={values.name} />
                 </div>
               </Col> 
               <Col size="2"> 
-                <div style={{ 'marginTop' : '30px'}}>
+                
                   <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
                     <i className="fa fa-filter" /> Filter
                   </Button>
-                </div>
+              
               </Col> 
             </Row>;
 }
@@ -231,7 +231,7 @@ const MyTeamListTable = (props) => {
             <Paginate pagination={props.myTeamList.list.pagination} />
         </div>
         :
-        <div> Sorry, No Record Found </div>
+       <div className="pd20">Sorry, no record found</div>
       )
 }
 

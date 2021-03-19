@@ -215,7 +215,7 @@ class MyRequests extends Component {
                     </ToggleButton>
                   </ButtonGroup>
                   
-                  <Row className="filters">  
+                  <Row className="filters myrequest-filter">  
                     <Col className="date-range"> 
                       <div className="form-group">
                         <label>Date Range:</label>

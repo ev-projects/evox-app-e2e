@@ -190,9 +190,9 @@ class ScheduleAssignDepartment extends Component {
               <Col sm={7}>
                 <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                       Departments Handled
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                       <Form.Control as="select" onChange={e => this.loadDepartmentSchedule(e.target.value)} >
@@ -209,9 +209,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7}>
                   <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                         Schedule Scope
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                     <Form.Row>
@@ -238,9 +238,9 @@ class ScheduleAssignDepartment extends Component {
                   <div>
                   <Form.Group className="white_bg">
                     <div className="header">
-                      <h1>
+                      <h4>
                         Creation Type
-                      </h1>
+                      </h4>
                     </div>
                     <div className="body">
                       <label>          
@@ -280,9 +280,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7}>
                   <Form.Group className="white_bg">
                     <div className="header">
-                      <h1>
+                      <h4>
                         Schedule Policy
-                      </h1>
+                      </h4>
                     </div>
                     <div className="body">
                       <SchedulePolicy/> 
@@ -292,9 +292,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7}>
                 <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                       Schedule Type
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                     <FieldArray name="std_schedule_details" render={arrayHelpers => (
@@ -353,9 +353,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7} >
                   <Form.Group className="white_bg">
                     <div className="header">
-                      <h1>
+                      <h4>
                         Work Days
-                      </h1>
+                      </h4>
                     </div>
                     <div className="body">
                       <WorkDays/>
@@ -369,9 +369,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7} >
                   <Form.Group className="white_bg">
                     <div className="header">
-                        <h1>
+                        <h4>
                           Standard Schedule
-                        </h1>
+                        </h4>
                     </div>
                     <div className="body">
                       <StandardSchedDetailsForm/>
@@ -382,9 +382,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7} >
                   <Form.Group className="white_bg">
                     <div className="header">
-                        <h1>
+                        <h4>
                           Flexible Schedule
-                        </h1>
+                        </h4>
                     </div>
                     <div className="body">
                       <FlexibleSchedDetailsForm/>
@@ -395,9 +395,9 @@ class ScheduleAssignDepartment extends Component {
                     <Col sm={7} >
                       <Form.Group className="white_bg">
                       <div className="header">
-                        <h1>
+                        <h4>
                           Customize Schedule
-                        </h1>
+                        </h4>
                       </div>
                       <div className="body">
                         {values.sorted_weekday.map((day, index) => {

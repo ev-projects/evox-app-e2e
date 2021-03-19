@@ -25,12 +25,8 @@
 }
 
 .btns{padding-top: 32px}
-.dtr-table{overflow: scroll; }
 .dtr-table .table td,.dtr-table .table th,
-.table-responsive .table td,.table-responsive  .table th,
-{
-    border: 1px solid #dee2e6;
-}
+
 .dtrSummary thead th{font-size: 12px; width: 65px}
 .dtrSummary tbody td,.dtrSummary thead th{border:1px solid #ccc;text-align: center;padding: 5px; width: 50px; vertical-align: middle;font-size: 12px}
 

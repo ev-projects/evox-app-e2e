@@ -172,7 +172,7 @@ class MyTeamRequests extends Component {
       <form onSubmit={handleSubmit}>
       <Wrapper {...this.props} >
             <ContainerWrapper>
-            <h2>My Team Request</h2> 
+            <h3>My Team Request</h3> 
             <div className="request-tab"><Tabs defaultActiveKey="home" 
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
@@ -279,7 +279,7 @@ class MyTeamRequests extends Component {
                             onChange={handleChange}
                             style={{ display: 'block' }}
                           >
-                          <option    label="Select a Department" />
+                          <option    label="- Department -" />
                           {this.props.user.departments_handled.map(function(item){
                             return <option value={item.id} label={item.department_name} />;
                           })}
@@ -289,7 +289,7 @@ class MyTeamRequests extends Component {
                     <Col className="search-name">
                       <div className="form-group">
                           
-                          <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
+                          <input type="textfield" className="form-control" variant="primary" placeholder="Enater name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     </Col> 
                     <Col className="filter-button">
@@ -302,7 +302,7 @@ class MyTeamRequests extends Component {
                     </Row>
                     <hr/>
                     <Row className="bulk-action">
-                      <Col className="col-3 col-md-6 col-sm-8"> 
+                      <Col className="col-2 col-md-4 col-sm-8"> 
                       <div className="form-group">
                           <label>Action:</label>
                           <select

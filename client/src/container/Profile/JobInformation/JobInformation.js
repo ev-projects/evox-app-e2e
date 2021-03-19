@@ -60,65 +60,54 @@ class JobInformation extends Component {
             <Wrapper >
                <ContainerWrapper>
                   <ContainerBody>
+                  <Row>
+                                            <div className="profile-header"> 
+                                               
+                                                <div className="col-4 picture" >
+                                                    <img src={ Validator.isValid( profile.profilePicture ) ? "data:image/jpg;base64,"+ profile.profilePicture : "/images/default-user-image.png"}
+                                                        style={{'marginTop': '15px', 'width' :'170px', 'height': '170px'}} />
+                                                </div>
+                                                <div className="information" >
+                                                    {profile.details.full_name} <br />
+                                                    {profile.details.department} <br />
+                                                    {profile.job_title}      
+                                                </div>
+                                                
+                                                 
+                                            </div>
+                                            </Row>
                     { !page.isReloading ?
                         <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
                             <Row>
                                 <Content col="12" title="Job Information"  subtitle={ <BackButton {...this.props}/>} >
-
-                                <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
+                                <div className="profile-tabs">
+                                {!Authenticator.check('client') ?
+                                <Button type="button" className="btn active float-right"><Link to={{
                                     pathname: global.links.job_information + this.props.params.id,
                                     }}
                                     title="Job Information"
                                 >
                                     Job Information
-                                </Link></Button>     
-                                <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
+                                </Link></Button>
+                                :
+                                    null
+                                }
+                                <Button type="button" className="btn float-right"><Link to={{
                                     pathname: global.links.personal_information + this.props.params.id,
                                     }}
                                     title="Personal Information"
                                 >
                                     Personal Information
-                                </Link></Button>                          
-                                            <Row>
-                                                <div className="col-lg-4 text-center" >
-                                                    <img src={ Validator.isValid( profile.profilePicture ) ? "data:image/jpg;base64,"+ profile.profilePicture : "/images/default-user-image.png"}
-                                                        style={{'marginTop': '15px', 'width' :'170px', 'height': '170px'}} />
-                                                </div>
-                                                <div className="col-lg-8" >
-                                                    
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> Name: </label>    
-                                                            <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.full_name}   />
-                                                            </InputGroup> 
-                                                        </Col> 
-                                                    </Row> 
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> Job Title: </label>    
-                                                            <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.job_title}  />
-                                                            </InputGroup> 
-                                                        </Col> 
-                                                    </Row>  
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> Department: </label>    
-                                                            <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.department
-}  />
-                                                            </InputGroup> 
-                                                        </Col> 
-                                                    </Row> 
-                                                   
-                                                </div>
-                                            </Row>
+                                </Link></Button>
+                                </div>                           
+                                           
                                             <br/>
                                             <Row>
                                             { profile.employment_status != null ?
                                             <React.Fragment>
-                                            <label>Employment Status </label> 
+                                            
+                                            <div className="content-table">
+                                            <h4>Employment Status </h4> 
                                             <Table striped bordered hover>
                                                         <thead>
                                                             <tr>
@@ -139,6 +128,7 @@ class JobInformation extends Component {
                                                           
                                                         </tbody>
                                                     </Table>
+                                                    </div>
                                                     </React.Fragment>
 
                                                      :
@@ -146,7 +136,10 @@ class JobInformation extends Component {
                                                      } 
                                                      { profile.job_information != null ? 
                                                     <React.Fragment>
-                                                     <label> Job Information </label> 
+                                                     
+                                                     <div className="content-table">
+                                                     <br />
+                                                     <h4> Job Information </h4> 
                                                     <Table striped bordered hover>
                                                         <thead>
                                                             <tr>
@@ -170,7 +163,7 @@ class JobInformation extends Component {
                                                         }
                                                           
                                                         </tbody>
-                                                    </Table>
+                                                    </Table></div>
                                                     </React.Fragment>
 
                                                     :

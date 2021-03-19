@@ -1,6 +1,27 @@
 /*
  * Dashboard css File
 */
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{text-transform: uppercase; color: #333 !important;}
+h1,.h1{font-size: 1.75rem !important}
+h2,.h2{font-size: 1.5rem !important}
+h3,.h3{font-size: 1.25rem !important}
+h4,.h4{font-size: 1rem !important}
+h5,.h5{font-size: 1rem !important}
+h6,.h6{font-size: 1rem !important}
+.page-title{margin-left:20px;}
+.team-request-page .col-lg-12{padding: 0 !important; margin:0 !important;}
+.pd30{margin:0;padding: 30px}
+.content-table {
+    width: 95%;
+    overflow-x: auto;
+    margin: 0 0 0 25px;
+}
+.content-table table thead th{text-align: left; vertical-align: middle;background: #82af13 !important; color: #fff !important}
+.content-table table tbody td{text-align: left; vertical-align: middle;border:1px solid #ddd !important;}
+
+.sidebar {
+    padding-left: 1rem !important;
+}
 .card {
     border: 0 !important;
     border-radius: 0  !important;

@@ -43,9 +43,9 @@ class Schedule extends Component {
         <Col sm={7} >
           <Form.Group className="white_bg">
             <div className="header">
-              <h1>
+              <h4>
                 Schedule Template
-              </h1>
+              </h4>
             </div>
             <div className="body">
               <InputGroup>
@@ -60,9 +60,9 @@ class Schedule extends Component {
         <Col sm={7}>
           <Form.Group className="white_bg">
             <div className="header">
-              <h1>
+              <h4>
                 Schedule Policy
-              </h1>
+              </h4>
             </div>
             <div className="body">
               <SchedulePolicy/> 
@@ -72,9 +72,9 @@ class Schedule extends Component {
         <Col sm={7} >
           <Form.Group className="white_bg">
             <div className="header">
-              <h1>
+              <h4>
                 Schedule Type
-              </h1>
+              </h4>
             </div>
           <div className="body">
             <FieldArray name="std_schedule_details" render={arrayHelpers => (
@@ -132,9 +132,9 @@ class Schedule extends Component {
         <Col sm={7} >
           <Form.Group className="white_bg">
             <div className="header">
-              <h1>
+              <h4>
                 Work Days
-              </h1>
+              </h4>
             </div>
             <div className="body">
               <WorkDays/>
@@ -149,9 +149,9 @@ class Schedule extends Component {
           <Col sm={7} >
             <Form.Group className="white_bg">
               <div className="header">
-                  <h1>
+                  <h4>
                     Standard Form
-                  </h1>
+                  </h4>
               </div>
               <div className="body">
                 <StandardSchedDetailsForm/>
@@ -162,9 +162,9 @@ class Schedule extends Component {
           <Col sm={7} >
             <Form.Group className="white_bg">
               <div className="header">
-                  <h1>
+                  <h4>
                     Flexible Form
-                  </h1>
+                  </h4>
               </div>
               <div className="body">
                 <FlexibleSchedDetailsForm/>
@@ -175,9 +175,9 @@ class Schedule extends Component {
             <Col sm={7} >
               <Form.Group className="white_bg">
               <div className="header">
-                <h1>
+                <h4>
                   Customize Schedule
-                </h1>
+                </h4>
               </div>
               <div className="body">
                 {values.sorted_weekday.map((day, index) => {

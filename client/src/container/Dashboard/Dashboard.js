@@ -49,10 +49,6 @@ class Dashboard extends Component {
         return (
             <Wrapper {...this.props} >
                <ContainerWrapper>
-                  <ContainerHeader>
-                      
-                  </ContainerHeader>
-                 
                   <ContainerBody>
                     <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
                       <Row>
