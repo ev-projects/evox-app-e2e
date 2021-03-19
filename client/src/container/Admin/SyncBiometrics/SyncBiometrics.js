@@ -34,7 +34,7 @@ class SyncBiometrics extends Component {
             switch( key ) {
                 case "valid_from":
                 case "valid_to":
-                      formData[key] =  moment( values[key] ).format("YYYY-MM-DD");
+                      formData[key] =  moment( values[key] ).format("YYYY-MM-DD") + " 00:00:00";
                     break;
                 default:
                     formData[key] =  values[key];
