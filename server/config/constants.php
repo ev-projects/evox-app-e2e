@@ -37,6 +37,11 @@ return [
         'employmentHistoryStatus',
         'supervisorEId'
     ],
+    
+    'BHR_USER_TABLE' => [
+        'employee_status'    =>  'employmentStatus', 
+        'job_info'  =>  'jobInfo'
+    ],
 
     'BHR_USER_FIELDS' => [
         'employeeNumber',
@@ -220,7 +225,13 @@ return [
         "day"           => 86400,
     ],
 
-    
+    'TIMESTAMP' => [
+        "minute"        => 60,
+        "hour"          => 3600,
+        "eight_hours"   => 28800,
+        "day"           => 86400,
+    ],
+
     'LOG_START' => ' [ CALL START ] ',
     'LOG_END' => ' [ CALL END ] ',
     'LOG_QUEUED' => ' [ QUEUED ] ',

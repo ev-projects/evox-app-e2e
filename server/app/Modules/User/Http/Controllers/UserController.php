@@ -96,9 +96,9 @@ class UserController extends Controller
                
             $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
 
-            $employment_status = $this->bhr->get_user_job_information( $user->bhr_num , 'employmentStatus' );
+            $employment_status = $this->bhr->get_user_job_information( $user->bhr_num , get_constant('BHR_USER_TABLE.employee_status') );
 
-            $job_information = $this->bhr->get_user_job_information( $user->bhr_num , 'jobInfo' );
+            $job_information = $this->bhr->get_user_job_information( $user->bhr_num , get_constant('BHR_USER_TABLE.job_info')  );
 
             $info = $this->bhr->get_user_bhr_field( $user->bhr_num  );
             return success_response(
