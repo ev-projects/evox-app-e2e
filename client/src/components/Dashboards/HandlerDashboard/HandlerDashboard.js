@@ -9,7 +9,7 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../Gr
 import Wrapper from "../../Template/Wrapper";
 import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
-import QuickPunch from "../../../container/QuickPunch";
+import BirthdayAnniversary from "../../../container/BirthdayAnniversary";
 
 const HandlerDashboard = ( props ) => {
 
@@ -18,10 +18,10 @@ const HandlerDashboard = ( props ) => {
     const { user } = props;
     const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
-    return (<div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
+    return (
+    <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
               <Row>
-                <div className="col-lg-8 col-md-7 col-sm-12">
-                  <Row>                                    
+                <Content title="Department" col="6">                  
                     <div className="form-group">
                         <select
                             name="department_id"
@@ -38,8 +38,12 @@ const HandlerDashboard = ( props ) => {
                         }
                         </select>
                     </div>
-                  </Row>
-                </div>
+                    </Content>    
+                    <div className="birthday-anniv">  
+                      <Content title="Birthday and Anniversary" >                                    
+                        <BirthdayAnniversary/>
+                      </Content> 
+                    </div>
               </Row>
             </div>
         );

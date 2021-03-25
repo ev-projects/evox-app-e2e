@@ -35,6 +35,9 @@ import dtrLogsReducers from "./dtr/dtrLogsReducers";
 
 import myRequestListReducers from "./filters/myRequestListReducers";
 import dpaListReducers from "./filters/dpaListReducers";
+
+import clientReducers from "./client/clientReducers";
+
 import myTeamListReducers from "./filters/myTeamListReducers";
 import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
 
@@ -77,7 +80,9 @@ const rootReducer = combineReducers({
 
     lookup:   lookupListReducers,
 
-    redirect : redirectReducers
+    redirect : redirectReducers,
+
+    client  : clientReducers
 });
 
 export default rootReducer;

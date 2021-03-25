@@ -31,7 +31,7 @@ class UserProfileResource extends JsonResource
         
         if($this->birthdate!=null){
             $birthdate = new Carbon($this->birthdate);
-            $birthdate = $birthdate->format('M, d');
+            $birthdate = $birthdate->format('F d');
         }else{
             $birthdate = '';
         }

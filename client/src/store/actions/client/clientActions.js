@@ -1,0 +1,26 @@
+import axios from "axios";
+import API from "../../../services/API";
+import { trackPromise } from "react-promise-tracker";
+import Formatter from "../../../services/Formatter";
+
+
+
+// BIRTHDAY ANNIV
+export const birthdayAnniv = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/"+ id +"/get_birthday_anniversary",
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_BIRTHDAY_ANNIVERSARY', 
+                'data'   : result.data
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+

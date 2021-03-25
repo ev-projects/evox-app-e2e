@@ -225,11 +225,15 @@ return [
         "day"           => 86400,
     ],
 
-    'TIMESTAMP' => [
-        "minute"        => 60,
-        "hour"          => 3600,
-        "eight_hours"   => 28800,
-        "day"           => 86400,
+    # 1 MONTH SCOPE FROM DATE TODAY
+    'ANNIVERSARY_BIRTHDAY' => [
+        "day_from"      => 1,
+        "day_to"        => 30,
+    ],
+
+    'REGULARIZATION' => [
+        "month_from"    => 6,
+        "month_to"      => 4,
     ],
 
     'LOG_START' => ' [ CALL START ] ',
