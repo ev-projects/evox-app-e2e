@@ -36,7 +36,7 @@ class SendChangeScheduleRequestEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-            foreach( $this->change_schedule->user()->first()->supervisors()->get() as $recepient ){
+            foreach( $this->change_schedule->user()->first()->user_handlers()->get() as $recepient ){
                 Mail::send( new ChangeScheduleRequestEmail( $recepient, $this->change_schedule ) );
                 
                 log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->change_schedule], "emails");

@@ -22,11 +22,17 @@ class UserListResource extends JsonResource
             array_push( $departments_handled, $departments );
         }
 
-        // Create Resource for Department Handled
+        // Create Resource for Supervisee
         $supervisee = [];
         foreach( $this->supervisee()->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get()  as $user){
             array_push( $supervisee, $user );
         }
+
+        // Create Resource for Users Handled
+        // $users_handled = [];
+        // foreach( $this->users_handled()->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get()  as $user){
+        //     array_push( $users_handled, $user );
+        // }
 
         $main_info = array(
             'id' => $this->id,
@@ -39,6 +45,7 @@ class UserListResource extends JsonResource
             'full_name' => $this->getFullName(),
             'departments_handled' => $departments_handled,
             'supervisee' => $supervisee,
+            // 'users_handled' => $users_handled,
         );
 
         return $main_info;

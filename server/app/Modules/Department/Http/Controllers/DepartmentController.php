@@ -64,7 +64,7 @@ class DepartmentController extends Controller
      */
     public function department_handlers($id){
         try {
-            $user_collection = $this->department->find( $id )->department_handlers()
+            $user_collection = $this->department->find( $id )->department_supervisors()
                                                              ->orderBy('first_name', 'asc')
                                                              ->orderBy('last_name', 'asc')
                                                              ->get();

@@ -38,7 +38,6 @@ import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervis
 import SyncBhrLeaves from "../container/Admin/SyncBhrLeaves"; 
 import SyncUserUpdates from "../container/Admin/SyncUserUpdates"; 
 import AssignRole from "../container/Admin/AssignRole";
-import MyTeamList from "../container/MyTeam/MyTeamList";
 import JobInformation from "../container/Profile/JobInformation";
 import PersonalInformation from "../container/Profile/PersonalInformation";
 import Validator from "../services/Validator";
@@ -50,6 +49,8 @@ import DPAForm from "../container/DPAForm";
 import DPAList from "../container/MyTeam/DPAList";
 import RegisterUser from "../container/Admin/RegisterUser";
 import SyncBiometrics from "../container/Admin/SyncBiometrics/SyncBiometrics";
+import EmployeeList from "../container/MyTeam/EmployeeList";
+import ManageTeams from "../container/MyTeam/ManageTeams";
 
 const RoutesList = (props) => {
 
@@ -60,7 +61,7 @@ const RoutesList = (props) => {
 
         { /* General Links */ }
         <ProtectedRoute exact path={global.links.dashboard} >
-          <Dashboard role={['employee', 'supervisor', 'client']} permission={['employee_access', 'supervisor_access', 'client_access']} />
+          <Dashboard role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dpa} >
@@ -71,15 +72,15 @@ const RoutesList = (props) => {
         
         { /* Employee Links */ }
         <ProtectedRoute exact path={global.links.dtr+":id"} >
-          <DailyTimeRecord role={['employee', 'supervisor', 'client']} permission={['employee_access', 'supervisor_access', 'client_access']}/>
+          <DailyTimeRecord role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.personal_information+":id"} >
-          <PersonalInformation role={['employee', 'supervisor', 'client']} permission={['employee_access', 'supervisor_access', 'client_access']}/>
+          <PersonalInformation role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.job_information+":id"} >
-          <JobInformation role={['employee', 'supervisor', 'client']} permission={['employee_access', 'supervisor_access', 'client_access']}/>
+          <JobInformation role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.my_request}>
@@ -114,24 +115,28 @@ const RoutesList = (props) => {
         
 
         { /* Team Links */ }
-        <ProtectedRoute exact path={global.links.dpa_list}>
-          <DPAList role={['supervisor']} permission={['supervisor_access']} />
+        <ProtectedRoute exact path={global.links.manage_teams}>
+          <ManageTeams role={['supervisor']} permission={['supervisor_access']}/>
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.my_team_list}>
-          <MyTeamList role={['supervisor', 'client']} permission={['supervisor_access', 'client_access']}/>
+        <ProtectedRoute exact path={global.links.dpa_list}>
+          <DPAList role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.employee_list}>
+          <EmployeeList role={['supervisor', 'team_leader', 'client']} permission={['supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.my_team_requests}>
-          <MyTeamRequests role={['supervisor']} permission={['supervisor_access']} />
+          <MyTeamRequests role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_summary}>
-          <DtrSummary role={['supervisor']} permission={['supervisor_access']} />
+          <DtrSummary role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_logs}>
-          <DtrLogs role={['supervisor', 'client']} permission={['supervisor_access', 'client_access']} />
+          <DtrLogs role={['supervisor', 'team_leader', 'client']} permission={['supervisor_access', 'team_leader_access', 'client_access']} />
         </ProtectedRoute>
 
 
@@ -139,23 +144,23 @@ const RoutesList = (props) => {
 
         { /* Schedule Links */ }
         <ProtectedRoute exact path={global.links.template_add} >
-          <TemplateCreate role={['supervisor']} permission={['supervisor_access']} />
+          <TemplateCreate role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.template_list+":templateid"} >
-          <TemplateEdit  role={['supervisor']} permission={['supervisor_access']} />
+          <TemplateEdit  role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.template_list} >
-          <TemplateList  role={['supervisor']} permission={['supervisor_access']} />
+          <TemplateList  role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.schedule_assign_user+":user_id"} >
-          <ScheduleAssign role={['supervisor']} permission={['supervisor_access']} />
+          <ScheduleAssign role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.schedule_assign_department} >
-          <ScheduleAssignDepartment role={['supervisor']} permission={['supervisor_access']}/>
+          <ScheduleAssignDepartment role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']}/>
         </ProtectedRoute>
 
 

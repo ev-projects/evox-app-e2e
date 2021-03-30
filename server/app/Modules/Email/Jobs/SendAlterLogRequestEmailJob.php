@@ -36,7 +36,7 @@ class SendAlterLogRequestEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-            foreach( $this->alter_log->user()->first()->supervisors()->get() as $recepient ){
+            foreach( $this->alter_log->user()->first()->user_handlers()->get() as $recepient ){
                 Mail::send( new AlterLogRequestEmail( $recepient, $this->alter_log ) );
                 
                 log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->alter_log], "emails");

@@ -83,10 +83,11 @@ return [
     ],
 
     'USER_ROLES' => [
-        'employee'    =>  'employee', 
-        'supervisor'  =>  'supervisor',
-        'admin'       =>  'admin',
-        'client'      =>  'client',
+        'employee'      =>  'employee', 
+        'supervisor'    =>  'supervisor',
+        'team_leader'   =>  'team_leader',
+        'admin'         =>  'admin',
+        'client'        =>  'client',
     ],
 
     'REGISTERED_USER' => 'Registered User',

@@ -56,6 +56,14 @@ return [
 
 
     /**
+     *  Team Creation
+     */
+    'store_team_success' => 'Successfully created a team!',
+    'update_team_success' => 'Successfully updated the team!',
+    'destroy_team_success' => 'Successfully deleted the team!',
+
+
+    /**
      *  User Assigning
      */
     'user_assign_roles_permissions_attempt' => 'Attempt for Assigning the Roles and Permissions to the User',

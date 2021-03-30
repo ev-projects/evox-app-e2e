@@ -3,6 +3,7 @@
 namespace App\Modules\User\Repositories;
 
 use App\Modules\Department\Models\Department;
+use App\Modules\Team\Models\Team;
 use App\Modules\User\Models\User;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
@@ -89,8 +90,8 @@ class UserRepository implements UserRepositoryInterface{
             }
 
             # 4.
-            // Attach the Departments Handled to User
-            $user->departments_handled()->sync( $request->departments_handled );
+            // Attach the Departments Supervised to User
+            $user->departments_supervised()->sync( $request->departments_handled );
             
             log_to_file( 'info', 'User Registered Successfully', [$user], 'user_sync');
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
@@ -501,7 +502,7 @@ class UserRepository implements UserRepositoryInterface{
             $user_collection = [];
             if( get_authenticated_user( $id )  ) {
 
-                $user_collection = User::findOrFail( $id )->supervisee();
+                $user_collection = User::findOrFail( $id )->users_handled();
                 
                 if( is_valid( request()->get('department_id') ) ) {
                     $user_collection->where('department_id', '=', request()->get('department_id'));
@@ -566,7 +567,7 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function get_users_under_supervisee( Request $request ){
         try {
-            $user_collection =  auth()->user()->supervisee(); 
+            $user_collection =  auth()->user()->users_handled(); 
 
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
@@ -594,7 +595,7 @@ class UserRepository implements UserRepositoryInterface{
     public function get_dpa_list( Request $request ){
         try {
             // Fetch the Users under the supervisee and join to their department for the sorting via Department Name
-            $user_collection = User::whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
+            $user_collection = User::whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
                                     ->join('departments', 'departments.id','=','users.department_id')
                                     ->orderBy('departments.department_name','asc')
                                     ->orderBy('users.emp_num','desc')
@@ -871,6 +872,39 @@ class UserRepository implements UserRepositoryInterface{
             throw $e;
         }
     }
+
+    
+
+
+    /**
+     *  Responsible for fetching the specific User list of a Team
+     * @param string $team_id
+     * @return Collection $user_collection
+     */
+    public function list_via_team( $team_id ){
+        try {
+
+            if( request()->get('page') == 'all' ){
+                $user_collection = Team::find( $team_id )->team_users()
+                                                         ->orderBy('first_name', 'asc')
+                                                         ->orderBy('last_name', 'asc')
+                                                         ->get();
+
+            } else {
+                $user_collection = Team::find( $team_id )->team_users()
+                                                         ->orderBy('first_name', 'asc')
+                                                         ->orderBy('last_name', 'asc')
+                                                         ->paginate(15);
+            }     
+        
+            return $user_collection;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    
+    
     ###############################################################################################
     ##################################### Protected functions #####################################
     ###############################################################################################

@@ -476,6 +476,33 @@ class UserController extends Controller
         }
     }
 
+
+    
+
+    /**
+     * Returns all the User List of Specific Team
+     * @param string $team_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function list_via_team( $team_id ){   
+        try {
+            log_activity( trans('messages.list_via_team_attempt') );
+            
+            $this->validate(new Request([
+                'team_id' => $team_id
+            ]), [
+                'team_id' => 'int'
+            ]);
+            
+            return success_response(
+                trans('messages.list_role_success'), 
+                UserListResource::collection( $this->user->list_via_department( $team_id ), false )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     /**
      * Returns all the User List of Specific Department
      * @param string $department_id

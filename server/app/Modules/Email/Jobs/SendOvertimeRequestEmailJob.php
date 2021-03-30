@@ -36,7 +36,7 @@ class SendOvertimeRequestEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-            foreach( $this->overtime->user()->first()->supervisors()->get() as $recepient ){
+            foreach( $this->overtime->user()->first()->user_handlers()->get() as $recepient ){
                 Mail::send( new OvertimeRequestEmail( $recepient, $this->overtime ) );
                 
                 log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->overtime], "emails");

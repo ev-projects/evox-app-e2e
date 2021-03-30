@@ -25,7 +25,7 @@ if (! function_exists('get_authenticated_user')) {
 
             # If not, fetch the User Instance from the currently logged in's supervisee list.
             } else {
-               return auth()->user()->supervisee()->findOrFail( $user_id );
+               return auth()->user()->users_handled()->findOrFail( $user_id );
             }
 
         }catch(Exception $e){
@@ -96,9 +96,9 @@ if (! function_exists('is_under_supervisee')) {
             }
 
             if( $force_to_fail ) {
-                return auth()->user()->supervisee()->findOrFail( $user_id ) ? true : false;
+                return auth()->user()->users_handled()->findOrFail( $user_id ) ? true : false;
             } else {
-                return auth()->user()->supervisee()->find( $user_id ) ? true : false;
+                return auth()->user()->users_handled()->find( $user_id ) ? true : false;
             }
 
         }catch(Exception $e){
