@@ -65,6 +65,106 @@ class Dtr extends Model
 
     /**
      * 
+     *  Check if the current DTR has a value
+     * @return bool 
+     */
+    public function hasLog()
+    {
+        return ( !is_null( $this->time_in ) || !is_null( $this->time_out ) ) ? true : false;
+    }
+
+    /**
+     * 
+     *  Check if the employee has flexi sched
+     * @return bool 
+     */
+    public function onTimeLog()
+    {
+        if( $this->time_in <= $this->start_datetime && $this->time_out <= $this->start_datetime ){
+            return true;
+        }elseif( $this->hasFlexibleSchedule() ){
+            if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
+
+                # GRACE Period
+                if($expected_out > $this->end_flexy_datetime ){
+                    $expected_out = $this->end_flexy_datetime;
+                }
+
+            }else{
+                return false;
+            }
+            
+            if( $expected_out < $this->time_out ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+
+    }
+
+    /**
+     * 
+     *  Check if the employee is late
+     * @return bool 
+     */
+    public function checkLate()
+    {
+        if( $this->time_in <= $this->start_datetime ){
+            return false;
+        }elseif( $this->hasFlexibleSchedule() ){
+            if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return true;
+        }
+
+    }
+
+    /**
+     * 
+     *  Check if the employee is has undertime
+     * @return bool 
+     */
+    public function checkUndertime()
+    {
+        if( $this->time_out <= $this->end_datetime ){
+            return true;
+        }elseif( $this->hasFlexibleSchedule() ){
+            if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
+
+                if($expected_out > $this->end_flexy_datetime ){
+                    $expected_out = $this->end_flexy_datetime;
+                }
+
+                if( $expected_out > $this->time_out ){
+                    return true;
+                }else{
+                    return false;
+                }
+            }elseif($this->time_out < $this->end_flexy_datetime){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+
+    }
+
+
+    
+
+    /**
+     * 
      *  Check if the current DTR has a Schedule
      * @return bool 
      */
@@ -129,6 +229,7 @@ class Dtr extends Model
     {
         return ( $this->is_rest_day ) ? true : false;
     }
+
 
     /**
      * 
