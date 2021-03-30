@@ -77,7 +77,7 @@ class ClientController extends Controller
         try {
             log_activity( trans('messages.get_anniversary_birthday_attempt') );
             
-            $time_today = new Carbon( "2021-01-01" );
+            $time_today = Carbon::now();
             $time_from = $time_today->subMonth( 6 );
             $time_to = $time_today->addMonth( 6 );
 

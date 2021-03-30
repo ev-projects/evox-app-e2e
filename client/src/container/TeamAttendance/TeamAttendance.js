@@ -68,7 +68,7 @@ class TeamAttendance extends Component {
               </div>
           
           :
-          null
+          <div>No record found</div>
           } 
   </div>);
 	}
