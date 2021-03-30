@@ -1,0 +1,19 @@
+.holiday{
+    color: #ffff00 !important;
+}
+
+.on-leave{
+    color: #0033cc !important;
+}
+
+.no_time_logs, .rest_day{
+    color: #696969!important;
+}
+
+.absent{
+    color: #cc0000 !important;
+}
+
+.undertime, .late{
+    color: orange !important;
+}

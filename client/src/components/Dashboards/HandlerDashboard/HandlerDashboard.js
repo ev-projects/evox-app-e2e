@@ -10,6 +10,7 @@ import Wrapper from "../../Template/Wrapper";
 import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import BirthdayAnniversary from "../../../container/BirthdayAnniversary";
+import TeamAttendance from "../../../container/TeamAttendance";
 
 const HandlerDashboard = ( props ) => {
 
@@ -21,7 +22,7 @@ const HandlerDashboard = ( props ) => {
     return (
     <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
               <Row>
-                <Content title="Department" col="6">                  
+                <Content title="Department" col="12">                  
                     <div className="form-group">
                         <select
                             name="department_id"
@@ -39,12 +40,17 @@ const HandlerDashboard = ( props ) => {
                         </select>
                     </div>
                     </Content>    
-                    <div className="birthday-anniv">  
-                      <Content title="Birthday and Anniversary" >                                    
+                      
+              </Row>
+              <Row className="birthday-anniv">
+              <Content title="Team Attendance Status" col="6">                  
+                    <TeamAttendance/>
+                    </Content>    
+              <Content title="Birthday and Anniversary" col="6">                                    
                         <BirthdayAnniversary/>
                       </Content> 
-                    </div>
               </Row>
+
             </div>
         );
 };

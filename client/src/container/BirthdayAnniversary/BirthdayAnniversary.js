@@ -28,10 +28,12 @@ class BirthdayAnniversary extends Component {
     }
 
 	render = () => {  
-		const { data } = this.props;
+		const { birthdayAndAnniv } = this.props;
     return(
       <div >
-      { data.content != null ? 
+  
+      <div >
+        { birthdayAndAnniv.length > 0  ? 
             <div className="content-table">
               <Table striped bordered hover>
                   <thead>
@@ -43,7 +45,7 @@ class BirthdayAnniversary extends Component {
                   </thead>
                   <tbody>
               
-                  {data.content.map(function (data, i) {
+                  {birthdayAndAnniv.map(function (data, i) {
                     var icon = ''
                     switch(data.type) {
                       case "birthdate":
@@ -67,10 +69,11 @@ class BirthdayAnniversary extends Component {
                   </tbody>
               </Table>
               </div>
-          
-          :
-          null
-          } 
+              :
+              <div>No celebrations found</div>
+              } 
+              </div>
+     
   </div>);
 	}
   }
@@ -83,7 +86,7 @@ class BirthdayAnniversary extends Component {
   const mapStateToProps = (state) => {
 	return {
 		user : state.user,
-		data : state.client.data
+		birthdayAndAnniv : state.client.birthdayAndAnniv
 	}
   }
   const mapDispatchToProps = (dispatch) => {

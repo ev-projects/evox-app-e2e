@@ -82,6 +82,9 @@ class User extends Authenticatable implements JWTSubject
             case 2:
                 $result = $this->last_name . ', '. $this->first_name . (is_valid($this->middle_name) ? ' ' . $this->middle_name : '');
                 break;
+            case 3:
+                $result = $this->first_name. ' '. $this->last_name ;
+                break;
             default:
                 $result = $this->first_name . ' ' . (is_valid($this->middle_name) ? $this->middle_name . ' ' : '') . $this->last_name;
                 break;

@@ -313,40 +313,6 @@ class UserController extends Controller
 
 
     /**
-     * Function for Change Password 
-     * @param string $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function get_birthday_anniversary( $id ){   
-        try {
-            log_activity( trans('messages.get_anniversary_birthday_attempt') );
-
-            $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
-                            ->whereRaw("(DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) >= ".get_constant("ANNIVERSARY_BIRTHDAY.day_from")." AND (DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) <=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_to")."");
-
-            $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
-                            ->whereRaw("(DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) >=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_from")." AND (DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) <=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_to")."");
-
-            $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
-            $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
-
-            $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
-                                ->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' ");
-            
-            $birthdate->union($anniversary)->union($regularization)->orderByRaw('Month(date),Day(date)')->union($regularization);
-            
-            
-            return success_response(
-                trans('messages.change_password_success'), 
-                new AnniversaryResources( $birthdate->get() )
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-
-
-    /**
      * Function for Ticking the DPA field of the User
      * @param string $id
      * @return \Illuminate\Http\JsonResponse

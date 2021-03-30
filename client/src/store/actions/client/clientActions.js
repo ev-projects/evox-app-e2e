@@ -24,3 +24,23 @@ export const birthdayAnniv = ( id ) => {
     }
 }
 
+// TEAM ATTENDANCE STATUS
+export const teamAttendanceStatus = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/"+ id +"/get_team_attendance",
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_TEAM_ATTENDANCE_STATUS', 
+                'data'   : result.data
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+

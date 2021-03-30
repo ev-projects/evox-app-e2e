@@ -67,9 +67,11 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     # Gets the list of Teams of the User
     Route::get('profile', 'UserController@profile');//->middleware('auth.apikey');
 
-    Route::get('birthday_anniversary', 'UserController@job_information');
+    Route::get('job_information', 'UserController@job_information');
 
-    Route::get('get_birthday_anniversary', 'UserController@get_birthday_anniversary');
+    Route::get('get_birthday_anniversary', 'ClientController@get_birthday_anniversary');
+
+    Route::get('get_team_attendance', 'ClientController@get_team_attendance');
 
     # Gets the Default Schedule of the User indicated.
     Route::get('default_schedule', 'UserController@default_schedule');//->middleware('auth.apikey');

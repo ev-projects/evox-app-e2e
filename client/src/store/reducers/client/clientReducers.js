@@ -3,7 +3,8 @@
  */
 
 const initState = {
-    data : []
+    birthdayAndAnniv : [],
+    teamAttendance : []
 }
 
 const clientReducers = (state = initState, action) => {
@@ -16,10 +17,16 @@ const clientReducers = (state = initState, action) => {
         case "FETCH_BIRTHDAY_ANNIVERSARY":
             result = {
                 ...state,
-                data : action.data
+                birthdayAndAnniv : action.data.content,
             }
             break;
-
+        case "FETCH_TEAM_ATTENDANCE_STATUS":
+            result = {
+                ...state,
+                teamAttendance : action.data.content,
+            }
+            break;
+            
         
         default:
             result = state;
