@@ -123,7 +123,7 @@ const Sidebar = (props) => {
 
                   
                   {/* SUPERVISOR Links */}
-                  { Authenticator.check('supervisor', 'supervisor_access') ?
+                  { Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
                       <li className="nav-item has-treeview ">
                         <a className="nav-link" >
                           <i className="nav-icon fa fa-users" />
@@ -133,10 +133,19 @@ const Sidebar = (props) => {
                           </p>
                         </a>
                         <ul className="nav nav-treeview">
+                          { Authenticator.check(['supervisor'], ['supervisor_access']) ?
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.manage_teams} >
+                                <i className="nav-icon fa fa-users" aria-hidden="true"></i>
+                                <p>Manage Teams</p> 
+                              </Link>
+                            </li> 
+                            : null 
+                          }
                           <li className="nav-item">
-                            <Link className="nav-link" to={global.links.my_team_list} >
+                            <Link className="nav-link" to={global.links.employee_list} >
                               <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
-                              <p> My Team List</p> 
+                              <p>Employee List</p> 
                             </Link>
                           </li> 
                           <li className="nav-item">
@@ -169,7 +178,7 @@ const Sidebar = (props) => {
                     null
                   }
                    
-                  {Authenticator.check('supervisor', 'supervisor_access') ?
+                  {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
                     <li className="nav-item has-treeview ">
                       <a className="nav-link" >
                         <i className="nav-icon fa fa-calendar-o" />
@@ -218,7 +227,7 @@ const Sidebar = (props) => {
                         </a>
                         <ul className="nav nav-treeview">
                           <li className="nav-item">
-                            <Link className="nav-link" to={global.links.my_team_list} >
+                            <Link className="nav-link" to={global.links.employee_list} >
                               <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
                               <p> Employee List</p> 
                             </Link>

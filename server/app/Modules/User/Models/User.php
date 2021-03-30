@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Models;
 
+use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\Dtr;
 
@@ -99,6 +100,32 @@ class User extends Authenticatable implements JWTSubject
     {
         return "20".$this->emp_num;
     }
+    
+    public function personal(){
+        return [    
+            "first_name" => $this->first_name , 
+            "middle_name" => $this->middle_name , 
+            "last_name" => $this->last_name , 
+            "emp_num" => $this->emp_num , 
+            "email" => $this->email , 
+            "department" => $this->department()->first()->department_name   
+        ];
+    }
+
+    public function job_description(){
+        return [    
+            "first_name" => $this->first_name 
+        ];
+    }
+
+    /**
+     *  Gets user info for displaying page or block
+     */
+    public function getUserInfo()
+    {
+        return [    "full_name" => $this->getFullName() , 
+                    "department" => $this->department()->first()->department_name   ];
+    }
 
     ########################################################################
     ############################ Relationships #############################
@@ -107,22 +134,20 @@ class User extends Authenticatable implements JWTSubject
     
     # Fetch the User's Supervisors
     public function supervisors()
-    {
+    {            
         return $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id');
     }
-
-    # Fetch the User's Supervisee 
+    
+    # Fetch the User's Supervisee
     public function supervisee()
-    {   
-        // If the User has Client Role, get all the Users from his/her departments handled.
-        if( auth()->user()->hasRole( get_constant('USER_ROLES.client') )  ) { 
-            return User::whereIn('users.department_id', $this->departments_handled()->get()->pluck('id')->toArray());
-            
-        // If not, fetch the default users handled via the users_supervisors pivot table
-        } else {
-            return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
-        }
-            
+    {         
+        return$this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
+    }
+
+    # Fetch the User Departments Supervised
+    public function departments_supervised()
+    {
+        return $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id');
     }
 
     # Fetch the User's Department
@@ -130,10 +155,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Department::class, 'id', 'department_id');
     }
 
-    # Fetch the User Departments Handled
-    public function departments_handled()
+    # Fetch the User's Team
+    public function team()
     {
-        return $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id');
+        return $this->belongsToMany(Team::class, 'team_users', 'user_id', 'team_id');
     }
 
     # Fetch the User's Schedule (Source type is Default)
@@ -309,7 +334,7 @@ class User extends Authenticatable implements JWTSubject
 
         #Team or Individual Request
         if($filter['url']=='my_team_requests'){
-            $id = under_supervisee_id_list($this->supervisee()->select('id')->get());
+            $id = under_supervisee_id_list($this->users_handled()->select('id')->get());
 
             $change_schedules->whereIn('change_schedules.user_id',$id);
             $overtimes       ->whereIn('overtimes.user_id',$id);
@@ -389,42 +414,106 @@ class User extends Authenticatable implements JWTSubject
      
         return   $result ;
     }
-
-    
-    public function personal(){
-        return [    
-            "first_name" => $this->first_name , 
-            "middle_name" => $this->middle_name , 
-            "last_name" => $this->last_name , 
-            "emp_num" => $this->emp_num , 
-            "email" => $this->email , 
-            "department" => $this->department()->first()->department_name   
-        ];
-    }
-
-    public function job_description(){
-        return [    
-            "first_name" => $this->first_name 
-        ];
-    }
-
-    /**
-     *  Gets user info for displaying page or block
-     */
-    public function getUserInfo()
-    {
-        return [    "full_name" => $this->getFullName() , 
-                    "department" => $this->department()->first()->department_name   ];
-    }
-
-
-    
-
-  
   
     # Fetch the User's DTR
     public function get_user_by_string($str = null){
         return $this->where('first_name', 'like', '%' . $str . '%')->orWhere('last_name', 'like', '%' . $str . '%');
+    }
+
+    
+    /**
+     * //////////////////////////////////////////
+     *          Handled/Handler Methods 
+     * //////////////////////////////////////////
+     */
+    
+    # Fetch the User Handlers of the current User Instance
+    public function user_handlers()
+    {            
+        /* Gets the following: 
+            1. Users that handles you via 'department_handlers' table
+            2. Users that handles the team you belong to via 'team_handlers' 
+         */
+        $team = $this->team()->first();
+        $user_id_array = array_merge( 
+            $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id')->pluck('id')->toArray(), 
+            ( is_valid( $team ) ) ? $team->team_handlers()->pluck('id')->toArray() : []
+        );
+        return User::whereIn('users.id', array_unique($user_id_array));
+    }
+
+    # Fetch the Users Handled of the current User Instance 
+    public function users_handled()
+    {   
+        // If the User has Client Role, get all the Users from his/her departments handled.
+        if( $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
+            return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
+
+
+        // If the User has Team Leader & Supervisor Role, get all the Users from the Department's Handled Team list AND the default users handled via users_supervivsors pivot table.
+        } elseif( $this->hasRole( get_constant('USER_ROLES.supervisor') ) && $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
+            $user_id_array = $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id')->pluck('id')->toArray();
+            foreach( $this->departments_handled()->get() as $departments ){ 
+                foreach( $departments->teams()->get() as $teams ){
+                    $user_id_array = array_merge( $user_id_array, $teams->team_users()->pluck('id')->toArray());
+                }
+            }
+            return User::whereIn('users.id', array_unique($user_id_array));
+          
+
+        // If the User has Supervisor Role, fetch the default users handled via the users_supervisors pivot table
+        } elseif( $this->hasRole( get_constant('USER_ROLES.supervisor') )  ) { 
+            return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
+          
+
+        // If the User has Team Leader Role, get all the Users from his/her teams being leaded.
+        } elseif( $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
+            $user_id_array = [];
+            foreach( $this->teams_handled()->get() as $teams ){
+                $user_id_array = array_merge( $user_id_array, $teams->team_users()->pluck('id')->toArray());
+            }
+            return User::whereIn('users.id', $user_id_array);
+          
+
+        // If not, fetch the default users handled via the users_supervisors pivot table
+        } else {
+            return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
+        }
+            
+    }
+
+    # Fetch the User Teams Handled
+    public function teams_handled()
+    {
+        /* Gets the following: 
+            1. Teams that you handle via 'team_handlers' table
+            2. Teams under the Departments you supervised via 'departments_handlers' 
+         */
+        $teams_id_array = $this->belongsToMany(Team::class, 'team_handlers', 'user_id', 'team_id')->pluck('id')->toArray();
+        foreach ( $this->departments_supervised()->get() as $department ) {
+            $teams_id_array = array_merge( 
+                $teams_id_array,
+                $department->teams()->pluck('id')->toArray()
+            );
+        };
+        return Team::whereIn('teams.id', $teams_id_array);
+    }
+
+    # Fetch the User Departments Handled
+    public function departments_handled()
+    {
+        /* Gets the following: 
+            1. Departments that you handle via 'department_handlers' table
+            2. Departments of the Teams you are handling via 'team_handlers' 
+         */
+        $departments_id_array = $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id')->pluck('id')->toArray();
+        foreach( $this->teams_handled()->get() as $team) {
+            $departments_id_array = array_merge( 
+                $departments_id_array, 
+                $team->department()->pluck('id')->toArray() 
+            );
+        }
+        return Department::whereIn('departments.id', array_unique($departments_id_array));
     }
 
 

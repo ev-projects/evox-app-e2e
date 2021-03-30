@@ -118,5 +118,12 @@ Route::group(['prefix' => 'department/{department_id}', 'middleware' => ['jwtaut
     # Gets the User List of Specific Department
     Route::get('/users', 'UserController@list_via_department');
 
+});
+
+Route::group(['prefix' => 'team/{team_id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the User List of Specific Department
+    Route::get('/users', 'UserController@list_via_team');
+
 
 });

@@ -162,6 +162,14 @@ return [
             'permission' => 0666,
         ],
 
+        'team' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/team.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+
         'drupal_migration' => [
             'driver' => 'single',
             'path' => storage_path('logs/drupal_migration.log'),

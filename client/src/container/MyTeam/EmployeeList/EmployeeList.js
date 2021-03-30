@@ -4,7 +4,7 @@ import { connect,dispatch } from 'react-redux';
 import { useFormikContext } from 'formik';
 import Select from "react-select";
 
-import "./MyTeamList.css";
+import "./EmployeeList.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 import Paginate from '../../../components/Template/Paginate'
 import Wrapper from "../../../components/Template/Wrapper";
@@ -19,7 +19,7 @@ import { InputDate,InputTime   } from '../../../components/DatePickerComponent/D
 import Validator from "../../../services/Validator";
 import Authenticator from "../../../services/Authenticator";
 
-class MyTeamList extends Component {
+class EmployeeList extends Component {
 
   
     constructor(props){
@@ -263,7 +263,7 @@ const Status = (props) => {
       fetchMyTeamList : ( user_id, params ) => dispatch( fetchMyTeamList( user_id, params ) ),
     }
   }
-  export default connect(mapStateToProps, mapDispatchToProps)(MyTeamList);
+  export default connect(mapStateToProps, mapDispatchToProps)(EmployeeList);
 
 
 

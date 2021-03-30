@@ -22,6 +22,7 @@ import { setRedirect } from '../../../store/actions/redirectActions';
 
 import Wrapper from "../../../components/Template/Wrapper";
 import Validator from "../../../services/Validator";
+import Formatter from "../../../services/Formatter";
 
 
 class AssignDepartmentHandlers extends Component {
@@ -110,19 +111,9 @@ class AssignDepartmentHandlers extends Component {
 
       if( Validator.isValid( this.state.selectedDepartment )  )  {
 
-        let department_handlers = [];
-        if( nextProps.department_handlers != undefined ) {
-            for (var i = 0; i < nextProps.department_handlers.length; i++) {
-              department_handlers.push({
-                label  : nextProps.department_handlers[i].full_name,
-                value  : nextProps.department_handlers[i].id
-              })
-            }
-        }
-
         // Set the Department Handlers as Selected Value
         this.setState({
-            selectedValues: department_handlers,
+            selectedValues:  Formatter.array_to_multiselect_array( nextProps.department_handlers, 'full_name', 'id' ),
             showSupervisorList : true
         }); 
         
@@ -147,16 +138,7 @@ class AssignDepartmentHandlers extends Component {
   render = () => {  
 
     // Iterates the Option to be shown for the Supervisor List
-    let supervisor_list = [];
-    if( this.props.supervisor != undefined ) {
-
-      for (var i = 0; i < this.props.supervisor.length; i++) {
-        supervisor_list.push({
-          label  : this.props.supervisor[i].full_name,
-          value  : this.props.supervisor[i].id
-        })
-      }
-    }
+    let supervisor_list = Formatter.array_to_multiselect_array( this.props?.supervisor, 'full_name', 'id' );
     
     // Declares the Initial Values of the Form base.
     const initialValues = {

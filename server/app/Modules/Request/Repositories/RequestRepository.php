@@ -41,7 +41,7 @@ class RequestRepository implements RequestRepositoryInterface{
             
             # Get the Id of Team or User and add it to the query
             if($data->url=='my_team_requests'){
-                $id = under_supervisee_id_list(Auth::user()->supervisee()->select('id')->get());
+                $id = under_supervisee_id_list(Auth::user()->users_handled()->select('id')->get());
                 $list = implode(', ', $id); 
                 $id_filter = '
                 WHERE user_id IN ('.$list.')'; 

@@ -22,9 +22,9 @@ class DepartmentResource extends JsonResource
                 'id' => $this->id,
                 'department_name' => $this->department_name,
                 'description' => $this->description,
-                'department_handlers'  => UserListResource::collection($this->department_handlers()->orderBy('first_name', 'asc')
-                                                                                                   ->orderBy('last_name', 'asc')
-                                                                                                   ->get()),
+                'department_handlers'  => UserListResource::collection($this->department_user_handlers()->orderBy('first_name', 'asc')
+                                                                                                        ->orderBy('last_name', 'asc')
+                                                                                                        ->get()),
                 'users'  => UserListResource::collection($this->users()->orderBy('first_name', 'asc')
                                                                        ->orderBy('last_name', 'asc')
                                                                        ->get())

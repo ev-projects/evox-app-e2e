@@ -29,8 +29,9 @@ global.links = {
     work_from_home                  :  "/app/request/WorkFromHome/",
 
     // Team Links
+    manage_teams                    :  "/app/team/Manage",
     dpa_list                        :  "/app/team/DPAList",
-    my_team_list                    :  "/app/team/MyTeamList",
+    employee_list                   :  "/app/team/MyTeamList",
     my_team_requests                :  "/app/team/MyTeamRequests",
     dtr_summary                     :  "/app/team/DtrSummary",
     dtr_logs                        :  "/app/team/DtrLogs",
