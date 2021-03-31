@@ -1,28 +1,4 @@
-.quickpunch{
-    text-align : center;
-    background-color: #313131;
-    color: white;
-}
 
-.note{
-    text-align: justify;
-    font-family: BhrHeaderFont,Trebuchet MS !important;
-    font-size: 12px;
-}
-
-.quickpunch .time{
-    font-size: 50px;
-    margin-top: 20px;
-}
-
-.quickpunch .btn {
-    width: 130px;
-    margin: 30px 10px;
-}
-
-.quickpunch .date,.quickpunch .label {
-    color: #d4d4d4;
-}
 
 .btns{padding-top: 32px}
 .dtr-table .table td,.dtr-table .table th,

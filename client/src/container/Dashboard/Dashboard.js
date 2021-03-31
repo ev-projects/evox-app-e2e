@@ -26,15 +26,16 @@ class Dashboard extends Component {
         return  <Wrapper {...this.props} >
                     <ContainerWrapper>
                       <ContainerBody>
-                        { Authenticator.check(['supervisor', 'team_leader', 'client'], ['supervisor_access', 'team_leader_access', 'client_access']) ? 
-                          <HandlerDashboard {...this.props} />
-                          :
-                          null
-                        }
+                        
                         {Authenticator.check(['employee'], ['employee_access']) ? 
                             <EmployeeDashboard {...this.props} />
                             :
                             (null)
+                        }
+                        { Authenticator.check(['supervisor', 'team_leader', 'client'], ['supervisor_access', 'team_leader_access', 'client_access']) ? 
+                          <HandlerDashboard {...this.props} />
+                          :
+                          null
                         }
                       </ContainerBody>
                   </ContainerWrapper>

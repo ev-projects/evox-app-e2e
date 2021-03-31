@@ -1,12 +1,11 @@
 .quickpunch{
     text-align : center;
-    background-color: #313131;
+    background-color: #343a40;
     color: white;
 }
-
+.quickpunch h3{color: #fff !important; font-size: 2rem}
 .note{
     text-align: justify;
-    font-family: BhrHeaderFont,Trebuchet MS !important;
     font-size: 12px;
 }
 
@@ -17,7 +16,7 @@
 
 .quickpunch .btn {
     width: 130px;
-    margin: 30px 10px;
+    margin: 30px 10px 10px;
 }
 
 .quickpunch .date,.quickpunch .label {

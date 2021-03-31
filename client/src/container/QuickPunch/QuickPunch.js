@@ -64,7 +64,7 @@ class QuickPunch extends Component {
 		<form onSubmit={handleSubmit}>
 		<div className="card">
 		<div className="card-body quickpunch">
-			<h2>QUICK PUNCH</h2>
+			<h3>QUICK PUNCH</h3>
 			<Row>
 	  <Col className="date" >{ moment(this.state.time).format("dddd, MMMM Do")}</Col>
 			</Row>

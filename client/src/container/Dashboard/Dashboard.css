@@ -8,6 +8,11 @@ h3,.h3{font-size: 1.25rem !important}
 h4,.h4{font-size: 1rem !important}
 h5,.h5{font-size: 1rem !important}
 h6,.h6{font-size: 1rem !important}
+.dashboard .row{margin: 0 !important;}
+.dashboard .col-6 > div{margin-bottom: 20px; min-height: 100px}
+.dashboard .card-body{
+    box-shadow: none !important;}
+.alert-pop-up{z-index:  1000}
 .page-title{margin-left:20px;}
 .team-request-page .col-lg-12{padding: 0 !important; margin:0 !important;}
 .pd30{margin:0;padding: 30px}
@@ -18,7 +23,7 @@ h6,.h6{font-size: 1rem !important}
 }
 .content-table table thead th{text-align: left; vertical-align: middle;background: #82af13 !important; color: #fff !important}
 .content-table table tbody td{text-align: left; vertical-align: middle;border:1px solid #ddd !important;}
-
+.birthday-anniv .content-table table thead th{text-align: left; vertical-align: middle;background: transparent !important; color: #333 !important}
 .sidebar {
     padding-left: 1rem !important;
 }
@@ -101,6 +106,8 @@ td.actions .fa{font-size: 18px}
 .pagination .page button{font-size: 14px}
 .filters{margin-top: 30px}
 .evbuddy{background:    #fff; font-size: 12px; padding: 20px 10px}
+.evbuddy ul{margin:0; padding: 0}
+.evbuddy a{font-size: 1rem; text-decoration: none; color: #333}
 a.btn-primary{padding: 10px 15px; color: #fff !important;}
 
 .card-header .back-button{position: fixed; top: 7%; right:2%;z-index: 1000}

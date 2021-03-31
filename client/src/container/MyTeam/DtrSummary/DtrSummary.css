@@ -1,14 +1,4 @@
-.quickpunch{
-    text-align : center;
-    background-color: #313131;
-    color: white;
-}
 
-.note{
-    text-align: justify;
-    font-family: BhrHeaderFont,Trebuchet MS !important;
-    font-size: 12px;
-}
 .filters.filter-dtr {width: 100%; float: none;margin:0; padding: 0 20px}
 .filters.filter-dtr .filter-button {
     width: 25%;
@@ -21,19 +11,6 @@
 
 .dtr-summary-table {
     width: 100%
-}
-.quickpunch .time{
-    font-size: 50px;
-    margin-top: 20px;
-}
-
-.quickpunch .btn {
-    width: 130px;
-    margin: 30px 10px;
-}
-
-.quickpunch .date,.quickpunch .label {
-    color: #d4d4d4;
 }
 
 .btns{padding-top: 32px}
