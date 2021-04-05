@@ -80,51 +80,62 @@ class Dtr extends Model
      */
     public function onTimeLog()
     {
-        if( $this->time_in <= $this->start_datetime && $this->time_out <= $this->start_datetime ){
-            return true;
-        }elseif( $this->hasFlexibleSchedule() ){
-            if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
-                $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
+        if($this->hasSchedule()){
+            $late = $this->policies()->where('policy','=','allow_late')->where('value','=','1')->get()->count() > 0;
+            $undertime = $this->policies()->where('policy','=','allow_undertime')->where('value','=','1')->get()->count() > 0;
 
-                # GRACE Period
-                if($expected_out > $this->end_flexy_datetime ){
-                    $expected_out = $this->end_flexy_datetime;
+            if( $late &&  $undertime){
+                if( $this->time_in <= $this->start_datetime && $this->time_out >= $this->end_datetime ){
+                    return true;
+                }elseif( $this->hasFlexibleSchedule() ){
+                    if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                        $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
+        
+                        if($expected_out > $this->end_flexy_datetime ){
+                            $expected_out = $this->end_flexy_datetime;
+                        }
+        
+                    }else{
+                        return false;
+                    }
+                    
+                    if( $expected_out <= $this->time_out ){
+                        return true;
+                    }else{
+                        return false;
+                    }
                 }
-
             }else{
-                return false;
+                if( $this->validLog() ){
+                    return true;
+                }
             }
-            
-            if( $expected_out < $this->time_out ){
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return false;
         }
-
+        
+        return false;
+        
     }
+
 
     /**
      * 
-     *  Check if the employee is late
+     *  Check if the employee clock in on time
      * @return bool 
      */
-    public function checkLate()
+    public function isPresent()
     {
-        if( $this->time_in <= $this->start_datetime ){
-            return false;
-        }elseif( $this->hasFlexibleSchedule() ){
-            if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
-                return false;
-            }else{
+        if(is_valid( $this->time_in)){
+            if( $this->time_in <= $this->start_datetime ){
                 return true;
+            }elseif( $this->hasFlexibleSchedule() ){
+                if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                    return true;
+                }
+                return false;
             }
-        }else{
-            return true;
         }
 
+        return false;
     }
 
     /**
@@ -134,34 +145,37 @@ class Dtr extends Model
      */
     public function checkUndertime()
     {
-        if( $this->time_out <= $this->end_datetime ){
-            return true;
-        }elseif( $this->hasFlexibleSchedule() ){
-            if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
-                $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
+        $undertime = $this->policies()->where('policy','=','allow_undertime')->where('value','=','1')->get()->count() > 0;
 
-                if($expected_out > $this->end_flexy_datetime ){
-                    $expected_out = $this->end_flexy_datetime;
-                }
-
-                if( $expected_out > $this->time_out ){
-                    return true;
-                }else{
-                    return false;
-                }
-            }elseif($this->time_out < $this->end_flexy_datetime){
+        if( $undertime ){
+            if( $this->time_out <= $this->end_datetime ){
                 return true;
+            }elseif( $this->hasFlexibleSchedule() ){
+                if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                    $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
+
+                    if($expected_out > $this->end_flexy_datetime ){
+                        $expected_out = $this->end_flexy_datetime;
+                    }
+
+                    if( $expected_out > $this->time_out ){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
             }else{
                 return false;
             }
-        }else{
-            return false;
         }
 
+        return false;
     }
 
 
-    
+    public function isIncompleteLog(){
+        return ( !is_valid( $this->time_in ) && is_valid( $this->time_out ) );
+    }
 
     /**
      * 

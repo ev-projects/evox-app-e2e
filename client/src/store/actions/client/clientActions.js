@@ -44,3 +44,23 @@ export const teamAttendanceStatus = ( id ) => {
 }
 
 
+// TEAM ATTENDANCE SUMMARY
+export const teamAttendanceSummary = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/"+ id +"/get_team_attendance_summary",
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_TEAM_ATTENDANCE_SUMMARY', 
+                'data'   : result.data
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+

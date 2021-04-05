@@ -25,6 +25,7 @@ use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\WorkFromHome;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
+use Carbon\Carbon;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -516,6 +517,93 @@ class User extends Authenticatable implements JWTSubject
         return Department::whereIn('departments.id', array_unique($departments_id_array));
     }
 
+
+
+    # Fetch Attendance Summary
+    public function team_attendance_summary( $current_time )
+    {
+        $start_day = $current_time->startOfWeek()->format('Y-m-d');
+        $end_day = $current_time->endOfWeek()->format('Y-m-d');
+        
+        $absent = Dtr::leftJoin('dtr_holidays', function($join) {
+            $join->on('dtr_holidays.dtr_id', '=', 'dtrs.id');
+            })->leftJoin('leaves', function($join) {
+                $join->on('leaves.dtr_id', '=', 'dtrs.id');
+            })->whereIn('user_id', auth()->user()->supervisee()->pluck('id')->toArray())
+        ->whereRaw("
+            date >= '".$start_day."' && date <= '".$current_time->format('Y-m-d')."'
+            AND
+            (
+                (source_type_tagging = 'rest_day_work' AND is_rest_day = 1 )
+                    OR
+                dtr_holidays.dtr_id is NULL
+                    OR
+                leaves.status != 'approved'
+            )
+            AND time_in IS NULL
+            AND time_out IS NULL
+            AND start_datetime IS NOT NULL
+        ")
+        ->get()->count();
+
+        $on_leave =  Dtr::leftJoin('leaves', function($join) {
+                $join->on('leaves.dtr_id', '=', 'dtrs.id');
+            })->whereIn('user_id', auth()->user()->supervisee()->pluck('id')->toArray())
+        ->whereRaw("
+            date >= '".$start_day."' && date <= '".$end_day."' 
+                AND
+            leaves.status = 'approved'
+        ")
+        ->get()->count();
+
+        $team_attendance_summary = [
+            "absent" => $absent,
+            "on_leave" => $on_leave
+        ];
+        return  $team_attendance_summary;
+    }   
+
+    # Fetch Team DTR
+    public function team_dtr( $current_time )
+    {
+        $time_from = $current_time->subHour( 6 );
+        $time_to = $current_time->addHour( 6 );
+
+        $team_dtr = Dtr::whereIn('user_id', auth()->user()->supervisee()->pluck('id')->toArray())
+        ->whereRaw("
+                start_datetime BETWEEN  '".  $time_from->timestamp."' AND '".  $time_to->timestamp."'
+            OR 
+                start_flexy_datetime BETWEEN  '".  $time_from->timestamp ."' AND '".  $time_to->timestamp ."'
+            OR  
+                end_datetime BETWEEN  '".  $time_from->timestamp."' AND '".  $time_to->timestamp."'
+            OR 
+                end_flexy_datetime BETWEEN  '".  $time_from->timestamp ."' AND '".  $time_to->timestamp ."'
+            OR 
+            date = '".date("Y-m-d" ,$current_time->timestamp)."'
+        ")
+        ->get();
+
+        return  $team_dtr;
+    } 
+
+
+    public function team_anniversary_regularization(){
+        $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
+        ->whereRaw("(DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) >= ".get_constant("ANNIVERSARY_BIRTHDAY.day_from")." AND (DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) <=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_to")."");
+
+        $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
+                ->whereRaw("(DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) >=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_from")." AND (DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) <=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_to")."");
+
+        $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
+        $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
+
+        $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
+                    ->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' ");
+
+        $birthdate->union($anniversary)->union($regularization)->orderByRaw('Month(date),Day(date)')->union($regularization);
+
+        return $birthdate->get();
+    }
 
     ########################################################################
 }

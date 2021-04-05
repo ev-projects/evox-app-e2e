@@ -11,7 +11,7 @@ import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import BirthdayAnniversary from "../../../container/BirthdayAnniversary";
 import TeamAttendance from "../../../container/TeamAttendance";
-
+import TeamAttendanceSummary from "../../../container/TeamAttendanceSummary";
 const HandlerDashboard = ( props ) => {
 
     
@@ -46,11 +46,11 @@ const HandlerDashboard = ( props ) => {
                 <Row>
                   <div className="col-7">
                       <Row>
-                          <Content title="This Week's attendance summary" col="12"></Content>                 
+                          <Content title="This Week's attendance summary" col="12"><TeamAttendanceSummary/></Content>                 
                       </Row>
-                      <Row>
-                          <Content title="Today's attendance" col="12"><TeamAttendance/></Content>                
-                      </Row>
+                        <Row>
+                            <Content title="Today's attendance" col="12"><TeamAttendance/></Content>                
+                        </Row>
                   </div>    
                   <div className="birthday-anniv col-5"> 
                       <Row>
@@ -68,6 +68,7 @@ const HandlerDashboard = ( props ) => {
   };
 const mapStateToProps = (state) => {
   return {
+     
       user : state.user
   }
 }

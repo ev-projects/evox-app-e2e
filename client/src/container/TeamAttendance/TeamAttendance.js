@@ -56,10 +56,28 @@ class TeamAttendance extends Component {
                           }
                           </td>
                           <td>
-                          {data.status.map(t => <span className={Formatter.title_to_slug(t)}>{t}</span>)
+                            {data.status.length > 0 ?
+                            <div>{data.status.map(t => <span className={Formatter.title_to_slug(t)}>{t}</span>)
                             .reduce((prev, curr) => [prev, ', ', curr])}
-                          </td>
+                            {data.status.length > 1 ?
+                              <div>,</div>
+                                :
+                                ''
+                              }</div>
 
+                              :
+                              ''
+                            }
+                             {Object.keys(data.values).length > 0 ?
+                            <div>{ Object.entries(data.values).map(function(key,data) {
+                              return <span ><span className={Formatter.title_to_slug(key[0])}>{Formatter.slug_to_title(key[0])}</span> ({key[1]})</span>
+                          }).reduce((prev, curr) => [prev, ', ', curr]) } </div>
+                          :
+                          ''
+                        }
+                            <div> 
+                              </div>
+                          </td>
                           </tr>)
                       }) 
                   }

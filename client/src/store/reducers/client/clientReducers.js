@@ -4,7 +4,8 @@
 
 const initState = {
     birthdayAndAnniv : [],
-    teamAttendance : []
+    teamAttendance : [],
+    teamAttendanceSummary : []
 }
 
 const clientReducers = (state = initState, action) => {
@@ -26,7 +27,12 @@ const clientReducers = (state = initState, action) => {
                 teamAttendance : action.data.content,
             }
             break;
-            
+        case "FETCH_TEAM_ATTENDANCE_SUMMARY":
+            result = {
+                ...state,
+                teamAttendanceSummary : action.data.content,
+            }
+            break;       
         
         default:
             result = state;

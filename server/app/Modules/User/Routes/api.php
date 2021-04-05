@@ -73,6 +73,8 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 
     Route::get('get_team_attendance', 'ClientController@get_team_attendance');
 
+    Route::get('get_team_attendance_summary', 'ClientController@get_team_attendance_summary');
+
     # Gets the Default Schedule of the User indicated.
     Route::get('default_schedule', 'UserController@default_schedule');//->middleware('auth.apikey');
     
