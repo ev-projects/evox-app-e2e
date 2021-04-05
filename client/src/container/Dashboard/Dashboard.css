@@ -8,14 +8,18 @@ h3,.h3{font-size: 1.25rem !important}
 h4,.h4{font-size: 1rem !important}
 h5,.h5{font-size: 1rem !important}
 h6,.h6{font-size: 1rem !important}
+
 .dashboard .row{margin: 0 !important;}
 .dashboard .col-6 > div{margin-bottom: 20px; min-height: 100px}
-.dashboard .card-body{
-    box-shadow: none !important;}
+.dashboard .card-body{box-shadow: none !important;padding: 20px 0 !important; border:0 !important;}
+
 .alert-pop-up{z-index:  1000}
 .page-title{margin-left:20px;}
 .team-request-page .col-lg-12{padding: 0 !important; margin:0 !important;}
 .pd30{margin:0;padding: 30px}
+
+.dashboard.client{background: #fff}
+.dashboard.client .row .select-dept{padding: 20px}
 .content-table {
     width: 95%;
     overflow-x: auto;
@@ -23,7 +27,20 @@ h6,.h6{font-size: 1rem !important}
 }
 .content-table table thead th{text-align: left; vertical-align: middle;background: #82af13 !important; color: #fff !important}
 .content-table table tbody td{text-align: left; vertical-align: middle;border:1px solid #ddd !important;}
-.birthday-anniv .content-table table thead th{text-align: left; vertical-align: middle;background: transparent !important; color: #333 !important}
+
+.birthday-anniv .content-table. table thead th{text-align: left; vertical-align: middle;background: transparent !important; color: #333 !important}
+.content-table.bdr0{margin:0px; width: 100%; border:0;}
+.content-table.bdr0 table thead th{text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
+.content-table.bdr0 table tbody td{background: #fff !important;text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
+
+.dashboard > .row > div > .row,
+.dashboard > .row > div > .row > div >.row{margin-top: 10px !important}
+.dashboard .content-table table{margin:0px auto; width: 95%; border:0 !important; background: #fff}
+.dashboard .card-header{ border-bottom: 5px solid #82af13 !important; width: 100%; background: transparent !important; }
+.team-attendance .content-table{margin:0px; width: 100%; border:0 !important;}
+.team-attendance .content-table table thead th{background:#fff !important; color:#333 !important;text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
+.team-attendance .content-table table tbody td{text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
+
 .sidebar {
     padding-left: 1rem !important;
 }
@@ -37,10 +54,11 @@ h6,.h6{font-size: 1rem !important}
 }
  .card-title {
     background-color: transparent ;
-    color: #82af13;
+    color: #000 !important;
     padding: 0;
     text-align: center;
     font-size: 1.5em;
+    font-weight: 500;
 }
 .block{background: #fff;
     padding: 20px;
@@ -105,9 +123,30 @@ h6,.h6{font-size: 1rem !important}
 td.actions .fa{font-size: 18px}
 .pagination .page button{font-size: 14px}
 .filters{margin-top: 30px}
-.evbuddy{background:    #fff; font-size: 12px; padding: 20px 10px}
-.evbuddy ul{margin:0; padding: 0}
-.evbuddy a{font-size: 1rem; text-decoration: none; color: #333}
+.evbuddy{background:  #fff; font-size: 12px; padding: 20px}
+
+.evbuddy a{font-size: .875rem; text-decoration: none; color: #333 !important}
 a.btn-primary{padding: 10px 15px; color: #fff !important;}
 
 .card-header .back-button{position: fixed; top: 7%; right:2%;z-index: 1000}
+.team-summary .table{width: 100% !important}
+.team-summary .card-body{padding: 40px 0 !important}
+.team-summary table thead td{background: #eee}
+
+.team-summary table thead td .desc{ text-align: center; font-size: .875rem  !important;}
+.team-summary table thead td .total{font-size: 2rem; text-align: center;}
+.team-summary table tbody td,.team-summary table tbody td div{text-align: center;}
+.team-summary table tbody td .total{font-size: 1.5rem; text-align: center; line-height: 150%}
+.team-summary table tbody td .total.up{color:#81b014 !important;}
+.team-summary table tbody td .total.down{color:#dc3545 !important;}
+
+.team-summary table tbody td h4{ text-align: center; font-size: .75rem !important;}
+.team-summary table tbody td h5{ text-align: center; font-size: .65rem !important;}
+
+.team-attendance .content-table table tbody td:nth-child(2){font-size: .75rem; width: 35%}
+.team-attendance .content-table .holiday{color: orange !important}
+.team-attendance .content-table{height: 400px; overflow-y: scroll}
+.team-attendance .content-table td{background: #fff !important}
+.team-attendance .content-table tbody{overflow-y: scroll;}
+.company-announcement .row .card-body >.row{margin-bottom: 20px !important}
+.company-announcement .row .card-body >.row p{padding:0 20px;}

@@ -11,6 +11,7 @@ import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import QuickPunch from "../../../container/QuickPunch";
 
+
 const EmployeeDashboard = ( props ) => {
 
   let state = {
@@ -48,10 +49,63 @@ const EmployeeDashboard = ( props ) => {
               <div className="col-lg-4">
                 
                     <Row>
+                    <Col size="12">
                         <QuickPunch />
+                    </Col>
+
+                        
+                    </Row>
+                    <Row className="holidays">
+                        <Content title="Incoming holidays" col="12">
+                        <div className="content-table bdr0">
+                            <Table>
+                                <tbody>
+                                  <tr>
+                                    <td className="date"><span className="icn"></span><span className="date">April 1</span></td>
+                                    <td className="desc"> Maundy Thursday (Regular Holiday)</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="date"><span className="icn"></span><span className="date">April 2</span></td>
+                                    <td className="desc"> Good Friday (Regular Holiday)</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="date"><span className="icn"></span><span className="date">April 3</span></td>
+                                    <td className="desc"> Black Saturday (Special Holiday)</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="date"><span className="icn"></span><span className="date">April 9</span></td>
+                                    <td className="desc"> Araw ng Kagitingan (Regular Holiday)</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="date"><span className="icn"></span><span className="date">May 1</span></td>
+                                    <td className="desc"> Labor day (Regular Holiday)</td>
+                                  </tr>
+                                 
+                                  </tbody>
+                            </Table>
+                         </div>
+                        </Content>                  
                     </Row>
                     <Row>
-                    <h3 align="center"><strong>EV</strong> JOB OPENINGS</h3>
+                    <Content title="ICT Schedule" col="12">
+                      <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
+                        <ul>
+                          <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
+                          <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
+                          <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
+                        </ul>
+                    </Content>   
+                    
+                    </Row>
+                    
+               
+               
+                </div>
+                <div className="col-lg-4">
+                  <Row>
+                    <div className="card-header">
+                        <h3 align="center" className="card-title"><strong>EV</strong> JOB OPENINGS</h3>
+                    </div>
                     <div className="card-body evbuddy">
                     <ul>
                       <li><a href="https://careers.eastvantage.com/content/us-mortgage-loan-disclosure-specialist-night-shift-mandaluyong">US Mortgage Loan Disclosure Specialist | Night Shift | Mandaluyong</a></li>
@@ -80,15 +134,11 @@ const EmployeeDashboard = ( props ) => {
                     
                   </div>
                     </Row>
-               
-               
                 </div>
-                <div className="col-lg-8 col-md-6 col-sm-12">
+                <div className="col-lg-4 col-md-6 col-sm-12 company-announcement">
                   <Row>
-                  <h3>Company Announcements</h3>
-                      <div class="block col-lg-12 col-md-12 col-sm-12">
-                        <div class="row">
-                          <div class="col-lg-6 col-md-12 col-sm-12">
+                      <Content title="Company Announcements" col="12">
+                        <Row>
                           <ReactPlayer 
                               width={width}
                               height={height}
@@ -110,8 +160,8 @@ const EmployeeDashboard = ( props ) => {
                             
                             <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Cclick the link below to fill out the form </p>
                             <p><a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a></p>
-                          </div>
-                          <div class="col-lg-6 col-md-12 col-sm-12">
+                          </Row>
+                          <Row>
                             <a href="https://evox2.eastvantage.com/app/dpa" target="_blank">
                             <img src="https://www.eastvantage.com/webinar/DPA.jpg" width="100%" /></a>
                             <p>All employees are required to watch the Data Privacy webinar. Please tick the checkbox that will appear once the video ends to confirm your attendance. <br />Click the link below to go to the page.</p>
@@ -120,18 +170,12 @@ const EmployeeDashboard = ( props ) => {
                                 Data Privacy Webinar
                               </Link>
                             </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6 col-md-12 col-sm-12">
+                          </Row>
+                      </Content> 
+                          
+                        
                       
-                        <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
-                        <ul>
-                          <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
-                          <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
-                          <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
-                        </ul>
-                    </div>
+                      
                   </Row>
                 </div>
                 

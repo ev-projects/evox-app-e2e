@@ -34,15 +34,9 @@ class BirthdayAnniversary extends Component {
   
       <div >
         { birthdayAndAnniv.length > 0  ? 
-            <div className="content-table">
+            <div className="content-table bdr0">
               <Table striped bordered hover>
-                  <thead>
-                      <tr>
-                      <th>Name</th>
-                      <th>Date</th>
-                      <th>Display</th>
-                      </tr>
-                  </thead>
+                  
                   <tbody>
               
                   {birthdayAndAnniv.map(function (data, i) {

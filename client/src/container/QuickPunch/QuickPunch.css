@@ -4,6 +4,7 @@
     color: white;
 }
 .quickpunch h3{color: #fff !important; font-size: 2rem}
+.quickpunch .note{padding: 0 20px}
 .note{
     text-align: justify;
     font-size: 12px;
