@@ -915,9 +915,7 @@ class DtrRepository implements DtrRepositoryInterface{
                         $result->push( $dtr );
 
                         // If the DTR has Valid Time Logs, trigger the computation for Payroll items.
-                        if( $dtr->hasValidTimelogs() ) {
                             $this->compute_payroll_items( $dtr );
-                        }
                     }
                 } 
             }

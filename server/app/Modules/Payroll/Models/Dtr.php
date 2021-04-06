@@ -73,6 +73,17 @@ class Dtr extends Model
         return ( !is_null( $this->time_in ) || !is_null( $this->time_out ) ) ? true : false;
     }
 
+
+    /**
+     * 
+     *  Check if the current DTR has a value
+     * @return bool 
+     */
+    public function validLogIn()
+    {
+        return ( !is_null( $this->time_in ) ) ? true : false;
+    }
+
     /**
      * 
      *  Check if the employee has flexi sched

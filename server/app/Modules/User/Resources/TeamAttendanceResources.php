@@ -70,9 +70,12 @@ class TeamAttendanceResources extends JsonResource
                             $status[] = 'Absent';
                         }elseif( $array->onTimeLog() ){
                             $status[] = 'On Time';
-                        }elseif( $array->isPresent() ){
-                            $status[] = 'Present';
                         }else{
+
+                            if( $array->isPresent() ){
+                                $status[] = 'Present';
+                            }
+                            
                             $payroll_items = [];
                             foreach( $array->payroll_items()->whereIn('item',['late','undertime'])->whereNotNull('value')->get() as  $key => $payroll_item){
                                 
