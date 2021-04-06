@@ -20,6 +20,7 @@ global.links = {
     personal_information            :  "/app/profile/PersonalInformation/",
     job_information                 :  "/app/profile/JobInformation/",
     my_request                      :  "/app/account/MyRequests",
+    ev_learning                      :  "/app/EVLearning",
 
     // Request Links
     overtime                        :  "/app/request/Overtime/",
