@@ -121,6 +121,17 @@ const Sidebar = (props) => {
                     null
                   }
 
+                  { Authenticator.check('employee', 'employee_access') ?
+                      <li className="nav-item">
+                        <Link className="nav-link" to={ global.links.ev_learning}>
+                          <i className="nav-icon fa fa-book nav-icon" />
+                          <p>EV Learning</p>
+                        </Link> 
+                      </li>
+                    :
+                    null
+                  }
+
                   
                   {/* SUPERVISOR Links */}
                   { Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
