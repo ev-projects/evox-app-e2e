@@ -5,8 +5,11 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../co
 
 class EVLearning extends Component {
   render() {
-    return  <div>
+    return  <ContainerWrapper> 
+
+
 	<div className="el-title">Guidelines</div>
+	<img src="/images/ev-learning.png" alt="User Image"/>
 	<ol>
 	  <li>Make sure to register via your work email address before working on a course.</li>
 	  <li>Once the course is completed, please send the total hours spent plus the screenshot for completion per completed course or&nbsp;forward the email notification that the e-learning site will send you after completing the course to happiness@eastvantage.com</li>
@@ -396,7 +399,7 @@ class EVLearning extends Component {
 		</div>
 	  </div>
 	</div>
-  </div>;
+	</ContainerWrapper>;
   }
 }
 
