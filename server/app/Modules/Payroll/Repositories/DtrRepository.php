@@ -284,9 +284,11 @@ class DtrRepository implements DtrRepositoryInterface{
      *  Responsible for Applying of Schedule to DTR.
      * @param User|user_id $user_or_user_id
      * @param Schedule $schedule
+     * @param $bypass
+     * 
      * @return array $result
      */
-    public function apply_schedule_to_dtr( $user_or_user_id, Schedule $schedule )
+    public function apply_schedule_to_dtr( $user_or_user_id, Schedule $schedule, $bypass = false )
     {
         DB::beginTransaction();
         try {
@@ -328,9 +330,9 @@ class DtrRepository implements DtrRepositoryInterface{
                     //     $to_update_flag = false;
                     //     $result['not_updated'][] = $dtr;
                     // }
-        
-                    # If the Schedule Instance is Default AND the current DTR tagging was already set as Temporary/Change Schedule/Rest Day Work, sets the Update Flag to FALSE
-                    if( $schedule->isDefault() && ($dtr->isTemporary() || $dtr->isChangeSchedule() || $dtr->isRestDayWork()) ) {
+
+                    # If not gonna bypass and the Schedule Instance is Default AND the current DTR tagging was already set as Temporary/Change Schedule/Rest Day Work, sets the Update Flag to FALSE
+                    if( !$bypass & $schedule->isDefault() && ($dtr->isTemporary() || $dtr->isChangeSchedule() || $dtr->isRestDayWork()) ) {
                         $to_update_flag = false;
                         $result['not_updated'][] = $dtr;
                     }

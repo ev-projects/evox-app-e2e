@@ -47,15 +47,16 @@ class DtrSummary
 
             # Iterates the DTR Collection
             foreach ( $dtr_collection as $dtr ) {
+                
                 # Get the DTR Type of the Current DTR Instance
                 $dtr_type = $dtr->getDtrType();
-
+                
                 # Checks if the DTR has Valid Timelogs and proper Schedule.
                 if( $dtr->validLog() && $dtr->hasSchedule() ) {
 
                     # Gets all the Payroll Items of the current DTR Instance.
                     $payroll_items_collection = $dtr->payroll_items()->get();
-                   ;
+
                     # Group the Payroll Items base on Tagging.
                     $grouped_payroll_items_array = grouped_payroll_items( $payroll_items_collection );
 
@@ -68,9 +69,8 @@ class DtrSummary
                     $next_dtr       = $dtr->next_dtr()->first();
                     $previous_dtr   = $dtr->previous_dtr()->first();
 
-                    $next_dtr_type  = ( is_valid( $next_dtr ) ) ? $next_dtr->getDtrType() : "reg";;
-                    $previous_dtr_type      = ( is_valid( $previous_dtr ) ) ? $previous_dtr->getDtrType() : "reg";;
-
+                    $next_dtr_type  = ( is_valid( $next_dtr ) ) ? $next_dtr->getDtrType() : "reg";
+                    $previous_dtr_type      = ( is_valid( $previous_dtr ) ) ? $previous_dtr->getDtrType() : "reg";
 
                     # Rest day tagging scenario
                     if( !$this->check_if_holiday( $next_dtr_type ) &&  $dtr_type == get_constant('DTR_TYPE.rest_day')){

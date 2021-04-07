@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import "./ChangeSchedule.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 
 /** Form Manipulation */
@@ -30,6 +30,7 @@ import Wrapper from "../../../components/Template/Wrapper";
 import Formatter from '../../../services/Formatter'
 import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";
 import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
+import Validator from "../../../services/Validator";
 
 class ChangeSchedule extends Component {
 
@@ -147,9 +148,11 @@ class ChangeSchedule extends Component {
 			cst_schedule_details: cst_schedule_details,
 			sorted_week_days: ['mon','tue','wed','thu','fri','sat','sun'],
 			schedule_policies : {
-				allow_late : 		this.props.instance?.schedule?.schedule_policies?.allow_late != undefined ? this.props.instance.schedule.schedule_policies.allow_late : 0, 
-				allow_undertime : 	this.props.instance?.schedule?.schedule_policies?.allow_undertime != undefined ? this.props.instance.schedule.schedule_policies.allow_undertime : 0, 
-				allow_night_diff: 	this.props.instance?.schedule?.schedule_policies?.allow_night_diff != undefined ? this.props.instance.schedule.schedule_policies.allow_night_diff : 0, 
+				allow_late : 			( Validator.isNumeric(this.props.instance?.schedule?.schedule_policies?.allow_late) ? parseInt(this.props.instance.schedule.schedule_policies.allow_late) : 0 ), 
+				allow_undertime : 		( Validator.isNumeric(this.props.instance?.schedule?.schedule_policies?.allow_undertime) ? parseInt(this.props.instance.schedule.schedule_policies.allow_undertime) : 0 ), 
+				allow_night_diff: 		( Validator.isNumeric(this.props.instance?.schedule?.schedule_policies?.allow_night_diff) ? parseInt(this.props.instance.schedule.schedule_policies.allow_night_diff) : 0 ), 
+				allow_special_holiday: 	( Validator.isNumeric(this.props.instance?.schedule?.schedule_policies?.allow_special_holiday) ? parseInt(this.props.instance.schedule.schedule_policies.allow_special_holiday) : 1 ), 
+				allow_legal_holiday: 	( Validator.isNumeric(this.props.instance?.schedule?.schedule_policies?.allow_legal_holiday) ? parseInt(this.props.instance.schedule.schedule_policies.allow_legal_holiday) : 1 ), 
 			},
 			work_days: this.props.instance.schedule?.work_days != undefined ? this.props.instance.schedule.work_days : [],
 			wd: {
@@ -203,6 +206,14 @@ class ChangeSchedule extends Component {
 												<InputDate name="valid_to" />
 											</div>
 										</Col>
+									</Row>
+									<Row>
+										<Col size="12">
+											<div className="form-group">
+												<label for="valid_to">Holiday Policy:</label>
+												<ScheduleHolidayPolicy/> 
+											</div>
+										</Col> 
 									</Row>
 									<Row>
 										<Col size="12">

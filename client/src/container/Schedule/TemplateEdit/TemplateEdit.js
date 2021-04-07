@@ -9,12 +9,13 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { updateSchedule, getTemplateSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
-import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 
 import PageLoading from "../../PageLoading";
 import Wrapper from "../../../components/Template/Wrapper";
 import BackButton from "../../../components/Template/BackButton";
+import Validator from "../../../services/Validator";
 
 class Schedule extends Component {    
   state = {}
@@ -37,12 +38,14 @@ class Schedule extends Component {
     const sched_type = this.props.template.schedule_type;
     const work_days = this.props.template.work_days;
 
-
-    var allow_late = (this.props.template.schedule_policies?.allow_late!==undefined&&this.props.template.schedule_policies.allow_late==1)?this.props.template.schedule_policies.allow_late:0;
-    var allow_undertime = (this.props.template.schedule_policies?.allow_undertime!==undefined&&this.props.template.schedule_policies.allow_undertime==1)?this.props.template.schedule_policies.allow_undertime:0;
-    var allow_night_diff = (this.props.template.schedule_policies?.allow_night_diff!==undefined&&this.props.template.schedule_policies.allow_night_diff==1)?this.props.template.schedule_policies.allow_night_diff:0;
-
-    var schedule_policies =  {allow_late : allow_late , allow_undertime : allow_undertime, allow_night_diff: allow_night_diff };
+    var schedule_policies =  {
+      allow_late :            ( Validator.isNumeric(this.props.template?.schedule_policies?.allow_late ) ? parseInt(this.props.template.schedule_policies.allow_late) : 0),
+      allow_undertime :       ( Validator.isNumeric(this.props.template?.schedule_policies?.allow_undertime ) ? parseInt(this.props.template.schedule_policies.allow_undertime) : 0),
+      allow_night_diff :      ( Validator.isNumeric(this.props.template?.schedule_policies?.allow_night_diff ) ? parseInt(this.props.template.schedule_policies.allow_night_diff) : 0),
+      allow_special_holiday : ( Validator.isNumeric(this.props.template?.schedule_policies?.allow_special_holiday ) ? parseInt(this.props.template.schedule_policies.allow_special_holiday) : 1),
+      allow_legal_holiday :   ( Validator.isNumeric(this.props.template?.schedule_policies?.allow_legal_holiday ) ? parseInt(this.props.template.schedule_policies.allow_legal_holiday) : 1)
+    };
+    
     var std_schedule_details = [];
     var flx_schedule_details = [];
     var cst_schedule_details = [];
@@ -98,7 +101,19 @@ class Schedule extends Component {
             </InputGroup> 
           </div>
         </Form.Group>
-      </Col>          
+      </Col>       
+      <Col sm={7}>
+        <Form.Group className="white_bg">
+          <div className="header">
+            <h4>
+              Holiday Policy
+            </h4>
+          </div>
+          <div className="body">
+            <ScheduleHolidayPolicy/> 
+          </div>
+        </Form.Group>
+      </Col>            
       <Col sm={7}>
         <Form.Group className="white_bg">
           <div className="header">

@@ -11,7 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { addTemplateSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
-import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, ScheduleHolidayPolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../../components/Template/Wrapper";
@@ -30,14 +30,14 @@ class Schedule extends Component {
   componentWillMount(){
       
   }
-
+  
   render = () => {
     return <Wrapper {...this.props} >
     <Formik 
       onSubmit={this.onSubmitHandler} 
       validationSchema={validationSchema} 
       initialValues={{sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}}
-      ,name : '',std_schedule_details: [],flx_schedule_details: [],cst_schedule_details: [], source_type: 'template',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0}, schedule_type : '', work_days: [] }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+      ,name : '',std_schedule_details: [],flx_schedule_details: [],cst_schedule_details: [], source_type: 'template',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0, allow_special_holiday:1, allow_legal_holiday:1}, schedule_type : '', work_days: [] }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
     <form onSubmit={handleSubmit}> 
         <ContainerWrapper> 
         <Col sm={7} >
@@ -56,7 +56,19 @@ class Schedule extends Component {
               </InputGroup> 
             </div>
           </Form.Group>
-        </Col>          
+        </Col>       
+        <Col sm={7}>
+          <Form.Group className="white_bg">
+            <div className="header">
+              <h4>
+                Holiday Policy
+              </h4>
+            </div>
+            <div className="body">
+              <ScheduleHolidayPolicy/> 
+            </div>
+          </Form.Group>
+        </Col>            
         <Col sm={7}>
           <Form.Group className="white_bg">
             <div className="header">

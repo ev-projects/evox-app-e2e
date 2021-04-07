@@ -98,7 +98,7 @@ class syncBhrUsers extends Command
                         if( is_valid( $department ) ) {
 
                             $schedule = $department->defaultSchedule()->first();
-                            $this->schedule->replicate_schedule_to_user( $schedule, $user );
+                            $this->schedule->copy_schedule_to_user( $schedule, $user );
                             
                         }
 

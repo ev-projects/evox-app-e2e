@@ -102,7 +102,7 @@ class Computation
                  *   COMPUTE for Late
                  */
                 # Checks if the 'allow_late' policy is activated.
-                if( $this->check_allowed_policy('allow_late') ) {
+                if( $this->dtr->check_allowed_policy('allow_late') ) {
                     $late_payroll_item = $this->compute_late();
                     
                     # If the $late_payroll_item is valid, add it on $payroll_items array.
@@ -114,7 +114,7 @@ class Computation
                  *   COMPUTE for Undertime
                  */
                 # Checks if the 'allow_undertime' policy is activated.
-                if( $this->check_allowed_policy('allow_undertime') ) {
+                if( $this->dtr->check_allowed_policy('allow_undertime') ) {
                     $undertime_payroll_item = $this->compute_undertime();
                     
                     # If the $undertime_payroll_item is valid, add it on $payroll_items array.
@@ -130,7 +130,7 @@ class Computation
              *   COMPUTE for Night Diff.
              */
             # Checks if the 'allow_night_diff' policy is activated.
-            if( $this->check_allowed_policy('allow_night_diff') ) {
+            if( $this->dtr->check_allowed_policy('allow_night_diff') ) {
                 $night_diff_payroll_item_collection = $this->compute_night_diff();
                 
                 # If the $night_diff_payroll_item_collection is valid, Iterate it and add each item on $payroll_items array.
@@ -1141,24 +1141,6 @@ class Computation
         }
 
         return $total_night_diff;
-    }
-
-
-
-    ###############################################################################################
-    ##################################### Validation functions ####################################
-    ###############################################################################################
-
-    /**
-     *  Checks if the Policy Name parameter is existing on the DTR's Policy.
-     *   
-     * @param string $policy_name
-     * @return boolean
-     */
-    private function check_allowed_policy( $policy_name ) {
-        return $this->policies->contains(function ($policy) use ($policy_name) {
-            return $policy->policy ==  $policy_name && $policy->value == "1";
-        });
     }
 
 }

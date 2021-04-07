@@ -16,7 +16,7 @@ interface DtrRepositoryInterface
     public function apply_drupal_evox_data_to_dtr( array $drupal_evox_dtr_array );
 
     
-    public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
+    public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule, $bypass = false );
 
     public function remove_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
 

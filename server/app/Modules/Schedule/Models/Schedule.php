@@ -2,6 +2,7 @@
 
 namespace App\Modules\Schedule\Models;
 
+use App\Modules\Department\Models\Department;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -165,6 +166,18 @@ class Schedule extends Model{
      */
     public function schedule_policies(){
         return $this->hasMany(SchedulePolicy::class);
+    }
+
+    # Fetch the Schedules owner
+    public function owner(){
+        switch( $this->bind_to ) {
+            case "user":
+                return $this->hasOne(User::class, 'id', 'bind_id');
+                break;
+            case "department":
+                return $this->hasOne(Department::class, 'id', 'bind_id');
+                break;
+        }
     }
 
     /**

@@ -26,10 +26,10 @@ return [
     'user_not_active' => 'Sorry, your account is suspended. Please email helpdesk@eastvantage.com to activate your account.',
     
     'login' => 'Login',
-    'login_success' => 'Logged in successfully!',
+    'login_success' => 'Successfully Login!',
 
     'logout' => 'Logout',
-    'logout_success' => 'Logged out successful!',
+    'logout_success' => 'Successfully Logout!',
     
     'payload' => 'Payload',
     'payload_success' => 'Payload successfully loaded!',
@@ -224,8 +224,8 @@ return [
     'bulk_request_update' => 'Requests are now updated',
     
 
-    'quickpunch_in_success' => 'Log In Successful',
-    'quickpunch_out_success' => 'Log Out Successful',
+    'quickpunch_in_success' => 'Successfully Clock In!',
+    'quickpunch_out_success' => 'Successfully Clock Out!',
 
     'request_display_attempt' => 'Request List Attempt',
     'request_number_display_attempt' => 'Request Number List Attempt',

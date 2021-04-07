@@ -176,6 +176,23 @@ return [
         "overtime_night_diff" => "overtime_night_diff",
         "rendered_hours" => "rendered_hours"
     ],
+    
+    'ASSIGN_DEPARTMENT_ACTIONS' => [
+        "assign_schedule_holiday_policy" => "assign_schedule_holiday_policy",
+        "assign_schedule_policy" => "assign_schedule_policy",
+        "assign" => "assign",
+    ],
+
+    'SCHEDULE_POLICIES' => [
+        "allow_undertime" => "allow_undertime",
+        "allow_late" => "allow_late",
+        "allow_night_diff" => "allow_night_diff",
+    ],
+
+    'SCHEDULE_HOLIDAY_POLICIES' => [
+        "allow_special_holiday" => "allow_special_holiday",
+        "allow_legal_holiday" => "allow_legal_holiday",
+    ],
 
     'PAYROLL_ITEM_TAGS' => [
         "regular" => "regular",

@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
 import PageLoading from "../../PageLoading";
 import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
@@ -79,9 +79,11 @@ class AssignDefault extends Component {
     state.work_day = Validator.isValid( schedule?.work_days ) ? schedule.work_days : [];
 
     state.schedule_policies =  {
-      allow_late :      ( Validator.isValid( schedule.schedule_policies?.allow_late ) && schedule.schedule_policies.allow_late == 1 ) ? schedule.schedule_policies.allow_late : 0 , 
-      allow_undertime : ( Validator.isValid( schedule.schedule_policies?.allow_undertime ) && schedule.schedule_policies.allow_undertime == 1 ) ? schedule.schedule_policies.allow_undertime : 0, 
-      allow_night_diff: ( Validator.isValid( schedule.schedule_policies?.allow_night_diff ) && schedule.schedule_policies.allow_night_diff == 1 ) ? schedule.schedule_policies.allow_night_diff : 0 
+      allow_late :            ( Validator.isNumeric( schedule.schedule_policies?.allow_late ) ) ? parseInt(schedule.schedule_policies.allow_late) : 0 , 
+      allow_undertime :       ( Validator.isNumeric( schedule.schedule_policies?.allow_undertime ) ) ? parseInt(schedule.schedule_policies.allow_undertime) : 0, 
+      allow_night_diff:       ( Validator.isNumeric( schedule.schedule_policies?.allow_night_diff ) ) ? parseInt(schedule.schedule_policies.allow_night_diff) : 0,
+      allow_special_holiday:  ( Validator.isNumeric( schedule.schedule_policies?.allow_special_holiday ) ) ? parseInt(schedule.schedule_policies.allow_special_holiday) : 1, 
+      allow_legal_holiday:    ( Validator.isNumeric( schedule.schedule_policies?.allow_legal_holiday ) ) ? parseInt(schedule.schedule_policies.allow_legal_holiday) : 1 
     };
     
     state.schedule_type = schedule.schedule_type;
@@ -295,7 +297,7 @@ class AssignDefault extends Component {
                       /> 
                     Template &nbsp;</label>
                     <Form.Control.Feedback type="invalid">
-                      &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
+                      &nbsp;{errors.creation_type && touched.creation_type && errors.creation_type}
                       </Form.Control.Feedback>
                     { values.creation_type  === "template" ? (<div>
                     <Form.Label>Custom Select</Form.Label>
@@ -309,7 +311,19 @@ class AssignDefault extends Component {
                   </div>  
                   </Form.Group>
                 </div>
-              </Col>      
+              </Col>           
+              <Col sm={7}>
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h4>
+                      Holiday Policy
+                    </h4>
+                  </div>
+                  <div className="body">
+                    <ScheduleHolidayPolicy/> 
+                  </div>
+                </Form.Group>
+              </Col>    
               <Col sm={7}>
                 <Form.Group className="white_bg">
                   <div className="header">
