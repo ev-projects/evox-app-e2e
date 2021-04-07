@@ -55,37 +55,7 @@ const EmployeeDashboard = ( props ) => {
 
                         
                     </Row>
-                    <Row className="holidays">
-                        <Content title="Incoming holidays" col="12">
-                        <div className="content-table bdr0">
-                            <Table>
-                                <tbody>
-                                  <tr>
-                                    <td className="date"><span className="icn"></span><span className="date">April 1</span></td>
-                                    <td className="desc"> Maundy Thursday (Regular Holiday)</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="date"><span className="icn"></span><span className="date">April 2</span></td>
-                                    <td className="desc"> Good Friday (Regular Holiday)</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="date"><span className="icn"></span><span className="date">April 3</span></td>
-                                    <td className="desc"> Black Saturday (Special Holiday)</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="date"><span className="icn"></span><span className="date">April 9</span></td>
-                                    <td className="desc"> Araw ng Kagitingan (Regular Holiday)</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="date"><span className="icn"></span><span className="date">May 1</span></td>
-                                    <td className="desc"> Labor day (Regular Holiday)</td>
-                                  </tr>
-                                 
-                                  </tbody>
-                            </Table>
-                         </div>
-                        </Content>                  
-                    </Row>
+                    
                     <Row>
                     <Content title="ICT Schedule" col="12">
                       <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
@@ -102,9 +72,31 @@ const EmployeeDashboard = ( props ) => {
                
                 </div>
                 <div className="col-lg-4">
+                <Row className="holidays">
+                        <Content title="Upcoming holidays" col="12">
+                        <div className="content-table bdr0">
+                            <Table>
+                                <tbody>
+                                  
+                                  <tr>
+                                    <td className="date"><span className="icn"></span><span className="date">April 9</span></td>
+                                    <td className="desc"> Araw ng Kagitingan (Regular Holiday)</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="date"><span className="icn"></span><span className="date">May 1</span></td>
+                                    <td className="desc"> Labor day (Regular Holiday)</td>
+                                  </tr>
+                                 
+                                  </tbody>
+                            </Table>
+                         </div>
+                        </Content>                  
+                    </Row>
                   <Row>
+                  <div className="col-lg-12">
+                  <div className="card">
                     <div className="card-header">
-                        <h3 align="center" className="card-title"><strong>EV</strong> JOB OPENINGS</h3>
+                        <h3 align="center" className="card-title">JOB OPENINGS</h3>
                     </div>
                     <div className="card-body evbuddy">
                     <ul>
@@ -132,6 +124,8 @@ const EmployeeDashboard = ( props ) => {
                     </ul><h4 align="center"><strong>Refer a friend and earn as much as 20K!</strong></h4>
                     <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
                     
+                  </div>
+                  </div>
                   </div>
                     </Row>
                 </div>

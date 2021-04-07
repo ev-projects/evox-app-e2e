@@ -47,47 +47,10 @@ const HandlerDashboard = ( props ) => {
                 <Row>
                   <div className="col-7">
                       <Row className="team-summary">
+                      <Content title="This Week's attendance summary" col="12">
                       <TeamAttendanceSummary/>
-                          {/* <Content title="This Week's attendance summary" col="12">
-                          <div classname="date">Date covered: April 5 - April 11</div>
-                            <div class="content-table bdr0">
-                                <table class="table ">
-                                    <thead>
-                                        <tr>
-                                            <td colspan="4"><div className="total">30</div><h4 className="desc">Total Headcount</h4></td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><h4>Scheduled Headcount</h4>
-                                                <div className="scheduled-hc">
-                                                    <span className="total up">96.57%</span><span className="number">(144)</span>
-                                                </div>
-                                                <h5>TARGET: 95%</h5>
-                                                
-                                            </td>
-                                            <td>
-                                                <h4>Unplanned Leaves</h4>
-                                                <div className="unplanned-leaves">
-                                                    <span className="total down">3.43%</span><span className="number">(4)</span>
-                                                </div>
-                                                <h5>TARGET: 3%</h5>
-                                                
-                                            </td>
-                                            <td>
-                                            <h4>Planned Leaves</h4>
-                                                <div className="planned-leaves">
-                                                    <span className="total down">8.93%</span><span className="number">(13)</span>
-                                                </div>
-                                                <h5>TARGET: 7%</h5>
-                                                
-                                            </td>
-                                                                                    </tr>
-
-                                    </tbody>
-                                    </table>
-                            </div>
-                          </Content>                  */}
+                      </Content>
+                          
                       </Row>
                       <Row className="team-attendance">  
                           <Content title="Today's attendance" col="12"><TeamAttendance/></Content>                
