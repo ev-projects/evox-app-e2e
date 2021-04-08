@@ -82,7 +82,7 @@ class Computation
         # Checks if the 'allow_late' policy is activated.
         if( $this->dtr->validLogIn() && $this->dtr->hasSchedule() && $this->dtr->holidays()->get()->count() < 1) {
             
-            if( $this->check_allowed_policy('allow_late') ) {
+            if( $this->dtr->check_allowed_policy('allow_undertime') ) {
                 $late_payroll_item = $this->compute_late();
                 
                 # If the $late_payroll_item is valid, add it on $payroll_items array.
