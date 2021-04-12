@@ -335,7 +335,7 @@ class User extends Authenticatable implements JWTSubject
 
         #Team or Individual Request
         if($filter['url']=='my_team_requests'){
-            $id = under_supervisee_id_list(auth()->user()->users_handled()->pluck('id')->toArray());
+            $id = auth()->user()->users_handled()->pluck('id')->toArray();
 
             $change_schedules->whereIn('change_schedules.user_id',$id);
             $overtimes       ->whereIn('overtimes.user_id',$id);

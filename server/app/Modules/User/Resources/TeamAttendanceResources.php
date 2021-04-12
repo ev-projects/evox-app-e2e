@@ -72,7 +72,7 @@ class TeamAttendanceResources extends JsonResource
                             $status[] = 'On Time';
                         }else{
 
-                            if( $array->isPresent() ){
+                            if( $array->hasLog() ){
                                 $status[] = 'Present';
                             }
                             
