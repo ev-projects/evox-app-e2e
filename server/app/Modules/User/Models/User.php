@@ -335,7 +335,7 @@ class User extends Authenticatable implements JWTSubject
 
         #Team or Individual Request
         if($filter['url']=='my_team_requests'){
-            $id = under_supervisee_id_list($this->users_handled()->select('id')->get());
+            $id = under_supervisee_id_list(auth()->user()->users_handled()->pluck('id')->toArray());
 
             $change_schedules->whereIn('change_schedules.user_id',$id);
             $overtimes       ->whereIn('overtimes.user_id',$id);
@@ -529,7 +529,7 @@ class User extends Authenticatable implements JWTSubject
             $join->on('dtr_holidays.dtr_id', '=', 'dtrs.id');
             })->leftJoin('leaves', function($join) {
                 $join->on('leaves.dtr_id', '=', 'dtrs.id');
-            })->whereIn('user_id', auth()->user()->user_handlers()->pluck('id')->toArray())
+            })->whereIn('user_id', auth()->user()->users_handled()->pluck('id')->toArray() )
         ->whereRaw("
             date >= '".$start_day."' && date <= '".$current_time->format('Y-m-d')."'
             AND
@@ -539,16 +539,18 @@ class User extends Authenticatable implements JWTSubject
                 dtr_holidays.dtr_id is NULL
                     OR
                 leaves.status != 'approved'
+                    OR
+                start_datetime IS NOT NULL
             )
             AND time_in IS NULL
             AND time_out IS NULL
-            AND start_datetime IS NOT NULL
+            
         ")
         ->get()->count();
 
         $on_leave =  Dtr::leftJoin('leaves', function($join) {
                 $join->on('leaves.dtr_id', '=', 'dtrs.id');
-            })->whereIn('user_id', auth()->user()->user_handlers()->pluck('id')->toArray())
+            })->whereIn('user_id', auth()->user()->users_handled()->pluck('id')->toArray() )
         ->whereRaw("
             date >= '".$start_day."' && date <= '".$end_day."' 
                 AND
@@ -569,17 +571,19 @@ class User extends Authenticatable implements JWTSubject
         $time_from = $current_time->subHour( 6 );
         $time_to = $current_time->addHour( 6 );
 
-        $team_dtr = Dtr::whereIn('user_id', auth()->user()->user_handlers()->pluck('id')->toArray())
+        $team_dtr = Dtr::whereIn('user_id',auth()->user()->users_handled()->pluck('id')->toArray())
         ->whereRaw("
-                start_datetime BETWEEN  '".  $time_from->timestamp."' AND '".  $time_to->timestamp."'
-            OR 
-                start_flexy_datetime BETWEEN  '".  $time_from->timestamp ."' AND '".  $time_to->timestamp ."'
-            OR  
-                end_datetime BETWEEN  '".  $time_from->timestamp."' AND '".  $time_to->timestamp."'
-            OR 
-                end_flexy_datetime BETWEEN  '".  $time_from->timestamp ."' AND '".  $time_to->timestamp ."'
-            OR 
-            date = '".date("Y-m-d" ,$current_time->timestamp)."'
+                ( 
+                    start_datetime BETWEEN  '".  $time_from->timestamp."' AND '".  $time_to->timestamp."'
+                OR 
+                    start_flexy_datetime BETWEEN  '".  $time_from->timestamp ."' AND '".  $time_to->timestamp ."'
+                OR  
+                    end_datetime BETWEEN  '".  $time_from->timestamp."' AND '".  $time_to->timestamp."'
+                OR 
+                    end_flexy_datetime BETWEEN  '".  $time_from->timestamp ."' AND '".  $time_to->timestamp ."'
+                OR 
+                    date = '".date("Y-m-d" ,$current_time->timestamp)."' 
+                )
         ")
         ->get();
 
@@ -588,16 +592,16 @@ class User extends Authenticatable implements JWTSubject
 
 
     public function team_anniversary_regularization(){
-        $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', auth()->user()->user_handlers()->pluck('id')->toArray())
+        $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
         ->whereRaw("(DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) >= ".get_constant("ANNIVERSARY_BIRTHDAY.day_from")." AND (DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) <=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_to")."");
 
-        $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', auth()->user()->user_handlers()->pluck('id')->toArray())
+        $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
                 ->whereRaw("(DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) >=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_from")." AND (DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) <=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_to")."");
 
         $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
         $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
 
-        $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', auth()->user()->user_handlers()->pluck('id')->toArray())
+        $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
                     ->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' ");
 
         $birthdate->union($anniversary)->union($regularization)->orderByRaw('Month(date),Day(date)')->union($regularization);
