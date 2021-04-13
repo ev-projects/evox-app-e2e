@@ -23,7 +23,7 @@ class TimeOff extends Component {
     }
     
     componentWillMount(){
-        const start_date = moment('2019-07-01').startOf('month');
+        const start_date = moment().startOf('month');
         const end_date =  moment().endOf('month');
         this.props.fetchTimeOff(this.props.params.id, start_date, end_date);
     }
