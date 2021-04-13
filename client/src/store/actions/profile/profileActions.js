@@ -69,6 +69,30 @@ export const fetchJobInformation= ( id ) => {
     }
 }
 
+
+export const fetchTimeOff = ( id, start_date, end_date ) => {
+    return (dispatch, getState) => {
+
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/time_off/" + start_date.format("YYYY-MM-DD") + "/" + end_date.format("YYYY-MM-DD")
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'              : 'FETCH_TIME_OFF',
+                'user'              : result.data.content.user,
+                'profilePicture'    : result.data.content.profile_picture,
+                'leaves_list'       : result.data.content.leaves_list,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 export const changePassword = ( id, formData ) => {
 
     return (dispatch, getState) => {

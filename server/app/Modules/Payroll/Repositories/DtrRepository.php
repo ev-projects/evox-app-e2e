@@ -8,6 +8,7 @@ use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Payroll\Models\Leave;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Schedule\Models\Schedule;
@@ -1047,6 +1048,24 @@ class DtrRepository implements DtrRepositoryInterface{
             log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_computation");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_computation");
+            throw $e;
+        }
+    }
+
+    
+
+    
+    /**
+     * Gets the leaves binded from the specific DTR collections
+     * @param Collection $dtr_collection
+     * @return Collection $leaves_collections
+     */
+    public function get_leaves_from_dtr( Collection $dtr_collection ){
+        try{
+            $leaves_collections = Leave::whereIn('dtr_id', $dtr_collection->pluck('id'))->get();
+            return $leaves_collections;
+        } catch (Exception $e) {
+            log_error($e);
             throw $e;
         }
     }

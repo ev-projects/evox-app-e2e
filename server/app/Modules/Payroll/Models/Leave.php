@@ -81,4 +81,16 @@ class Leave extends Model
     {
         return ( ! in_array( $this->type, get_constant("UNPAID_LEAVE_TYPES") ) ) ? true : false;
     }
+
+    ########################################################################
+
+    /**
+     *  Relationships
+     */
+    /**
+     * hasOne Relationship to DTR
+     */
+    public function dtr(){
+        return $this->belongsTo(Dtr::class);
+    }
 }

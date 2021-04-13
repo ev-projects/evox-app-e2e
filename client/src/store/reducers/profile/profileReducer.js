@@ -38,6 +38,16 @@ const profileReducer = (state = initState, action) => {
                 break;
         /**  */
 
+        case "FETCH_TIME_OFF":
+            return {
+                ...state,
+                details : action.user,
+                profilePicture : action.profilePicture,
+                leaves_list : action.leaves_list
+            }
+                break;
+        /**  */
+
         case "CLOSE_ALL_FORM":
             return {
                 ...state,

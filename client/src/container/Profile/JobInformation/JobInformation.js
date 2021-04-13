@@ -82,23 +82,40 @@ class JobInformation extends Component {
                                 <Content col="12" title="Job Information"  subtitle={ <BackButton {...this.props}/>} >
                                 <div className="profile-tabs">
                                 {!Authenticator.check('client') ?
-                                <Button type="button" className="btn active float-right"><Link to={{
-                                    pathname: global.links.job_information + this.props.params.id,
-                                    }}
-                                    title="Job Information"
-                                >
-                                    Job Information
-                                </Link></Button>
+                                    <Button type="button" className="btn float-right">
+                                        <Link to={{
+                                            pathname: global.links.time_off + this.props.params.id,
+                                            }}
+                                            title="Time Off"
+                                        >
+                                        Time Off
+                                        </Link>
+                                    </Button>
                                 :
                                     null
                                 }
-                                <Button type="button" className="btn float-right"><Link to={{
-                                    pathname: global.links.personal_information + this.props.params.id,
-                                    }}
-                                    title="Personal Information"
-                                >
+                                {!Authenticator.check('client') ?
+                                    <Button type="button" className="btn active float-right">
+                                        <Link to={{
+                                            pathname: global.links.job_information + this.props.params.id,
+                                            }}
+                                            title="Job Information"
+                                        >
+                                        Job Information
+                                        </Link>
+                                    </Button>
+                                :
+                                    null
+                                }
+                                <Button type="button" className="btn float-right">
+                                    <Link to={{
+                                        pathname: global.links.personal_information + this.props.params.id,
+                                        }}
+                                        title="Personal Information"
+                                    >
                                     Personal Information
-                                </Link></Button>
+                                    </Link>
+                                </Button>
                                 </div>                           
                                            
                                             <br/>

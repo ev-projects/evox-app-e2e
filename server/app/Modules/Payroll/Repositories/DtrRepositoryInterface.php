@@ -42,5 +42,8 @@ interface DtrRepositoryInterface
     public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date );
     
     public function compute_payroll_items(Dtr $dtr);
+
+
+    public function get_leaves_from_dtr( Collection $dtr_collection );
     
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\Schedule\Resources\ScheduleResource;
@@ -33,18 +34,22 @@ use Spatie\Permission\Models\Permission;
 use App\Modules\User\Models\User;
 use App\Modules\User\Resources\DpaUserListResource;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
+use App\Modules\User\Resources\LeavesListResource;
 use App\Modules\User\Resources\RoleResource;
 
 class UserController extends Controller
 {
     protected $user;
+    protected $dtr;
     protected $bhr;
     protected $email;
 
     public function __construct(UserRepositoryInterface $user, 
+                                DtrRepositoryInterface $dtr, 
                                 BhrRepositoryInterface $bhr,
                                 EmailRepositoryInterface $email){
         $this->user = $user;
+        $this->dtr = $dtr;
         $this->bhr = $bhr;
         $this->email = $email;
     }
@@ -114,6 +119,46 @@ class UserController extends Controller
             );
 
             
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    /**
+     * Constructs the Time Off Details of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function time_off( $id, $start_date, $end_date ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+               
+
+            $user = $this->user->show( $id );
+               
+            $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
+
+            $user = $this->user->show( $id );
+
+            $dtr_collection = $user->dtr($start_date, $end_date)->get();
+            
+            $leaves_collection = $this->dtr->get_leaves_from_dtr( $dtr_collection );
+
+            return success_response(
+                trans('messages.show_time_off_collection'), 
+                [
+                    'user'  => new UserProfileResource( $user ),
+                    'profile_picture'  => $profile_picture, 
+                    'leaves_list'  => LeavesListResource::collection( $leaves_collection ),
+                ]
+                
+            );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
