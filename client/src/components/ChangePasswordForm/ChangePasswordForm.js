@@ -51,7 +51,7 @@ const ChangePasswordForm = ( context ) => {
         confirm_new_password:    Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable()/*.match( Yup.ref('new_password'), 'Passwords do not match')*/,
     });
 
-    return  <Content col="5" title={ (context.forceChangePassword ? "Reset" : "Change") +  " Password"} subtitle={ (context.forceChangePassword ? <div>This is required before doing any transactions.</div> : null)} >
+    return  <Content col={ (context.size ? context.size : "5")} title={ (context.forceChangePassword ? "Reset" : "Change") +  " Password"} subtitle={ (context.forceChangePassword ? <div>This is required before doing any transactions.</div> : null)} >
                 <Formik 
                     enableReinitialize
                     onSubmit={onSubmitHandler} 
@@ -98,7 +98,7 @@ const ChangePasswordForm = ( context ) => {
                             <Col size="12"> 
                             <Button type="submit" className="btn btn-primary" ><i className="fa fa-edit" /> Update</Button>&nbsp;
                             { ! context.forceChangePassword ? 
-                                <Button type="button" className="btn btn-secondary" onClick={()=> {context.setShowChangePasswordForm(false)}} ><i className="fa fa-ban" /> Cancel</Button> 
+                                <Button type="button" className="btn btn-secondary" onClick={()=> {context.setShowChangePasswordFormState(false)}} ><i className="fa fa-ban" /> Cancel</Button> 
                                 : 
                                 null 
                             }

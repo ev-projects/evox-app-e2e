@@ -35,6 +35,7 @@ use App\Modules\User\Models\User;
 use App\Modules\User\Resources\DpaUserListResource;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
 use App\Modules\User\Resources\LeavesListResource;
+use App\Modules\User\Resources\PersonalInformationResource;
 use App\Modules\User\Resources\RoleResource;
 
 class UserController extends Controller
@@ -72,16 +73,40 @@ class UserController extends Controller
 
             $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
 
-            $info = $this->bhr->get_user_bhr_field( $user->bhr_num  );
-
             return success_response(
                 trans('messages.show_profile_success'), 
                 [
                     'user'  => new UserProfileResource( $user ), 
-                    'profile_picture'  => $profile_picture, 
-                    'mobile_phone'  => is_valid( $info ) ? $info->mobilePhone : null,
-                    'job_title'  => is_valid( $info ) ? $info->jobTitle : null,
+                    'profile_picture'  => $profile_picture
                 ]
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    /**
+     * Constructs the Profile Details of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function personal_information( $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+               
+            $user = $this->user->show( $id );
+
+            $info = $this->bhr->get_user_bhr_field( $user->bhr_num  );
+
+            return success_response(
+                trans('messages.show_personal_information_success'), 
+                new PersonalInformationResource( $info )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -99,22 +124,16 @@ class UserController extends Controller
             ]);
 
             $user = $this->user->show( $id );
-               
-            $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
 
             $employment_status = $this->bhr->get_user_job_information( $user->bhr_num , get_constant('BHR_USER_TABLE.employee_status') );
 
             $job_information = $this->bhr->get_user_job_information( $user->bhr_num , get_constant('BHR_USER_TABLE.job_info')  );
 
-            $info = $this->bhr->get_user_bhr_field( $user->bhr_num  );
             return success_response(
                 trans('messages.show_profile_success'), 
                 [
-                    'user'  => new UserProfileResource( $user ),
-                    'profile_picture'  => $profile_picture, 
                     'job_information'  => new JobInformationResource( $job_information ) ,
-                    'employment_status'  =>new EmploymentStatusResource( $employment_status ),
-                    'job_title'  => is_valid( $info ) ? $info->jobTitle : null
+                    'employment_status'  => new EmploymentStatusResource( $employment_status )
                 ]
             );
 
@@ -141,10 +160,6 @@ class UserController extends Controller
                
 
             $user = $this->user->show( $id );
-               
-            $profile_picture = $this->bhr->get_profile_picture( $user->bhr_num );
-
-            $user = $this->user->show( $id );
 
             $dtr_collection = $user->dtr($start_date, $end_date)->get();
             
@@ -153,8 +168,6 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_time_off_collection'), 
                 [
-                    'user'  => new UserProfileResource( $user ),
-                    'profile_picture'  => $profile_picture, 
                     'leaves_list'  => LeavesListResource::collection( $leaves_collection ),
                 ]
                 

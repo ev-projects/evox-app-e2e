@@ -16,12 +16,3 @@
     border-radius: 50%;
     border:1px solid #ccc;
 }
-
-.profile-header .information{float: left; position: relative;top:20%;}
-.profile-header input{border:0 !important; background-color: transparent !important;}
-
-.profile-tabs{position: absolute;top:0; right: 0}
-.profile-tabs button{background: #ccc  !important; border:0 !important; margin-left:5px;}
-.profile-tabs button a{color:#333 !important;}
-.profile-tabs button.active{background: #82af13 !important;}
-.profile-tabs button.active a{color:#fff !important;}

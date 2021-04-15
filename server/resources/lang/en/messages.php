@@ -224,8 +224,8 @@ return [
     'bulk_request_update' => 'Requests are now updated',
     
 
-    'quickpunch_in_success' => 'Successfully Clock In!',
-    'quickpunch_out_success' => 'Successfully Clock Out!',
+    'quickpunch_in_success' => 'Successfully clocked in!',
+    'quickpunch_out_success' => 'Successfully clocked out!',
 
     'request_display_attempt' => 'Request List Attempt',
     'request_number_display_attempt' => 'Request Number List Attempt',

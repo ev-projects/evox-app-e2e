@@ -4,11 +4,11 @@
 
 const initState = {
     details : {},
-    profilePicture : [],
+    profile_picture : "",
+    personal_information : [],
     job_information: [],
+    time_off: [],
     closeAllForm: false,
-    mobile_phone : '',
-    job_title : ''
 }
 
 const profileReducer = (state = initState, action) => {
@@ -20,20 +20,22 @@ const profileReducer = (state = initState, action) => {
             return {
                 ...state,
                 details : action.user,
-                profilePicture : action.profilePicture,
-                mobile_phone : action.mobile_phone,
-                job_title : action.job_title
+                profile_picture : action.profile_picture
+            }
+            break;
+
+        case "FETCH_PERSONAL_INFORMATION":
+            return {
+                ...state,
+                personal_information : action.personal_information
             }
             break;
 
         case "FETCH_JOB_INFORMATION":
             return {
                 ...state,
-                details : action.user,
-                profilePicture : action.profilePicture,
                 job_information : action.job_information,
-                employment_status : action.employment_status,
-                job_title : action.job_title
+                employment_status : action.employment_status
             }
                 break;
         /**  */
@@ -41,8 +43,6 @@ const profileReducer = (state = initState, action) => {
         case "FETCH_TIME_OFF":
             return {
                 ...state,
-                details : action.user,
-                profilePicture : action.profilePicture,
                 leaves_list : action.leaves_list
             }
                 break;

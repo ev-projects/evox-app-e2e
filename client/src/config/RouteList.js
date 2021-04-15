@@ -54,6 +54,7 @@ import SyncBiometrics from "../container/Admin/SyncBiometrics/SyncBiometrics";
 import EmployeeList from "../container/MyTeam/EmployeeList";
 import ManageTeams from "../container/MyTeam/ManageTeams";
 import TimeOff from "../container/Profile/TimeOff";
+import Profile from "../container/Profile";
 
 const RoutesList = (props) => {
 
@@ -82,18 +83,10 @@ const RoutesList = (props) => {
           <EVLearning role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.personal_information+":id"} >
-          <PersonalInformation role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        <ProtectedRoute exact path={global.links.profile+":id"} >
+          <Profile role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.job_information+":id"} >
-          <JobInformation role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
-        </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.time_off+":id"} >
-          <TimeOff role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
-        </ProtectedRoute>
-
+        
         <ProtectedRoute exact path={global.links.my_request}>
           <MyRequests role={['employee']} permission={['employee_access']}/>
         </ProtectedRoute>

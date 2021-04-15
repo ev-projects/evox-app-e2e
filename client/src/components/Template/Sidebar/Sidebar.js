@@ -46,7 +46,7 @@ const Sidebar = (props) => {
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link" to={ global.links.personal_information  + user.id  }>
+                    <Link className="nav-link" to={ global.links.profile  + user.id  }>
                       <i className="nav-icon fa fa-user"/>
                       <p> My Profile</p>
                     </Link>

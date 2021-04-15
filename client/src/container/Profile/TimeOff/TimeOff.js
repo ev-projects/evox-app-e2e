@@ -17,129 +17,46 @@ import moment from 'moment';
 import Formatter from "../../../services/Formatter";
 import RestDayWork from "../../Request/RestDayWork";
 
-class TimeOff extends Component {
-    constructor(props){
-      super(props)
-    }
-    
-    componentWillMount(){
-        const start_date = moment().startOf('month');
-        const end_date =  moment().endOf('month');
-        this.props.fetchTimeOff(this.props.params.id, start_date, end_date);
-    }
-    
-    componentDidUpdate(prevProps) {
-        if (this.props.location.pathname !== prevProps.location.pathname) {
-            this.onRouteChanged();
-        }
-    }
+const TimeOff = ( props ) => {
 
-    onRouteChanged() {
-      this.props.fetchJobInformation( this.props.params.id );
-    }
+    const { profile, user } = props;
 
 
-    render(){
-      const { profile, user, page } = this.props;
+   return ( 
+        Validator.isValid( profile ) ?
+        <Row>            
+            <div className="col-lg-12" >
+            { profile.leaves_list?.length > 0 ? 
+                <div>
+                { profile.leaves_list.slice().reverse().map(function (leave, i) {
 
-        return (
-            <Wrapper >
-               <ContainerWrapper>
-                  <ContainerBody>
-                  <Row>
-                    <div className="profile-header"> 
-                        
-                        <div className="col-4 picture" >
-                            <img src={ Validator.isValid( profile.profilePicture ) ? "data:image/jpg;base64,"+ profile.profilePicture : "/images/default-user-image.png"}
-                                style={{'marginTop': '15px', 'width' :'170px', 'height': '170px'}} />
-                        </div>
-                        <div className="information" >
-                            {profile.details.full_name} <br />
-                            {profile.details.department} <br />
-                            {profile.job_title}      
-                        </div>
-                        
-                            
-                    </div>
-                    </Row>
-                    { !page.isReloading ?
-                        <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
-                            <Row>
-                                <Content col="12" title="Time Off"  subtitle={ <BackButton {...this.props}/>} >
-                                <div className="profile-tabs">
-                                {!Authenticator.check('client') ?
-                                    <Button type="button" className="btn active float-right">
-                                        <Link to={{
-                                            pathname: global.links.time_off + this.props.params.id,
-                                            }}
-                                            title="Time Off"
-                                        >
-                                        Time Off
-                                        </Link>
-                                    </Button>
-                                :
-                                    null
-                                }
-                                {!Authenticator.check('client') ?
-                                    <Button type="button" className="btn float-right">
-                                        <Link to={{
-                                            pathname: global.links.job_information + this.props.params.id,
-                                            }}
-                                            title="Job Information"
-                                        >
-                                        Job Information
-                                        </Link>
-                                    </Button>
-                                :
-                                    null
-                                }
-                                <Button type="button" className="btn float-right">
-                                    <Link to={{
-                                        pathname: global.links.personal_information + this.props.params.id,
-                                        }}
-                                        title="Personal Information"
-                                    >
-                                    Personal Information
-                                    </Link>
-                                </Button>
-                                </div>                           
-                                           
-                                { profile.leaves_list?.length > 0 ? 
-                                    <div>
-                                    { 
-                                        profile.leaves_list.slice().reverse().map(function (leave, i) {
+                        return  (<Row className="leave-row">
+                            <div className="icon-column"> 
+                                <LeaveIcon leave={leave}/>
+                            </div>                  
+                            <div className="details-column"> 
+                                <b className="time-off-date">{moment(leave.date).format("MMM DD")}</b><br/>
+                                <LeaveStatus leave={leave}/> {parseFloat(leave.amount)} day of <b>{leave.type}</b>
+                            </div>                  
+                            <div className="note-column"> 
+                                {leave.employee_note}
+                            </div>
+                            <hr/>
+                        </Row>)
+                    })
+                }
+                </div>
+                :
+                "You don't have any leaves this month."
+            } 
+            </div>
+        </Row>
+        :
+        null
+    );
 
-                                            return  (<Row className="leave-row">
-                                                <div className="icon-column"> 
-                                                    <LeaveIcon leave={leave}/>
-                                                </div>                  
-                                                <div className="details-column"> 
-                                                    <b className="time-off-date">{moment(leave.date).format("MMM DD")}</b><br/>
-                                                    <LeaveStatus leave={leave}/> {parseFloat(leave.amount)} day of <b>{leave.type}</b>
-                                                </div>                  
-                                                <div className="note-column"> 
-                                                    {leave.employee_note}
-                                                </div>
-                                                <hr/>
-                                            </Row>)
-                                        })
-                                    }
-                                    </div>
-                                    :
-                                    null
-                                } 
-                                </Content>
-                            </Row>
-                        </div>
-                    :
-                        null
-                    }
-                  </ContainerBody>
-              </ContainerWrapper>
-            </Wrapper>
-        );
-    }
 };
+
 
 
 // Component for the Leave Icon
@@ -194,11 +111,11 @@ export const LeaveStatus = ( props ) => {
     return status;
 }
 
+
 const mapStateToProps = (state) => {
   return {
       profile : state.profile,
-      user : state.user,
-      page : state.page
+      user : state.user
   }
 } 
 const mapDispatchToProps = (dispatch) => {
