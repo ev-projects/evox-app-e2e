@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import moment from 'moment';
 import Formatter from "../../../services/Formatter";
 import RestDayWork from "../../Request/RestDayWork";
+import LeaveCredits from "../LeaveCredits";
 
 const TimeOff = ( props ) => {
 
@@ -24,19 +25,27 @@ const TimeOff = ( props ) => {
 
    return ( 
         Validator.isValid( profile ) ?
-        <Row>            
-            <div className="col-lg-12" >
+        <Row>   
+            
+            <div className="col-lg-4" >
+            { profile.leave_credits != [] ? 
+                <LeaveCredits  />
+                :
+                null
+            }    
+            </div>     
+            <div className="col-lg-8" >
             { profile.leaves_list?.length > 0 ? 
                 <div>
                 { profile.leaves_list.slice().reverse().map(function (leave, i) {
 
                         return  (<Row className="leave-row">
                             <div className="icon-column"> 
-                                <LeaveIcon leave={leave}/>
+                                <LeaveIcon type={leave.type}/>
                             </div>                  
                             <div className="details-column"> 
                                 <b className="time-off-date">{moment(leave.date).format("MMM DD")}</b><br/>
-                                <LeaveStatus leave={leave}/> {parseFloat(leave.amount)} day of <b>{leave.type}</b>
+                                <LeaveStatus status={leave.status}/> {parseFloat(leave.amount)} day of <b>{leave.type}</b>
                             </div>                  
                             <div className="note-column"> 
                                 {leave.employee_note}
@@ -47,7 +56,7 @@ const TimeOff = ( props ) => {
                 }
                 </div>
                 :
-                "You don't have any leaves this month."
+                <div className="no-leaves-row">You don't have any leaves this month.</div>
             } 
             </div>
         </Row>
@@ -63,7 +72,7 @@ const TimeOff = ( props ) => {
 export const LeaveIcon = ( props ) => { 
 
     let icon = "";
-    switch( Formatter.title_to_slug( props.leave.type )  ) {
+    switch( Formatter.title_to_slug( props.type )  ) {
         case "vacation_leave":
             icon = <i class="fa fa-plane fa-icon" /> 
             break;
@@ -94,7 +103,7 @@ export const LeaveIcon = ( props ) => {
 export const LeaveStatus = ( props ) => { 
 
     let status = "";
-    switch( props.leave.status ) {
+    switch( props.status ) {
         case "requested":
             status = <i className="fa fa-hourglass" style={{"color": '#ffc84d'}} /> 
             break;

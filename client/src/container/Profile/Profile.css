@@ -58,9 +58,11 @@
 .profile-header .information{float: left; position: relative;top:40px;}
 .profile-header input{border:0 !important; background-color: transparent !important;}
 
-.profile-tabs{position: absolute;top:-5px; right: 5px}
+.profile-tabs{position: absolute;top:-6px; right: 5px}
 .profile-tabs .nav-tabs{border: 0 !important;}
 .profile-tabs a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px;}
-.profile-tabs a.active {
-     background-color: #82af13  !important; color: #fff !important;
-}
+.profile-tabs a.active {background-color: #82af13  !important; color: #fff !important;}
+.profile-tabs button.active a{color:#82af13 !important;}
+.card-header{background: transparent !important;}
+.user_form .row {margin-top: 15px; margin-bottom: 15px }
+.user_form .year-dropdown{padding: 0}

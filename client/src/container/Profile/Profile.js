@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./Profile.css";
 import { Container,Row,Col, Tabs, Tab, Table,Image, Spinner,Button,Form,InputGroup,FormControl   } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { fetchTimeOff , fetchPersonalInformation, fetchProfile, fetchJobInformation } from '../../store/actions/profile/profileActions' ;
+import { fetchTimeOff , fetchPersonalInformation, fetchProfile, fetchJobInformation, fetchLeaveCredits } from '../../store/actions/profile/profileActions' ;
 import Select from "react-select";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
@@ -18,6 +18,7 @@ import PersonalInformation from "./PersonalInformation";
 import JobInformation from "./JobInformation";
 import TimeOff from "./TimeOff";
 import Formatter from "../../services/Formatter";
+import LeaveCredits from "./LeaveCredits";
 
 class Profile extends Component {
     constructor(props){
@@ -49,6 +50,7 @@ class Profile extends Component {
                 case "time_off":
                     const start_date = moment().startOf('month');
                     const end_date =  moment().endOf('month');
+                    this.props.fetchLeaveCredits(this.props.params.id);
                     this.props.fetchTimeOff(this.props.params.id, start_date, end_date);
                     break;
             }
@@ -81,7 +83,7 @@ class Profile extends Component {
                <ContainerWrapper>
                   <ContainerBody>
                     <Row>
-                        <Col size="4" >
+                        <Col>
                             <div className="profile-header"> 
                                 <div className="col-4 picture" >
                                     <img src={ Validator.isValid( profile.profile_picture ) ? "data:image/jpg;base64,"+ profile.profile_picture : "/images/default-user-image.png"}
@@ -93,8 +95,6 @@ class Profile extends Component {
                                     { profile.personal_information?.job_title}      
                                 </div>
                             </div>
-                        </Col>
-                        <Col size="8" >
                         </Col>
                     </Row>
                     { Object.keys(profile.details).length > 0 && !page.isReloading ?
@@ -155,6 +155,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchProfile : ( id ) => dispatch( fetchProfile( id) ),
     fetchPersonalInformation : ( id ) => dispatch( fetchPersonalInformation( id) ),
     fetchJobInformation : ( id ) => dispatch( fetchJobInformation( id) ),
+    fetchLeaveCredits : ( id ) => dispatch( fetchLeaveCredits( id ) ),
     fetchTimeOff : ( id, start_date, end_date ) => dispatch( fetchTimeOff( id, start_date, end_date ) )
 
   }

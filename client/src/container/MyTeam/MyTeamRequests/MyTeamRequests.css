@@ -29,10 +29,10 @@
     background: #ccc;
 }
 .filters .col{padding: 0px !important; margin:0 10px 0 0 !important;}
-.filters .date-range > div > div{width: 37.5%; float: left; margin-right: 5px}
+.filters .date-range > div > div{width: 36.5%; float: left; margin-right: 5px}
 .filters .date-range {
-    width: 45% !important;
-    flex: 0 48%;
+    width: 50% !important;
+    flex: 0 50%;
 }
 .filters.myrequest-filter .date-range {
     width: 80% !important;
@@ -102,9 +102,9 @@
     color: red  !important;
 }
 
-.display-block{
+.btn.display-block{
     display: block !important   ;
-    width: 100px!important;
+    width: 120px!important;
 }
 
 .input-feedback{

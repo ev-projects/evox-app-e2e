@@ -1,0 +1,27 @@
+.leave-credits {
+    height: 175px;
+    background-color: #ffffff;
+}
+
+.leave-card {
+    background-color: #dcdcdc;
+    margin-top: 15px;
+    height: 145px;
+    text-align: center;
+    padding-top: 15px;
+}
+
+.leave-card-type{
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.leave-card-balance{
+    color: #82af13;
+    font-size: 40px;
+}
+
+.leave-card-note{
+    color: #82af13;
+    font-size: 12px;
+}

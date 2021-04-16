@@ -34,9 +34,11 @@ use Spatie\Permission\Models\Permission;
 use App\Modules\User\Models\User;
 use App\Modules\User\Resources\DpaUserListResource;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
+use App\Modules\User\Resources\LeaveCreditsListResource;
 use App\Modules\User\Resources\LeavesListResource;
 use App\Modules\User\Resources\PersonalInformationResource;
 use App\Modules\User\Resources\RoleResource;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserController extends Controller
 {
@@ -164,12 +166,39 @@ class UserController extends Controller
             $dtr_collection = $user->dtr($start_date, $end_date)->get();
             
             $leaves_collection = $this->dtr->get_leaves_from_dtr( $dtr_collection );
+            
+            return success_response(
+                trans('messages.show_time_off_collection'), 
+                LeavesListResource::collection( $leaves_collection )
+                
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    /**
+     * Constructs the Leave Credits Details of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function leave_credits( $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+
+            $user = $this->user->show( $id );
+
+            $leave_credits_collection = $this->bhr->get_leave_credits( $user->bhr_num, Carbon::today()->format('Y-m-d')  );
 
             return success_response(
                 trans('messages.show_time_off_collection'), 
-                [
-                    'leaves_list'  => LeavesListResource::collection( $leaves_collection ),
-                ]
+                new LeaveCreditsListResource( $leave_credits_collection )
                 
             );
         } catch(Exception $e){
