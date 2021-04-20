@@ -27,14 +27,14 @@ const TimeOff = ( props ) => {
         Validator.isValid( profile ) ?
         <Row>   
             
-            <div className="col-lg-4" >
+            <div className="col-lg-4 leaves-col" >
             { profile.leave_credits != [] ? 
                 <LeaveCredits  />
                 :
                 null
             }    
             </div>     
-            <div className="col-lg-8" >
+            <div className="col-lg-8  timeoff-col" >
             { profile.leaves_list?.length > 0 ? 
                 <div>
                 { profile.leaves_list.slice().reverse().map(function (leave, i) {
@@ -48,9 +48,9 @@ const TimeOff = ( props ) => {
                                 <LeaveStatus status={leave.status}/> {parseFloat(leave.amount)} day of <b>{leave.type}</b>
                             </div>                  
                             <div className="note-column"> 
-                                {leave.employee_note}
+                               <small><strong>Note:</strong><br/></small> {leave.employee_note}
                             </div>
-                            <hr/>
+                        
                         </Row>)
                     })
                 }
@@ -77,7 +77,7 @@ export const LeaveIcon = ( props ) => {
             icon = <i class="fa fa-plane fa-icon" /> 
             break;
         case "sick_leave":
-            icon = <i className="fa fa-stethoscope fa-icon" /> 
+            icon = <i className="fa fa-medkit fa-icon" /> 
             break;
         case "magna_carta_leave_for_woman":
             icon = <i className="fa fa-female fa-icon" /> 

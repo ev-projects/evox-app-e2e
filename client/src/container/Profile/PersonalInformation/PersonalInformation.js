@@ -30,7 +30,7 @@ const PersonalInformation = ( props ) => {
             <div className="col-lg-8" >
                 <h4>Basic Information</h4>
                 <Row>
-                    <Col size="3">  
+                    <div className="col-lg-6 col-md-12 col-sm-12">  
                         <label> Status: </label>    
                         { profile.details.is_active != null ?
                         <InputGroup>
@@ -46,59 +46,59 @@ const PersonalInformation = ( props ) => {
                         :
                         null
                         }
-                    </Col>   
-                    <Col size="3">  
+                    </div>   
+                    <div className="col-lg-6 col-md-12 col-sm-12"> 
                         <label> Employee Number: </label>    
                         <InputGroup>
                             <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.emp_num}  />
                         </InputGroup>
-                    </Col> 
+                    </div> 
                 </Row>
                 <Row>
-                    <Col size="6" style={{'marginBottom': '5px'}}>
+                    <div className="col-lg-6 col-md-12 col-sm-12"> 
                         <label> Full Name: </label> 
                         <InputGroup>
                             <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.full_name}  />
                         </InputGroup>
-                    </Col> 
-                    <Col size="6" style={{'marginBottom': '5px'}}>  
+                    </div> 
+                    <div className="col-lg-6 col-md-12 col-sm-12">  
                         <label> Nick Name: </label>    
                         <InputGroup>
                             <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.nickname}  />
                         </InputGroup> 
-                    </Col>     
+                    </div>     
                 </Row>
                 <Row>  
-                    <Col size="4" style={{'marginBottom': '5px'}}>  
+                    <div className="col-lg-4 col-md-12  col-sm-12">  
                         <label> Birth Date: </label>    
                         <InputGroup>
                             <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.birthdate}  />
                         </InputGroup> 
-                    </Col> 
+                    </div> 
                 </Row>
                 <hr /> 
                 <h4>Contact Information</h4>
                 {!Authenticator.check('client') ?
                     <Row>  
-                        <Col size="6" style={{'marginBottom': '5px'}}>  
+                       <div className="col-lg-6 col-md-12 col-sm-12"> 
                             <label> Mobile Number: </label>    
                             <InputGroup>
                                 <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.personal_information?.mobile_phone}  />
                             </InputGroup> 
-                        </Col>
-                        <Col size="6" style={{'marginBottom': '5px'}}>  
+                        </div>
+                       <div className="col-lg-6 col-md-12 col-sm-12">  
                             <label> Work Email: </label>    
                             <InputGroup>
                                 <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.email}  />
                             </InputGroup> 
-                        </Col> 
+                        </div> 
                     </Row> 
                     :
                     null
                 }
                 <hr /> 
                 <Row>
-                    <Col size="6" style={{'marginBottom': '5px'}}>  
+                    <Col size="6">  
                         { profile.details.id == user.id ?
                             <Button type="button" className="btn btn-secondary" onClick={()=> {setShowChangePasswordFormState(true)}} >Change Password</Button>
                             :

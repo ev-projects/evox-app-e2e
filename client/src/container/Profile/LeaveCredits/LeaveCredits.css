@@ -4,7 +4,7 @@
 }
 
 .leave-card {
-    background-color: #dcdcdc;
+    background-color: #eee;
     margin-top: 15px;
     height: 145px;
     text-align: center;
@@ -12,16 +12,16 @@
 }
 
 .leave-card-type{
-    font-size: 15px;
+    font-size: 1.1rem;
     font-weight: 500;
 }
 
 .leave-card-balance{
     color: #82af13;
-    font-size: 40px;
+    font-size: 3rem;
 }
 
 .leave-card-note{
-    color: #82af13;
-    font-size: 12px;
+    color: #000;
+    font-size: .875rem;
 }

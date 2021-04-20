@@ -1,19 +1,25 @@
 .icon-column {
-    width: 10%;
+    width: 50px;
     border-right: 1px solid white !important;
     text-align: center;
+    padding-top: 10px;
 }
 
 .details-column {
-    width: 50%;
+    width: 30%;
     border-left: 1px solid white !important;
     border-right: 1px solid white !important;
 }
 .note-column {
-    width: 40%;
+    width: 65%;
     border-left: 1px solid white !important;
+    min-height: 50px;
+    vertical-align: middle;
 }
+.note-column small{
+    display: none;
 
+}
 .time-off-icon {
     width: 50px;
     height: 50px;
@@ -25,9 +31,14 @@
     margin-left: 10px !important;
     margin-right: 10px !important;
 }
+.leave-row .fa-icon{font-size: 2rem;}
+.no-leaves-row{
+    text-align: center;
+    margin-top: 40px;
+}
 
 .time-off-date {
-    font-size: 17.5px;
+    font-size: 1.5;
 }
 
 
@@ -35,7 +46,8 @@
     color: #82af13;
     font-size: 50px;
 }
-
+.profile-content .row{padding:10px 0;}
+.year-dropdown{padding: 0; margin: 0}
 .profile-header{width: 80%; margin-left: 25px}
 .profile-header .picture {
     float: left;
@@ -49,8 +61,8 @@
 
 .profile-header img {
     margin-top: 15px;
-    width: 150px;
-    height: 150px;
+    width: 115px;
+    height: 115px;
     border-radius: 50%;
     border:1px solid #ccc;
 }
@@ -66,3 +78,36 @@
 .card-header{background: transparent !important;}
 .user_form .row {margin-top: 15px; margin-bottom: 15px }
 .user_form .year-dropdown{padding: 0}
+
+@media only screen and (max-width: 650px) {
+.profile-header .picture{display: none !important;}
+.profile-header .information {
+    float: none;
+    top: 0px;
+}
+.profile-content .card-header{display: none;}
+ .profile-content .card-body{
+    margin-top: 36px;
+}
+.leaves-col,
+.leave-credits .col {
+    padding:0 5px!important;
+}
+
+.timeoff-col {margin-top: 30px;}
+.icon-column {
+    width: 50px;
+
+}
+
+.details-column {
+    width: 80%;
+
+}
+.note-column {
+    width: 100%;
+}
+.note-column small{
+    display: block;
+}
+}

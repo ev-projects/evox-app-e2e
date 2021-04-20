@@ -19,9 +19,9 @@
     border-color: gray !important;
     border-radius: 25px !important;
 }
-.filters {margin-top:0; width: 55%; float: right;}
+
 .filters.myrequest-filter {margin-top:0; width: 35%; float: right;}
-.filters .date-range label {
+.filters .date-range label,.bulk-action .form-group label {
     float: left;
     font-size: 12px;
     padding: 10px;
@@ -45,6 +45,7 @@
 .filters .search-name{width: 25%;flex: 10%;}
 .filters .filter-button{ width: 15%;flex: 5%; }
 .filters select, .filters input[type="textfield"]{font-size:1rem;}
+.bulk-action .form-group >div {float: left; margin-right: 10px}
 .denied{
     background-color: red !important;
     color: white !important;
@@ -110,4 +111,4 @@
 .input-feedback{
     color: red !important;
 }
-
+.form-control{font-size: inherit !important}

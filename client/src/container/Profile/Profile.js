@@ -85,9 +85,9 @@ class Profile extends Component {
                     <Row>
                         <Col>
                             <div className="profile-header"> 
-                                <div className="col-4 picture" >
+                                <div className="picture" >
                                     <img src={ Validator.isValid( profile.profile_picture ) ? "data:image/jpg;base64,"+ profile.profile_picture : "/images/default-user-image.png"}
-                                        style={{'marginTop': '15px', 'width' :'170px', 'height': '170px'}} />
+                                         />
                                 </div>
                                 <div className="information" >
                                     { profile.details.full_name} <br />
@@ -98,7 +98,7 @@ class Profile extends Component {
                         </Col>
                     </Row>
                     { Object.keys(profile.details).length > 0 && !page.isReloading ?
-                        <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
+                        <div className="profile-content">
                             <Row>
                                 <Content col="12" title={Formatter.slug_to_title(this.state.current_tab)}  subtitle={ <BackButton {...this.props}/>} >
                                     <div className="profile-tabs">
@@ -107,8 +107,8 @@ class Profile extends Component {
                                                 defaultActiveKey={this.state.current_tab}
                                                 onSelect={ (key) =>  { this.setTab(key) } }
                                         >
-                                            <Tab eventKey="personal_information" title="Personal Information" type="submit"></Tab>
-                                            {!Authenticator.check('client') ? <Tab eventKey="job_information" title="Job Information" type="submit"></Tab> : null }
+                                            <Tab eventKey="personal_information" title="Personal Info" type="submit"></Tab>
+                                            {!Authenticator.check('client') ? <Tab eventKey="job_information" title="Job Info" type="submit"></Tab> : null }
                                             {!Authenticator.check('client') ? <Tab eventKey="time_off" title="Time Off" type="submit"></Tab> : null }
                                             
                                         </Tabs>
