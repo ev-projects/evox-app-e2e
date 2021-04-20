@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
-import { fetchMyTeamList } from '../../../store/actions/filters/myTeamActions';
+import { fetchMyTeamList, fetchTeamUnderDepartment } from '../../../store/actions/filters/myTeamActions';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import Validator from "../../../services/Validator";
 import Authenticator from "../../../services/Authenticator";
@@ -29,8 +29,11 @@ class EmployeeList extends Component {
           filters: {
             status:         this.props.myTeamList?.filters?.status,
             department_id:  this.props.myTeamList?.filters?.department_id,
+            team_id:        this.props.myTeamList?.filters?.team_id, 
+            job_title:      this.props.myTeamList?.filters?.job_title,
             name:           this.props.myTeamList?.filters?.name,
             page:           this.props.myTeamList?.filters?.page,
+            order_by:       this.props.myTeamList?.filters?.order_by,
             url:           'MyTeam'
         }
       }
@@ -58,13 +61,14 @@ class EmployeeList extends Component {
 
   componentWillMount(){
     
-    // Fetch the my Team List upon mounting of the component if the My Team List is not yet initially loaded.
-    if( ! Validator.isValid( this.props.myTeamList.list ) ) {
-      this.props.fetchMyTeamList( this.props.user.id, this.state.filters);
-    }
+
   }
 
 
+  departmentSelected = (departmentId) => {
+    this.props.fetchTeamUnderDepartment(this.props.user.id, departmentId);
+  }
+  
   render = () => {  
 
     var total = [];
@@ -82,7 +86,7 @@ class EmployeeList extends Component {
                 <ContainerWrapper>   
                 <ContainerBody>
                 <h2 className="page-title"> Employee list</h2>
-                <MyTeamListFilter {...this.props} />
+                <MyTeamListFilter {...this} />
                 <div className="content-table">
                  <MyTeamListTable  {...this.props} />
                 </div>
@@ -98,45 +102,21 @@ class EmployeeList extends Component {
   }
 
 const MyTeamListFilter = (props) => {
-
   const { values, handleChange, setFieldValue } = useFormikContext();
+  const { team_list } = props.props.myTeamList;
 
-    // Generate status data
-    var statusOptions = [
-      {
-       'label' : 'Active', 
-       'value' : 1 
-      },{
-       'label' : 'Inactive', 
-       'value' : 2 
-      },
-    ];
-
-    return  <Row className="filters filter-dtr">  
-              <Col size="4"> 
-                    
-                    <select
-                    className="form-control" 
-                      name="status"
-                      value={values.status}
-                      onChange={handleChange}
-                    >
-                      <option label="Select Employee Status..." />
-                      <option value="1" label="Active" />
-                      <option value="0" label="Inactive" />
-                    </select>
-              </Col> 
+    return <React.Fragment> <Row className="filters filter-dtr">  
               <Col size="2"> 
                 <div className="form-group">
                     <select
                     className="form-control" 
                       name="department_id"
                       value={values.department_id}
-                      onChange={handleChange}
+                      onChange={(e) => { setFieldValue('department_id', e.target.value);  props.departmentSelected(e.target.value)}}
                       style={{ display: 'block' }}
                     >
                     <option label="Select Department" />
-                    {props.user.departments_handled.map(function(item){
+                    {props.props.user.departments_handled.map(function(item){
                       return <option value={item.id} label={item.department_name} />;
                     })}
                     </select>
@@ -144,7 +124,28 @@ const MyTeamListFilter = (props) => {
               </Col> 
               <Col size="2"> 
                 <div className="form-group">
-                   
+                    <select
+                    className="form-control" 
+                      name="team_id"
+                      value={values.team_id}
+                      onChange={handleChange}
+                      style={{ display: 'block' }}
+                    >
+                    <option label="Select Team" />
+                    {team_list.map(function(item){
+                      return <option value={item.id} label={item.name} />;
+                    })}
+                    </select>
+                </div>
+
+              </Col> 
+              <Col size="2"> 
+                <div className="form-group">
+                    <input type="textfield" className="form-control" variant="primary" placeholder="Enter Job Title" name="job_title" onChange={handleChange} value={values.job_title} />
+                </div>
+              </Col> 
+              <Col size="2"> 
+                <div className="form-group">
                     <input type="textfield" className="form-control" variant="primary" placeholder="Enter Name" name="name" onChange={handleChange} value={values.name} />
                 </div>
               </Col> 
@@ -155,7 +156,35 @@ const MyTeamListFilter = (props) => {
                   </Button>
               
               </Col> 
-            </Row>;
+            </Row>
+            <Row>
+            <Col size="6">
+              </Col> 
+              <Col size="2"> 
+                Sort:
+                <div className="form-group">
+                    <select
+                    className="form-control" 
+                      name="order_by"
+                      value={values.order_by}
+                      onChange={handleChange}
+                      style={{ display: 'block' }}
+                    >
+                    <option label="Default" />
+                    <option value="name:asc"  label="Name: A-Z" />
+                    <option value="name:desc" label="Name: Z-A" />
+                    <option value="job_title:asc" label="Job Title: Ascending" />
+                    <option value="job_title:desc" label="Job Title: Descending" />
+                    </select>
+                </div>
+                </Col>
+                <Col size="2">
+                <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
+                    Apply
+                  </Button>
+              </Col> 
+            </Row>
+            </React.Fragment>;
 }
 
 const MyTeamListTable = (props) => {
@@ -181,7 +210,7 @@ const MyTeamListTable = (props) => {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Department</th> 
+                  <th>Job Title</th> 
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -190,7 +219,7 @@ const MyTeamListTable = (props) => {
                 { list.data.map((user) => {
                     return <tr>
                     <td>{user.full_name}</td>
-                    <td>{user.department} </td>
+                    <td>{user.job_title} </td>
                     <td className="emp-status"> <Status status={user.is_active} /></td>
                     <td className="actions">
                       <Link to={{
@@ -259,8 +288,9 @@ const Status = (props) => {
     }
   }
   const mapDispatchToProps = (dispatch) => {
-    return {
+    return { 
       fetchMyTeamList : ( user_id, params ) => dispatch( fetchMyTeamList( user_id, params ) ),
+      fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
     }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(EmployeeList);

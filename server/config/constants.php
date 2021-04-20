@@ -33,6 +33,7 @@ return [
         'nickname',
         'status',
         'hireDate',
+        'jobTitle',
         'terminationDate',
         'employmentHistoryStatus',
         'supervisorEId'
@@ -53,7 +54,6 @@ return [
         'nickname',
         'dateOfBirth',
         'gender',
-        'jobTitle',
         'maritalStatus',
         'gender',
         'department',

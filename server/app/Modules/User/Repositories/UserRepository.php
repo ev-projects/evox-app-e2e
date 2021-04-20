@@ -151,6 +151,7 @@ class UserRepository implements UserRepositoryInterface{
                     $user->emp_num = $bhr_user->employeeNumber;
                     $user->bhr_num = $bhr_user->id;
                     $user->email = $bhr_user->bestEmail;
+                    $user->job_title = $bhr_user->jobTitle;
                     $user->username = generate_username( $bhr_user );
                     $user->password = Hash::make( get_constant('DEFAULT_PASSWORD') );
                     $user->first_name = $bhr_user->firstName;
@@ -255,7 +256,8 @@ class UserRepository implements UserRepositoryInterface{
                     $bhr_user->employeeNumber = "0" . $bhr_user->employeeNumber;
                 }
                 
-                $user->emp_num = $bhr_user->employeeNumber;
+                $user->emp_num = $bhr_user->employeeNumber; 
+                $user->job_title = $bhr_user->jobTitle;
                 $user->bhr_num = $bhr_user->id;
                 $user->email = $bhr_user->bestEmail;
                 $user->first_name = $bhr_user->firstName;
@@ -504,23 +506,45 @@ class UserRepository implements UserRepositoryInterface{
 
                 $user_collection = User::findOrFail( $id )->users_handled();
                 
-                if( is_valid( request()->get('department_id') ) ) {
-                    $user_collection->where('department_id', '=', request()->get('department_id'));
+                if( is_valid( request()->get('team_id') ) ) {
+                    $user_collection->join('team_users', 'team_users.user_id', '=', 'users.id')->where('team_id', '=', request()->get('team_id'));
+                }else{
+                    if( is_valid( request()->get('department_id') ) ) {
+                        $user_collection->where('department_id', '=', request()->get('department_id'));
+                    }
                 }
 
                 if( is_valid( request()->get('name') ) ) {
                     $user_collection->whereRaw("(first_name LIKE '%".request()->get('name')."%' OR last_name LIKE '%".request()->get('name')."%')");
                 }
 
-                if( is_valid( request()->get('status') ) ) {
-                    $user_collection->where('is_active', '=', request()->get('status'));
+                if( is_valid( request()->get('job_title') ) ) {
+                    $user_collection->where('job_title', 'like', '%' .request()->get('job_title'). '%');
                 }
+
+                if( is_valid( request()->get('order_by') ) ) {
+                    $order = explode(":", request()->get('order_by'));
+
+                    switch ($order[0]) {
+                        case "name":
+                            $user_collection->orderBy('first_name',  $order[1])
+                                ->orderBy('last_name',  $order[1]);
+                            break;
+                        case "job_title":
+                            $user_collection->orderBy('job_title',  $order[1]);
+                            break;
+                        default:
+                            $user_collection->orderBy('first_name',  $order[1])
+                                ->orderBy('last_name',  $order[1]);
+                      }
+
+                    
+                }
+
                 
                 if( request()->get('page') == 'all' ){
                     
-                    $user_collection->orderBy('first_name', 'asc')
-                                    ->orderBy('last_name', 'asc')
-                                    ->get();
+                    $user_collection->get();
     
                 } else {
                     $user_collection = $user_collection->orderBy('first_name', 'asc')

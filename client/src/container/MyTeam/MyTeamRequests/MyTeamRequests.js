@@ -198,7 +198,7 @@ class MyTeamRequests extends Component {
             
             <ContainerBody>  
                 <Content col="12">
-                    
+                    <Row className="status-filter">
                   <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
@@ -259,7 +259,7 @@ class MyTeamRequests extends Component {
                       &nbsp;Declined 
                     </ToggleButton>
                   </ButtonGroup>
-                  
+                  </Row>
                   <Row  className="filters">  
                     <Col className="date-range"> 
                       <div className="form-group">
@@ -289,7 +289,7 @@ class MyTeamRequests extends Component {
                     <Col className="search-name">
                       <div className="form-group">
                           
-                          <input type="textfield" className="form-control" variant="primary" placeholder="Enater name" name="name" onChange={handleChange} value={values.name} />
+                          <input type="textfield" className="form-control" variant="primary" placeholder="Enter name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     </Col> 
                     <Col className="filter-button">
@@ -302,9 +302,10 @@ class MyTeamRequests extends Component {
                     </Row>
                     <hr/>
                     <Row className="bulk-action">
-                      <Col className="col-2 col-md-4 col-sm-8"> 
+                      <Col className="col-lg-12 col-md-6 col-sm-8"> 
                       <div className="form-group">
                           <label>Action:</label>
+                          <div className="select-div">
                           <select
                             className="form-control" 
                             name="bulk_action"
@@ -316,19 +317,18 @@ class MyTeamRequests extends Component {
                             <option value="approve" label="Approved" />
                             <option value="deny" label="Deny" />
                           </select>
+                          </div>
+                          <div className="btn-div">
+                          <Button className="display-block"  variant="primary" type="submit" onClick={() => setFieldValue("action", "bulk_action")} >
+                          <i className="fa fa-edit" /> Update
+                        </Button>
+                        </div>
                           
                       </div>
                       <ErrorMessage component="div" name="bulk_action" className="input-feedback" />
+                      <ErrorMessage component="div" name="checkedList" className="input-feedback" />
                     </Col> 
-                    <Col className="col-4 col-md-4 col-sm-4"> 
-                    <div className="form-group">
-                        <label>&nbsp;</label>  
-                        <Button className="display-block"  variant="primary" type="submit" onClick={() => setFieldValue("action", "bulk_action")} >
-                          <i className="fa fa-edit" /> Update
-                        </Button>
-                    </div>
-                    <ErrorMessage component="div" name="checkedList" className="input-feedback" />
-                    </Col> 
+                     
                     </Row>
                     <Row>
                     </Row>

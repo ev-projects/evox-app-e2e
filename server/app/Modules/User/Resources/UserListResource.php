@@ -42,6 +42,7 @@ class UserListResource extends JsonResource
             'middle_name' => $this->middle_name,
             'last_name' => $this->last_name,
             'is_active' => $this->is_active,
+            'job_title' => $this->job_title,
             'full_name' => $this->getFullName(),
             'departments_handled' => $departments_handled,
             'supervisee' => $supervisee,

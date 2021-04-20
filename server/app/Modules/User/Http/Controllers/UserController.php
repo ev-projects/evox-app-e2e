@@ -24,7 +24,7 @@ use App\Modules\User\Resources\AnniversaryResources;
 use Carbon\Carbon;
 use App\Modules\User\Resources\EmploymentStatusResource; 
 use App\Modules\User\Resources\JobInformationResource; 
-
+use Auth;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -249,6 +249,24 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_my_team_list'), 
                 new UserListResourceCollection( $user_collection ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    /**
+     * Returns the Temporary Schedules of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function my_team_list_under_department( $id, $department_id ){   
+        try {
+            $user_collection = Auth::user()->departments_team( $department_id );
+
+            return success_response(
+                trans('messages.show_my_team_list'), 
+                $user_collection
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

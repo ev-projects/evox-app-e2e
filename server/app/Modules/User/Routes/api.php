@@ -87,6 +87,8 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     # Gets the list of Teams of the User
     Route::get('my_team_list', 'UserController@my_team_list');//->middleware('auth.apikey');
 
+    Route::get('team_list/{department_id}', 'UserController@my_team_list_under_department');//->middleware('auth.apikey');
+    
     # Get the Role of the user
     Route::get('/role/', 'UserController@get_user_role');
 

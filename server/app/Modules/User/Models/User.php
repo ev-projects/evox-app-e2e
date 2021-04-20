@@ -500,6 +500,19 @@ class User extends Authenticatable implements JWTSubject
         return Team::whereIn('teams.id', $teams_id_array);
     }
 
+    # Fetch the Departments Team
+    public function departments_team($department_id)
+    {
+        // Fetch department team if Supervisor
+        if( $this->hasRole( get_constant('USER_ROLES.supervisor') )  ) { 
+            $teams_id_array = Team::where( "department_id" , $department_id );
+        } elseif( $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
+            $teams_id_array =  $this->belongsToMany(Team::class, 'team_handlers', 'user_id', 'team_id')->where( "department_id" ,$department_id );
+        }
+
+        return $teams_id_array->get();
+    }
+
     # Fetch the User Departments Handled
     public function departments_handled()
     {
