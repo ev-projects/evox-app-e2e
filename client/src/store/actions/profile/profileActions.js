@@ -85,7 +85,30 @@ export const fetchTimeOff = ( id, start_date, end_date ) => {
 
             dispatch({
                 'type'              : 'FETCH_TIME_OFF',
-                'leaves_list'       : result.data.content.leaves_list,
+                'leaves_list'       : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+
+export const fetchLeaveCredits = ( id ) => {
+    return (dispatch, getState) => {
+
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/leave_credits/"
+        })
+        .then(result => {
+
+            dispatch({
+                'type'              : 'FETCH_LEAVE_CREDITS',
+                'leave_credits'     : result.data.content,
             })
 
         })

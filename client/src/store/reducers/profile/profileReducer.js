@@ -37,7 +37,7 @@ const profileReducer = (state = initState, action) => {
                 job_information : action.job_information,
                 employment_status : action.employment_status
             }
-                break;
+            break;
         /**  */
 
         case "FETCH_TIME_OFF":
@@ -45,7 +45,15 @@ const profileReducer = (state = initState, action) => {
                 ...state,
                 leaves_list : action.leaves_list
             }
-                break;
+            break;
+        /**  */
+
+        case "FETCH_LEAVE_CREDITS":
+            return {
+                ...state,
+                leave_credits : action.leave_credits
+            }
+            break;
         /**  */
 
         case "CLOSE_ALL_FORM":

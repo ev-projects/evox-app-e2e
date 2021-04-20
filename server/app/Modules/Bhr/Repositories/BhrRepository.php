@@ -239,6 +239,43 @@ class BhrRepository implements BhrRepositoryInterface{
         }
     }
 
+
+    /**
+     *  Responsible for Fetching the User's Leave Credits
+     * @param string $bhr_user_number
+     * @param string $end_date
+     * @return Object $bhr_user
+     */
+    public function get_leave_credits( string $bhr_user_number, string $end_date ){
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
+        try {
+
+            $result = null;
+
+            if( is_valid($bhr_user_number) ){
+
+                $end_date = date('Y-m-d', strtotime($end_date)) . 'T00:00:00-00:00';
+
+                $result = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/time_off/calculator?end='.$end_date  );
+                    
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "bhrlog");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            } else {
+                log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
+            }
+
+            return $result;
+
+        } catch (Exception $e) {
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+
     /**
      *  Responsible for Fetching Holidays from BHr and Syncing it on our Holiday Table. Conducts checking if holiday already exists.
      * @param string $start_date

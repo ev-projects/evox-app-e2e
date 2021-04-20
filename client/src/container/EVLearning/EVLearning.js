@@ -30,7 +30,8 @@ class EVLearning extends Component {
 	  <li><a href="#leadership">Leadership</a></li>
 	</ul>
 	{/* start list */}
-	<div className="list"><a id="general" name="general" />
+	<div className="list">
+	<a id="general" name="general" />
 	  <div className="el-title">General</div>
 	  <div className="el-content">
 		<div className="el-links">
@@ -196,12 +197,13 @@ class EVLearning extends Component {
 		</div>
 	  </div>
 	</div>
-	{/* end list */}{/* start list */}
+	{/* end list */}
+{/* start list */}
 	<div className="list"><a id="sales" name="sales" />
 	  <div className="el-title">Sales and Marketing</div>
 	  <div className="el-content">
 		<div className="el-links">
-		  <div className="el-link-title"><span style={{fontSize: '18px'}}><a href="https://www.coursera.org/?authMode=signup" target="_blank">Coursera</a></span></div>
+		  <div className="el-link-title"> <span><a href="https://www.coursera.org/?authMode=signup" target="_blank">Coursera</a></span></div>
 		  <ul className="el-list-link">
 			<li><a href="https://www.coursera.org/learn/negotiation" target="_blank">Introduction to Negotiations</a></li>
 			<li><a href="https://www.coursera.org/browse/business/marketing" target="_blank">Marketing Learning</a></li>
@@ -213,7 +215,7 @@ class EVLearning extends Component {
 		  </ul>
 		</div>
 		<div className="el-links">
-		  <div className="el-link-title"><span style={{fontSize: '18px'}}><a href="https://alison.com/" target="_blank">Alison Online Courses</a></span></div>
+		  <div className="el-link-title"> <span><a href="https://alison.com/" target="_blank">Alison Online Courses</a></span></div>
 		  <ul className="el-list-link">
 			<li><a href="https://www.classcentral.com/course/futurelearn-digital-skills-digital-marketing-9778" target="_blank">Growing your Career in Digital Marketing</a></li>
 			<li><a href="https://www.futurelearn.com/courses/social-media-analytics" target="_blank">Understanding Social Media Analytics</a></li>
@@ -225,7 +227,7 @@ class EVLearning extends Component {
 		  </ul>
 		</div>
 		<div className="el-links">
-		  <p className="el-link-title"><span style={{fontSize: '18px'}}><a href="https://www.open.ac.uk/account/createaccount?URL=https://www.open.edu/openlearn/free-courses/full-catalogue" target="_blank">The Open University</a></span></p>
+		  <div className="el-link-title"><a href="https://www.open.ac.uk/account/createaccount?URL=https://www.open.edu/openlearn/free-courses/full-catalogue" target="_blank">The Open University</a></div>
 		  <ul className="el-list-link">
 			<li><a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/marketing-communications-strategic-function/content-section-0?active-tab=description-tab" target="_blank">Marketing Communications as a Strategic Function</a></li>
 			<li><a href="https://www.open.edu/openlearn/money-business/marketing-the-21st-century/content-section-0?active-tab=description-tab" target="_blank">Marketing in the 21st Century</a></li>
@@ -233,34 +235,40 @@ class EVLearning extends Component {
 			<li><a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/social-marketing/content-section-0?active-tab=description-tab" target="_blank">Social Marketing</a></li>
 			<li><a href="https://www.open.edu/openlearn/money-management/management/technology-innovation-and-management/content-section-0?active-tab=description-tab" target="_blank">Technology, Innovation and Management</a></li>
 		  </ul>
-		  <p><span style={{fontSize: '18px'}}><a href="https://app.hubspot.com/signup-v2/crm/step/user-info" target="_blank">HubSpot Academy</a>&nbsp;</span></p>
+		</div>
+		<div className="el-links">
+		  <p className="el-link-title"> <span><a href="https://app.hubspot.com/signup-v2/crm/step/user-info" target="_blank">HubSpot Academy</a>&nbsp;</span></p>
 		  <ul className="el-list-link">
 			<li><a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/marketing-communications-strategic-function/content-section-0?active-tab=description-tab" target="_blank">C</a><a href="https://app.hubspot.com/academy/6298623/tracks?categories=MARKETING&status=ALL" target="_blank">ontent Strategy</a></li>
 		  </ul>
-		  <div><span style={{fontSize: '18px'}}><a href="https://www.clickminded.com/mc-registration-seo-keyword-strategy-2/" target="_blank">ClickMinded</a></span>&nbsp;&nbsp;</div>
-		  {/* end list */}{/* start list */}
-		  <div className="list">
+		</div>
+		<div className="el-links">
+		<p className="el-link-title"> <span><a href="https://www.clickminded.com/mc-registration-seo-keyword-strategy-2/" target="_blank">ClickMinded</a></span></p>
 			<ul className="el-list-link">
 			  <li><a href="https://www.clickminded.com/mc-registration-seo-keyword-strategy-2/" target="_blank">SEO Mini-Course</a></li>
-			</ul>
-		  </div>
-		</div>
+			
+		</ul>
 	  </div>
-	</div>
-	<div><span style={{fontSize: '18px'}}><a href="https://courses.edx.org/register?next=%2Flogout" target="_blank">edX</a></span></div>
-	{/* end list */}{/* start list */}
-	<div className="list">
-	  <ul className="el-list-link">
+	  <div className="el-links">
+	  <p className="el-link-title"> <span><a href="https://courses.edx.org/register?next=%2Flogout" target="_blank">edX</a></span></p>
+	<ul className="el-list-link">
+			  
 		<li><a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/social-marketing/content-section-0?active-tab=description-tab" target="_blank">M</a><a href="https://www.edx.org/course/marketing-management-1" target="_blank">arketing Management 1</a></li>
 		<li><a href="https://www.edx.org/course/marketing-analytics-competitive-analysis-and-market-segmentation-0" target="_blank">Marketing Analytics: Competative Analysis and Market Segmentation</a></li>
 		<li><a href="https://www.edx.org/course/marketing-analytics" target="_blank">Marketing Analytics</a></li>
 	  </ul>
+		</div>
+	  </div>
+	</div>
+	{/* end list */}{/* start list */}
+	<div className="list">
+	  
 	  <a id="recruitment" name="recruitment" />
 	  <div className="el-title">HR / Recruitment</div>
 	  <div className="el-content">
 		<div className="el-links">
 		  <div className="el-link-title">
-			<p className="el-link-title"><span style={{fontSize: '18px'}}><a href="https://www.open.ac.uk/account/createaccount?URL=https://www.open.edu/openlearn/free-courses/full-catalogue" target="_blank">The Open University</a></span></p>
+			<a href="https://www.open.edu/openlearn/free-courses/full-catalogue" target="_blank">The Open University</a>
 		  </div>
 		  <ul className="el-list-link">
 			<li><a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-management/what-strategic-human-resource-management/content-section-0?intro%3D1&source=gmail&ust=1569662027984000&usg=AFQjCNEHdykP30QplmhOr8oQGkRdyn6Rpw" href="https://www.open.edu/openlearn/money-management/what-strategic-human-resource-management/content-section-0?intro=1" target="_blank">What is Strategic HR?</a>&nbsp;</li>
