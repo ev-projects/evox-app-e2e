@@ -23,13 +23,15 @@ use App\Modules\User\Resources\UserProfileResource;
 use App\Modules\User\Resources\AnniversaryResources; 
 use Carbon\Carbon;
 use App\Modules\User\Resources\EmploymentStatusResource; 
-use App\Modules\User\Resources\JobInformationResource; 
+use App\Modules\User\Resources\JobInformationResource;   
+use App\Modules\User\Resources\HolidayResource;
 use Auth;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Modules\Payroll\Models\Holiday;
 
 use App\Modules\User\Models\User;
 use App\Modules\User\Resources\DpaUserListResource;
@@ -645,6 +647,22 @@ class UserController extends Controller
 
 
 
+    # This function registers User to the system
+    public function get_holidays( ){
+        try {
+            log_activity( trans('messages.get_holidays_attempt') );
+            $test = new Holiday();
+            return success_response(
+                trans('messages.get_holidays_success'),
+                new HolidayResource( $test->get_holiday_within_date() ) 
+            );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    
 
 
 

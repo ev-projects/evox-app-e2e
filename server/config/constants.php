@@ -249,7 +249,7 @@ return [
     ],
 
     # 1 MONTH SCOPE FROM DATE TODAY
-    'ANNIVERSARY_BIRTHDAY' => [
+    'MONTH_SCOPE' => [
         "day_from"      => 1,
         "day_to"        => 30,
     ],

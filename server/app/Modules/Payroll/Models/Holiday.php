@@ -80,4 +80,11 @@ class Holiday extends Model
     }
 
 
+
+    public function get_holiday_within_date(){
+        $holiday = $this->whereRaw("(DAYOFYEAR(date) - DAYOFYEAR(NOW())) >=  ".get_constant("MONTH_SCOPE.day_from")." AND (DAYOFYEAR(date) - DAYOFYEAR(NOW())) <=  ".get_constant("MONTH_SCOPE.day_to")."");
+        return  $holiday->get();
+    }
+
+
 }

@@ -5,10 +5,11 @@
 const initState = {
     birthdayAndAnniv : [],
     teamAttendance : [],
-    teamAttendanceSummary : []
+    teamAttendanceSummary : [],
+    holidays:[]
 }
 
-const clientReducers = (state = initState, action) => {
+const dashboardtReducers = (state = initState, action) => {
     let message = "";
     let result = {...state};
     switch(action.type) {
@@ -33,11 +34,16 @@ const clientReducers = (state = initState, action) => {
                 teamAttendanceSummary : action.data.content,
             }
             break;       
-        
+        case "FETCH_HOLIDAYS":
+            result = {
+                ...state,
+                holidays : action.data.content,
+            }
+            break;   
         default:
             result = state;
     }
     return result;
 }
 
-export default clientReducers;
+export default dashboardtReducers;

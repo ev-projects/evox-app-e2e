@@ -606,10 +606,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function team_anniversary_regularization(){
         $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
-        ->whereRaw("(DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) >= ".get_constant("ANNIVERSARY_BIRTHDAY.day_from")." AND (DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) <=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_to")."");
+        ->whereRaw("(DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) >= ".get_constant("MONTH_SCOPE.day_from")." AND (DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) <=  ".get_constant("MONTH_SCOPE.day_to")."");
 
         $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
-                ->whereRaw("(DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) >=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_from")." AND (DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) <=  ".get_constant("ANNIVERSARY_BIRTHDAY.day_to")."");
+                ->whereRaw("(DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) >=  ".get_constant("MONTH_SCOPE.day_from")." AND (DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) <=  ".get_constant("MONTH_SCOPE.day_to")."");
 
         $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
         $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );

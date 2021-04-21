@@ -48,7 +48,7 @@ class TeamAttendanceSummary extends Component {
   const mapStateToProps = (state) => {
     return {
       user : state.user,
-      AttendanceSummary : state.client.teamAttendanceSummary,
+      AttendanceSummary : state.dashboard.teamAttendanceSummary,
     }
   }
   const mapDispatchToProps = (dispatch) => {

@@ -80,7 +80,7 @@ class BirthdayAnniversary extends Component {
   const mapStateToProps = (state) => {
 	return {
 		user : state.user,
-		birthdayAndAnniv : state.client.birthdayAndAnniv
+		birthdayAndAnniv : state.dashboard.birthdayAndAnniv
 	}
   }
   const mapDispatchToProps = (dispatch) => {

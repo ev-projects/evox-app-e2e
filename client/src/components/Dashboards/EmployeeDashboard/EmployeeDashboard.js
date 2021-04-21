@@ -10,7 +10,7 @@ import Wrapper from "../../Template/Wrapper";
 import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import QuickPunch from "../../../container/QuickPunch";
-
+import Holiday from "../../../container/Holiday";
 
 const EmployeeDashboard = ( props ) => {
 
@@ -74,22 +74,7 @@ const EmployeeDashboard = ( props ) => {
                 <div className="col-lg-4">
                 <Row className="holidays">
                         <Content title="Upcoming holidays" col="12">
-                        <div className="content-table bdr0">
-                            <Table>
-                                <tbody>
-                                  
-                                  <tr>
-                                    <td className="date"><span className="icn"></span><span className="date">April 9</span></td>
-                                    <td className="desc"> Araw ng Kagitingan (Regular Holiday)</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="date"><span className="icn"></span><span className="date">May 1</span></td>
-                                    <td className="desc"> Labor day (Regular Holiday)</td>
-                                  </tr>
-                                 
-                                  </tbody>
-                            </Table>
-                         </div>
+                        <Holiday/>
                         </Content>                  
                     </Row>
                   <Row>

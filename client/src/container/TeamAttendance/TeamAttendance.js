@@ -98,10 +98,10 @@ class TeamAttendance extends Component {
   const validationSchema = Yup.object().shape({});
   
   const mapStateToProps = (state) => {
-	return {
-		user : state.user,
-		teamAttendance : state.client.teamAttendance
-	}
+    return {
+      user : state.user,
+      teamAttendance : state.dashboard
+    }
   }
   const mapDispatchToProps = (dispatch) => {
 	  return {

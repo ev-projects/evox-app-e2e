@@ -11,6 +11,7 @@ import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import BirthdayAnniversary from "../../../container/BirthdayAnniversary";
 import TeamAttendance from "../../../container/TeamAttendance";
+import Holiday from "../../../container/Holiday";
 import TeamAttendanceSummary from "../../../container/TeamAttendanceSummary";
 
 const HandlerDashboard = ( props ) => {
@@ -58,11 +59,9 @@ const HandlerDashboard = ( props ) => {
                   </div>    
                   <div className="birthday-anniv col-5"> 
                       <Row>
-                          <Content title="Celebrations" col="12"><BirthdayAnniversary/></Content>  
+                          <Content title="Celebrations" col="10"><BirthdayAnniversary/></Content>  
                       </Row>
-                      
-  
-                     
+
                   </div>
                 </Row>
               </div>
@@ -70,7 +69,8 @@ const HandlerDashboard = ( props ) => {
   };
 const mapStateToProps = (state) => {
   return {
-      user : state.user
+      user : state.user,
+      data: state.client
   }
 }
 const mapDispatchToProps = (dispatch) => {

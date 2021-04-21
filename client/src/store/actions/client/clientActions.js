@@ -64,3 +64,23 @@ export const teamAttendanceSummary = ( id ) => {
 }
 
 
+// HOLIDAY
+export const thisMonthHoliday = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/get_holidays",
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_HOLIDAYS', 
+                'data'   : result.data
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
