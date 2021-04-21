@@ -13,6 +13,7 @@ import BirthdayAnniversary from "../../../container/BirthdayAnniversary";
 import TeamAttendance from "../../../container/TeamAttendance";
 import Holiday from "../../../container/Holiday";
 import TeamAttendanceSummary from "../../../container/TeamAttendanceSummary";
+import Authenticator from "../../../services/Authenticator";
 
 const HandlerDashboard = ( props ) => {
 
@@ -57,10 +58,22 @@ const HandlerDashboard = ( props ) => {
                           <Content title="Today's attendance" col="12"><TeamAttendance/></Content>                
                       </Row>
                   </div>    
+                                       
                   <div className="birthday-anniv col-5"> 
+                    {!Authenticator.check(['employee'], ['employee_access']) ? 
+                            <Row>
+                            <Content title="Upcoming holidays" col="12">
+                                <Holiday/>
+                                </Content>   
+                                </Row>
+                            :
+                            (null)
+                        }
+                        
+                        
                       <Row>
                           <Content title="Celebrations" col="10"><BirthdayAnniversary/></Content>  
-                      </Row>
+                      </Row> 
 
                   </div>
                 </Row>

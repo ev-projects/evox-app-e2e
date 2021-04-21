@@ -11,6 +11,7 @@ import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import QuickPunch from "../../../container/QuickPunch";
 import Holiday from "../../../container/Holiday";
+import Authenticator from "../../../services/Authenticator";
 
 const EmployeeDashboard = ( props ) => {
 
@@ -72,11 +73,16 @@ const EmployeeDashboard = ( props ) => {
                
                 </div>
                 <div className="col-lg-4">
-                <Row className="holidays">
-                        <Content title="Upcoming holidays" col="12">
-                        <Holiday/>
-                        </Content>                  
-                    </Row>
+                      {Authenticator.check(['employee'], ['employee_access']) ? 
+                            <Row>
+                            <Content title="Upcoming holidays" col="12">
+                                <Holiday/>
+                                </Content>   
+                                </Row>
+                            :
+                            (null)
+                      }
+                    
                   <Row>
                   <div className="col-lg-12">
                   <div className="card">

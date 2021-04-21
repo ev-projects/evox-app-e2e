@@ -13,7 +13,6 @@ import * as yup from "yup";
 import EmployeeDashboard from "../../components/Dashboards/EmployeeDashboard";
 import Authenticator from "../../services/Authenticator";
 import HandlerDashboard from "../../components/Dashboards/HandlerDashboard";
-
 class Dashboard extends Component {
     constructor(props){
       super(props);
