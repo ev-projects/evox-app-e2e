@@ -209,6 +209,7 @@ const MyTeamListTable = (props) => {
             <Table striped bordered hover>
               <thead>
                 <tr>
+                <th>Emp #</th>
                   <th>Name</th>
                   <th>Job Title</th> 
                   <th>Department</th>
@@ -219,22 +220,26 @@ const MyTeamListTable = (props) => {
               <tbody>
                 { list.data.map((user) => {
                     return <tr>
+                    <td>{user.emp_num}</td>
                     <td>{user.full_name}</td>
                     <td>{user.job_title} </td>
                     <td>{user.department} </td>
                     <td>{user.email} </td>
                     <td className="actions">
-                      <Link to={{
+  
+                      
+                      &nbsp;&nbsp;&nbsp;
+                      { !Authenticator.checkRole('client') ? 
+                        <span>
+                          <Link to={{
                               pathname: global.links.dtr + user.id,
                               resetInitialState: true
                             }}
-                          title="View DTR"
-                      >
-                        <i className="fa fa-clock-o ev-color" aria-hidden="true"></i>
-                      </Link>
-                      &nbsp;&nbsp;&nbsp;
-                      { ! Authenticator.check( 'client', 'client_access' ) ? 
-                        <span>
+                              title="View DTR"
+                          >
+                            <i className="fa fa-clock-o ev-color" aria-hidden="true"></i>
+                          </Link>
+                          &nbsp;&nbsp;
                           <Link to={{
                                   pathname: global.links.schedule_assign_user + user.id
                                 }}
@@ -242,7 +247,7 @@ const MyTeamListTable = (props) => {
                           >
                             <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
                           </Link>
-                          &nbsp;&nbsp;&nbsp;
+                          &nbsp;&nbsp;
                         </span>
                         : 
                         null
