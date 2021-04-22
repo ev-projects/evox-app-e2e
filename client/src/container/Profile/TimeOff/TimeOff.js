@@ -1,9 +1,9 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import "./TimeOff.css";
-import { Container,Row,Col,Table,Image, Spinner,Button,Form,InputGroup,FormControl   } from 'react-bootstrap';
+import { Container,Row,Col,Table,Image, Spinner,Button,Form,InputGroup,FormControl, Tabs, Tab  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { useFormikContext } from 'formik';
-import { fetchTimeOff ,changePassword } from '../../../store/actions/profile/profileActions' ;
+import { fetchTimeOff } from '../../../store/actions/profile/profileActions' ;
 
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
@@ -20,8 +20,90 @@ import LeaveCredits from "../LeaveCredits";
 
 const TimeOff = ( props ) => {
 
-    const { profile, user } = props;
+   const { profile, user } = props;
+   let { start_date, end_date }  = props;
 
+   const [viewType, setViewType] = useState("month");
+
+   const handleChangeViewType = ( type ) => {
+        switch( type ){
+
+            // Change the view type to "day" and set the current start_date as the basis of the start and end date.
+            case "day":
+                start_date.set(moment().startOf('day').toObject());
+                end_date.set(start_date.toObject()).endOf('day');
+                break;
+
+            // Change the view type to "week" and set the current start_date as the basis of the start and end date.
+            case "week":
+                start_date.set(moment().startOf('week').toObject());
+                end_date.set(start_date.toObject()).endOf('week');
+                break;
+
+            // Change the view type to "month" and set the current start_date as the basis of the start and end date.
+            case "month":
+                start_date.set(moment().startOf('month').toObject());
+                end_date.set(start_date.toObject()).endOf('month');
+                break;
+        }
+        props.fetchTimeOff( profile.details.id, start_date, end_date )
+        setViewType(type);
+    }
+
+   const handleChangeNavigateAction = ( action ) => {
+
+        switch( action ){
+
+            // If the action type is "next"
+            case "next":
+                switch( viewType ){
+
+                    // If the viewType is "day", move 1 day forward.
+                    case "day":
+                        start_date.add(1, 'day').startOf('day');
+                        end_date.set(start_date.toObject()).endOf('day');
+                        break;
+
+                    // If the viewType is "week", move 1 week forward.
+                    case "week":
+                        start_date.add(1, 'week').startOf('week');
+                        end_date.set(start_date.toObject()).endOf('week');
+                        break;
+
+                    // If the viewType is "month", move 1 month forward.
+                    case "month":
+                        start_date.add(1, 'month').startOf('month');
+                        end_date.set(start_date.toObject()).endOf('month');
+                        break;
+                }
+                break;
+
+            // If the action type is "next"
+            case "prev":
+                switch( viewType ){
+
+                    // If the viewType is "day", move 1 day backward.
+                    case "day":
+                        start_date.subtract(1, 'day').startOf('day');
+                        end_date.set(start_date.toObject()).endOf('day');
+                        break;
+
+                    // If the viewType is "week", move 1 week backward.
+                    case "week":
+                        start_date.subtract(1, 'week').startOf('week');
+                        end_date.set(start_date.toObject()).endOf('week');
+                        break;
+
+                    // If the viewType is "month", move 1 month backward.
+                    case "month":
+                        start_date.subtract(1, 'month').startOf('month');
+                        end_date.set(start_date.toObject()).endOf('month');
+                        break;
+                }
+                break;
+        }
+        props.fetchTimeOff( profile.details.id, start_date, end_date )
+   }
 
    return ( 
         Validator.isValid( profile ) ?
@@ -34,7 +116,25 @@ const TimeOff = ( props ) => {
                 null
             }    
             </div>     
-            <div className="col-lg-8  timeoff-col" >
+            <div className="col-lg-8" >
+                <Row className="leaves-list">
+                    <div className="view-type-tabs">
+                        <Tabs defaultActiveKey="home" 
+                            id="uncontrolled-tab-example"
+                            defaultActiveKey={viewType}
+                            onSelect={key => handleChangeViewType(key) }
+                        >
+                            <Tab eventKey="day" title="Today" type="submit"></Tab>
+                            <Tab eventKey="week" title="Weekly" type="submit"></Tab>
+                            <Tab eventKey="month" title="Monthly" type="submit"></Tab>
+                        </Tabs>
+                    </div>
+                    <div className="navigator">
+                        <i className="fa fa-angle-left view-navigate" onClick={(e) => handleChangeNavigateAction("prev")} /> 
+                        <i className="fa fa-angle-right view-navigate"  onClick={(e) => handleChangeNavigateAction("next")} />
+                    </div>
+                    <div className="dates-label">{ Validator.isValid( start_date ) && Validator.isValid( end_date ) ? (start_date.format("LL") === end_date.format("LL") ? start_date.format("LL") : start_date.format("LL") + " - " + end_date.format("LL") )  : null }</div>
+                </Row>
             { profile.leaves_list?.length > 0 ? 
                 <div>
                 { profile.leaves_list.slice().reverse().map(function (leave, i) {
@@ -56,7 +156,7 @@ const TimeOff = ( props ) => {
                 }
                 </div>
                 :
-                <div className="no-leaves-row">You don't have any leaves this month.</div>
+                <div className="no-leaves-row">You don't have any leaves this {viewType}.</div>
             } 
             </div>
         </Row>
