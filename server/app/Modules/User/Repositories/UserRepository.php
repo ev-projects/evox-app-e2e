@@ -537,8 +537,8 @@ class UserRepository implements UserRepositoryInterface{
                             $user_collection->orderBy('first_name',  $order[1])
                                 ->orderBy('last_name',  $order[1]);
                       }
-
-                    
+                }else{
+                    $user_collection->orderBy('emp_num',  'asc');
                 }
 
                 

@@ -48,12 +48,6 @@ const HandlerDashboard = ( props ) => {
   
                 <Row>
                   <div className="col-7">
-                      <Row className="team-summary">
-                      <Content title="This Week's attendance summary" col="12">
-                      <TeamAttendanceSummary/>
-                      </Content>
-                          
-                      </Row>
                       <Row className="team-attendance">  
                           <Content title="Today's attendance" col="12"><TeamAttendance/></Content>                
                       </Row>

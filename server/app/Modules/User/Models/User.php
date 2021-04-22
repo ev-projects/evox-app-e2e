@@ -504,11 +504,12 @@ class User extends Authenticatable implements JWTSubject
     public function departments_team($department_id)
     {
         // Fetch department team if Supervisor
-        if( $this->hasRole( get_constant('USER_ROLES.supervisor') )  ) { 
+        if( $this->hasRole( get_constant('USER_ROLES.supervisor') ) || $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
             $teams_id_array = Team::where( "department_id" , $department_id );
         } elseif( $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
             $teams_id_array =  $this->belongsToMany(Team::class, 'team_handlers', 'user_id', 'team_id')->where( "department_id" ,$department_id );
         }
+
 
         return $teams_id_array->get();
     }

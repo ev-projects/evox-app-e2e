@@ -211,7 +211,8 @@ const MyTeamListTable = (props) => {
                 <tr>
                   <th>Name</th>
                   <th>Job Title</th> 
-                  <th>Status</th>
+                  <th>Department</th>
+                  <th>Email</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -220,7 +221,8 @@ const MyTeamListTable = (props) => {
                     return <tr>
                     <td>{user.full_name}</td>
                     <td>{user.job_title} </td>
-                    <td className="emp-status"> <Status status={user.is_active} /></td>
+                    <td>{user.department} </td>
+                    <td>{user.email} </td>
                     <td className="actions">
                       <Link to={{
                               pathname: global.links.dtr + user.id,

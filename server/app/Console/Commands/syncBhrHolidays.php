@@ -53,7 +53,7 @@ class syncBhrHolidays extends Command
  
             $payroll_cutoff = $this->payroll->get_payroll_cutoff();
             $start_date = $payroll_cutoff->start_date;
-            $end_date = $payroll_cutoff->end_date;
+            $end_date =  Carbon::now()->addMonth(3)->format("Y-m-d");
 
 
             
