@@ -73,7 +73,7 @@ const EmployeeDashboard = ( props ) => {
                
                 </div>
                 <div className="col-lg-4">
-                      {Authenticator.check(['employee'], ['employee_access']) ? 
+                      { !Authenticator.checkRole('client')  ? 
                             <Row>
                             <Content title="Upcoming holidays" col="12">
                                 <Holiday/>

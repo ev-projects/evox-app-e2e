@@ -60,7 +60,7 @@ const HandlerDashboard = ( props ) => {
                   </div>    
                                        
                   <div className="birthday-anniv col-5"> 
-                    {!Authenticator.check(['employee'], ['employee_access']) ? 
+                    {Authenticator.checkRole('client') ? 
                             <Row>
                             <Content title="Upcoming holidays" col="12">
                                 <Holiday/>
