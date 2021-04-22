@@ -157,11 +157,10 @@ const MyTeamListFilter = (props) => {
               
               </Col> 
             </Row>
-            <Row>
-            <Col size="6">
-              </Col> 
-              <Col size="2"> 
-                Sort:
+            <Row className="sortby">
+            
+              <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12"> 
+                <label>Sort</label>
                 <div className="form-group">
                     <select
                     className="form-control" 
@@ -177,12 +176,11 @@ const MyTeamListFilter = (props) => {
                     <option value="job_title:desc" label="Job Title: Descending" />
                     </select>
                 </div>
-                </Col>
-                <Col size="2">
+               
                 <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
                     Apply
                   </Button>
-              </Col> 
+              </div> 
             </Row>
             </React.Fragment>;
 }

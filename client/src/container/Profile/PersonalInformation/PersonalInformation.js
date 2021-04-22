@@ -29,8 +29,11 @@ const PersonalInformation = ( props ) => {
         <Row>            
             <div className="col-lg-8" >
                 <h4>Basic Information</h4>
-                <Row>
-                    <div className="col-lg-6 col-md-12 col-sm-12">  
+                
+                   
+                    { !Authenticator.checkRole('client') ? 
+                    <Row>
+                     <div className="col-lg-6 col-md-12 col-sm-12">  
                         <label> Status: </label>    
                         { profile.details.is_active != null ?
                         <InputGroup>
@@ -46,14 +49,19 @@ const PersonalInformation = ( props ) => {
                         :
                         null
                         }
-                    </div>   
-                    <div className="col-lg-6 col-md-12 col-sm-12"> 
+                    </div>
+                      <div className="col-lg-6 col-md-12 col-sm-12"> 
                         <label> Employee Number: </label>    
                         <InputGroup>
                             <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.emp_num}  />
                         </InputGroup>
                     </div> 
-                </Row>
+                        </Row>
+                        : 
+                        null
+                      }   
+                    
+                
                 <Row>
                     <div className="col-lg-6 col-md-12 col-sm-12"> 
                         <label> Full Name: </label> 
@@ -68,7 +76,8 @@ const PersonalInformation = ( props ) => {
                         </InputGroup> 
                     </div>     
                 </Row>
-                <Row>  
+                 { !Authenticator.checkRole('client') ? 
+                      <Row>  
                     <div className="col-lg-4 col-md-12  col-sm-12">  
                         <label> Birth Date: </label>    
                         <InputGroup>
@@ -76,6 +85,11 @@ const PersonalInformation = ( props ) => {
                         </InputGroup> 
                     </div> 
                 </Row>
+                        
+                        : 
+                        null
+                      }   
+               
                 <hr /> 
                 <h4>Contact Information</h4>
                 {!Authenticator.check('client') ?

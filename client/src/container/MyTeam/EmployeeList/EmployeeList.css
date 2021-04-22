@@ -1,3 +1,32 @@
 .ev-color{
     color: #82af13 !important;
 }
+.sortby {
+    display: block !important;
+    margin: 0;
+    position: relative;
+    top: 33px;
+    z-index: 1000;
+}
+
+.sortby > div
+ {
+    float: right;
+    max-width: 400px;
+    flex: unset;
+}
+.sortby label {
+    float: left;
+    background: #ccc;
+    padding: 6px;
+    display: inline-block;
+}
+.sortby .form-group {
+    float: left;
+    max-width: 200px;
+    margin-right: 10px;
+}
+.sortby .btn {
+    float: left;
+    max-width: 100px;
+}
