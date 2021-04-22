@@ -6,11 +6,12 @@ import Formatter from "../../../services/Formatter";
 
 
 // BIRTHDAY ANNIV
-export const birthdayAnniv = ( id ) => {
+export const birthdayAnniv = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/"+ id +"/get_birthday_anniversary",
+            url: "/user/get_birthday_anniversary",
+            params    : params
         })
         .then(result => {
             dispatch({
@@ -25,16 +26,17 @@ export const birthdayAnniv = ( id ) => {
 }
 
 // TEAM ATTENDANCE STATUS
-export const teamAttendanceStatus = ( id ) => {
+export const teamAttendanceStatus = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/"+ id +"/get_team_attendance",
+            url: "/user/get_team_attendance",
+            params    : params
         })
         .then(result => {
             dispatch({
-                'type'  : 'FETCH_TEAM_ATTENDANCE_STATUS', 
-                'data'   : result.data
+                'type'      : 'FETCH_TEAM_ATTENDANCE_STATUS', 
+                'data'      : result.data,
             })
         })
         .catch(e => {

@@ -29,7 +29,7 @@ class TeamAttendance extends Component {
 
     
 	render = () => {  
-		const { teamAttendance } = this.props;
+		const { teamAttendance } = this.props.teamAttendance;
     return(
       <div >
       { teamAttendance.length > 0  ?

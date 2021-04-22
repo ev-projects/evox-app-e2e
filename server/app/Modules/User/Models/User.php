@@ -26,6 +26,7 @@ use App\Modules\Request\Models\WorkFromHome;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
+use Auth;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -520,7 +521,7 @@ class User extends Authenticatable implements JWTSubject
         /* Gets the following: 
             1. Departments that you handle via 'department_handlers' table
             2. Departments of the Teams you are handling via 'team_handlers' 
-         */
+        */
         $departments_id_array = $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id')->pluck('id')->toArray();
         foreach( $this->teams_handled()->get() as $team) {
             $departments_id_array = array_merge( 
@@ -585,7 +586,13 @@ class User extends Authenticatable implements JWTSubject
         $time_from = $current_time->subHour( 6 );
         $time_to = $current_time->addHour( 6 );
 
-        $team_dtr = Dtr::whereIn('user_id',auth()->user()->users_handled()->pluck('id')->toArray())
+        $user_list = Auth::user()->users_handled();
+
+        if( is_valid( request()->get('department_id') ) ) {
+            $user_list->where('department_id', '=', request()->get('department_id'));
+        }
+
+        $team_dtr = Dtr::whereIn('user_id', $user_list->pluck('id')->toArray())
         ->whereRaw("
                 ( 
                     start_datetime BETWEEN  '".  $time_from->timestamp."' AND '".  $time_to->timestamp."'
@@ -606,16 +613,23 @@ class User extends Authenticatable implements JWTSubject
 
 
     public function team_anniversary_regularization(){
-        $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
+
+        $user_list = Auth::user()->users_handled();
+
+        if( is_valid( request()->get('department_id') ) ) {
+            $user_list->where('department_id', '=', request()->get('department_id'));
+        }
+
+        $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', $user_list->pluck('id')->toArray() )
         ->whereRaw("(DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) >= ".get_constant("MONTH_SCOPE.day_from")." AND (DAYOFYEAR(birthdate) - DAYOFYEAR(NOW())) <=  ".get_constant("MONTH_SCOPE.one_month")."");
 
-        $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
+        $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', $user_list->pluck('id')->toArray() )
                 ->whereRaw("(DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) >=  ".get_constant("MONTH_SCOPE.day_from")." AND (DAYOFYEAR(date_hired) - DAYOFYEAR(NOW())) <=  ".get_constant("MONTH_SCOPE.one_month")."");
 
         $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
         $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
 
-        $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
+        $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', $user_list->pluck('id')->toArray() )
                     ->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' ");
 
         $birthdate->union($anniversary)->union($regularization)->orderByRaw('Month(date),Day(date)')->union($regularization);

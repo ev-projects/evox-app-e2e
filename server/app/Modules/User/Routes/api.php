@@ -57,6 +57,12 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
 
     # Get holiday
     Route::get('get_holidays', 'UserController@get_holidays');
+
+    # Get User Attendance
+    Route::get('get_team_attendance', 'ClientController@get_team_attendance');
+
+    # Get Birthday Anniversary
+    Route::get('get_birthday_anniversary', 'ClientController@get_birthday_anniversary');
 });
 #####################################################################################################
 
@@ -75,10 +81,6 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::get('time_off/{start_date}/{end_date}', 'UserController@time_off');
 
     Route::get('leave_credits', 'UserController@leave_credits');
-
-    Route::get('get_birthday_anniversary', 'ClientController@get_birthday_anniversary');
-
-    Route::get('get_team_attendance', 'ClientController@get_team_attendance');
 
     Route::get('get_team_attendance_summary', 'ClientController@get_team_attendance_summary');
 

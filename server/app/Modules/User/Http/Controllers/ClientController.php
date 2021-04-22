@@ -38,7 +38,7 @@ class ClientController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function get_birthday_anniversary( $id ){   
+    public function get_birthday_anniversary( ){   
         try {
             log_activity( trans('messages.get_anniversary_birthday_attempt') );
             $user = User::find(auth()->user()->id);
@@ -58,7 +58,7 @@ class ClientController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function get_team_attendance( $id ){   
+    public function get_team_attendance( ){   
         try {
             log_activity( trans('messages.get_team_attendance_attempt') );
             $user = User::find(auth()->user()->id);
