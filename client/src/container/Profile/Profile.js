@@ -50,6 +50,12 @@ class Profile extends Component {
                 case "time_off":
                     const start_date = moment().startOf('month');
                     const end_date =  moment().endOf('month');
+                    
+                    this.setState({
+                        start_date: start_date,
+                        end_date: end_date
+                    })
+
                     this.props.fetchLeaveCredits(this.props.params.id);
                     this.props.fetchTimeOff(this.props.params.id, start_date, end_date);
                     break;
@@ -124,7 +130,7 @@ class Profile extends Component {
                                         null
                                     }
                                     { this.state.current_tab == "time_off" && profile.leaves_list != [] ? 
-                                        <TimeOff  />
+                                        <TimeOff start_date={this.state.start_date} end_date={this.state.end_date}/>
                                         :
                                         null
                                     }
