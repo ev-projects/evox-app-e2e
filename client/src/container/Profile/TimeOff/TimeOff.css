@@ -45,6 +45,27 @@
 .leaves-list .navigator{margin-left: 8px; margin-right:8px;color: #82af13}
 .leaves-list .dates-label{margin-top: 8px;}
 .leaves-list .view-type-tabs .nav-tabs{border: 0 !important;}
-.leaves-list .view-type-tabs a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px;}
+.leaves-list .view-type-tabs a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 2px;}
 .leaves-list .view-type-tabs a.active {background-color: #82af13  !important; color: #fff !important;}
 .leaves-list .view-type-tabs button.active a{color:#82af13 !important;}
+
+.custom-date {
+    display: block;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 170px !important;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.custom-filter-btn{
+    height: calc(1.5em + .75rem + 2px)
+}
