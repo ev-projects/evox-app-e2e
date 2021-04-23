@@ -199,7 +199,7 @@ const TimeOff = ( props ) => {
                                 <LeaveIcon type={leave.type}/>
                             </div>                  
                             <div className="details-column"> 
-                                <b className="time-off-date">{moment(leave.date).format("MMM DD")}</b><br/>
+                                <b className="time-off-date">{moment(leave.date).format("ll")}</b><br/>
                                 <LeaveStatus status={leave.status}/> {parseFloat(leave.amount)} day of <b>{leave.type}</b>
                             </div>                  
                             <div className="note-column"> 
