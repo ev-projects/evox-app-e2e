@@ -47,6 +47,7 @@
     font-size: 50px;
 }
 .profile-content .row{padding:10px 0;}
+.profile-content .input-group .year-dropdown{margin: 0 !important; padding: 0}
 .year-dropdown{padding: 0; margin: 0}
 .profile-header{width: 80%; margin-left: 25px}
 .profile-header .picture {

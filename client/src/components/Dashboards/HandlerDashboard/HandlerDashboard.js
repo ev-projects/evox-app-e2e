@@ -99,12 +99,12 @@ import { teamAttendanceStatus,birthdayAnniv } from '../../../store/actions/clien
               }
               </Row>
               <Row>
-                <div className="col-7">
+                <div className="col-lg-7 col-md-6 col-sm-12">
                     <Row className="team-attendance">  
                         <Content title="Today's attendance" col="12"><TeamAttendance/></Content>                
                     </Row>
                 </div>    
-                <div className="birthday-anniv col-5"> 
+                <div className="birthday-anniv col-lg-5 col-md-6 col-sm-12"> 
                   {Authenticator.checkRole('client') ? 
                           <Row>
                           <Content title="Upcoming holidays" col="12">

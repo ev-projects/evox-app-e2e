@@ -269,7 +269,7 @@ export const LeaveStatus = ( props ) => {
             status = <i className="fa fa-times-circle" style={{"color": '#bd2130'}} /> 
             break;
         case "canceled":
-            status = <i className="fa fa-ban" style={{"color": '#bd2130'}} /> 
+            status = <i className="fa fa-ban" style={{"color": '#999'}} /> 
             break;
     }
     return status;

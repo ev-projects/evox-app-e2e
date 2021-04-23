@@ -6,7 +6,8 @@ table .center{
 	text-align: center;
 }
 .dtr-table th{padding: 10px 3px !important; border: 1px solid #eaeaea !important;vertical-align: middle  !important; text-align: center;}
-.dtr-filter{padding: 0 !important; margin: 0 0 20px 0}
+.dtr-filter{padding: 0 !important; margin: 0 0 20px 0; z-index: 1000}
+.dtr-filter > div{padding:0 1% 0 0;}
 .dtr-table tr{background: #fff}
 .dtr-table td{border: 1px solid #eaeaea;padding: 3px 3px !important}
 .body {
@@ -87,7 +88,7 @@ float: left;
 
 }
 .dtr-filter {
-    width: 100% !important;
+    width: 101% !important;
     float: none;
     margin-bottom: 20px;
 
@@ -124,10 +125,7 @@ float: left;
 .SummaryBlock .ot .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
 .SummaryBlock .otnd .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
 
-.SummaryBlock .col-lg-1 {
-    flex: 0 0 7.333333%;
-    max-width: 7.333333%;
-}
+
 
 .SummaryBlock .toast{box-shadow: none !important; text-align: center;}
 .SummaryBlock .toast-body {
@@ -139,9 +137,8 @@ float: left;
 }
 .SummaryBlock .holidays {
     border: 1px #eee solid;
-    margin: 0 3px;
-    width: 18%;
-    padding: 5px 10px 0;
+    margin: 0px;
+    padding: 10px 10px 0 !important;
     overflow: hidden;
 }
 
@@ -208,7 +205,19 @@ float: left;
     max-width: 31.333333%;
 }
 }
+@media only screen and (max-width: 650px) {
+    
+.col-lg-1 {
+    flex: 0 0 7.333333%;
+    max-width: 7.333333%;
+}
+
+}
 @media only screen and (min-width: 576px){
+    .col-sm-4 {
+    flex: 0 0 7.333333%;
+    max-width: 7.333333%;
+}
   .SummaryBlock .col-sm-2 {
     margin: 0 !important;
     padding: 0 3px;

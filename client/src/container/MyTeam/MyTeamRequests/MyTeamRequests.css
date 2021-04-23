@@ -4,7 +4,7 @@
     position: relative;
     top: 12px;
     left: 21px;
-    z-index: 100;
+    z-index: 1000;
 }
 .request-tab .nav-tabs{border: 0 !important;}
 .request-tab a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px}
@@ -112,3 +112,22 @@
     color: red !important;
 }
 .form-control{font-size: inherit !important}
+
+
+@media only screen and (max-width: 650px) {
+
+.filters.myrequest-filter {margin:0; width: 100%; float: none;}
+.filters.myrequest-filter .date-range {
+    width: 75% !important;
+    flex: 0 75%;
+}
+.filters .date-range > div > div{width: 31%; float: left; margin-right: 5px}
+.request-tab{top:18px;}
+.request-tab .nav-tabs a:nth-child(1){
+    display: none
+}
+.request-tab a{padding: 5px 10px}
+.request-tab .nav-tabs a{
+    font-size: .875rem
+}
+}
