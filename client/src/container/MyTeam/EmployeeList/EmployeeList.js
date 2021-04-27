@@ -69,7 +69,9 @@ class EmployeeList extends Component {
 
 
   departmentSelected = (departmentId) => {
-    this.props.fetchTeamUnderDepartment(this.props.user.id, departmentId);
+    if( departmentId != '' ) {
+      this.props.fetchTeamUnderDepartment(this.props.user.id, departmentId);
+    }
   }
   
   render = () => {  
