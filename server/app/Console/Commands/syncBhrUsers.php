@@ -19,7 +19,7 @@ class syncBhrUsers extends Command
      *
      * @var string
      */
-    protected $signature = 'sync_bhr_users';
+    protected $signature = 'sync_bhr_users:send {all?}';
 
     /**
      * The console command description.
@@ -64,13 +64,18 @@ class syncBhrUsers extends Command
              * 
              */
             $user_supervisor_pivot_array = [];
-
+        
             // Use the date yesterday.
             $since_date_to_sync = Carbon::today()->subDays(1)->format('Y-m-d') . 'T00:00:00-00:00';
 
             # 1.
             # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
-            $bhr_user_number_array = $this->bhr->get_changed_users( $since_date_to_sync );
+            if($this->argument('all') == 'all'){
+                $bhr_user_number_array = $this->bhr->get_all_bhr_user_numbers( );
+            }else{
+                $bhr_user_number_array = $this->bhr->get_changed_users( $since_date_to_sync );
+            }
+
             # 2.
             # Iterate the actual BHR User Numbers array
             foreach( $bhr_user_number_array as $bhr_user_number ){
