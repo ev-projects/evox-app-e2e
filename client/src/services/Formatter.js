@@ -122,7 +122,7 @@ class Formatter {
 
       // Iterate the array to formulate the final list.
       for (var i = 0; i < array.length; i++) {
-        console.log(array[i])
+        
         // Create the item object
         var item = {
           label  : array[i][label_key],
