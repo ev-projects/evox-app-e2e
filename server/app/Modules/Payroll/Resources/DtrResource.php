@@ -67,25 +67,22 @@ class DtrResource extends JsonResource
                 }
             }
 
-            $attendance_status = '';
 
-            # Check if absent
-            if( $this->isAbsent() ){
-                $attendance_status = get_constant("ATTENDANCE_STATUS.absent");
+            # Setting of Attendance Status of the current DTR. (Default status is Absent)
+            $attendance_status = get_constant("ATTENDANCE_STATUS.absent");
 
             # If has an Approved Leave, set status to the parsre-to-slug Leave Type
-            }elseif( $this->on_leave()->get()->count() > 0 ) {
+            if( is_valid( $approved_leave_type ) ) {
                 $attendance_status = $approved_leave_type;
 
-            # If dtr tag is restday, assign restday
+            # If has a valid time in and out and has Schedule, set status to Present
             } elseif( $this->is_rest_day ) {
                 $attendance_status = get_constant("ATTENDANCE_STATUS.rest_day");
-
-            # If has complete timelogs, assign present
-            }   elseif( $this->hasCompleteTimelogs() ) {
+            }   elseif( $this->hasCompleteTimelogs() /*&& $this->hasSchedule()*/ ) {
                 $attendance_status = get_constant("ATTENDANCE_STATUS.present");
 
-            } 
+            # If set as Rest Day, set status as Rest Day.
+            }
 
             # Create Resource for Holidays
             $holidays = [];
