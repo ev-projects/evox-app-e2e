@@ -648,7 +648,7 @@ class UserController extends Controller
 
 
     # This function registers User to the system
-    public function get_holidays( ){
+    public function holidays( ){
         try {
             log_activity( trans('messages.get_holidays_attempt') );
             $test = new Holiday();

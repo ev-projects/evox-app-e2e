@@ -10,7 +10,7 @@ export const birthdayAnniv = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/get_birthday_anniversary",
+            url: "/user/birthday_anniversary",
             params    : params
         })
         .then(result => {
@@ -30,7 +30,7 @@ export const teamAttendanceStatus = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/get_team_attendance",
+            url: "/user/team_attendance",
             params    : params
         })
         .then(result => {
@@ -71,7 +71,7 @@ export const thisMonthHoliday = ( id ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/get_holidays",
+            url: "/user/holidays",
         })
         .then(result => {
             dispatch({

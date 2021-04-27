@@ -60,7 +60,10 @@ class EmployeeList extends Component {
   }
 
   componentWillMount(){
-    
+    // Fetch the my Team List upon mounting of the component if the My Team List is not yet initially loaded.
+    if( ! Validator.isValid( this.props.myTeamList.list ) ) {
+      this.props.fetchMyTeamList( this.props.user.id, this.state.filters);
+    }
 
   }
 
@@ -102,7 +105,7 @@ class EmployeeList extends Component {
   }
 
 const MyTeamListFilter = (props) => {
-  const { values, handleChange, setFieldValue } = useFormikContext();
+  const { values, handleChange, setFieldValue,handleSubmit } = useFormikContext();
   const { team_list } = props.props.myTeamList;
 
     return <React.Fragment> <Row className="filters filter-dtr">  
@@ -166,7 +169,7 @@ const MyTeamListFilter = (props) => {
                     className="form-control" 
                       name="order_by"
                       value={values.order_by}
-                      onChange={handleChange}
+                      onChange={(e) => { setFieldValue('order_by', e.target.value);   handleSubmit();}}
                       style={{ display: 'block' }}
                     >
                     <option label="Default" />
@@ -176,10 +179,7 @@ const MyTeamListFilter = (props) => {
                     <option value="job_title:desc" label="Job Title: Descending" />
                     </select>
                 </div>
-               
-                <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
-                    Apply
-                  </Button>
+
               </div> 
             </Row>
             </React.Fragment>;
