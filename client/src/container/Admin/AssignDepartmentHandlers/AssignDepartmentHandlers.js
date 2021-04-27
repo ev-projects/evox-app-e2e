@@ -32,9 +32,10 @@ class AssignDepartmentHandlers extends Component {
 
     this.initialState = {
       reloadingDepartmentList: false,
-      showSupervisorList: false,
+      showList: false,
       selectedDepartment : null,
-      selectedValues: []
+      selectedSupervisors: [],
+      selectedClients: []
     }
 
     this.state = this.initialState;  
@@ -51,12 +52,13 @@ class AssignDepartmentHandlers extends Component {
     
         if( values[key] != null ) {
             switch( key ) {
-                case "user_id":
-                    let user_id = [];
+                case "supervisor_user_id":
+                case "client_user_id":
+                    let user_id = ( formData['user_id'] != undefined ) ? formData['user_id']  : [];
                     for (var i = 0; i < values[key].length; i++) {
                       user_id.push(values[key][i]['value']);
                     }
-                    formData[key] = user_id;
+                    formData['user_id'] = user_id;
                     break;
                 default:
                     formData[key] = values[key];
@@ -66,7 +68,7 @@ class AssignDepartmentHandlers extends Component {
     }
 
     // If action is NULL, it means it's either store/update
-    if (window.confirm("Are you sure you want to assign these Supervisors on the selected Department?")) {
+    if (window.confirm("Are you sure you want to assign these Supervisors & Clients on the selected Department?")) {
 
         this.setState({
           reloadingDepartmentList: true
@@ -98,29 +100,46 @@ class AssignDepartmentHandlers extends Component {
   }
 
   // Function for handling the onChange of Selected Supervisor
-  setSelectedValues = ( values ) => {
+  setSelectedSupervisors = ( values ) => {
     this.setState({
-        selectedValues: values
+        selectedSupervisors: values
+    });
+  }
+
+  // Function for handling the onChange of Selected Clients
+  setSelectedClients = ( values ) => {
+    this.setState({
+        selectedClients: values
     });
   }
 
   componentWillReceiveProps = async(nextProps) => {
 
-    // If the Department Handlers is updated, set the State for the selectedValues in the Department Handlers
+    // If the Department Handlers is updated, set the State for the selectedSupervisors in the Department Handlers
     if( nextProps.department_handlers != this.props.department_handlers ) {
 
       if( Validator.isValid( this.state.selectedDepartment )  )  {
 
+        // Filter the selected supervisors from the department handlers 
+        let selected_supervisors = nextProps.department_handlers.filter(function(department_handler) {
+            return nextProps.supervisor.findIndex((supervisor) => supervisor.id === department_handler.id) === -1 ? false : true
+        });
+
+        // Filter the selected client from the department handlers 
+        let selected_clients = nextProps.department_handlers.filter(function(department_handler) {
+            return nextProps.client.findIndex((client) => client.id === department_handler.id) === -1 ? false : true
+        });
         // Set the Department Handlers as Selected Value
         this.setState({
-            selectedValues:  Formatter.array_to_multiselect_array( nextProps.department_handlers, 'full_name', 'id' ),
-            showSupervisorList : true
+            selectedSupervisors:  Formatter.array_to_multiselect_array( selected_supervisors, 'full_name', 'id' ),
+            selectedClients:  Formatter.array_to_multiselect_array( selected_clients, 'full_name', 'id' ),
+            showList : true
         }); 
         
       } else {
 
           this.setState({
-            showSupervisorList : false
+            showList : false
           });
 
       }
@@ -131,6 +150,7 @@ class AssignDepartmentHandlers extends Component {
   componentWillMount = async() => {
 
     await this.props.fetchUserList('supervisor', {page : 'all'});
+    await this.props.fetchUserList('client', {page : 'all'});
     await this.props.fetchDepartmentList();
 
   }
@@ -139,11 +159,15 @@ class AssignDepartmentHandlers extends Component {
 
     // Iterates the Option to be shown for the Supervisor List
     let supervisor_list = Formatter.array_to_multiselect_array( this.props?.supervisor, 'full_name', 'id' );
+
+    // Iterates the Option to be shown for the Client List
+    let client_list = Formatter.array_to_multiselect_array( this.props?.client, 'full_name', 'id' );
     
     // Declares the Initial Values of the Form base.
     const initialValues = {
         department_id : this.state.selectedDepartment != undefined ? this.state.selectedDepartment : null,
-        user_id : this.state.selectedValues != undefined ? this.state.selectedValues : null
+        supervisor_user_id : this.state.selectedSupervisors != undefined ? this.state.selectedSupervisors : null,
+        client_user_id : this.state.selectedClients != undefined ? this.state.selectedClients : null
     };
 
     // Show the form if the Department and Supervisor list has already loaded.
@@ -196,20 +220,35 @@ class AssignDepartmentHandlers extends Component {
                                 </Row>
 
                                 { /** Show the Supervisor List depending on the showSupervisorList State */
-                                  this.state.showSupervisorList ?
+                                  this.state.showList ?
+                                  <React.Fragment>
                                   <Row>  
                                     <div className="form-group"  style={{'width': '100%', 'paddingLeft': '12.5px'}}>
                                         <label>Supervisor List:</label>
                                         <MultiSelect
-                                          name="user_id[]"
+                                          name="supervisor_user_id[]"
                                           options={supervisor_list}
-                                          value={this.state.selectedValues}
-                                          onChange={this.setSelectedValues}
+                                          value={this.state.selectedSupervisors}
+                                          onChange={this.setSelectedSupervisors}
                                           labelledBy={"Select Supervisor(s)"}
                                         />
-                                        <ErrorMessage component="div" name="gender" className="input-feedback" />
+                                        <ErrorMessage component="div" name="supervisor" className="input-feedback" />
                                     </div>
                                   </Row>
+                                  <Row>  
+                                    <div className="form-group"  style={{'width': '100%', 'paddingLeft': '12.5px'}}>
+                                        <label>Client List:</label>
+                                        <MultiSelect
+                                          name="client_user_id[]"
+                                          options={client_list}
+                                          value={this.state.selectedClients}
+                                          onChange={this.setSelectedClients}
+                                          labelledBy={"Select Client(s)"}
+                                        />
+                                        <ErrorMessage component="div" name="client" className="input-feedback" />
+                                    </div>
+                                  </Row>
+                                  </React.Fragment>
                                   :
                                   null
                                 } 
@@ -217,7 +256,7 @@ class AssignDepartmentHandlers extends Component {
                               <Col size="1">
                               </Col>  
                               { /** Show the Assign Button and Selected Supervisor List if the Selected Values has data. */
-                                Validator.isValid( this.state.selectedValues ) && this.state.selectedValues.length != 0 ?
+                                Validator.isValid( this.state.selectedSupervisors ) && this.state.selectedSupervisors.length != 0 ?
                                   <Col size="5">
                                     <Row>   
                                       <Button type="submit" style={{'width': '80%'}} className="btn btn-primary"><i class="fa fa-tag" /> Assign</Button>
@@ -226,7 +265,7 @@ class AssignDepartmentHandlers extends Component {
                                       <div className="form-group" style={{'width': '100%', 'paddingTop': '10px'}}>
                                         <label>Selected Supervisor(s):</label>
                                         <ul>
-                                        {  this.state.selectedValues.map((value, index) => {
+                                        {  this.state.selectedSupervisors.map((value, index) => {
                                               return <li>
                                                         {value.label}
                                                     </li>;
@@ -235,7 +274,25 @@ class AssignDepartmentHandlers extends Component {
 
                                         </ul>
                                       </div>
-                                    </Row> 
+                                    </Row>  
+                                    { this.state.selectedClients.length > 0 ? 
+                                      <Row>   
+                                        <div className="form-group" style={{'width': '100%', 'paddingTop': '10px'}}>
+                                          <label>Selected Client(s):</label>
+                                          <ul>
+                                          {  this.state.selectedClients.map((value, index) => {
+                                                return <li>
+                                                          {value.label}
+                                                      </li>;
+                                            }) 
+                                          }
+
+                                          </ul>
+                                        </div>
+                                      </Row> 
+                                      :
+                                      null
+                                    }
                                   </Col>  
                                   :
                                   null 
@@ -257,7 +314,8 @@ const mapStateToProps = (state) => {
   return {
     department             : state.lookup.department,
     department_handlers    : state.lookup.department_handlers,
-    supervisor             : state.lookup.supervisor
+    supervisor             : state.lookup.supervisor,
+    client                 : state.lookup.client,
   }
 }
 const mapDispatchToProps = (dispatch) => {
