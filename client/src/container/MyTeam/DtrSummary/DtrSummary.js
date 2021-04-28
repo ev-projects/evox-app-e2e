@@ -141,7 +141,7 @@ class DtrSummary extends Component {
                     <Col className="search-name"> 
                       <div className="form-group">
                           
-                          <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="Search name" onChange={handleChange} value={values.name} />
+                          <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     
                     </Col> 

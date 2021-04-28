@@ -508,7 +508,7 @@ class Dtr extends Model
         // If the $type is not yet set, proceed on checking if the type is Rest day or Regular
         if( ! is_valid( $type ) ) {
 
-            if( $this->is_rest_day && $this->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work') ){
+            if( $this->is_rest_day ){
                 $type = get_constant('DTR_TYPE.rest_day');
     
             }else{
@@ -624,12 +624,21 @@ class Dtr extends Model
         return $this->hasMany(Leave::class);
     }   
     
+
+    /**
+     *
+     */
+    public function isAbsent(){
+        return !$this->validLog() && $this->hasSchedule() && $this->on_leave()->count() <= 0 && ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
+    } 
+    
     
     /**
      * hasMany Relationship for Dtr Leaves model
      */
     public function on_leave(){
-        return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->count();
+        //  return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->count();
+        return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->where( 'type' , '<>' ,'Unpaid Leave' );
     } 
     
     /**

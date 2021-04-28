@@ -118,10 +118,10 @@ class DtrSummary
                         }                   
                     }
                    
-                }elseif( !$dtr->validLog() && $dtr->hasSchedule() && $dtr->leaves()->count() <= 0 && !$this->check_if_holiday( $dtr_type ) ){
+                }elseif( $dtr->isAbsent() ){
                     $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] +=  1;
-                }elseif( $dtr->on_leave() )  {
-                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->leaves()->first()->amount;
+                }elseif( $dtr->on_leave()->get()->count() > 0 )  {
+                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->on_leave()->first()->amount;
                 }
 
                 

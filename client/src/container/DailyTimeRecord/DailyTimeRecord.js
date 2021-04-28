@@ -288,11 +288,10 @@ class DailyTimeRecord extends Component {
                           if( dtr.holidays.length > 0){
                             dtr_type = dtr.holidays[0].type;
                             status = <div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
-                        } else if ( dtr.is_rest_day == 1 ){
-                            dtr_type = "rest_day";
-                        }
+                          } else if ( dtr.is_rest_day == 1 ){
+                              dtr_type = "rest_day";
+                          }
                         
-                          
                           // If the DTR date is beyond the current date, don't show the DTR row by returning null.
                           if( moment().diff(moment(dtr.date)) < 0 ) {
                             return null;

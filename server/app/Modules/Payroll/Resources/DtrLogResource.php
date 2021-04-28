@@ -42,9 +42,9 @@ class DtrLogResource extends JsonResource
 
             $leaves = $this->leaves()->get();
             
-            if( !$this->validLog() && $this->hasSchedule() && $leaves->count() <= 0 && !( in_array(  $this->getDtrType(), get_constant('DTR_TYPE.holiday') ) ) ){
+            if( $this->isAbsent() ){
                 $payroll_items[ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] =  1;
-            }elseif( $this->on_leave() )  {
+            }elseif( $this->on_leave()->count() > 0 )  {
                 $payroll_items[ get_constant('PAYROLL_ITEMS.'. text_to_slug( $leaves->first()->type ))  ] =  $leaves->first()->amount;
             }
 
