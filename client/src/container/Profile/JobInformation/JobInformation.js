@@ -69,13 +69,15 @@ const JobInformation = ( props ) => {
                             </thead>
                             <tbody>
                             {profile.job_information.slice().reverse().map(function (data, i) {
+                                if(user.department==data.department){
                                     return  (<tr>
-                                    <td>{data.date}</td>
-                                    <td>{data.location}</td>
-                                    <td>{data.department}</td>
-                                    <td>{data.jobTitle}</td>
-                                    <td>{data.reportsTo}</td>
-                                    </tr>)
+                                        <td>{data.date}</td>
+                                        <td>{data.location}</td>
+                                        <td>{data.department}</td>
+                                        <td>{data.jobTitle}</td>
+                                        <td>{data.reportsTo}</td>
+                                        </tr>)
+                                }
                                 }) 
                             }
                             </tbody>
