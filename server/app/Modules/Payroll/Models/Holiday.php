@@ -85,7 +85,7 @@ class Holiday extends Model
         $date_from = Carbon::now();
         $date_to = Carbon::now()->addMonth(3);
 
-        $holiday = $this->whereRaw("(is_predefined = 1 AND (DAYOFYEAR(date) - DAYOFYEAR(NOW())) >=  ".get_constant("MONTH_SCOPE.day_from")." AND (DAYOFYEAR(date) - DAYOFYEAR(NOW())) <=  ".get_constant("MONTH_SCOPE.three_months").") 
+        $holiday = $this->whereRaw("(is_predefined = 1 AND (DAYOFYEAR(date) - DAYOFYEAR(NOW())) >=  ".get_constant("MONTH_SCOPE.day_from")." AND (DAYOFYEAR(date) - DAYOFYEAR(NOW())) <=  ".get_constant("MONTH_SCOPE.four_months").") 
         OR (is_predefined = 0 AND date >= '".$date_from->format("Y-m-d") ."' AND date <= '".$date_to->format("Y-m-d") ."' ) ")->orderByRaw('Month(date),Day(date)');
         return  $holiday->get();
     }

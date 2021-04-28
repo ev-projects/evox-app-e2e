@@ -251,8 +251,9 @@ return [
     # 1 MONTH SCOPE FROM DATE TODAY
     'MONTH_SCOPE' => [
         "day_from"      => 1,
-        "one_month"     => 30,
-        "three_months"  => 90,
+        "one_month"     => 31,
+        "three_months"  => 92,
+        "four_months"  => 123,
     ],
 
     'REGULARIZATION' => [
