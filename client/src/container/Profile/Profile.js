@@ -98,7 +98,7 @@ class Profile extends Component {
                                 <div className="information" >
                                     { profile.details.full_name} <br />
                                     { profile.details.department} <br />
-                                    { profile.personal_information?.job_title}      
+                                    { profile.details.job_title}      
                                 </div>
                             </div>
                         </Col>
@@ -108,21 +108,20 @@ class Profile extends Component {
                             <Row>
                                 <Content col="12" title={Formatter.slug_to_title(this.state.current_tab)}  subtitle={ <BackButton {...this.props}/>} >
                                     <div className="profile-tabs">
-                                        { !Authenticator.checkRole('client') ? 
+                                    { user.id !== profile.details.id || !Authenticator.checkRole('client') ?
                                         <Tabs defaultActiveKey="home" 
                                                 id="uncontrolled-tab-example"
                                                 defaultActiveKey={this.state.current_tab}
                                                 onSelect={ (key) =>  { this.setTab(key) } }
                                         >
                                             <Tab eventKey="personal_information" title="Personal Info" type="submit"></Tab>
-                                            {!Authenticator.check('client') ? <Tab eventKey="job_information" title="Job Info" type="submit"></Tab> : null }
-                                            {!Authenticator.check('client') ? <Tab eventKey="time_off" title="Time Off" type="submit"></Tab> : null }
+                                            <Tab eventKey="job_information" title="Job Info" type="submit"></Tab>
+                                            <Tab eventKey="time_off" title="Time Off" type="submit"></Tab>
                                             
                                         </Tabs>
-                        
-                        : 
-                        null
-                      }
+                                        :
+                                        null
+                                    }
                                         
                                     </div>
                                     { this.state.current_tab == "personal_information" && profile.personal_information != [] ? 

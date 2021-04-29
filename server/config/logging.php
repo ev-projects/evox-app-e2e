@@ -90,6 +90,14 @@ return [
             'permission' => 0666,
         ],
 
+        'user_profile' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/user_profile.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+
         'bhrlog' => [
             'driver' => 'single',
             'path' => storage_path('logs/bhr.log'),

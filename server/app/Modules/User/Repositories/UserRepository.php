@@ -151,7 +151,6 @@ class UserRepository implements UserRepositoryInterface{
                     $user->emp_num = $bhr_user->employeeNumber;
                     $user->bhr_num = $bhr_user->id;
                     $user->email = $bhr_user->bestEmail;
-                    $user->job_title = $bhr_user->jobTitle;
                     $user->username = generate_username( $bhr_user );
                     $user->password = Hash::make( get_constant('DEFAULT_PASSWORD') );
                     $user->first_name = $bhr_user->firstName;
@@ -161,12 +160,14 @@ class UserRepository implements UserRepositoryInterface{
                     $user->employment_status = $bhr_user->employmentHistoryStatus;
                     $user->date_hired = $bhr_user->hireDate;
                     $user->is_active = true;
+                    $user->job_title = $bhr_user->jobTitle;
+                    $user->mobile_number = $bhr_user->mobilePhone;
 
-                    if($bhr_user->dateOfBirth!="0000-00-00"&&$bhr_user->dateOfBirth!=null){
+                    if($bhr_user->dateOfBirth != "0000-00-00" && $bhr_user->dateOfBirth != null){
                         $user->birthdate =$bhr_user->dateOfBirth;
                     }
     
-                    if($bhr_user->terminationDate!="0000-00-00"&&$bhr_user->terminationDate!=null){
+                    if($bhr_user->terminationDate != "0000-00-00" && $bhr_user->terminationDate != null){
                         $user->termination_date = $bhr_user->terminationDate;
                     }
 
@@ -247,7 +248,7 @@ class UserRepository implements UserRepositoryInterface{
 
         DB::beginTransaction();
         try {  
-
+            
             // If BHr User has E-mail and valid Employment history status, insert the user
             if( is_valid( $bhr_user->bestEmail ) /*&& is_valid( $bhr_user->employmentHistoryStatus ) */ ) {
 
@@ -256,7 +257,6 @@ class UserRepository implements UserRepositoryInterface{
                 }
                 
                 $user->emp_num = $bhr_user->employeeNumber; 
-                $user->job_title = $bhr_user->jobTitle;
                 $user->bhr_num = $bhr_user->id;
                 $user->email = $bhr_user->bestEmail;
                 $user->first_name = $bhr_user->firstName;
@@ -266,6 +266,8 @@ class UserRepository implements UserRepositoryInterface{
                 $user->nickname = $bhr_user->nickname;
                 $user->date_hired = $bhr_user->hireDate;
                 $user->is_active = ( $bhr_user->terminationDate == "0000-00-00" && $bhr_user->employmentHistoryStatus != get_constant('BHR_USER_EMPLOYMENT_STATUS.terminated') ) ? true : false;
+                $user->job_title = $bhr_user->jobTitle;
+                $user->mobile_number = $bhr_user->mobilePhone;
 
 
                 if($bhr_user->dateOfBirth!="0000-00-00"&&$bhr_user->dateOfBirth!=null){

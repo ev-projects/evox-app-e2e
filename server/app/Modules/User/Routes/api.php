@@ -69,8 +69,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
 # API Calls for user/{id}
 Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
-     # Gets user info ( Name and Department )
-     Route::get('info', 'UserController@user_info');
+    # Gets user info ( Name and Department )
+    Route::get('info', 'UserController@user_info');
     
     Route::get('profile', 'UserController@profile');
     
@@ -110,8 +110,22 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     # Assign Employees Post Request
     Route::post('/assign_employees/', 'UserController@assign_employees')->middleware('role:admin');
 
-});
 
+    #####################################################################################################
+    
+    Route::group(['prefix' => 'profile', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+        
+        # Gets the User List of Specific Role
+        Route::post('/', 'ProfileController@store');
+
+        # Gets the User List of Specific Role
+        Route::put('/', 'ProfileController@update');
+    
+    
+    });
+    
+
+});
 
 
 #####################################################################################################

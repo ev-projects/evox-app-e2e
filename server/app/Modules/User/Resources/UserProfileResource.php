@@ -52,6 +52,8 @@ class UserProfileResource extends JsonResource
             'birthdate' =>$birthdate,
             'nickname' => $this->nickname,
             'is_active' => $this->is_active,
+            'job_title' => $this->job_title,
+            'mobile_number' => $this->mobile_number,
             'force_change_password' => $this->force_change_password,
             'dpa_ticked_at' => $this->dpa_ticked_at,
             'full_name' => $this->getFullName()

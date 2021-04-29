@@ -12,7 +12,6 @@ import Validator from "../../services/Validator";
 
 const ChangePasswordForm = ( context ) => {
 
-    console.log(context);
     async function onSubmitHandler (values) {
 
         var formData = {};
@@ -98,7 +97,7 @@ const ChangePasswordForm = ( context ) => {
                             <Col size="12"> 
                             <Button type="submit" className="btn btn-primary" ><i className="fa fa-edit" /> Update</Button>&nbsp;
                             { ! context.forceChangePassword ? 
-                                <Button type="button" className="btn btn-secondary" onClick={()=> {context.setShowChangePasswordFormState(false)}} ><i className="fa fa-ban" /> Cancel</Button> 
+                                <Button type="button" className="btn btn-secondary" onClick={()=> {context.setShowChangePasswordForm(false)}} ><i className="fa fa-ban" /> Cancel</Button> 
                                 : 
                                 null 
                             }
