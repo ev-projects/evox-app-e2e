@@ -29,6 +29,23 @@ export const fetchProfile = ( id ) => {
     }
 }
 
+
+export const updateUserProfile = ( id, post_data ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/user/" + id + "/profile",
+            data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 export const fetchPersonalInformation = ( id ) => {
     return (dispatch, getState) => {
         

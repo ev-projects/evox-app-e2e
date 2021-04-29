@@ -98,7 +98,7 @@ class Profile extends Component {
                                 <div className="information" >
                                     { profile.details.full_name} <br />
                                     { profile.details.department} <br />
-                                    { profile.personal_information?.job_title}      
+                                    { profile.details.job_title}      
                                 </div>
                             </div>
                         </Col>
@@ -114,13 +114,9 @@ class Profile extends Component {
                                                 onSelect={ (key) =>  { this.setTab(key) } }
                                         >
                                             <Tab eventKey="personal_information" title="Personal Info" type="submit"></Tab>
-                                            {!Authenticator.check('client') ? <Tab eventKey="job_information" title="Job Info" type="submit"></Tab> : null }
-                                            {!Authenticator.check('client') ? <Tab eventKey="time_off" title="Time Off" type="submit"></Tab> : null }
-                                            
+                                            <Tab eventKey="job_information" title="Job Info" type="submit"></Tab>
+                                            <Tab eventKey="time_off" title="Time Off" type="submit"></Tab>
                                         </Tabs>
-                        
-                   
-                                        
                                     </div>
                                     { this.state.current_tab == "personal_information" && profile.personal_information != [] ? 
                                         <PersonalInformation  />

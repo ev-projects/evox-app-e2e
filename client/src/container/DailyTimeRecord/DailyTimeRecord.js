@@ -351,7 +351,7 @@ class DailyTimeRecord extends Component {
 // Component for the DTR Request List
 const DtrSummaryHolidays = ( props  ) => { 
   return (<React.Fragment>
-    <div className="holidays col-lg-2 col-md-6 col-sm-6">
+    <div className="holidays col-lg-2 col-md-4 col-sm-6">
     <h5><span className="ion-ios-calendar-outline"></span>{props.column_name}</h5>
     <Row>
     
@@ -406,7 +406,7 @@ const DtrSummaryBlock = ( props  ) => {
 
   return (<React.Fragment>
                 <Row className="SummaryBlock">
-                    <Col className="late col-lg-1 col-md-3 col-sm-3">
+                    <Col className="late col-lg-1 col-md-2 col-sm-3">
                       <Toast >
                         <Toast.Header>
                           <span>LATE</span>
@@ -414,7 +414,7 @@ const DtrSummaryBlock = ( props  ) => {
                         <Toast.Body>{data.late}</Toast.Body>
                       </Toast>
                     </Col>
-                    <Col className="ut  col-lg-1 col-md-3 col-sm-3">
+                    <Col className="ut  col-lg-1 col-md-2 col-sm-3">
                       <Toast >
                         <Toast.Header>
                           UT
@@ -422,7 +422,7 @@ const DtrSummaryBlock = ( props  ) => {
                         <Toast.Body>{data.undertime}</Toast.Body>
                       </Toast>
                       </Col>
-                  <Col className="nsd  col-lg-1 col-md-3 col-sm-3">
+                  <Col className="nsd  col-lg-1 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       NSD
@@ -430,7 +430,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Body>{data.night_diff}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="ot  col-lg-1 col-md-3 col-sm-3">
+                  <Col className="ot  col-lg-1 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       OT
@@ -438,7 +438,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Body>{data.overtime}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="otnd  col-lg-1 col-md-4 col-sm-3">
+                  <Col className="otnd  col-lg-1 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       OTND
@@ -446,7 +446,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Body>{data.overtime_night_diff}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="ul  col-lg-1 col-md-3 col-sm-3">
+                  <Col className="ul  col-lg-1 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       ABSENT

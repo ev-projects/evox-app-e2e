@@ -83,6 +83,11 @@ return [
      */
     'show_profile_success' => 'Successfully shown the Profile Information!',
     'current_password_not_match' => 'The password does not match on your current password!',
+    'update_user_profile_attempt' => 'Attempt to update user profile...',
+    'update_user_profile_success' => 'Successfully updated the profile!',
+
+    
+
 
     /**
      *  Department
