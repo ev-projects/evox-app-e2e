@@ -50,7 +50,7 @@ const ChangePasswordForm = ( context ) => {
         confirm_new_password:    Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable()/*.match( Yup.ref('new_password'), 'Passwords do not match')*/,
     });
 
-    return  <Content col={ (context.size ? context.size : "5")} title={ (context.forceChangePassword ? "Reset" : "Change") +  " Password"} subtitle={ (context.forceChangePassword ? <div>This is required before doing any transactions.</div> : null)} >
+    return  <Content col={ (context.size ? context.size : "6")} title={ (context.forceChangePassword ? "Reset" : "Change") +  " Password"} subtitle={ (context.forceChangePassword ? <div>This is required before doing any transactions.</div> : null)} >
                 <Formik 
                     enableReinitialize
                     onSubmit={onSubmitHandler} 

@@ -12,7 +12,7 @@
 .sortby > div
  {
     float: right;
-    max-width: 400px;
+    max-width: 290px;
     flex: unset;
 }
 .sortby label {

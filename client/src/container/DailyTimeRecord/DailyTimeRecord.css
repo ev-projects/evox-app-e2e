@@ -176,7 +176,10 @@ float: left;
 }
 @media only screen and (max-width: 575px) {
 .content .col-lg-12, .content .col-12{padding: 5px 0 !important}
-    .dtr-schedule .col{width: 100%; padding: 0}
+.dtr-schedule .col{width: 100%; padding: 0}
+
+.table thead .dtr-schedule,.table thead .dtr-status,
+.table tbody .dtr-schedule,.table tbody .dtr-status{display: none}
 .SummaryBlock{padding: 0}
     .SummaryBlock .toast-header {font-size: 11px;}
   
@@ -206,7 +209,8 @@ float: left;
 }
 }
 @media only screen and (max-width: 650px) {
-    
+.table thead .dtr-schedule,.table thead .dtr-status,
+.table tbody .dtr-schedule,.table tbody .dtr-status{display: none}
 .col-lg-1 {
     flex: 0 0 7.333333%;
     max-width: 7.333333%;
