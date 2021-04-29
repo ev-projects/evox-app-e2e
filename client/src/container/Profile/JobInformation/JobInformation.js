@@ -18,8 +18,7 @@ const JobInformation = ( props ) => {
 
     const { profile, user } = props;
 
-
-   return ( 
+    return ( 
         Validator.isValid( profile ) ?
         <Row>            
             <div className="col-lg-12" >
@@ -68,6 +67,8 @@ const JobInformation = ( props ) => {
                                 </tr>
                             </thead>
                             <tbody>
+                            { Authenticator.checkRole('client') && props.id != user.id ? 
+                            <React.Fragment>
                             {profile.job_information.slice().reverse().map(function (data, i) {
                                 if(user.department==data.department){
                                     return  (<tr>
@@ -80,6 +81,20 @@ const JobInformation = ( props ) => {
                                 }
                                 }) 
                             }
+                            </React.Fragment>
+                            :<React.Fragment>
+                            {profile.job_information.slice().reverse().map(function (data, i) {
+                                return  (<tr>
+                                    <td>{data.date}</td>
+                                    <td>{data.location}</td>
+                                    <td>{data.department}</td>
+                                    <td>{data.jobTitle}</td>
+                                    <td>{data.reportsTo}</td>
+                                    </tr>)
+                            }) 
+                        }
+                        </React.Fragment>
+                        }
                             </tbody>
                         </Table>
                     </div>

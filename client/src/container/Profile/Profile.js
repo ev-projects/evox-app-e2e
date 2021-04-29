@@ -108,7 +108,6 @@ class Profile extends Component {
                             <Row>
                                 <Content col="12" title={Formatter.slug_to_title(this.state.current_tab)}  subtitle={ <BackButton {...this.props}/>} >
                                     <div className="profile-tabs">
-                                        { !Authenticator.checkRole('client') ? 
                                         <Tabs defaultActiveKey="home" 
                                                 id="uncontrolled-tab-example"
                                                 defaultActiveKey={this.state.current_tab}
@@ -120,9 +119,7 @@ class Profile extends Component {
                                             
                                         </Tabs>
                         
-                        : 
-                        null
-                      }
+                   
                                         
                                     </div>
                                     { this.state.current_tab == "personal_information" && profile.personal_information != [] ? 
@@ -131,7 +128,7 @@ class Profile extends Component {
                                         null
                                     }
                                     { this.state.current_tab == "job_information" && profile.employment_status != []  && profile.job_information != [] ? 
-                                        <JobInformation  />
+                                        <JobInformation id={this.props.params.id} />
                                         :
                                         null
                                     }
