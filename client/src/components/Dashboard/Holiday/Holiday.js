@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import "./Holiday.css";
-import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
-import { thisMonthHoliday } from '../../store/actions/client/clientActions'
+import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
+import { getThisMonthHoliday } from '../../../store/actions/dashboard/dashboardActions'
 import { connect } from 'react-redux';
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
   
 class Holiday extends Component {
 
   componentWillMount(){ 
-    this.props.thisMonthHoliday( );
+    this.props.getThisMonthHoliday( );
 	}
 
   render() {
@@ -46,7 +46,7 @@ return {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    thisMonthHoliday  : ( ) => dispatch( thisMonthHoliday( ) ),
+    getThisMonthHoliday  : ( ) => dispatch( getThisMonthHoliday( ) ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Holiday);

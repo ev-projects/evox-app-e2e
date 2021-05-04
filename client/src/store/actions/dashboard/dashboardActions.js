@@ -5,12 +5,34 @@ import Formatter from "../../../services/Formatter";
 
 
 
+
+
+
 // BIRTHDAY ANNIV
-export const birthdayAnniv = ( params = null ) => {
+export const getDtrNotifications = () => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/birthday_anniversary",
+            url: "/dtr/report/dtr_notifications",
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_DTR_NOTIFICATIONS', 
+                'data'   : result.data
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+// BIRTHDAY ANNIV
+export const getBirthdayAnniv = ( params = null ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr/report/team_birthday_anniversary",
             params    : params
         })
         .then(result => {
@@ -26,11 +48,11 @@ export const birthdayAnniv = ( params = null ) => {
 }
 
 // TEAM ATTENDANCE STATUS
-export const teamAttendanceStatus = ( params = null ) => {
+export const getTeamAttendanceStatus = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/team_attendance",
+            url: "/dtr/report/team_attendance",
             params    : params
         })
         .then(result => {
@@ -47,11 +69,11 @@ export const teamAttendanceStatus = ( params = null ) => {
 
 
 // TEAM ATTENDANCE SUMMARY
-export const teamAttendanceSummary = ( id ) => {
+export const getTeamAttendanceSummary = ( id ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/"+ id +"/get_team_attendance_summary",
+            url: "/dtr/report/team_attendance_summary",
         })
         .then(result => {
             dispatch({
@@ -67,11 +89,11 @@ export const teamAttendanceSummary = ( id ) => {
 
 
 // HOLIDAY
-export const thisMonthHoliday = ( id ) => {
+export const getThisMonthHoliday = ( id ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/holidays",
+            url: "/dtr/report/holidays",
         })
         .then(result => {
             dispatch({
@@ -84,5 +106,3 @@ export const thisMonthHoliday = ( id ) => {
         });
     }
 }
-
-

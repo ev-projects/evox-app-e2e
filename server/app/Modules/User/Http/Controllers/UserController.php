@@ -642,29 +642,4 @@ class UserController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
-
-    
-
-
-
-    # This function registers User to the system
-    public function holidays( ){
-        try {
-            log_activity( trans('messages.get_holidays_attempt') );
-            $test = new Holiday();
-            return success_response(
-                trans('messages.get_holidays_success'),
-                new HolidayResource( $test->get_holiday_within_date() ) 
-            );
-
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-
-    
-
-
-
-
 }

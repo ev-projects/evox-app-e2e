@@ -21,11 +21,31 @@ Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], fu
 
     Route::post('/quickpunch', 'DtrController@quickpunch');
 
-
     # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
     Route::get('/insert_time_in_out/{dtr_id}/{time_in}/{time_out}/{is_rest_day}', 'DtrController@insert_time_in_and_out');//->middleware('auth.apikey');
 
 });
+
+# API Call for DTR
+Route::group(['prefix' => 'dtr/report/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+
+    # Get holiday
+    Route::get('holidays', 'DtrReportController@holidays');
+
+    # Get DTR Notifications
+    Route::get('dtr_notifications', 'DtrReportController@dtr_notifications');
+
+    # Get User Attendance
+    Route::get('team_attendance', 'DtrReportController@team_attendance');
+
+    # Get Team Attendance Summary
+    Route::get('team_attendance_summary', 'DtrReportController@team_attendance_summary');
+
+    # Get Birthday Anniversary
+    Route::get('team_birthday_anniversary', 'DtrReportController@team_birthday_anniversary');
+
+});
+
 
 # API Call for DTR Summary
 Route::group(['prefix' => 'dtr_summary', 'middleware' => ['jwtauth', 'auth.apikey']], function () {

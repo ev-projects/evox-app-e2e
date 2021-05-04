@@ -9,14 +9,13 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../Gr
 import Wrapper from "../../Template/Wrapper";
 import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
-import BirthdayAnniversary from "../../../container/BirthdayAnniversary";
-import TeamAttendance from "../../../container/TeamAttendance";
-import Holiday from "../../../container/Holiday";
-import TeamAttendanceSummary from "../../../container/TeamAttendanceSummary";
+import BirthdayAnniversary from "../../../components/Dashboard/BirthdayAnniversary";
+import TeamAttendance from "../../../components/Dashboard/TeamAttendance";
+import Holiday from "../../../components/Dashboard/Holiday";
 import Authenticator from "../../../services/Authenticator";
 import * as Yup from 'yup';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
-import { teamAttendanceStatus,birthdayAnniv } from '../../../store/actions/client/clientActions'
+import { getTeamAttendanceStatus, getBirthdayAnniv } from '../../../store/actions/dashboard/dashboardActions'
 
 
   class HandlerDashboard extends Component {
@@ -49,8 +48,8 @@ import { teamAttendanceStatus,birthdayAnniv } from '../../../store/actions/clien
       } 
     }
 
-    this.props.teamAttendanceStatus( formData  );
-    this.props.birthdayAnniv( formData  );
+    this.props.getTeamAttendanceStatus( formData  );
+    this.props.getBirthdayAnniv( formData  );
   }
 
   componentWillMount(){
@@ -139,8 +138,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchUser : () => dispatch( fetchUser() ),
-    teamAttendanceStatus  : ( params ) => dispatch( teamAttendanceStatus( params ) ),
-    birthdayAnniv         : ( params ) => dispatch( birthdayAnniv( params ) ),
+    getTeamAttendanceStatus  : ( params ) => dispatch( getTeamAttendanceStatus( params ) ),
+    getBirthdayAnniv         : ( params ) => dispatch( getBirthdayAnniv( params ) ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(HandlerDashboard);

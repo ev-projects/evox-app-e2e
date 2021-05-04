@@ -9,9 +9,10 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../Gr
 import Wrapper from "../../Template/Wrapper";
 import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
-import QuickPunch from "../../../container/QuickPunch";
-import Holiday from "../../../container/Holiday";
+import QuickPunch from "../../../components/Dashboard/QuickPunch";
+import Holiday from "../../../components/Dashboard/Holiday";
 import Authenticator from "../../../services/Authenticator";
+import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 
 const EmployeeDashboard = ( props ) => {
 
@@ -47,31 +48,23 @@ const EmployeeDashboard = ( props ) => {
 
     return (<div className="dashboard">
               <Row>
+
               <div className="col-lg-4 col-md-6 col-12">
                 
                     <Row>
-                    <Col size="12">
-                        <QuickPunch />
-                    </Col>
+                      <Col size="12">
+                          <QuickPunch />
+                      </Col>
+                    </Row>
 
-                        
-                    </Row>
-                    
-                    <Row>
-                    <Content title="ICT Schedule" col="12">
-                      <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
-                        <ul>
-                          <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
-                          <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
-                          <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
-                        </ul>
-                    </Content>   
-                    
-                    </Row>
-                    
-               
-               
+                    {/* <Row className="team-attendance">
+                        <Content title="DTR Notifications" col="12">
+                          <DtrNotifications/>
+                        </Content>       
+                    </Row> */}
+
                 </div>
+
                 <div className="col-lg-4 col-md-6 col-12">
                       { !Authenticator.checkRole('client')  ? 
                             <Row>
@@ -114,11 +107,11 @@ const EmployeeDashboard = ( props ) => {
                   </div>
                     </Row>
                 </div>
-                <div className="col-lg-4 col-md-6 col-sm-12 company-announcement">
-                  <Row>
+                <div className="col-lg-4 col-md-6 col-sm-12">
+                  <Row className="company-announcement">
                       <Content title="Company Announcements" col="12">
                         <Row>
-                          <ReactPlayer 
+                          {/* <ReactPlayer 
                               width={width}
                               height={height}
                               url={url}
@@ -131,13 +124,9 @@ const EmployeeDashboard = ( props ) => {
                               volume={volume}
                               muted={muted}
                               config={config}
-                              onReady={()=>{ /*console.log('onReady Call back')*/ }}
-                              onStart={()=>{ /*console.log('onStart Call back')*/ }}
-                              onPause={()=>{ /*console.log('onPause Call back')*/ }}
-                              onError={()=>{ /*console.log('onError Call back')*/ }}
-                          />
+                          /> */}
                             
-                            <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Cclick the link below to fill out the form </p>
+                            <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Click the link below to fill out the form </p>
                             <p><a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a></p>
                           </Row>
                           <Row>
@@ -149,10 +138,17 @@ const EmployeeDashboard = ( props ) => {
                             </p>
                           </Row>
                       </Content> 
-                          
-                        
-                      
-                      
+                  </Row>
+
+                  <Row>
+                    <Content title="ICT Schedule" col="12">
+                      <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
+                        <ul>
+                          <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
+                          <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
+                          <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
+                        </ul>
+                    </Content>   
                   </Row>
                 </div>
                 

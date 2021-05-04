@@ -2,12 +2,12 @@ import React, { Component, useState, useEffect  } from "react";
 import DatePicker from "react-datepicker";
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
 
-import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js'
+import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js'
 import "./BirthdayAnniversary.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { birthdayAnniv } from '../../store/actions/client/clientActions'
+import { getBirthdayAnniv } from '../../../store/actions/dashboard/dashboardActions'
 import * as Yup from 'yup';
 
 
@@ -21,25 +21,25 @@ class BirthdayAnniversary extends Component {
 	}
 
     componentWillMount(){
-		this.props.birthdayAnniv( this.props.user.id );
+		this.props.getBirthdayAnniv( this.props.user.id );
 	}
 	
     componentWillUnmount(){
     }
 
 	render = () => {  
-		const { birthdayAndAnniv } = this.props;
+		const { birthday_and_anniv } = this.props.dashboard;
     return(
       <div >
   
       <div >
-        { birthdayAndAnniv.length > 0  ? 
+        { birthday_and_anniv.length > 0  ? 
             <div className="content-table bdr0">
               <Table striped bordered hover>
                   
                   <tbody>
               
-                  {birthdayAndAnniv.map(function (data, i) {
+                  {birthday_and_anniv.map(function (data, i) {
                     var icon = ''
                     switch(data.type) {
                       case "birthdate":
@@ -80,12 +80,12 @@ class BirthdayAnniversary extends Component {
   const mapStateToProps = (state) => {
 	return {
 		user : state.user,
-		birthdayAndAnniv : state.dashboard.birthdayAndAnniv
+		dashboard : state.dashboard
 	}
   }
   const mapDispatchToProps = (dispatch) => {
 	  return {
-		birthdayAnniv         : ( id ) => dispatch( birthdayAnniv( id ) ),
+      getBirthdayAnniv         : ( id ) => dispatch( getBirthdayAnniv( id ) ),
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(BirthdayAnniversary);
