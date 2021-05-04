@@ -407,7 +407,11 @@ class User extends Authenticatable implements JWTSubject
                
         }
         
-
+        if($filter['status']=='pending'){
+            $query->orderBy('created_at','desc');
+        }else{
+            $query->orderBy('updated_at','desc');
+        }
 
         
         $result = array(

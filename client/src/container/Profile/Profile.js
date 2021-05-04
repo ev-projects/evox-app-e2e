@@ -124,7 +124,7 @@ class Profile extends Component {
                                         null
                                     }
                                     { this.state.current_tab == "job_information" && profile.employment_status != []  && profile.job_information != [] ? 
-                                        <JobInformation id={this.props.params.id} />
+                                        <JobInformation />
                                         :
                                         null
                                     }

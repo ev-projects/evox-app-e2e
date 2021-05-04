@@ -21,13 +21,12 @@ class MyTeamRequests extends Component {
 
   constructor(props){
     super(props);
-
     this.initialState = {
         filters: {
-          status:           this.props.filters?.status ?? null,
-          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : (( this.props.settings?.current_payroll_cutoff?.start_date ) ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
-          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : (( this.props.settings?.current_payroll_cutoff?.end_date ) ? new Date( this.props.settings.current_payroll_cutoff.end_date ) : null),
-          department_id:    this.props.filters?.department_id ?? null,
+          status:           this.props.filters?.status ?? "pending",
+          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : null,
+          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : null,
+          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled.length == 1 ? this.props.user.departments_handled[0].id : null,
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
           checkedList:      this.props.filters?.checkedList ?? [],
@@ -42,7 +41,6 @@ class MyTeamRequests extends Component {
   }
 
   onSubmitHandler = (values) => {
-    console.log(values);
     var formData = { url: "my_team_requests"  };
 
     switch(values.action) {
@@ -61,15 +59,9 @@ class MyTeamRequests extends Component {
             } 
         }
         this.props.bulkRequest( formData );
-
-        this.props.fetchRequestList( formData );
-
         values.checkedList = [];
         values.action = '';
-
-      
         break;
-
     default:
         for (var key in values) {
           if( values[key] != null && values[key] != ""  ) {
@@ -85,11 +77,10 @@ class MyTeamRequests extends Component {
                   break;
               }
           } 
-          
       }
-      this.props.fetchStatusNumbers( formData );
-      this.props.fetchRequestList( formData );
     }
+    this.props.fetchRequestList( formData );
+    this.props.fetchStatusNumbers( formData );
   }
 
 
@@ -100,6 +91,7 @@ class MyTeamRequests extends Component {
       valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
       valid_to  : Validator.isValid(this.state.filters.valid_to) ? this.state.filters.valid_to.toISOString().substring(0, 10) : null
     };
+
 
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
     if( ! this.props.isListLoaded ) {
@@ -116,6 +108,7 @@ class MyTeamRequests extends Component {
   }
 
   render = () => {  
+
 
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
