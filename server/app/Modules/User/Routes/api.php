@@ -54,15 +54,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
 
     # Get the Role of the user
     Route::get('get_dpa_list', 'UserController@get_dpa_list');
-
-    # Get holiday
-    Route::get('holidays', 'UserController@holidays');
-
-    # Get User Attendance
-    Route::get('team_attendance', 'ClientController@team_attendance');
-
-    # Get Birthday Anniversary
-    Route::get('birthday_anniversary', 'ClientController@birthday_anniversary');
 });
 #####################################################################################################
 
@@ -81,8 +72,6 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::get('time_off/{start_date}/{end_date}', 'UserController@time_off');
 
     Route::get('leave_credits', 'UserController@leave_credits');
-
-    Route::get('get_team_attendance_summary', 'ClientController@get_team_attendance_summary');
 
     # Gets the Default Schedule of the User indicated.
     Route::get('default_schedule', 'UserController@default_schedule');//->middleware('auth.apikey');

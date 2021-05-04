@@ -3,9 +3,9 @@
  */
 
 const initState = {
-    birthdayAndAnniv : [],
-    teamAttendance : [],
-    teamAttendanceSummary : [],
+    birthday_and_anniv : [],
+    team_attendance : [],
+    team_attendance_summary : [],
     holidays:[]
 }
 
@@ -16,22 +16,28 @@ const dashboardtReducers = (state = initState, action) => {
         /**
          *  Logout Actions
          */
+        case "FETCH_DTR_NOTIFICATIONS":
+            result = {
+                ...state,
+                dtr_notifications : action.data.content,
+            }
+            break;
         case "FETCH_BIRTHDAY_ANNIVERSARY":
             result = {
                 ...state,
-                birthdayAndAnniv : action.data.content,
+                birthday_and_anniv : action.data.content,
             }
             break;
         case "FETCH_TEAM_ATTENDANCE_STATUS":
             result = {
                 ...state,
-                teamAttendance : action.data.content,
+                team_attendance : action.data.content,
             }
             break;
         case "FETCH_TEAM_ATTENDANCE_SUMMARY":
             result = {
                 ...state,
-                teamAttendanceSummary : action.data.content,
+                team_attendance_summary : action.data.content,
             }
             break;       
         case "FETCH_HOLIDAYS":

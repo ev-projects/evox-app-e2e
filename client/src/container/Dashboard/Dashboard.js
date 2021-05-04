@@ -7,12 +7,11 @@ import { fetchUser } from '../../store/actions/userActions' ;
 
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../components/Template/Wrapper";
-import QuickPunch from "../../container/QuickPunch";
 import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
-import EmployeeDashboard from "../../components/Dashboards/EmployeeDashboard";
+import EmployeeDashboard from "../../components/Dashboard/EmployeeDashboard";
 import Authenticator from "../../services/Authenticator";
-import HandlerDashboard from "../../components/Dashboards/HandlerDashboard";
+import HandlerDashboard from "../../components/Dashboard/HandlerDashboard";
 class Dashboard extends Component {
     constructor(props){
       super(props);

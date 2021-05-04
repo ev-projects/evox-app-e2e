@@ -2,14 +2,14 @@ import React, { Component, useState, useEffect  } from "react";
 import DatePicker from "react-datepicker";
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
 
-import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js'
+import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js'
 import "./TeamAttendance.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { teamAttendanceStatus } from '../../store/actions/client/clientActions'
+import { getTeamAttendanceStatus } from '../../../store/actions/dashboard/dashboardActions'
 import * as Yup from 'yup';
-import Formatter from "../../services/Formatter";
+import Formatter from "../../../services/Formatter";
 
 class TeamAttendance extends Component {
 	constructor(props){
@@ -21,7 +21,7 @@ class TeamAttendance extends Component {
 	}
 
   componentWillMount(){ 
-    this.props.teamAttendanceStatus( this.props.user.id );
+    this.props.getTeamAttendanceStatus( this.props.user.id );
 	}
 	
     componentWillUnmount(){
@@ -29,10 +29,10 @@ class TeamAttendance extends Component {
 
     
 	render = () => {  
-		const { teamAttendance } = this.props.teamAttendance;
+		const { team_attendance } = this.props.dashboard;
     return(
       <div >
-      { teamAttendance.length > 0  ?
+      { team_attendance.length > 0  ?
             <div className="content-table">
               <Table striped bordered hover>
                   <thead>
@@ -44,7 +44,7 @@ class TeamAttendance extends Component {
                   </thead>
                   <tbody>
               
-                  {teamAttendance.map(function (data, i) {
+                  {team_attendance.map(function (data, i) {
                           return  (<tr>
                           <td>{data.name}</td>
                           <td>
@@ -100,12 +100,12 @@ class TeamAttendance extends Component {
   const mapStateToProps = (state) => {
     return {
       user : state.user,
-      teamAttendance : state.dashboard
+      dashboard : state.dashboard
     }
   }
   const mapDispatchToProps = (dispatch) => {
 	  return {
-    teamAttendanceStatus  : ( id ) => dispatch( teamAttendanceStatus( id ) ),
+      getTeamAttendanceStatus  : ( id ) => dispatch( getTeamAttendanceStatus( id ) ),
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(TeamAttendance);

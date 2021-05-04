@@ -151,8 +151,8 @@ a.btn-primary{padding: 10px 15px; color: #fff !important;}
 .team-attendance .content-table{height: 400px; overflow-y: scroll}
 .team-attendance .content-table td{background: #fff !important}
 .team-attendance .content-table tbody{overflow-y: scroll;}
-.company-announcement .row .card-body >.row{margin-bottom: 20px !important; background: #fff}
-.company-announcement .row .card-body >.row p{padding:10px;}
+.company-announcement .card-body >.row{margin-bottom: 20px !important; background: #fff}
+.company-announcement .card-body >.row p{padding:10px;}
 .company-announcement .card-body{background: transparent;}
 
 @media only screen and (max-width: 650px) {
