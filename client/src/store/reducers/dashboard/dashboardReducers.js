@@ -6,6 +6,7 @@ const initState = {
     my_dtr_notifications : [],
     birthday_and_anniv : [],
     team_attendance : [],
+    recent_dtr : [],
     team_attendance_summary : [],
     holidays:[]
 }
@@ -31,6 +32,12 @@ const dashboardReducers = (state = initState, action) => {
             result = {
                 ...state,
                 team_attendance : action.data,
+            }
+            break;
+        case "FETCH_RECENT_DTR":
+            result = {
+                ...state,
+                recent_dtr : action.data.content,
             }
             break;
         case "FETCH_TEAM_ATTENDANCE_SUMMARY":

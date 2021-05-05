@@ -107,3 +107,23 @@ export const getThisMonthHoliday = ( id ) => {
         });
     }
 }
+
+
+export const getRecentDtr = ( user_id, from ,to ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr/report/team_attendance",
+            url: "/dtr/"+user_id+"/"+from+"/"+to,
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_RECENT_DTR', 
+                'data'      : result.data,
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}

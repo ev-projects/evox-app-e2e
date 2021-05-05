@@ -7,7 +7,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
 import * as Yup from 'yup';
-
+import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions'
 
 class QuickPunch extends Component {
 	constructor(props){
@@ -23,7 +23,6 @@ class QuickPunch extends Component {
 		var formData = new FormData();
 	
 		for (var key in values) {
-		  console.log(values);
 	
 			if( values[key] != null ) {
 				switch( key ) {
@@ -34,6 +33,10 @@ class QuickPunch extends Component {
 			}
 		}
 		this.props.biometrixLog(  formData );
+
+		var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
+		var to = moment().format("YYYY-MM-DD");
+		this.props.getRecentDtr(this.props.user.id, from , to );
 	}
 
     componentWillMount(){
@@ -96,12 +99,13 @@ class QuickPunch extends Component {
   
   const mapStateToProps = (state) => {
 	return {
-	 
+		user : state.user
 	}
   }
   const mapDispatchToProps = (dispatch) => {
 	  return {
 		biometrixLog    : ( post_data ) => dispatch( biometrixLog( post_data ) ),
+		getRecentDtr : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) )
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(QuickPunch);

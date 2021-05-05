@@ -13,6 +13,7 @@ import QuickPunch from "../../../components/Dashboard/QuickPunch";
 import Holiday from "../../../components/Dashboard/Holiday";
 import Authenticator from "../../../services/Authenticator";
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
+import RecentDtr from "../../../components/Dashboard/RecentDtr";
 import moment from 'moment';
 
 const EmployeeDashboard = ( props ) => {
@@ -64,6 +65,12 @@ const EmployeeDashboard = ( props ) => {
                         <Content title="DTR Notifications" col="12" subtitle={<span> Payroll Cut-off: {moment( current_payroll_cutoff?.start_date ).format("MMM D")  +" - "+ moment( current_payroll_cutoff?.end_date ).format("MMM D")} </span>}>
                           <DtrNotifications/>
                         </Content>       
+                    </Row>
+
+                    <Row className="dtr-notifications">
+                        <Content title="Daily Time Record" col="12">
+                                    <div><RecentDtr/></div>
+                        </Content>     
                     </Row>
 
                 </div>
