@@ -117,7 +117,7 @@ const MyTeamListFilter = (props) => {
                     className="form-control" 
                       name="department_id"
                       value={values.department_id}
-                      onChange={(e) => { setFieldValue('department_id', e.target.value);  props.departmentSelected(e.target.value)}}
+                      onChange={(e) => { setFieldValue('department_id', e.target.value);  setFieldValue('team_id', null);  props.departmentSelected(e.target.value)}}
                       style={{ display: 'block' }}
                     >
                     <option label="Select Department" />
