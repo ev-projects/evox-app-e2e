@@ -74,7 +74,7 @@ class RecentDtr extends Component {
              </tbody>
          </Table>
               :
-              <div>No record found</div>
+              <div className="no-previous-dtr">No Previous DTR</div>
               } 
               </div>
      

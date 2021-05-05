@@ -62,15 +62,15 @@ const EmployeeDashboard = ( props ) => {
                     </Row>
 
                     <Row className="dtr-notifications">
-                        <Content title="DTR Notifications" col="12" subtitle={<span> Payroll Cut-off: {moment( current_payroll_cutoff?.start_date ).format("MMM D")  +" - "+ moment( current_payroll_cutoff?.end_date ).format("MMM D")} </span>}>
-                          <DtrNotifications/>
-                        </Content>       
+                        <Content title="Daily Time Record" col="12">
+                          <RecentDtr/>
+                        </Content>     
                     </Row>
 
                     <Row className="dtr-notifications">
-                        <Content title="Daily Time Record" col="12">
-                                    <div><RecentDtr/></div>
-                        </Content>     
+                        <Content title="DTR Notifications" col="12" subtitle={<small> Payroll Cut-off: <br /> {moment( current_payroll_cutoff?.start_date ).format("MMM D")  +" - "+ moment( current_payroll_cutoff?.end_date ).format("MMM D")} </small>}>
+                          <DtrNotifications/>
+                        </Content>       
                     </Row>
 
                 </div>

@@ -40,6 +40,7 @@
     overflow-y: scroll;
     min-height: 150px;
     max-height: 200px;
+    margin: 0 auto;
 }
 
 .dtr-notifications .content-table td{
@@ -50,7 +51,5 @@
 }
 
 .dtr-notifications .no-notifications{
-    color: #82af13;
     text-align: center;
-    font-weight: bold;
 }

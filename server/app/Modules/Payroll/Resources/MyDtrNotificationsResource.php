@@ -88,7 +88,7 @@ class MyDtrNotificationsResource extends JsonResource
                         
                         // If there is an existing leave and it is "Unpaid Leave" OR If its any other leave type and the status is still "requested"
                         if( is_valid( $leave ) && ($leave->type == 'Unpaid Leave' ||  $leave->status == "requested"   )) {
-                            $details = $leave->type . " - " . $leave->status;
+                            $details = $leave->type . " - " . ( $leave->status == "requested" ? "Pending" : $leave->status);
 
                         // If there is an existing leave and its status is "approved", Just set the $details as empty ( so it wouldnt be included on the list )
                         }elseif( is_valid( $leave ) && $leave->status == "approved"  ) {

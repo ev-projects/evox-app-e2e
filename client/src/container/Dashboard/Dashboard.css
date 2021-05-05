@@ -15,7 +15,8 @@ h6,.h6{font-size: 1rem !important}
 .dashboard .col-6 > div{margin-bottom: 20px; min-height: 100px}
 .dashboard .card-body{box-shadow: none !important;padding: 20px 0 !important; border:0 !important;}
 .card-header {background: transparent !important;}
-.alert-pop-up{z-index:  1000; width: 80% !important; max-width: 400px;}
+.alert-pop-up{z-index:  10; width: 80% !important; max-width: 400px;}
+.alert-heading {text-transform: initial !important;}
 .page-title{margin-left:20px;}
 .team-request-page .col-lg-12{padding: 0 !important; margin:0 !important;}
 .pd30{margin:0;padding: 30px}
@@ -154,6 +155,14 @@ a.btn-primary{padding: 10px 15px; color: #fff !important;}
 .company-announcement .card-body >.row{margin-bottom: 20px !important; background: #fff}
 .company-announcement .card-body >.row p{padding:10px;}
 .company-announcement .card-body{background: transparent;}
+
+.dashboard .dtr-table thead th{font-size:.5rem !important}
+.dashboard .dtr-table tbody td{}
+.dashboard .dtr-log .justify-content-center{font-size:.875rem !important;}
+.dashboard .month.justify-content-center{font-size:.75rem !important;}
+.dashboard .dtr-table tbody td.dtr-status{font-size:.75rem !important;}
+.dashboard .dtr-table tbody td.dtr-schedule{font-size:.75rem !important}
+.dashboard .dtr-notifications .card-body{padding:0 !important;}
 
 @media only screen and (max-width: 650px) {
     .dashboard .col-md-12,.dashboard .col-lg-12{padding: 0 !important ;}
