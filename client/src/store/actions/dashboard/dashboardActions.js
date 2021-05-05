@@ -9,16 +9,17 @@ import Formatter from "../../../services/Formatter";
 
 
 // BIRTHDAY ANNIV
-export const getDtrNotifications = () => {
+export const getMyDtrNotifications = () => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr/report/dtr_notifications",
+            url: "/dtr/report/my_dtr_notifications",
         })
         .then(result => {
+            
             dispatch({
-                'type'  : 'FETCH_DTR_NOTIFICATIONS', 
-                'data'   : result.data
+                'type'  : 'FETCH_MY_DTR_NOTIFICATIONS', 
+                'data'   : result.data.content
             })
         })
         .catch(e => {
@@ -38,7 +39,7 @@ export const getBirthdayAnniv = ( params = null ) => {
         .then(result => {
             dispatch({
                 'type'  : 'FETCH_BIRTHDAY_ANNIVERSARY', 
-                'data'   : result.data
+                'data'   : result.data.content
             })
         })
         .catch(e => {
@@ -58,7 +59,7 @@ export const getTeamAttendanceStatus = ( params = null ) => {
         .then(result => {
             dispatch({
                 'type'      : 'FETCH_TEAM_ATTENDANCE_STATUS', 
-                'data'      : result.data,
+                'data'      : result.data.content
             })
         })
         .catch(e => {
@@ -78,7 +79,7 @@ export const getTeamAttendanceSummary = ( id ) => {
         .then(result => {
             dispatch({
                 'type'  : 'FETCH_TEAM_ATTENDANCE_SUMMARY', 
-                'data'   : result.data
+                'data'   : result.data.content
             })
         })
         .catch(e => {
@@ -98,7 +99,7 @@ export const getThisMonthHoliday = ( id ) => {
         .then(result => {
             dispatch({
                 'type'  : 'FETCH_HOLIDAYS', 
-                'data'   : result.data
+                'data'   : result.data.content
             })
         })
         .catch(e => {

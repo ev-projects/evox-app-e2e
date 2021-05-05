@@ -4,6 +4,7 @@ namespace App\Modules\Payroll\Repositories;
 
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Payroll\Models\PayrollCutoff;
 use App\Modules\Team\Models\Team;
 use App\Modules\User\Models\User;
 use Carbon\Carbon;
@@ -24,6 +25,25 @@ class DtrReportRepository implements DtrReportRepositoryInterface{
     ###################################### Public functions #######################################
     ###############################################################################################
 
+    /**
+     *  Responsible for fetching all the currently logged in team member's Birthday and Anniversary.
+     * @param $start_date
+     * @param $end_date
+     * @return Collection $dtr_collection
+     */
+    public function get_my_dtr_notifications( $start_date, $end_date ){
+        try {
+            
+            $dtr_collection = auth()->user()->dtr( $start_date, $end_date )->get();
+            return $dtr_collection;
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
+    
     
     /**
      *  Responsible for fetching all the currently logged in team member's Birthday and Anniversary.
@@ -58,6 +78,8 @@ class DtrReportRepository implements DtrReportRepositoryInterface{
             throw $e;
         }
     }
+
+
 
     /**
      *  Responsible for fetching the Team's attendance

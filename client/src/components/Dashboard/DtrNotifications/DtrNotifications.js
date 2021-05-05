@@ -7,7 +7,7 @@ import "./DtrNotifications.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { getDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
+import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
 import * as Yup from 'yup';
 import Formatter from "../../../services/Formatter";
 
@@ -21,75 +21,45 @@ class DtrNotifications extends Component {
 	}
 
   componentWillMount(){ 
-    this.props.getDtrNotifications( this.props.user.id );
+    this.props.getMyDtrNotifications( this.props.user.id );
 	}
-	
-    componentWillUnmount(){
-    }
-
     
 	render = () => {  
-		const { team_attendance } = this.props.dashboard;
+
+		const { my_dtr_notifications } = this.props.dashboard;
     return(
-      <div >
-      { team_attendance.length > 0  ?
+      <div>
+      { my_dtr_notifications.length > 0  ?
             <div className="content-table">
               <Table striped bordered hover>
-                  <thead>
+                  {/* <thead>
                       <tr>
                       <th>Name</th>
                       <th  style={{width:'135px'}}>Schedule</th>
                       <th>Status</th>
                       </tr>
-                  </thead>
+                  </thead> */}
                   <tbody>
               
-                  {team_attendance.map(function (data, i) {
-                          return  (<tr>
-                          <td>{data.name}</td>
-                          <td>
-                          {data.schedule.map(function (data, i) {
-                          return  (
-                                  <div>{data}</div>
-                                  )
-                              }) 
-                          }
-                          </td>
-                          <td>
-                            {data.status.length > 0 ?
-                            <div>{data.status.map(t => <span className={Formatter.title_to_slug(t)}>{t}</span>)
-                            .reduce((prev, curr) => [prev, ', ', curr])}
-                            {data.status.length > 1 ?
-                              <div>,</div>
-                                :
-                                ''
-                              }</div>
-
-                              :
-                              ''
-                            }
-                             {Object.keys(data.values).length > 0 ?
-                            <div>{ Object.entries(data.values).map(function(key,data) {
-                              return <span ><span className={Formatter.title_to_slug(key[0])}>{Formatter.slug_to_title(key[0])}</span> ({key[1]})</span>
-                          }).reduce((prev, curr) => [prev, ', ', curr]) } </div>
-                          :
-                          ''
-                        }
-                            <div> 
-                              </div>
-                          </td>
-                          </tr>)
-                      }) 
+                  { my_dtr_notifications.map(function (data, i) {
+                      return  (
+                          <tr>
+                            <td>{data.date}</td>
+                            <td className={ Formatter.title_to_slug(data.status) }>{data.status}</td>
+                            <td>{data.details}</td>
+                          </tr>
+                      );
+                    })
                   }
                   </tbody>
               </Table>
               </div>
           
           :
-          <div>No record found</div>
-          } 
-  </div>);
-	}
+          <div className="no-notifications">No Notifications this Payroll Cutoff</div>
+      } 
+      </div>);
+	  }
   }
 
 
@@ -100,12 +70,12 @@ class DtrNotifications extends Component {
   const mapStateToProps = (state) => {
     return {
       user : state.user,
-      dashboard : state.dashboard
+      dashboard : state.dashboard,
     }
   }
   const mapDispatchToProps = (dispatch) => {
 	  return {
-      getDtrNotifications  : () => dispatch( getDtrNotifications() ),
+      getMyDtrNotifications  : () => dispatch( getMyDtrNotifications() ),
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(DtrNotifications);

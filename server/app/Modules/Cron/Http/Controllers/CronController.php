@@ -9,6 +9,7 @@ use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Resources\DtrBiometricsResource;
 use App\Modules\Payroll\Resources\DtrResource;
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Collection;
 class CronController extends Controller
 {
     protected $bhr;
-    protected $payroll;
+    protected $payroll_cutoff;
     protected $user;
     protected $dtr;
     protected $overtime;
@@ -38,7 +39,7 @@ class CronController extends Controller
     
 
     public function __construct(BhrRepositoryInterface $bhr, 
-                                PayrollRepository $payroll, 
+                                PayrollCutoffRepositoryInterface $payroll_cutoff,
                                 UserRepositoryInterface $user, 
                                 DtrRepositoryInterface $dtr, 
                                 OvertimeRepositoryInterface $overtime,
@@ -49,7 +50,7 @@ class CronController extends Controller
                                 ChangeScheduleRepositoryInterface $change_schedule,
                                 AlterLogRepositoryInterface $alter_log){
         $this->bhr = $bhr;
-        $this->payroll = $payroll;
+        $this->payroll_cutoff = $payroll_cutoff;
         $this->user = $user;
         $this->dtr = $dtr;
         $this->overtime = $overtime;
@@ -298,7 +299,7 @@ class CronController extends Controller
             
             // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $payroll_cutoff = $this->payroll->get_payroll_cutoff();
+                $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
                 $start_date = $payroll_cutoff->start_date;
                 $end_date = $payroll_cutoff->end_date;
             }
@@ -335,7 +336,7 @@ class CronController extends Controller
             
             // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $payroll_cutoff = $this->payroll->get_payroll_cutoff();
+                $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
                 $start_date = $payroll_cutoff->start_date;
                 $end_date = $payroll_cutoff->end_date;
             }

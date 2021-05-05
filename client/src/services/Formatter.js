@@ -110,6 +110,7 @@ class Formatter {
   */
   title_to_slug( text ) {
       return text.replace(/ /g, '_')
+                .replace(/&/g, 'and')
                 .toLowerCase();
   }
 

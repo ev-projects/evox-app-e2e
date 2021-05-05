@@ -3,47 +3,46 @@
  */
 
 const initState = {
+    my_dtr_notifications : [],
     birthday_and_anniv : [],
     team_attendance : [],
     team_attendance_summary : [],
     holidays:[]
 }
 
-const dashboardtReducers = (state = initState, action) => {
+const dashboardReducers = (state = initState, action) => {
     let message = "";
     let result = {...state};
     switch(action.type) {
-        /**
-         *  Logout Actions
-         */
-        case "FETCH_DTR_NOTIFICATIONS":
+        
+        case "FETCH_MY_DTR_NOTIFICATIONS":
             result = {
                 ...state,
-                dtr_notifications : action.data.content,
+                my_dtr_notifications : action.data,
             }
             break;
         case "FETCH_BIRTHDAY_ANNIVERSARY":
             result = {
                 ...state,
-                birthday_and_anniv : action.data.content,
+                birthday_and_anniv : action.data,
             }
             break;
         case "FETCH_TEAM_ATTENDANCE_STATUS":
             result = {
                 ...state,
-                team_attendance : action.data.content,
+                team_attendance : action.data,
             }
             break;
         case "FETCH_TEAM_ATTENDANCE_SUMMARY":
             result = {
                 ...state,
-                team_attendance_summary : action.data.content,
+                team_attendance_summary : action.data,
             }
             break;       
         case "FETCH_HOLIDAYS":
             result = {
                 ...state,
-                holidays : action.data.content,
+                holidays : action.data,
             }
             break;   
         default:
@@ -52,4 +51,4 @@ const dashboardtReducers = (state = initState, action) => {
     return result;
 }
 
-export default dashboardtReducers;
+export default dashboardReducers;

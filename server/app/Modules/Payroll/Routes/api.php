@@ -32,8 +32,8 @@ Route::group(['prefix' => 'dtr/report/', 'middleware' => ['jwtauth', 'auth.apike
     # Get holiday
     Route::get('holidays', 'DtrReportController@holidays');
 
-    # Get DTR Notifications
-    Route::get('dtr_notifications', 'DtrReportController@dtr_notifications');
+    # Get My DTR Notifications
+    Route::get('my_dtr_notifications', 'DtrReportController@my_dtr_notifications');
 
     # Get User Attendance
     Route::get('team_attendance', 'DtrReportController@team_attendance');

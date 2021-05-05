@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\User\Resources;
+namespace App\Modules\Payroll\Resources;
 
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;

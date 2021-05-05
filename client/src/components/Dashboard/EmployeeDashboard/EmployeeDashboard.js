@@ -13,6 +13,7 @@ import QuickPunch from "../../../components/Dashboard/QuickPunch";
 import Holiday from "../../../components/Dashboard/Holiday";
 import Authenticator from "../../../services/Authenticator";
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
+import moment from 'moment';
 
 const EmployeeDashboard = ( props ) => {
 
@@ -44,6 +45,8 @@ const EmployeeDashboard = ( props ) => {
     const { width, height, url, playing, controls, light, volume, muted, config, loop, playbackRate, pip, showSubmitForm } = state
     
     const { user } = props;
+    const { current_payroll_cutoff } = props.settings;
+    
     const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
     return (<div className="dashboard">
@@ -57,11 +60,11 @@ const EmployeeDashboard = ( props ) => {
                       </Col>
                     </Row>
 
-                    {/* <Row className="team-attendance">
-                        <Content title="DTR Notifications" col="12">
+                    <Row className="dtr-notifications">
+                        <Content title="DTR Notifications" col="12" subtitle={<span> Payroll Cut-off: {moment( current_payroll_cutoff?.start_date ).format("MMM D")  +" - "+ moment( current_payroll_cutoff?.end_date ).format("MMM D")} </span>}>
                           <DtrNotifications/>
                         </Content>       
-                    </Row> */}
+                    </Row>
 
                 </div>
 
@@ -161,7 +164,8 @@ const EmployeeDashboard = ( props ) => {
 
 const mapStateToProps = (state) => {
   return {
-      user : state.user
+      user : state.user,
+      settings : state.settings
   }
 }
 const mapDispatchToProps = (dispatch) => {

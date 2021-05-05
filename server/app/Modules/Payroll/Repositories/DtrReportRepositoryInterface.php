@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 
 interface DtrReportRepositoryInterface
 {
+    public function get_my_dtr_notifications( $start_date, $end_date );
+
     public function get_team_birthday_anniversary();
 
     public function get_team_attendance( Carbon $current_time );

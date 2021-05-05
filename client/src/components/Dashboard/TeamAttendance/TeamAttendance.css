@@ -9,11 +9,3 @@
 .no_time_logs, .rest_day{
     color: #696969!important;
 }
-
-.absent{
-    color: #cc0000 !important;
-}
-
-.undertime, .late{
-    color: orange !important;
-}

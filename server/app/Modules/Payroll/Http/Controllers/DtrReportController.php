@@ -5,14 +5,16 @@ namespace App\Modules\Payroll\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
-use App\Modules\User\Resources\AnniversaryResources; 
-use App\Modules\User\Resources\TeamAttendanceResources; 
+use App\Modules\Payroll\Resources\AnniversaryResources; 
+use App\Modules\Payroll\Resources\TeamAttendanceResources; 
+use App\Modules\Payroll\Resources\HolidayResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Spatie\Permission\Models\Permission;
 use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\HolidayRepositoryInterface;
-use App\Modules\User\Resources\HolidayResource;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
+use App\Modules\Payroll\Resources\MyDtrNotificationsResource;
 use Carbon\Carbon;
 
 
@@ -20,12 +22,15 @@ class DtrReportController extends Controller
 {
     protected $dtr_report;
     protected $holiday;
+    protected $payroll_cutoff;
 
 
-    public function __construct( DtrReportRepositoryInterface $dtr_report ,
-                                 HolidayRepositoryInterface $holiday ){
+    public function __construct( DtrReportRepositoryInterface $dtr_report,
+                                 HolidayRepositoryInterface $holiday,
+                                 PayrollCutoffRepositoryInterface $payroll_cutoff ){
         $this->dtr_report = $dtr_report;
         $this->holiday = $holiday;
+        $this->payroll_cutoff = $payroll_cutoff;
     }
 
     # This function registers User to the system
@@ -53,13 +58,15 @@ class DtrReportController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function dtr_notifications( ){   
+    public function my_dtr_notifications(){   
         try {
-            log_activity( trans('messages.get_anniversary_birthday_attempt') );
+            log_activity( trans('messages.get_my_dtr_notifications_attempt') );
+
+            $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
 
             return success_response(
-                trans('messages.get_anniversary_birthday_success'), 
-                new AnniversaryResources( $this->dtr_report->get_team_birthday_anniversary() )
+                trans('messages.get_my_dtr_notifications_success'), 
+                new MyDtrNotificationsResource( $this->dtr_report->get_my_dtr_notifications( $payroll_cutoff->start_date, $payroll_cutoff->end_date) )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

@@ -1,106 +1,56 @@
-/*
- * Dashboard css File
-*/
-.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{text-transform: uppercase; color: #333 !important;}
-h1,.h1{font-size: 1.75rem !important}
-h2,.h2{font-size: 1.5rem !important}
-h3,.h3{font-size: 1.25rem !important}
-h4,.h4{font-size: 1rem !important}
-h5,.h5{font-size: 1rem !important}
-h6,.h6{font-size: 1rem !important}
-.page-title{margin-left:20px;}
-.team-request-page .col-lg-12{padding: 0 !important; margin:0 !important;}
-.pd30{margin:0;padding: 30px}
-.content-table {
-    width: 95%;
-    overflow-x: auto;
-    margin: 0 0 0 25px;
-}
-.content-table table thead th{text-align: left; vertical-align: middle;background: #82af13 !important; color: #fff !important}
-.content-table table tbody td{text-align: left; vertical-align: middle;border:1px solid #ddd !important;}
 
-.sidebar {
-    padding-left: 1rem !important;
+.absent, .no-schedule, .rdw_incomplete{
+    color: #cc0000 !important;
 }
-.card {
-    border: 0 !important;
-    border-radius: 0  !important;
-    box-shadow: none;
+
+.undertime, .late, .late_and_undertime{
+    color: orange !important;
 }
-.card-header {
-    padding: 0  !important;
+
+
+.dtr-notifications .content-table table thead th{
+    background:#fff !important; 
+    color:#333 !important;
+    text-align: left; 
+    vertical-align: middle;
+    border-top:0 !important; 
+    border-left:0 !important; 
+    border-right:0 !important;
 }
- .card-title {
-    background-color: transparent ;
+
+.dtr-notifications .content-table table tbody td{
+    text-align: left; 
+    vertical-align: middle;
+    border-top:0 !important;
+     border-left:0 !important; 
+     border-right:0 !important;
+}
+
+.dtr-notifications .content-table table tbody td:nth-child(2){
+    font-size: .75rem; 
+    width: 35%
+}
+
+.dtr-notifications .content-table .holiday{
+    color: orange !important
+}
+
+.dtr-notifications .content-table{
+    height: 400px; 
+    overflow-y: scroll;
+    min-height: 150px;
+    max-height: 200px;
+}
+
+.dtr-notifications .content-table td{
+    background: #fff !important
+}
+.dtr-notifications .content-table tbody{
+    overflow-y: scroll;
+}
+
+.dtr-notifications .no-notifications{
     color: #82af13;
-    padding: 0;
     text-align: center;
-    font-size: 1.5em;
+    font-weight: bold;
 }
-.block{background: #fff;
-    padding: 20px;
-    border-top: 5px solid #82af13;
-    margin-bottom: 20px;
-   }
-.block h3{margin-bottom: 20px;}
-.block img{max-height: 312px; width: 100%}
-.table thead th {font-weight: normal !important; text-transform: uppercase; font-weight: 500 !important; font-size: 14px}
-.table-responsive .table thead th, .table-responsive .table tbody td{border:1px solid #ddd;}
-.table thead th.dtr-date{ width: 5%; text-align: center;}
-.table thead th.dtr-status{width: 13%; text-align: center; font-size: 14px}
-.table thead th.dtr-item{width: 6%; text-align: center;}
-.table thead th.dtr-log{width: 7%; text-align: center;}
-.table thead th.dtr-log .row{padding: 10px 0; font-size: 14px;}
-.table thead th.dtr-schedule{width: 13%; text-align: center;}
-.table thead th.dtr-requests{width: 14%; text-align: center;}
-.table thead th.dtr-actions{width: 5%; text-align: center;}
-.table tbody td{font-size: 14px; vertical-align: middle;}
-.requests-list{text-align: left;}
-.requests-list ul{padding: 0 !important}
-.requests-list li{
-    font-size: 14px;
-    display: block;
-    margin: 5px 0;
-}
-
-.table td.dtr-actions .btn-primary{background: transparent !important; border: 0 !important }
-.table td.dtr-actions .btn-primary .fa{color:#82af13!important; font-size: 24px;}
-.table td.dtr-schedule .row,
-.requests-list li .row{
-    margin: 5px 0;
-}
-
-.requests-list span.circ{
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    margin-right: 5px;
-    border-radius: 50%;
-}
-.requests-list .Pending span.circ{
-    background: #f1c40f
-}
-.requests-list .Approved span.circ{
-    background: #81b014
-}
-.requests-list .Canceled span.circ{
-    background: #717171
-}
-.requests-list .Declined span.circ{
-    background: #dc3545
-}
-.requests-list .Pending span{color: #f1c40f}
-.requests-list .Approved span{color: #81b014}
-.requests-list .Canceled span{color: #717171;}
-.requests-list .Declined span{color: #dc3545}
-
-.col-btn{padding-top: 30px}
-.date-range.row{padding-top: 30px;}
-.emp-status{font-size: 14px;}
-td.actions .fa{font-size: 18px}
-.pagination .page button{font-size: 14px}
-.filters{margin-top: 30px}
-.evbuddy{background:    #fff; font-size: 12px; padding: 20px 10px}
-a.btn-primary{padding: 10px 15px; color: #fff !important;}
-
-.card-header .back-button{position: fixed; top: 7%; right:2%;z-index: 1000}
