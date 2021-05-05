@@ -34,55 +34,7 @@ class TeamAttendance extends Component {
       <div >
       { team_attendance.length > 0  ?
             <div className="content-table">
-              <Table striped bordered hover>
-                  <thead>
-                      <tr>
-                      <th>Name</th>
-                      <th  style={{width:'135px'}}>Schedule</th>
-                      <th>Status</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-              
-                  {team_attendance.map(function (data, i) {
-                          return  (<tr>
-                          <td>{data.name}</td>
-                          <td>
-                          {data.schedule.map(function (data, i) {
-                          return  (
-                                  <div>{data}</div>
-                                  )
-                              }) 
-                          }
-                          </td>
-                          <td>
-                            {data.status.length > 0 ?
-                            <div>{data.status.map(t => <span className={Formatter.title_to_slug(t)}>{t}</span>)
-                            .reduce((prev, curr) => [prev, ', ', curr])}
-                            {data.status.length > 1 ?
-                              <div>,</div>
-                                :
-                                ''
-                              }</div>
-
-                              :
-                              ''
-                            }
-                             {Object.keys(data.values).length > 0 ?
-                            <div>{ Object.entries(data.values).map(function(key,data) {
-                              return <span ><span className={Formatter.title_to_slug(key[0])}>{Formatter.slug_to_title(key[0])}</span> ({key[1]})</span>
-                          }).reduce((prev, curr) => [prev, ', ', curr]) } </div>
-                          :
-                          ''
-                        }
-                            <div> 
-                              </div>
-                          </td>
-                          </tr>)
-                      }) 
-                  }
-                  </tbody>
-              </Table>
+              <DtrRecord dtr={team_attendance} />
               </div>
           
           :
@@ -92,7 +44,58 @@ class TeamAttendance extends Component {
 	}
   }
 
+  const DtrRecord = (props) => { 
+    return <Table striped bordered hover>
+    <thead>
+        <tr>
+        <th>Name</th>
+        <th  style={{width:'135px'}}>Schedule</th>
+        <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
 
+    {props.dtr.map(function (data, i) {
+            return  (<tr>
+            <td>{data.name}</td>
+            <td>
+            {data.schedule.map(function (data, i) {
+            return  (
+                    <div>{data}</div>
+                    )
+                }) 
+            }
+            </td>
+            <td>
+              {data.status.length > 0 ?
+              <div>{data.status.map(t => <span className={Formatter.title_to_slug(t)}>{t}</span>)
+              .reduce((prev, curr) => [prev, ', ', curr])}
+              {data.status.length > 1 ?
+                <div>,</div>
+                  :
+                  ''
+                }</div>
+
+                :
+                ''
+              }
+               {Object.keys(data.values).length > 0 ?
+              <div>{ Object.entries(data.values).map(function(key,data) {
+                return <span ><span className={Formatter.title_to_slug(key[0])}>{Formatter.slug_to_title(key[0])}</span> ({key[1]})</span>
+            }).reduce((prev, curr) => [prev, ', ', curr]) } </div>
+            :
+            ''
+          }
+              <div> 
+                </div>
+            </td>
+            </tr>)
+        }) 
+    }
+    </tbody>
+</Table>;
+  }
+  
 
 
   const validationSchema = Yup.object().shape({});

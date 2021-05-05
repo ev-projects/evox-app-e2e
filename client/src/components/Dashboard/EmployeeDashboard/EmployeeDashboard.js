@@ -13,7 +13,7 @@ import QuickPunch from "../../../components/Dashboard/QuickPunch";
 import Holiday from "../../../components/Dashboard/Holiday";
 import Authenticator from "../../../services/Authenticator";
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
-
+import RecentDtr from "../../../components/Dashboard/RecentDtr";
 const EmployeeDashboard = ( props ) => {
 
   let state = {
@@ -56,12 +56,9 @@ const EmployeeDashboard = ( props ) => {
                           <QuickPunch />
                       </Col>
                     </Row>
-
-                    {/* <Row className="team-attendance">
-                        <Content title="DTR Notifications" col="12">
-                          <DtrNotifications/>
-                        </Content>       
-                    </Row> */}
+                    <Content title="Daily Time Record" col="12">
+                                <div><RecentDtr/></div>
+                    </Content>  
 
                 </div>
 
