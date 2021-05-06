@@ -45,9 +45,6 @@ h6,.h6{font-size: 1rem !important}
 .team-attendance .content-table table thead th{background:#fff !important; color:#333 !important;text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
 .team-attendance .content-table table tbody td{text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
 
-.sidebar {
-    padding-left: 1rem !important;
-}
 .card {
     border: 0 !important;
     border-radius: 0  !important;

@@ -19,9 +19,6 @@ h6,.h6{font-size: 1rem !important}
 .content-table table thead th{text-align: left; vertical-align: middle;background: #82af13 !important; color: #fff !important}
 .content-table table tbody td{text-align: left; vertical-align: middle;border:1px solid #ddd !important;}
 
-.sidebar {
-    padding-left: 1rem !important;
-}
 .card {
     border: 0 !important;
     border-radius: 0  !important;

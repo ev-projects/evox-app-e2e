@@ -153,6 +153,39 @@ const Sidebar = (props) => {
                             </li> 
                             : null 
                           }
+                          {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
+                            <li className="nav-item has-treeview ">
+                              <a className="nav-link" >
+                                <i className="nav-icon fa fa-calendar-o" />
+                                <p>
+                                  Manage Schedule
+                                  <i className="right fa fa-chevron-left" />
+                                </p>
+                              </a>
+                              <ul className="nav nav-treeview">
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.template_list }>
+                                    <i className="nav-icon fa fa-list nav-icon" />
+                                    <p>Template List</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.schedule_assign_department }>
+                                    <i className="nav-icon fa fa-calendar-check-o nav-icon" />
+                                    <p style={{'fontSize':13}}>Assign Department Schedule</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.template_add }>
+                                    <i className="nav-icon fa fa-plus nav-icon" />
+                                    <p>Add Template</p>
+                                  </Link>
+                                </li>
+                              </ul>
+                            </li>
+                            :
+                            null
+                          }
                           <li className="nav-item">
                             <Link className="nav-link" to={global.links.employee_list} >
                               <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
@@ -185,40 +218,6 @@ const Sidebar = (props) => {
                           </li>
                         </ul>
                       </li>
-                    :
-                    null
-                  }
-                   
-                  {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
-                    <li className="nav-item has-treeview ">
-                      <a className="nav-link" >
-                        <i className="nav-icon fa fa-calendar-o" />
-                        <p>
-                          Manage Schedule
-                          <i className="right fa fa-chevron-left" />
-                        </p>
-                      </a>
-                      <ul className="nav nav-treeview">
-                        <li className="nav-item">
-                          <Link className="nav-link" to={ global.links.template_list }>
-                            <i className="nav-icon fa fa-list nav-icon" />
-                            <p>Template List</p>
-                          </Link>
-                        </li>
-                        <li className="nav-item">
-                          <Link className="nav-link" to={ global.links.schedule_assign_department }>
-                            <i className="nav-icon fa fa-calendar-check-o nav-icon" />
-                            <p style={{'fontSize':13}}>Assign Department Schedule</p>
-                          </Link>
-                        </li>
-                        <li className="nav-item">
-                          <Link className="nav-link" to={ global.links.template_add }>
-                            <i className="nav-icon fa fa-plus nav-icon" />
-                            <p>Add Template</p>
-                          </Link>
-                        </li>
-                      </ul>
-                    </li>
                     :
                     null
                   }
