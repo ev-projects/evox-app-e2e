@@ -48,7 +48,7 @@ class DtrRepository implements DtrRepositoryInterface{
             
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date], "dtr");
 
-            $dtr_array = [];
+            $dtr_insert_array = [];
             
             # Iterates per User per Date.
             foreach( $user_collection as $user ) {

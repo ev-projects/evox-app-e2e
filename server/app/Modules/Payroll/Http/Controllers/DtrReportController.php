@@ -64,9 +64,15 @@ class DtrReportController extends Controller
 
             $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
 
+            // Start date as the start of the payroll cutoff
+            $start_date = $payroll_cutoff->start_date;
+
+            // End date as the date yesterday. 
+            $end_date = Carbon::yesterday()->format('Y-m-d');
+
             return success_response(
                 trans('messages.get_my_dtr_notifications_success'), 
-                new MyDtrNotificationsResource( $this->dtr_report->get_my_dtr_notifications( $payroll_cutoff->start_date, $payroll_cutoff->end_date) )
+                new MyDtrNotificationsResource( $this->dtr_report->get_my_dtr_notifications( $start_date, $end_date) )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
