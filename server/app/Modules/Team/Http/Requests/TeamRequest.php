@@ -2,6 +2,7 @@
 
 namespace App\Modules\Team\Http\Requests;
 
+use App\Modules\User\Models\User;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -55,9 +56,18 @@ class TeamRequest extends FormRequest
      */
     public function messages()
     {
-        return [
-            'team_users.*.exists'    => 'The user with the ID::input does not exist from the department selected.',
-          ];
+        $message =  [];
+
+        // Construct specific message for existing and unique validation error for each user.
+        foreach (request()->get('team_users') as $key => $value) {
+
+            $user = User::find($value);
+            
+            $message["team_users.".$key.".exists"] = $user->getFullName() . " is not from this department selected.";
+            $message["team_users.".$key.".unique"] = $user->getFullName() . " has already a team.";
+        }
+
+        return $message;
     }
 
     /**
