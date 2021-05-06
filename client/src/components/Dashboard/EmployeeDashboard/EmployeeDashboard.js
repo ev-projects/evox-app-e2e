@@ -86,8 +86,44 @@ const EmployeeDashboard = ( props ) => {
                             :
                             (null)
                       }
-                    
-                  <Row>
+                   <Row>
+                    <Content title="ICT Schedule" col="12">
+                      <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
+                        <ul>
+                          <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
+                          <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
+                          <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
+                        </ul>
+                    </Content>   
+                  </Row>
+                </div>
+                <div className="col-lg-4 col-md-6 col-sm-12">
+                  <Row className="company-announcement">
+                      <Content title="Company Announcements" col="12">
+                        <Row>
+                          { <ReactPlayer 
+                              width={width}
+                              height={height}
+                              url={url}
+                              pip={pip}
+                              playing={playing}
+                              controls={controls}
+                              light={light}
+                              loop={loop}
+                              playbackRate={playbackRate}
+                              volume={volume}
+                              muted={muted}
+                              config={config}
+                          /> }
+                            
+                            <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Click the link below to fill out the form </p>
+                            <p><a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a></p>
+                          </Row>
+                            
+                      </Content> 
+
+                  </Row>
+                    <Row>
                   <div className="col-lg-12">
                   <div className="card">
                     <div className="card-header">
@@ -117,50 +153,8 @@ const EmployeeDashboard = ( props ) => {
                   </div>
                   </div>
                     </Row>
-                </div>
-                <div className="col-lg-4 col-md-6 col-sm-12">
-                  <Row className="company-announcement">
-                      <Content title="Company Announcements" col="12">
-                        <Row>
-                          {/* <ReactPlayer 
-                              width={width}
-                              height={height}
-                              url={url}
-                              pip={pip}
-                              playing={playing}
-                              controls={controls}
-                              light={light}
-                              loop={loop}
-                              playbackRate={playbackRate}
-                              volume={volume}
-                              muted={muted}
-                              config={config}
-                          /> */}
-                            
-                            <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Click the link below to fill out the form </p>
-                            <p><a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a></p>
-                          </Row>
-                          <Row>
-                            <p>All employees are required to watch the Data Privacy webinar. Please tick the checkbox that will appear once the video ends to confirm your attendance. <br />Click the link below to go to the page.</p>
-                            <p>
-                              <Link className="btn-primary" to={global.links.dpa} >
-                                Data Privacy Webinar
-                              </Link>
-                            </p>
-                          </Row>
-                      </Content> 
-                  </Row>
-
-                  <Row>
-                    <Content title="ICT Schedule" col="12">
-                      <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
-                        <ul>
-                          <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
-                          <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
-                          <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
-                        </ul>
-                    </Content>   
-                  </Row>
+                  
+                 
                 </div>
                 
                                         

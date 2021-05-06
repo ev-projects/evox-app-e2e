@@ -39,7 +39,6 @@ class RecentDtr extends Component {
              <thead>
                  <tr>
                      <th className="dtr-date">Date</th>
-                     <th className="dtr-status">Status</th>
                      <th className="dtr-schedule">Schedule</th>
                      <th className="dtr-log">Clock In</th>
                      <th className="dtr-log">Clock Out</th>
@@ -65,8 +64,8 @@ class RecentDtr extends Component {
 
                    return <tr className={"center "+dtr_type+"-bg-color"}>
                            <td className="dtr-date">{DtrFormatter.displayDate(dtr.date)}</td> 
-                           <td className="dtr-status">{status}</td>
-                           <td className="dtr-schedule"><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
+                           
+                           <td className="dtr-schedule"><div className="dtr-status">{status}</div><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
                            <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
                            <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
                          </tr>

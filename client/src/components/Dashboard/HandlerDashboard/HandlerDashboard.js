@@ -114,7 +114,7 @@ import { getTeamAttendanceStatus, getBirthdayAnniv } from '../../../store/action
                           (null)
                       }
                     <Row>
-                        <Content title="Celebrations" col="10"><BirthdayAnniversary/></Content>  
+                        <Content title="Celebrations" col="12"><BirthdayAnniversary/></Content>  
                     </Row> 
 
                 </div>
