@@ -119,7 +119,7 @@ class MyDtrNotificationsResource extends JsonResource
             if( is_valid( $status ) && is_valid( $details ) ){
                 array_push( $array, 
                 [
-                    'date' => Carbon::parse( $dtr->date )->format("F j"),
+                    'date' => Carbon::parse( $dtr->date )->format("Y-m-d"),
                     'status' => $status,
                     'details' => $details
                 ]);

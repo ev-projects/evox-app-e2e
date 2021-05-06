@@ -43,7 +43,7 @@ class DtrNotifications extends Component {
 
                       return  (
                           <tr>
-                            <td>{data.date}</td>
+                            <td>{moment(data.date).format("MMM D")}</td>
                             <td className={ Formatter.title_to_slug(data.status) }>{data.status}</td>
                             <td>{data.details}</td>
                           </tr>
