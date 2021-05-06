@@ -32,16 +32,15 @@ class DtrNotifications extends Component {
       { my_dtr_notifications.length > 0  ?
             <div className="content-table">
               <Table striped bordered hover>
-                  {/* <thead>
-                      <tr>
-                      <th>Name</th>
-                      <th  style={{width:'135px'}}>Schedule</th>
-                      <th>Status</th>
-                      </tr>
-                  </thead> */}
                   <tbody>
               
-                  { my_dtr_notifications.map(function (data, i) {
+                  { my_dtr_notifications.slice().reverse().map(function (data, i) {
+
+                      // If the DTR date is beyond the current date, don't show the notification by returning null.
+                      if( moment().diff(moment(data.date)) < 0 ) {
+                        return null;
+                      }
+
                       return  (
                           <tr>
                             <td>{data.date}</td>

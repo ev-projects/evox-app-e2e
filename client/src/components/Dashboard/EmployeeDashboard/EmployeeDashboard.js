@@ -47,6 +47,7 @@ const EmployeeDashboard = ( props ) => {
     
     const { user } = props;
     const { current_payroll_cutoff } = props.settings;
+		const { my_dtr_notifications } = props.dashboard;
     
     const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
@@ -68,7 +69,7 @@ const EmployeeDashboard = ( props ) => {
                     </Row>
 
                     <Row className="dtr-notifications">
-                        <Content title="DTR Notifications" col="12" subtitle={<small> Payroll Cut-off: <br /> {moment( current_payroll_cutoff?.start_date ).format("MMM D")  +" - "+ moment( current_payroll_cutoff?.end_date ).format("MMM D")} </small>}>
+                        <Content title={"DTR Notifications (" + my_dtr_notifications?.filter(data => moment().diff(moment(data.date)) > 0).length +")" } col="12" subtitle={<small> Payroll Cut-off: <br /> {moment( current_payroll_cutoff?.start_date ).format("MMM D")  +" - "+ moment( current_payroll_cutoff?.end_date ).format("MMM D")} </small>}>
                           <DtrNotifications/>
                         </Content>       
                     </Row>
@@ -172,7 +173,8 @@ const EmployeeDashboard = ( props ) => {
 const mapStateToProps = (state) => {
   return {
       user : state.user,
-      settings : state.settings
+      settings : state.settings,
+      dashboard : state.dashboard,
   }
 }
 const mapDispatchToProps = (dispatch) => {
