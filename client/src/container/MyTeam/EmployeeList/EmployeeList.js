@@ -29,7 +29,7 @@ class EmployeeList extends Component {
           filters: {
             status:         this.props.myTeamList?.filters?.status,
             department_id:  this.props.myTeamList?.filters?.department_id,
-            team_id:        this.props.myTeamList?.filters?.team_id, 
+            team_id:        this.props.myTeamList?.filters?.team_id,
             job_title:      this.props.myTeamList?.filters?.job_title,
             name:           this.props.myTeamList?.filters?.name,
             page:           this.props.myTeamList?.filters?.page,
@@ -54,7 +54,6 @@ class EmployeeList extends Component {
           }
       } 
   }
-
   this.props.fetchMyTeamList( this.props.user.id, formData );
   
   }
@@ -117,10 +116,10 @@ const MyTeamListFilter = (props) => {
                     className="form-control" 
                       name="department_id"
                       value={values.department_id}
-                      onChange={(e) => { setFieldValue('department_id', e.target.value);  setFieldValue('team_id', null);  props.departmentSelected(e.target.value)}}
+                      onChange={(e) => { setFieldValue('department_id', e.target.value);  setFieldValue('team_id', '');  props.departmentSelected(e.target.value)}}
                       style={{ display: 'block' }}
                     >
-                    <option label="Select Department" />
+                    <option label="Select Department" value=''/>
                     {props.props.user.departments_handled.map(function(item){
                       return <option value={item.id} label={item.department_name} />;
                     })}
