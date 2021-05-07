@@ -20,7 +20,7 @@
     border-radius: 25px !important;
 }
 
-.filters.myrequest-filter {margin-top:0; width: 35%; float: right;}
+.filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: 20px; float: none;}
 .filters .date-range label,.bulk-action .form-group label {
     float: left;
     font-size: 12px;
