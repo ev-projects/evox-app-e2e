@@ -218,10 +218,7 @@ float: left;
 
 }
 @media only screen and (min-width: 576px){
-    .col-sm-4 {
-    flex: 0 0 7.333333%;
-    max-width: 7.333333%;
-}
+
   .SummaryBlock .col-sm-2 {
     margin: 0 !important;
     padding: 0 3px;
