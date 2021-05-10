@@ -1,6 +1,7 @@
 import React, { Component }  from 'react';
 import API from "./API";
 import { Container,Row,Col,Table,Image,Card,Spinner } from 'react-bootstrap';
+import moment from 'moment';
 
 class DtrFormatter {
   /** Convert Date Str to Month and Day Format
@@ -12,12 +13,8 @@ class DtrFormatter {
         var day = '';
 
         if(dateStr!=null){
-            const dayName = ["Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var d = new Date(dateStr);
-            day = dayName[d.getDay()];
-
-            return (<div><div className="month">{monthNames[d.getMonth()].toUpperCase()}</div><div className="day">{d.getDate()}</div><div className="dayname">{day}</div></div>);
+            date = moment(dateStr);
+            return (<div><div className="month">{date.format('MMM')}</div><div className="day">{date.format('DD')}</div><div className="dayname">{date.format('ddd')}</div></div>);
         }
 
         return '';
@@ -47,9 +44,7 @@ class DtrFormatter {
         var monthDay = '';
 
         if(dateStr!=null){
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var d = new Date(dateStr);
-            monthDay = monthNames[d.getMonth()].toUpperCase() + ' ' + d.getDate();
+            return moment(dateStr).format('MMM DD');
         }
 
         return monthDay;
@@ -96,8 +91,7 @@ class DtrFormatter {
         var time = '';
 
         if(dateStr!=null){
-            var d = new Date(dateStr);
-            time =   ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) +':'+   ('0' + d.getSeconds()).slice(-2) ;
+            return moment(dateStr).format('H:mm:ss');
         }
         return time;
     }
