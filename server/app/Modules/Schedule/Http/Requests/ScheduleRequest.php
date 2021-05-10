@@ -33,16 +33,18 @@ class ScheduleRequest extends FormRequest
     public function rules(Request $request)
     {   
         $rules = [
-            'bind_to'                               => 'string|in:user,department',
-            'bind_id'                               => 'string',
-            'schedule_type'                         => 'required|string|in:standard,flexible,customize',
-            'valid_from'                            => 'required_if:source_type,temporary|required_if:source_type,change_schedule|required_if:source_type,default|date_format:Y-m-d',
-            'valid_to'                              => 'required_if:source_type,temporary|required_if:source_type,change_schedule|date_format:Y-m-d',
-            'work_days'                             => 'array',            
-            'schedule_policies.*'                   => 'in: allow_undertime,allow_late,allow_night_diff',
-            'schedule_policies.allow_undertime'     => 'bool',
-            'schedule_policies.allow_late'          => 'bool',
-            'schedule_policies.allow_night_diff'    => 'bool',
+            'bind_to'                                   => 'string|in:user,department',
+            'bind_id'                                   => 'string',
+            'schedule_type'                             => 'required|string|in:standard,flexible,customize',
+            'valid_from'                                => 'required_if:source_type,temporary|required_if:source_type,change_schedule|required_if:source_type,default|date_format:Y-m-d',
+            'valid_to'                                  => 'required_if:source_type,temporary|required_if:source_type,change_schedule|date_format:Y-m-d',
+            'work_days'                                 => 'array',            
+            'schedule_policies.*'                       => 'bool|in:'.implode(',', array_merge(get_constant('SCHEDULE_POLICIES'), get_constant('SCHEDULE_HOLIDAY_POLICIES'))),
+            'schedule_policies.allow_undertime'         => 'bool',
+            'schedule_policies.allow_late'              => 'bool',
+            'schedule_policies.allow_night_diff'        => 'bool',
+            'schedule_policies.allow_special_holiday'   => 'bool',
+            'schedule_policies.allow_legal_holiday'     => 'bool',
         ];
 
         // If Schedule Type is Customized, manually iterate the per Work Day rules

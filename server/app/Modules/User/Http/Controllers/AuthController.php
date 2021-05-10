@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
-use App\Modules\Payroll\Repositories\PayrollRepository;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\Payroll\Resources\PayrollCutoffResource;
 use App\Modules\User\Resources\UserProfileResource;
 use Exception;
@@ -14,13 +14,13 @@ use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
-    protected $payroll;
+    protected $payroll_cutoff;
     protected $bhr;
     
 
-    public function __construct(PayrollRepository $payroll,
+    public function __construct(PayrollCutoffRepositoryInterface $payroll_cutoff,
                                 BhrRepositoryInterface $bhr){
-        $this->payroll = $payroll;
+        $this->payroll_cutoff = $payroll_cutoff;
         $this->bhr = $bhr;
     }
     /**
@@ -51,6 +51,11 @@ class AuthController extends Controller
             // Attempt to check the Credentials. If credentials not found, return User Not Found.
             if (!$token = auth()->attempt($credentials)) {
                 return error_response( trans('messages.user_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+            }
+
+            // Attempt to check if the User is active. If not active, return User not active.
+            if ( ! auth()->user()->is_active ) {
+                return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
             }
 
             log_activity( trans('messages.login') );
@@ -120,7 +125,7 @@ class AuthController extends Controller
         $result['constant'] = get_constant();
 
         $result['settings'] = [
-            'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll->get_payroll_cutoff()),
+            'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll_cutoff->get_payroll_cutoff()),
             'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num )
         ];
 

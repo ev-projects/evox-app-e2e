@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
          */
         'jwtauth' => \App\Modules\User\Http\Middleware\JWTAuthentication::class,
         'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+        'role' => \App\Http\Middleware\EnsureUserHasRole::class,
 
         /**
      * 

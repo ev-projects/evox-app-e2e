@@ -16,7 +16,7 @@ interface DtrRepositoryInterface
     public function apply_drupal_evox_data_to_dtr( array $drupal_evox_dtr_array );
 
     
-    public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
+    public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule, $bypass = false );
 
     public function remove_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
 
@@ -42,5 +42,8 @@ interface DtrRepositoryInterface
     public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date );
     
     public function compute_payroll_items(Dtr $dtr);
+
+
+    public function get_leaves_from_dtr( Collection $dtr_collection );
     
 }

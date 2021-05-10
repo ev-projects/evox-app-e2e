@@ -8,6 +8,7 @@ use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Payroll\Models\Leave;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Schedule\Models\Schedule;
@@ -17,10 +18,13 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 
 class DtrRepository implements DtrRepositoryInterface{
-    
-    function __construct(){
+    protected $user;
+
+    function __construct(UserRepositoryInterface $user){
+        $this->user = $user;
         $this->computation = new Computation();
         $this->dtr_summary = new DtrSummary();
     }
@@ -44,7 +48,7 @@ class DtrRepository implements DtrRepositoryInterface{
             
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date], "dtr");
 
-            $dtr_array = [];
+            $dtr_insert_array = [];
             
             # Iterates per User per Date.
             foreach( $user_collection as $user ) {
@@ -281,9 +285,11 @@ class DtrRepository implements DtrRepositoryInterface{
      *  Responsible for Applying of Schedule to DTR.
      * @param User|user_id $user_or_user_id
      * @param Schedule $schedule
+     * @param $bypass
+     * 
      * @return array $result
      */
-    public function apply_schedule_to_dtr( $user_or_user_id, Schedule $schedule )
+    public function apply_schedule_to_dtr( $user_or_user_id, Schedule $schedule, $bypass = false )
     {
         DB::beginTransaction();
         try {
@@ -325,9 +331,9 @@ class DtrRepository implements DtrRepositoryInterface{
                     //     $to_update_flag = false;
                     //     $result['not_updated'][] = $dtr;
                     // }
-        
-                    # If the Schedule Instance is Default AND the current DTR tagging was already set as Temporary/Change Schedule/Rest Day Work, sets the Update Flag to FALSE
-                    if( $schedule->isDefault() && ($dtr->isTemporary() || $dtr->isChangeSchedule() || $dtr->isRestDayWork()) ) {
+
+                    # If not gonna bypass and the Schedule Instance is Default AND the current DTR tagging was already set as Temporary/Change Schedule/Rest Day Work, sets the Update Flag to FALSE
+                    if( !$bypass & $schedule->isDefault() && ($dtr->isTemporary() || $dtr->isChangeSchedule() || $dtr->isRestDayWork()) ) {
                         $to_update_flag = false;
                         $result['not_updated'][] = $dtr;
                     }
@@ -792,13 +798,13 @@ class DtrRepository implements DtrRepositoryInterface{
         try {
 
             $result = new Collection;
-            
+            $processed_data = array();
             // Iterate the fetched Employee Leaves that was fetched from BHr.
             foreach( $bhr_leaves_array as $row ) {
 
                 // Proceed only if the Status of the Leave Request is in the LEAVE REQUEST STATUS constant Array
                 if( in_array( $row->status->status, get_constant('LEAVE_REQUEST_STATUS') ) )   {
-
+                    $user = $this->user->show_via_bhr_number( $row->employeeId );
                     // Get the DTR related on the Leave Request's Date Range
                     $dtr_collection = Dtr::select('dtrs.*')
                                             ->join('users', 'dtrs.user_id', '=', 'users.id')
@@ -833,6 +839,15 @@ class DtrRepository implements DtrRepositoryInterface{
                         # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
                         $leave_insert_array[] = implode(",", $leave_insert_values);
                     }
+                
+                    $processed_data[] = [
+                        "date" => $row->start .' - '.  $row->end,
+                        "employee_no" =>  $user->emp_num,
+                        "employee_name" => $user->first_name . ' ' . $user->last_name ,
+                        "leave_type" =>( is_valid( $row->type ) && isset( $row->type->name ) ) ? $row->type->name: 'null',
+                        "status" => ( is_valid( $row->status->status ) ) ? $row->status->status : 'null',
+                        "amount" =>   ( is_valid( $row->amount->amount ) ) ? $row->amount->amount : 'null',
+                    ];
                 }
             }
                                     
@@ -867,7 +882,7 @@ class DtrRepository implements DtrRepositoryInterface{
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             DB::commit();
-            return $result;
+            return $processed_data;
 
         } catch (Exception $e) {
             DB::rollback();
@@ -903,9 +918,7 @@ class DtrRepository implements DtrRepositoryInterface{
                         $result->push( $dtr );
 
                         // If the DTR has Valid Time Logs, trigger the computation for Payroll items.
-                        if( $dtr->hasValidTimelogs() ) {
                             $this->compute_payroll_items( $dtr );
-                        }
                     }
                 } 
             }
@@ -1035,6 +1048,24 @@ class DtrRepository implements DtrRepositoryInterface{
             log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_computation");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_computation");
+            throw $e;
+        }
+    }
+
+    
+
+    
+    /**
+     * Gets the leaves binded from the specific DTR collections
+     * @param Collection $dtr_collection
+     * @return Collection $leaves_collections
+     */
+    public function get_leaves_from_dtr( Collection $dtr_collection ){
+        try{
+            $leaves_collections = Leave::whereIn('dtr_id', $dtr_collection->pluck('id'))->get();
+            return $leaves_collections;
+        } catch (Exception $e) {
+            log_error($e);
             throw $e;
         }
     }

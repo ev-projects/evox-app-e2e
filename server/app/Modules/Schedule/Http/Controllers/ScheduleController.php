@@ -123,8 +123,53 @@ class ScheduleController extends Controller
             $schedule = $this->schedule->assign( $request->all() );
 
             // If the bind to is for user, apply the newly assigned schedule to the DTR related
-            if( $request->bind_to == 'user' ) {
-                $dtr_collection = $this->dtr->apply_schedule_to_dtr( $request->bind_id, $schedule );
+            if( $schedule->bind_to == 'user' ) {
+                $dtr_collection = $this->dtr->apply_schedule_to_dtr( $schedule->bind_id, $schedule );
+
+            // If the bind to is for department and the actions meets the Assign actions, apply the newly updated schedule to the Department User's DTR related
+            } elseif( $schedule->bind_to == 'department' ) {
+
+                if( in_array( $request->action, get_constant('ASSIGN_DEPARTMENT_ACTIONS') ) ){
+
+                    // Get the department owner of the schedule
+                    $department = $schedule->owner()->first();
+
+                    // Iterate the Department Users and apply the schedule to user default schedule
+                    foreach( $department->users()->get() as $user ){
+    
+                        // Fetch the user default schedule
+                        $user_schedule = $user->defaultSchedule()->first();
+                        
+                        // If the User Schedule exist, proceed on replicating the schedule details depending on the action
+                        if( is_valid($user_schedule) ) {
+
+                            switch( $request->action ){
+
+                                // Replicate the schedule holiday policy of the department schedule to user default schedule
+                                case "assign_schedule_holiday_policy":
+                                    $user_schedule = $this->schedule->replicate_schedule_holiday_policy( $user_schedule, $schedule );
+                                    break;
+                                // Replicate the schedule policy of the department schedule to user default schedule
+                                case "assign_schedule_policy":
+                                    $user_schedule = $this->schedule->replicate_schedule_policy( $user_schedule, $schedule );
+                                    break;
+                                // Replicate the schedule of the department schedule to user default schedule
+                                case "assign":
+                                    $user_schedule = $this->schedule->replicate_schedule( $user_schedule, $schedule );
+                                    break;
+            
+                            }
+                            
+                        // If the User Schedule DOES NOT exist, proceed on copying the whole department schedule to the user.
+                        } else {
+                            $user_schedule = $this->schedule->copy_schedule_to_user( $schedule, $user );
+                        }
+
+                        // Apply the updated user schedule to the user's DTR. (bypass the checking of the default schedule of user)
+                        $this->dtr->apply_schedule_to_dtr( $user_schedule->bind_id, $user_schedule, true );
+                    }
+                }
+
             }
 
             return success_response(

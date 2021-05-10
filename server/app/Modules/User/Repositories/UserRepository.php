@@ -3,6 +3,7 @@
 namespace App\Modules\User\Repositories;
 
 use App\Modules\Department\Models\Department;
+use App\Modules\Team\Models\Team;
 use App\Modules\User\Models\User;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
@@ -22,7 +23,99 @@ class UserRepository implements UserRepositoryInterface{
     ###################################### Public functions #######################################
     ###############################################################################################
 
+    /**
+     *  Responsible for Registering a User w/ specific departments being handled and roles/permissions
+     * @param Request $request
+     * @return array [ $user, $temporary_password ]
+     */
+    public function register_user( $request ){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
+
+        DB::beginTransaction();
+        try {  
+            /**
+             *  1. Insert the User
+             *  2. Attach the Role/s to User
+             *  3. Attach the Role's Permissions to User
+             *  3. Attach the Departments Handled to User
+             */
+
+            // Generate Temporary Password for the User
+            $temporary_password = str_random(8);
+
+            # 1.
+            $user = new User();
+
+            $user->emp_num = null;
+            $user->bhr_num = null;
+            $user->email = $request->email;
+            $user->username = $request->email;
+            $user->password = Hash::make( $temporary_password );
+            $user->first_name = $request->first_name;
+            $user->middle_name = null;
+            $user->last_name = $request->last_name;
+            $user->employment_status = get_constant('REGISTERED_USER');
+            $user->force_change_password = true;
+            $user->date_hired = null;
+            $user->is_active = true;
+
+            // Save the User and it will generate the User ID
+            $user->save();
+
+            
+            # 2.
+            // Iterate the roles to be assigned to the User
+            foreach( $request->roles as $role_name ){
+
+                //Fetch the Role to attach on the User 
+                $role = Role::findByName( $role_name );
+
+                // Assign the Role
+                $user->assignRole( $role );
     
+                # 3.
+                // Total Permissions that are not synced yet on the User
+                $permissions_to_sync = [];
+    
+                // Iterate and filter out all the Permissions that are already existing for the User.
+                foreach( $role->permissions()->get() as $permission ){
+                    if( ! $user->hasDirectPermission( $permission ) ) {
+                        $permissions_to_sync[] = $permission;
+                    }
+                }
+                
+                // Assign the User's Permissions
+                $user->givePermissionTo( $permissions_to_sync );
+            }
+
+            # 4.
+            // Attach the Departments Supervised to User
+            $user->departments_supervised()->sync( $request->departments_handled );
+            
+            log_to_file( 'info', 'User Registered Successfully', [$user], 'user_sync');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            DB::commit();
+            return [
+                'user' => $user,
+                'temporary_password' => $temporary_password,
+            ];
+
+        } catch (Exception $e) {
+
+            DB::rollback();
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            throw $e;
+        }
+    }
+    
+
+
     /**
      *  Responsible for Inserting the BHR Users to EVOX, Attaching Default Roles and Permissions
      * @param object $bhr_user_number
@@ -63,10 +156,21 @@ class UserRepository implements UserRepositoryInterface{
                     $user->first_name = $bhr_user->firstName;
                     $user->middle_name = $bhr_user->middleName;
                     $user->last_name = $bhr_user->lastName;
+                    $user->nickname = $bhr_user->nickname; 
                     $user->employment_status = $bhr_user->employmentHistoryStatus;
                     $user->date_hired = $bhr_user->hireDate;
                     $user->is_active = true;
-                    
+                    $user->job_title = $bhr_user->jobTitle;
+                    $user->mobile_number = $bhr_user->mobilePhone;
+
+                    if($bhr_user->dateOfBirth != "0000-00-00" && $bhr_user->dateOfBirth != null){
+                        $user->birthdate =$bhr_user->dateOfBirth;
+                    }
+    
+                    if($bhr_user->terminationDate != "0000-00-00" && $bhr_user->terminationDate != null){
+                        $user->termination_date = $bhr_user->terminationDate;
+                    }
+
                     /** Fetch Department if existing. Insert new department if not.*/ 
                     $department = $this->generate_department( $bhr_user->department );
                     if( is_valid( $department ) ) {
@@ -144,7 +248,7 @@ class UserRepository implements UserRepositoryInterface{
 
         DB::beginTransaction();
         try {  
-
+            
             // If BHr User has E-mail and valid Employment history status, insert the user
             if( is_valid( $bhr_user->bestEmail ) /*&& is_valid( $bhr_user->employmentHistoryStatus ) */ ) {
 
@@ -152,16 +256,27 @@ class UserRepository implements UserRepositoryInterface{
                     $bhr_user->employeeNumber = "0" . $bhr_user->employeeNumber;
                 }
                 
-                $user->emp_num = $bhr_user->employeeNumber;
+                $user->emp_num = $bhr_user->employeeNumber; 
                 $user->bhr_num = $bhr_user->id;
                 $user->email = $bhr_user->bestEmail;
                 $user->first_name = $bhr_user->firstName;
                 $user->middle_name = $bhr_user->middleName;
                 $user->last_name = $bhr_user->lastName;
                 $user->employment_status = $bhr_user->employmentHistoryStatus;
+                $user->nickname = $bhr_user->nickname;
                 $user->date_hired = $bhr_user->hireDate;
                 $user->is_active = ( $bhr_user->terminationDate == "0000-00-00" && $bhr_user->employmentHistoryStatus != get_constant('BHR_USER_EMPLOYMENT_STATUS.terminated') ) ? true : false;
-                
+                $user->job_title = $bhr_user->jobTitle;
+                $user->mobile_number = $bhr_user->mobilePhone;
+
+
+                if($bhr_user->dateOfBirth!="0000-00-00"&&$bhr_user->dateOfBirth!=null){
+                    $user->birthdate =$bhr_user->dateOfBirth;
+                }
+    
+                if($bhr_user->terminationDate!="0000-00-00"&&$bhr_user->terminationDate!=null){
+                    $user->termination_date = $bhr_user->terminationDate;
+                }
                 /** Fetch Department if existing. Insert new department if not.*/ 
                 $department = $this->generate_department( $bhr_user->department );
                 if( is_valid( $department ) ) {
@@ -389,25 +504,47 @@ class UserRepository implements UserRepositoryInterface{
             $user_collection = [];
             if( get_authenticated_user( $id )  ) {
 
-                $user_collection = User::findOrFail( $id )->supervisee();
+                $user_collection = User::findOrFail( $id )->users_handled();
                 
-                if( is_valid( request()->get('department_id') ) ) {
-                    $user_collection->where('department_id', '=', request()->get('department_id'));
+                if( is_valid( request()->get('team_id') ) ) {
+                    $user_collection->join('team_users', 'team_users.user_id', '=', 'users.id')->where('team_id', '=', request()->get('team_id'));
+                }else{
+                    if( is_valid( request()->get('department_id') ) ) {
+                        $user_collection->where('department_id', '=', request()->get('department_id'));
+                    }
                 }
 
                 if( is_valid( request()->get('name') ) ) {
                     $user_collection->whereRaw("(first_name LIKE '%".request()->get('name')."%' OR last_name LIKE '%".request()->get('name')."%')");
                 }
 
-                if( is_valid( request()->get('status') ) ) {
-                    $user_collection->where('is_active', '=', request()->get('status'));
+                if( is_valid( request()->get('job_title') ) ) {
+                    $user_collection->where('job_title', 'like', '%' .request()->get('job_title'). '%');
                 }
+
+                if( is_valid( request()->get('order_by') ) ) {
+                    $order = explode(":", request()->get('order_by'));
+
+                    switch ($order[0]) {
+                        case "name":
+                            $user_collection->orderBy('first_name',  $order[1])
+                                ->orderBy('last_name',  $order[1]);
+                            break;
+                        case "job_title":
+                            $user_collection->orderBy('job_title',  $order[1]);
+                            break;
+                        default:
+                            $user_collection->orderBy('first_name',  $order[1])
+                                ->orderBy('last_name',  $order[1]);
+                      }
+                }else{
+                    $user_collection->orderBy('emp_num',  'asc');
+                }
+
                 
                 if( request()->get('page') == 'all' ){
                     
-                    $user_collection->orderBy('first_name', 'asc')
-                                    ->orderBy('last_name', 'asc')
-                                    ->get();
+                    $user_collection->get();
     
                 } else {
                     $user_collection = $user_collection->orderBy('first_name', 'asc')
@@ -426,13 +563,17 @@ class UserRepository implements UserRepositoryInterface{
 
 
     /**
-     *  Responsible for fetching all the Active Users
+     *  Responsible for fetching all the Active and Non Client Users
      * @param $id
      * @return User $user
      */
     public function get_all_active_users(){
         try {
-            $users = User::where('is_active', 1)->get();
+            $users = User::where('is_active', 1)
+                         ->whereHas('roles', function( $query ) {
+                             $query->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
+                         })
+                         ->get();
             return $users;
         } catch (Exception $e) {
             throw $e;
@@ -450,7 +591,7 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function get_users_under_supervisee( Request $request ){
         try {
-            $user_collection =  auth()->user()->supervisee(); 
+            $user_collection =  auth()->user()->users_handled(); 
 
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
@@ -478,7 +619,7 @@ class UserRepository implements UserRepositoryInterface{
     public function get_dpa_list( Request $request ){
         try {
             // Fetch the Users under the supervisee and join to their department for the sorting via Department Name
-            $user_collection = User::whereIn('users.id', auth()->user()->supervisee()->pluck('id')->toArray())
+            $user_collection = User::whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
                                     ->join('departments', 'departments.id','=','users.department_id')
                                     ->orderBy('departments.department_name','asc')
                                     ->orderBy('users.emp_num','desc')
@@ -755,6 +896,39 @@ class UserRepository implements UserRepositoryInterface{
             throw $e;
         }
     }
+
+    
+
+
+    /**
+     *  Responsible for fetching the specific User list of a Team
+     * @param string $team_id
+     * @return Collection $user_collection
+     */
+    public function list_via_team( $team_id ){
+        try {
+
+            if( request()->get('page') == 'all' ){
+                $user_collection = Team::find( $team_id )->team_users()
+                                                         ->orderBy('first_name', 'asc')
+                                                         ->orderBy('last_name', 'asc')
+                                                         ->get();
+
+            } else {
+                $user_collection = Team::find( $team_id )->team_users()
+                                                         ->orderBy('first_name', 'asc')
+                                                         ->orderBy('last_name', 'asc')
+                                                         ->paginate(15);
+            }     
+        
+            return $user_collection;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    
+    
     ###############################################################################################
     ##################################### Protected functions #####################################
     ###############################################################################################

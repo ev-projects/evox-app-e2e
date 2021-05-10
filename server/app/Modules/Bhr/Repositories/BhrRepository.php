@@ -26,7 +26,7 @@ class BhrRepository implements BhrRepositoryInterface{
      * @return array $bhr_user_number_array { inserted && changed }
      */
     public function get_changed_users( $since_date_to_sync ){
-
+       
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
 
@@ -36,7 +36,8 @@ class BhrRepository implements BhrRepositoryInterface{
 
             // Define the End Point for the API.
             $end_point = 'employees/changed?since=' . $since_date_to_sync;
-
+            
+          
             // Iterate the BHr Call Result
             foreach( ( bhr_api_call('GET', $end_point) )->employees as $employee_sub_details ) {
                 $bhr_user_number_array[ $employee_sub_details->id ] = $employee_sub_details->id;
@@ -56,6 +57,7 @@ class BhrRepository implements BhrRepositoryInterface{
             throw $e;
         }
     }
+
 
 
 
@@ -134,21 +136,28 @@ class BhrRepository implements BhrRepositoryInterface{
      * @param string $bhr_user_number
      * @return base64_encoded $profile_picture
      */
-    public function get_profile_picture( string $bhr_user_number ){
+    public function get_profile_picture( string $bhr_user_number = null ){
 
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
 
-            # Call the API of BHR to fetch the User's Profile Picture
-            $profile_picture = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/photo/medium');
+            $result = null;
 
-            // Parse to base64_encode
-            $profile_picture = base64_encode($profile_picture);
-                
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            if( is_valid($bhr_user_number) ){
 
-            return $profile_picture;
+                # Call the API of BHR to fetch the User's Profile Picture
+                $profile_picture = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/photo/medium');
+
+                // Parse to base64_encode
+                $result = base64_encode($profile_picture);
+                    
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            } else {
+                log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
+            }
+
+            return $result;
 
         } catch (Exception $e) {
             
@@ -160,8 +169,112 @@ class BhrRepository implements BhrRepositoryInterface{
         }
     }
 
-    
+    /**
+     *  Responsible for Fetching the User's Detail via BHR User number
+     * @param string $bhr_user_number
+     * @param boolean $for_sync
+     * @return Object $bhr_user
+     */
+    public function get_user_bhr_field( string $bhr_user_number = null  ){
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
+        try {
 
+            $result = null;
+
+            if( is_valid($bhr_user_number) ){
+                $fields =  get_imploded_constant('BHR_USER_PERSONAL' );
+
+                # Call the API of BHR to fetch the User's details in BHR
+                $result = bhr_api_call('GET', 'employees/'.$bhr_user_number.'?fields='. $fields   );
+                    
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "bhrlog");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            } else {
+                log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
+            }
+
+            return $result;
+
+        } catch (Exception $e) {
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+
+
+    /**
+     *  Responsible for Fetching the User's Detail via BHR User number
+     * @param string $bhr_user_number
+     * @param boolean $for_sync
+     * @return Object $bhr_user
+     */
+    public function get_user_job_information( string $bhr_user_number = null , string $field_name ){
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
+        try {
+
+            $result = null;
+
+            if( is_valid($bhr_user_number) ){
+                $result = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/tables/'.$field_name  );
+                    
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "bhrlog");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            } else {
+                log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
+            }
+
+            return $result;
+
+        } catch (Exception $e) {
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+
+
+    /**
+     *  Responsible for Fetching the User's Leave Credits
+     * @param string $bhr_user_number
+     * @param string $end_date
+     * @return Object $bhr_user
+     */
+    public function get_leave_credits( string $bhr_user_number, string $end_date ){
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
+        try {
+
+            $result = null;
+
+            if( is_valid($bhr_user_number) ){
+
+                $end_date = date('Y-m-d', strtotime($end_date)) . 'T00:00:00-00:00';
+
+                $result = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/time_off/calculator?end='.$end_date  );
+                    
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "bhrlog");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            } else {
+                log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
+            }
+
+            return $result;
+
+        } catch (Exception $e) {
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
 
     /**
      *  Responsible for Fetching Holidays from BHr and Syncing it on our Holiday Table. Conducts checking if holiday already exists.

@@ -8,11 +8,10 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import PageNotFound from "../../PageNotFound";
 
 import { addTemplateSchedule } from '../../../store/actions/scheduleActions'
 import Formatter from '../../../services/Formatter'
-import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, onSelectTimeHandlerStd, onSelectTimeHandlerFlexi, SchedulePolicy, ScheduleHolidayPolicy, WorkDays, StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../../components/Template/Wrapper";
@@ -31,22 +30,22 @@ class Schedule extends Component {
   componentWillMount(){
       
   }
-
+  
   render = () => {
-    return <Wrapper>
+    return <Wrapper {...this.props} >
     <Formik 
       onSubmit={this.onSubmitHandler} 
       validationSchema={validationSchema} 
       initialValues={{sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}}
-      ,name : '',std_schedule_details: [],flx_schedule_details: [],cst_schedule_details: [], source_type: 'template',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0}, schedule_type : '', work_days: [] }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+      ,name : '',std_schedule_details: [],flx_schedule_details: [],cst_schedule_details: [], source_type: 'template',schedule_policies : {allow_undertime:0, allow_late:0, allow_night_diff:0, allow_special_holiday:1, allow_legal_holiday:1}, schedule_type : '', work_days: [] }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
     <form onSubmit={handleSubmit}> 
         <ContainerWrapper> 
         <Col sm={7} >
           <Form.Group className="white_bg">
             <div className="header">
-              <h1>
+              <h4>
                 Schedule Template
-              </h1>
+              </h4>
             </div>
             <div className="body">
               <InputGroup>
@@ -57,13 +56,25 @@ class Schedule extends Component {
               </InputGroup> 
             </div>
           </Form.Group>
-        </Col>          
+        </Col>       
         <Col sm={7}>
           <Form.Group className="white_bg">
             <div className="header">
-              <h1>
+              <h4>
+                Holiday Policy
+              </h4>
+            </div>
+            <div className="body">
+              <ScheduleHolidayPolicy/> 
+            </div>
+          </Form.Group>
+        </Col>            
+        <Col sm={7}>
+          <Form.Group className="white_bg">
+            <div className="header">
+              <h4>
                 Schedule Policy
-              </h1>
+              </h4>
             </div>
             <div className="body">
               <SchedulePolicy/> 
@@ -73,9 +84,9 @@ class Schedule extends Component {
         <Col sm={7} >
           <Form.Group className="white_bg">
             <div className="header">
-              <h1>
+              <h4>
                 Schedule Type
-              </h1>
+              </h4>
             </div>
           <div className="body">
             <FieldArray name="std_schedule_details" render={arrayHelpers => (
@@ -133,9 +144,9 @@ class Schedule extends Component {
         <Col sm={7} >
           <Form.Group className="white_bg">
             <div className="header">
-              <h1>
+              <h4>
                 Work Days
-              </h1>
+              </h4>
             </div>
             <div className="body">
               <WorkDays/>
@@ -150,9 +161,9 @@ class Schedule extends Component {
           <Col sm={7} >
             <Form.Group className="white_bg">
               <div className="header">
-                  <h1>
+                  <h4>
                     Standard Form
-                  </h1>
+                  </h4>
               </div>
               <div className="body">
                 <StandardSchedDetailsForm/>
@@ -163,9 +174,9 @@ class Schedule extends Component {
           <Col sm={7} >
             <Form.Group className="white_bg">
               <div className="header">
-                  <h1>
+                  <h4>
                     Flexible Form
-                  </h1>
+                  </h4>
               </div>
               <div className="body">
                 <FlexibleSchedDetailsForm/>
@@ -176,9 +187,9 @@ class Schedule extends Component {
             <Col sm={7} >
               <Form.Group className="white_bg">
               <div className="header">
-                <h1>
+                <h4>
                   Customize Schedule
-                </h1>
+                </h4>
               </div>
               <div className="body">
                 {values.sorted_weekday.map((day, index) => {
@@ -192,7 +203,7 @@ class Schedule extends Component {
         ) : null}
         <Col sm={7}>
           <Button variant="primary" type="submit">
-            Create
+            <i className="fa fa-location-arrow" /> Submit
           </Button>
         </Col>
       </ContainerWrapper>

@@ -34,32 +34,72 @@ export const fetchUserList = ( role, params ) => {
     }
 }
 
-
-
-// // Fetch Department User List base on Department ID
-// export const fetchDepartmentUsers = ( department_id ) => {
-//     return (dispatch, getState) => {
-//         API.call({
-//             method: "get",
-//             url: "/department/"+ department_id +"/users"
-//         })
-//         .then(result => {
+// Fetch the Teams Handled via User ID
+export const fetchTeamsHandledList = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/teams_handled"
+        })
+        .then(result => {
             
-//             dispatch({
-//                 'type'              : 'FETCH_DEPARTMENT_USER_LIST_SUCCESS',
-//                 'department_id'     : department_id,
-//                 'list'              : result.data.content,
-//             })
+            dispatch({
+                'type'      : 'FETCH_TEAMS_HANDLED_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
 
-//         })
-//         .catch(e => {
-//             dispatch( Formatter.alert_error( e ) ) 
-//         });
-//     }
-// }
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
 
 
-// Fetch User List base on Role
+
+// Fetch the Teams Details via ID
+export const fetchTeam = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/team/" + id
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'          : 'FETCH_TEAM_SUCCESS',
+                'instance'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+// Fetch Role List
+export const fetchRoleList = () => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/roles",
+        })
+        .then(result => {
+            dispatch({
+                'type'     : 'FETCH_ROLE_LIST_SUCCESS', 
+                'list'     : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+// Fetch Department List
 export const fetchDepartmentList = () => {
     return (dispatch, getState) => {
         API.call({
@@ -70,6 +110,50 @@ export const fetchDepartmentList = () => {
             
             dispatch({
                 'type'      : 'FETCH_DEPARTMENT_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+// Fetch the Department Handlers List via Department ID
+export const fetchDepartmentHandlersList = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/department/" + id + "/department_handlers"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_DEPARTMENT_HANDLERS_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+// Fetch the Department Users List via Department ID
+export const fetchDepartmentUsersList = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/department/" + id + "/users"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_DEPARTMENT_USERS_LIST_SUCCESS',
                 'list'      : result.data.content,
             })
 

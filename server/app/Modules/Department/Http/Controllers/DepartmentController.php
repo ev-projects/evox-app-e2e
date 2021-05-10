@@ -8,7 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Department\Http\Requests\AssignDepartmentHandlersRequest;
 use App\Modules\Department\Resources\DepartmentResource;
 use App\Modules\Department\Repositories\DepartmentRepositoryInterface;
+use App\Modules\Department\Resources\DepartmentListResource;
 use App\Modules\Schedule\Resources\ScheduleResource;
+use App\Modules\User\Resources\UserListResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -31,7 +33,7 @@ class DepartmentController extends Controller
 
             return success_response(
                 trans('messages.all_department_success'), 
-                DepartmentResource::collection( $department_collection ) 
+                DepartmentListResource::collection( $department_collection ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -49,6 +51,48 @@ class DepartmentController extends Controller
             return success_response(
                 trans('messages.find_department_success'), 
                 new DepartmentResource( $department ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+
+
+    /**
+     * Shows the Department Hanlders of the Department
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function department_handlers($id){
+        try {
+            $user_collection = $this->department->find( $id )->department_supervisors()
+                                                             ->orderBy('first_name', 'asc')
+                                                             ->orderBy('last_name', 'asc')
+                                                             ->get();
+
+            return success_response(
+                trans('messages.fetch_department_handlers_success'), 
+                UserListResource::collection( $user_collection ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+
+
+    /**
+     * Shows the Department Hanlders of the Department
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function users($id){
+        try {
+            $user_collection = $this->department->find( $id )->users()
+                                                             ->orderBy('first_name', 'asc')
+                                                             ->orderBy('last_name', 'asc')
+                                                             ->get();
+
+            return success_response(
+                trans('messages.fetch_department_users_success'), 
+                UserListResource::collection( $user_collection ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);

@@ -10,8 +10,10 @@ class Authenticator {
      */
     checkPermission = ( permission ) => {
       if (permission != "" && (permission != null) && (permission != undefined)) {
-          if( store.getState().user?.permissions?.includes( permission ) ) {
-            return true;
+          if( permission instanceof Array ) {
+            return permission.some( r => store.getState().user?.permissions?.includes(r) );
+          }else {
+            return store.getState().user?.permissions?.includes( permission );
           }
         return false;
       }
@@ -23,9 +25,12 @@ class Authenticator {
      */
     checkRole = ( role ) => {
         if (role != "" && (role != null) && (role != undefined)) {
-            if( store.getState().user?.roles?.includes( role ) ) {
-              return true;
+            if( role instanceof Array ) {
+              return role.some( r => store.getState().user?.roles?.includes(r) );
+            }else {
+              return store.getState().user?.roles?.includes( role );
             }
+            
           return false;
         }
         return false;
@@ -36,7 +41,7 @@ class Authenticator {
      * Checks for both Permission and Role of the Currently Logged in user.
      */
     check =( role, permission ) => {
-        return this.checkPermission( permission ) && this.checkRole( role );
+        return  this.checkRole( role ) && this.checkPermission( permission );
     }
   }
   

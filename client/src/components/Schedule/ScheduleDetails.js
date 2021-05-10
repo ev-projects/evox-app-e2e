@@ -2,40 +2,93 @@ import React, { Component } from "react";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import { Form,Button,Container,Col,InputGroup,FormControl  } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
+import { useFormikContext } from 'formik';
 
 import "./Schedule.css";
+import Authenticator from "../../services/Authenticator";
 
 var day = {mon:"Monday", tue:"Tuesday", wed : "Wednesday" , thu: "Thursday", fri: "Friday", sat : "Saturday", sun : "Sunday"};
 
+const ScheduleHolidayPolicy = (props) => {
+  
+  const { handleSubmit, setFieldValue } = useFormikContext();
+
+  return (<Field>
+      {({ field, form }) => (
+      <div>
+        <Form.Group>
+          <label>
+          <input 
+            type="checkbox"
+            checked={field.value.schedule_policies.allow_special_holiday=="1"}
+            onChange={() => form.setFieldValue('schedule_policies.allow_special_holiday', field.value.schedule_policies.allow_special_holiday==1?0:1 )}
+          />
+
+          Special Holiday &nbsp;
+        </label>
+        <label>
+          <input 
+            type="checkbox"
+            checked={field.value.schedule_policies.allow_legal_holiday=="1"}
+            onChange={() => form.setFieldValue('schedule_policies.allow_legal_holiday', field.value.schedule_policies.allow_legal_holiday==1?0:1)}
+          />
+          Legal Holiday &nbsp;
+        </label>
+        </Form.Group>
+        { props.showAssignButton ? 
+          <button className="btn btn-secondary" onClick={(e)=> { setFieldValue('action', 'assign_schedule_holiday_policy'); handleSubmit(e); }}>
+            <i className="fa fa-tag" /> Assign to all employees
+          </button>
+          :
+          null
+        }
+      </div>
+      )}
+    </Field>);
+}
+
 const SchedulePolicy = (props) => {
+  
+  const { handleSubmit, setFieldValue } = useFormikContext();
+
     return (<Field>
         {({ field, form }) => (
-    <div>
-        <Form.Group>
-        <label>
-        <input 
-          type="checkbox"
-          checked={field.value.schedule_policies.allow_undertime=="1"}
-          onChange={() => form.setFieldValue('schedule_policies.allow_undertime', field.value.schedule_policies.allow_undertime==1?0:1 )}
-        />
+        <div>
+          <Form.Group>
+            <label>
+              <input 
+                type="checkbox"
+                checked={field.value.schedule_policies.allow_undertime=="1"}
+                onChange={() => form.setFieldValue('schedule_policies.allow_undertime', field.value.schedule_policies.allow_undertime==1?0:1 )}
+              />
 
-        Undertime &nbsp;</label>
-        <label>
-        <input 
-          type="checkbox"
-          checked={field.value.schedule_policies.allow_late=="1"}
-          onChange={() => form.setFieldValue('schedule_policies.allow_late', field.value.schedule_policies.allow_late==1?0:1)}
-        />
-        Tardiness &nbsp;</label>
-        <label>
-        <input 
-          type="checkbox"
-          checked={field.value.schedule_policies.allow_night_diff=="1"}
-          onChange={()  => {
-           form.setFieldValue('schedule_policies.allow_night_diff',field.value.schedule_policies.allow_night_diff==1?0:1)}}
-        />
-        Night Differential &nbsp;</label>
-        </Form.Group>
+              Undertime &nbsp;
+            </label>
+            <label>
+              <input 
+                type="checkbox"
+                checked={field.value.schedule_policies.allow_late=="1"}
+                onChange={() => form.setFieldValue('schedule_policies.allow_late', field.value.schedule_policies.allow_late==1?0:1)}
+              />
+              Tardiness &nbsp;
+            </label>
+            <label>
+              <input 
+                type="checkbox"
+                checked={field.value.schedule_policies.allow_night_diff=="1"}
+                onChange={()  => {
+                form.setFieldValue('schedule_policies.allow_night_diff',field.value.schedule_policies.allow_night_diff==1?0:1)}}
+              />
+              Night Differential &nbsp;
+            </label>
+          </Form.Group>
+          { props.showAssignButton ? 
+            <button className="btn btn-secondary" onClick={(e)=> { setFieldValue('action','assign_schedule_policy'); handleSubmit(e); }}>
+              <i className="fa fa-tag" /> Assign to all employees
+            </button>
+            :
+            null
+          }
         </div>
         )}
       </Field>);
@@ -415,6 +468,7 @@ export {
   onSelectTimeHandlerFlexi,
   StandardSchedDetailsForm,
   FlexibleSchedDetailsForm,
+  ScheduleHolidayPolicy,
   SchedulePolicy,
   WorkDays
 }

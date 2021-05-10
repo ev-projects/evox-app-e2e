@@ -1,3 +1,16 @@
+
+
+.request-tab {
+    position: relative;
+    top: 12px;
+    left: 21px;
+    z-index: 1000;
+}
+.request-tab .nav-tabs{border: 0 !important;}
+.request-tab a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px}
+.request-tab a.active {
+     background-color: #82af13  !important; color: #fff !important;
+}
 .request_list_btn{
     background-color:white !important;
     color: black !important;
@@ -7,7 +20,32 @@
     border-radius: 25px !important;
 }
 
-
+.filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: 20px; float: none;}
+.filters .date-range label,.bulk-action .form-group label {
+    float: left;
+    font-size: 12px;
+    padding: 10px;
+    text-transform: uppercase;
+    background: #ccc;
+}
+.filters .col{padding: 0px !important; margin:0 10px 0 0 !important;}
+.filters .date-range > div > div{width: 36.5%; float: left; margin-right: 5px}
+.filters .date-range {
+    width: 50% !important;
+    flex: 0 50%;
+}
+.filters.myrequest-filter .date-range {
+    width: 80% !important;
+    flex: 0 80%;
+}
+.filters .dept {
+    width: 27%;
+    flex: 10%;
+}
+.filters .search-name{width: 25%;flex: 10%;}
+.filters .filter-button{ width: 15%;flex: 5%; }
+.filters select, .filters input[type="textfield"]{font-size:1rem;}
+.bulk-action .form-group >div {float: left; margin-right: 10px}
 .denied{
     background-color: red !important;
     color: white !important;
@@ -65,12 +103,31 @@
     color: red  !important;
 }
 
-.display-block{
+.btn.display-block{
     display: block !important   ;
-    width: 100px!important;
+    width: 120px!important;
 }
 
 .input-feedback{
     color: red !important;
 }
+.form-control{font-size: inherit !important}
 
+
+@media only screen and (max-width: 650px) {
+
+.filters.myrequest-filter {margin:0; width: 100%; float: none;}
+.filters.myrequest-filter .date-range {
+    width: 75% !important;
+    flex: 0 75%;
+}
+.filters .date-range > div > div{width: 31%; float: left; margin-right: 5px}
+.request-tab{top:18px;}
+.request-tab .nav-tabs a:nth-child(1){
+    display: none
+}
+.request-tab a{padding: 5px 10px}
+.request-tab .nav-tabs a{
+    font-size: .875rem
+}
+}

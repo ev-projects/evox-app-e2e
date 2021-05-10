@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\Schedule\Resources\ScheduleResource;
@@ -14,30 +15,46 @@ use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
+use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\UserListResourceCollection;
-use App\Modules\User\Resources\UserProfileResource;
+use App\Modules\User\Resources\UserProfileResource; 
+use App\Modules\User\Resources\AnniversaryResources; 
+use Carbon\Carbon;
+use App\Modules\User\Resources\EmploymentStatusResource; 
+use App\Modules\User\Resources\JobInformationResource;   
+use App\Modules\User\Resources\HolidayResource;
+use Auth;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Modules\Payroll\Models\Holiday;
 
 use App\Modules\User\Models\User;
 use App\Modules\User\Resources\DpaUserListResource;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
+use App\Modules\User\Resources\LeaveCreditsListResource;
+use App\Modules\User\Resources\LeavesListResource;
+use App\Modules\User\Resources\PersonalInformationResource;
+use App\Modules\User\Resources\RoleResource;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserController extends Controller
 {
     protected $user;
+    protected $dtr;
     protected $bhr;
     protected $email;
 
     public function __construct(UserRepositoryInterface $user, 
+                                DtrRepositoryInterface $dtr, 
                                 BhrRepositoryInterface $bhr,
                                 EmailRepositoryInterface $email){
         $this->user = $user;
+        $this->dtr = $dtr;
         $this->bhr = $bhr;
         $this->email = $email;
     }
@@ -64,14 +81,133 @@ class UserController extends Controller
                 trans('messages.show_profile_success'), 
                 [
                     'user'  => new UserProfileResource( $user ), 
-                    'profile_picture'  => $profile_picture, 
+                    'profile_picture'  => $profile_picture
                 ]
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+
+    /**
+     * Constructs the Profile Details of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function personal_information( $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+               
+            $user = $this->user->show( $id );
+
+            $info = $this->bhr->get_user_bhr_field( $user->bhr_num  );
+
+            return success_response(
+                trans('messages.show_personal_information_success'), 
+                new PersonalInformationResource( $info )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
     
+
+    public function job_information( $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+
+            $user = $this->user->show( $id );
+
+            $employment_status = $this->bhr->get_user_job_information( $user->bhr_num , get_constant('BHR_USER_TABLE.employee_status') );
+
+            $job_information = $this->bhr->get_user_job_information( $user->bhr_num , get_constant('BHR_USER_TABLE.job_info')  );
+
+            return success_response(
+                trans('messages.show_profile_success'), 
+                [
+                    'job_information'  => new JobInformationResource( $job_information ) ,
+                    'employment_status'  => new EmploymentStatusResource( $employment_status )
+                ]
+            );
+
+            
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    /**
+     * Constructs the Time Off Details of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function time_off( $id, $start_date, $end_date ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+               
+
+            $user = $this->user->show( $id );
+
+            $dtr_collection = $user->dtr($start_date, $end_date)->get();
+            
+            $leaves_collection = $this->dtr->get_leaves_from_dtr( $dtr_collection );
+            
+            return success_response(
+                trans('messages.show_time_off_collection'), 
+                LeavesListResource::collection( $leaves_collection )
+                
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+    /**
+     * Constructs the Leave Credits Details of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function leave_credits( $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+
+            $user = $this->user->show( $id );
+
+            $leave_credits_collection = $this->bhr->get_leave_credits( $user->bhr_num, Carbon::today()->format('Y-m-d')  );
+
+            return success_response(
+                trans('messages.show_time_off_collection'), 
+                new LeaveCreditsListResource( $leave_credits_collection )
+                
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 
     /**
      * Returns the Default Schedule of the User by the User ID
@@ -144,6 +280,24 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_my_team_list'), 
                 new UserListResourceCollection( $user_collection ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    /**
+     * Returns the Temporary Schedules of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function my_team_list_under_department( $id, $department_id ){   
+        try {
+            $user_collection = Auth::user()->departments_team( $department_id );
+
+            return success_response(
+                trans('messages.show_my_team_list'), 
+                $user_collection
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -264,7 +418,6 @@ class UserController extends Controller
     }
 
 
-    
 
     /**
      * Function for Ticking the DPA field of the User
@@ -396,6 +549,33 @@ class UserController extends Controller
         }
     }
 
+
+    
+
+    /**
+     * Returns all the User List of Specific Team
+     * @param string $team_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function list_via_team( $team_id ){   
+        try {
+            log_activity( trans('messages.list_via_team_attempt') );
+            
+            $this->validate(new Request([
+                'team_id' => $team_id
+            ]), [
+                'team_id' => 'int'
+            ]);
+            
+            return success_response(
+                trans('messages.list_role_success'), 
+                UserListResource::collection( $this->user->list_via_department( $team_id ), false )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     /**
      * Returns all the User List of Specific Department
      * @param string $department_id
@@ -434,7 +614,8 @@ class UserController extends Controller
         try {
             log_activity( trans('messages.list_role_attempt') );
                     return success_response(
-                        trans('messages.list_role_success'),  Role::with('permissions')->get()
+                        trans('messages.list_role_success'),  
+                        RoleResource::collection( Role::with('permissions')->get() ) 
                     );
 
         } catch(Exception $e){
@@ -442,12 +623,23 @@ class UserController extends Controller
         }
     }
 
+    # This function registers User to the system
+    public function register( RegisterUserRequest $request){
     
+        try {
+            log_activity( trans('messages.register_user_attempt') );
 
+            $data = $this->user->register_user( $request );
 
+            $this->email->sendRegisteredUserEmail( $data['user'], $data['temporary_password'] );
+            
+            return success_response(
+                trans('messages.register_user_success'),  
+                new UserProfileResource( $data['user'] )
+            );
 
-
-
-
-
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
 }

@@ -1,0 +1,55 @@
+
+.absent, .no-schedule, .rdw_incomplete{
+    color: #cc0000 !important;
+}
+
+.undertime, .late, .late_and_undertime{
+    color: orange !important;
+}
+
+
+.dtr-notifications .content-table table thead th{
+    background:#fff !important; 
+    color:#333 !important;
+    text-align: left; 
+    vertical-align: middle;
+    border-top:0 !important; 
+    border-left:0 !important; 
+    border-right:0 !important;
+}
+
+.dtr-notifications .content-table table tbody td{
+    text-align: left; 
+    vertical-align: middle;
+    border-top:0 !important;
+     border-left:0 !important; 
+     border-right:0 !important;
+}
+
+.dtr-notifications .content-table table tbody td:nth-child(2){
+    font-size: .75rem; 
+    width: 35%
+}
+
+.dtr-notifications .content-table .holiday{
+    color: orange !important
+}
+
+.dtr-notifications .content-table{
+    height: 300px; 
+    overflow-y: scroll;
+    min-height: 150px;
+    max-height: 280px;
+    margin: 0 auto;
+}
+
+.dtr-notifications .content-table td{
+    background: #fff !important
+}
+.dtr-notifications .content-table tbody{
+    overflow-y: scroll;
+}
+
+.dtr-notifications .no-notifications{
+    text-align: center;
+}

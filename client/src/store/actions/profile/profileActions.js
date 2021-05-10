@@ -9,9 +9,6 @@ import Formatter from "../../../services/Formatter";
 
 export const fetchProfile = ( id ) => {
     return (dispatch, getState) => {
-        
-        // Sets the Reloading to True
-        dispatch({'type': 'RELOAD_START'});
 
         API.call({
             method: "get",
@@ -20,13 +17,10 @@ export const fetchProfile = ( id ) => {
         .then(result => {
             
             dispatch({
-                'type'              : 'FETCH_PROFILE',
-                'user'              : result.data.content.user,
-                'profilePicture'    : result.data.content.profile_picture
+                'type'               : 'FETCH_PROFILE',
+                'user'               : result.data.content.user,
+                'profile_picture'    : result.data.content.profile_picture,
             })
-
-            // Sets the Reloading to False
-            dispatch({'type': 'RELOAD_END'});
 
         })
         .catch(e => {
@@ -35,6 +29,111 @@ export const fetchProfile = ( id ) => {
     }
 }
 
+
+export const updateUserProfile = ( id, post_data ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/user/" + id + "/profile",
+            data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const fetchPersonalInformation = ( id ) => {
+    return (dispatch, getState) => {
+        
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/personal_information"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'                      : 'FETCH_PERSONAL_INFORMATION',
+                'personal_information'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+export const fetchJobInformation= ( id ) => {
+    return (dispatch, getState) => {
+
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/job_information"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'              : 'FETCH_JOB_INFORMATION',
+                'job_information'   : result.data.content.job_information,
+                'employment_status' : result.data.content.employment_status
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+export const fetchTimeOff = ( id, start_date, end_date ) => {
+    return (dispatch, getState) => {
+
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/time_off/" + start_date.format("YYYY-MM-DD") + "/" + end_date.format("YYYY-MM-DD")
+        })
+        .then(result => {
+
+            dispatch({
+                'type'              : 'FETCH_TIME_OFF',
+                'leaves_list'       : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+
+export const fetchLeaveCredits = ( id ) => {
+    return (dispatch, getState) => {
+
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/leave_credits/"
+        })
+        .then(result => {
+
+            dispatch({
+                'type'              : 'FETCH_LEAVE_CREDITS',
+                'leave_credits'     : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
 
 export const changePassword = ( id, formData ) => {
 

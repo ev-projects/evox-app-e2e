@@ -15,7 +15,7 @@ import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
 
-import { fetchUserList, fetchDepartmentList } from '../../../store/actions/lookup/lookupListActions';
+import { fetchUserList, fetchDepartmentList, fetchDepartmentUsersList } from '../../../store/actions/lookup/lookupListActions';
 import { assignEmployeeSupervisorsActions } from '../../../store/actions/admin/assignEmployeeSupervisorsActions'
 
 import Wrapper from "../../../components/Template/Wrapper";
@@ -124,34 +124,50 @@ class AssignEmployeeSupervisors extends Component {
 
 
  // Function for handling the onChange of Department Dropdown
- handleSelectDepartment = (event) =>{
+ handleSelectDepartment = async(event) =>{
 
   const value = event.target.value
 
-  if( Validator.isValid( value )  )  {
+  // Fetch the Department Users List
+  await this.props.fetchDepartmentUsersList( value );
 
-    // This list will render the final list of employees base on the Department
-    let employee_list = [];
+  // Set the Department Handlers as Selected Value
+  this.setState({
+      selectedDepartment : value
+  });
 
-    // This list will be the cross-matched existing Supervisory of the user
-    let selected_values = [];
 
-    // If the Department Users has values  base on the selected Department, proceed
-    if( this.props.department != undefined  && this.props.department.some(department => department.id == value) ) {
+ }
+  
 
-      const department_index = this.props.department.findIndex(department => department.id == value)
 
+ componentWillReceiveProps = async(nextProps) => {
+
+  // If the Department Users is updated, set the State for the selectedValues in the Department Handlers
+  if( nextProps.department_users != this.props.department_users ) {
+
+
+    console.log(nextProps.department_users )
+    console.log( this.state.selectedDepartment  )
+
+    if( Validator.isValid( this.state.selectedDepartment )  )  {
+
+      // This list will render the final list of employees base on the Department
+      let employee_list = [];
+  
+      // This list will be the cross-matched existing Supervisory of the user
+      let selected_values = [];
+  
       // Iterate the selected Department Users to formulate the final employee list.
-      for (var i = 0; i < this.props.department[department_index].users.length; i++) {
+      for (var i = 0; i < nextProps.department_users.length; i++) {
 
+        // Create the employee object
         var employee = {
-          label  : this.props.department[department_index].users[i].full_name,
-          value  : this.props.department[department_index].users[i].id
+          label  : nextProps.department_users[i].full_name,
+          value  : nextProps.department_users[i].id
         };
-
-        // Don't include the selected Supervisor on the Employee List.
-        // if( this.state.selectedSupervisor != employee.value ) {
         
+        // Push the Employee object to the employee list array
         employee_list.push(employee)
 
         // Gets the index of the Supervisor from the list.
@@ -163,32 +179,31 @@ class AssignEmployeeSupervisors extends Component {
 
             selected_values.push(employee)
         }
-        // }
 
       }
-    } 
-
-    this.setState({
-      selectedDepartment : value,
-      showEmployeeList : true,
-      employeeList : employee_list,
-      selectedValues : selected_values,
-    });
-
-  } else {
-
-    this.setState({
-      selectedDepartment : "",
-      showEmployeeList : false,
-      employeeList : [],
-      selectedValues : [],
-    });
+      
+  
+      this.setState({
+        selectedDepartment : this.state.selectedDepartment,
+        showEmployeeList : true,
+        employeeList : employee_list,
+        selectedValues : selected_values,
+      });
+  
+    } else {
+  
+      this.setState({
+        selectedDepartment : "",
+        showEmployeeList : false,
+        employeeList : [],
+        selectedValues : [],
+      });
+  
+    }
 
   }
 
- }
-  
-
+}
   // Function for handling the onChange of Selected Supervisor
   setSelectedValues = ( values ) => {
     this.setState({
@@ -220,7 +235,7 @@ class AssignEmployeeSupervisors extends Component {
 
     // Show the form if the Department and Supervisor list has already loaded.
     return ( this.props.supervisor != undefined ? 
-        <Wrapper previousPath={this.props.location.previousPath} role={'admin'} permission={'full_access'}>
+        <Wrapper {...this.props} >
               <ContainerWrapper>
                   <ContainerBody>
                       <Content col="6" title="Assign Employee Supervisors" >
@@ -342,7 +357,7 @@ class AssignEmployeeSupervisors extends Component {
                                 { /** Show the Assign Button if there is a data on Selected Department. */
                                   Validator.isValid( this.state.selectedDepartment ) ?
                                     <Row>   
-                                      <Button type="submit" style={{'width': '80%'}} className="btn btn-primary">Assign</Button>
+                                      <Button type="submit" style={{'width': '80%'}} className="btn btn-primary"><i class="fa fa-tag" /> Assign</Button>
                                     </Row> 
                                     :
                                     null 
@@ -392,8 +407,9 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchUserList             : ( role, params ) => dispatch( fetchUserList( role, params ) ),
-      fetchDepartmentList       : () => dispatch( fetchDepartmentList() ),
+      fetchUserList                     : ( role, params ) => dispatch( fetchUserList( role, params ) ),
+      fetchDepartmentList               : () => dispatch( fetchDepartmentList() ),
+      fetchDepartmentUsersList          : ( id ) => dispatch( fetchDepartmentUsersList( id ) ),
       assignEmployeeSupervisorsActions  : ( user_id, post_data ) => dispatch( assignEmployeeSupervisorsActions( user_id, post_data ) ),
     }
 }

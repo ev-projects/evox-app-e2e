@@ -104,25 +104,21 @@ class DtrSummary extends Component {
 		{
 		({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
 		<form onSubmit={handleSubmit}>
-		<Wrapper>
-			  <ContainerWrapper>       
-				  <Content col="12" title="DTR Summary">
-				  <Row>  
-                    <Col className="col-2"> 
+		<Wrapper {...this.props} >
+			  <ContainerWrapper>  
+        <h2 className="page-title">DTR SUMMARY </h2>
+        <Row className="filters filter-dtr"> 
+              <Col className="date-range"> 
                       <div className="form-group">
-                        <label>Date From:</label>
+                        <label>Date Range:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
-                      </div>
-                    </Col> 
-                    <Col  className="col-2">   
-                      <div className="form-group">
-                        <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
-                    </Col>
-                    <Col className="col-2"> 
+                    </Col>  
+                    
+                    <Col className="dept"> 
                     <div className="form-group">
-                          <label>Department:</label>
+                          
                           <select
                           className="form-control" 
                             name="department_id"
@@ -130,7 +126,7 @@ class DtrSummary extends Component {
                             onChange={handleChange}
                             style={{ display: 'block' }}
                           >
-                          <option    label="Select a Department" />
+                          <option    label="- Department -" />
                           {this.props.user.departments_handled.map(function(item){
                             return <option value={item.id} label={item.department_name} />;
                           })}
@@ -142,20 +138,20 @@ class DtrSummary extends Component {
 
                     
                     </Col> 
-                    <Col className="col-2"> 
+                    <Col className="search-name"> 
                       <div className="form-group">
-                          <label>Name:</label>
+                          
                           <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     
                     </Col> 
-					          <Col className="btns">   
-                    	<div className="form-group">
-						          <label> </label>
-							          <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}>Submit</Button>&nbsp;&nbsp;
+                    <Col className="btns filter-button">   
+                      <div className="form-group">
+                      <label> </label>
+                        <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
                         <Dropdown className="export-drop-down">
                           <Dropdown.Toggle variant="success" id="dropdown-basic">
-                          Export
+                            <i className="fa fa-download" /> Export
                           </Dropdown.Toggle>
 
                           <Dropdown.Menu>
@@ -167,9 +163,11 @@ class DtrSummary extends Component {
 
                      
                     </Col>
-                    </Row>
+                    </Row>     
+				  <div className="content-table">
+				  
 
-                      { this.props.dtrSummary.isListLoaded? (<div className="dtr-table">
+                      { this.props.dtrSummary.isListLoaded? (<Row><div className="dtr-summary-table">
                          
   <table class="table dtrSummary">
     <thead class="thead-light">
@@ -233,8 +231,8 @@ class DtrSummary extends Component {
 
   </tbody>
 </table>
-</div>) : (<div> No Record to be displayed</div>)}    
-				  </Content>
+</div></Row>) : (<div className="pd20">Sorry, no record found</div>)}    
+				  </div>
 			  </ContainerWrapper>
 	
 			</Wrapper>

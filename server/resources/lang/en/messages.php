@@ -22,13 +22,14 @@ return [
     /**
      *  User Authentication
      */
-    'user_not_found' => 'Sorry, Unrecognized Username or Password',
+    'user_not_found' => 'Sorry, Unrecognized Username or Password.',
+    'user_not_active' => 'Sorry, your account is suspended. Please email helpdesk@eastvantage.com to activate your account.',
     
     'login' => 'Login',
-    'login_success' => 'Logged in successfully!',
+    'login_success' => 'Successfully Login!',
 
     'logout' => 'Logout',
-    'logout_success' => 'Logged out successful!',
+    'logout_success' => 'Successfully Logout!',
     
     'payload' => 'Payload',
     'payload_success' => 'Payload successfully loaded!',
@@ -46,7 +47,20 @@ return [
     'tick_dpa_attempt'    => 'Attempt to tick the DPA of the User',
     'tick_dpa_success'    => 'Thank you for watching the video! ',
 
+    'register_user_attempt'    => 'Attempt to Register a User',
+    'register_user_success'    => 'Successfully registered a User!',
+
+    'role_not_allowed'          => 'No specific role to do this action!',
+    'permission_not_allowed'    => "No permission to do this action!",
     
+
+
+    /**
+     *  Team Creation
+     */
+    'store_team_success' => 'Successfully created a team!',
+    'update_team_success' => 'Successfully updated the team!',
+    'destroy_team_success' => 'Successfully deleted the team!',
 
 
     /**
@@ -69,6 +83,11 @@ return [
      */
     'show_profile_success' => 'Successfully shown the Profile Information!',
     'current_password_not_match' => 'The password does not match on your current password!',
+    'update_user_profile_attempt' => 'Attempt to update user profile...',
+    'update_user_profile_success' => 'Successfully updated the profile!',
+
+    
+
 
     /**
      *  Department
@@ -210,8 +229,8 @@ return [
     'bulk_request_update' => 'Requests are now updated',
     
 
-    'quickpunch_in_success' => 'Log In Successful',
-    'quickpunch_out_success' => 'Log Out Successful',
+    'quickpunch_in_success' => 'Successfully clocked in!',
+    'quickpunch_out_success' => 'Successfully clocked out!',
 
     'request_display_attempt' => 'Request List Attempt',
     'request_number_display_attempt' => 'Request Number List Attempt',

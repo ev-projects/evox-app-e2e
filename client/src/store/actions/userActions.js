@@ -172,7 +172,7 @@ export const forgotPasswordRequest = ( email ) => {
 
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.login_url
+                'link'      : global.links.login
             })
             
         })

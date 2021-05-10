@@ -75,31 +75,33 @@ class Computation
 
         $payroll_items = [];
 
+            
+        /**
+         *   COMPUTE for Late
+         */
+        # Checks if the 'allow_late' policy is activated.
+        if( $this->dtr->validLogIn() && $this->dtr->hasSchedule() && $this->dtr->holidays()->get()->count() < 1) {
+            
+            if( $this->dtr->check_allowed_policy('allow_late') ) {
+                $late_payroll_item = $this->compute_late();
+                
+                # If the $late_payroll_item is valid, add it on $payroll_items array.
+                if( is_valid( $late_payroll_item ) ) {
+                    $payroll_items[] = $late_payroll_item;
+                }
+            }
+        }
+
+
         # Check if the DTR has Valid Time Logs and has a proper Schedule.
         if( $this->dtr->hasValidTimelogs() && $this->dtr->hasSchedule() ) {
-
-
-            
             # Check if the current date is Holiday
             if($this->dtr->holidays()->get()->count() < 1) {
-
-                /**
-                 *   COMPUTE for Late
-                 */
-                # Checks if the 'allow_late' policy is activated.
-                if( $this->check_allowed_policy('allow_late') ) {
-                    $late_payroll_item = $this->compute_late();
-                    
-                    # If the $late_payroll_item is valid, add it on $payroll_items array.
-                    if( is_valid( $late_payroll_item ) ) {
-                        $payroll_items[] = $late_payroll_item;
-                    }
-                }
                 /**
                  *   COMPUTE for Undertime
                  */
                 # Checks if the 'allow_undertime' policy is activated.
-                if( $this->check_allowed_policy('allow_undertime') ) {
+                if( $this->dtr->check_allowed_policy('allow_undertime') ) {
                     $undertime_payroll_item = $this->compute_undertime();
                     
                     # If the $undertime_payroll_item is valid, add it on $payroll_items array.
@@ -110,12 +112,13 @@ class Computation
 
             }
             
+            
 
             /**
              *   COMPUTE for Night Diff.
              */
             # Checks if the 'allow_night_diff' policy is activated.
-            if( $this->check_allowed_policy('allow_night_diff') ) {
+            if( $this->dtr->check_allowed_policy('allow_night_diff') ) {
                 $night_diff_payroll_item_collection = $this->compute_night_diff();
                 
                 # If the $night_diff_payroll_item_collection is valid, Iterate it and add each item on $payroll_items array.
@@ -340,6 +343,7 @@ class Computation
      */
     private function compute_undertime(){
         try{    
+      
             $undertime = 0;
                     
             # Get the Total Rendered Time (Time-Out - Time-in)
@@ -374,13 +378,11 @@ class Computation
                     }
 
                 # If the Time-In is BETWEEN the Start-Datetime and Start-Flexy-Datetime
-                }elseif( $this->dtr->isTimedInBetweenSchedule() ){
-
+                }elseif( $this->dtr->isTimedInBetweenSchedule() ){             
                     # If the Required Time is HIGHER than the Rendered time, compute for Undertime.
                     if( $required_time > $rendered_time ){
                         $undertime = $required_time - $rendered_time;
                     }
-
                 # If the Time-In is AFTER or EQUAL the Start-Flexy-Datetime
                 } elseif ( $this->dtr->isTimedInAfterSchedule() ){
 
@@ -412,11 +414,20 @@ class Computation
             }else{
                 $undertime = $undertime - $this->timeoff_time;
             }
+            
+            # Condition for breaktime deduction on undertime
+            $half_day = ( $required_time - $this->dtr->break_time ) / 2;
+            if( $undertime >= $half_day && $undertime <= ($half_day + $this->dtr->break_time) ){
+                $undertime -= ($undertime - $half_day);
+            }elseif( ($half_day + $this->dtr->break_time )  < $undertime ){
+                $undertime -= $this->dtr->break_time;
+            }
+
 
             # Double checks the Validity of the Computed Undertime. If not valid, set it to Default value (0)
             # 1. If Undertime LESS THAN 0 (Negative values)
             # 2. If Undertime is GREATHER THAN 8 hours.
-            if( $undertime < 0 || $undertime > get_constant('TIMESTAMP.eight_hours') ){
+            if( $undertime < 0 || $undertime > $required_time ){
                 $undertime = 0;
             }
             
@@ -1126,24 +1137,6 @@ class Computation
         }
 
         return $total_night_diff;
-    }
-
-
-
-    ###############################################################################################
-    ##################################### Validation functions ####################################
-    ###############################################################################################
-
-    /**
-     *  Checks if the Policy Name parameter is existing on the DTR's Policy.
-     *   
-     * @param string $policy_name
-     * @return boolean
-     */
-    private function check_allowed_policy( $policy_name ) {
-        return $this->policies->contains(function ($policy) use ($policy_name) {
-            return $policy->policy ==  $policy_name && $policy->value == "1";
-        });
     }
 
 }

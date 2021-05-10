@@ -7,8 +7,7 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
-import PageNotFound from "../../PageNotFound";
+import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,ScheduleHolidayPolicy,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
 import PageLoading from "../../PageLoading";
 import { ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 
@@ -17,6 +16,7 @@ import { scheduleAssign,getDefaultSchedule,listTemplate,getTemplateSchedule } fr
 import Wrapper from "../../../components/Template/Wrapper/index.js";
 import BackButton from "../../../components/Template/BackButton/index.js";
 import Validator from "../../../services/Validator.js";
+import Authenticator from "../../../services/Authenticator.js";
 
 class ScheduleAssignDepartment extends Component {    
   constructor(props){
@@ -88,10 +88,13 @@ class ScheduleAssignDepartment extends Component {
     state.work_day = Validator.isValid( schedule?.work_days ) ? schedule.work_days : [];
 
     state.schedule_policies =  {
-      allow_late :      ( Validator.isValid( schedule.schedule_policies?.allow_late ) && schedule.schedule_policies.allow_late == 1 ) ? schedule.schedule_policies.allow_late : 0 , 
-      allow_undertime : ( Validator.isValid( schedule.schedule_policies?.allow_undertime ) && schedule.schedule_policies.allow_undertime == 1 ) ? schedule.schedule_policies.allow_undertime : 0, 
-      allow_night_diff: ( Validator.isValid( schedule.schedule_policies?.allow_night_diff ) && schedule.schedule_policies.allow_night_diff == 1 ) ? schedule.schedule_policies.allow_night_diff : 0 
+      allow_late :            ( Validator.isNumeric( schedule.schedule_policies?.allow_late ) ? parseInt(schedule.schedule_policies.allow_late) : 0), 
+      allow_undertime :       ( Validator.isNumeric( schedule.schedule_policies?.allow_undertime ) ? parseInt(schedule.schedule_policies.allow_undertime) : 0), 
+      allow_night_diff:       ( Validator.isNumeric( schedule.schedule_policies?.allow_night_diff ) ? parseInt(schedule.schedule_policies.allow_night_diff) : 0),
+      allow_special_holiday:  ( Validator.isNumeric( schedule.schedule_policies?.allow_special_holiday ) ? parseInt(schedule.schedule_policies.allow_special_holiday) : 1),
+      allow_legal_holiday:    ( Validator.isNumeric( schedule.schedule_policies?.allow_legal_holiday ) ? parseInt(schedule.schedule_policies.allow_legal_holiday) : 1) 
     };
+    
     
     state.schedule_type = schedule.schedule_type;
 
@@ -165,12 +168,13 @@ class ScheduleAssignDepartment extends Component {
 
   render = () => {
     
-    return <Wrapper>
+    return <Wrapper {...this.props} >
               <Formik 
                 enableReinitialize
                 onSubmit={this.onSubmitHandler} 
                 validationSchema={validationSchema} 
                 initialValues={{
+                  action: null,
                   bind_to: this.state.bind_to, 
                   bind_id: this.state.bind_id,
                   sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
@@ -191,9 +195,9 @@ class ScheduleAssignDepartment extends Component {
               <Col sm={7}>
                 <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                       Departments Handled
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                       <Form.Control as="select" onChange={e => this.loadDepartmentSchedule(e.target.value)} >
@@ -210,9 +214,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7}>
                   <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                         Schedule Scope
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                     <Form.Row>
@@ -239,9 +243,9 @@ class ScheduleAssignDepartment extends Component {
                   <div>
                   <Form.Group className="white_bg">
                     <div className="header">
-                      <h1>
+                      <h4>
                         Creation Type
-                      </h1>
+                      </h4>
                     </div>
                     <div className="body">
                       <label>          
@@ -281,21 +285,33 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7}>
                   <Form.Group className="white_bg">
                     <div className="header">
-                      <h1>
-                        Schedule Policy
-                      </h1>
+                      <h4>
+                        Holiday Policy
+                      </h4>
                     </div>
                     <div className="body">
-                      <SchedulePolicy/> 
+                      <ScheduleHolidayPolicy showAssignButton={( Authenticator.check(['supervisor'], ['supervisor_access']) ? true : false )}/> 
+                    </div>
+                  </Form.Group>
+                </Col>       
+                <Col sm={7}>
+                  <Form.Group className="white_bg">
+                    <div className="header">
+                      <h4>
+                        Schedule Policy
+                      </h4>
+                    </div>
+                    <div className="body">
+                      <SchedulePolicy  showAssignButton={( Authenticator.check(['supervisor'], ['supervisor_access']) ? true : false )}/> 
                     </div>
                   </Form.Group>
                 </Col>
                 <Col sm={7}>
                 <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                       Schedule Type
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                     <FieldArray name="std_schedule_details" render={arrayHelpers => (
@@ -354,9 +370,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7} >
                   <Form.Group className="white_bg">
                     <div className="header">
-                      <h1>
+                      <h4>
                         Work Days
-                      </h1>
+                      </h4>
                     </div>
                     <div className="body">
                       <WorkDays/>
@@ -370,9 +386,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7} >
                   <Form.Group className="white_bg">
                     <div className="header">
-                        <h1>
+                        <h4>
                           Standard Schedule
-                        </h1>
+                        </h4>
                     </div>
                     <div className="body">
                       <StandardSchedDetailsForm/>
@@ -383,9 +399,9 @@ class ScheduleAssignDepartment extends Component {
                 <Col sm={7} >
                   <Form.Group className="white_bg">
                     <div className="header">
-                        <h1>
+                        <h4>
                           Flexible Schedule
-                        </h1>
+                        </h4>
                     </div>
                     <div className="body">
                       <FlexibleSchedDetailsForm/>
@@ -396,9 +412,9 @@ class ScheduleAssignDepartment extends Component {
                     <Col sm={7} >
                       <Form.Group className="white_bg">
                       <div className="header">
-                        <h1>
+                        <h4>
                           Customize Schedule
-                        </h1>
+                        </h4>
                       </div>
                       <div className="body">
                         {values.sorted_weekday.map((day, index) => {
@@ -411,15 +427,24 @@ class ScheduleAssignDepartment extends Component {
                     </Col>
                 ) : null}
                 <Col sm={7}>
-                  <Button variant="primary" type="submit">
-                    Update
+                  <Button variant="primary" onClick={(e)=> { setFieldValue('action', 'update'); handleSubmit(e); }}>
+                  <i className="fa fa-edit" /> Update
                   </Button>
+                  &nbsp;
+                  {  Authenticator.check(['supervisor'], ['supervisor_access'])  ? 
+                    <button className="btn btn-secondary" onClick={(e)=> { setFieldValue('action', 'assign'); handleSubmit(e); }}>
+                      <i className="fa fa-tag" /> Assign to all employees
+                    </button>
+                    :
+                    null
+                  }
                   &nbsp;
                   <BackButton {...this.props} />
                 </Col>
                 </div>
                 :
-              null }
+                null 
+              }
             </ContainerWrapper>
             </form>
             )}

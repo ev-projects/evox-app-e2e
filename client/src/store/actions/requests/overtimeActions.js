@@ -24,7 +24,7 @@ export const addOvertime = ( post_data ) => {
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.dashboard_url
+                'link'      : global.links.dashboard
             })
         })
         .catch(e => {
@@ -47,7 +47,7 @@ export const updateOvertime = ( id, post_data ) => {
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.dashboard_url
+                'link'      : global.links.dashboard
             })
         })
         .catch(e => {
@@ -88,7 +88,7 @@ export const updateOvertimeStatus = ( id, post_data, status ) => {
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.dashboard_url
+                'link'      : global.links.dashboard
             })
         })
         .catch(e => {

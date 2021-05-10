@@ -67,25 +67,21 @@ class DtrLogs extends Component {
 		{
 		({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
 		<form onSubmit={handleSubmit}>
-		<Wrapper>
-			  <ContainerWrapper>       
-				  <Content col="12" title="DTR Logs">
-				  <Row>  
-                    <Col className="col-2"> 
+		<Wrapper {...this.props} >
+			  <ContainerWrapper>
+        <h2 className="page-title">DTR LOGS</h2>
+        <Row className="filters filter-dtr">  
+                    <Col className="date-range"> 
                       <div className="form-group">
-                        <label>Date From:</label>
+                        <label>Date range:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
-                      </div>
-                    </Col> 
-                    <Col  className="col-2">   
-                      <div className="form-group">
-                        <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
-                    </Col>
-                    <Col className="col-2"> 
+                    </Col> 
+                    
+                    <Col className="dept"> 
                     <div className="form-group">
-                          <label>Department:</label>
+                          
                           <select
                           className="form-control" 
                             name="department_id"
@@ -93,7 +89,7 @@ class DtrLogs extends Component {
                             onChange={handleChange}
                             style={{ display: 'block' }}
                           >
-                          <option    label="Select a Department" />
+                          <option    label="- Department -" />
                           {this.props.user.departments_handled.map(function(item){
                             return <option value={item.id} label={item.department_name} />;
                           })}
@@ -105,23 +101,26 @@ class DtrLogs extends Component {
 
                     
                     </Col> 
-                    <Col className="col-2"> 
+                    <Col className="search-name"> 
                       <div className="form-group">
-                          <label>Name:</label>
+                          
                           <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     
                     </Col> 
-					          <Col className="btns">   
-                    	<div className="form-group">
-						          <label> </label>
-							          <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}>Submit</Button>&nbsp;&nbsp;
+                    <Col className="btns filter-button">   
+                      <div className="form-group">
+                      <label> </label>
+                        <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
                         {/* <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button> */}
                       </div>
                     </Col>
-                    </Row>
+                    </Row>       
+				  <div className="content-table">
+				  
 
                       { this.props.dtrLogs?.isListLoaded? (
+                        <div className="dtr-summary-table">
                         <div className="dtr-table">
                             <table class="table dtrSummary">
                               <thead class="thead-light">
@@ -177,11 +176,12 @@ class DtrLogs extends Component {
                                   }
                               </tbody>
                             </table>
+                            
                             <Paginate pagination={this.props.dtrLogs?.instance?.pagination} />
-                        </div>) 
+                        </div></div>) 
                         : 
-                        (<div> No Record to be displayed</div>)}    
-				  </Content>
+                        (<div className="pd20">Sorry, no record found</div>)}    
+				  </div>
 			  </ContainerWrapper>
 			</Wrapper>
 		</form>

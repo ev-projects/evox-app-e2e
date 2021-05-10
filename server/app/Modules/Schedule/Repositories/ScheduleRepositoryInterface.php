@@ -19,7 +19,13 @@ interface ScheduleRepositoryInterface
     
     public function get_template_schedules();
 
-    public function replicate_schedule_to_user( Schedule $schedule, User $user );
+    public function copy_schedule_to_user( Schedule $schedule, User $user );
+
+    public function replicate_schedule_holiday_policy( Schedule $schedule, Schedule $schedule_to_copy );
+
+    public function replicate_schedule_policy( Schedule $schedule, Schedule $schedule_to_copy );
+
+    public function replicate_schedule( Schedule $schedule, Schedule $schedule_to_copy );
 
     public function apply_drupal_evox_data_to_default_schedule( array $drupal_evox_default_schedule_array );
 

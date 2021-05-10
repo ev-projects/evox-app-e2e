@@ -67,7 +67,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
         try {
             $department = Department::find($id);
 
-            $department->department_handlers()->sync( $user_id_array );
+            $department->department_supervisors()->sync( $user_id_array );
 
             log_to_file('info', 'Success', [$department->id . ' - ' . $department->department_name, $user_id_array], 'assign');
             return $department;

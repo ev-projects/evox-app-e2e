@@ -29,22 +29,34 @@ return [
         'lastName',
         'department',
         'bestEmail',
+        'dateOfBirth',
+        'nickname',
         'status',
         'hireDate',
+        'jobTitle',
+        'mobilePhone',
         'terminationDate',
         'employmentHistoryStatus',
         'supervisorEId'
+    ],
+    
+    'BHR_USER_TABLE' => [
+        'employee_status'    =>  'employmentStatus', 
+        'job_info'  =>  'jobInfo'
     ],
 
     'BHR_USER_FIELDS' => [
         'employeeNumber',
         'firstName',
         'lastName',
+        'middleName',
+        'supervisorEId',
         'fullname1',
         'nickname',
         'dateOfBirth',
         'gender',
         'maritalStatus',
+        'gender',
         'department',
         'supervisor',
         'employmentHistoryStatus',
@@ -54,6 +66,7 @@ return [
         'customTIN',
         'customPhilhealth',
         'customHDMF',
+        'terminationDate',
         'customBankaccount',
         'homePhone',
         'hireDate',
@@ -66,15 +79,24 @@ return [
         'status'
     ],
 
+    'BHR_USER_PERSONAL' => [
+        'mobilePhone',
+        'jobTitle'
+    ],
 
     'BHR_USER_EMPLOYMENT_STATUS' => [
         'terminated'    =>  'Terminated', 
     ],
 
     'USER_ROLES' => [
-        'employee'    =>  'employee', 
-        'supervisor'  =>  'supervisor'
+        'employee'      =>  'employee', 
+        'supervisor'    =>  'supervisor',
+        'team_leader'   =>  'team_leader',
+        'admin'         =>  'admin',
+        'client'        =>  'client',
     ],
+
+    'REGISTERED_USER' => 'Registered User',
 
     'DEFAULT_PASSWORD'  => '{ev2010}',
 
@@ -155,6 +177,23 @@ return [
         "overtime_night_diff" => "overtime_night_diff",
         "rendered_hours" => "rendered_hours"
     ],
+    
+    'ASSIGN_DEPARTMENT_ACTIONS' => [
+        "assign_schedule_holiday_policy" => "assign_schedule_holiday_policy",
+        "assign_schedule_policy" => "assign_schedule_policy",
+        "assign" => "assign",
+    ],
+
+    'SCHEDULE_POLICIES' => [
+        "allow_undertime" => "allow_undertime",
+        "allow_late" => "allow_late",
+        "allow_night_diff" => "allow_night_diff",
+    ],
+
+    'SCHEDULE_HOLIDAY_POLICIES' => [
+        "allow_special_holiday" => "allow_special_holiday",
+        "allow_legal_holiday" => "allow_legal_holiday",
+    ],
 
     'PAYROLL_ITEM_TAGS' => [
         "regular" => "regular",
@@ -210,7 +249,19 @@ return [
         "day"           => 86400,
     ],
 
-    
+    # 1 MONTH SCOPE FROM DATE TODAY
+    'MONTH_SCOPE' => [
+        "day_from"      => 1,
+        "one_month"     => 31,
+        "three_months"  => 92,
+        "four_months"  => 123,
+    ],
+
+    'REGULARIZATION' => [
+        "month_from"    => 6,
+        "month_to"      => 4,
+    ],
+
     'LOG_START' => ' [ CALL START ] ',
     'LOG_END' => ' [ CALL END ] ',
     'LOG_QUEUED' => ' [ QUEUED ] ',

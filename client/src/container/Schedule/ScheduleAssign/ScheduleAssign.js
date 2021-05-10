@@ -7,8 +7,7 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm} from '../../../components/Schedule/ScheduleDetails.js';
-import PageNotFound from "../../PageNotFound";
+import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
 import PageLoading from "../../PageLoading";
 import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
@@ -80,9 +79,11 @@ class AssignDefault extends Component {
     state.work_day = Validator.isValid( schedule?.work_days ) ? schedule.work_days : [];
 
     state.schedule_policies =  {
-      allow_late :      ( Validator.isValid( schedule.schedule_policies?.allow_late ) && schedule.schedule_policies.allow_late == 1 ) ? schedule.schedule_policies.allow_late : 0 , 
-      allow_undertime : ( Validator.isValid( schedule.schedule_policies?.allow_undertime ) && schedule.schedule_policies.allow_undertime == 1 ) ? schedule.schedule_policies.allow_undertime : 0, 
-      allow_night_diff: ( Validator.isValid( schedule.schedule_policies?.allow_night_diff ) && schedule.schedule_policies.allow_night_diff == 1 ) ? schedule.schedule_policies.allow_night_diff : 0 
+      allow_late :            ( Validator.isNumeric( schedule.schedule_policies?.allow_late ) ) ? parseInt(schedule.schedule_policies.allow_late) : 0 , 
+      allow_undertime :       ( Validator.isNumeric( schedule.schedule_policies?.allow_undertime ) ) ? parseInt(schedule.schedule_policies.allow_undertime) : 0, 
+      allow_night_diff:       ( Validator.isNumeric( schedule.schedule_policies?.allow_night_diff ) ) ? parseInt(schedule.schedule_policies.allow_night_diff) : 0,
+      allow_special_holiday:  ( Validator.isNumeric( schedule.schedule_policies?.allow_special_holiday ) ) ? parseInt(schedule.schedule_policies.allow_special_holiday) : 1, 
+      allow_legal_holiday:    ( Validator.isNumeric( schedule.schedule_policies?.allow_legal_holiday ) ) ? parseInt(schedule.schedule_policies.allow_legal_holiday) : 1 
     };
     
     state.schedule_type = schedule.schedule_type;
@@ -161,7 +162,7 @@ class AssignDefault extends Component {
     const method = (this.props.user.id==this.props.params.user_id) ? 'store' : 'approval';
 
     return ( this.state.isInitialDataLoaded ) ? 
-          <Wrapper>
+          <Wrapper {...this.props} >
             <ContainerWrapper>
             <ContainerBody>
             <Content col="12" title="Assign Schedule" subtitle={<RequestSubtitle method={method} user={this.props.user_info} />} >
@@ -190,9 +191,9 @@ class AssignDefault extends Component {
                 <div>
                 <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                       Source Type
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                     <label>          
@@ -225,9 +226,9 @@ class AssignDefault extends Component {
                 <div>
                 <Form.Group className="white_bg">
                 <div className="header">
-                  <h1>
+                  <h4>
                       Schedule Scope
-                  </h1>
+                  </h4>
                 </div>
                 <div className="body">
                   <Form.Row>
@@ -272,9 +273,9 @@ class AssignDefault extends Component {
                 <div>
                 <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                       Creation Type
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                     <label>          
@@ -296,7 +297,7 @@ class AssignDefault extends Component {
                       /> 
                     Template &nbsp;</label>
                     <Form.Control.Feedback type="invalid">
-                      &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
+                      &nbsp;{errors.creation_type && touched.creation_type && errors.creation_type}
                       </Form.Control.Feedback>
                     { values.creation_type  === "template" ? (<div>
                     <Form.Label>Custom Select</Form.Label>
@@ -310,13 +311,25 @@ class AssignDefault extends Component {
                   </div>  
                   </Form.Group>
                 </div>
-              </Col>      
+              </Col>           
               <Col sm={7}>
                 <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
+                      Holiday Policy
+                    </h4>
+                  </div>
+                  <div className="body">
+                    <ScheduleHolidayPolicy/> 
+                  </div>
+                </Form.Group>
+              </Col>    
+              <Col sm={7}>
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h4>
                       Schedule Policy
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                     <SchedulePolicy/> 
@@ -326,9 +339,9 @@ class AssignDefault extends Component {
               <Col sm={7}>
               <Form.Group className="white_bg">
                 <div className="header">
-                  <h1>
+                  <h4>
                     Schedule Type
-                  </h1>
+                  </h4>
                 </div>
                 <div className="body">
                   <FieldArray name="std_schedule_details" render={arrayHelpers => (
@@ -387,9 +400,9 @@ class AssignDefault extends Component {
               <Col sm={7} >
                 <Form.Group className="white_bg">
                   <div className="header">
-                    <h1>
+                    <h4>
                       Work Days
-                    </h1>
+                    </h4>
                   </div>
                   <div className="body">
                     <WorkDays/>
@@ -403,9 +416,9 @@ class AssignDefault extends Component {
               <Col sm={7} >
                 <Form.Group className="white_bg">
                   <div className="header">
-                      <h1>
+                      <h4>
                         Standard Schedule
-                      </h1>
+                      </h4>
                   </div>
                   <div className="body">
                     <StandardSchedDetailsForm/>
@@ -416,9 +429,9 @@ class AssignDefault extends Component {
               <Col sm={7} >
                 <Form.Group className="white_bg">
                   <div className="header">
-                      <h1>
+                      <h4>
                         Flexible Schedule
-                      </h1>
+                      </h4>
                   </div>
                   <div className="body">
                     <FlexibleSchedDetailsForm/>
@@ -429,9 +442,9 @@ class AssignDefault extends Component {
                   <Col sm={7} >
                     <Form.Group className="white_bg">
                     <div className="header">
-                      <h1>
+                      <h4>
                         Customize Schedule
-                      </h1>
+                      </h4>
                     </div>
                     <div className="body">
                       {values.sorted_weekday.map((day, index) => {
@@ -445,7 +458,7 @@ class AssignDefault extends Component {
               ) : null}
               <Col sm={7}>
                 <Button variant="primary" type="submit">
-                  Update
+                <i className="fa fa-edit" /> Update
                 </Button>
                 &nbsp;
                 <BackButton {...this.props} />

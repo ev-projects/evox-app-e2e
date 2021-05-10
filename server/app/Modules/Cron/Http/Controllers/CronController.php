@@ -9,7 +9,9 @@ use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollRepository;
+use App\Modules\Payroll\Resources\DtrBiometricsResource;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
@@ -27,7 +29,7 @@ use Illuminate\Database\Eloquent\Collection;
 class CronController extends Controller
 {
     protected $bhr;
-    protected $payroll;
+    protected $payroll_cutoff;
     protected $user;
     protected $dtr;
     protected $overtime;
@@ -37,7 +39,7 @@ class CronController extends Controller
     
 
     public function __construct(BhrRepositoryInterface $bhr, 
-                                PayrollRepository $payroll, 
+                                PayrollCutoffRepositoryInterface $payroll_cutoff,
                                 UserRepositoryInterface $user, 
                                 DtrRepositoryInterface $dtr, 
                                 OvertimeRepositoryInterface $overtime,
@@ -48,7 +50,7 @@ class CronController extends Controller
                                 ChangeScheduleRepositoryInterface $change_schedule,
                                 AlterLogRepositoryInterface $alter_log){
         $this->bhr = $bhr;
-        $this->payroll = $payroll;
+        $this->payroll_cutoff = $payroll_cutoff;
         $this->user = $user;
         $this->dtr = $dtr;
         $this->overtime = $overtime;
@@ -144,8 +146,9 @@ class CronController extends Controller
             
             # 2.
             # Iterate the actual BHR User Numbers array
+            $processed_user = array();
             foreach( $bhr_user_number_array as $bhr_user_number ){
-
+                $action = '';
                 // Fetch the User if it's already existing in the System
                 $user = $this->user->show_via_bhr_number( $bhr_user_number );
                 
@@ -155,7 +158,8 @@ class CronController extends Controller
                 # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
                 if( is_valid( $user ) ){
                     $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
-                    
+                    $action = 'Update';
+
                 # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
                 } else {
                     $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
@@ -169,7 +173,7 @@ class CronController extends Controller
                         if( is_valid( $department ) ) {
 
                             $schedule = $department->defaultSchedule()->first();
-                            $this->schedule->replicate_schedule_to_user( $schedule, $user );
+                            $this->schedule->copy_schedule_to_user( $schedule, $user );
                             
                         }
 
@@ -182,12 +186,20 @@ class CronController extends Controller
                             $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                         }
                     }
+                    $action = 'New User';
                 }
 
                 # 3.
                 if( is_valid( $user ) ) {
                     $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
                 }
+
+                $processed_user[] = array(
+                    'emp_num' =>  $user->emp_num ,
+                    'name' =>  $user->first_name.' '.$user->last_name   ,
+                    'action' =>  $action
+                );
+
                         
             }
 
@@ -196,7 +208,7 @@ class CronController extends Controller
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
-                $apply_user_supervisor_pivot_result,
+                $processed_user,
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){
@@ -264,7 +276,7 @@ class CronController extends Controller
 
             $biometrics_collection = $this->biometrics->get_biometrics( $start_datetime, $end_datetime );
             
-            $result = DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrics_collection ) );
+            $result = DtrBiometricsResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrics_collection ) );
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
@@ -287,7 +299,7 @@ class CronController extends Controller
             
             // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $payroll_cutoff = $this->payroll->get_payroll_cutoff();
+                $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
                 $start_date = $payroll_cutoff->start_date;
                 $end_date = $payroll_cutoff->end_date;
             }
@@ -324,7 +336,7 @@ class CronController extends Controller
             
             // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $payroll_cutoff = $this->payroll->get_payroll_cutoff();
+                $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
                 $start_date = $payroll_cutoff->start_date;
                 $end_date = $payroll_cutoff->end_date;
             }

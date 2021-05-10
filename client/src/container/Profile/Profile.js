@@ -1,130 +1,143 @@
 import React, { Component } from "react";
 import "./Profile.css";
-import { Container,Row,Col,Table,Image, Spinner,Button,Form,InputGroup,FormControl   } from 'react-bootstrap';
+import { Container,Row,Col, Tabs, Tab, Table,Image, Spinner,Button,Form,InputGroup,FormControl   } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { useFormikContext } from 'formik';
-import { fetchProfile, changePassword } from '../../store/actions/profile/profileActions' ;
-
+import { fetchTimeOff , fetchPersonalInformation, fetchProfile, fetchJobInformation, fetchLeaveCredits } from '../../store/actions/profile/profileActions' ;
+import Select from "react-select";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
+import ChangePasswordForm from "../../components/ChangePasswordForm";
 import * as Yup from 'yup';
 import Wrapper from "../../components/Template/Wrapper";
-import QuickPunch from "../QuickPunch";
 import BackButton from "../../components/Template/BackButton";
 import Validator from "../../services/Validator";
-import ChangePasswordForm from "../../components/ChangePasswordForm";
+import Authenticator from "../../services/Authenticator";
+import { Link } from "react-router-dom"; 
+import moment from 'moment';
+import PersonalInformation from "./PersonalInformation";
+import JobInformation from "./JobInformation";
+import TimeOff from "./TimeOff";
+import Formatter from "../../services/Formatter";
+import LeaveCredits from "./LeaveCredits";
 
 class Profile extends Component {
     constructor(props){
       super(props)
-
-      this.initialState = {
-
-        showChangePasswordForm : false,
+      this.state = {
+          current_tab: null
       }
-      
-
-      this.state = this.initialState; 
     }
     
     componentWillMount(){
-        this.props.fetchProfile( this.props.params.id );
+        this.setInitialDetails();
     }
-
     
-    componentWillReceiveProps = async(nextProps) => {
+    componentDidUpdate(prevProps, prevState ) {
         
-        // If the closeAllForm is triggered, manually set all the showing of forms to False.
-        if( nextProps.profile?.closeAllForm  ) {
-            
-           this.setShowChangePasswordForm(false);
-        }
-    }
-
-    
-    componentDidUpdate(prevProps) {
         if (this.props.location.pathname !== prevProps.location.pathname) {
             this.onRouteChanged();
         }
+
+        if( prevState.current_tab !== this.state.current_tab ) {
+
+            switch( this.state.current_tab ) {
+                case "personal_information":
+                    this.props.fetchPersonalInformation( this.props.params.id );
+                    break;
+                case "job_information":
+                    this.props.fetchJobInformation( this.props.params.id );
+                    break;
+                case "time_off":
+                    const start_date = moment().startOf('month');
+                    const end_date =  moment().endOf('month');
+                    
+                    this.setState({
+                        start_date: start_date,
+                        end_date: end_date
+                    })
+
+                    this.props.fetchLeaveCredits(this.props.params.id);
+                    this.props.fetchTimeOff(this.props.params.id, start_date, end_date);
+                    break;
+            }
+        }
+
     }
 
     onRouteChanged() {
-      this.props.fetchProfile( this.props.params.id );
+        this.setInitialDetails();
     }
 
-    setShowChangePasswordForm = ( bool ) => {
+    setInitialDetails(){
+        this.props.fetchProfile( this.props.params.id )
+        this.setTab( "personal_information" )
+        this.props.fetchPersonalInformation( this.props.params.id );
+    }
+
+    setTab( tab ) {
         this.setState({
-            showChangePasswordForm : bool
+            current_tab: tab
         })
     }
 
     render(){
-
+      
       const { profile, user, page } = this.props;
 
         return (
             <Wrapper >
                <ContainerWrapper>
                   <ContainerBody>
+                    <Row>
+                        <Col>
+                            <div className="profile-header"> 
+                                <div className="picture" >
+                                    <img src={ Validator.isValid( profile.profile_picture ) ? "data:image/jpg;base64,"+ profile.profile_picture : "/images/default-user-image.png"}
+                                         />
+                                </div>
+                                <div className="information" >
+                                    { profile.details.full_name} <br />
+                                    { profile.details.department} <br />
+                                    { profile.details.job_title}      
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
                     { Object.keys(profile.details).length > 0 && !page.isReloading ?
-                        <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
+                        <div className="profile-content">
                             <Row>
-                                <Content col="8" title="User Profile"  subtitle={ <BackButton {...this.props}/>} >
-                                        
-                                            <Row>
-                                                <div className="col-lg-4 text-center" >
-                                                    <img src={ Validator.isValid( profile.profilePicture ) ? "data:image/jpg;base64,"+ profile.profilePicture : "/images/default-user-image.png"}
-                                                        style={{'marginTop': '15px', 'width' :'170px', 'height': '170px'}} />
-                                                </div>
-                                                <div className="col-lg-8" >
-                                                    
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> Name: </label>    
-                                                            <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.full_name}  />
-                                                            </InputGroup> 
-                                                        </Col> 
-                                                    </Row> 
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> Username: </label>    
-                                                            <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.username}  />
-                                                            </InputGroup> 
-                                                        </Col> 
-                                                    </Row> 
-                                                    <Row>  
-                                                        <Col size="12" style={{'marginBottom': '5px'}}>  
-                                                            <label> E-mail: </label>    
-                                                            <InputGroup>
-                                                                <FormControl class="form-control" variant="primary" disabled="true" disabled="true" value={profile.details.email}  />
-                                                            </InputGroup> 
-                                                        </Col> 
-                                                    </Row> 
-                                                </div>
-                                            </Row>
-                                            <br/>
-                                            <Row>
-                                                <div className="col-lg-12" >
-                                                    { profile.details.id == user.id ?
-                                                        <Button type="button" className="btn btn-secondary" onClick={()=> {this.setShowChangePasswordForm(true)}} >Change Password</Button>
-                                                        :
-                                                        null
-                                                    }
-                                                    
-                                                </div>
-                                            </Row>
+                                <Content col="12" title={Formatter.slug_to_title(this.state.current_tab)}  subtitle={ <BackButton {...this.props}/>} >
+                                    <div className="profile-tabs">
+                                        <Tabs defaultActiveKey="home" 
+                                                id="uncontrolled-tab-example"
+                                                defaultActiveKey={this.state.current_tab}
+                                                onSelect={ (key) =>  { this.setTab(key) } }
+                                        >
+                                            <Tab eventKey="personal_information" title="Personal Info" type="submit"></Tab>
+                                            <Tab eventKey="job_information" title="Job Info" type="submit"></Tab>
+                                            <Tab eventKey="time_off" title="Time Off" type="submit"></Tab>
+                                        </Tabs>
+                                    </div>
+                                    { this.state.current_tab == "personal_information" && profile.personal_information != [] ? 
+                                        <PersonalInformation  />
+                                        :
+                                        null
+                                    }
+                                    { this.state.current_tab == "job_information" && profile.employment_status != []  && profile.job_information != [] ? 
+                                        <JobInformation />
+                                        :
+                                        null
+                                    }
+                                    { this.state.current_tab == "time_off" && profile.leaves_list != [] ? 
+                                        <TimeOff start_date={this.state.start_date} end_date={this.state.end_date}/>
+                                        :
+                                        null
+                                    }
+                                    
                                 </Content>
-                                {
-                                    this.state.showChangePasswordForm ? 
-                                    <ChangePasswordForm {...this} />
-                                    : 
-                                    null
-                                }
                             </Row>
                         </div>
-                    :
+                        :
                         null
                     }
                   </ContainerBody>
@@ -140,10 +153,15 @@ const mapStateToProps = (state) => {
       user : state.user,
       page : state.page
   }
-}
+} 
 const mapDispatchToProps = (dispatch) => {
+
   return {
-    fetchProfile : ( id ) => dispatch( fetchProfile( id) )
+    fetchProfile : ( id ) => dispatch( fetchProfile( id) ),
+    fetchPersonalInformation : ( id ) => dispatch( fetchPersonalInformation( id) ),
+    fetchJobInformation : ( id ) => dispatch( fetchJobInformation( id) ),
+    fetchLeaveCredits : ( id ) => dispatch( fetchLeaveCredits( id ) ),
+    fetchTimeOff : ( id, start_date, end_date ) => dispatch( fetchTimeOff( id, start_date, end_date ) )
 
   }
 }

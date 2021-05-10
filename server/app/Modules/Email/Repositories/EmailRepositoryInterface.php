@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface EmailRepositoryInterface
 {
+
+    public function sendRegisteredUserEmail( User $user, $temporary_password );
+
     public function sendForgotPasswordRequestEmail( User $user, $temporary_password );
 
     public function sendOvertimeRequestEmail( Overtime $overtime );

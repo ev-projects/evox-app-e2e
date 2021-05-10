@@ -25,7 +25,7 @@ if (! function_exists('get_authenticated_user')) {
 
             # If not, fetch the User Instance from the currently logged in's supervisee list.
             } else {
-               return auth()->user()->supervisee()->findOrFail( $user_id );
+               return auth()->user()->users_handled()->findOrFail( $user_id );
             }
 
         }catch(Exception $e){
@@ -34,6 +34,42 @@ if (! function_exists('get_authenticated_user')) {
         }
     }
 }
+
+if (! function_exists('ordinal')) {   
+    /**
+     * This function gets the the prefix of number
+     *
+     * @param  int $user_id
+     * @return App\Modules\User\Models\User
+     */
+    function ordinal( $input_number ) 
+    {
+        $number = (string) $input_number;
+        $last_digit = substr($number, -1);
+        $second_last_digit = substr($number, -2, 1);
+        $suffix = 'th';
+        if ($second_last_digit != '1')
+        {
+          switch ($last_digit)
+          {
+            case '1':
+              $suffix = 'st';
+              break;
+            case '2':
+              $suffix = 'nd';
+              break;
+            case '3':
+              $suffix = 'rd';
+              break;
+            default:
+              break;
+          }
+        }
+        if ((string) $number === '1') $suffix = 'st';
+        return $number.$suffix;
+      }
+}
+
 
 
 if (! function_exists('is_under_supervisee')) {   
@@ -60,9 +96,9 @@ if (! function_exists('is_under_supervisee')) {
             }
 
             if( $force_to_fail ) {
-                return auth()->user()->supervisee()->findOrFail( $user_id ) ? true : false;
+                return auth()->user()->users_handled()->findOrFail( $user_id ) ? true : false;
             } else {
-                return auth()->user()->supervisee()->find( $user_id ) ? true : false;
+                return auth()->user()->users_handled()->find( $user_id ) ? true : false;
             }
 
         }catch(Exception $e){

@@ -1,0 +1,22 @@
+.el-nav{width: 80%; margin: 0 auto}
+.el-nav > li{ display: block; float:left; width:50%; border:1px solid #ccc; padding:10px; }
+.el-nav > li a{color: #333 !important}
+.list{ float: none; display: block; clear:both; padding:20px 0; margin-bottom: 20px; border-bottom:5px solid #ccc; overflow: hidden;}
+.list .el-title{text-transform: uppercase; font-weight: bold }
+.list ul li{}
+.list ul li a{color:#333 !important;}
+.el-links{float: left; display: block; margin:10px 0; width:33%;}
+.el-links ul{padding: 0; margin: 0}
+.el-link-title{padding: 20px 0; color:#333 !important;}
+.el-link-title a{color:#333 !important;}
+.el-nav{width: 80%; margin: 0 auto}
+.el-nav > li{ display: block; float:left; width:50%; border:1px solid #ccc; padding:10px; }
+.el-nav > li a{color: #333 !important}
+.list{ float: none; display: block; clear:both; padding:20px 0; margin-bottom: 20px; border-bottom:5px solid #ccc; overflow: hidden;}
+.list .el-title{text-transform: uppercase; font-weight: bold }
+.list ul li a{color:#333 !important;}
+.el-links{float: left; display: block; margin:10px 0; width:33%;}
+.el-links ul{padding: 0 0 0 20px; margin: 0; list-style: disc none outside}
+.el-links ul li:nth-child(3n+1){clear: left}
+.el-link-title{padding: 0 20px; color:#333 !important; border-bottom: 1px solid #ccc; width: 95%; font-weight: bold}
+.el-link-title a{color:#333 !important;}

@@ -47,15 +47,16 @@ class DtrSummary
 
             # Iterates the DTR Collection
             foreach ( $dtr_collection as $dtr ) {
+                
                 # Get the DTR Type of the Current DTR Instance
                 $dtr_type = $dtr->getDtrType();
-
+                
                 # Checks if the DTR has Valid Timelogs and proper Schedule.
                 if( $dtr->validLog() && $dtr->hasSchedule() ) {
 
                     # Gets all the Payroll Items of the current DTR Instance.
                     $payroll_items_collection = $dtr->payroll_items()->get();
-                   ;
+
                     # Group the Payroll Items base on Tagging.
                     $grouped_payroll_items_array = grouped_payroll_items( $payroll_items_collection );
 
@@ -68,9 +69,8 @@ class DtrSummary
                     $next_dtr       = $dtr->next_dtr()->first();
                     $previous_dtr   = $dtr->previous_dtr()->first();
 
-                    $next_dtr_type  = ( is_valid( $next_dtr ) ) ? $next_dtr->getDtrType() : "reg";;
-                    $previous_dtr_type      = ( is_valid( $previous_dtr ) ) ? $previous_dtr->getDtrType() : "reg";;
-
+                    $next_dtr_type  = ( is_valid( $next_dtr ) ) ? $next_dtr->getDtrType() : "reg";
+                    $previous_dtr_type      = ( is_valid( $previous_dtr ) ) ? $previous_dtr->getDtrType() : "reg";
 
                     # Rest day tagging scenario
                     if( !$this->check_if_holiday( $next_dtr_type ) &&  $dtr_type == get_constant('DTR_TYPE.rest_day')){
@@ -105,7 +105,7 @@ class DtrSummary
                         if( is_valid( $next_dtr ) ) {
                             $this->compute_payroll_items_to_summary( $next_dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.overlapped') ] );
                         }else{
-                            $this->compute_payroll_items_to_summary( get_constant('PAYROLL_ITEM_TAGS.regular') , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.overlapped') ] );
+                            $this->compute_payroll_items_to_summary( get_constant('DTR_TYPE.regular') , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.overlapped') ] );
                         }    
                     } 
                     
@@ -114,14 +114,14 @@ class DtrSummary
                         if( is_valid( $previous_dtr ) ) {
                             $this->compute_payroll_items_to_summary( $previous_dtr_type , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.underlapped') ] );
                         }else{
-                            $this->compute_payroll_items_to_summary( get_constant('PAYROLL_ITEM_TAGS.regular') , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.underlapped') ] );
+                            $this->compute_payroll_items_to_summary( get_constant('DTR_TYPE.regular') , $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.underlapped') ] );
                         }                   
                     }
                    
-                }elseif( !$dtr->validLog() && $dtr->hasSchedule() && $dtr->leaves()->count() <= 0 && !$this->check_if_holiday( $dtr_type ) ){
+                }elseif( $dtr->isAbsent() ){
                     $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] +=  1;
-                }elseif( $dtr->on_leave() )  {
-                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->leaves()->first()->amount;
+                }elseif( $dtr->on_leave()->get()->count() > 0 )  {
+                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->on_leave()->first()->amount;
                 }
 
                 

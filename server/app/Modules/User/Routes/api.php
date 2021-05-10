@@ -43,20 +43,35 @@ Route::group(['prefix' => 'auth'], function () {
 # API Calls for user/{id}
 Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
+    # Gets the User List of Specific Role
+    Route::get('/search-user/{string_name}', 'UserController@get_user_by_string');
+
+    # Get the user roles
+    Route::get('/roles/', 'UserController@get_roles');
+
+    # Register a User
+    Route::post('register', 'UserController@register')->middleware('role:admin');
+
     # Get the Role of the user
     Route::get('get_dpa_list', 'UserController@get_dpa_list');
-
 });
 #####################################################################################################
 
 # API Calls for user/{id}
 Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
-     # Gets user info ( Name and Department )
-     Route::get('info', 'UserController@user_info');
+    # Gets user info ( Name and Department )
+    Route::get('info', 'UserController@user_info');
     
-    # Gets the list of Teams of the User
-    Route::get('profile', 'UserController@profile');//->middleware('auth.apikey');
+    Route::get('profile', 'UserController@profile');
+    
+    Route::get('personal_information', 'UserController@personal_information');
+
+    Route::get('job_information', 'UserController@job_information');
+
+    Route::get('time_off/{start_date}/{end_date}', 'UserController@time_off');
+
+    Route::get('leave_credits', 'UserController@leave_credits');
 
     # Gets the Default Schedule of the User indicated.
     Route::get('default_schedule', 'UserController@default_schedule');//->middleware('auth.apikey');
@@ -67,6 +82,8 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     # Gets the list of Teams of the User
     Route::get('my_team_list', 'UserController@my_team_list');//->middleware('auth.apikey');
 
+    Route::get('team_list/{department_id}', 'UserController@my_team_list_under_department');//->middleware('auth.apikey');
+    
     # Get the Role of the user
     Route::get('/role/', 'UserController@get_user_role');
 
@@ -77,13 +94,27 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::post('change_password', 'UserController@change_password');//->middleware('auth.apikey');
     
     # Assign Roles & Permissions Post request
-    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions');
+    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions')->middleware('role:admin');
     
     # Assign Employees Post Request
-    Route::post('/assign_employees/', 'UserController@assign_employees');
+    Route::post('/assign_employees/', 'UserController@assign_employees')->middleware('role:admin');
+
+
+    #####################################################################################################
+    
+    Route::group(['prefix' => 'profile', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+        
+        # Gets the User List of Specific Role
+        Route::post('/', 'ProfileController@store');
+
+        # Gets the User List of Specific Role
+        Route::put('/', 'ProfileController@update');
+    
+    
+    });
+    
 
 });
-
 
 
 #####################################################################################################
@@ -96,26 +127,19 @@ Route::group(['prefix' => 'role/{role}', 'middleware' => ['jwtauth', 'auth.apike
 
 });
 
-
-#####################################################################################################
-
-Route::group(['prefix' => 'admin-access/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-    
-    # Gets the User List of Specific Role
-    Route::get('/search-user/{string_name}', 'UserController@get_user_by_string');
-
-    # Get the user roles
-    Route::get('/roles/', 'UserController@get_roles');
-
-});
-
-
 #####################################################################################################
 
 Route::group(['prefix' => 'department/{department_id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
     
     # Gets the User List of Specific Department
     Route::get('/users', 'UserController@list_via_department');
+
+});
+
+Route::group(['prefix' => 'team/{team_id}', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the User List of Specific Department
+    Route::get('/users', 'UserController@list_via_team');
 
 
 });

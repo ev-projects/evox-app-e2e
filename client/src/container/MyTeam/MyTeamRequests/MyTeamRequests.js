@@ -21,13 +21,12 @@ class MyTeamRequests extends Component {
 
   constructor(props){
     super(props);
-
     this.initialState = {
         filters: {
-          status:           this.props.filters?.status ?? null,
-          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : (( this.props.settings?.current_payroll_cutoff?.start_date ) ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
-          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : (( this.props.settings?.current_payroll_cutoff?.end_date ) ? new Date( this.props.settings.current_payroll_cutoff.end_date ) : null),
-          department_id:    this.props.filters?.department_id ?? null,
+          status:           this.props.filters?.status ?? "pending",
+          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : null,
+          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : null,
+          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled.length == 1 ? this.props.user.departments_handled[0].id : null,
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
           checkedList:      this.props.filters?.checkedList ?? [],
@@ -42,7 +41,6 @@ class MyTeamRequests extends Component {
   }
 
   onSubmitHandler = (values) => {
-    console.log(values);
     var formData = { url: "my_team_requests"  };
 
     switch(values.action) {
@@ -61,15 +59,9 @@ class MyTeamRequests extends Component {
             } 
         }
         this.props.bulkRequest( formData );
-
-        this.props.fetchRequestList( formData );
-
         values.checkedList = [];
         values.action = '';
-
-      
         break;
-
     default:
         for (var key in values) {
           if( values[key] != null && values[key] != ""  ) {
@@ -85,11 +77,10 @@ class MyTeamRequests extends Component {
                   break;
               }
           } 
-          
       }
-      this.props.fetchStatusNumbers( formData );
-      this.props.fetchRequestList( formData );
     }
+    this.props.fetchRequestList( formData );
+    this.props.fetchStatusNumbers( formData );
   }
 
 
@@ -100,6 +91,7 @@ class MyTeamRequests extends Component {
       valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
       valid_to  : Validator.isValid(this.state.filters.valid_to) ? this.state.filters.valid_to.toISOString().substring(0, 10) : null
     };
+
 
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
     if( ! this.props.isListLoaded ) {
@@ -116,6 +108,7 @@ class MyTeamRequests extends Component {
   }
 
   render = () => {  
+
 
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
@@ -170,11 +163,10 @@ class MyTeamRequests extends Component {
       {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
-      <Wrapper>
-            <ContainerWrapper>   
-            <ContainerBody>  
-                <Content col="12" title="My Team Request"  subtitle={ <BackButton {...this.props} /> }>
-                <Tabs defaultActiveKey="home" 
+      <Wrapper {...this.props} >
+            <ContainerWrapper>
+            <h3>My Team Request</h3> 
+            <div className="request-tab"><Tabs defaultActiveKey="home" 
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
                       onSelect={(key) =>  {
@@ -194,7 +186,12 @@ class MyTeamRequests extends Component {
                   </Tab>
                   <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
                   </Tab>
-                </Tabs>    
+                </Tabs>
+            </div>
+            
+            <ContainerBody>  
+                <Content col="12">
+                    <Row className="status-filter">
                   <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
@@ -255,23 +252,19 @@ class MyTeamRequests extends Component {
                       &nbsp;Declined 
                     </ToggleButton>
                   </ButtonGroup>
-                  
+                  </Row>
                   <Row  className="filters">  
-                    <Col className="col-lg-2 col-2 col-md-4 col-sm-6"> 
+                    <Col className="date-range"> 
                       <div className="form-group">
-                        <label>Date From:</label>
+                        <label>Date Range:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
-                      </div>
-                    </Col> 
-                    <Col className="col-lg-2 col-2 col-md-4 col-sm-6">   
-                    <div className="form-group">
-                        <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
-                    </Col>
-                    <Col className="col-lg-2 col-2 col-md-5 col-sm-5"> 
-                      <div className="form-group">
-                          <label>Department:</label>
+                    </Col> 
+                    
+                    <Col className="dept"> 
+                      <div className="form-group ">
+                          
                           <select
                           className="form-control" 
                             name="department_id"
@@ -279,33 +272,33 @@ class MyTeamRequests extends Component {
                             onChange={handleChange}
                             style={{ display: 'block' }}
                           >
-                          <option    label="Select a Department" />
+                          <option    label="- Department -" />
                           {this.props.user.departments_handled.map(function(item){
                             return <option value={item.id} label={item.department_name} />;
                           })}
                           </select>
                       </div>
                     </Col> 
-                    <Col className="col-lg-2 col-2 col-md-5 col-sm-4">
+                    <Col className="search-name">
                       <div className="form-group">
-                          <label>Name:</label>
-                          <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
+                          
+                          <input type="textfield" className="form-control" variant="primary" placeholder="Enter name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     </Col> 
-                    <Col className="col-lg-2 col-2 col-md-2 col-sm-3">
+                    <Col className="filter-button">
                     <div className="form-group">
-                          <label>&nbsp;</label>
-                          <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
-                          Filter
+                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
+                          <i className="fa fa-filter" /> Filter
                         </Button>
                     </div>
                     </Col>
                     </Row>
                     <hr/>
                     <Row className="bulk-action">
-                      <Col className="col-4 col-md-6 col-sm-8"> 
+                      <Col className="col-lg-12 col-md-6 col-sm-8"> 
                       <div className="form-group">
                           <label>Action:</label>
+                          <div className="select-div">
                           <select
                             className="form-control" 
                             name="bulk_action"
@@ -317,19 +310,18 @@ class MyTeamRequests extends Component {
                             <option value="approve" label="Approved" />
                             <option value="deny" label="Deny" />
                           </select>
+                          </div>
+                          <div className="btn-div">
+                          <Button className="display-block"  variant="primary" type="submit" onClick={() => setFieldValue("action", "bulk_action")} >
+                          <i className="fa fa-edit" /> Update
+                        </Button>
+                        </div>
                           
                       </div>
                       <ErrorMessage component="div" name="bulk_action" className="input-feedback" />
+                      <ErrorMessage component="div" name="checkedList" className="input-feedback" />
                     </Col> 
-                    <Col className="col-4 col-md-4 col-sm-4"> 
-                    <div className="form-group">
-                        <label>&nbsp;</label>  
-                        <Button className="display-block"  variant="primary" type="submit" onClick={() => setFieldValue("action", "bulk_action")} >
-                          Update
-                        </Button>
-                    </div>
-                    <ErrorMessage component="div" name="checkedList" className="input-feedback" />
-                    </Col> 
+                     
                     </Row>
                     <Row>
                     </Row>
@@ -370,7 +362,7 @@ class MyTeamRequests extends Component {
                               <p> Work Days: {item.fourth_column?.work_days?.join()}</p>
                               </div>
                             ); 
-                            link =  global.change_schedule + item.id.toString();
+                            link =  global.links.change_schedule + item.id.toString();
                               break;
                           case "alter_logs":
                               fourthColumn.push(
@@ -387,7 +379,7 @@ class MyTeamRequests extends Component {
                                   <p>Out: {item.fourth_column.current_time_out}</p>
                                 </div>
                               );
-                              link =  global.alter_log + item.id.toString();
+                              link =  global.links.alter_log + item.id.toString();
                               break;
                           case "rest_day_works":
                             fourthColumn.push(
@@ -397,7 +389,7 @@ class MyTeamRequests extends Component {
                               <span>To: {item.fifth_column}</span>
                             );
 
-                              link =  global.rest_day_work + item.id.toString();
+                              link =  global.links.rest_day_work + item.id.toString();
                               break;
                           case "overtimes":
                               fifthColumn.push(
@@ -407,7 +399,7 @@ class MyTeamRequests extends Component {
                                 <span>{item.fourth_column}</span>
 
                               );
-                              link =  global.overtime + item.id.toString();
+                              link =  global.links.overtime + item.id.toString();
                               break;
                        }
                         return <tr>
@@ -421,7 +413,7 @@ class MyTeamRequests extends Component {
                         <td>{fifthColumn}</td>
                         <td> <Status status={item.status} /></td>
                         <td>{item.updated_by} <br/><small>{item.updated_at}</small></td>
-                        <td> <Link to={{ pathname: link, previousPath:  global.base_url +'team/MyTeamRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
+                        <td> <Link to={{ pathname: link, previousPath:  global.links.base +'team/MyTeamRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
                       </tr>         
                     })}
                   </tbody>

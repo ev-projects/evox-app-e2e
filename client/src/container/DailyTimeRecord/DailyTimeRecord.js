@@ -20,6 +20,7 @@ import RequestSubtitle from "../../components/RequestComponent/RequestButtons/Re
 import Formatter from '../../services/Formatter';
 import Wrapper from '../../components/Template/Wrapper';
 import Validator from '../../services/Validator';
+import Authenticator from '../../services/Authenticator';
 
 class DailyTimeRecord extends Component {
 
@@ -132,6 +133,7 @@ class DailyTimeRecord extends Component {
       
   }
     render(){
+      
         var yearOptions = [];
         var monthOptions = [];
         var payrollCutoffOptions = [];
@@ -177,28 +179,33 @@ class DailyTimeRecord extends Component {
           }
         }
         return (
-        <Wrapper>
+        <Wrapper {...this.props} >
           <ContainerWrapper>
           <ContainerBody className="dtr-wrapper">
-              <Content col="12" title="Daily Time Record" subtitle={ <BackButton {...this.props}/> } subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
-              { method=="approval"? 
-              <Button type="button" className="btn-updatesched btn btn-secondary float-right"><Link to={{
-                              pathname: global.schedule_assign_user + this.props.params.id,
-                            }}
-                          title="View Schedule"
-                      >
-                        Update Schedule
-                </Link></Button>
+              <Content col="12" title="Daily Time Record" subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
+              
+              <BackButton style={{'float': 'right'}} {...this.props}/>
+              { ! Authenticator.check( 'client', 'client_access' ) && method=="approval" ? 
+                <Button type="button" className="btn-update-sched btn btn-secondary float-right">
+                  <Link to={{
+                        pathname: global.links.schedule_assign_user + this.props.params.id,
+                        previousPath: this.props.location.pathname
+                      }}
+                    title="View Schedule"
+                  >
+                  <i className="fa fa-calendar-check-o" />  Update Schedule
+                  </Link>
+                </Button>
                 : 
                 null
-            } 
+              } 
                 { this.props.dtr.isFilterLoaded? 
                     <div className="dtr-filter col-lg-12 col-md-12 col-sm-12 "> 
                       
                       <Select
                         name="year"
                         value={this.state.selectedYear}
-                        className="year-dropdown col-lg-2 col-md-4 col-sm-4 col-12"
+                        className="year-dropdown col-lg-2 col-md-2 col-sm-3 col-12"
                         onChange={this.handleSelectYear}
                         options={yearOptions}
                         placeholder="Select Year"
@@ -209,7 +216,7 @@ class DailyTimeRecord extends Component {
                           <Select
                             name="month"
                             value={this.state.selectedMonth}
-                            className="month-dropdown  col-lg-2 col-md-4 col-sm-4 col-12"
+                            className="month-dropdown  col-lg-2 col-md-3 col-sm-3 col-12"
                             onChange={this.handleSelectMonth}
                             options={monthOptions}
                             placeholder={"Select Payroll Cutoff"}
@@ -223,7 +230,7 @@ class DailyTimeRecord extends Component {
                           <Select
                             name="payroll_cutoff"
                             value={this.state.selectedPayrollCutoff}
-                            className="payroll-cutoff-dropdown  col-lg-2 col-md-4 col-sm-4 col-12"
+                            className="payroll-cutoff-dropdown  col-lg-2 col-md-4 col-sm-3 col-12"
                             onChange={this.handleSelectPayrollCutoff}
                             options={payrollCutoffOptions}
                             placeholder={"Select Payroll Cutoff"}
@@ -281,11 +288,10 @@ class DailyTimeRecord extends Component {
                           if( dtr.holidays.length > 0){
                             dtr_type = dtr.holidays[0].type;
                             status = <div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
-                        } else if ( dtr.is_rest_day == 1 ){
-                            dtr_type = "rest_day";
-                        }
+                          } else if ( dtr.is_rest_day == 1 ){
+                              dtr_type = "rest_day";
+                          }
                         
-                          
                           // If the DTR date is beyond the current date, don't show the DTR row by returning null.
                           if( moment().diff(moment(dtr.date)) < 0 ) {
                             return null;
@@ -310,7 +316,7 @@ class DailyTimeRecord extends Component {
                                         <Link className="btn btn-primary" 
                                               title="Alter Log"
                                               to={{
-                                                pathname: global.base_url +'request/AlterLog/' + (( alter_log_id != null ) ? alter_log_id : ""),
+                                                pathname: global.links.base +'request/AlterLog/' + (( alter_log_id != null ) ? alter_log_id : ""),
                                                 previousPath: this.props.location.pathname, 
                                                 date: dtr.date,
                                                 current_time_in: dtr.time_in,
@@ -345,7 +351,7 @@ class DailyTimeRecord extends Component {
 // Component for the DTR Request List
 const DtrSummaryHolidays = ( props  ) => { 
   return (<React.Fragment>
-    <div className="holidays col-lg-2 col-sm-4 col-12">
+    <div className="holidays col-lg-2 col-md-4 col-sm-6">
     <h5><span className="ion-ios-calendar-outline"></span>{props.column_name}</h5>
     <Row>
     
@@ -400,7 +406,7 @@ const DtrSummaryBlock = ( props  ) => {
 
   return (<React.Fragment>
                 <Row className="SummaryBlock">
-                    <Col className="late col-lg-1 col-sm-2 col-4">
+                    <Col className="late col-lg-1 col-md-2 col-sm-3">
                       <Toast >
                         <Toast.Header>
                           <span>LATE</span>
@@ -408,23 +414,23 @@ const DtrSummaryBlock = ( props  ) => {
                         <Toast.Body>{data.late}</Toast.Body>
                       </Toast>
                     </Col>
-                    <Col className="ut col-lg-1 col-sm-2 col-4">
+                    <Col className="ut  col-lg-1 col-md-2 col-sm-3">
                       <Toast >
                         <Toast.Header>
-                          UNDERTIME
+                          UT
                         </Toast.Header>
                         <Toast.Body>{data.undertime}</Toast.Body>
                       </Toast>
                       </Col>
-                  <Col className="nsd col-lg-1 col-sm-2 col-4">
+                  <Col className="nsd  col-lg-1 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
-                      NIGHT DIFF
+                      NSD
                     </Toast.Header>
                     <Toast.Body>{data.night_diff}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="ot col-lg-1 col-sm-2 col-4">
+                  <Col className="ot  col-lg-1 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       OT
@@ -432,7 +438,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Body>{data.overtime}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="otnd col-lg-1 col-sm-2 col-4">
+                  <Col className="otnd  col-lg-1 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       OTND
@@ -440,7 +446,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Body>{data.overtime_night_diff}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="ul col-lg-1 col-sm-2 col-4">
+                  <Col className="ul  col-lg-1 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       ABSENT

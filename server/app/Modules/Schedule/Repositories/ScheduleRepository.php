@@ -49,6 +49,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             $this->save_schedule_details( $schedule, $data['schedule_details'] );
             $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
+            $this->save_schedule_holiday_policies( $schedule, $data['schedule_policies'] );
             
             DB::commit();
             log_to_file('info', 'Success', [$schedule]);
@@ -93,6 +94,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             $this->save_schedule_details( $schedule, $data['schedule_details'] );
             $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
+            $this->save_schedule_holiday_policies( $schedule, $data['schedule_policies'] );
 
             DB::commit();
             log_to_file('info', 'Success', [$schedule]);
@@ -224,20 +226,20 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             foreach( $this->filter_schedule_details($schedule, $schedule_details) as $day => $details ){
                 $schedule_details_array[ $day ] = new ScheduleDetail();
                 $schedule_details_array[ $day ]->day               = $day;
-                $schedule_details_array[ $day ]->start_time        = time_to_seconds($details['start_time']);
-                $schedule_details_array[ $day ]->end_time          = time_to_seconds($details['end_time']);
-                $schedule_details_array[ $day ]->break_time        = time_to_seconds($details['break_time']);
+                $schedule_details_array[ $day ]->start_time        = ( is_numeric($details['start_time']) ? $details['start_time'] : time_to_seconds($details['start_time']) );
+                $schedule_details_array[ $day ]->end_time          = ( is_numeric($details['end_time']) ? $details['end_time'] : time_to_seconds($details['end_time']) );
+                $schedule_details_array[ $day ]->break_time        = ( is_numeric($details['break_time']) ? $details['break_time'] : time_to_seconds($details['break_time']) );
 
                 # For Flexible Schedule
                 if($schedule['schedule_type']=="flexible"){
-                    $schedule_details_array[ $day ]->start_flexy_time  = time_to_seconds($details['start_flexy_time']);
-                    $schedule_details_array[ $day ]->end_flexy_time    = time_to_seconds($details['end_flexy_time']);
+                    $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time']) );
+                    $schedule_details_array[ $day ]->end_flexy_time    = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time']) );
 
                 # Check if the start flexy and end flexy is existing since it's optional
                 }elseif($schedule['schedule_type']=="customize"){
                     if( isset( $details['start_flexy_time'] ) && isset( $details['end_flexy_time'] ) ){
-                        $schedule_details_array[ $day ]->start_flexy_time  = time_to_seconds($details['start_flexy_time']);
-                        $schedule_details_array[ $day ]->end_flexy_time  = time_to_seconds($details['end_flexy_time']);
+                        $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time']) );
+                        $schedule_details_array[ $day ]->end_flexy_time  = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time']) );
                     }
                 }
             }
@@ -269,12 +271,45 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             # Saving of Schedule Policy
             foreach( $schedule_policies as $policy => $value ){
 
-                // Don't save if the value of the policy is 0.
-                // if( $value != 0 ) {
+                if( in_array( $policy, get_constant('SCHEDULE_POLICIES') ) ) {
                     $schedule_policies_array[ $policy ]             = new SchedulePolicy();
                     $schedule_policies_array[ $policy ]->policy     = $policy;
                     $schedule_policies_array[ $policy ]->value      = $value;
-                // }
+                }
+            }
+
+            $schedule->schedule_policies()->saveMany( $schedule_policies_array );
+            
+            DB::commit();
+            log_to_file('info', 'Success', [$schedule_policies_array]);
+            return true;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
+
+    /**
+     *  Responsible for saving the Schedule Holiday Policies that was submitted.
+     * @param Schedule $schedule
+     * @param array (schedule_policies Post Variables) $schedule_policies
+     * @return bool
+     */
+    protected function save_schedule_holiday_policies(Schedule $schedule, array $schedule_policies){
+        DB::beginTransaction();
+        try{
+            $schedule_policies_array = [];
+
+            # Saving of Schedule Policy
+            foreach( $schedule_policies as $policy => $value ){
+
+                if( in_array( $policy, get_constant('SCHEDULE_HOLIDAY_POLICIES') ) ) {
+                    $schedule_policies_array[ $policy ]             = new SchedulePolicy();
+                    $schedule_policies_array[ $policy ]->policy     = $policy;
+                    $schedule_policies_array[ $policy ]->value      = $value;
+                }
             }
 
             $schedule->schedule_policies()->saveMany( $schedule_policies_array );
@@ -345,9 +380,35 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             # If the Department has an existing Default Schedule, update the Schedule
             if ( $department->defaultSchedule()->count() > 0 ) {
                 
-                $schedule_id = $department->defaultSchedule()->first()->id;
-                $schedule = $this->update( $data , $schedule_id );
-                log_to_file( 'info', ucfirst($data['source_type']).' Schedule UPDATED', [$schedule->getAttributes()], "assign");
+                $schedule = $department->defaultSchedule()->first();
+
+                if( is_valid( $data['action'] ) ) {
+
+                    switch( $data['action'] ){
+
+                        // Update the Schedule Holiday Policy only ( allow_legal_holiday, allow_special_holiday )
+                        case "assign_schedule_holiday_policy":
+                            $schedule->schedule_policies()->whereIn('policy', get_constant('SCHEDULE_HOLIDAY_POLICIES'))->delete();
+                            $this->save_schedule_holiday_policies( $schedule, $data['schedule_policies'] );
+                            break;
+                            
+                        // Update the Schedule Policy only ( allow_late, allow_undertime, allow_nightdiff )
+                        case "assign_schedule_policy":
+                            $schedule->schedule_policies()->whereIn('policy', get_constant('SCHEDULE_POLICIES'))->delete();
+                            $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
+                            break;
+    
+                        // Update the whole schedule and its Schedule Details and Policies
+                        default:
+                            $schedule = $this->update( $data , $schedule->id);
+                            break;
+                            
+                    }
+                } else {
+                    $schedule = $this->update( $data , $schedule->id);
+                }
+
+                log_to_file( 'info', ucfirst($data['source_type']).' Schedule UPDATED '.( is_valid( $data['action'] ) ? ' [Action:'.$data['action'].']' : '' ), [$schedule->getAttributes()], "assign");
 
             # If not existing, Insert the new Schedule
             } else {
@@ -430,7 +491,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
      * 
      * @return array $to_compute_items
      */
-    public function replicate_schedule_to_user( $schedule, User $user ) {
+    public function copy_schedule_to_user( $schedule, User $user ) {
 
         DB::beginTransaction();
         try {
@@ -477,6 +538,162 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             throw $e;
         }
     }
+
+
+
+
+    /**
+     *  Responsible for replicating the Schedule Holiday Policies of the Schedule and apply it to a specific user.
+     * @param Schedule $schedule
+     * @param Schedule $schedule_to_copy
+     * 
+     * @return Schedule $schedule
+     */
+    public function replicate_schedule_holiday_policy(Schedule $schedule, Schedule $schedule_to_copy) {
+
+        DB::beginTransaction();
+        try {
+
+            log_to_file('info', get_constant('LOG_START') . __FUNCTION__ , [], "assign");
+            if( is_valid( $schedule ) && is_valid( $schedule_to_copy )) {
+
+                $schedule_policies  = $schedule_to_copy
+                    ->schedule_policies()
+                    ->pluck('value','policy')
+                    ->toArray();
+                # Deleting the Schedule Holiday Policies before inserting the new one.
+                $schedule->schedule_policies()->whereIn('policy', get_constant('SCHEDULE_HOLIDAY_POLICIES'))->delete();
+
+                # Insert the new Schedule Holiday Policies
+                $this->save_schedule_holiday_policies( $schedule, $schedule_policies );
+            }
+            
+            DB::commit();
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "assign");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "assign");
+            return $schedule;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "assign");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "assign");
+            log_error($e);
+            throw $e;
+        }
+    }
+    
+
+
+
+
+    /**
+     *  Responsible for replicating the details of the Schedule and apply it to a specific user.
+     * @param Schedule $schedule
+     * @param Schedule $schedule_to_copy
+     * 
+     * @return Schedule $schedule
+     */
+    public function replicate_schedule_policy(Schedule $schedule, Schedule $schedule_to_copy) {
+
+        DB::beginTransaction();
+        try {
+
+            log_to_file('info', get_constant('LOG_START') . __FUNCTION__ , [], "assign");
+            if( is_valid( $schedule ) && is_valid( $schedule_to_copy )) {
+
+                $schedule_policies  = $schedule_to_copy
+                    ->schedule_policies()
+                    ->pluck('value','policy')
+                    ->toArray();
+
+                # Deleting the Schedule Policies before inserting the new one.
+                $schedule->schedule_policies()->whereIn('policy', get_constant('SCHEDULE_POLICIES'))->delete();
+
+                # Insert the new Schedule Holiday Policies
+                $this->save_schedule_policies( $schedule, $schedule_policies );
+                
+            }
+            
+            DB::commit();
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "assign");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "assign");
+            return $schedule;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "assign");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "assign");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+
+
+    /**
+     *  Responsible for replicating the details of the Schedule and apply it to a specific user.
+     * @param Schedule $schedule
+     * @param Schedule $schedule_to_copy
+     * 
+     * @return Schedule $schedule
+     */
+    public function replicate_schedule(Schedule $schedule, Schedule $schedule_to_copy) {
+
+        DB::beginTransaction();
+        try {
+
+            log_to_file('info', get_constant('LOG_START') . __FUNCTION__ , [], "assign");
+            if( is_valid( $schedule ) && is_valid( $schedule_to_copy )) {
+
+                $schedule_details = $schedule_to_copy
+                    ->schedule_details()
+                    ->get()
+                    ->mapWithKeys(function ($schedule_detail) {
+                        return [ $schedule_detail['day'] => $schedule_detail ]; 
+                    })
+                ->toArray();
+
+                $schedule_policies  = $schedule_to_copy
+                    ->schedule_policies()
+                    ->pluck('value','policy')
+                    ->toArray();
+
+                $schedule->schedule_type = $schedule_to_copy->schedule_type;
+                $schedule->valid_from = $schedule_to_copy->valid_from;
+                $schedule->valid_to = $schedule_to_copy->valid_to;
+                $schedule->rest_days = $schedule_to_copy->rest_days;
+                $schedule->update();
+
+                # Deleting the Details and Policies before inserting the new one.
+                $schedule->schedule_details()->delete();
+                $schedule->schedule_policies()->delete();
+
+                $this->save_schedule_details( $schedule, $schedule_details );
+                $this->save_schedule_policies( $schedule, $schedule_policies );
+                $this->save_schedule_holiday_policies( $schedule, $schedule_policies );
+                
+            }
+            
+            DB::commit();
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "assign");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "assign");
+            return $schedule;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "assign");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "assign");
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+    
 
 
 

@@ -1,5 +1,5 @@
-
-
+body{font-size: 11px}
+.card {background: transparent !important; }
 .card-title{
 	background-color: #3a3a3a;
 	color: white;
@@ -14,8 +14,9 @@
 
 .card-body{
     box-shadow: 0 1px 1px 1px rgba(0,0,0,0.25) !important;
-    border-bottom: 5px solid #82af13 !important;
+    border-bottom: 0px solid #82af13 !important;
     border-top: 5px solid #82af13 !important;
+    background: #fff;
 }
 
 .btn-primary {
@@ -32,6 +33,7 @@ button:focus {
 	width: 100%;
 }
 
+.login-wrapper .card {background: transparent !important; }
 .login-wrapper .col-md-5{
 	max-width: 600px !important;
 	margin: 100px auto !important;
@@ -51,8 +53,8 @@ button:focus {
 
 body{
 	background-color: #f4f4f4 !important;
-	background-image: url(https://eastvantage.com/evox/icn/bg.jpg);
-    background-repeat: no-repeat;
+	/*background-image: url(https://eastvantage.com/evox/icn/bg.jpg);
+    */background-repeat: no-repeat;
     background-position: bottom right;
     background-attachment: fixed;
 }
@@ -88,4 +90,14 @@ input:focus
 	float: right;
     padding-top: 10px;
 	color: #495057 !important;
+}
+
+@media only screen and (min-width: 1400px) {body{font-size:1rem;}}
+
+@media only screen and (max-width: 600px) {
+.dashboard .col-8,.dashboard .col-6,.dashboard .col-4{flex: 0 0 100%; max-width: 100%}
+.quickpunch .btn {
+    margin: 10px 10px;
+}
+
 }

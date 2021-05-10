@@ -65,6 +65,131 @@ class Dtr extends Model
 
     /**
      * 
+     *  Check if the current DTR has a value
+     * @return bool 
+     */
+    public function hasLog()
+    {
+        return ( !is_null( $this->time_in ) || !is_null( $this->time_out ) ) ? true : false;
+    }
+
+
+    /**
+     * 
+     *  Check if the current DTR has a value
+     * @return bool 
+     */
+    public function validLogIn()
+    {
+        return ( !is_null( $this->time_in ) ) ? true : false;
+    }
+
+    /**
+     * 
+     *  Check if the employee has flexi sched
+     * @return bool 
+     */
+    public function onTimeLog()
+    {
+        if($this->hasSchedule()){
+            $late = $this->policies()->where('policy','=','allow_late')->where('value','=','1')->get()->count() > 0;
+            $undertime = $this->policies()->where('policy','=','allow_undertime')->where('value','=','1')->get()->count() > 0;
+
+            if( $late &&  $undertime){
+                if( $this->time_in <= $this->start_datetime && $this->time_out >= $this->end_datetime ){
+                    return true;
+                }elseif( $this->hasFlexibleSchedule() ){
+                    if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                        $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
+        
+                        if($expected_out > $this->end_flexy_datetime ){
+                            $expected_out = $this->end_flexy_datetime;
+                        }
+        
+                    }else{
+                        return false;
+                    }
+                    
+                    if( $expected_out <= $this->time_out ){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            }else{
+                if( $this->validLog() ){
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+        
+    }
+
+
+    /**
+     * 
+     *  Check if the employee clock in on time
+     * @return bool 
+     */
+    public function isPresent()
+    {
+        if(is_valid( $this->time_in)){
+            if( $this->time_in <= $this->start_datetime ){
+                return true;
+            }elseif( $this->hasFlexibleSchedule() ){
+                if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     *  Check if the employee is has undertime
+     * @return bool 
+     */
+    public function checkUndertime()
+    {
+        $undertime = $this->policies()->where('policy','=','allow_undertime')->where('value','=','1')->get()->count() > 0;
+
+        if( $undertime ){
+            if( $this->time_out <= $this->end_datetime ){
+                return true;
+            }elseif( $this->hasFlexibleSchedule() ){
+                if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                    $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
+
+                    if($expected_out > $this->end_flexy_datetime ){
+                        $expected_out = $this->end_flexy_datetime;
+                    }
+
+                    if( $expected_out > $this->time_out ){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            }else{
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+
+    public function isIncompleteLog(){
+        return ( !is_valid( $this->time_in ) && is_valid( $this->time_out ) );
+    }
+
+    /**
+     * 
      *  Check if the current DTR has a Schedule
      * @return bool 
      */
@@ -129,6 +254,7 @@ class Dtr extends Model
     {
         return ( $this->is_rest_day ) ? true : false;
     }
+
 
     /**
      * 
@@ -321,16 +447,17 @@ class Dtr extends Model
         $type = '';
 
         $holiday_collection = $this->holidays()->get();
-
-        if( count($holiday_collection) > 0 ){
-
+        
+        if( count($holiday_collection) > 0 ){ 
+            
             foreach( $holiday_collection as $holiday ) {
                 
+                // If the $type has already been set and there's more than 1 holiday on the iteration
                 if( is_valid($type) ){
-
+                    
                     switch( $type ) {
                         case get_constant('DTR_TYPE.holiday.legal'):
-
+                            
                             switch( $holiday->type ){
                                 
                                 case get_constant('DTR_TYPE.holiday.legal'):
@@ -359,17 +486,36 @@ class Dtr extends Model
                             break;
                     }
 
+                // If the $type is not yet set
                 } else {
-                    $type = $holiday->type;
+                    $allow_legal_holiday_policy = $this->get_policy_value( 'allow_legal_holiday' );
+                    $allow_special_holiday_policy = $this->get_policy_value( 'allow_special_holiday' );
+
+                    // If the current Holiday type is allowed by the DTR Policy, set the $type
+                    if( ($holiday->type == get_constant('DTR_TYPE.holiday.legal') &&
+                        ($allow_legal_holiday_policy === null || $allow_legal_holiday_policy == true )) 
+                        || 
+                        ($holiday->type == get_constant('DTR_TYPE.holiday.special') &&
+                        ($allow_special_holiday_policy === null ||  $allow_special_holiday_policy == true )) 
+                    ) {
+
+                        $type = $holiday->type;
+                    }
                 }
             }
+        }
 
-        }elseif( $this->is_rest_day && $this->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work') ){
-            $type = get_constant('DTR_TYPE.rest_day');
+        // If the $type is not yet set, proceed on checking if the type is Rest day or Regular
+        if( ! is_valid( $type ) ) {
 
-        }else{
-            $type = get_constant('DTR_TYPE.regular');
-        }     
+            if( $this->is_rest_day ){
+                $type = get_constant('DTR_TYPE.rest_day');
+    
+            }else{
+                $type = get_constant('DTR_TYPE.regular');
+            }  
+        }
+        
         return $type;
     }
 
@@ -478,12 +624,21 @@ class Dtr extends Model
         return $this->hasMany(Leave::class);
     }   
     
+
+    /**
+     *
+     */
+    public function isAbsent(){
+        return !$this->validLog() && $this->hasSchedule() && $this->on_leave()->count() <= 0 && ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
+    } 
+    
     
     /**
      * hasMany Relationship for Dtr Leaves model
      */
     public function on_leave(){
-        return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->count();
+        //  return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->count();
+        return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->where( 'type' , '<>' ,'Unpaid Leave' );
     } 
     
     /**
@@ -541,6 +696,36 @@ class Dtr extends Model
             'date' => $this->date
         ]);
     }
+
+    
+
+    ###############################################################################################
+    ##################################### Validation functions ####################################
+    ###############################################################################################
+
+    /**
+     *  Checks if the Policy Name parameter is existing on the DTR's Policy.
+     *   
+     * @param string $policy_name
+     * @return boolean
+     */
+    public function check_allowed_policy( $policy_name ) {
+        return $this->policies()->get()->contains(function ($policy) use ($policy_name) {
+            return $policy->policy ==  $policy_name && $policy->value == "1";
+        });
+    }
+
+    /**
+     *  Gets the Policy Value via the Policy Name
+     *   
+     * @param string $policy_name
+     * @return boolean
+     */
+    public function get_policy_value( $policy_name ) {
+        $policy = $this->policies()->where("policy", $policy_name)->first();
+        return ( is_valid($policy) ? (bool) $policy->value : null );
+    }
+
 
 
 }

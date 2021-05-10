@@ -24,7 +24,7 @@ export const addAlterLog = ( post_data ) => {
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.dashboard_url
+                'link'      : global.links.dashboard
             })
 
         })
@@ -48,7 +48,7 @@ export const updateAlterLog = ( id, post_data ) => {
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.dashboard_url
+                'link'      : global.links.dashboard
             })
         })
         .catch(e => {
@@ -71,7 +71,7 @@ export const updateAlterLogStatus = ( id, post_data, status ) => {
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.dashboard_url
+                'link'      : global.links.dashboard
             })
         })
         .catch(e => {

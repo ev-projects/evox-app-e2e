@@ -5,10 +5,11 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
-use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use App\Modules\Cron\Http\Controllers\CronController;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 
 class syncBhrLeaves extends Command
 {
@@ -32,12 +33,12 @@ class syncBhrLeaves extends Command
      * @return void
      */
     public function __construct(DtrRepositoryInterface $dtr,
-                                PayrollRepository $payroll,
+                                PayrollCutoffRepositoryInterface $payroll_cutoff,
                                 BhrRepositoryInterface $bhr)
     {
         $this->bhr = $bhr;
         $this->dtr = $dtr;
-        $this->payroll = $payroll;
+        $this->payroll_cutoff = $payroll_cutoff;
         parent::__construct();
     }
 

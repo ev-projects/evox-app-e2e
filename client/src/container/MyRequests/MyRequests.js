@@ -126,11 +126,11 @@ class MyRequests extends Component {
       {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
-      <Wrapper>
+      <Wrapper {...this.props} >
             <ContainerWrapper> 
-            <ContainerBody>        
-                <Content col="12" title="My Requests">
-                <Tabs defaultActiveKey="home" 
+            <h2>My Requests</h2> 
+            <div className="request-tab">
+             <Tabs defaultActiveKey="home" 
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
                       onSelect={(key) =>  {
@@ -149,7 +149,11 @@ class MyRequests extends Component {
                   </Tab>
                   <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
                   </Tab>
-                </Tabs>    
+                </Tabs> 
+                </div>  
+            <ContainerBody>        
+                <Content col="12">
+                
                 <ButtonGroup toggle className="mb-2">
                     <ToggleButton
                       type="checkbox"
@@ -211,23 +215,19 @@ class MyRequests extends Component {
                     </ToggleButton>
                   </ButtonGroup>
                   
-                  <Row className="date-range">  
-                    <Col className="col-lg-2 col-4"> 
+                  <Row className="filters myrequest-filter">  
+                    <Col className="date-range"> 
                       <div className="form-group">
-                        <label>Date From:</label>
+                        <label>Date Range:</label>
                         <InputDate name="valid_from" value={values.valid_from}/>
-                      </div>
-                    </Col> 
-                    <Col className="col-lg-2  col-4">  
-                    <div className="form-group">
-                        <label>Date To:</label>
                         <InputDate name="valid_to" value={values.valid_to}/>
                       </div>
-                    </Col>
-                    <Col className="col-lg-2  col-4 col-btn">   
+                    </Col> 
+                    
+                    <Col className="filter-button">   
                     <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
-                    Filter
-                  </Button>
+                      <i className="fa fa-filter" /> Filter
+                    </Button>
                     </Col>
                     
                     </Row>
@@ -267,7 +267,7 @@ class MyRequests extends Component {
                               <p> Work Days: {item.fourth_column?.work_days.join()}</p>
                               </div>
                             ); 
-                            link =  global.change_schedule + item.id.toString();
+                            link =  global.links.change_schedule + item.id.toString();
                               break;
                           case "alter_logs":
                             fourthColumn.push(
@@ -284,7 +284,7 @@ class MyRequests extends Component {
                                 <p>Out: {item.fourth_column.current_time_out}</p>
                               </div>
                             );
-                            link =  global.alter_log + item.id.toString();
+                            link =  global.links.alter_log + item.id.toString();
                               break;
                           case "rest_day_works":
                             fourthColumn.push(
@@ -295,7 +295,7 @@ class MyRequests extends Component {
                               <span>To: {item.fifth_column}</span>
 
                             );
-                            link =  global.rest_day_work + item.id.toString();
+                            link =  global.links.rest_day_work + item.id.toString();
                               break;
                           case "overtimes":
                               fifthColumn.push(
@@ -306,7 +306,7 @@ class MyRequests extends Component {
                                 <span>{item.fourth_column}</span>
 
                               );
-                              link =  global.overtime + item.id.toString();
+                              link =  global.links.overtime + item.id.toString();
                               break;
                        }
                         return <tr>
@@ -316,7 +316,7 @@ class MyRequests extends Component {
                         <td>{fifthColumn}</td>
                         <td> <Status status={item.status} /></td>
                         <td>{item.updated_by} <br/><small> {item.updated_at}</small></td>
-                        <td> <Link to={{ pathname: link, previousPath:  global.base_url +'account/MyRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
+                        <td> <Link to={{ pathname: link, previousPath:  global.links.base +'account/MyRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
                       </tr>         
                     })}
                     </tbody>

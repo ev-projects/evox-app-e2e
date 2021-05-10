@@ -170,6 +170,7 @@ return [
         App\Modules\Email\Providers\EmailServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Modules\Department\Providers\DepartmentServiceProvider::class,
+        App\Modules\Team\Providers\TeamServiceProvider::class,
     ],
 
     /*

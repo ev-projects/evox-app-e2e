@@ -23,8 +23,9 @@ import redirectReducers from "./settings/redirectReducers";
 
 import payrollCutoffReducers from "./admin/payrollCutoffReducers"
 
-import assignRoleReducers from "./admin/assignRoleReducers"
-
+import assignRoleReducers from "./admin/assignRoleReducers" 
+import registerUserReducers from "./admin/registerUserReducers"
+import syncReducers from "./admin/syncReducers"
 import lookupListReducers from "./lookup/lookupListReducers"
 
 import dtrReducer from "./dtr/dtrReducers";
@@ -34,6 +35,9 @@ import dtrLogsReducers from "./dtr/dtrLogsReducers";
 
 import myRequestListReducers from "./filters/myRequestListReducers";
 import dpaListReducers from "./filters/dpaListReducers";
+
+import dashboardReducers from "./dashboard/dashboardReducers";
+
 import myTeamListReducers from "./filters/myTeamListReducers";
 import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
 
@@ -62,8 +66,9 @@ const rootReducer = combineReducers({
 
     payrollCutoff: payrollCutoffReducers,
 
-    assignRole: assignRoleReducers,
-    
+    assignRole          : assignRoleReducers,
+    registerUser        : registerUserReducers,  
+    sync                : syncReducers,  
     myRequestList       : myRequestListReducers,
     dpaList             : dpaListReducers,
     myTeamList          : myTeamListReducers,
@@ -75,7 +80,9 @@ const rootReducer = combineReducers({
 
     lookup:   lookupListReducers,
 
-    redirect : redirectReducers
+    redirect : redirectReducers,
+
+    dashboard  : dashboardReducers
 });
 
 export default rootReducer;

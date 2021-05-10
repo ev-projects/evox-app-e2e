@@ -110,8 +110,35 @@ class Formatter {
   */
   title_to_slug( text ) {
       return text.replace(/ /g, '_')
+                .replace(/&/g, 'and')
                 .toLowerCase();
   }
+
+  array_to_multiselect_array( array, label_key, value_key ){
+    // This list will render the final list
+    let list = [];
+
+    // Check if the array is really an array.
+    if( array instanceof Array  ) {
+
+      // Iterate the array to formulate the final list.
+      for (var i = 0; i < array.length; i++) {
+        
+        // Create the item object
+        var item = {
+          label  : array[i][label_key],
+          value  : array[i][value_key]
+        };
+        
+        // Push the item object to the list array
+        list.push(item);
+      }
+
+    }
+
+    return list;
+  }
+
 }
 
 export default new Formatter();

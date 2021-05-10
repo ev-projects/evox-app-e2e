@@ -15,7 +15,7 @@ export const setRedirect = (link) => {
     return (dispatch, getState) => {
         dispatch({
             'type'      : 'SET_REDIRECT',
-            'link'      : ( link != null ) ? link : global.dashboard_url
+            'link'      : ( link != null ) ? link : global.links.dashboard
         })
     }
 }

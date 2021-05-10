@@ -18,6 +18,8 @@ import TemplateEdit from "../container/Schedule/TemplateEdit";
 import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
+import EVLearning from "../container/EVLearning/EVLearning";
+
 
 // Requests
 import AlterLog from "../container/Request/AlterLog";
@@ -35,9 +37,11 @@ import DtrSummary from "../container/MyTeam/DtrSummary";
 import PayrollCutoff from "../container/Admin/PayrollCutoff";
 import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandlers";
 import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervisors";
+import SyncBhrLeaves from "../container/Admin/SyncBhrLeaves"; 
+import SyncUserUpdates from "../container/Admin/SyncUserUpdates"; 
 import AssignRole from "../container/Admin/AssignRole";
-import MyTeamList from "../container/MyTeam/MyTeamList";
-import Profile from "../container/Profile";
+import JobInformation from "../container/Profile/JobInformation";
+import PersonalInformation from "../container/Profile/PersonalInformation";
 import Validator from "../services/Validator";
 import RequestEmailApproval from "../container/RequestEmailApproval";
 import ScheduleAssignDepartment from "../container/Schedule/ScheduleAssignDepartment";
@@ -45,6 +49,12 @@ import DtrLogs from "../container/MyTeam/DtrLogs";
 import ForgotPasswordRequest from "../container/ForgotPasswordRequest";
 import DPAForm from "../container/DPAForm";
 import DPAList from "../container/MyTeam/DPAList";
+import RegisterUser from "../container/Admin/RegisterUser";
+import SyncBiometrics from "../container/Admin/SyncBiometrics/SyncBiometrics";
+import EmployeeList from "../container/MyTeam/EmployeeList";
+import ManageTeams from "../container/MyTeam/ManageTeams";
+import TimeOff from "../container/Profile/TimeOff";
+import Profile from "../container/Profile";
 
 const RoutesList = (props) => {
 
@@ -52,44 +62,147 @@ const RoutesList = (props) => {
   const DefaultContainer = () => (
     <div>
       <Switch>
-        <ProtectedRoute exact path="/app/dashboard" ><Dashboard /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/schedule" ><TemplateCreate /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/assign/user/:user_id" ><ScheduleAssign /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/assign/department/" ><ScheduleAssignDepartment /></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/template/:templateid" ><TemplateEdit/></ProtectedRoute>
-        <ProtectedRoute path="/app/schedule/template/" ><TemplateList /></ProtectedRoute>
 
+        { /* General Links */ }
+        <ProtectedRoute exact path={global.links.dashboard} >
+          <Dashboard role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']} />
+        </ProtectedRoute>
 
-        {/* Requests */}
-        <ProtectedRoute exact path="/app/request/AlterLog/:id?"><AlterLog onApproval={false}/></ProtectedRoute>
+        <ProtectedRoute exact path={global.links.dpa} >
+          <DPAForm  role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
 
-        <ProtectedRoute exact path="/app/request/ChangeSchedule/:id?"><ChangeSchedule onApproval={false}/></ProtectedRoute>
-
-        <ProtectedRoute exact path="/app/request/Overtime/:id?"><Overtime onApproval={false}/></ProtectedRoute>
-        
-        <ProtectedRoute exact path="/app/request/RestDayWork/:id?"><RestDayWork onApproval={false}/></ProtectedRoute>
-
-        <ProtectedRoute exact path="/app/request/WorkFromHome/:id?"><WorkFromHome onApproval={false}/></ProtectedRoute>
-
-        <ProtectedRoute exact path="/app/account/MyRequests"><MyRequests/></ProtectedRoute>
-
-        {/* For Supervisors */}
-        <ProtectedRoute exact path="/app/team/DPAList"><DPAList/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/team/MyTeamList"><MyTeamList/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/team/MyTeamRequests"><MyTeamRequests/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/team/DtrSummary"><DtrSummary/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/team/DtrLogs"><DtrLogs/></ProtectedRoute>
-
-        {/* Settings */}
-        <ProtectedRoute exact path="/app/admin/PayrollCutoff/"><PayrollCutoff /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/admin/AssignDepartmentHandlers/"><AssignDepartmentHandlers /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/admin/AssignEmployeeSupervisors/"><AssignEmployeeSupervisors /></ProtectedRoute>
-        <ProtectedRoute exact path="/app/admin/AssignRole/"><AssignRole /></ProtectedRoute>
 
         
-        <ProtectedRoute exact path="/app/dtr/:id/" ><DailyTimeRecord/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/profile/:id/" ><Profile/></ProtectedRoute>
-        <ProtectedRoute exact path="/app/dpa/" ><DPAForm/></ProtectedRoute>
+        { /* Employee Links */ }
+        <ProtectedRoute exact path={global.links.dtr+":id"} >
+          <DailyTimeRecord role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.ev_learning} >
+          <EVLearning role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.profile+":id"} >
+          <Profile role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+        
+        <ProtectedRoute exact path={global.links.my_request}>
+          <MyRequests role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+
+        
+
+        { /* Request Links */ }
+        <ProtectedRoute exact path={global.links.overtime+":id?"}>
+          <Overtime onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.alter_log+":id?"}>
+          <AlterLog onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.change_schedule+":id?"}>
+          <ChangeSchedule onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+        
+        <ProtectedRoute exact path={global.links.rest_day_work+":id?"}>
+          <RestDayWork onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.work_from_home+":id?"}>
+          <WorkFromHome onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+
+        
+
+        { /* Team Links */ }
+        <ProtectedRoute exact path={global.links.manage_teams}>
+          <ManageTeams role={['supervisor']} permission={['supervisor_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dpa_list}>
+          <DPAList role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.employee_list}>
+          <EmployeeList role={['supervisor', 'team_leader', 'client']} permission={['supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.my_team_requests}>
+          <MyTeamRequests role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_summary}>
+          <DtrSummary role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_logs}>
+          <DtrLogs role={['supervisor', 'team_leader', 'client']} permission={['supervisor_access', 'team_leader_access', 'client_access']} />
+        </ProtectedRoute>
+
+
+        
+
+        { /* Schedule Links */ }
+        <ProtectedRoute exact path={global.links.template_add} >
+          <TemplateCreate role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.template_list+":templateid"} >
+          <TemplateEdit  role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.template_list} >
+          <TemplateList  role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.schedule_assign_user+":user_id"} >
+          <ScheduleAssign role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.schedule_assign_department} >
+          <ScheduleAssignDepartment role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']}/>
+        </ProtectedRoute>
+
+
+        
+
+        {/* Admin Links */}
+        <ProtectedRoute exact path={global.links.payroll_cutoff}>
+          <PayrollCutoff role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.assign_department_handlers}>
+          <AssignDepartmentHandlers  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.assign_employee_supervisors}>
+          <AssignEmployeeSupervisors  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.sync_biometrics}>
+          <SyncBiometrics  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.sync_bhr_leaves}>
+          <SyncBhrLeaves  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute> 
+
+        <ProtectedRoute exact path={global.links.sync_bhr_user_updates}>
+          <SyncUserUpdates  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.assign_role}>
+          <AssignRole  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.register_user}>
+          <RegisterUser  role={['admin']} permission={['full_access']} />
+        </ProtectedRoute>
+        
         <Route exact path="*" component={PageNotFound} />
       </Switch>
       <Footer />
@@ -100,7 +213,7 @@ const RoutesList = (props) => {
   const LoginContainer = () => (
     <div className="container">
       <Route exact path="/" component={Login} />
-      <Route path="/login" component={Login} />
+      <Route path={global.links.login} component={Login} />
     </div>
   );
 
@@ -114,9 +227,9 @@ const RoutesList = (props) => {
         <div>&nbsp;</div>
       </div>
       <Switch>
-        <Route exact path={["/", "/login"]} component={LoginContainer} />
-        <Route exact path="/request/approval/:hashCode/:status?" component={RequestEmailApproval} />
-        <Route exact path="/recover/password" component={ForgotPasswordRequest} />
+        <Route exact path={["/", global.links.login ]} component={LoginContainer} />
+        <Route exact path={global.links.request_approval+":hashCode/:status?"} component={RequestEmailApproval} />
+        <Route exact path={global.links.recover_password} component={ForgotPasswordRequest} />
         <Route component={DefaultContainer} />
       </Switch>
     </div>
