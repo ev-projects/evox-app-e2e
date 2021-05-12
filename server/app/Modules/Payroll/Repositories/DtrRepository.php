@@ -1099,8 +1099,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                         ". $biometrics->getFlexyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
                                         OR 
                                          date = '".date("Y-m-d" , datetime_to_timestamp( $biometrics->CheckTime ))."'
-                                        )
-                                        AND ". $biometrics->getTimeType() . " IS NULL"
+                                        )"
                                 )->first();
 
             # If the fetched DTR exist, update the Specific Time Type with the Biometrics' Check Time.
