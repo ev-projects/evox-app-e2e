@@ -29,7 +29,6 @@ class PayrollServiceProvider extends ServiceProvider
         $this->app->bind( BiometricsRepositoryInterface::class, BiometricsRepository::class );
         $this->app->bind( PayrollCutoffRepositoryInterface::class, PayrollCutoffRepository::class );
         $this->app->bind( DrupalEvoxRepositoryInterface::class, DrupalEvoxRepository::class );
-        $this->app->bind( DtrReportRepositoryInterface::class, DtrReportRepository::class );
         $this->app->bind( HolidayRepositoryInterface::class, HolidayRepository::class );
     }
 

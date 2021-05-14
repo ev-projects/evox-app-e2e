@@ -37,8 +37,6 @@ interface DtrRepositoryInterface
  
     public function sync_biometrics_to_dtr( Collection $biometrics_collection );
 
-    public function compute_dtr_summary(Collection $user_collection, string $start_date, string $end_date );
-
     public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date );
     
     public function compute_payroll_items(Dtr $dtr);

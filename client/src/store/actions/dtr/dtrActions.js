@@ -47,7 +47,7 @@ export const getUserDtrSummary = ( id , from , to ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr_summary/block/"+id+"/" + from +"/" + to,
+            url: "/report/dtr_summary/block/"+id+"/" + from +"/" + to,
         })
         .then(result => { 
             

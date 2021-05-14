@@ -10,7 +10,7 @@ export const fetchDtrSummary = ( data = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr_summary/team",
+            url: "/report/dtr_summary/team",
             params : data
         })
         .then(result => {
@@ -34,7 +34,7 @@ export const exportDtrSummary = ( data = null ) => {
     return (dispatch, getState) => {
         API.export({
             method: "get",
-            url: "/dtr_summary/export",
+            url: "/report/dtr_summary/export",
             params : data
         })
         .then(result => {
