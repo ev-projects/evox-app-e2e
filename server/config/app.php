@@ -165,6 +165,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Modules\Bhr\Providers\BhrServiceProvider::class,
         App\Modules\Payroll\Providers\PayrollServiceProvider::class,
+        App\Modules\Report\Providers\ReportServiceProvider::class,
         App\Modules\Schedule\Providers\ScheduleServiceProvider::class,
         App\Modules\User\Providers\UserServiceProvider::class,
         App\Modules\Email\Providers\EmailServiceProvider::class,

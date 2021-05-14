@@ -26,50 +26,6 @@ Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], fu
 
 });
 
-# API Call for DTR
-Route::group(['prefix' => 'dtr/report/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-
-    # Get holiday
-    Route::get('holidays', 'DtrReportController@holidays');
-
-    # Get My DTR Notifications
-    Route::get('my_dtr_notifications', 'DtrReportController@my_dtr_notifications');
-
-    # Get User Attendance
-    Route::get('team_attendance', 'DtrReportController@team_attendance');
-
-    # Get Team Attendance Summary
-    Route::get('team_attendance_summary', 'DtrReportController@team_attendance_summary');
-
-    # Get Birthday Anniversary
-    Route::get('team_birthday_anniversary', 'DtrReportController@team_birthday_anniversary');
-
-});
-
-
-# API Call for DTR Summary
-Route::group(['prefix' => 'dtr_summary', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-    
-    # Gets the DTR Summary of the team.
-    Route::get('/{user_id}/{start_date}/{end_date}', 'DtrController@dtr_summary');
-
-    Route::get('block/{user_id}/{start_date}/{end_date}', 'DtrController@dtr_summary_block');
-
-    # Gets the DTR Summary of the User indicated. 
-    Route::get('team', 'DtrController@team_dtr_summary'); 
-
-    Route::get('export', 'DtrController@export_team_dtr_summary');
-});
-
-# API Call for DTR Summary
-Route::group(['prefix' => 'dtr_logs', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-    
-    # Gets the DTR Summary of the User indicated. 
-    Route::get('team', 'DtrController@team_dtr_logs');
-
-    Route::get('export', 'DtrController@export_team_dtr_logs');
-});
-
 
 
 # API Call for Payroll

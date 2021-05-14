@@ -13,7 +13,7 @@ export const getMyDtrNotifications = () => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr/report/my_dtr_notifications",
+            url: "/report/my_dtr_notifications",
         })
         .then(result => {
             
@@ -33,7 +33,7 @@ export const getBirthdayAnniv = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr/report/team_birthday_anniversary",
+            url: "/report/team_birthday_anniversary",
             params    : params
         })
         .then(result => {
@@ -53,7 +53,7 @@ export const getTeamAttendanceStatus = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr/report/team_attendance",
+            url: "/report/team_attendance",
             params    : params
         })
         .then(result => {
@@ -74,7 +74,7 @@ export const getTeamAttendanceSummary = ( id ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr/report/team_attendance_summary",
+            url: "/report/team_attendance_summary",
         })
         .then(result => {
             dispatch({
@@ -94,7 +94,7 @@ export const getThisMonthHoliday = ( id ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr/report/holidays",
+            url: "/report/holidays",
         })
         .then(result => {
             dispatch({
@@ -113,7 +113,6 @@ export const getRecentDtr = ( user_id, from ,to ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/dtr/report/team_attendance",
             url: "/dtr/"+user_id+"/"+from+"/"+to,
         })
         .then(result => {

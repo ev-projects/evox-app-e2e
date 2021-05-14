@@ -1,12 +1,17 @@
 <?php 
 
-namespace App\Modules\Payroll\Repositories;
+namespace App\Modules\Report\Repositories;
 
 use App\Modules\Department\Models\Department;
+use App\Modules\Payroll\Models\Computation;
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\PayrollCutoff;
+use App\Modules\Payroll\Models\TeamAttendanceSummary;
+use App\Modules\Report\Repositories\ReportRepositoryInterface;
 use App\Modules\Team\Models\Team;
 use App\Modules\User\Models\User;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
 use Exception;
@@ -19,8 +24,17 @@ use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 
-class DtrReportRepository implements DtrReportRepositoryInterface{
+class ReportRepository implements ReportRepositoryInterface{
     
+    protected $user;
+
+    function __construct(UserRepositoryInterface $user){
+        $this->user = $user;
+        $this->computation = new Computation();
+        $this->dtr_summary = new DtrSummary();
+        $this->team_attendance_summary = new TeamAttendanceSummary();
+    }
+
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
@@ -124,53 +138,66 @@ class DtrReportRepository implements DtrReportRepositoryInterface{
      * @param Carbon $current_time
      * @return array
      */
-    public function get_team_attendance_summary( Carbon $current_time ){
+    public function get_team_attendance_summary(  Collection $user_collection, string $start_date, string $end_date ){
         try {
-            $start_day = $current_time->startOfWeek()->format('Y-m-d');
-            $end_day = $current_time->endOfWeek()->format('Y-m-d');
-            
-            $absent = Dtr::leftJoin('dtr_holidays', function($join) {
-                $join->on('dtr_holidays.dtr_id', '=', 'dtrs.id');
-                })->leftJoin('leaves', function($join) {
-                    $join->on('leaves.dtr_id', '=', 'dtrs.id');
-                })->whereIn('user_id', auth()->user()->users_handled()->pluck('id')->toArray() )
-                  ->whereRaw("
-                date >= '".$start_day."' && date <= '".$current_time->format('Y-m-d')."'
-                AND
-                (
-                    (source_type_tagging = 'rest_day_work' AND is_rest_day = 1 )
-                        OR
-                    dtr_holidays.dtr_id is NULL
-                        OR
-                    leaves.status != 'approved'
-                        OR
-                    start_datetime IS NOT NULL
-                )
-                AND time_in IS NULL
-                AND time_out IS NULL
-            ")
-            ->get()->count();
 
-            $on_leave =  Dtr::leftJoin('leaves', function($join) {
-                    $join->on('leaves.dtr_id', '=', 'dtrs.id');
-                })->whereIn('user_id', auth()->user()->users_handled()->pluck('id')->toArray() )
-            ->whereRaw("
-                date >= '".$start_day."' && date <= '".$end_day."' 
-                    AND
-                leaves.status = 'approved'
-            ")
-            ->get()->count();
+            $result = $this->team_attendance_summary->get_summary( $user_collection, $start_date, $end_date );
 
-            $team_attendance_summary = [
-                "absent" => $absent,
-                "on_leave" => $on_leave
-            ];
+            // log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$result], "dtr_summary");
+            // log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            return $result;
             
-            return  $team_attendance_summary;
         } catch (Exception $e) {
             throw $e;
         }
     }
+
+
+    
+    
+
+    /**
+     *  Responsible for Computing the DTR Payroll Items Summary base from the User Collection and the Date Range.
+     * @param Collection $user_collection
+     * @param string $start_date
+     * @param string $end_date
+     * @return array
+     */
+    public function get_dtr_summary( Collection $user_collection, string $start_date, string $end_date ){
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
+        
+        try{
+            $user_dtr_summary = [];
+            $index = 0;
+            foreach( $user_collection as $user ) {
+
+                $user_dtr_summary[$index] = array(
+                    'employee_info' => array(   
+                                                'employee_id'=> $user->emp_num,
+                                                'name'=> $user->first_name .' '. $user->last_name,
+                                                'department'=> $user->department()->get()[0]->department_name  
+                                            ), 
+                    'summary' => $this->dtr_summary->get_summary( $user->dtr($start_date, $end_date)->get() )
+                );
+                $index++;
+            }
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$user_dtr_summary], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            $result = array(
+                                'summary' => $user_dtr_summary,
+                                'column' =>  $this->dtr_summary->column
+            );
+            
+            return $result;
+        } catch (Exception $e) {
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            throw $e;
+        }
+    }
+    
 
 
     ###############################################################################################
