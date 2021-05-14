@@ -44,7 +44,7 @@ class DtrLogResource extends JsonResource
             
             if( $this->isAbsent() ){
                 $payroll_items[ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] =  1;
-            }elseif( $this->on_leave()->count() > 0 )  {
+            }elseif( $this->onLeave()->count() > 0 )  {
                 $payroll_items[ get_constant('PAYROLL_ITEMS.'. text_to_slug( $leaves->first()->type ))  ] =  $leaves->first()->amount;
             }
 
