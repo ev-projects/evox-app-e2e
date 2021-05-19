@@ -36,6 +36,7 @@ global.links = {
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
     dtr_logs                        :  "/app/team/DtrLogs", 
+    team_schedule                   :  "/app/team/Schedule", 
 
     // Schedule Links
     template_add                    :  "/app/schedule/",

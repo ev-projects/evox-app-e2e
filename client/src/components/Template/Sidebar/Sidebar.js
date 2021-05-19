@@ -216,14 +216,17 @@ const Sidebar = (props) => {
                               <p>DTR Logs</p>
                             </Link>
                           </li>
+                          <li className="nav-item">
+                            <Link className="nav-link" to={global.links.team_schedule} >
+                              <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
+                              <p> Team Schedule </p> 
+                            </Link>
+                          </li> 
                         </ul>
                       </li>
                     :
                     null
                   }
-
-                  
-
 
                   {/* CLIENT Links */}
                   { Authenticator.check('client', 'client_access') ?
@@ -248,6 +251,7 @@ const Sidebar = (props) => {
                               <p> DTR Logs</p> 
                             </Link>
                           </li> 
+
                         </ul>
                       </li>
                     :

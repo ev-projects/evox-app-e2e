@@ -943,22 +943,28 @@ class DtrRepository implements DtrRepositoryInterface{
      * @param string $end_date
      * @return Dtr $dtr_collection ( Collection )
      */
-    public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date ){
+    public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date, $filter = [] ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
         
         try{
             // Get the DTR Collection via the User ID from the collection and the date between the start_date and end_date. Added sorting for the Emp number, First and Last name, then DTR's date.
             $dtr_collection = Dtr::whereIn('user_id', $user_collection->pluck('id')->toArray())
                                    ->whereBetween("date", array($start_date, $end_date))
-                                   ->join('users', 'users.id','=','dtrs.user_id')
-                                   ->orderBy('users.emp_num','asc')
+                                   ->join('users', 'users.id','=','dtrs.user_id');
+
+                if( $filter['link'] == 'team_schedule'){
+                    $dtr_collection ->orderBy('dtrs.date','asc')
+                                    ->orderBy('users.emp_num','asc');
+                }else{
+                    $dtr_collection->orderBy('users.emp_num','asc')
                                    ->orderBy('users.first_name','asc')
                                    ->orderBy('users.last_name','asc')
-                                   ->orderBy('dtrs.date','asc')
-                                   ->select('dtrs.*');
+                                   ->orderBy('dtrs.date','asc');
+                }
 
+                $dtr_collection->select('dtrs.*');
                 // If the parameter 'page' value is 'all', Get the whole DTR Collection
-                if( request()->get('page') == 'all' ){
+                if( request()->get('page') == 'all' ||  $filter['page'] == 'all'){
                     $dtr_collection = $dtr_collection->get();
                     
                 // If the parameter 'page' value is numeric, fetch the paginated list with offset.

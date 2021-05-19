@@ -53,3 +53,21 @@ export const fetchTeamUnderDepartment = ( user_id, department_id) => {
     }
 }
 
+// Fetch Team Request
+export const fetchTeamSchedule = ( ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/report/team_schedule",
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_TEAM_SCHEDULE_SUCCESS', 
+                'list'  : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}

@@ -5,6 +5,7 @@
 const initState = {
     list : null,
     team_list : [],
+    team_schedule : { data: [], date_list: [] },
     filters : {}
 }
 
@@ -19,10 +20,10 @@ const myTeamListReducers = (state = initState, action) => {
                 list : action.list
             }
             break;
-        case "FETCH_TEAM_LIST_SUCCESS":
+        case "FETCH_TEAM_SCHEDULE_SUCCESS":
             return {
                 ...state,
-                team_list : action.list
+                team_schedule : action.list
             }
             break;
         case "SET_MY_TEAM_LIST_FILTERS":

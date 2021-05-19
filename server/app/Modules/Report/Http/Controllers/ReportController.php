@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Resources\AnniversaryResources; 
 use App\Modules\Payroll\Resources\TeamAttendanceResources; 
+use App\Modules\Report\Resources\TeamScheduleResources; 
 use App\Modules\Payroll\Resources\HolidayResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -215,8 +216,39 @@ class ReportController extends Controller
     }
 
 
-    
+    /**
+     *  Responsible for fetching the Team's attendance
+     * @return array
+     */
+    public function team_schedule( Request $request ){
+        try {
+            $date_from =new Carbon('January 15, 2021');
 
+            # Starts on Sunday and Ends on Saturday
+            $date_from->setWeekStartsAt(Carbon::SUNDAY);
+            $date_from->setWeekEndsAt(Carbon::SATURDAY);
+            $filter = array();
+
+            # Filter 
+            $filter['page'] = 'all';
+            $filter['link'] = 'team_schedule';
+
+            # Within this week
+            $time_from = $date_from->startOfWeek()->format('Y-m-d H:i');
+            $time_to = $date_from->endOfWeek()->format('Y-m-d H:i');
+            $user_list = auth()->user()->users_handled()->get();
+            
+            $result = $this->dtr->get_dtr_logs( $user_list, $time_from,  $time_to, $filter );
+
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                new TeamScheduleResources($result)
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+    
 
 
     # This function registers User to the system
