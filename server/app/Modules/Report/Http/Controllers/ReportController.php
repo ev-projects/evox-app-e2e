@@ -222,7 +222,7 @@ class ReportController extends Controller
      */
     public function team_schedule( Request $request ){
         try {
-            $date_from =new Carbon('January 15, 2021');
+            $date_from = Carbon::now();
 
             # Starts on Sunday and Ends on Saturday
             $date_from->setWeekStartsAt(Carbon::SUNDAY);
