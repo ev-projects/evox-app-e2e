@@ -58,7 +58,7 @@ export const fetchTeamSchedule = ( ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/report/team_schedule",
+            url: "/report/team_schedule?&page=all&link=team_schedule",
         })
         .then(result => {
             dispatch({

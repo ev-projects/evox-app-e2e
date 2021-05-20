@@ -229,16 +229,13 @@ class ReportController extends Controller
             $date_from->setWeekEndsAt(Carbon::SATURDAY);
             $filter = array();
 
-            # Filter 
-            $filter['page'] = 'all';
-            $filter['link'] = 'team_schedule';
 
             # Within this week
             $time_from = $date_from->startOfWeek()->format('Y-m-d H:i');
             $time_to = $date_from->endOfWeek()->format('Y-m-d H:i');
             $user_list = auth()->user()->users_handled()->get();
             
-            $result = $this->dtr->get_dtr_logs( $user_list, $time_from,  $time_to, $filter );
+            $result = $this->dtr->get_dtr_logs( $user_list, $time_from,  $time_to);
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
