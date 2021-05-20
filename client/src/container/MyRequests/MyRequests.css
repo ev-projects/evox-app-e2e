@@ -2,7 +2,7 @@
     background-color: white !important;
     color: black !important;
     font-size: .875em !important;
-    min-width: 115px;
+    min-width: 100px;
     margin: 5px;
     padding: 5px !important;
     border-color: #ccc !important;
@@ -78,3 +78,10 @@
 .fa-times-circle{
     color: red  !important;
 }
+
+@media only screen and (max-width: 650px) {
+    .request-content .card-body {
+    padding: .35rem;
+}
+}
+
