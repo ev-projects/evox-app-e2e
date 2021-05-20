@@ -943,7 +943,7 @@ class DtrRepository implements DtrRepositoryInterface{
      * @param string $end_date
      * @return Dtr $dtr_collection ( Collection )
      */
-    public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date, $filter = [] ){
+    public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
         
         try{
@@ -952,7 +952,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                    ->whereBetween("date", array($start_date, $end_date))
                                    ->join('users', 'users.id','=','dtrs.user_id');
 
-                if( $filter['link'] == 'team_schedule'){
+                if( request()->get('link') == 'team_schedule' ){
                     $dtr_collection ->orderBy('dtrs.date','asc')
                                     ->orderBy('users.emp_num','asc');
                 }else{
@@ -964,7 +964,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 $dtr_collection->select('dtrs.*');
                 // If the parameter 'page' value is 'all', Get the whole DTR Collection
-                if( request()->get('page') == 'all' ||  $filter['page'] == 'all'){
+                if( request()->get('page') == 'all' ){
                     $dtr_collection = $dtr_collection->get();
                     
                 // If the parameter 'page' value is numeric, fetch the paginated list with offset.
