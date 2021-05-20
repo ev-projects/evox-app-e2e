@@ -105,6 +105,7 @@ class TeamAttendanceSummary
                         // If the DTR is considered absent or if there is an approved leave and its from the Unplanned leave types
                         }elseif( $dtr->isAbsent() || ( is_valid( $leave ) && in_array( $leave, get_constant('UNPLANNED_LEAVE_TYPES') ) ) ){
                             $this->result['unplanned_leaves']['total_count'] += 1;
+                            $this->result['scheduled_employees']['total_count'] += 1;
 
                         // If the DTR has Schedule and the DTR type is regular OR if the DTR is holiday and it has valid time logs
                         }elseif( $dtr->hasSchedule() && 
