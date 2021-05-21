@@ -57,7 +57,7 @@ class ForgotPasswordRequest extends Component {
 
     return (<div id="forgotPasswordRequest">
               <Container className="min-vh-80 d-flex flex-column justify-content-center">
-              <Col md={5}>
+              <Col md={8}>
                   <Card>
                       <Card.Body>
                           <div className="card-text">

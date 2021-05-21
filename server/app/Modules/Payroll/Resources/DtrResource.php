@@ -74,7 +74,7 @@ class DtrResource extends JsonResource
             if( $this->isAbsent() ){
                 $attendance_status = get_constant("ATTENDANCE_STATUS.absent");
 
-            }elseif( $this->on_leave()->get()->count() > 0 ) {
+            }elseif( $this->onLeave()->get()->count() > 0 ) {
                 $attendance_status = $approved_leave_type;
 
             } elseif( $this->is_rest_day ) {

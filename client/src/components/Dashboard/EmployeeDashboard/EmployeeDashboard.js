@@ -62,7 +62,7 @@ const EmployeeDashboard = ( props ) => {
                       </Col>
                     </Row>
 
-                    <Row className="dtr-notifications">
+                    <Row className="dtr-teaser">
                         <Content title="Daily Time Record" col="12">
                           <RecentDtr/>
                         </Content>     
@@ -130,24 +130,28 @@ const EmployeeDashboard = ( props ) => {
                         <h3 align="center" className="card-title">JOB OPENINGS</h3>
                     </div>
                     <div className="card-body evbuddy">
-                    <ul>
-                    <li><a href="https://careers.eastvantage.com/content/us-mortgage-loan-disclosure-specialist-night-shift-mandaluyong">US Mortgage Loan Disclosure Specialist | Night Shift | Mandaluyong</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/mandarin-learning-specialist-customer-support-representative">Mandarin Learning Specialist | Customer Support Representative</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/english-learning-specialist-customer-service-professional">English Learning Specialist | Customer Service Professional</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/japanese-learning-specialist-customer-care-professional">Japanese Learning Specialist | Customer Care Professional</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/mid-senior-python-developer-3-5-years-bgc-taguig">Mid to Senior Python Developer (3-5 years | BGC, Taguig)</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/elixir-software-engineer-full-stack-mid-senior-bgc">Senior Elixir Software Engineer (Full Stack)</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/software-qa-automation-engineer-robot-framework-mid-senior-bgc">Software QA Automation Engineer (Robot Framework)</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/full-stack-developerreact-js-developer-bgc">Full Stack Developer/React JS Developer</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/software-engineer-pythonetl-mid-senior-bgc">Software Engineer (Python/ETL)</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/senior-php-software-developer-backend-bgc">Senior PHP Software Developer (Laravel/Javascript)</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/sr-python-web-developer-api-bgc">Sr. Python Web Developer</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/devops-engineer-docker-aws-kubernetes-temporary-wfh-bgc">DevOps Engineer | Docker, AWS & Kubernetes (Temporary WFH | BGC)</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/freightlogistics-customer-service-representative-e-commerce-account">Freight/Logistics Customer Service Representative (E-Commerce Account)</a></li>
-                    <li><a href="https://careers.eastvantage.com/content/etl-engineer-python-ci-bgc-taguig">ETL Engineer</a></li>
-                    </ul>
                     <h4 align="center"><strong>Refer a friend and earn as much as 20K!</strong></h4>
                     <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
+                    <br />
+                    <ul>
+                   <li><a href="https://careers.eastvantage.com/content/full-stack-developerreact-js-developer-bgc">Full Stack Developer/React JS Developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/software-engineer-pythonetl-mid-senior-bgc">Software Engineer (Python/ETL)</a></li>
+<li><a href="https://careers.eastvantage.com/content/senior-php-software-developer-backend-bgc">Senior PHP Software Developer (Laravel/Javascript)</a></li>
+<li><a href="https://careers.eastvantage.com/content/sr-python-web-developer-api-bgc">Sr. Python Web Developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/devops-engineer-docker-aws-kubernetes-temporary-wfh-bgc">DevOps Engineer | Docker AWS & Kubernetes (Temporary WFH | BGC)</a></li>
+<li><a href="https://careers.eastvantage.com/content/freightlogistics-customer-service-representative-e-commerce-account">Freight/Logistics Customer Service Representative (E-Commerce Account)</a></li>
+<li><a href="https://careers.eastvantage.com/content/etl-engineer-python-ci-bgc-taguig">ETL Engineer</a></li>
+<li><a href="https://careers.eastvantage.com/content/react-js-developer-mid-senior-bgc-taguig">React JS Developer (Mid - Senior)</a></li>
+<li><a href="https://careers.eastvantage.com/content/qa-test-engineer-6-mos-contract-mobile-internet-banking">QA Test Engineer | 6 mos contract (Mobile & Internet Banking)</a></li>
+<li><a href="https://careers.eastvantage.com/content/it-infrastructure-specialist-1-2-years-experience-work-site-bgc">IT Support Specialist | Shifting Schedule | BGC Taguig (1-3 years)</a></li>
+<li><a href="https://careers.eastvantage.com/content/us-mortgage-loan-disclosure-specialist-night-shift-mandaluyong">US Mortgage Loan Disclosure Specialist | Night Shift | Mandaluyong</a></li>
+<li><a href="https://careers.eastvantage.com/content/japanese-learning-specialist-customer-care-professional">Japanese Learning Specialist | Customer Care Professional</a></li>
+<li><a href="https://careers.eastvantage.com/content/advertising-operations-manager-bgc-taguig">Advertising Operations Manager</a></li>
+<li><a href="https://careers.eastvantage.com/content/au-traffic-planner-queensland-bgc-taguig">AU Traffic Planner</a></li>
+<li><a href="https://careers.eastvantage.com/content/spanish-portuguese-bilingual-csr-bgc-taguig">Spanish-Portuguese Learning Specialist</a></li>
+<li><a href="https://careers.eastvantage.com/content/german-learning-specialist-bgc">German Learning Specialist (BGC)</a></li>
+<li><a href="https://careers.eastvantage.com/content/customer-support-specialist-logisticsfreight-bgc-taguig">Customer Support Specialist (Logistics/Freight) | BGC Taguig</a></li>
+                    </ul>
                     
                   </div>
                   </div>

@@ -629,16 +629,15 @@ class Dtr extends Model
      *
      */
     public function isAbsent(){
-        return !$this->validLog() && $this->hasSchedule() && $this->on_leave()->count() <= 0 && ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
+        return !$this->validLog() && $this->hasSchedule() && $this->onLeave()->count() <= 0 && ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
     } 
     
     
     /**
      * hasMany Relationship for Dtr Leaves model
      */
-    public function on_leave(){
-        //  return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->count();
-        return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->where( 'type' , '<>' ,'Unpaid Leave' );
+    public function onLeave(){
+        return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->where( 'type' , '<>' ,'Unpaid Leave' )->where( 'amount' , '>' ,0 );
     } 
     
     /**

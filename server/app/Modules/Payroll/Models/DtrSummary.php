@@ -120,8 +120,8 @@ class DtrSummary
                    
                 }elseif( $dtr->isAbsent() ){
                     $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] +=  1;
-                }elseif( $dtr->on_leave()->get()->count() > 0 )  {
-                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->on_leave()->first()->amount;
+                }elseif( $dtr->onLeave()->get()->count() > 0 )  {
+                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->onLeave()->first()->amount;
                 }
 
                 

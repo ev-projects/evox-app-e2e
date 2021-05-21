@@ -941,49 +941,6 @@ class DtrRepository implements DtrRepositoryInterface{
      * @param Collection $user_collection
      * @param string $start_date
      * @param string $end_date
-     * @return array
-     */
-    public function compute_dtr_summary( Collection $user_collection, string $start_date, string $end_date ){
-        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
-        
-        try{
-            $user_dtr_summary = [];
-            $index = 0;
-            foreach( $user_collection as $user ) {
-
-                $user_dtr_summary[$index] = array(
-                    'employee_info' => array(   
-                                                'employee_id'=> $user->emp_num,
-                                                'name'=> $user->first_name .' '. $user->last_name,
-                                                'department'=> $user->department()->get()[0]->department_name  
-                                            ), 
-                    'summary' => $this->dtr_summary->get_summary( $user->dtr($start_date, $end_date)->get() )
-                );
-                $index++;
-            }
-
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$user_dtr_summary], "dtr_summary");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
-            $result = array(
-                                'summary' => $user_dtr_summary,
-                                'column' =>  $this->dtr_summary->column
-            );
-            
-            return $result;
-        } catch (Exception $e) {
-            log_error($e);
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_summary");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
-            throw $e;
-        }
-    }
-    
-
-    /**
-     *  Responsible for Computing the DTR Payroll Items Summary base from the User Collection and the Date Range.
-     * @param Collection $user_collection
-     * @param string $start_date
-     * @param string $end_date
      * @return Dtr $dtr_collection ( Collection )
      */
     public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date ){
@@ -1099,8 +1056,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                         ". $biometrics->getFlexyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
                                         OR 
                                          date = '".date("Y-m-d" , datetime_to_timestamp( $biometrics->CheckTime ))."'
-                                        )
-                                        AND ". $biometrics->getTimeType() . " IS NULL"
+                                        )"
                                 )->first();
 
             # If the fetched DTR exist, update the Specific Time Type with the Biometrics' Check Time.

@@ -1,4 +1,9 @@
 
+
+.dtr-notifications .card-body {
+    border-top: 5px solid #82af13 !important;
+    background: #fff;
+}
 .absent, .no-schedule, .rdw_incomplete{
     color: #cc0000 !important;
 }
@@ -6,29 +11,21 @@
 .undertime, .late, .late_and_undertime{
     color: orange !important;
 }
-
+.dtr-notifications .content-table table{width: 100%}
+.dtr-notifications .content-table table tbody td, 
+.dtr-notifications .content-table table thead th {
+    text-align: left;
+    vertical-align: middle;
+    border-top: 0!important;
+    border-left: 0!important;
+    border-right: 0!important;
+    padding: 7px 5% 7px 0px;
+    font-size: .75rem;
+    background:#fff !important; 
+}
 
 .dtr-notifications .content-table table thead th{
-    background:#fff !important; 
     color:#333 !important;
-    text-align: left; 
-    vertical-align: middle;
-    border-top:0 !important; 
-    border-left:0 !important; 
-    border-right:0 !important;
-}
-
-.dtr-notifications .content-table table tbody td{
-    text-align: left; 
-    vertical-align: middle;
-    border-top:0 !important;
-     border-left:0 !important; 
-     border-right:0 !important;
-}
-
-.dtr-notifications .content-table table tbody td:nth-child(2){
-    font-size: .75rem; 
-    width: 35%
 }
 
 .dtr-notifications .content-table .holiday{
@@ -52,4 +49,5 @@
 
 .dtr-notifications .no-notifications{
     text-align: center;
+    padding: 20px;
 }

@@ -32,11 +32,7 @@ class QuickPunch extends Component {
 				}
 			}
 		}
-		this.props.biometrixLog(  formData );
-
-		var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
-		var to = moment().format("YYYY-MM-DD");
-		this.props.getRecentDtr(this.props.user.id, from , to );
+		this.props.biometrixLog(  formData , this.props.user.id );
 	}
 
     componentWillMount(){
@@ -104,8 +100,7 @@ class QuickPunch extends Component {
   }
   const mapDispatchToProps = (dispatch) => {
 	  return {
-		biometrixLog    : ( post_data ) => dispatch( biometrixLog( post_data ) ),
-		getRecentDtr : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) )
+		biometrixLog    : ( post_data , id ) => dispatch( biometrixLog( post_data , id ) ),
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(QuickPunch);

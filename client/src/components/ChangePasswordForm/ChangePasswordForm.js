@@ -50,7 +50,7 @@ const ChangePasswordForm = ( context ) => {
         confirm_new_password:    Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable()/*.match( Yup.ref('new_password'), 'Passwords do not match')*/,
     });
 
-    return  <Content col={ (context.size ? context.size : "6")} title={ (context.forceChangePassword ? "Reset" : "Change") +  " Password"} subtitle={ (context.forceChangePassword ? <div>This is required before doing any transactions.</div> : null)} >
+    return  <Content col={ (context.size ? context.size : "8")} title={ (context.forceChangePassword ? "Reset" : "Change") +  " Password"} subtitle={ (context.forceChangePassword ? <div>This is required before doing any transactions.</div> : null)} >
                 <Formik 
                     enableReinitialize
                     onSubmit={onSubmitHandler} 
@@ -60,7 +60,7 @@ const ChangePasswordForm = ( context ) => {
                     ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
                     <form onSubmit={handleSubmit}>
                         <Row>  
-                            <Col size="12">         
+                            <Col size="8">         
                                 <label> { context.forceChangePassword ? "Temporary" : "Current" } Password: </label> 
                                 <InputGroup>   
                                     <FormControl class="form-control"  type="password" variant="primary" name="current_password" onChange={handleChange} value={values.current_password} />
@@ -71,7 +71,7 @@ const ChangePasswordForm = ( context ) => {
                             </Col> 
                         </Row>   
                         <Row>  
-                            <Col size="12">        
+                            <Col size="8">        
                                 <label> New Password: </label>   
                                 <InputGroup> 
                                     <FormControl class="form-control" type="password" variant="primary" name="new_password" onChange={handleChange} value={values.new_password} />
@@ -82,7 +82,7 @@ const ChangePasswordForm = ( context ) => {
                             </Col> 
                         </Row> 
                         <Row>  
-                            <Col size="12">      
+                            <Col size="8">      
                                 <label> Confirm New Password: </label>     
                                 <InputGroup> 
                                     <FormControl class="form-control"  type="password" variant="primary" name="confirm_new_password" onChange={handleChange} value={values.confirm_new_password} />
@@ -94,7 +94,7 @@ const ChangePasswordForm = ( context ) => {
                         </Row> 
                         <br/>
                         <Row>  
-                            <Col size="12"> 
+                            <Col size="8"> 
                             <Button type="submit" className="btn btn-primary" ><i className="fa fa-edit" /> Update</Button>&nbsp;
                             { ! context.forceChangePassword ? 
                                 <Button type="button" className="btn btn-secondary" onClick={()=> {context.setShowChangePasswordForm(false)}} ><i className="fa fa-ban" /> Cancel</Button> 
