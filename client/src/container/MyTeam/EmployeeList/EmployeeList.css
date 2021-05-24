@@ -14,6 +14,7 @@
     float: right;
     max-width: 290px;
     flex: unset;
+    margin-right: 10px;
 }
 .sortby label {
     float: left;
@@ -24,7 +25,13 @@
 .sortby .form-group {
     float: left;
     max-width: 200px;
-    margin-right: 10px;
+    margin-right: 13px;
+}
+.sortby label{
+    padding: 7px;
+}
+.sortby select{
+    border-radius: 0;
 }
 .sortby .btn {
     float: left;

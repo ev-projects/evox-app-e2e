@@ -266,7 +266,7 @@ class ManageTeams extends Component {
         <Wrapper {...this.props} >
               <ContainerWrapper>
                   <ContainerBody>
-                      <Content col="6" title="Manage Team" >
+                      <Content col="8" title="Manage Team" >
                       {/* { this.state.renderForm ? */}
                         <Formik 
                           enableReinitialize="true"

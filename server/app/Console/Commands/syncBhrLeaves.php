@@ -50,7 +50,7 @@ class syncBhrLeaves extends Command
     public function handle()
     {
         try {
-            $payroll_cutoff = $this->payroll->get_payroll_cutoff();
+            $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
             $start_date = $payroll_cutoff->start_date;
             $end_date = $payroll_cutoff->end_date;
 
@@ -66,6 +66,7 @@ class syncBhrLeaves extends Command
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){
+            log_to_file( 'info', $e->getMessage(), [], "cron_errors");
             return error_response( trans('messages.error_default'), $e );
         }
     }

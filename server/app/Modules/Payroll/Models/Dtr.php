@@ -653,14 +653,16 @@ class Dtr extends Model
         return $this->hasMany(Leave::class);
     }   
     
-
     /**
-     *
+     * Returns true if has Schedule but has no Valid time logs and if there are no holidays and leaves on that day and the DTR Type is regular.
      */
     public function isAbsent(){
-        return !$this->validLog() && $this->hasSchedule() && $this->onLeave()->count() <= 0 && ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
+        return !$this->validLog() && 
+                    $this->hasSchedule() && 
+                    $this->onLeave()->count() <= 0 && 
+                    $this->holidays()->count() <= 0 &&
+                    ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
     } 
-    
     
     /**
      * hasMany Relationship for Dtr Leaves model

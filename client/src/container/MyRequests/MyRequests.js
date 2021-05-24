@@ -150,9 +150,10 @@ class MyRequests extends Component {
                   <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
                   </Tab>
                 </Tabs> 
-                </div>  
+                </div>
+            <div className="request-content"> 
             <ContainerBody>        
-                <Content col="12">
+                <Content col="12" className="myrequests">
                 
                 <ButtonGroup toggle className="mb-2">
                     <ToggleButton
@@ -326,6 +327,7 @@ class MyRequests extends Component {
                   
                   </Content>
                 </ContainerBody>
+                </div>
               </ContainerWrapper>
             </Wrapper>
         </form>

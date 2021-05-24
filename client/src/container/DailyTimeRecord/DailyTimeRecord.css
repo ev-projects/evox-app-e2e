@@ -5,7 +5,12 @@
 table .center{
 	text-align: center;
 }
-.dtr-table th{padding: 10px 3px !important; border: 1px solid #eaeaea !important;vertical-align: middle  !important; text-align: center;}
+.dtr-table th {
+    padding: 10px 3px!important;
+    border: 1px solid #eaeaea!important;
+    vertical-align: middle!important;
+    font-size: .75rem !important;
+}
 .dtr-filter{padding: 0 !important; margin: 0 0 20px 0; z-index: 1000}
 .dtr-filter > div{padding:0 1% 0 0;}
 .dtr-table tr{background: #fff}
@@ -58,24 +63,30 @@ table .center{
 
 .dtr-log .justify-content-center {
     color: #000;
-    font-size: 16px;
+    font-size: .875rem;
     margin: 0;
 }
 
-.month.justify-content-center{color:#999;font-size: 12px}
+.month.justify-content-center {
+    color: #999;
+    font-size: .5rem !important;
+}
+.table td.dtr-schedule .row {
+    margin: 2px 0 !important;
+    font-size: .65rem !important;
+}
 .dtr-item{font-size:16px !important}
 .lh < .center{
 	background-color: black !important;
 }
-
-.sh{
-	color: rgb(255, 194, 71) !important; 	
+.dtr-status>div>div{
+    font-size: .75rem !important;
 }
 
-.lh{
-	color: #3853ca!important; 
+.dtr-table .requests-list li {
+    font-size: .75rem !important;
+    margin: 3px 0;
 }
-
 .year-dropdown {
 float: left;
 }
@@ -174,12 +185,16 @@ float: left;
 .btn-update-sched a:hover{
     text-decoration: none;
 }
+.dtr-table>thead>tr>td, .dtr-table>thead>tr>th {
+
+    background: #82af13 !important;
+    color: #fff !important;
+    font-size: .75rem !important;
+}
 @media only screen and (max-width: 575px) {
 .content .col-lg-12, .content .col-12{padding: 5px 0 !important}
 .dtr-schedule .col{width: 100%; padding: 0}
 
-.table thead .dtr-schedule,.table thead .dtr-status,
-.table tbody .dtr-schedule,.table tbody .dtr-status{display: none}
 .SummaryBlock{padding: 0}
     .SummaryBlock .toast-header {font-size: 11px;}
   
@@ -209,12 +224,6 @@ float: left;
 }
 }
 @media only screen and (max-width: 650px) {
-.table thead .dtr-schedule,.table thead .dtr-status,
-.table tbody .dtr-schedule,.table tbody .dtr-status{display: none}
-.col-lg-1 {
-    flex: 0 0 7.333333%;
-    max-width: 7.333333%;
-}
 
 }
 @media only screen and (min-width: 576px){

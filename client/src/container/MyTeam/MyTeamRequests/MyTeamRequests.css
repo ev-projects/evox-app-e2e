@@ -20,7 +20,7 @@
     border-radius: 25px !important;
 }
 
-.filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: 20px; float: none;}
+.filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: -5px; float: none;}
 .filters .date-range label,.bulk-action .form-group label {
     float: left;
     font-size: 12px;
@@ -29,10 +29,11 @@
     background: #ccc;
 }
 .filters .col{padding: 0px !important; margin:0 10px 0 0 !important;}
-.filters .date-range > div > div{width: 36.5%; float: left; margin-right: 5px}
+.filters .date-range > div > div{width: 38%; float: left; margin-right: 5px}
 .filters .date-range {
-    width: 50% !important;
-    flex: 0 50%;
+    width: 38% !important;
+    flex: 0 1 38%;
+    margin-left: 1% !important;
 }
 .filters.myrequest-filter .date-range {
     width: 80% !important;
@@ -105,29 +106,55 @@
 
 .btn.display-block{
     display: block !important   ;
-    width: 120px!important;
+    width: 100px!important;
+    font-size:.875rem;
+    padding:8px 0;
 }
 
 .input-feedback{
     color: red !important;
 }
 .form-control{font-size: inherit !important}
-
+.react-datepicker-wrapper {
+    display: block;
+}
 
 @media only screen and (max-width: 650px) {
-
+.bulk-action .form-group label, .filters .date-range label {
+    font-size: .5rem;
+}
+.btn.display-block {
+    font-size: .75rem;
+    width: 90px!important;
+}
 .filters.myrequest-filter {margin:0; width: 100%; float: none;}
 .filters.myrequest-filter .date-range {
     width: 75% !important;
     flex: 0 75%;
 }
+.form-control{font-size:.75rem !important}
+.filters .date-range{flex: 0 1 100%;}
 .filters .date-range > div > div{width: 31%; float: left; margin-right: 5px}
-.request-tab{top:18px;}
-.request-tab .nav-tabs a:nth-child(1){
+.filters .dept{width: 27%}
+.filters .search-name{width: 25%}
+.filters .btn.display-block{width:52px !important; overflow: hidden; word-break: break-all; height: 38px}
+.request-tab {
+    top: 18px;
+    left: 4px;
+}
+.request-tab .nav-tabs a{
     display: none
 }
 .request-tab a{padding: 5px 10px}
-.request-tab .nav-tabs a{
-    font-size: .875rem
+.request-tab .nav-tabs a {
+    font-size: .75rem;
+    margin: 0 1px 0 1px;
+    padding: 3px 7px;
+}
+.filters.myrequest-filter .btn
+ {
+    height: 34px;
+    width: 38px;
+    overflow:hidden;
 }
 }

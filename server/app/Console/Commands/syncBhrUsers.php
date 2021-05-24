@@ -135,6 +135,7 @@ class syncBhrUsers extends Command
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){
+            log_to_file( 'info', $e->getMessage(), [], "cron_errors");
             return error_response( trans('messages.error_default'), $e );
         }
     }
