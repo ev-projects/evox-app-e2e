@@ -95,25 +95,28 @@ class TeamAttendanceSummary
                                             ->where( 'amount' , '>' , 0 )
                                             ->first();
                         
-                        // Declare the DTR Type since it would be reused.
-                        $dtr_type = $dtr->getDtrType();
+                        // Fetch the holidays
+                        $holiday_collection = $dtr->holidays()->count();
 
                         // If the DTR has Schedule and there is an approved leave and its not from Unplanned leave types
-                        if( $dtr->hasSchedule() && is_valid( $leave ) && !in_array( $leave, get_constant('UNPLANNED_LEAVE_TYPES') ) ){
+                        // ...Or has a holiday and there is no timelogs.
+                        if( $dtr->hasSchedule()  && 
+                            ( is_valid( $leave ) &&  !in_array( $leave->type, get_constant('UNPLANNED_LEAVE_TYPES') ) 
+                                || 
+                                ( $holiday_collection > 0 && !$dtr->hasValidTimeLogs() )
+                            ) ){
                             $this->result['planned_leaves']['total_count'] += 1;
 
                         // If the DTR is considered absent or if there is an approved leave and its from the Unplanned leave types
-                        }elseif( $dtr->isAbsent() || ( is_valid( $leave ) && in_array( $leave, get_constant('UNPLANNED_LEAVE_TYPES') ) ) ){
+                        }elseif( $dtr->isAbsent() || ( is_valid( $leave ) && in_array( $leave->type, get_constant('UNPLANNED_LEAVE_TYPES') ) ) ){
                             $this->result['unplanned_leaves']['total_count'] += 1;
                             $this->result['scheduled_employees']['total_count'] += 1;
 
                         // If the DTR has Schedule and the DTR type is regular OR if the DTR is holiday and it has valid time logs
                         }elseif( $dtr->hasSchedule() && 
-                            ( $dtr_type == get_constant('DTR_TYPE.regular') 
-                            ||
-                            ( !in_array( $dtr_type, [get_constant('DTR_TYPE.regular'),  get_constant('DTR_TYPE.rest_day')] ) && 
-                                $dtr->hasValidTimeLogs()
-                            )
+                            ( $holiday_collection <= 0
+                                ||
+                                ( $holiday_collection > 0 && $dtr->hasValidTimeLogs() )
                             ) ){
                             $this->result['scheduled_employees']['total_count'] += 1;
                         }
@@ -163,17 +166,17 @@ class TeamAttendanceSummary
             "scheduled_employees"  => [
                 'total_count' => 0,
                 'total_percentage' => 0,
-                'expected_percentage' => 95,
+                'target_percentage' => 95,
             ],
             "unplanned_leaves"  => [
                 'total_count' => 0,
                 'total_percentage' => 0,
-                'expected_percentage' => 3,
+                'target_percentage' => 3,
             ],
             "planned_leaves"  => [
                 'total_count' => 0,
                 'total_percentage' => 0,
-                'expected_percentage' => 7 ,
+                'target_percentage' => 7 ,
             ],
         );
     }
