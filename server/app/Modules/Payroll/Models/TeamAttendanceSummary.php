@@ -73,7 +73,7 @@ class TeamAttendanceSummary
                             ( $termination_date->gt( $end_date ) || $termination_date->between( $start_date, $end_date) ) 
                         )
                     ) ){
-                    
+
                     // Increment the total headcount
                     $this->result['total_headcount']++;
                     
@@ -87,8 +87,10 @@ class TeamAttendanceSummary
                         $end_date = $termination_date;
                     }
 
+                    $dtr_collection = $user->dtr( $start_date->format('Y-m-d'), $end_date->format('Y-m-d') )->get();
+                    
                     // Fetch the User's DTR base from the final start and end date
-                    foreach( $user->dtr( $start_date->format('Y-m-d'), $end_date->format('Y-m-d') )->get() as $dtr ) {
+                    foreach( $dtr_collection  as $dtr ) {
 
                         // Fetch the approved leave of the DTR if there is any
                         $leave = $dtr->leaves()->where( 'status' , 'approved' )
@@ -97,7 +99,13 @@ class TeamAttendanceSummary
                         
                         // Fetch the holidays
                         $holiday_collection = $dtr->holidays()->count();
-
+                        
+                        // Fetch the Rest day work
+                        $rest_day_work = $dtr->rest_day_work()->first();
+                        
+                        // Payroll Items
+                        $payroll_items_collection = $dtr->payroll_items()->get();
+                        
                         // If the DTR has Schedule and there is an approved leave and its not from Unplanned leave types
                         // ...Or has a holiday and there is no timelogs.
                         if( $dtr->hasSchedule()  && 
@@ -120,6 +128,16 @@ class TeamAttendanceSummary
                             ) ){
                             $this->result['scheduled_employees']['total_count'] += 1;
                         }
+
+                        foreach( $payroll_items_collection as $payroll_item ){
+                            if( is_valid( $rest_day_work ) 
+                                && $rest_day_work->isApproved()
+                                && $payroll_item->item == get_constant('PAYROLL_ITEMS.rendered_hours') ) {
+
+                                $this->result['total_hours']['rest_day_work'] += (int) $payroll_item->value;
+                            }
+                        };
+                        
                     }
                 }   
             }
@@ -134,6 +152,9 @@ class TeamAttendanceSummary
                 $this->result['scheduled_employees']['total_percentage'] = (float) number_format(($this->result['scheduled_employees']['total_count'] / $total_days) * 100, 2);
                 $this->result['planned_leaves']['total_percentage'] = (float) number_format(($this->result['planned_leaves']['total_count'] / $total_days) * 100, 2);
                 $this->result['unplanned_leaves']['total_percentage'] = (float) number_format(($this->result['unplanned_leaves']['total_count'] / $total_days) * 100, 2);
+
+                // Parse the seconds to time for total rest day data.
+                $this->result['total_hours']['rest_day_work'] = seconds_to_time( $this->result['total_hours']['rest_day_work'], true );
                 
             }
             return $this->result;
@@ -177,6 +198,9 @@ class TeamAttendanceSummary
                 'total_count' => 0,
                 'total_percentage' => 0,
                 'target_percentage' => 7 ,
+            ],
+            "total_hours"  => [
+                'rest_day_work' => 0,
             ],
         );
     }
