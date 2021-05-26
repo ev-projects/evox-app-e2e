@@ -102,6 +102,9 @@ class TeamAttendanceSummary
                         
                         // Fetch the Rest day work
                         $rest_day_work = $dtr->rest_day_work()->first();
+
+                        // Fetch the Overtime
+                        $overtime = $dtr->overtime()->first();
                         
                         // Payroll Items
                         $payroll_items_collection = $dtr->payroll_items()->get();
@@ -129,12 +132,33 @@ class TeamAttendanceSummary
                             $this->result['scheduled_employees']['total_count'] += 1;
                         }
 
+                        // If there is a approved Rest day work, count the instance
+                        if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {
+                            $this->result['total_rest_day_work']['total_count'] += 1;
+                        }
+
+                        // If there is a approved Overtime, count the instance
+                        if( is_valid( $overtime ) && $overtime->isApproved() ) {
+                            $this->result['total_overtime']['total_count'] += 1;
+                        }
+
                         foreach( $payroll_items_collection as $payroll_item ){
-                            if( is_valid( $rest_day_work ) 
-                                && $rest_day_work->isApproved()
+
+                            // If there is an approved rest day work and the current payroll item iterated is Rendered hours, add its value
+                            if( is_valid( $rest_day_work ) && $rest_day_work->isApproved()
                                 && $payroll_item->item == get_constant('PAYROLL_ITEMS.rendered_hours') ) {
 
-                                $this->result['total_hours']['rest_day_work'] += (int) $payroll_item->value;
+                                    $this->result['total_rest_day_work']['total_hours'] += (int) $payroll_item->value;
+
+                            }
+    
+                            // If there is an approved overtime and the current payroll item iterated is overtime, add its value
+                            if( is_valid( $overtime ) && $overtime->isApproved() 
+                                &&  in_array($payroll_item->item, [ get_constant('PAYROLL_ITEMS.overtime'), 
+                                                                    get_constant('PAYROLL_ITEMS.overtime_night_diff')
+                                                                  ]) ) {
+
+                                $this->result['total_overtime']['total_hours'] += (int) $payroll_item->value; 
                             }
                         };
                         
@@ -147,20 +171,24 @@ class TeamAttendanceSummary
 
                 // Computation for the total days 
                 $total_days = $this->result['scheduled_employees']['total_count'] + $this->result['planned_leaves']['total_count'] + $this->result['unplanned_leaves']['total_count'];
-    
-                // Computation for Scheduled Employee, Planned Leaves, and Unplanned Leaves
-                $this->result['scheduled_employees']['total_percentage'] = (float) number_format(($this->result['scheduled_employees']['total_count'] / $total_days) * 100, 2);
-                $this->result['planned_leaves']['total_percentage'] = (float) number_format(($this->result['planned_leaves']['total_count'] / $total_days) * 100, 2);
-                $this->result['unplanned_leaves']['total_percentage'] = (float) number_format(($this->result['unplanned_leaves']['total_count'] / $total_days) * 100, 2);
+                
+                // Computation for Scheduled Employee, Planned Leaves, and Unplanned Leaves if the total days are more than 0
+                if( $total_days > 0 ) {
+                    $this->result['scheduled_employees']['total_percentage'] = (float) number_format(($this->result['scheduled_employees']['total_count'] / $total_days) * 100, 2);
+                    $this->result['planned_leaves']['total_percentage'] = (float) number_format(($this->result['planned_leaves']['total_count'] / $total_days) * 100, 2);
+                    $this->result['unplanned_leaves']['total_percentage'] = (float) number_format(($this->result['unplanned_leaves']['total_count'] / $total_days) * 100, 2);    
+                }
 
-                // Parse the seconds to time for total rest day data.
-                $this->result['total_hours']['rest_day_work'] = seconds_to_time( $this->result['total_hours']['rest_day_work'], true );
+                // Parse the seconds to time for total rest day work and overtime data.
+                $this->result['total_rest_day_work']['total_hours'] = seconds_to_time( $this->result['total_rest_day_work']['total_hours'], true );
+                $this->result['total_overtime']['total_hours'] = seconds_to_time( $this->result['total_overtime']['total_hours'], true );
                 
             }
             return $this->result;
 
         } catch(Exception $e) {
-            dd( $e );
+            log_to_file( 'info', $e->getMessage(), [], "summary_errors");
+            return error_response( trans('messages.error_default'), $e );
         }
     }
 
@@ -199,8 +227,13 @@ class TeamAttendanceSummary
                 'total_percentage' => 0,
                 'target_percentage' => 7 ,
             ],
-            "total_hours"  => [
-                'rest_day_work' => 0,
+            "total_rest_day_work"  => [
+                'total_hours' => 0,
+                'total_count' => 0,
+            ],
+            "total_overtime"  => [
+                'total_hours' => 0,
+                'total_count' => 0,
             ],
         );
     }
