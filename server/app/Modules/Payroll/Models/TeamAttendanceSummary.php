@@ -5,6 +5,7 @@ namespace App\Modules\Payroll\Models;
 
 use App\Modules\User\Models\User;
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Payroll\Resources\TeamAttendanceResources;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -88,7 +89,9 @@ class TeamAttendanceSummary
                     }
 
                     $dtr_collection = $user->dtr( $start_date->format('Y-m-d'), $end_date->format('Y-m-d') )->get();
-                    
+
+                    $this->result['dtr_collection'] = $this->result['dtr_collection']->merge( $dtr_collection );
+
                     // Fetch the User's DTR base from the final start and end date
                     foreach( $dtr_collection  as $dtr ) {
 
@@ -108,15 +111,36 @@ class TeamAttendanceSummary
                         
                         // Payroll Items
                         $payroll_items_collection = $dtr->payroll_items()->get();
-                        
-                        // If the DTR has Schedule and there is an approved leave and its not from Unplanned leave types
+
+                        // If the DTR has Schedule and there is an approved leave and its not from Unplanned leave types and amount is 1
                         // ...Or has a holiday and there is no timelogs.
                         if( $dtr->hasSchedule()  && 
-                            ( is_valid( $leave ) &&  !in_array( $leave->type, get_constant('UNPLANNED_LEAVE_TYPES') ) 
-                                || 
-                                ( $holiday_collection > 0 && !$dtr->hasValidTimeLogs() )
-                            ) ){
+                            ( ( is_valid( $leave ) 
+                                && !in_array( $leave->type, get_constant('UNPLANNED_LEAVE_TYPES') ) 
+                                && (float) $leave->amount == 1 
+                              ) 
+                              || 
+                              ( $holiday_collection > 0 && !$dtr->hasValidTimeLogs() )
+                            ) 
+                        ){
                             $this->result['planned_leaves']['total_count'] += 1;
+
+                        
+                        // If the DTR has Schedule and there is an approved leave and its not from Unplanned leave types and amount is .5
+                        }elseif( $dtr->hasSchedule()  && 
+                            ( is_valid( $leave ) 
+                              && !in_array( $leave->type, get_constant('UNPLANNED_LEAVE_TYPES') ) 
+                              && (float) $leave->amount == 0.5
+                            ) 
+                        ){
+                            if( $dtr->hasValidTimelogs() ) {
+                                $this->result['scheduled_employees']['total_count'] += .5;
+                            } else {
+                                $this->result['unplanned_leaves']['total_count'] += .5;
+                                $this->result['scheduled_employees']['total_count'] += 1;
+                            }
+
+                            $this->result['planned_leaves']['total_count'] += .5;
 
                         // If the DTR is considered absent or if there is an approved leave and its from the Unplanned leave types
                         }elseif( $dtr->isAbsent() || ( is_valid( $leave ) && in_array( $leave->type, get_constant('UNPLANNED_LEAVE_TYPES') ) ) ){
@@ -182,6 +206,8 @@ class TeamAttendanceSummary
                 // Parse the seconds to time for total rest day work and overtime data.
                 $this->result['total_rest_day_work']['total_hours'] = seconds_to_time( $this->result['total_rest_day_work']['total_hours'], true );
                 $this->result['total_overtime']['total_hours'] = seconds_to_time( $this->result['total_overtime']['total_hours'], true );
+
+                // $this->result['dtr_collection'] = new TeamAttendanceResources( $this->result['dtr_collection']->sortBy('date'));
                 
             }
             return $this->result;
@@ -235,6 +261,7 @@ class TeamAttendanceSummary
                 'total_hours' => 0,
                 'total_count' => 0,
             ],
+            "dtr_collection"  => new Collection(),
         );
     }
 

@@ -601,7 +601,7 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
             }
 
-            return $user_collection->get();
+            return $user_collection->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
         } catch (Exception $e) {
             throw $e;
         }
