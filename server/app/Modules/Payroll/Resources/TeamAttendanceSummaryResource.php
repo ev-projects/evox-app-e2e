@@ -39,8 +39,10 @@ class TeamAttendanceSummaryResource extends JsonResource
                 $has_holiday = true;    
             }
             
-            // If DTR has leaves, tick the has_leave flag
-            if( $dtr->leaves()->get()->count() > 0 ){
+            $leave = $dtr->leaves()->first();
+            
+            // If DTR has valid leave, tick the has_leave flag
+            if( is_valid( $leave ) && $leave->isApproved() && $leave->amount > 0){
                 $status = $dtr->leaves()->get()->first()->type; 
                 $has_leave = true;
             }
