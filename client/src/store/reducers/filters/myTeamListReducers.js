@@ -20,6 +20,12 @@ const myTeamListReducers = (state = initState, action) => {
                 list : action.list
             }
             break;
+        case "FETCH_TEAM_LIST_SUCCESS":
+            return {
+                ...state,
+                team_list : action.list
+            }
+            break;
         case "FETCH_TEAM_SCHEDULE_SUCCESS":
             return {
                 ...state,

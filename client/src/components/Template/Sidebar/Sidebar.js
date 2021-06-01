@@ -230,39 +230,63 @@ const Sidebar = (props) => {
 
                   {/* CLIENT Links */}
                   { Authenticator.check('client', 'client_access') ?
-                      <li className="nav-item has-treeview ">
-                        <a className="nav-link" >
-                          <i className="nav-icon fa fa-users" />
-                          <p>
-                            My Team
-                            <i className="right fa fa-chevron-left" />
-                          </p>
-                        </a>
-                        <ul className="nav nav-treeview">
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.employee_list} >
-                              <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
-                              <p> Employee List</p> 
-                            </Link>
-                          </li> 
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.dtr_logs} >
-                              <i className="nav-icon fa fa-clock-o" aria-hidden="true"></i>
-                              <p> DTR Logs</p> 
-                            </Link>
-                          </li> 
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.team_schedule} >
-                              <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
-                              <p> Team Schedule </p> 
-                            </Link>
-                          </li> 
-                        </ul>
-                      </li>
+                    <React.Fragment>
+                        <li className="nav-item has-treeview ">
+                          <a className="nav-link" >
+                            <i className="nav-icon fa fa-users" />
+                            <p>
+                              My Team
+                              <i className="right fa fa-chevron-left" />
+                            </p>
+                          </a>
+                          <ul className="nav nav-treeview">
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.employee_list} >
+                                <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
+                                <p> Employee List</p> 
+                              </Link>
+                            </li> 
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.dtr_logs} >
+                                <i className="nav-icon fa fa-clock-o" aria-hidden="true"></i>
+                                <p> DTR Logs</p> 
+                              </Link>
+                            </li> 
+                          </ul>
+                        </li>
+                      </React.Fragment>
                     :
                     null
                   }
 
+                        
+                    {/* Report Links Links */}
+                    { Authenticator.check(['supervisor', 'client'], 'supervisor_access', 'client_access') ?
+                        <li className="nav-item has-treeview ">
+                          <a className="nav-link" >
+                            <i className="nav-icon fa fa-line-chart" />
+                            <p>
+                              Reports
+                              <i className="right fa fa-chevron-left" />
+                            </p>
+                          </a>
+                          <ul className="nav nav-treeview">
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.team_attendance_summary} >
+                                <p>Team Attendance Summary</p> 
+                              </Link>
+                            </li> 
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.team_schedule} >
+                                <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
+                                <p> Team Schedule </p> 
+                              </Link>
+                            </li>
+                          </ul>
+                        </li>
+                        :
+                        null
+                  }
 
 
                   

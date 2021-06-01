@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Models;
 use App\Modules\User\Models\User;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Resources\TeamAttendanceResources;
+use App\Modules\Payroll\Resources\TeamAttendanceSummaryResource;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -59,7 +60,7 @@ class TeamAttendanceSummary
             } 
             
             // Iterate the User collection that was fetched
-            foreach( $user_collection as $user) {
+            foreach( $user_collection->sortBy('emp_num') as $user) {
 
                 // Declare the variables for date hired and termination date to be used for conditions later.
                 $date_hired = Carbon::parse( $user->date_hired );
@@ -91,7 +92,7 @@ class TeamAttendanceSummary
                     $dtr_collection = $user->dtr( $start_date->format('Y-m-d'), $end_date->format('Y-m-d') )->get();
 
                     $this->result['dtr_collection'] = $this->result['dtr_collection']->merge( $dtr_collection );
-
+                    
                     // Fetch the User's DTR base from the final start and end date
                     foreach( $dtr_collection  as $dtr ) {
 
@@ -133,8 +134,11 @@ class TeamAttendanceSummary
                               && (float) $leave->amount == 0.5
                             ) 
                         ){
+                            // If the DTR has Valid time logs, add .5 on the scheduled employees
                             if( $dtr->hasValidTimelogs() ) {
                                 $this->result['scheduled_employees']['total_count'] += .5;
+
+                            // If the DTR has NO Valid time logs, add .5 on the unplanned leaves and 1 on scheduled employees
                             } else {
                                 $this->result['unplanned_leaves']['total_count'] += .5;
                                 $this->result['scheduled_employees']['total_count'] += 1;
@@ -207,7 +211,7 @@ class TeamAttendanceSummary
                 $this->result['total_rest_day_work']['total_hours'] = seconds_to_time( $this->result['total_rest_day_work']['total_hours'], true );
                 $this->result['total_overtime']['total_hours'] = seconds_to_time( $this->result['total_overtime']['total_hours'], true );
 
-                // $this->result['dtr_collection'] = new TeamAttendanceResources( $this->result['dtr_collection']->sortBy('date'));
+                $this->result['dtr_collection'] = new TeamAttendanceSummaryResource( $this->result['dtr_collection'] );
                 
             }
             return $this->result;

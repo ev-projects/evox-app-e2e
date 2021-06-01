@@ -1,0 +1,180 @@
+.summary-report{
+    width: 100%;
+    text-align: center;
+}
+
+.summary-report > .total-headcount-container  {
+    /* width: 500px;
+    background-color: #e9e9e9;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center; */
+    margin-left: 25px;
+    margin-right: 25px;
+    min-height: 75px;
+    padding: 15px 10px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+}
+
+.summary-report > .total-headcount-container > div  {
+    background-color: #ecf0f1;
+    width: 750px;
+}
+
+
+
+.summary-report > .total-headcount-container > div > span { 
+    font-size: 30px;
+}
+.summary-report > .total-headcount-container > div > label {
+    font-size: 15px;
+}
+
+
+
+
+.summary-report > .computed-summary-container  {
+    /* width: 500px;
+    background-color: #e9e9e9;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center; */
+    margin-left: 25px;
+    margin-right: 25px;
+    min-height: 75px;
+    padding: 0px 10px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+}
+
+.summary-report > .computed-summary-container > div  {
+    width: 250px;
+}
+
+.summary-report > .computed-summary-container > div > span {
+    font-size: 30px;
+}
+.summary-report > .computed-summary-container > div > .green {
+    color: #82af13;
+}
+
+.summary-report > .computed-summary-container > div > .red {
+    color: #f12631;
+}
+
+
+
+
+.summary-report > .computed-payroll-items-container  {
+    margin-left: 25px;
+    margin-right: 25px;
+    min-height: 75px;
+    padding: 0px 10px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+}
+
+.summary-report > .computed-payroll-items-container > div  {
+    width: 200px;
+}
+
+.summary-report > .computed-payroll-items-container > div > span {
+    font-size: 30px;
+}
+
+.summary-report > .computed-payroll-items-container > div > .green {
+    color: #82af13;
+}
+
+.summary-report > .computed-payroll-items-container > div > .red {
+    color: #f12631;
+}
+
+
+
+.summary-report > .dtr-list  {
+    margin-left: 25px;
+    margin-right: 25px;
+    height: 400px;
+    overflow: auto;
+    min-height: 75px;
+    padding: 0px 10px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+}
+
+/* .summary-report > .dtr-list > table {
+    width: 200px;
+} */
+.summary-report > .dtr-list > table > thead > tr > th  {
+    background-color: #ecf0f1;
+    color: black;
+    border-left: 0px solid;
+    border-right: 0px solid;
+    text-align: left;
+}
+
+.summary-report > .dtr-list > table > tbody > tr > td {
+    text-align: left;
+}
+
+.summary-report > .dtr-list > table > thead > tr > .name  {
+    width: 100px
+}
+.summary-report > .dtr-list > table > thead > tr > .job-title  {
+    width: 100px
+}
+.summary-report > .dtr-list > table > thead > tr > .date  {
+    width: 75px
+}
+.summary-report > .dtr-list > table > thead > tr > .status  {
+    width: 375px
+}
+
+.summary-report > .dtr-list > table > tbody > tr > td {
+    border-left: 0px solid;
+    border-right: 0px solid;
+    background-color: #ffffff !important;
+    
+}
+
+
+.summary-report > .dtr-list > table > tbody > tr > td > a {
+    color: #0068d7 !important;
+}
+.summary-report > .dtr-list > table > tbody > tr > .status {
+    font-weight: 500;
+}
+.summary-report > .dtr-list > table > tbody > tr > .absent {
+    color: red !important;
+}
+.summary-report > .dtr-list > table > tbody > tr > .present {
+    color: #82af13 !important;
+}
+.summary-report > .dtr-list > table > tbody > tr > .vacation-leave {
+    color: #007bff !important;
+}
+.summary-report > .dtr-list > table > tbody > tr > .sick-leave {
+    color: #fdad31 !important;
+}
+.summary-report > .dtr-list > table > tbody > tr > .rest-day-work,
+.summary-report > .dtr-list > table > tbody > tr > .overtime,
+.summary-report > .dtr-list > table > tbody > tr > .holiday {
+    color: #fd7e14 !important;
+}
+
+.summary-report > .dtr-list > table > tbody > tr > .rest-day,
+.summary-report > .dtr-list > table > tbody > tr > .no-schedule {
+    color: #6e6e6e !important;
+}

@@ -600,6 +600,10 @@ class UserRepository implements UserRepositoryInterface{
             if( is_valid( $request->name ) ){
                 $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
             }
+            
+            if( is_valid( $request->team_id ) ){
+                $user_collection->whereIn('id', Team::find( $request->team_id )->team_users()->pluck('id'));
+            }
 
             return $user_collection->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
         } catch (Exception $e) {

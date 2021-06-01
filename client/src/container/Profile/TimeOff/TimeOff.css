@@ -39,16 +39,6 @@
     color: #82af13;
     font-size: 50px;
 }
-
-.leaves-list { margin-left: 10px; }
-.leaves-list .view-navigate{font-size:40px; margin-left: 5px; margin-right: 5px; cursor: pointer;}
-.leaves-list .navigator{margin-left: 8px; margin-right:8px;color: #82af13}
-.leaves-list .dates-label{margin-top: 8px;}
-.leaves-list .view-type-tabs .nav-tabs{border: 0 !important;}
-.leaves-list .view-type-tabs a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 2px;}
-.leaves-list .view-type-tabs a.active {background-color: #82af13  !important; color: #fff !important;}
-.leaves-list .view-type-tabs button.active a{color:#82af13 !important;}
-
 .custom-date {
     display: block;
     margin-left: 10px;
