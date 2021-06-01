@@ -261,7 +261,7 @@ const Sidebar = (props) => {
 
                         
                     {/* Report Links Links */}
-                    { Authenticator.check(['supervisor', 'client'], 'supervisor_access', 'client_access') ?
+                    { Authenticator.check(['supervisor', 'client'], ['supervisor_access', 'client_access']) ?
                         <li className="nav-item has-treeview ">
                           <a className="nav-link" >
                             <i className="nav-icon fa fa-line-chart" />
