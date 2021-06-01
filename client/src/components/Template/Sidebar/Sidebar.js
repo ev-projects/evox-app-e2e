@@ -273,13 +273,14 @@ const Sidebar = (props) => {
                           <ul className="nav nav-treeview">
                             <li className="nav-item">
                               <Link className="nav-link" to={global.links.team_attendance_summary} >
-                                <p>Team Attendance Summary</p> 
+                                <i className="nav-icon fa fa-bar-chart"  aria-hidden="true"></i>
+                                <p>Attendance Summary</p> 
                               </Link>
                             </li> 
                             <li className="nav-item">
                               <Link className="nav-link" to={global.links.team_schedule} >
                                 <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
-                                <p> Team Schedule </p> 
+                                <p> Schedule </p> 
                               </Link>
                             </li>
                           </ul>
