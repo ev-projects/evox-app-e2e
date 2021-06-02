@@ -60,7 +60,7 @@ class TeamAttendanceSummaryResource extends JsonResource
                 if( $dtr->hasSchedule() ){
 
                     // If DTR has Log, set status as Present
-                    if( $dtr->hasLog() ){
+                    if( $dtr->hasValidTimelogs() ){
                         $status = 'Present';
 
                     // else, set status as Absent
