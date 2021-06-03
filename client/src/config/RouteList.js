@@ -29,7 +29,8 @@ import RestDayWork from "../container/Request/RestDayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
 
 import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
-import MyTeamSchedule from "../container/MyTeam/MyTeamSchedule";
+import WeeklySchedule from "../container/MyTeam/MyTeamSchedule/Weekly";
+import MonthlySchedule from "../container/MyTeam/MyTeamSchedule/Monthly";
 import MyRequests from "../container/MyRequests/MyRequests";
 
 import DtrSummary from "../container/MyTeam/DtrSummary";
@@ -136,8 +137,12 @@ const RoutesList = (props) => {
           <MyTeamRequests role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.team_schedule}>
-          <MyTeamSchedule role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        <ProtectedRoute exact path={global.links.weekly_team_schedule}>
+          <WeeklySchedule role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.monthly_team_schedule}>
+          <MonthlySchedule role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_summary}>

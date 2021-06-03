@@ -36,8 +36,8 @@ global.links = {
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
     dtr_logs                        :  "/app/team/DtrLogs", 
-    team_schedule                   :  "/app/team/Schedule", 
-
+    weekly_team_schedule            :  "/app/team/WeeklySchedule", 
+    monthly_team_schedule           :  "/app/team/MonthlySchedule", 
     // Schedule Links
     template_add                    :  "/app/schedule/",
     template_list                   :  "/app/schedule/template/",

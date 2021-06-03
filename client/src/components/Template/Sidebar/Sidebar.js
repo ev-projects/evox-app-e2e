@@ -217,7 +217,7 @@ const Sidebar = (props) => {
                             </Link>
                           </li>
                           <li className="nav-item">
-                            <Link className="nav-link" to={global.links.team_schedule} >
+                            <Link className="nav-link" to={global.links.weekly_team_schedule} >
                               <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
                               <p> Team Schedule </p> 
                             </Link>
@@ -252,7 +252,7 @@ const Sidebar = (props) => {
                             </Link>
                           </li> 
                           <li className="nav-item">
-                            <Link className="nav-link" to={global.links.team_schedule} >
+                            <Link className="nav-link" to={global.links.weekly_team_schedule} >
                               <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
                               <p> Team Schedule </p> 
                             </Link>

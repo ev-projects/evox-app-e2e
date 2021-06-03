@@ -30,8 +30,13 @@ const myTeamListReducers = (state = initState, action) => {
             return {
                 ...state,
                 filters : action.filters
-            }
+            } 
             break;
+        case "FETCH_TEAM_UNDER_DEPARTMENT_LIST_SUCCESS":
+            return {
+                ...state,
+                team_list : action.list
+            } 
         /**  */
         
         
