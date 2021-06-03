@@ -44,6 +44,9 @@ global.links = {
     schedule_assign_department      :  "/app/schedule/assign/department",
     schedule_assign_user            :  "/app/schedule/assign/user/",
 
+    // Report Links
+    team_attendance_summary         :  "/app/report/TeamAttendanceSummary/",
+
     // Admin Links
     payroll_cutoff                  :  "/app/admin/PayrollCutoff/",
     assign_department_handlers      :  "/app/admin/AssignDepartmentHandlers/",

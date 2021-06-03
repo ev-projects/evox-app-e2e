@@ -69,26 +69,6 @@ export const getTeamAttendanceStatus = ( params = null ) => {
 }
 
 
-// TEAM ATTENDANCE SUMMARY
-export const getTeamAttendanceSummary = ( id ) => {
-    return (dispatch, getState) => {
-        API.call({
-            method: "get",
-            url: "/report/team_attendance_summary",
-        })
-        .then(result => {
-            dispatch({
-                'type'  : 'FETCH_TEAM_ATTENDANCE_SUMMARY', 
-                'data'   : result.data.content
-            })
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    }
-}
-
-
 // HOLIDAY
 export const getThisMonthHoliday = ( id ) => {
     return (dispatch, getState) => {

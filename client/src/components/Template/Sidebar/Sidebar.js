@@ -259,10 +259,40 @@ const Sidebar = (props) => {
                           </li> 
                         </ul>
                       </li>
+
                     :
                     null
                   }
 
+                        
+                    {/* Report Links Links */}
+                    { Authenticator.check(['supervisor', 'client'], ['supervisor_access', 'client_access']) ?
+                        <li className="nav-item has-treeview ">
+                          <a className="nav-link" >
+                            <i className="nav-icon fa fa-line-chart" />
+                            <p>
+                              Reports
+                              <i className="right fa fa-chevron-left" />
+                            </p>
+                          </a>
+                          <ul className="nav nav-treeview">
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.team_attendance_summary} >
+                                <i className="nav-icon fa fa-bar-chart"  aria-hidden="true"></i>
+                                <p>Attendance Summary</p> 
+                              </Link>
+                            </li> 
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.team_schedule} >
+                                <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
+                                <p> Schedule </p> 
+                              </Link>
+                            </li>
+                          </ul>
+                        </li>
+                        :
+                        null
+                  }
 
 
                   

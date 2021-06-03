@@ -57,6 +57,7 @@ import EmployeeList from "../container/MyTeam/EmployeeList";
 import ManageTeams from "../container/MyTeam/ManageTeams";
 import TimeOff from "../container/Profile/TimeOff";
 import Profile from "../container/Profile";
+import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
 
 const RoutesList = (props) => {
 
@@ -175,6 +176,14 @@ const RoutesList = (props) => {
 
         <ProtectedRoute path={global.links.schedule_assign_department} >
           <ScheduleAssignDepartment role={['supervisor', 'team_leader']} permission={['supervisor_access', 'team_leader_access']}/>
+        </ProtectedRoute>
+
+
+        
+
+        {/* Report Links */}
+        <ProtectedRoute exact path={global.links.team_attendance_summary}>
+          <TeamAttendanceSummary role={['supervisor','client']} permission={['supervisor_access','client_access']} />
         </ProtectedRoute>
 
 

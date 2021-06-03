@@ -1,3 +1,5 @@
+.empsched .card-body{padding:2px !important;border-top:1px solid #ccc !important;}
+.empsched .card{margin-bottom: 5px !important}
 div.schedule_info {
     font-size: 12px;
     text-align: center;
