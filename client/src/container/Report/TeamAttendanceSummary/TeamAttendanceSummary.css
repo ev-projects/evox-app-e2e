@@ -4,8 +4,16 @@
     margin-top: 30px;
 }
 
+.summary-report label {
+    font-size: 12px;
+    text-transform: uppercase;
+    padding:0 !important;
+    margin: 0 0 5px 0 !important;
+    text-align: center;
+    display: block;
+}
 
-
+.computed-summary-container{margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid #ccc}
 
 /* .summary-report > .dtr-list > div > span {
     font-size: 30px;

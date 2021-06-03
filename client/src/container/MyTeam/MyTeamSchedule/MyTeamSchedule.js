@@ -83,7 +83,7 @@ class MyTeamSchedule extends Component {
                       SATURDAY
                     </Col>
                   </Row>
-                    <Row>
+                    <Row className="empsched">
                     {  data.length > 0  ? (<React.Fragment> 
                       {data.map((value,index) => {
                           return <Col>{date_list[index]}{value.map((schedule_info,index) => {
