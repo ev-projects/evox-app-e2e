@@ -84,9 +84,9 @@ class TeamAttendanceSummary
                         $start_date = $date_hired;
                     }
 
-                    // If the termination date is between the date range, replace the end date's value by the termination date
+                    // If the termination date is between the date range, replace the end date's value by the termination date - 1 day for the final day
                     if( is_valid( $termination_date ) && $termination_date->between( $start_date, $end_date) ) {
-                        $end_date = $termination_date;
+                        $end_date = $termination_date->subDays(1);
                     }
 
                     $dtr_collection = $user->dtr( $start_date->format('Y-m-d'), $end_date->format('Y-m-d') )->get();
