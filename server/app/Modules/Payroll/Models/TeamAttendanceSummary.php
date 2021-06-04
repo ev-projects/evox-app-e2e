@@ -198,13 +198,18 @@ class TeamAttendanceSummary
             if( $this->result['total_headcount'] > 0 ){
 
                 // Computation for the total days 
-                $total_days = $this->result['scheduled_employees']['total_count'] + $this->result['planned_leaves']['total_count'] + $this->result['unplanned_leaves']['total_count'];
-                
+                $total_days = $this->result['scheduled_employees']['total_count'] + $this->result['planned_leaves']['total_count'];
+
                 // Computation for Scheduled Employee, Planned Leaves, and Unplanned Leaves if the total days are more than 0
                 if( $total_days > 0 ) {
                     $this->result['scheduled_employees']['total_percentage'] = (float) number_format(($this->result['scheduled_employees']['total_count'] / $total_days) * 100, 2);
                     $this->result['planned_leaves']['total_percentage'] = (float) number_format(($this->result['planned_leaves']['total_count'] / $total_days) * 100, 2);
-                    $this->result['unplanned_leaves']['total_percentage'] = (float) number_format(($this->result['unplanned_leaves']['total_count'] / $total_days) * 100, 2);    
+                    $this->result['unplanned_leaves']['total_percentage'] = (float) number_format(($this->result['unplanned_leaves']['total_count'] / $this->result['scheduled_employees']['total_count']) * 100, 2);    
+                
+                    // Computation for Attendance's total count and percentage.
+                    $this->result['attendance']['total_count'] = $this->result['scheduled_employees']['total_count'] - $this->result['unplanned_leaves']['total_count'];
+                    $this->result['attendance']['total_percentage'] = (float) number_format(($this->result['attendance']['total_count'] / $this->result['scheduled_employees']['total_count']) * 100, 2);    
+
                 }
 
                 // Parse the seconds to time for total rest day work and overtime data.
@@ -243,6 +248,11 @@ class TeamAttendanceSummary
         $this->result = array(
             "total_headcount"  => 0,
             "scheduled_employees"  => [
+                'total_count' => 0,
+                'total_percentage' => 0,
+                'target_percentage' => 95,
+            ],
+            "attendance"  => [
                 'total_count' => 0,
                 'total_percentage' => 0,
                 'target_percentage' => 95,

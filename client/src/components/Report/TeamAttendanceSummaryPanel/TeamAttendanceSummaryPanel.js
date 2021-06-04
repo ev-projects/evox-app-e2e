@@ -9,6 +9,7 @@ const TeamAttendanceSummaryPanel = (props) => {
 
   const { team_attendance_summary } = props;
   const { scheduled_employees, 
+          attendance, 
           unplanned_leaves, 
           planned_leaves, 
           total_rest_day_work, 
@@ -29,17 +30,22 @@ const TeamAttendanceSummaryPanel = (props) => {
             <div className="computed-summary-container">
               <div>
                 <label>Scheduled Headcount</label><br/>
-                <span className={(scheduled_employees?.total_percentage >= scheduled_employees?.target_percentage ? "green" : "red")}>{scheduled_employees?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.scheduled_employees?.total_count})</small> <br/> 
+                <span className={(scheduled_employees?.total_percentage >= scheduled_employees?.target_percentage ? "green" : "red")}>{scheduled_employees?.total_percentage}%</span>&nbsp;<small>({scheduled_employees?.total_count})</small> <br/> 
                 <div className="target"><small>TARGET: {scheduled_employees?.target_percentage}%</small></div>
               </div>
               <div>
+                <label>Attendance</label><br/>
+                <span className={(attendance?.total_percentage >= attendance?.target_percentage ? "green" : "red")}>{attendance?.total_percentage}%</span>&nbsp;<small>({attendance?.total_count})</small> <br/> 
+                <div className="target"><small>TARGET: {attendance?.target_percentage}%</small></div>
+              </div>
+              <div>
                 <label>Unplanned Leaves</label><br/>
-                <span className={(unplanned_leaves?.total_percentage <= unplanned_leaves?.target_percentage ? "green" : "red")}>{unplanned_leaves?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.unplanned_leaves?.total_count})</small> <br/> 
+                <span className={(unplanned_leaves?.total_percentage <= unplanned_leaves?.target_percentage ? "green" : "red")}>{unplanned_leaves?.total_percentage}%</span>&nbsp;<small>({unplanned_leaves?.total_count})</small> <br/> 
                 <div className="target"><small>TARGET: {unplanned_leaves?.target_percentage}%</small></div>
               </div>
               <div>
                 <label>Planned Leaves</label><br/>
-                <span className={(planned_leaves?.total_percentage <= planned_leaves?.target_percentage ? "green" : "red")}>{planned_leaves?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.planned_leaves?.total_count})</small> <br/> 
+                <span className={(planned_leaves?.total_percentage <= planned_leaves?.target_percentage ? "green" : "red")}>{planned_leaves?.total_percentage}%</span>&nbsp;<small>({planned_leaves?.total_count})</small> <br/> 
                 <div className="target"><small>TARGET: {planned_leaves?.target_percentage}%</small></div>
               </div>
             </div>
