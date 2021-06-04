@@ -6,48 +6,56 @@ import Validator from "../../../services/Validator.js";
 import "./TeamAttendanceSummaryPanel.css";
 
 const TeamAttendanceSummaryPanel = (props) => {
-  
-  const { team_attendance_summary } = props;
-  
-return <div className="summary-report">
-        <div className="summary-wrapper">
-          <div className="total-headcount-container">
-            <div>
-              <span>{team_attendance_summary.total_headcount}</span> <br/> 
-              <label>Total Headcount</label>
-            </div>
-          </div>
-          <div className="computed-summary-container">
-            <div>
-              <label>Scheduled Headcount</label>
-              <span className="green">{team_attendance_summary.scheduled_employees?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.scheduled_employees?.total_count})</small> 
-              <div className="target"><small>TARGET: {team_attendance_summary.scheduled_employees?.target_percentage}%</small></div>
-            </div>
-            <div>
-              <label>Unplanned Leaves</label>
-              <span className="red">{team_attendance_summary.unplanned_leaves?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.unplanned_leaves?.total_count})</small> 
-              <div className="target"><small>TARGET: {team_attendance_summary.unplanned_leaves?.target_percentage} %</small></div>
-            </div>
-            <div>
-              <label>Planned Leaves</label>
-              <span className="red">{team_attendance_summary.planned_leaves?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.planned_leaves?.total_count})</small> 
-              <div className="target"><small>TARGET: {team_attendance_summary.planned_leaves?.target_percentage} %</small></div>
-            </div>
-          </div>
-          <div className="computed-payroll-items-container">
-            <div>
-              <label>Rest Day Work</label>
-              <span>{team_attendance_summary.total_rest_day_work?.total_hours}</span>&nbsp;<small>({team_attendance_summary.total_rest_day_work?.total_count})</small> <br/> 
 
+  const { team_attendance_summary } = props;
+  const { scheduled_employees, 
+          unplanned_leaves, 
+          planned_leaves, 
+          total_rest_day_work, 
+          total_overtime,
+          dtr_collection,
+          total_headcount } = team_attendance_summary;
+  
+  let show_list = props.show_list ?? true;
+  
+  return <div className="summary-report">
+          <div className="summary-wrapper">
+            <div className="total-headcount-container">
+              <div>
+                <span>{total_headcount}</span> <br/> 
+                <label>Total Headcount</label>
+              </div>
             </div>
-            <div>
-              <label>Overtime</label>
-              <span>{team_attendance_summary.total_overtime?.total_hours}</span>&nbsp;<small>({team_attendance_summary.total_overtime?.total_count})</small> <br/> 
+            <div className="computed-summary-container">
+              <div>
+                <label>Scheduled Headcount</label><br/>
+                <span className={(scheduled_employees?.total_percentage >= scheduled_employees?.target_percentage ? "green" : "red")}>{scheduled_employees?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.scheduled_employees?.total_count})</small> <br/> 
+                <div className="target"><small>TARGET: {scheduled_employees?.target_percentage}%</small></div>
+              </div>
+              <div>
+                <label>Unplanned Leaves</label><br/>
+                <span className={(unplanned_leaves?.total_percentage <= unplanned_leaves?.target_percentage ? "green" : "red")}>{unplanned_leaves?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.unplanned_leaves?.total_count})</small> <br/> 
+                <div className="target"><small>TARGET: {unplanned_leaves?.target_percentage}%</small></div>
+              </div>
+              <div>
+                <label>Planned Leaves</label><br/>
+                <span className={(planned_leaves?.total_percentage <= planned_leaves?.target_percentage ? "green" : "red")}>{planned_leaves?.total_percentage}%</span>&nbsp;<small>({team_attendance_summary.planned_leaves?.total_count})</small> <br/> 
+                <div className="target"><small>TARGET: {planned_leaves?.target_percentage}%</small></div>
+              </div>
+            </div>
+            <div className="computed-payroll-items-container">
+              <div>
+                <label>Rest Day Work</label><br/>
+                <span>{total_rest_day_work?.total_hours}</span>&nbsp;<small>({total_rest_day_work?.total_count})</small> <br/> 
+              </div>
+              <div>
+                <label>Overtime</label><br/>
+                <span>{total_overtime?.total_hours}</span>&nbsp;<small>({total_overtime?.total_count})</small> <br/> 
+              </div>
             </div>
           </div>
-          </div>
-          <br /><br />
-          {team_attendance_summary?.dtr_collection.length > 0 &&
+          <br />
+          {dtr_collection?.length > 0 &&
               <div className="dtr-list">
               <Table bordered hover>
                 <thead>
@@ -59,7 +67,7 @@ return <div className="summary-report">
                   </tr>
                 </thead>
                 <tbody>
-                  {team_attendance_summary?.dtr_collection.map(function(item){
+                  {dtr_collection?.map(function(item){
                       
                       return (
                       <tr>
