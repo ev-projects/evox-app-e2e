@@ -55,7 +55,7 @@ const TeamAttendanceSummaryPanel = (props) => {
             </div>
           </div>
           <br />
-          {dtr_collection?.length > 0 &&
+          {show_list == true && dtr_collection?.length > 0 &&
               <div className="dtr-list">
               <Table bordered hover>
                 <thead>
