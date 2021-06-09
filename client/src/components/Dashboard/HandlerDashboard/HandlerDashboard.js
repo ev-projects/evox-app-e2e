@@ -6,9 +6,7 @@ import { connect } from 'react-redux';
 import { fetchUser } from '../../../store/actions/userActions' ;
 
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../GridComponent/AdminLte.js';
-import Wrapper from "../../Template/Wrapper";
-import ReactPlayer from 'react-player/lazy';
-import * as yup from "yup";
+import moment from 'moment';
 import BirthdayAnniversary from "../../../components/Dashboard/BirthdayAnniversary";
 import TeamAttendance from "../../../components/Dashboard/TeamAttendance";
 import Holiday from "../../../components/Dashboard/Holiday";
@@ -16,6 +14,9 @@ import Authenticator from "../../../services/Authenticator";
 import * as Yup from 'yup';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import { getTeamAttendanceStatus, getBirthdayAnniv } from '../../../store/actions/dashboard/dashboardActions'
+import { getTeamAttendanceSummary } from '../../../store/actions/report/reportActions'
+import TeamAttendanceSummaryPanel from "../../Report/TeamAttendanceSummaryPanel";
+import Validator from "../../../services/Validator";
 
 
   class HandlerDashboard extends Component {
@@ -50,16 +51,27 @@ import { getTeamAttendanceStatus, getBirthdayAnniv } from '../../../store/action
 
     this.props.getTeamAttendanceStatus( formData  );
     this.props.getBirthdayAnniv( formData  );
+
+    if( Authenticator.checkRole('client') ){
+      this.props.getTeamAttendanceSummary( moment().startOf('week'), moment().endOf('week'), formData  );
+    }
+    
   }
 
   componentWillMount(){
+
+    if( Authenticator.checkRole('client') ){
+      this.props.getTeamAttendanceSummary( moment().startOf('week'), moment().endOf('week'), {} );
+    }
   }
 
 
   departmentSelected = (departmentId) => {
   }
   
-  render = () => {  
+  render = () => {
+
+    const { team_attendance_summary } = this.props.report;
     const { user } = this.props;
     var total = [];
     var validationSchema = Yup.object().shape({});
@@ -99,20 +111,31 @@ import { getTeamAttendanceStatus, getBirthdayAnniv } from '../../../store/action
               </Row>
               <Row>
                 <div className="col-lg-7 col-md-6 col-sm-12">
+                    {Authenticator.checkRole('client') ? 
+                          <Row>
+                            <Content title="This Week's Attendance Summary" col="12">
+                              { Validator.isValid(team_attendance_summary) && 
+                                <TeamAttendanceSummaryPanel team_attendance_summary={team_attendance_summary} show_list={false} />
+                              }
+                            </Content>   
+                          </Row>
+                          :
+                          (null)
+                    }
                     <Row className="team-attendance">  
                         <Content title="Today's attendance" col="12"><TeamAttendance/></Content>                
                     </Row>
                 </div>    
                 <div className="birthday-anniv col-lg-5 col-md-6 col-sm-12"> 
-                  {Authenticator.checkRole('client') ? 
+                    {Authenticator.checkRole('client') ? 
                           <Row>
-                          <Content title="Upcoming holidays" col="12">
+                            <Content title="Upcoming holidays" col="12">
                               <Holiday/>
-                              </Content>   
-                              </Row>
+                            </Content>   
+                          </Row>
                           :
                           (null)
-                      }
+                    }
                     <Row>
                         <Content title="Celebrations" col="12"><BirthdayAnniversary/></Content>  
                     </Row> 
@@ -132,7 +155,8 @@ import { getTeamAttendanceStatus, getBirthdayAnniv } from '../../../store/action
 const mapStateToProps = (state) => {
   return {
       user : state.user,
-      data: state.client
+      data: state.client,
+      report : state.report,
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -140,6 +164,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchUser : () => dispatch( fetchUser() ),
     getTeamAttendanceStatus  : ( params ) => dispatch( getTeamAttendanceStatus( params ) ),
     getBirthdayAnniv         : ( params ) => dispatch( getBirthdayAnniv( params ) ),
+    getTeamAttendanceSummary  : ( start_date, end_date, params ) => dispatch( getTeamAttendanceSummary( start_date, end_date, params ) ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(HandlerDashboard);
