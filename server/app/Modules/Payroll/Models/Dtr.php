@@ -661,8 +661,22 @@ class Dtr extends Model
                     $this->hasSchedule() && 
                     $this->onLeave()->count() <= 0 && 
                     $this->holidays()->count() <= 0 &&
+                    $this->IsTime()  &&
                     ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
     } 
+
+
+    /**
+     * Returns true if the current time is more than the start datetime
+     */
+    public function IsTime(){
+        if( $this->hasFlexibleSchedule() ){
+            return  $this->start_flexy_datetime  < strtotime("now");
+        }
+
+        return $this->start_datetime < strtotime("now");
+    } 
+
     
     /**
      * hasMany Relationship for Dtr Leaves model

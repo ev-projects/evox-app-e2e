@@ -43,7 +43,7 @@ export const fetchTeamUnderDepartment = ( user_id, department_id) => {
         })
         .then(result => {
             dispatch({
-                'type'  : 'FETCH_TEAM_LIST_SUCCESS', 
+                'type'  : 'FETCH_TEAM_UNDER_DEPARTMENT_LIST_SUCCESS', 
                 'list'  : result.data.content
             })
         })
@@ -54,16 +54,17 @@ export const fetchTeamUnderDepartment = ( user_id, department_id) => {
 }
 
 // Fetch Team Request
-export const fetchTeamSchedule = ( ) => {
+export const fetchTeamSchedule = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
             url: "/report/team_schedule?&page=all&link=team_schedule",
+            params : params
         })
         .then(result => {
             dispatch({
                 'type'      : 'FETCH_TEAM_SCHEDULE_SUCCESS', 
-                'list'  : result.data.content
+                'list'  : result.data.content,
             })
         })
         .catch(e => {

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Resources\AnniversaryResources; 
 use App\Modules\Payroll\Resources\TeamAttendanceResources; 
 use App\Modules\Report\Resources\TeamScheduleResources; 
+use App\Modules\Report\Resources\DailyScheduleReources; 
 use App\Modules\Payroll\Resources\HolidayResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -223,19 +224,45 @@ class ReportController extends Controller
     public function team_schedule( Request $request ){
         try {
             $date_from = Carbon::now();
+            $user_list = auth()->user()->users_handled();
 
-            # Starts on Sunday and Ends on Saturday
-            $date_from->setWeekStartsAt(Carbon::SUNDAY);
-            $date_from->setWeekEndsAt(Carbon::SATURDAY);
-            $filter = array();
+            // Team Filter
+            if( is_valid( request()->get('team_id') ) ) {
+                $user_list->join('team_users', 'team_users.user_id', '=', 'users.id')->where('team_id', '=', request()->get('team_id'));
+            }else{
+                // Department Filter
+                if( is_valid( request()->get('department_id') ) ) {
+                    $user_list->where('department_id', '=', request()->get('department_id'));
+                }
+            }
 
+            // Filter by name string
+            if( is_valid( request()->get('name') ) ) {
+                $user_list->whereRaw("(first_name LIKE '%".request()->get('name')."%' OR last_name LIKE '%".request()->get('name')."%')");
+            }
 
-            # Within this week
-            $time_from = $date_from->startOfWeek()->format('Y-m-d H:i');
-            $time_to = $date_from->endOfWeek()->format('Y-m-d H:i');
-            $user_list = auth()->user()->users_handled()->get();
+            if(request()->get('page')=="weekly"){
+                $date_from->setWeekStartsAt(Carbon::SUNDAY);
+                $date_from->setWeekEndsAt(Carbon::SATURDAY);
+
+                $time_from = $date_from->startOfWeek()->format('Y-m-d');
+                $time_to = $date_from->endOfWeek()->format('Y-m-d');
+            }elseif(request()->get('page')=="monthly"){
+                $time_from = $date_from->firstOfMonth()->format('Y-m-d');
+                $time_to = $date_from->endOfMonth()->format('Y-m-d');
+            }elseif(request()->get('page')=="daily"){
+
+                $time_from = $date_from->startOfDay()->format('Y-m-d');
+                $time_to = $date_from->endOfDay()->format('Y-m-d');
+                $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+
+                return success_response(
+                    trans('messages.'.__FUNCTION__.'_success'), 
+                    new DailyScheduleReources($result,$date_from )
+                );
+            }
             
-            $result = $this->dtr->get_dtr_logs( $user_list, $time_from,  $time_to);
+            $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
@@ -246,6 +273,7 @@ class ReportController extends Controller
         }
     }
     
+
 
 
     # This function registers User to the system

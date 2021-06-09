@@ -949,13 +949,37 @@ class DtrRepository implements DtrRepositoryInterface{
         try{
             // Get the DTR Collection via the User ID from the collection and the date between the start_date and end_date. Added sorting for the Emp number, First and Last name, then DTR's date.
             $dtr_collection = Dtr::whereIn('user_id', $user_collection->pluck('id')->toArray())
-                                   ->whereBetween("date", array($start_date, $end_date))
                                    ->join('users', 'users.id','=','dtrs.user_id');
 
+                //  This is for My Team Schedule
                 if( request()->get('link') == 'team_schedule' ){
+                    if( request()->get('page')== 'daily' ){
+                        $dtr_collection ->whereRaw("
+                           (    
+                                start_datetime BETWEEN ".strtotime($start_date)." AND ".strtotime($end_date)."
+                                    OR
+                                end_datetime BETWEEN ".strtotime($start_date)." AND ".strtotime($end_date)."
+                                    OR
+                                date BETWEEN '".$start_date."' AND  '".$end_date."' 
+                            )
+                        ");
+                    }else{
+                        $dtr_collection ->whereRaw("
+                        (    
+                             date BETWEEN '".$start_date."' AND  '".$end_date."' 
+                         )
+                     ");
+                    }
+
+
                     $dtr_collection ->orderBy('dtrs.date','asc')
+                                    ->orderBy('dtrs.start_datetime','asc')
                                     ->orderBy('users.emp_num','asc');
+
+
                 }else{
+                    $dtr_collection->whereBetween("date", array($start_date, $end_date));
+
                     $dtr_collection->orderBy('users.emp_num','asc')
                                    ->orderBy('users.first_name','asc')
                                    ->orderBy('users.last_name','asc')
@@ -964,7 +988,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 $dtr_collection->select('dtrs.*');
                 // If the parameter 'page' value is 'all', Get the whole DTR Collection
-                if( request()->get('page') == 'all' ){
+                if( request()->get('pagination') == 'all' ){
                     $dtr_collection = $dtr_collection->get();
                     
                 // If the parameter 'page' value is numeric, fetch the paginated list with offset.
