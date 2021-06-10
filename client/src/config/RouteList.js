@@ -32,6 +32,8 @@ import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
 import WeeklySchedule from "../container/MyTeam/MyTeamSchedule/Weekly";
 import MonthlySchedule from "../container/MyTeam/MyTeamSchedule/Monthly";
 import DailySchedule from "../container/MyTeam/MyTeamSchedule/Daily";
+import CustomSchedule from "../container/MyTeam/MyTeamSchedule/Custom";
+
 import MyRequests from "../container/MyRequests/MyRequests";
 
 import DtrSummary from "../container/MyTeam/DtrSummary";
@@ -147,9 +149,13 @@ const RoutesList = (props) => {
           <MonthlySchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
         </ProtectedRoute> 
 
-        <ProtectedRoute exact path={global.links.monthly_daily_schedule}>
+        <ProtectedRoute exact path={global.links.daily_team_schedule}>
           <DailySchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
-        </ProtectedRoute>
+        </ProtectedRoute>  
+
+        <ProtectedRoute exact path={global.links.custom_team_schedule}>
+          <CustomSchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+        </ProtectedRoute> 
 
         <ProtectedRoute exact path={global.links.dtr_summary}>
           <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />

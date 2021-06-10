@@ -9,6 +9,7 @@ import Validator from "../../../services/Validator";
 import Authenticator from "../../../services/Authenticator";
 import PageNotFound from "../../../container/PageNotFound";
 import PageNotAllowed from "../../../container/PageNotAllowed";
+import ErrorHandler from "../../../container/ErrorHandler";
 
 const Wrapper = (props) => {
   
@@ -50,7 +51,7 @@ const Wrapper = (props) => {
 
     return  (
       allow_to_show ? 
-        <div>{props.children}</div>
+        <ErrorHandler>{props.children}</ErrorHandler>
       : 
         <PageNotAllowed />
     ) 

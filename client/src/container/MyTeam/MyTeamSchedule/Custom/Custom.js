@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Card,Col,Badge,Table,Tabs,Tab,Row,Button } from 'react-bootstrap';
 import { connect,dispatch } from 'react-redux';
-import "./Weekly.css";
+import "./Custom.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
@@ -9,17 +9,19 @@ import * as Yup from 'yup';
 import { fetchTeamSchedule } from '../../../../store/actions/filters/myTeamActions';
 import { fetchTeamUnderDepartment } from '../../../../store/actions/filters/myTeamActions';
 import { Link } from "react-router-dom";
+import { InputDate,InputTime   } from '../../../../components/DatePickerComponent/DatePicker.js';
 
-class Weekly extends Component {
+class Custom extends Component {
 
   constructor(props){
     super(props);
+
     this.initialState = {
         filters: {
-          department_id : this.props.user.departments_handled.length > 0?  this.props.user.departments_handled[0].id : null,  
+          department_id : this.props.user.departments_handled.length > 0 ?  this.props.user.departments_handled[0].id : null,  
           name : this.props.filters?.name ?? null,  
           team_id :this.props.filters?.team_id ?? null, 
-          page : "weekly",
+          page : "monthly",
           pagination: "all"
       }
     }
@@ -44,7 +46,7 @@ class Weekly extends Component {
 
   componentDidMount(){
     var params = this.initialState.filters;
-    this.props.fetchTeamSchedule( params )
+    this.props.fetchTeamSchedule(params)
   }
 
   departmentSelected = (departmentId) => {
@@ -59,10 +61,23 @@ class Weekly extends Component {
   render = () => {  
   var { team_list } = this.props.team;
 
-  var { date_list, data } = this.props.team.weekly;
-  
+  var { date_list, data, week_list } = this.props.team.monthly;
+  console.log(this.props.team);
+  const week_dictionary = {
+    "Sunday": 0,
+    "Monday" : 1,
+    "Tuesday" : 2, 
+    "Wednesday" : 3,
+    "Thursday" : 4,
+    "Friday" :5,
+    "Saturday" : 6,
+  } ;
+
+  var length = data.length - 1 ;
   const validationSchema = Yup.object().shape({
   });
+
+  var day_number = 0;
 
     return(<Formik 
       enableReinitialize
@@ -80,18 +95,24 @@ class Weekly extends Component {
                 <Link className="nav-link" to={ global.links.daily_schedule }>
                   Daily
                 </Link>
-                <Link className="nav-link active" to={ global.links.weekly_team_schedule }>
+                <Link className="nav-link" to={ global.links.weekly_team_schedule }>
                   Weekly
                 </Link>
-                <Link className="nav-link" to={ global.links.monthly_team_schedule }>
-                  Monthly
+                <Link className="nav-link active" to={ global.links.monthly_team_schedule }>
+                 Monthly
                 </Link>
               </nav>
-            </div>  
+            </div>   
             <ContainerBody>  
-              
                 <Content col="12">
-                  <Row>
+                <Row  className="filters">  
+                    <Col className="date-range"> 
+                      <div className="form-group">
+                        <label>Date Range:</label>
+                        <InputDate name="valid_from" value={values.valid_from}/>
+                        <InputDate name="valid_to" value={values.valid_to}/>
+                      </div>
+                    </Col>
                   <Col className="dept"> 
                       <div className="form-group ">
                           
@@ -161,49 +182,72 @@ class Weekly extends Component {
                       SATURDAY
                     </Col>
                   </Row>
-                    <Row  className="empsched">
                     {  data.length > 0  ? (<React.Fragment> 
-                      {data[0].map((value,index) => {
-                          return <Col>{date_list[index]}{value.map((schedule_info,index) => {
+                       {data.map((week,week_index) => {
+                          var first_week_offset = '';
+                          var last_week_offset = '';
+                          var cols;
 
-                            var card_class = '';
-                            var card_text = ''; 
-
-                            if(schedule_info.type.includes("early")){
-                              card_class = 'early';
-                              card_text = schedule_info.Schedule[0];                           
-                            }else if(schedule_info.type.includes("on_leave")){
-                              card_class = 'on_leave';
-                              card_text = 'On Leave';
-                            }else if(schedule_info.type.includes("holiday")){
-                              card_class = 'holiday';
-                              card_text = 'Holiday';
-                            }else if(schedule_info.type.includes("rest_day")){
-                              card_class = 'rest_day';
-                              card_text = 'Rest Day';
-                            }else if(schedule_info.type.includes("late")){
-                              card_class = 'late';
-                              card_text = schedule_info.Schedule[0]; 
-                            }else if(schedule_info.type.includes("absent")){
-                              card_class = 'absent';
-                              card_text = schedule_info.Schedule[0]; 
-                            }else if(value.type.includes("no_schedule")){
-                              card_class = 'no_schedule';
-                              card_text = "No Schedule";
+                          // FIRST WEEK OFFSET
+                          if (week_index==0)
+                          {
+                            for ( var i = 0; i <  week_dictionary[[week_list[0][0]]]; i++) {
+                              cols =<React.Fragment> {cols} <Col></Col></React.Fragment>;
                             }
 
-                              return <Card>
-                                <div className={"card-body "+card_class}>
-                                  <div class="schedule_info">
-                                    <div>{schedule_info.Name}</div>
-                                    <div> &nbsp; {card_text} &nbsp;</div>
-                                  </div>
-                              </div>
-                              </Card>;
-                          })}</Col>;
-                      })}
+                            first_week_offset =<React.Fragment>{cols}</React.Fragment>;
+
+                            // LAST WEEK OFFSET
+                          }else if(length==week_index){
+                            for ( var i = 6; i >  week_dictionary[[week_list[length][1]]]; i--) {
+                              cols =<React.Fragment> {cols} <Col></Col></React.Fragment>;
+                            }
+
+                            last_week_offset =<React.Fragment>{cols}</React.Fragment>;
+                          }
+                          
+                          return  <React.Fragment><Row  className="empsched"> {first_week_offset} {week.map((day,day_index) => {
+                            day_number = day_number + 1;
+                            return <Col>{date_list[day_number-1]}
+                            {day.map((schedule_info,index) => {
+                              var card_class = '';
+                              var card_text = ''; 
+  
+                              if(schedule_info.type.includes("early")){
+                                card_class = 'early';
+                                card_text = schedule_info.Schedule[0];                           
+                              }else if(schedule_info.type.includes("on_leave")){
+                                card_class = 'on_leave';
+                                card_text = 'On Leave';
+                              }else if(schedule_info.type.includes("holiday")){
+                                card_class = 'holiday';
+                                card_text = 'Holiday';
+                              }else if(schedule_info.type.includes("rest_day")){
+                                card_class = 'rest_day';
+                                card_text = 'Rest Day';
+                              }else if(schedule_info.type.includes("late")){
+                                card_class = 'late';
+                                card_text = schedule_info.Schedule[0]; 
+                              }else if(schedule_info.type.includes("absent")){
+                                card_class = 'absent';
+                                card_text = schedule_info.Schedule[0]; 
+                              }else if(schedule_info.type.includes("no_schedule")){
+                                card_class = 'no_schedule';
+                                card_text = "No Schedule";
+                              }
+  
+                                return <Card>
+                                  <div className={"card-body "+card_class}>
+                                    <div class="schedule_info">
+                                      <div>{schedule_info.Name}</div>
+                                      <div> &nbsp; {card_text} &nbsp;</div>
+                                    </div>
+                                </div>
+                                </Card>;
+                            })}</Col> 
+                          })}{last_week_offset} </Row></React.Fragment>;
+                      })} 
                     </React.Fragment>) : (<React.Fragment></React.Fragment>)}
-                    </Row>
                 </Content>
             </ContainerBody>  
             </ContainerWrapper>
@@ -213,23 +257,22 @@ class Weekly extends Component {
     
       </Formik>);
   }
- 
   }
 
-
+  
   const mapStateToProps = (state) => {
     return {
-      team : state.myTeamList,
+      team : state.myTeamList
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchTeamSchedule : ( params  ) => dispatch( fetchTeamSchedule( params ) ),
+      fetchTeamSchedule : (  params ) => dispatch( fetchTeamSchedule(  params ) ),
       fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
     }
   }
   
-  export default connect(mapStateToProps, mapDispatchToProps)(Weekly);
+  export default connect(mapStateToProps, mapDispatchToProps)(Custom);
 
 
 
