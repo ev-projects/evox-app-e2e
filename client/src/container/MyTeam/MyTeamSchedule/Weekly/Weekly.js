@@ -8,6 +8,7 @@ import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } fro
 import * as Yup from 'yup';
 import { fetchTeamSchedule } from '../../../../store/actions/filters/myTeamActions';
 import { fetchTeamUnderDepartment } from '../../../../store/actions/filters/myTeamActions';
+import { Link } from "react-router-dom";
 
 class Weekly extends Component {
 
@@ -58,7 +59,7 @@ class Weekly extends Component {
   render = () => {  
   var { team_list } = this.props.team;
 
-  var { date_list, data } = this.props.team.team_schedule;
+  var { date_list, data } = this.props.team.weekly;
   
   const validationSchema = Yup.object().shape({
   });
@@ -74,17 +75,19 @@ class Weekly extends Component {
       <Wrapper {...this.props} >
             <ContainerWrapper>
             <h2>My Team Schedule</h2> 
-  
             <div className="request-tab">
-                <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
-                  <Tab eventKey="all" title="Today" >
-                  </Tab>
-                  <Tab eventKey="alteration" title="Weekly" >
-                  </Tab>
-                  <Tab eventKey="overtime" title="Monthly">
-                  </Tab>
-                </Tabs> 
-                </div>  
+              <nav class="nav nav-tabs" role="tablist">
+                <Link className="nav-link" to={ global.links.daily_schedule }>
+                  monthly_daily_schedule
+                </Link>
+                <Link className="nav-link active" to={ global.links.weekly_team_schedule }>
+                  Weekly
+                </Link>
+                <Link className="nav-link" to={ global.links.monthly_team_schedule }>
+                  Monthly
+                </Link>
+              </nav>
+            </div>  
             <ContainerBody>  
               
                 <Content col="12">
@@ -184,7 +187,7 @@ class Weekly extends Component {
                             }else if(schedule_info.type.includes("absent")){
                               card_class = 'absent';
                               card_text = schedule_info.Schedule[0]; 
-                            }else if(schedule_info.type.includes("no_schedule")){
+                            }else if(value.type.includes("no_schedule")){
                               card_class = 'no_schedule';
                               card_text = "No Schedule";
                             }

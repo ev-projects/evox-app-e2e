@@ -8,6 +8,7 @@ import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } fro
 import * as Yup from 'yup';
 import { fetchTeamSchedule } from '../../../../store/actions/filters/myTeamActions';
 import { fetchTeamUnderDepartment } from '../../../../store/actions/filters/myTeamActions';
+import { Link } from "react-router-dom";
 
 class Monthly extends Component {
 
@@ -59,8 +60,8 @@ class Monthly extends Component {
   render = () => {  
   var { team_list } = this.props.team;
 
-  var { date_list, data,week_list } = this.props.team.team_schedule;
-  
+  var { date_list, data, week_list } = this.props.team.monthly;
+  console.log(this.props.team);
   const week_dictionary = {
     "Sunday": 0,
     "Monday" : 1,
@@ -89,15 +90,18 @@ class Monthly extends Component {
             <ContainerWrapper>
             <h2>My Team Schedule</h2> 
             <div className="request-tab">
-                <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
-                  <Tab eventKey="all" title="Today" >
-                  </Tab>
-                  <Tab eventKey="alteration" title="Weekly" >
-                  </Tab>
-                  <Tab eventKey="overtime" title="Monthly">
-                  </Tab>
-                </Tabs> 
-                </div>  
+              <nav class="nav nav-tabs" role="tablist">
+                <Link className="nav-link" to={ global.links.daily_schedule }>
+                  Daily
+                </Link>
+                <Link className="nav-link" to={ global.links.weekly_team_schedule }>
+                  Weekly
+                </Link>
+                <Link className="nav-link active" to={ global.links.monthly_team_schedule }>
+                 Monthly
+                </Link>
+              </nav>
+            </div>   
             <ContainerBody>  
                 <Content col="12">
                 <Row>

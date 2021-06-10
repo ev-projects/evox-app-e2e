@@ -6,9 +6,11 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../..
 import Wrapper from "../../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import * as Yup from 'yup';
+import { Link } from "react-router-dom";
 import { fetchTeamSchedule } from '../../../../store/actions/filters/myTeamActions';
 import { fetchTeamUnderDepartment } from '../../../../store/actions/filters/myTeamActions';
 import moment from 'moment';
+import ErrorHandler from "../../../ErrorHandler";
 
 class Daily extends Component {
 
@@ -60,7 +62,7 @@ class Daily extends Component {
   render = () => {  
   var { team_list } = this.props.team;
 
-  var { data } = this.props.team.team_schedule;
+  var { daily } = this.props.team;
 
   const validationSchema = Yup.object().shape({
   });
@@ -74,19 +76,22 @@ class Daily extends Component {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
       <Wrapper {...this.props} >
+        <ErrorHandler></ErrorHandler>
             <ContainerWrapper>
             <h2>My Team Schedule</h2> 
-  
             <div className="request-tab">
-                <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
-                  <Tab eventKey="all" title="Today" >
-                  </Tab>
-                  <Tab eventKey="alteration" title="Weekly" >
-                  </Tab>
-                  <Tab eventKey="overtime" title="Monthly">
-                  </Tab>
-                </Tabs> 
-                </div>  
+              <nav class="nav nav-tabs" role="tablist">
+                <Link className="nav-link active" to={ global.links.daily_schedule }>
+                  Daily
+                </Link>
+                <Link className="nav-link" to={ global.links.weekly_team_schedule }>
+                  Weekly
+                </Link>
+                <Link className="nav-link" to={ global.links.monthly_team_schedule }>
+                 Monthly
+                </Link>
+              </nav>
+            </div>  
             <ContainerBody>  
                 <Content col="12">
                   <Row>
@@ -137,12 +142,12 @@ class Daily extends Component {
                     </Col>
                     </Row>
                   
-                    {  data.length > 0  ? (<React.Fragment> 
+                    {  daily.length > 0  ? (<React.Fragment> 
                       <Row className="Hourframe">
                   <div>12AM</div><div>1AM</div><div>2AM</div><div>3AM</div><div>4AM</div><div>5AM</div><div>6AM</div><div>7AM</div><div>8AM</div><div>9AM</div><div>10AM</div><div>11AM</div><div>12NN</div>
                   <div>1PM</div><div>2PM</div><div>3PM</div><div>4PM</div><div>5PM</div><div>6PM</div><div>7PM</div><div>8PM</div><div>9PM</div><div>10PM</div><div>11PM</div><div>12AM</div>
                   </Row>
-                      {data.map((value,index) => {
+                      {daily.map((value,index) => {
                         var first_div = {
                           width: "0",
                           content: "",

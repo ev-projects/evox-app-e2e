@@ -62,10 +62,22 @@ export const fetchTeamSchedule = ( params = null ) => {
             params : params
         })
         .then(result => {
-            dispatch({
-                'type'      : 'FETCH_TEAM_SCHEDULE_SUCCESS', 
-                'list'  : result.data.content,
-            })
+            if(params.page=="daily"){
+                dispatch({
+                    'type'      : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
+                    'daily'  : result.data.content,
+                })
+            }else if(params.page=="weekly"){
+                dispatch({
+                    'type'      : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
+                    'weekly'  : result.data.content,
+                })
+            }else if(params.page=="monthly"){
+                dispatch({
+                    'type'      : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
+                    'monthly'  : result.data.content,
+                })
+            }
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
