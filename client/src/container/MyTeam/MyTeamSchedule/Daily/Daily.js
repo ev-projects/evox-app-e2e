@@ -75,7 +75,6 @@ class Daily extends Component {
       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
       <form onSubmit={handleSubmit}>
       <Wrapper {...this.props} >
-        <ErrorHandler></ErrorHandler>
             <ContainerWrapper>
             <h2>My Team Schedule</h2> 
             <div className="request-tab">
