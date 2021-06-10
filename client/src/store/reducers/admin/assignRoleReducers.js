@@ -6,7 +6,7 @@ const initState = {
     isRolesLoaded: false,
     roles: null,
 
-    isUserRolesLoaded: false,
+    isUserRolesPermissionsLoaded: false,
     userRole: null,
 
     isUserListLoaded: false,
@@ -31,14 +31,13 @@ const assignRoleReducers = (state = initState, action) => {
                 isUserListLoaded : true,
             };
             break;
-        case "FETCH_USER_ROLE":
+        case "FETCH_USER_ROLE_AND_PERMISSION":
             return {
                 userRole : action.userRole,
-                isUserRolesLoaded : true,
+                userPermission : action.userPermission,
+                isUserRolesPermissionsLoaded : true,
             };
-
-          
-                break;
+            break;
         default:
             result = state;
     }

@@ -85,7 +85,7 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::get('team_list/{department_id}', 'UserController@my_team_list_under_department');//->middleware('auth.apikey');
     
     # Get the Role of the user
-    Route::get('/role/', 'UserController@get_user_role');
+    Route::get('/role_permission/', 'UserController@get_user_role_permission');
 
     # Change Password Post request
     Route::post('tick_dpa', 'UserController@tick_dpa');//->middleware('auth.apikey');

@@ -185,7 +185,7 @@ class DailyTimeRecord extends Component {
               <Content col="12" title="Daily Time Record" subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
               
               <BackButton style={{'float': 'right'}} {...this.props}/>
-              { ! Authenticator.check( 'client', 'client_access' ) && method=="approval" ? 
+              { Authenticator.check(['supervisor', 'team_leader'], ['manage_schedule', 'team_leader_access']) && method=="approval" ? 
                 <Button type="button" className="btn-update-sched btn btn-secondary float-right">
                   <Link to={{
                         pathname: global.links.schedule_assign_user + this.props.params.id,

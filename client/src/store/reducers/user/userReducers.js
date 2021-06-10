@@ -67,7 +67,17 @@ const userReducer = (state = initState, action) => {
             }
             break;
 
-        case "UPDATE_USER_DEPARTMENT_HANDLED":
+        case "UPDATE_USER":
+            // Update the User if the currently logged user is the one being updated.
+            if( state.id == action.user?.id ) {
+                return {
+                    ...state,
+                    ...action.user
+                }
+            }
+            break;
+
+        case "UPDATE_USER":
             const user_index = action.department.department_handlers.findIndex((user) => user.emp_num === state.emp_num)
             const department_index = state.departments_handled.findIndex((department) => department.id === action.department.id)
 

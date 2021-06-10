@@ -230,34 +230,40 @@ const MyTeamListTable = (props) => {
                       &nbsp;&nbsp;&nbsp;
                       { !Authenticator.checkRole('client') ? 
                         <span>
-                          <Link to={{
-                              pathname: global.links.dtr + user.id,
-                              resetInitialState: true
-                            }}
-                              title="View DTR"
-                          >
-                            <i className="fa fa-clock-o ev-color" aria-hidden="true"></i>
-                          </Link>
+                          { Authenticator.check('supervisor', 'view_employee_dtr') &&
+                            <Link to={{
+                                pathname: global.links.dtr + user.id,
+                                resetInitialState: true
+                              }}
+                                title="View DTR"
+                            >
+                              <i className="fa fa-clock-o ev-color" aria-hidden="true"></i>
+                            </Link>
+                          }
                           &nbsp;&nbsp;
-                          <Link to={{
-                                  pathname: global.links.schedule_assign_user + user.id
-                                }}
-                              title="View Schedule"
-                          >
-                            <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
-                          </Link>
+                          { Authenticator.check('supervisor', 'manage_schedule') &&
+                            <Link to={{
+                                    pathname: global.links.schedule_assign_user + user.id
+                                  }}
+                                title="View Schedule"
+                            >
+                              <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
+                            </Link>
+                          }
                           &nbsp;&nbsp;
                         </span>
                         : 
                         null
                       }
-                      <Link to={{
-                              pathname: global.links.profile + user.id
-                            }}
-                          title="View Profile"
-                      >
-                        <i className="fa fa-info ev-color" aria-hidden="true"></i>
-                      </Link>
+                      { Authenticator.check('supervisor', ['view_employee_personal_info','view_employee_job_info','view_employee_time_off']) &&
+                        <Link to={{
+                                pathname: global.links.profile + user.id
+                              }}
+                            title="View Profile"
+                        >
+                          <i className="fa fa-info ev-color" aria-hidden="true"></i>
+                        </Link>
+                      }
                     </td>
                   </tr>         
                 })}
