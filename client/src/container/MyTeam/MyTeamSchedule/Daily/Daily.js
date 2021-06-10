@@ -10,7 +10,6 @@ import { Link } from "react-router-dom";
 import { fetchTeamSchedule } from '../../../../store/actions/filters/myTeamActions';
 import { fetchTeamUnderDepartment } from '../../../../store/actions/filters/myTeamActions';
 import moment from 'moment';
-import ErrorHandler from "../../../ErrorHandler";
 
 class Daily extends Component {
 
