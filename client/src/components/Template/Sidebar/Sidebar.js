@@ -216,12 +216,7 @@ const Sidebar = (props) => {
                               <p>DTR Logs</p>
                             </Link>
                           </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.weekly_team_schedule} >
-                              <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
-                              <p> Team Schedule </p> 
-                            </Link>
-                          </li> 
+
                         </ul>
                       </li>
                     :
@@ -288,7 +283,41 @@ const Sidebar = (props) => {
                                 <p> Schedule </p> 
                               </Link>
                             </li>
+                            {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
+                            <li className="nav-item has-treeview ">
+                              <a className="nav-link" >
+                                <i className="nav-icon fa fa-calendar-o" />
+                                <p>
+                                  Team Schedule
+                                  <i className="right fa fa-chevron-left" />
+                                </p>
+                              </a>
+                              <ul className="nav nav-treeview">
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.daily_schedule }>
+                                    <i className="nav-icon fa fa-list nav-icon" />
+                                    <p>Daily</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.weekly_team_schedule }>
+                                    <i className="nav-icon fa fa-calendar-check-o nav-icon" />
+                                    <p style={{'fontSize':13}}>Weekly</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.monthly_team_schedule }>
+                                  <i className="nav-icon fa fa-calendar-check-o nav-icon" />
+                                    <p>Monthly</p>
+                                  </Link>
+                                </li>
+                              </ul>
+                            </li>
+                            :
+                            null
+                          }
                           </ul>
+                          
                         </li>
                         :
                         null

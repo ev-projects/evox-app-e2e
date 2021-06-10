@@ -61,8 +61,6 @@ class Daily extends Component {
   var { team_list } = this.props.team;
 
   var { data } = this.props.team.team_schedule;
-    
-  var today = moment("January 25, 2021");
 
   const validationSchema = Yup.object().shape({
   });
@@ -138,11 +136,12 @@ class Daily extends Component {
                     </div>
                     </Col>
                     </Row>
-                  <Row className="Hourframe">
+                  
+                    {  data.length > 0  ? (<React.Fragment> 
+                      <Row className="Hourframe">
                   <div>12AM</div><div>1AM</div><div>2AM</div><div>3AM</div><div>4AM</div><div>5AM</div><div>6AM</div><div>7AM</div><div>8AM</div><div>9AM</div><div>10AM</div><div>11AM</div><div>12NN</div>
                   <div>1PM</div><div>2PM</div><div>3PM</div><div>4PM</div><div>5PM</div><div>6PM</div><div>7PM</div><div>8PM</div><div>9PM</div><div>10PM</div><div>11PM</div><div>12AM</div>
                   </Row>
-                    {  data.length > 0  ? (<React.Fragment> 
                       {data.map((value,index) => {
                         var first_div = {
                           width: "0",
