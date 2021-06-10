@@ -11,6 +11,7 @@ import Wrapper from "../../../components/Template/Wrapper";
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import { fetchDtrSummary,exportDtrSummary } from '../../../store/actions/dtr/dtrSummaryActions';
 import { Form  } from 'react-bootstrap';
+import Authenticator from "../../../services/Authenticator.js";
 
 class DtrSummary extends Component {
 
@@ -149,16 +150,19 @@ class DtrSummary extends Component {
                       <div className="form-group">
                       <label> </label>
                         <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
-                        <Dropdown className="export-drop-down">
-                          <Dropdown.Toggle variant="success" id="dropdown-basic">
-                            <i className="fa fa-download" /> Export
-                          </Dropdown.Toggle>
+                        
+                        { Authenticator.check('supervisor', 'allow_dtr_summary_export') &&
+                          <Dropdown className="export-drop-down">
+                            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                              <i className="fa fa-download" /> Export
+                            </Dropdown.Toggle>
 
-                          <Dropdown.Menu>
-                            <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
-                            <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
+                            <Dropdown.Menu>
+                              <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
+                              <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                        }
                       </div>
 
                      

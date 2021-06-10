@@ -55,7 +55,7 @@ global.links = {
     sync_biometrics                 :  "/app/admin/SyncBiometrics/",
     sync_bhr_leaves                 :  "/app/admin/SyncBhrLeaves/",
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
-    assign_role                     :  "/app/admin/AssignRole/",
+    assign_role_permission          :  "/app/admin/AssignRolePermission/",
     register_user                   :  "/app/admin/RegisterUser/",
 };
 

@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect ,setState } from "react";
 import DatePicker from "react-datepicker";
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
-import "./AssignRole.css";
+import "./AssignRolesPermissions.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -10,35 +10,34 @@ import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
-import { fetchUser,fetchUserRole,assignRole } from '../../../store/actions/admin/assignRoleActions'
+import { fetchUser,fetchUserRolePermission,assignRolesPermissions } from '../../../store/actions/admin/assignRoleActions'
 import { fetchRoleList } from '../../../store/actions/lookup/lookupListActions';
 import Formatter from "../../../services/Formatter";
 
 
-class AssignRole extends Component {
+class AssignRolesPermissions extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { roles : [] , userLists : null ,  userRole : [] , selectedUser : null };
+		this.state = { 
+			roles : [], 
+			userLists : null,  
+			userRole : [], 
+			userPermission : [], 
+			selectedUser : null 
+		};
 	  }
 
 
 	onSubmitHandler = (values) => {
-		var formData = {roles:[],permissions:[]};
-		var userRoles = this.state.roles;
 
-		// Load the Loaded Roles with Permission for the update
-		for (var role_key in userRoles) {
-			if(values.role.includes(userRoles[role_key].name)){
-				formData.roles.push(userRoles[role_key].name);
-				for (var permission_key in userRoles[role_key].permissions) {
-					formData.permissions.push(userRoles[role_key].permissions[permission_key].name);
-				}
-			}
+		// Set parameters for the  calling Assinging Roles and Permissions
+		var user_id = values.selectedUser;
+		var formData = {
+			roles : values.roles,
+			permissions : values.permissions
+		};
 
-		}
-		
-		var selectedUser = values.selectedUser;
-		this.props.assignRole(selectedUser,formData);
+		this.props.assignRolesPermissions(user_id, formData);
 	}
 
 	// Function for updating Selected User on state
@@ -60,8 +59,9 @@ class AssignRole extends Component {
 		this.state.userLists = this.props.userLists;
 	}
 
-	if(this.props.isUserRolesLoaded){
+	if(this.props.isUserRolesPermissionsLoaded){
 		this.state.userRole = this.props.userRole;
+		this.state.userPermission = this.props.userPermission;
 	}
 
 	return(<Formik 
@@ -70,7 +70,8 @@ class AssignRole extends Component {
 		validationSchema={validationSchema} 
 		initialValues={{
 			selectedUser: this.state.selectedUser, 
-			role: this.state.userRole,
+			roles: this.state.userRole,
+			permissions: this.state.userPermission,
 		}}>
 	  {
 	  ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
@@ -78,7 +79,7 @@ class AssignRole extends Component {
 		        <Wrapper {...this.props} >
               <ContainerWrapper>
                   <ContainerBody>
-                      <Content col="6" title="Assign Role to a User" >
+                      <Content col="6" title="Assign Roles/Permissions to a User" >
 					  	<Col> 
 							<div className="form-group">
 								<label>Search Name:</label>
@@ -98,7 +99,7 @@ class AssignRole extends Component {
 											className="form-control" 
 											name="selectedUser"
 											value={values.selectedUser}
-											onChange={(e) => { this.handleChange(e); this.props.fetchUserRole(e.target.value); }}
+											onChange={(e) => { this.handleChange(e); this.props.fetchUserRolePermission(e.target.value); }}
 											style={{ display: 'block' }}
 										>
 										<option    label="Select Name" />
@@ -114,11 +115,24 @@ class AssignRole extends Component {
 								
 							 {  this.state.userLists?.length > 0  && this.state.selectedUser != null ? (<div>
 							 <div className="form-group">
-								<label>Select Role:</label>
+								<label>Select Role and Permission:</label>
 								{ this.state.roles.map(function(role){
-									return 	<label style={{ display: 'block' }}>
-												<Field type="checkbox" label="Admin" name="role" value={role.name} /> &nbsp; { Formatter.slug_to_title(role.name) }
-											</label>;
+									return 	<React.Fragment>
+										<label className="role-label">
+												<Field type="checkbox" label={role.name} name="roles" value={role.name} /> &nbsp; { Formatter.slug_to_title(role.name) }
+										</label>
+										{  	role.permissions.length > 0 && 
+											<div className="role-permissions">
+												{	role.permissions.map(function(permission){
+													return <label className="permission-label col-6">
+																<Field type="checkbox" label={permission.label} name="permissions" value={permission.name} /> &nbsp; { permission.label }
+															</label>
+													})
+												}
+												<hr/>
+											</div>
+										}
+									</React.Fragment>;
 								})}
 							</div>
 							<Button className="display-block" variant="primary" type="submit">
@@ -148,25 +162,26 @@ class AssignRole extends Component {
   const mapStateToProps = (state) => {
 	 
 	return {
-		userLists     			: state.assignRole.userLists, 
-		isUserListLoaded     	: state.assignRole.isUserListLoaded,
+		userLists     						: state.assignRole.userLists, 
+		isUserListLoaded     				: state.assignRole.isUserListLoaded,
 
-		// isRolesLoaded     		: state.assignRole.isRolesLoaded,
-		// roles     				: state.assignRole.roles,
-		roles             		: state.lookup.roles,
+		// isRolesLoaded     				: state.assignRole.isRolesLoaded,
+		// roles     						: state.assignRole.roles,
+		roles             					: state.lookup.roles,
 
-		userRole     			: state.assignRole.userRole,
-		isUserRolesLoaded     	: state.assignRole.isUserRolesLoaded,
+		userRole     						: state.assignRole.userRole,
+		userPermission     					: state.assignRole.userPermission,
+		isUserRolesPermissionsLoaded     	: state.assignRole.isUserRolesPermissionsLoaded,
 	}
   }
   
   const mapDispatchToProps = (dispatch) => {
 	  return {
-		fetchUser       	: ( name_string  ) => dispatch( fetchUser( name_string ) ),
-		fetchRoleList      : () => dispatch( fetchRoleList() ),
-		fetchUserRole       : ( user_id ) => dispatch( fetchUserRole( user_id ) ),
-		assignRole       	: ( user_id , post_data ) => dispatch( assignRole( user_id , post_data ) ),
+		fetchUser       		: ( name_string  ) => dispatch( fetchUser( name_string ) ),
+		fetchRoleList      		: () => dispatch( fetchRoleList() ),
+		fetchUserRolePermission       	: ( user_id ) => dispatch( fetchUserRolePermission( user_id ) ),
+		assignRolesPermissions  : ( user_id , post_data ) => dispatch( assignRolesPermissions( user_id , post_data ) ),
 	  } 
   }
-  export default connect(mapStateToProps, mapDispatchToProps)(AssignRole);
+  export default connect(mapStateToProps, mapDispatchToProps)(AssignRolesPermissions);
   

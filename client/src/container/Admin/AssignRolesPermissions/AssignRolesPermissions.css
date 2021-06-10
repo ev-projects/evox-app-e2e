@@ -1,0 +1,11 @@
+.role-label {
+    color: #82af13;
+    display: block;
+    font-weight: 500 !important;
+}
+.role-permissions{
+    margin-left: 25px; 
+}
+.permission-label {
+    color: black;
+}

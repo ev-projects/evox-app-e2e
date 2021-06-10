@@ -21,7 +21,7 @@ const Sidebar = (props) => {
     profile_picture_url =  "data:image/jpg;base64,"+settings.profile_picture
   }
 
-
+  
   return <div>      
           <aside className="main-sidebar sidebar-dark-primary elevation-4">
             <a href="/" className="brand-link">
@@ -53,18 +53,16 @@ const Sidebar = (props) => {
                   </li>
 
                   {/*  EMPLOYEE Links */}
-                  { Authenticator.check('employee', 'employee_access') ?
+                  { Authenticator.check('employee', 'employee_access') &&
                       <li className="nav-item">
                         <Link className="nav-link" to={ global.links.dtr + user.id +'/' }>
                           <i className="nav-icon fa fa-clock-o nav-icon" />
                           <p> Daily Time Record</p>
                         </Link>
                       </li>
-                    :
-                    null
                   }
                   
-                  { Authenticator.check('employee', 'employee_access') ?
+                  { Authenticator.check('employee', 'employee_access') &&
                       <li className="nav-item has-treeview ">
                         <a className="nav-link">
                           <i className="nav-icon fa fa-list-alt" />
@@ -95,41 +93,33 @@ const Sidebar = (props) => {
                           
                         </ul>
                       </li>
-                    :
-                    null
                   }
                 
-                  { Authenticator.check('employee', 'employee_access') ?
+                  { Authenticator.check('employee', 'employee_access') &&
                       <li className="nav-item">
                         <Link className="nav-link" to={global.links.my_request}>
                         <i class="nav-icon fa fa-inbox" aria-hidden="true"></i>
                           <p> My Requests</p> 
                         </Link>
                       </li>
-                    :
-                    null
                   }
                   
-                  { Authenticator.check('employee', 'employee_access') ?
+                  { Authenticator.check('employee', 'employee_access') &&
                       <li className="nav-item">
                         <Link className="nav-link" to={ global.links.dpa}>
                           <i className="nav-icon fa fa-play-circle nav-icon" />
                           <p>DPA Webinar</p>
                         </Link> 
                       </li>
-                    :
-                    null
                   }
 
-                  { Authenticator.check('employee', 'employee_access') ?
+                  { Authenticator.check('employee', 'employee_access') &&
                       <li className="nav-item">
                         <Link className="nav-link" to={ global.links.ev_learning}>
                           <i className="nav-icon fa fa-book nav-icon" />
                           <p>EV Learning</p>
                         </Link> 
                       </li>
-                    :
-                    null
                   }
 
                   
@@ -144,16 +134,15 @@ const Sidebar = (props) => {
                           </p>
                         </a>
                         <ul className="nav nav-treeview">
-                          { Authenticator.check(['supervisor'], ['supervisor_access']) ?
+                          { Authenticator.check('supervisor', 'manage_teams') &&
                             <li className="nav-item">
                               <Link className="nav-link" to={global.links.manage_teams} >
                                 <i className="nav-icon fa fa-users" aria-hidden="true"></i>
                                 <p>Manage Teams</p> 
                               </Link>
                             </li> 
-                            : null 
                           }
-                          {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
+                          { Authenticator.check(['supervisor'], ['manage_schedule']) &&
                             <li className="nav-item has-treeview ">
                               <a className="nav-link" >
                                 <i className="nav-icon fa fa-calendar-o" />
@@ -183,45 +172,53 @@ const Sidebar = (props) => {
                                 </li>
                               </ul>
                             </li>
-                            :
-                            null
                           }
                           <li className="nav-item">
-                            <Link className="nav-link" to={global.links.employee_list} >
-                              <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
-                              <p>Employee List</p> 
-                            </Link>
+                              <Link className="nav-link" to={global.links.employee_list} >
+                                <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
+                                <p>Employee List</p> 
+                              </Link>
                           </li> 
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.dpa_list} >
-                              <i className="nav-icon fa fa-list-alt" aria-hidden="true"></i>
-                              <p> DPA List</p> 
-                            </Link>
-                          </li> 
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.my_team_requests} >
-                              <i className="nav-icon fa fa-users" aria-hidden="true"></i>
-                              <p> My Team Request</p> 
-                            </Link>
-                          </li> 
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.dtr_summary} >
-                              <i className="nav-icon fa fa-file-text nav-icon" />
-                              <p>DTR Summary</p>
-                            </Link>
-                          </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.dtr_logs} >
-                              <i className="nav-icon fa fa-bars nav-icon" />
-                              <p>DTR Logs</p>
-                            </Link>
-                          </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.weekly_team_schedule} >
-                              <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
-                              <p> Team Schedule </p> 
-                            </Link>
-                          </li> 
+                          { Authenticator.check('supervisor', 'view_dpa_list') &&
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.dpa_list} >
+                                <i className="nav-icon fa fa-list-alt" aria-hidden="true"></i>
+                                <p> DPA List</p> 
+                              </Link>
+                            </li> 
+                          }
+                          { Authenticator.check('supervisor', 'view_employee_requests') &&
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.my_team_requests} >
+                                <i className="nav-icon fa fa-users" aria-hidden="true"></i>
+                                <p> My Team Request</p> 
+                              </Link>
+                            </li> 
+                          }
+                          { Authenticator.check('supervisor', 'view_dtr_summary') &&
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.dtr_summary} >
+                                <i className="nav-icon fa fa-file-text nav-icon" />
+                                <p>DTR Summary</p>
+                              </Link>
+                            </li>
+                          }
+                          { Authenticator.check('supervisor', 'view_dtr_logs') &&
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.dtr_logs} >
+                                <i className="nav-icon fa fa-bars nav-icon" />
+                                <p>DTR Logs</p>
+                              </Link>
+                            </li>
+                          }
+                          { Authenticator.check('supervisor', 'manage_schedule') &&
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.team_schedule} >
+                                <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
+                                <p> Team Schedule </p> 
+                              </Link>
+                            </li> 
+                          }
                         </ul>
                       </li>
                     :
@@ -229,44 +226,37 @@ const Sidebar = (props) => {
                   }
 
                   {/* CLIENT Links */}
-                  { Authenticator.check('client', 'client_access') ?
-                      <li className="nav-item has-treeview ">
-                        <a className="nav-link" >
-                          <i className="nav-icon fa fa-users" />
-                          <p>
-                            My Team
-                            <i className="right fa fa-chevron-left" />
-                          </p>
-                        </a>
-                        <ul className="nav nav-treeview">
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.employee_list} >
-                              <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
-                              <p> Employee List</p> 
-                            </Link>
-                          </li> 
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.dtr_logs} >
-                              <i className="nav-icon fa fa-clock-o" aria-hidden="true"></i>
-                              <p> DTR Logs</p> 
-                            </Link>
-                          </li> 
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.weekly_team_schedule} >
-                              <i className="nav-icon fa fa-file-text" aria-hidden="true"></i>
-                              <p> Team Schedule </p> 
-                            </Link>
-                          </li> 
-                        </ul>
-                      </li>
-
-                    :
-                    null
+                  { Authenticator.check('client', 'client_access') &&
+                    <React.Fragment>
+                        <li className="nav-item has-treeview ">
+                          <a className="nav-link" >
+                            <i className="nav-icon fa fa-users" />
+                            <p>
+                              My Team
+                              <i className="right fa fa-chevron-left" />
+                            </p>
+                          </a>
+                          <ul className="nav nav-treeview">
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.employee_list} >
+                                <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
+                                <p> Employee List</p> 
+                              </Link>
+                            </li> 
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.dtr_logs} >
+                                <i className="nav-icon fa fa-clock-o" aria-hidden="true"></i>
+                                <p> DTR Logs</p> 
+                              </Link>
+                            </li> 
+                          </ul>
+                        </li>
+                    </React.Fragment>
                   }
 
                         
                     {/* Report Links Links */}
-                    { Authenticator.check(['supervisor', 'client'], ['supervisor_access', 'client_access']) ?
+                    { Authenticator.check(['supervisor', 'client'], ['supervisor_access', 'client_access']) &&
                         <li className="nav-item has-treeview ">
                           <a className="nav-link" >
                             <i className="nav-icon fa fa-line-chart" />
@@ -290,14 +280,12 @@ const Sidebar = (props) => {
                             </li>
                           </ul>
                         </li>
-                        :
-                        null
-                  }
+                    }
 
 
                   
                   {/* ADMIN Links */}
-                  { Authenticator.check('admin', 'full_access') ?
+                  { Authenticator.check('admin', 'full_access') &&
                       <li className="nav-item has-treeview ">
                         <a className="nav-link">
                           <i className="nav-icon fa fa-cog" />
@@ -307,80 +295,98 @@ const Sidebar = (props) => {
                           </p>
                         </a>
                         <ul className="nav nav-treeview">
-                          <li className="nav-item">
-                            <Link className="nav-link" to={ global.links.payroll_cutoff }>
-                              <i className="nav-icon fa fa-table nav-icon" />
-                              <p>Payroll Cutoff</p>
-                            </Link> 
-                          </li>
-                          <li className="nav-item has-treeview ">
-                            <a className="nav-link">
-                              <i className="nav-icon fa fa-exchange" />
-                              <p>
-                                Sync
-                                <i className="right fa fa-chevron-left" />
-                              </p>
-                            </a>
-                            <ul className="nav nav-treeview">
-                              <li className="nav-item">
-                                <Link className="nav-link" to={ global.links.sync_biometrics }>
-                                  <i className="nav-icon fa fa-bars nav-icon" />
-                                  <p>Biometrics</p>
-                                </Link> 
-                              </li>
-                              <li className="nav-item">
-                                <Link className="nav-link" to={ global.links.sync_bhr_user_updates }>
-                                  <i className="nav-icon fa fa-user nav-icon" />
-                                  <p style={{'fontSize':13}}>BHR User Updates</p>
-                                </Link> 
-                              </li>
-                              <li className="nav-item">
-                                <Link className="nav-link" to={ global.links.sync_bhr_leaves }>
-                                  <i className="nav-icon fa fa-calendar-o nav-icon" />
-                                  <p style={{'fontSize':13}}>BHR Leaves</p>
-                                </Link> 
-                              </li>
-                            </ul>
-                          </li>
-                          <li className="nav-item has-treeview ">
-                            <a className="nav-link">
-                              <i className="nav-icon fa fa-tags" />
-                              <p>
-                                Assign
-                                <i className="right fa fa-chevron-left" />
-                              </p>
-                            </a>
-                            <ul className="nav nav-treeview">
-                              <li className="nav-item">
-                                <Link className="nav-link" to={ global.links.assign_department_handlers }>
-                                  <i className="nav-icon fa fa-building-o nav-icon" />
-                                  <p style={{'fontSize':13}}>Department Handlers</p>
-                                </Link> 
-                              </li>
-                              <li className="nav-item">
-                                <Link className="nav-link" to={ global.links.assign_employee_supervisors }>
-                                  <i className="nav-icon fa fa-users nav-icon" />
-                                  <p style={{'fontSize':13}}>Employee Supervisors</p>
-                                </Link> 
-                              </li>
-                              <li className="nav-item">
-                                <Link className="nav-link" to={ global.links.assign_role }>
-                                  <i className="nav-icon fa fa-user-o nav-icon" />
-                                  <p style={{'fontSize':13}}>Role to User</p>
-                                </Link> 
-                              </li>
-                            </ul>
-                          </li>
-                          <li className="nav-item">
-                            <Link className="nav-link" to={ global.links.register_user }>
-                              <i className="nav-icon fa fa-user-plus nav-icon" />
-                              <p style={{'fontSize':13}}>Register User</p>
-                            </Link> 
-                          </li>
+                          { Authenticator.check('admin', 'manage_payroll_cutoff') &&
+                            <li className="nav-item">
+                              <Link className="nav-link" to={ global.links.payroll_cutoff }>
+                                <i className="nav-icon fa fa-table nav-icon" />
+                                <p>Payroll Cutoff</p>
+                              </Link> 
+                            </li>
+                          }
+                          { Authenticator.check('admin', ['sync_biometrics','sync_bhr_user_updates', 'sync_bhr_leaves']) &&
+                            <li className="nav-item has-treeview ">
+                              <a className="nav-link">
+                                <i className="nav-icon fa fa-exchange" />
+                                <p>
+                                  Sync
+                                  <i className="right fa fa-chevron-left" />
+                                </p>
+                              </a>
+                              <ul className="nav nav-treeview">
+                                { Authenticator.check('admin', 'sync_biometrics') &&
+                                  <li className="nav-item">
+                                    <Link className="nav-link" to={ global.links.sync_biometrics }>
+                                      <i className="nav-icon fa fa-bars nav-icon" />
+                                      <p>Biometrics</p>
+                                    </Link> 
+                                  </li>
+                                }
+                                { Authenticator.check('admin', 'sync_bhr_user_updates') &&
+                                  <li className="nav-item">
+                                    <Link className="nav-link" to={ global.links.sync_bhr_user_updates }>
+                                      <i className="nav-icon fa fa-user nav-icon" />
+                                      <p style={{'fontSize':13}}>BHR User Updates</p>
+                                    </Link> 
+                                  </li>
+                                }
+                                { Authenticator.check('admin', 'sync_bhr_leaves') &&
+                                  <li className="nav-item">
+                                    <Link className="nav-link" to={ global.links.sync_bhr_leaves }>
+                                      <i className="nav-icon fa fa-calendar-o nav-icon" />
+                                      <p style={{'fontSize':13}}>BHR Leaves</p>
+                                    </Link> 
+                                  </li>
+                                }
+                              </ul>
+                            </li>
+                          }
+                          { Authenticator.check('admin', ['assign_department_handlers','assign_employee_supervisors', 'assign_role_permission']) &&
+                            <li className="nav-item has-treeview ">
+                              <a className="nav-link">
+                                <i className="nav-icon fa fa-tags" />
+                                <p>
+                                  Assign
+                                  <i className="right fa fa-chevron-left" />
+                                </p>
+                              </a>
+                              <ul className="nav nav-treeview">
+                                { Authenticator.check('admin', 'assign_department_handlers') &&
+                                  <li className="nav-item">
+                                    <Link className="nav-link" to={ global.links.assign_department_handlers }>
+                                      <i className="nav-icon fa fa-building-o nav-icon" />
+                                      <p style={{'fontSize':13}}>Department Handlers</p>
+                                    </Link> 
+                                  </li>
+                                }
+                                { Authenticator.check('admin', 'assign_employee_supervisors') &&
+                                  <li className="nav-item">
+                                    <Link className="nav-link" to={ global.links.assign_employee_supervisors }>
+                                      <i className="nav-icon fa fa-users nav-icon" />
+                                      <p style={{'fontSize':13}}>Employee Supervisors</p>
+                                    </Link> 
+                                  </li>
+                                }
+                                { Authenticator.check('admin', 'assign_role_permission') &&
+                                  <li className="nav-item">
+                                    <Link className="nav-link" to={ global.links.assign_role_permission }>
+                                      <i className="nav-icon fa fa-user-o nav-icon" />
+                                      <p style={{'fontSize':13}}>Role/Permission to User</p>
+                                    </Link> 
+                                  </li> 
+                                }
+                              </ul>
+                            </li>
+                          }
+                          { Authenticator.check('admin', 'allow_register_user') &&
+                            <li className="nav-item">
+                              <Link className="nav-link" to={ global.links.register_user }>
+                                <i className="nav-icon fa fa-user-plus nav-icon" />
+                                <p style={{'fontSize':13}}>Register User</p>
+                              </Link> 
+                            </li>
+                          }
                         </ul>
                       </li>
-                    :
-                    null
                   }
 
                   <li className="nav-item">
