@@ -1,5 +1,6 @@
 import React, { Component }  from 'react';
 import API from "./API";
+import Validator from './Validator';
 
 class Formatter {
 
@@ -95,11 +96,11 @@ class Formatter {
    * return | String
   */
   slug_to_title( slug ) {
-      return slug.replace(/_/g, ' ')
-                .replace(/\w\S*/g,
-                  function(txt) {
-                      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-                  });
+    return slug.replace(/_/g, ' ')
+              .replace(/\w\S*/g,
+                function(txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                });
   }
 
 

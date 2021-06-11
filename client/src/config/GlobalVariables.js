@@ -36,12 +36,18 @@ global.links = {
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
     dtr_logs                        :  "/app/team/DtrLogs", 
-
+    weekly_team_schedule            :  "/app/team/WeeklyTeamSchedule", 
+    monthly_team_schedule           :  "/app/team/MonthlyTeamSchedule", 
+    custom_team_schedule            :  "/app/team/CustomTeamSchedule", 
+    daily_team_schedule             :  "/app/team/DailyTeamSchedule", 
     // Schedule Links
     template_add                    :  "/app/schedule/",
     template_list                   :  "/app/schedule/template/",
     schedule_assign_department      :  "/app/schedule/assign/department",
     schedule_assign_user            :  "/app/schedule/assign/user/",
+
+    // Report Links
+    team_attendance_summary         :  "/app/report/TeamAttendanceSummary/",
 
     // Admin Links
     payroll_cutoff                  :  "/app/admin/PayrollCutoff/",
@@ -50,7 +56,7 @@ global.links = {
     sync_biometrics                 :  "/app/admin/SyncBiometrics/",
     sync_bhr_leaves                 :  "/app/admin/SyncBhrLeaves/",
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
-    assign_role                     :  "/app/admin/AssignRole/",
+    assign_role_permission          :  "/app/admin/AssignRolePermission/",
     register_user                   :  "/app/admin/RegisterUser/",
 };
 

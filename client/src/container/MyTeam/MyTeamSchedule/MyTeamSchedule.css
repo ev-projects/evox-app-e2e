@@ -1,0 +1,31 @@
+.empsched .card-body{padding:2px !important;border-top:1px solid #ccc !important;}
+.empsched .card{margin-bottom: 5px !important}
+div.schedule_info {
+    font-size: 12px;
+    text-align: center;
+}
+
+.card .rest_day{
+    background-color: #e6e6e6;
+    color: black !important;
+}
+
+.card .absent{
+    background-color: #ffe2e2;
+    color: black !important;
+}
+
+.card .late{
+    background-color: #ffeece;
+    color: black !important;
+}
+
+.card .on_leave{
+    background-color: #eefcfe;
+    color: black !important;
+}
+
+.card .early{
+    background-color: #f3ffe2;
+    color: black !important;
+}

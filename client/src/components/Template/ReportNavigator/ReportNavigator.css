@@ -1,0 +1,8 @@
+.report-navigator { margin-left: 10px; min-width: 625px;}
+.report-navigator .view-navigate{font-size:40px; margin-left: 5px; margin-right: 5px; cursor: pointer;}
+.report-navigator .navigator{margin-left: 8px; margin-right:8px;color: #82af13}
+.report-navigator .dates-label{margin-top: 8px;}
+.report-navigator .view-type-tabs .nav-tabs{border: 0 !important;}
+.report-navigator .view-type-tabs a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 2px;}
+.report-navigator .view-type-tabs a.active {background-color: #82af13  !important; color: #fff !important;}
+.report-navigator .view-type-tabs button.active a{color:#82af13 !important;}

@@ -366,11 +366,11 @@ class UserController extends Controller
 
             $this->user->assign_roles_to_user( $id , $request->get('roles'), );
 
-            $this->user->assign_permissions_to_user( $id ,$request->get('permissions') );
+            $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions') );
             
             return success_response(
                 trans('messages.user_assign_roles_permissions_success'), 
-                true
+                new UserProfileResource( $user )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -597,11 +597,16 @@ class UserController extends Controller
     }
 
     # This function returns user role
-    public function get_user_role( $user_id ){   
+    public function get_user_role_permission( $user_id ){   
         try {
+            $user = User::find($user_id);
             log_activity( trans('messages.list_role_attempt') );
                     return success_response(
-                        trans('messages.list_role_success'),  User::find($user_id)->roles->pluck('name')
+                        trans('messages.list_role_success'),  
+                        [ 
+                            'roles' => $user->roles->pluck('name'),
+                            'permissions' => $user->permissions->pluck('name'),
+                        ]
                     );
 
         } catch(Exception $e){

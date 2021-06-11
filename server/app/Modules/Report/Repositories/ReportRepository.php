@@ -154,8 +154,6 @@ class ReportRepository implements ReportRepositoryInterface{
 
 
     
-    
-
     /**
      *  Responsible for Computing the DTR Payroll Items Summary base from the User Collection and the Date Range.
      * @param Collection $user_collection

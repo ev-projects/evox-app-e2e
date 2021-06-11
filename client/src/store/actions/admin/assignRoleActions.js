@@ -4,17 +4,18 @@ import Formatter from "../../../services/Formatter";
 
 
 // Fetch User Role
-export const fetchUserRole = ( id ) => {
+export const fetchUserRolePermission = ( id ) => {
 
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/"+ id +"/role",
+            url: "/user/"+ id +"/role_permission",
         })
         .then(result => {
             dispatch({
-                'type'      : 'FETCH_USER_ROLE', 
-                'userRole'  : result.data.content
+                'type'              : 'FETCH_USER_ROLE_AND_PERMISSION', 
+                'userRole'          : result.data.content.roles,
+                'userPermission'    : result.data.content.permissions,
             })
         })
         .catch(e => {
@@ -43,16 +44,20 @@ export const fetchUser = ( name_string ) => {
 }
 
 
-export const assignRole = ( id , post_data ) => {
+export const assignRolesPermissions = ( user_id , post_data ) => {
     return (dispatch, getState) => {
         API.call({
             method: "POST",
-            url: "/user/" + id + "/assign_roles_permissions/",
+            url: "/user/" + user_id + "/assign_roles_permissions/",
             data: post_data
         })
         .then(result => {
-           
             dispatch( Formatter.alert_success( result, 3000 ));
+
+            dispatch({
+                'type'         : 'UPDATE_USER',
+                'user'         : result.data.content,
+            })
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

@@ -29,6 +29,10 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
     # Get Team Attendance Summary
     Route::get('team_attendance_summary/{start_date}/{end_date}', 'ReportController@team_attendance_summary');
 
+    # Get Team Schedule
+    Route::get('team_schedule/', 'ReportController@team_schedule');
+
+
     # Get Birthday Anniversary
     Route::get('team_birthday_anniversary', 'ReportController@team_birthday_anniversary');
 

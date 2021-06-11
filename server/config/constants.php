@@ -158,6 +158,13 @@ return [
         "MGC Unpaid Call Out Days"
     ],
 
+    'UNPLANNED_LEAVE_TYPES' => [
+        "Unpaid Leave",
+        "Bereavement leave",
+        "Sick Leave",
+        "MGC Unpaid Call Out Days"
+    ],
+
 
     'PAYROLL_NIGHT_DIFF_TIME' => [
         "start" => "22:00",

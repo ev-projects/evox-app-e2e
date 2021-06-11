@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
+use App\Modules\User\Models\User;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Carbon\Carbon;
 use Exception;
@@ -71,7 +72,14 @@ class syncBhrUsers extends Command
             # 1.
             # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
             if($this->argument('all') == 'all'){
-                $bhr_user_number_array = $this->bhr->get_all_bhr_user_numbers( );
+                // Get all active users from BHR
+                $bhr_user_number_array = collect($this->bhr->get_all_bhr_user_numbers());
+                
+                // Get all Users from EVOX which is originally synced from BHr (including inactive users)
+                $user_number_array = User::whereNotNull('bhr_num')->pluck('bhr_num');
+
+                // Merge both of the list to get the final list of users to merge.
+                $bhr_user_number_array = $bhr_user_number_array->merge( $user_number_array );
             }else{
                 $bhr_user_number_array = $this->bhr->get_changed_users( $since_date_to_sync );
             }
@@ -135,6 +143,7 @@ class syncBhrUsers extends Command
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){
+            log_to_file( 'info', $e->getMessage(), [], "cron_errors");
             return error_response( trans('messages.error_default'), $e );
         }
     }

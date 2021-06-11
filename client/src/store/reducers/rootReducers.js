@@ -40,6 +40,7 @@ import dashboardReducers from "./dashboard/dashboardReducers";
 
 import myTeamListReducers from "./filters/myTeamListReducers";
 import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
+import reportReducers from './report/reportReducers';
 
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
@@ -82,7 +83,9 @@ const rootReducer = combineReducers({
 
     redirect : redirectReducers,
 
-    dashboard  : dashboardReducers
+    dashboard  : dashboardReducers,
+
+    report  : reportReducers
 });
 
 export default rootReducer;

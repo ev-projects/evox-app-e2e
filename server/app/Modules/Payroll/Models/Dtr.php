@@ -84,6 +84,26 @@ class Dtr extends Model
         return ( !is_null( $this->time_in ) ) ? true : false;
     }
 
+
+    /**
+     * 
+     *  Get schedule
+     * @return bool 
+     */
+    public function getSchedule()
+    {
+        $schedule = array();
+
+        if( $this->hasSchedule() ){
+            $schedule[] = date("h:i:s", $this->start_datetime) .  '-' .date("h:i:s", $this->end_datetime );
+            if( $this->hasFlexibleSchedule() ){
+                $schedule[] = date("h:i:s", $this->start_flexy_datetime) .  '-' .date("h:i:s", $this->end_flexy_datetime );
+            }
+        }
+
+        return  $schedule;
+    }
+
     /**
      * 
      *  Check if the employee has flexi sched
@@ -133,18 +153,27 @@ class Dtr extends Model
      *  Check if the employee clock in on time
      * @return bool 
      */
-    public function isPresent()
+    public function isOntime()
     {
-        if(is_valid( $this->time_in)){
-            if( $this->time_in <= $this->start_datetime ){
-                return true;
-            }elseif( $this->hasFlexibleSchedule() ){
-                if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+        $late = $this->policies()->where('policy','=','allow_late')->where('value','=','1')->get()->count() > 0;
+
+        if($late){
+            if(is_valid( $this->time_in)){
+                if( $this->time_in <= $this->start_datetime ){
                     return true;
+                }elseif( $this->hasFlexibleSchedule() ){
+                    if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+            }
+        }else{
+            if($this->hasLog()){
+                return true;
             }
         }
+        
 
         return false;
     }
@@ -624,14 +653,30 @@ class Dtr extends Model
         return $this->hasMany(Leave::class);
     }   
     
-
     /**
-     *
+     * Returns true if has Schedule but has no Valid time logs and if there are no holidays and leaves on that day and the DTR Type is regular.
      */
     public function isAbsent(){
-        return !$this->validLog() && $this->hasSchedule() && $this->onLeave()->count() <= 0 && ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
+        return !$this->validLog() && 
+                    $this->hasSchedule() && 
+                    $this->onLeave()->count() <= 0 && 
+                    $this->holidays()->count() <= 0 &&
+                    $this->IsTime()  &&
+                    ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
     } 
-    
+
+
+    /**
+     * Returns true if the current time is more than the start datetime
+     */
+    public function IsTime(){
+        if( $this->hasFlexibleSchedule() ){
+            return  $this->start_flexy_datetime  < strtotime("now");
+        }
+
+        return $this->start_datetime < strtotime("now");
+    } 
+
     
     /**
      * hasMany Relationship for Dtr Leaves model

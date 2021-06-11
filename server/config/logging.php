@@ -186,6 +186,22 @@ return [
             'permission' => 0666,
         ],
 
+        'cron_errors' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/cron_errors.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+
+        'summary_errors' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/summary_errors.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+
 
     ],
 

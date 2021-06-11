@@ -118,12 +118,15 @@ class TeamAttendanceResources extends JsonResource
             }elseif( !$rd_holiday_leave ){
                 $status[] = 'No Schedule';
 
-            }
+            }   
+
+            $user = $array->user()->first();
 
                 array_push( $team_attendance ,
                 [
                     "date" => $array->date,
-                    "name" => $array->user()->first()->getFullName( 2 ) ,
+                    "name" => $user->getFullName( 2 ) ,
+                    "job_title" =>  $user->job_title,
                     "schedule" =>  $schedule,
                     "values" => $values,
                     "status" => $status

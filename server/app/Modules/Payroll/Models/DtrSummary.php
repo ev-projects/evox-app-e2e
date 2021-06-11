@@ -143,7 +143,8 @@ class DtrSummary
             return $this->summary;
 
         } catch(Exception $e) {
-            dd( $e );
+            log_to_file( 'info', $e->getMessage(), [], "summary_errors");
+            return error_response( trans('messages.error_default'), $e );
         }
     }
 

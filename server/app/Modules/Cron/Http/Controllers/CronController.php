@@ -135,14 +135,28 @@ class CronController extends Controller
 
             // If a $since_date_to_sync has parameter, use it as since date to sync. If not, use the date yesterday.
             if( is_valid( $since_date_to_sync ) ){
-                $since_date_to_sync = date('Y-m-d', strtotime($since_date_to_sync)) . 'T00:00:00-00:00';
+                $since_date_to_sync = date('Y-m-d', strtotime($since_date_to_sync)) . 'T00:00:00-00:00'; 
             } else {
                 $since_date_to_sync = Carbon::today()->subDays(7)->format('Y-m-d') . 'T00:00:00-00:00';
             }
 
             # 1.
             # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
-            $bhr_user_number_array = $this->bhr->get_changed_users( $since_date_to_sync );
+            if(request()->get('sync_type') == 'all'){
+
+                // Get all active users from BHR
+                $bhr_user_number_array = collect($this->bhr->get_all_bhr_user_numbers());
+                
+                // Get all Users from EVOX which is originally synced from BHr (including inactive users)
+                $user_number_array = User::whereNotNull('bhr_num')->pluck('bhr_num');
+
+                // Merge both of the list to get the final list of users to merge.
+                $bhr_user_number_array = $bhr_user_number_array->merge( $user_number_array );
+
+            }else{
+                $bhr_user_number_array = $this->bhr->get_changed_users( $since_date_to_sync );
+                
+            }
             
             # 2.
             # Iterate the actual BHR User Numbers array

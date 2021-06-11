@@ -83,6 +83,9 @@ class Profile extends Component {
     render(){
       
       const { profile, user, page } = this.props;
+      let allow_view_personal_info = profile.details?.id == user.id || ( profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_personal_info') );
+      let allow_view_job_info = profile.details?.id == user.id || ( profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_job_info') );
+      let allow_view_time_off = profile.details?.id == user.id || ( profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_time_off') );
 
         return (
             <Wrapper >
@@ -113,22 +116,23 @@ class Profile extends Component {
                                                 defaultActiveKey={this.state.current_tab}
                                                 onSelect={ (key) =>  { this.setTab(key) } }
                                         >
-                                            <Tab eventKey="personal_information" title="Personal Info" type="submit"></Tab>
-                                            <Tab eventKey="job_information" title="Job Info" type="submit"></Tab>
-                                            <Tab eventKey="time_off" title="Time Off" type="submit"></Tab>
+                                            { allow_view_personal_info && <Tab eventKey="personal_information" title="Personal Info" type="submit"></Tab> }
+                                            { allow_view_job_info && <Tab eventKey="job_information" title="Job Info" type="submit"></Tab> }
+                                            { allow_view_time_off && <Tab eventKey="time_off" title="Time Off" type="submit"></Tab> }
+                                        
                                         </Tabs>
                                     </div>
-                                    { this.state.current_tab == "personal_information" && profile.personal_information != [] ? 
+                                    { allow_view_personal_info && this.state.current_tab == "personal_information" && profile.personal_information != [] ? 
                                         <PersonalInformation  />
                                         :
                                         null
                                     }
-                                    { this.state.current_tab == "job_information" && profile.employment_status != []  && profile.job_information != [] ? 
+                                    { allow_view_job_info && this.state.current_tab == "job_information" && profile.employment_status != []  && profile.job_information != [] ? 
                                         <JobInformation />
                                         :
                                         null
                                     }
-                                    { this.state.current_tab == "time_off" && profile.leaves_list != [] ? 
+                                    { allow_view_time_off && this.state.current_tab == "time_off" && profile.leaves_list != [] ? 
                                         <TimeOff start_date={this.state.start_date} end_date={this.state.end_date}/>
                                         :
                                         null
