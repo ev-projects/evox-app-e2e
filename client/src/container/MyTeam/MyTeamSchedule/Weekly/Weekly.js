@@ -77,7 +77,7 @@ class Weekly extends Component {
             <h2>My Team Schedule</h2> 
             <div className="request-tab">
               <nav class="nav nav-tabs" role="tablist">
-                <Link className="nav-link" to={ global.links.daily_schedule }>
+                <Link className="nav-link" to={ global.links.daily_team_schedule }>
                   Daily
                 </Link>
                 <Link className="nav-link active" to={ global.links.weekly_team_schedule }>

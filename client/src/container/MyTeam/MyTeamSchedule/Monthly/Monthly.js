@@ -91,7 +91,7 @@ class Monthly extends Component {
             <h2>My Team Schedule</h2> 
             <div className="request-tab">
               <nav class="nav nav-tabs" role="tablist">
-                <Link className="nav-link" to={ global.links.daily_schedule }>
+                <Link className="nav-link" to={ global.links.daily_team_schedule }>
                   Daily
                 </Link>
                 <Link className="nav-link" to={ global.links.weekly_team_schedule }>
@@ -175,28 +175,30 @@ class Monthly extends Component {
                     </Col>
                   </Row>
                     {  data.length > 0  ? (<React.Fragment> 
-                       {data.map((week,week_index) => {
+                        {data.map((week,week_index) => {
                           var first_week_offset = '';
                           var last_week_offset = '';
-                          var cols;
 
                           // FIRST WEEK OFFSET
                           if (week_index==0)
                           {
+                            var first_cols;
                             for ( var i = 0; i <  week_dictionary[[week_list[0][0]]]; i++) {
-                              cols =<React.Fragment> {cols} <Col></Col></React.Fragment>;
+                              first_cols =<React.Fragment> {first_cols} <Col></Col></React.Fragment>;
                             }
-
-                            first_week_offset =<React.Fragment>{cols}</React.Fragment>;
-
-                            // LAST WEEK OFFSET
-                          }else if(length==week_index){
-                            for ( var i = 6; i >  week_dictionary[[week_list[length][1]]]; i--) {
-                              cols =<React.Fragment> {cols} <Col></Col></React.Fragment>;
-                            }
-
-                            last_week_offset =<React.Fragment>{cols}</React.Fragment>;
+                            first_week_offset =<React.Fragment>{first_cols}</React.Fragment>;
                           }
+                          
+                            // LAST WEEK OFFSET
+                          if(length==week_index){
+                            var last_cols;
+                            for ( var i = 6; i >  week_dictionary[[week_list[length][1]]]; i--) {
+                              last_cols =<React.Fragment> {last_cols} <Col></Col></React.Fragment>;
+                            }
+
+                            last_week_offset =<React.Fragment>{last_cols}</React.Fragment>;
+                          }
+                          
                           
                           return  <React.Fragment><Row  className="empsched"> {first_week_offset} {week.map((day,day_index) => {
                             day_number = day_number + 1;
