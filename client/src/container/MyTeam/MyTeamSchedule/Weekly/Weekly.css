@@ -39,3 +39,8 @@ div.schedule_info {
     background-color: #f3ffe2;
     color: black !important;
 } 
+
+.card .no_status{
+    background-color: #f0f0f0;
+    color: black !important;
+}

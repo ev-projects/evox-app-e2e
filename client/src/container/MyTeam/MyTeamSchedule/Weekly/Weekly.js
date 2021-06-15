@@ -187,9 +187,12 @@ class Weekly extends Component {
                             }else if(schedule_info.type.includes("absent")){
                               card_class = 'absent';
                               card_text = schedule_info.Schedule[0]; 
-                            }else if(value.type.includes("no_schedule")){
+                            }else if(schedule_info.type.includes("no_schedule")){
                               card_class = 'no_schedule';
                               card_text = "No Schedule";
+                            }else if(schedule_info.type.includes("no_status")){
+                              card_class = 'no_status';
+                              card_text = "No Status";
                             }
 
                               return <Card>

@@ -661,21 +661,84 @@ class Dtr extends Model
                     $this->hasSchedule() && 
                     $this->onLeave()->count() <= 0 && 
                     $this->holidays()->count() <= 0 &&
-                    $this->IsTime()  &&
+                    $this->checkCurrentTime()  &&
                     ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
     } 
 
 
     /**
-     * Returns true if the current time is more than the start datetime
+     * Returns True if the current time is greater than the time in
      */
-    public function IsTime(){
-        if( $this->hasFlexibleSchedule() ){
-            return  $this->start_flexy_datetime  < strtotime("now");
+    public function checkCurrentTime(){
+        if($this->hasSchedule()){
+            if( $this->hasFlexibleSchedule() ){
+                return  $this->start_flexy_datetime  < strtotime("Now");
+            }
+            return $this->start_datetime < strtotime("Now");
+        }
+        return True;
+    } 
+
+
+    
+    /**
+     * Returns DTR Status of a date
+     */
+    public function getDtrStatus(){
+        $status = [];
+        $isRestDayHolidayLeave = false; # Late, Absent and Undertime should be displayed on when there's no Rest Day Work, Holiday and Leave 
+        if( $this->isRestDay() ){
+            if( $this->rest_day_work()->where('status','=','approved')->get()->count() > 0 ){
+                $status[] = 'rest_day_work';
+            }else{
+                $status[] = 'rest_day';
+                $isRestDayHolidayLeave = true;
+            }
         }
 
-        return $this->start_datetime < strtotime("now");
+        if( $this->holidays()->get()->count() > 0 ){
+            $status[] = 'holiday';
+            $isRestDayHolidayLeave = true;
+        }
+        
+        if($this->onLeave()->get()->count() > 0  ){
+            $status[] = "on_leave"; 
+            $isRestDayHolidayLeave = true;
+        }
+        
+        # Check if there is schedule
+        if( $this->hasSchedule() ){
+            if( !$isRestDayHolidayLeave ){
+                # Group the Payroll Items and compute the total on the payroll_items array.
+                $payroll_items = [];
+                foreach( $this->payroll_items()->get() as  $key => $payroll_item){
+                    if(isset($payroll_items[ $payroll_item->item ])){
+                        $payroll_items[ $payroll_item->item ] += $payroll_item->value;
+                    }else{
+                        $payroll_items[ $payroll_item->item] = $payroll_item->value;
+                    }
+                }
+
+                if( $this->isAbsent() ){
+                    $status[] = 'absent';
+                }elseif( $this->isOntime() ){
+                    $status[] = 'early';
+                }elseif( isset( $payroll_items['late'] ) && is_valid( $payroll_items['late'] ) ) {
+                    $status[] = "late";
+                }elseif( isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
+                    $status[] = "undertime";
+                }else{
+                    $status[] = 'no_status';
+                }
+
+            }
+        }elseif( !$isRestDayHolidayLeave ){
+            $status[] = 'no_schedule';
+        }
+
+        return $status;
     } 
+
 
     
     /**

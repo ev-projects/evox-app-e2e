@@ -181,6 +181,9 @@ class Daily extends Component {
                         }else if(value.type.includes("no_schedule")){
                           card_class = 'no_schedule';
                           card_text = "No Schedule";
+                        }else if(value.type.includes("no_status")){
+                          card_class = 'no_status';
+                          card_text = "No Status";
                         }
 
                         if(value.day_type=="underlapped"){
