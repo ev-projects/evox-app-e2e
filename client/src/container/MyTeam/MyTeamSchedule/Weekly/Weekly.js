@@ -161,7 +161,7 @@ class Weekly extends Component {
                       SATURDAY
                     </Col>
                   </Row>
-                    <Row  className="empsched">
+                    <Row  className="emp_sched">
                     {  data.length > 0  ? (<React.Fragment> 
                       {data[0].map((value,index) => {
                           return <Col>{date_list[index]}{value.map((schedule_info,index) => {

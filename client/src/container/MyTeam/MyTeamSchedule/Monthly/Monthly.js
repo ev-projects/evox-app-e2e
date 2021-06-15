@@ -202,7 +202,7 @@ class Monthly extends Component {
                           }
                           
                           
-                          return  <React.Fragment><Row  className="empsched"> {first_week_offset} {week.map((day,day_index) => {
+                          return  <React.Fragment><Row  className="emp_sched"> {first_week_offset} {week.map((day,day_index) => {
                             day_number = day_number + 1;
                             return <Col>{date_list[day_number-1]}
                             {day.map((schedule_info,index) => {
