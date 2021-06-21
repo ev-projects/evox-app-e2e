@@ -33,44 +33,10 @@ class DailyScheduleReources extends JsonResource
                 if(!$array->hasSchedule()){
                     continue;
                 }
-
                 $tag  = "regular";
-
-                $status = [];
-                $isRestDayHolidayLeave = false;
-                $week_day = date('l',strtotime($array->date)  );
-                if( $array->isRestDay() ){
-                    if( $array->rest_day_work()->where('status','=','approved')->get()->count() > 0 ){
-                        $status[] = 'rest_day_work';
-                    }else{
-                        $status[] = 'rest_day';
-                        $isRestDayHolidayLeave = true;
-                    }
-                }
-    
-                if( $array->holidays()->get()->count() > 0 ){
-                    $status[] = 'holiday';
-                    $isRestDayHolidayLeave = true;
-                }
                 
-                if($array->onLeave()->get()->count() > 0  ){
-                    $status[] = "on_leave"; 
-                    $isRestDayHolidayLeave = true;
-                }
-    
-                if( $array->hasSchedule() ){
-                    if( !$isRestDayHolidayLeave ){
-                        if( $array->isAbsent() ){
-                            $status[] = 'absent';
-                        }elseif( $array->isOntime() ){
-                            $status[] = 'early';
-                        }else{
-                            $status[] = 'late';
-                        }
-                    }
-                }elseif( !$isRestDayHolidayLeave ){
-                    $status[] = 'no_schedule';
-                }
+                $status = $array->getDtrStatus();
+                $week_day = date('l',strtotime($array->date)  );
 
                 // Underlapped Schedule
                 if(date( 'Y-m-d', $array->start_datetime ) <  $this->current_date ){

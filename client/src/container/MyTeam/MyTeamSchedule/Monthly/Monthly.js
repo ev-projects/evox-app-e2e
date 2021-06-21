@@ -10,6 +10,7 @@ import { fetchTeamSchedule } from '../../../../store/actions/filters/myTeamActio
 import { fetchTeamUnderDepartment } from '../../../../store/actions/filters/myTeamActions';
 import { Link } from "react-router-dom";
 
+
 class Monthly extends Component {
 
   constructor(props){
@@ -54,14 +55,11 @@ class Monthly extends Component {
     }
   }
 
-  componentDidUpdate(){
-  }
 
   render = () => {  
   var { team_list } = this.props.team;
 
   var { date_list, data, week_list } = this.props.team.monthly;
-  console.log(this.props.team);
   const week_dictionary = {
     "Sunday": 0,
     "Monday" : 1,
@@ -71,6 +69,8 @@ class Monthly extends Component {
     "Friday" :5,
     "Saturday" : 6,
   } ;
+
+
 
   var length = data.length - 1 ;
   const validationSchema = Yup.object().shape({
@@ -100,6 +100,7 @@ class Monthly extends Component {
                 <Link className="nav-link active" to={ global.links.monthly_team_schedule }>
                  Monthly
                 </Link>
+
               </nav>
             </div>   
             <ContainerBody>  
@@ -153,7 +154,8 @@ class Monthly extends Component {
                     </Row>
                   <Row>
                     <Col>
-                      SUNDAY
+                      SUNDAY 
+
                     </Col>
                     <Col>
                       MONDAY
@@ -228,6 +230,9 @@ class Monthly extends Component {
                               }else if(schedule_info.type.includes("no_schedule")){
                                 card_class = 'no_schedule';
                                 card_text = "No Schedule";
+                              }else if(schedule_info.type.includes("no_status")){
+                                card_class = 'no_status';
+                                card_text = "No Status";
                               }
   
                                 return <Card>

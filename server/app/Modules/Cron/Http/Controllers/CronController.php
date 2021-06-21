@@ -246,8 +246,12 @@ class CronController extends Controller
             }
 
             # Fetches all the Active Users
-            $user_collection = $this->user->get_all_active_users();
-
+            // return $user_collection;
+            if(is_valid( request()->get('id') )){
+                $user_collection = User::where("id",request()->get('id') )->get();
+            }else{
+                $user_collection = $this->user->get_all_active_users();
+            }       
             # Generates the Date Range that would be generated as DTR for each Active Employees
             $date_array = generate_date_array($start_date, $end_date );
             
