@@ -471,7 +471,7 @@ class Dtr extends Model
      *  Gets DTR Type of the DTR wether it's a Regular, Rest Day, or Holiday
      * @return string
      */
-    public function getDtrType(){
+    public function getDtrType($isPayroll = False){
 
         $type = '';
 
@@ -536,20 +536,25 @@ class Dtr extends Model
 
         // If the $type is not yet set, proceed on checking if the type is Rest day or Regular
         if( ! is_valid( $type ) ) {
-
-            if( $this->is_rest_day ){
-                $type = get_constant('DTR_TYPE.rest_day');
-    
+            if( $isPayroll ){
+                if( $this->is_rest_day && $this->source_type_tagging  == get_constant('REQUEST_TYPES.rest_day_work')){
+                    $type = get_constant('DTR_TYPE.rest_day'); 
+                }else{
+                    $type = get_constant('DTR_TYPE.regular');
+                }  
             }else{
-                $type = get_constant('DTR_TYPE.regular');
-            }  
+                if( $this->is_rest_day ){
+                    $type = get_constant('DTR_TYPE.rest_day');
+        
+                }else{
+                    $type = get_constant('DTR_TYPE.regular');
+                }  
+            }
+
         }
         
         return $type;
     }
-
-
-    
 
     /**
      *  Gets the Best Schedule of the DTR base from the existing schedules
