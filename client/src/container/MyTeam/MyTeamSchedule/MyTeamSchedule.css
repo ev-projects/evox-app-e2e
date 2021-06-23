@@ -1,31 +1,55 @@
-.empsched .card-body{padding:2px !important;border-top:1px solid #ccc !important;}
-.empsched .card{margin-bottom: 5px !important}
+.emp_sched .card-body{padding:2px !important;border-top:1px solid #ccc !important;}
+.emp_sched .card{margin-bottom: 5px !important}
+
 div.schedule_info {
     font-size: 12px;
     text-align: center;
 }
 
-.card .rest_day{
-    background-color: #e6e6e6;
+.emp_sched .rest_day{
+    background-color: #d7d7d7;
     color: black !important;
 }
 
-.card .absent{
-    background-color: #ffe2e2;
+.emp_sched .holiday{
+    background-color: #b1faff !important;
+    color: black !important;
+}
+.emp_sched .absent{
+    background-color: #ffe2e0;
     color: black !important;
 }
 
-.card .late{
-    background-color: #ffeece;
+.emp_sched .late{
+    background-color: #ffefcd;
     color: black !important;
 }
 
-.card .on_leave{
+.emp_sched .on_leave{
     background-color: #eefcfe;
     color: black !important;
 }
 
-.card .early{
+.emp_sched .undertime{
+    background-color: #fedeb7;
+    color: black !important;
+}
+
+.emp_sched .early{
     background-color: #f3ffe2;
     color: black !important;
+} 
+
+.emp_sched .no_status{
+    background-color: #f0f0f0;
+    color: black !important;
+}
+
+
+.Hourframe div {
+    width: 4%;
+}
+
+.emp_sched{
+    margin: 5px;
 }

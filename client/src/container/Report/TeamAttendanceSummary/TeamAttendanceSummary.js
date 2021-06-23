@@ -50,7 +50,7 @@ class TeamAttendanceSummary extends Component {
     }
 
     // Handles the change of date that'll be triggered by the ReportNavigator
-    handleChangeDate = ( start_date, end_date ) => {
+    handleChangeDate = ( start_date, end_date, scope_type ) => {
       this.setState({
         start_date : start_date,
         end_date : end_date,

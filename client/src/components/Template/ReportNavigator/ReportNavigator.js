@@ -45,7 +45,7 @@ const ReportNavigator = (props) => {
                      end_date.set(start_date.toObject()).endOf('month');
                      break;
              }
-            props.handleChangeDate( start_date, end_date);
+            props.handleChangeDate( start_date, end_date, type);
         }
         setViewType(type);
         setForceChange(!forceChange);
@@ -104,7 +104,7 @@ const ReportNavigator = (props) => {
                   }
                   break;
         }
-        props.handleChangeDate( start_date, end_date);
+        props.handleChangeDate( start_date, end_date, viewType);
         setForceChange(!forceChange);
      }
 
@@ -112,10 +112,9 @@ const ReportNavigator = (props) => {
 
     // Handles the fetching of Customized filter
     function handleCustomFilter(){
-        
         start_date.set( moment(customStartDate).toObject())
         end_date.set( moment(customEndDate).toObject())
-        props.handleChangeDate( start_date, end_date);
+        props.handleChangeDate( start_date, end_date, "custom");
         setForceChange(!forceChange);
     }
 

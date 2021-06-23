@@ -26,7 +26,7 @@ const TimeOff = ( props ) => {
    let { start_date, end_date }  = props;
 
     // Handles the change of date that'll be triggered by the ReportNavigator
-    const handleChangeDate = ( start_date, end_date ) => {
+    const handleChangeDate = ( start_date, end_date, scope_type ) => {
         props.fetchTimeOff( profile.details.id, start_date, end_date )
     }
 

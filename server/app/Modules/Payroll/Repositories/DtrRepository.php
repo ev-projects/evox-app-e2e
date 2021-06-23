@@ -953,7 +953,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 //  This is for My Team Schedule
                 if( request()->get('link') == 'team_schedule' ){
-                    if( request()->get('page')== 'daily' ){
+                    if( request()->get('page')== 'day' ){
                         $dtr_collection ->whereRaw("
                            (    
                                 start_datetime BETWEEN ".strtotime($start_date)." AND ".strtotime($end_date)."

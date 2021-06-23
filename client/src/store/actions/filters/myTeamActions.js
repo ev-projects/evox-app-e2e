@@ -58,24 +58,24 @@ export const fetchTeamSchedule = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/report/team_schedule?&page=all&link=team_schedule",
+            url: "/report/team_schedule?link=team_schedule",
             params : params
         })
         .then(result => {
-            if(params.page=="daily"){
+            if(params.scope_type=="day"){
                 dispatch({
                     'type'      : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
-                    'daily'  : result.data.content,
+                    'day'  : result.data.content.data,
                 })
-            }else if(params.page=="weekly"){
+            }else if(params.scope_type=="week"){
                 dispatch({
                     'type'      : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
-                    'weekly'  : result.data.content,
+                    'week'  : result.data.content,
                 })
-            }else if(params.page=="monthly"){
+            }else if(params.scope_type=="month"||params.scope_type=="custom"){
                 dispatch({
                     'type'      : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
-                    'monthly'  : result.data.content,
+                    'month'  : result.data.content,
                 })
             }
         })
