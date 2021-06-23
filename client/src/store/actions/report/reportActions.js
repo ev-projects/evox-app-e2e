@@ -5,6 +5,14 @@ import Formatter from "../../../services/Formatter";
 
 
 // TEAM ATTENDANCE SUMMARY
+
+export const setSelectedAttendanceSummary = (data) => {
+    return {
+        type:"SET_SELECTED_ATTENDACE_SUMMARY",
+        payload : data
+    }
+}
+
 export const getTeamAttendanceSummary = ( start_date, end_date, params ) => {
     
     return (dispatch, getState) => {
@@ -24,3 +32,4 @@ export const getTeamAttendanceSummary = ( start_date, end_date, params ) => {
         });
     }
 }
+

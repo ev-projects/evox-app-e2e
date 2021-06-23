@@ -23,9 +23,9 @@ class TeamAttendanceSummary extends Component {
         this.initialState = {
           start_date:       moment().startOf('week'),
           end_date:         moment().endOf('week'),
-          department_id:    this.props.user.departments_handled.length == 1 ? this.props.user.departments_handled[0].id : null,
-          team_id:          null,
-          name:             null,
+          department_id:    this.props.user.departments_handled.length == 1 ? this.props.user.departments_handled[0].id : "",
+          team_id:          "",
+          name:             "",
         }
         this.state = this.initialState;
     }
@@ -107,7 +107,7 @@ class TeamAttendanceSummary extends Component {
                             >
                             <option label="Select Department" value=''/>
                             {user.departments_handled.map(function(item){
-                              return <option value={item.id} label={item.department_name} />;
+                              return <option key={item.id} value={item.id} label={item.department_name} />;
                             })}
                             </select>
                         </div>
@@ -123,7 +123,7 @@ class TeamAttendanceSummary extends Component {
                             >
                             <option label="Select Team" />
                             {team_list.length > 0 && team_list.map(function(item){
-                              return <option value={item.id} label={item.name} />;
+                              return <option key={item.id} value={item.id} label={item.name} />;
                             })}
                             </select>
                         </div>
@@ -141,7 +141,7 @@ class TeamAttendanceSummary extends Component {
                     </Row>
                     <Row> 
                       { Validator.isValid(team_attendance_summary) && 
-                        <TeamAttendanceSummaryPanel team_attendance_summary={team_attendance_summary}/>
+                        <TeamAttendanceSummaryPanel team_attendance_summary={team_attendance_summary} selected_summary={this.props.report.selected_summary}/>
                       }
                     </Row>
                   </Content>
@@ -155,6 +155,7 @@ class TeamAttendanceSummary extends Component {
   const validationSchema = Yup.object().shape({});
   
   const mapStateToProps = (state) => {
+
     return {
       user : state.user,
       report : state.report,

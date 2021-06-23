@@ -6,7 +6,7 @@ import Validator from "../../../services/Validator.js";
 import "./TeamAttendanceSummaryPanel.css";
 
 const TeamAttendanceSummaryPanel = (props) => {
-
+  
   const { team_attendance_summary } = props;
   const { scheduled_employees, 
           attendance, 
@@ -16,6 +16,10 @@ const TeamAttendanceSummaryPanel = (props) => {
           total_overtime,
           dtr_collection,
           total_headcount } = team_attendance_summary;
+  const selected_summary = props.selected_summary
+  console.log(selected_summary)
+  console.log("kkelvi")
+          
   
   let show_list = props.show_list ?? true;
   
@@ -24,38 +28,38 @@ const TeamAttendanceSummaryPanel = (props) => {
             <div className="total-headcount-container">
               <div>
                 <span>{total_headcount}</span> <br/> 
-                <label>Total Headcount</label>
+                <label >Total Headcount</label>
               </div>
             </div>
             <div className="computed-summary-container">
               <div>
-                <label>Scheduled Headcount</label><br/>
+                <label className={selected_summary == "scheduled_employees" ? "font-weight-bold" : ""}>Scheduled Headcount</label><br/>
                 <span className={(scheduled_employees?.total_percentage >= scheduled_employees?.target_percentage ? "green" : "red")}>{scheduled_employees?.total_percentage}%</span>&nbsp;<small>({scheduled_employees?.total_count})</small> <br/> 
                 <div className="target"><small>TARGET: {scheduled_employees?.target_percentage}%</small></div>
               </div>
               <div>
-                <label>Attendance</label><br/>
+                <label className={selected_summary == "attendance" ? "font-weight-bold" : ""}>Attendance</label><br/>
                 <span className={(attendance?.total_percentage >= attendance?.target_percentage ? "green" : "red")}>{attendance?.total_percentage}%</span>&nbsp;<small>({attendance?.total_count})</small> <br/> 
                 <div className="target"><small>TARGET: {attendance?.target_percentage}%</small></div>
               </div>
               <div>
-                <label>Unplanned Leaves</label><br/>
+                <label className={selected_summary == "unplanned_leaves" ? "font-weight-bold" : ""}>Unplanned Leaves</label><br/>
                 <span className={(unplanned_leaves?.total_percentage <= unplanned_leaves?.target_percentage ? "green" : "red")}>{unplanned_leaves?.total_percentage}%</span>&nbsp;<small>({unplanned_leaves?.total_count})</small> <br/> 
                 <div className="target"><small>TARGET: {unplanned_leaves?.target_percentage}%</small></div>
               </div>
               <div>
-                <label>Planned Leaves</label><br/>
+                <label className={selected_summary == "planned_leaves" ? "font-weight-bold" : ""}>Planned Leaves</label><br/>
                 <span className={(planned_leaves?.total_percentage <= planned_leaves?.target_percentage ? "green" : "red")}>{planned_leaves?.total_percentage}%</span>&nbsp;<small>({planned_leaves?.total_count})</small> <br/> 
                 <div className="target"><small>TARGET: {planned_leaves?.target_percentage}%</small></div>
               </div>
             </div>
             <div className="computed-payroll-items-container">
               <div>
-                <label>Rest Day Work</label><br/>
+                <label className={selected_summary == "total_rest_day_work" ? "font-weight-bold" : ""}>Rest Day Work</label><br/>
                 <span>{total_rest_day_work?.total_hours}</span>&nbsp;<small>({total_rest_day_work?.total_count})</small> <br/> 
               </div>
               <div>
-                <label>Overtime</label><br/>
+                <label className={selected_summary == "total_overtime" ? "font-weight-bold" : ""}>Overtime</label><br/>
                 <span>{total_overtime?.total_hours}</span>&nbsp;<small>({total_overtime?.total_count})</small> <br/> 
               </div>
             </div>
@@ -76,7 +80,7 @@ const TeamAttendanceSummaryPanel = (props) => {
                   {dtr_collection?.map(function(item){
                       
                       return (
-                      <tr>
+                      <tr key={item.user_id}>
                           <td><Link to={ global.links.profile + item.user_id  }>{item.name} </Link> </td>
                           <td>{item.job_title}</td>
                           <td>{moment( item.date ).format("MMM D")}</td>
