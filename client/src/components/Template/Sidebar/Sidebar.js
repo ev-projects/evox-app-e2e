@@ -5,6 +5,7 @@ import Authenticator from "../../../services/Authenticator";
 import Validator from "../../../services/Validator";
 import { logOut } from '../../../store/actions/userActions'
 import "./Sidebar.css";
+import { setSelectedAttendanceSummary } from "../../../store/actions/report/reportActions";
 
 const Sidebar = (props) => {
   
@@ -98,7 +99,7 @@ const Sidebar = (props) => {
                   { Authenticator.check('employee', 'employee_access') &&
                       <li className="nav-item">
                         <Link className="nav-link" to={global.links.my_request}>
-                        <i class="nav-icon fa fa-inbox" aria-hidden="true"></i>
+                        <i className="nav-icon fa fa-inbox" aria-hidden="true"></i>
                           <p> My Requests</p> 
                         </Link>
                       </li>
@@ -251,12 +252,79 @@ const Sidebar = (props) => {
                             </p>
                           </a>
                           <ul className="nav nav-treeview">
-                            <li className="nav-item">
+                            {/* <li className="nav-item">
                               <Link className="nav-link" to={global.links.team_attendance_summary} >
                                 <i className="nav-icon fa fa-bar-chart"  aria-hidden="true"></i>
                                 <p>Attendance Summary</p> 
                               </Link>
-                            </li> 
+                            </li>  */}
+
+                            <li className="nav-item has-treeview ">
+                              <a className="nav-link" >
+                              <i className="nav-icon fa fa-bar-chart" aria-hidden="true"></i>
+                                <p>
+                                Attendance Summary
+                                  <i className="right fa fa-chevron-left" />
+                                </p>
+                              </a>
+                              <ul className="nav nav-treeview">
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.team_attendance_summary } 
+                                  onClick={()=>{
+                                    props.setSelectedAttendanceSummary("scheduled_employees")
+                                  }}>
+                                    <i className="nav-icon fa fa-bars nav-icon" />
+                                    <p>Scheduled</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.team_attendance_summary }
+                                  onClick={()=>{
+                                    props.setSelectedAttendanceSummary("attendance")
+                                  }}>
+                                    <i className="nav-icon fa fa-calendar nav-icon" />
+                                    <p>Attendance</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.team_attendance_summary }
+                                  onClick={()=>{
+                                    props.setSelectedAttendanceSummary("unplanned_leaves")
+                                  }}>
+                                    <i className="nav-icon fa fa-window-close-o nav-icon" />
+                                    <p>Unplanned</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.team_attendance_summary } 
+                                  onClick={()=>{
+                                    props.setSelectedAttendanceSummary("planned_leaves")
+                                  }}>
+                                    <i className="nav-icon fa fa-pencil-square nav-icon" />
+                                    <p>Planned Leaves</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.team_attendance_summary }
+                                  onClick={()=>{
+                                    props.setSelectedAttendanceSummary("total_rest_day_work")
+                                  }}>
+                                    <i className="nav-icon fa fa-plus nav-icon " />
+                                    <p>Rest day Work</p>
+                                  </Link>
+                                </li>
+                                <li className="nav-item">
+                                  <Link className="nav-link" to={ global.links.team_attendance_summary }
+                                  onClick={()=>{
+                                    props.setSelectedAttendanceSummary("total_overtime")
+                                  }}>
+                                    <i className="nav-icon fa fa-clock-o nav-icon " />
+                                    <p>Overtime Work</p>
+                                  </Link>
+                                </li>
+                              </ul>
+                            </li>
+                            
                             {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
                             <li className="nav-item">
                             <Link className="nav-link" to={global.links.my_team_schedule} >
@@ -402,7 +470,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    logOut: () => dispatch( logOut() ) 
+    logOut: () => dispatch( logOut() ) ,
+    setSelectedAttendanceSummary : (data) => dispatch (setSelectedAttendanceSummary(data))
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

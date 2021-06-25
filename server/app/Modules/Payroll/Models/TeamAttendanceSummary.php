@@ -95,7 +95,7 @@ class TeamAttendanceSummary
                     
                     // Fetch the User's DTR base from the final start and end date
                     foreach( $dtr_collection  as $dtr ) {
-
+                        
                         // Fetch the approved leave of the DTR if there is any
                         $leave = $dtr->leaves()->where( 'status' , 'approved' )
                                             ->where( 'amount' , '>' , 0 )
@@ -125,6 +125,8 @@ class TeamAttendanceSummary
                             ) 
                         ){
                             $this->result['planned_leaves']['total_count'] += 1;
+                            // add user to the list
+                            array_push($this->result['planned_leaves']['users'],$dtr);
 
                         
                         // If the DTR has Schedule and there is an approved leave and its not from Unplanned leave types and amount is .5
@@ -137,6 +139,8 @@ class TeamAttendanceSummary
                             // If the DTR has Valid time logs, add .5 on the scheduled employees
                             if( $dtr->hasValidTimelogs() ) {
                                 $this->result['scheduled_employees']['total_count'] += .5;
+                                // add user to the list 
+                                array_push($this->result['scheduled_employees']['users'],$dtr);
 
                             // If the DTR has NO Valid time logs, add .5 on the unplanned leaves and 1 on scheduled employees
                             } else {
@@ -145,11 +149,14 @@ class TeamAttendanceSummary
                             }
 
                             $this->result['planned_leaves']['total_count'] += .5;
+                            array_push($this->result['planned_leaves']['users'],$dtr);
 
                         // If the DTR is considered absent or if there is an approved leave and its from the Unplanned leave types
                         }elseif( $dtr->isAbsent() || ( is_valid( $leave ) && in_array( $leave->type, get_constant('UNPLANNED_LEAVE_TYPES') ) ) ){
                             $this->result['unplanned_leaves']['total_count'] += 1;
                             $this->result['scheduled_employees']['total_count'] += 1;
+                            array_push($this->result['unplanned_leaves']['users'],$dtr);
+                            array_push($this->result['scheduled_employees']['users'],$dtr);
 
                         // If the DTR has Schedule and the DTR type is regular OR if the DTR is holiday and it has valid time logs
                         }elseif( $dtr->hasSchedule() && 
@@ -158,16 +165,19 @@ class TeamAttendanceSummary
                                 ( $holiday_collection > 0 && $dtr->hasValidTimeLogs() )
                             ) ){
                             $this->result['scheduled_employees']['total_count'] += 1;
+                            array_push($this->result['scheduled_employees']['users'],$dtr);
                         }
 
                         // If there is a approved Rest day work, count the instance
                         if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {
                             $this->result['total_rest_day_work']['total_count'] += 1;
+                            array_push($this->result['total_rest_day_work']['users'],$dtr);
                         }
 
                         // If there is a approved Overtime, count the instance
                         if( is_valid( $overtime ) && $overtime->isApproved() ) {
                             $this->result['total_overtime']['total_count'] += 1;
+                            array_push($this->result['total_overtime']['users'],$dtr);
                         }
 
                         foreach( $payroll_items_collection as $payroll_item ){
@@ -212,13 +222,27 @@ class TeamAttendanceSummary
 
                 }
 
+
                 // Parse the seconds to time for total rest day work and overtime data.
                 $this->result['total_rest_day_work']['total_hours'] = seconds_to_time( $this->result['total_rest_day_work']['total_hours'], true );
                 $this->result['total_overtime']['total_hours'] = seconds_to_time( $this->result['total_overtime']['total_hours'], true );
 
+             
+                foreach ($this->result['scheduled_employees']['users'] as $scheduled) {
+                $key = array_search($scheduled->id, array_column($this->result['unplanned_leaves']['users'], 'id'));
+                    if ($key === false){
+                        array_push($this->result['attendance']['users'],$scheduled);
+                    }
+                }
+
                 $this->result['dtr_collection'] = new TeamAttendanceSummaryResource( $this->result['dtr_collection'] );
+                $this->result['scheduled_employees']['users'] = new TeamAttendanceSummaryResource( $this->result['scheduled_employees']['users']);
+                $this->result['unplanned_leaves']['users'] = new TeamAttendanceSummaryResource( $this->result['unplanned_leaves']['users']);
+                $this->result['planned_leaves']['users'] = new TeamAttendanceSummaryResource( $this->result['planned_leaves']['users']);
+                $this->result['attendance']['users'] = new TeamAttendanceSummaryResource( $this->result['attendance']['users']);
                 
             }
+            
             return $this->result;
 
         } catch(Exception $e) {
@@ -251,29 +275,35 @@ class TeamAttendanceSummary
                 'total_count' => 0,
                 'total_percentage' => 0,
                 'target_percentage' => 95,
+                'users' => [],
             ],
             "attendance"  => [
                 'total_count' => 0,
                 'total_percentage' => 0,
                 'target_percentage' => 95,
+                'users' => [],
             ],
             "unplanned_leaves"  => [
                 'total_count' => 0,
                 'total_percentage' => 0,
                 'target_percentage' => 3,
+                'users' => [],
             ],
             "planned_leaves"  => [
                 'total_count' => 0,
                 'total_percentage' => 0,
                 'target_percentage' => 7 ,
+                'users' => [],
             ],
             "total_rest_day_work"  => [
                 'total_hours' => 0,
                 'total_count' => 0,
+                'users' => [],
             ],
             "total_overtime"  => [
                 'total_hours' => 0,
                 'total_count' => 0,
+                'users' => [],
             ],
             "dtr_collection"  => new Collection(),
         );
