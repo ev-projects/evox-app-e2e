@@ -4,7 +4,7 @@
 
 const initState = {
     team_attendance_summary: [],
-    selected_summary: "",
+    selected_summary: "scheduled_employees",
 }
 
 const reportReducers = (state = initState, action) => {

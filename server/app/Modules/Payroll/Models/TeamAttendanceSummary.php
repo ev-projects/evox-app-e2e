@@ -222,14 +222,24 @@ class TeamAttendanceSummary
 
                 }
 
+
                 // Parse the seconds to time for total rest day work and overtime data.
                 $this->result['total_rest_day_work']['total_hours'] = seconds_to_time( $this->result['total_rest_day_work']['total_hours'], true );
                 $this->result['total_overtime']['total_hours'] = seconds_to_time( $this->result['total_overtime']['total_hours'], true );
+
+             
+                foreach ($this->result['scheduled_employees']['users'] as $scheduled) {
+                $key = array_search($scheduled->id, array_column($this->result['unplanned_leaves']['users'], 'id'));
+                    if ($key === false){
+                        array_push($this->result['attendance']['users'],$scheduled);
+                    }
+                }
 
                 $this->result['dtr_collection'] = new TeamAttendanceSummaryResource( $this->result['dtr_collection'] );
                 $this->result['scheduled_employees']['users'] = new TeamAttendanceSummaryResource( $this->result['scheduled_employees']['users']);
                 $this->result['unplanned_leaves']['users'] = new TeamAttendanceSummaryResource( $this->result['unplanned_leaves']['users']);
                 $this->result['planned_leaves']['users'] = new TeamAttendanceSummaryResource( $this->result['planned_leaves']['users']);
+                $this->result['attendance']['users'] = new TeamAttendanceSummaryResource( $this->result['attendance']['users']);
                 
             }
             
