@@ -26,7 +26,14 @@
     font-size: 15px;
 }
 
-
+.summary-active{
+    background-color: rgb(230, 230, 230);
+    cursor: pointer;
+    border-radius: 5px;
+}
+.summary-inactive{
+    cursor: pointer;
+}
 
 
 .summary-report >.summary-wrapper > .computed-summary-container  {
@@ -74,7 +81,11 @@
     font-size: 30px;
 }
 
-.summary-report >.summary-wrapper > .computed-payroll-items-container > div > .green {
+.summary-report >.summary-wrapper > .computed-payroll-items-container > div > .green .active-text{
+    color: #82af13;
+}
+
+.active-text{
     color: #82af13;
 }
 

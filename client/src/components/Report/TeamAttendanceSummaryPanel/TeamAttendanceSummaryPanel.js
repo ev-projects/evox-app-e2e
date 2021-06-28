@@ -22,6 +22,7 @@ const TeamAttendanceSummaryPanel = (props) => {
   console.log(selected_summary)
   console.log("kkelvi")
   console.log(team_attendance_summary[selected_summary].users)
+  console.log(team_attendance_summary)
 
 
   let show_list = props.show_list ?? true;
@@ -35,53 +36,55 @@ const TeamAttendanceSummaryPanel = (props) => {
         </div>
       </div>
       <div className="computed-summary-container">
-        <div>
-          <label className={selected_summary == "scheduled_employees" ? " btn btn-success" : "btn btn-default"}
-            onClick={() => {
-              props.setSelectedAttendanceSummary("scheduled_employees")
-            }}>Scheduled Headcount</label><br />
+        <div className={selected_summary == "scheduled_employees" ? "summary-active" : "summary-inactive"}
+          onClick={() => {
+            props.setSelectedAttendanceSummary("scheduled_employees")
+          }}>
+          <label className={selected_summary == "scheduled_employees" ? "active-text font-weight-bolder" : ""} >Scheduled Headcount</label><br />
           <span className={(scheduled_employees?.total_percentage >= scheduled_employees?.target_percentage ? "green" : "red")}
           >{scheduled_employees?.total_percentage}%</span>&nbsp;<small>({scheduled_employees?.total_count})</small> <br />
           <div className="target"><small>TARGET: {scheduled_employees?.target_percentage}%</small></div>
         </div>
-        <div>
-          <label className={selected_summary == "attendance" ? " btn btn-success" : "btn btn-default"}
-            onClick={() => {
-              props.setSelectedAttendanceSummary("attendance")
-            }}>Attendance</label><br />
+        <div className={selected_summary == "attendance" ? "summary-active" : "summary-inactive"}
+          onClick={() => {
+            props.setSelectedAttendanceSummary("attendance")
+          }}>
+          <label className={selected_summary == "attendance" ? "active-text font-weight-bolder" : ""}
+          >Attendance</label><br />
           <span className={(attendance?.total_percentage >= attendance?.target_percentage ? "green" : "red")}>{attendance?.total_percentage}%</span>&nbsp;<small>({attendance?.total_count})</small> <br />
           <div className="target"><small>TARGET: {attendance?.target_percentage}%</small></div>
         </div>
-        <div>
-          <label className={selected_summary == "unplanned_leaves" ? " btn btn-success" : "btn btn-default"}
-            onClick={() => {
-              props.setSelectedAttendanceSummary("unplanned_leaves")
-            }}>Unplanned Leaves</label><br />
+        <div className={selected_summary == "unplanned_leaves" ? "summary-active" : "summary-inactive"}
+          onClick={() => {
+            props.setSelectedAttendanceSummary("unplanned_leaves")
+          }}>
+          <label className={selected_summary == "unplanned_leaves" ? "active-text font-weight-bolder" : ""}
+          >Unplanned Leaves</label><br />
           <span className={(unplanned_leaves?.total_percentage <= unplanned_leaves?.target_percentage ? "green" : "red")}>{unplanned_leaves?.total_percentage}%</span>&nbsp;<small>({unplanned_leaves?.total_count})</small> <br />
           <div className="target"><small>TARGET: {unplanned_leaves?.target_percentage}%</small></div>
         </div>
-        <div>
-          <label className={selected_summary == "planned_leaves" ? " btn btn-success" : "btn btn-default"}
+        <div className={selected_summary == "planned_leaves" ? "summary-active" : "summary-inactive"}
           onClick={() => {
             props.setSelectedAttendanceSummary("planned_leaves")
-          }}>Planned Leaves</label><br />
+          }}>
+          <label className={selected_summary == "planned_leaves" ? "active-text font-weight-bolder" : ""}>Planned Leaves</label><br />
           <span className={(planned_leaves?.total_percentage <= planned_leaves?.target_percentage ? "green" : "red")}>{planned_leaves?.total_percentage}%</span>&nbsp;<small>({planned_leaves?.total_count})</small> <br />
           <div className="target"><small>TARGET: {planned_leaves?.target_percentage}%</small></div>
         </div>
       </div>
       <div className="computed-payroll-items-container">
-        <div>
-          <label className={selected_summary == "total_rest_day_work" ? " btn btn-success" : "btn btn-default"}
+        <div className={selected_summary == "total_rest_day_work" ? "summary-active" : "summary-inactive"}
           onClick={() => {
             props.setSelectedAttendanceSummary("total_rest_day_work")
-          }}>Rest Day Work</label><br />
+          }}>
+          <label className={selected_summary == "total_rest_day_work" ? "active-text font-weight-bolder" : ""}>Rest Day Work</label><br />
           <span>{total_rest_day_work?.total_hours}</span>&nbsp;<small>({total_rest_day_work?.total_count})</small> <br />
         </div>
-        <div>
-          <label className={selected_summary == "total_overtime" ? " btn btn-success" : "btn btn-default"}
+        <div className={selected_summary == "total_overtime" ? "summary-active" : "summary-inactive"}
           onClick={() => {
             props.setSelectedAttendanceSummary("total_overtime")
-          }}>Overtime</label><br />
+          }}>
+          <label className={selected_summary == "total_overtime" ? "active-text font-weight-bolder" : ""}>Overtime</label><br />
           <span>{total_overtime?.total_hours}</span>&nbsp;<small>({total_overtime?.total_count})</small> <br />
         </div>
       </div>
@@ -102,7 +105,7 @@ const TeamAttendanceSummaryPanel = (props) => {
             {team_attendance_summary[selected_summary].users?.map(function (item) {
 
               return (
-                <tr key={item.user_id}>
+                <tr >
                   <td><Link to={global.links.profile + item.user_id}>{item.name} </Link> </td>
                   <td>{item.job_title}</td>
                   <td>{moment(item.date).format("MMM D")}</td>
