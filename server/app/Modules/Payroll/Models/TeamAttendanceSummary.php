@@ -240,6 +240,8 @@ class TeamAttendanceSummary
                 $this->result['unplanned_leaves']['users'] = new TeamAttendanceSummaryResource( $this->result['unplanned_leaves']['users']);
                 $this->result['planned_leaves']['users'] = new TeamAttendanceSummaryResource( $this->result['planned_leaves']['users']);
                 $this->result['attendance']['users'] = new TeamAttendanceSummaryResource( $this->result['attendance']['users']);
+                $this->result['total_rest_day_work']['users'] = new TeamAttendanceSummaryResource( $this->result['total_rest_day_work']['users']);
+                $this->result['total_overtime']['users'] = new TeamAttendanceSummaryResource( $this->result['total_overtime']['users']);
                 
             }
             

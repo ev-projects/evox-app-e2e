@@ -19,10 +19,6 @@ const TeamAttendanceSummaryPanel = (props) => {
     dtr_collection,
     total_headcount } = team_attendance_summary;
   const selected_summary = props.selected_summary
-  console.log(selected_summary)
-  console.log("kkelvi")
-  console.log(team_attendance_summary[selected_summary].users)
-  console.log(team_attendance_summary)
 
 
   let show_list = props.show_list ?? true;
