@@ -10,7 +10,7 @@ import { setSelectedAttendanceSummary } from "../../../store/actions/report/repo
 const Sidebar = (props) => {
   
   
-  const { user, settings } = props;
+  const { user, settings, selected_summary } = props;
 
   var name = 'Loading...';
   if(user.first_name!=null&&user.last_name!=null){
@@ -269,7 +269,7 @@ const Sidebar = (props) => {
                               </a>
                               <ul className="nav nav-treeview">
                                 <li className="nav-item">
-                                  <Link className="nav-link" to={ global.links.team_attendance_summary } 
+                                  <Link className={selected_summary=="scheduled_employees" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary } 
                                   onClick={()=>{
                                     props.setSelectedAttendanceSummary("scheduled_employees")
                                   }}>
@@ -278,7 +278,7 @@ const Sidebar = (props) => {
                                   </Link>
                                 </li>
                                 <li className="nav-item">
-                                  <Link className="nav-link" to={ global.links.team_attendance_summary }
+                                  <Link className={selected_summary=="attendance" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary }
                                   onClick={()=>{
                                     props.setSelectedAttendanceSummary("attendance")
                                   }}>
@@ -287,7 +287,7 @@ const Sidebar = (props) => {
                                   </Link>
                                 </li>
                                 <li className="nav-item">
-                                  <Link className="nav-link" to={ global.links.team_attendance_summary }
+                                  <Link className={selected_summary=="unplanned_leaves" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary }
                                   onClick={()=>{
                                     props.setSelectedAttendanceSummary("unplanned_leaves")
                                   }}>
@@ -296,7 +296,7 @@ const Sidebar = (props) => {
                                   </Link>
                                 </li>
                                 <li className="nav-item">
-                                  <Link className="nav-link" to={ global.links.team_attendance_summary } 
+                                  <Link className={selected_summary=="planned_leaves" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary } 
                                   onClick={()=>{
                                     props.setSelectedAttendanceSummary("planned_leaves")
                                   }}>
@@ -305,7 +305,7 @@ const Sidebar = (props) => {
                                   </Link>
                                 </li>
                                 <li className="nav-item">
-                                  <Link className="nav-link" to={ global.links.team_attendance_summary }
+                                  <Link className={selected_summary=="total_rest_day_work" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary }
                                   onClick={()=>{
                                     props.setSelectedAttendanceSummary("total_rest_day_work")
                                   }}>
@@ -314,7 +314,7 @@ const Sidebar = (props) => {
                                   </Link>
                                 </li>
                                 <li className="nav-item">
-                                  <Link className="nav-link" to={ global.links.team_attendance_summary }
+                                  <Link className={selected_summary=="total_overtime" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary }
                                   onClick={()=>{
                                     props.setSelectedAttendanceSummary("total_overtime")
                                   }}>
@@ -462,9 +462,11 @@ const Sidebar = (props) => {
 
 
 const mapStateToProps = (state) => {
+  console.log(state)
   return {
       user : state.user,
-      settings : state.settings
+      settings : state.settings,
+      selected_summary : state.report.selected_summary
   }
 }
 
