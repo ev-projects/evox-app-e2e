@@ -27,7 +27,7 @@ class EmployeeList extends Component {
 
       this.initialState = {
           filters: {
-            status:         this.props.myTeamList?.filters?.status,
+            status:         1,
             department_id:  this.props.myTeamList?.filters?.department_id,
             team_id:        this.props.myTeamList?.filters?.team_id,
             job_title:      this.props.myTeamList?.filters?.job_title,
@@ -126,6 +126,18 @@ const MyTeamListFilter = (props) => {
                     </select>
                 </div>
               </Col> 
+              <Col size="4">
+                    <select
+                    className="form-control"
+                      name="status"
+                      value={values.status}
+                      onChange={handleChange}
+                    >
+                      <option label="Select Status..." />
+                      <option value="1" label="Active" />
+                      <option value="0" label="Inactive" />
+                    </select>
+              </Col>
               <Col size="2"> 
                 <div className="form-group">
                     <select
