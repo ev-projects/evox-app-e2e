@@ -23,7 +23,7 @@ class TeamAttendanceSummary extends Component {
         this.initialState = {
           start_date:       moment().startOf('week'),
           end_date:         moment().endOf('week'),
-          department_id:    this.props.user.departments_handled.length == 1 ? this.props.user.departments_handled[0].id : "",
+          department_id:    this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0].id : "",
           team_id:          "",
           name:             "",
         }
@@ -74,6 +74,7 @@ class TeamAttendanceSummary extends Component {
 
     componentWillMount(){ 
       // this.handleChangeDate( this.state.start_date, this.state.end_date );
+      this.handleSubmit();
     }
       
     render = () => {  
