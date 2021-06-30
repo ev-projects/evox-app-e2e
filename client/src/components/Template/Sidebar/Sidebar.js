@@ -287,15 +287,6 @@ const Sidebar = (props) => {
                                   </Link>
                                 </li>
                                 <li className="nav-item">
-                                  <Link className={selected_summary=="unplanned_leaves" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary }
-                                  onClick={()=>{
-                                    props.setSelectedAttendanceSummary("unplanned_leaves")
-                                  }}>
-                                    <i className="nav-icon fa fa-window-close-o nav-icon" />
-                                    <p>Unplanned</p>
-                                  </Link>
-                                </li>
-                                <li className="nav-item">
                                   <Link className={selected_summary=="planned_leaves" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary } 
                                   onClick={()=>{
                                     props.setSelectedAttendanceSummary("planned_leaves")
@@ -304,6 +295,16 @@ const Sidebar = (props) => {
                                     <p>Planned Leaves</p>
                                   </Link>
                                 </li>
+                                <li className="nav-item">
+                                  <Link className={selected_summary=="unplanned_leaves" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary }
+                                  onClick={()=>{
+                                    props.setSelectedAttendanceSummary("unplanned_leaves")
+                                  }}>
+                                    <i className="nav-icon fa fa-window-close-o nav-icon" />
+                                    <p>Unplanned</p>
+                                  </Link>
+                                </li>
+                                
                                 <li className="nav-item">
                                   <Link className={selected_summary=="total_rest_day_work" ? "nav-link activeAttendanceSummaryReport" : "nav-link" } to={ global.links.team_attendance_summary }
                                   onClick={()=>{
