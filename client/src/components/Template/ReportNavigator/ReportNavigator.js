@@ -144,7 +144,7 @@ const ReportNavigator = (props) => {
                         timeFormat="MMMM d, yyyy"
                         placeholder="Start Date"
                         selected={customStartDate}   
-                        onChange={date => setCustomStartDate(date)} 
+                        onChange={(date) => { setCustomStartDate(date); start_date.set( moment(date).toObject());}}
                     />
                         <span style={{marginTop: "5px"}}>to</span>
                     <DatePicker 
@@ -156,7 +156,7 @@ const ReportNavigator = (props) => {
                         timeFormat="MMMM d, yyyy"
                         placeholder="End Date"
                         selected={customEndDate}       
-                        onChange={date => setCustomEndDate(date)} 
+                        onChange={(date) => { setCustomEndDate(date); end_date.set( moment(date).toObject());}}
                     />   
                     <Button className="custom-filter-btn" variant="primary" onClick={handleCustomFilter} >
                         <i className="fa fa-filter" />
