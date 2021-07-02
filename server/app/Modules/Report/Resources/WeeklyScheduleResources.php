@@ -5,7 +5,7 @@ namespace App\Modules\Report\Resources;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TeamScheduleResources extends JsonResource
+class WeeklyScheduleResources extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -27,15 +27,14 @@ class TeamScheduleResources extends JsonResource
         $date_list = [];
         $list = [];
         $week_list = [];
+
+
         if(count( $this->resource ) > 0 ) {
             $prev_date = $this->resource[0]->date;
             $date_list[] =  date("M,d", strtotime($prev_date));
 
             $day_index = 0;
             $week_index = 0;
-            
-            $week_start = date('l',strtotime($prev_date));
-            $prev_day = $week_start;
             
             foreach ( $this->team_schedule->items() as $array) {
                 $status = $array->getDtrStatus();
@@ -47,15 +46,8 @@ class TeamScheduleResources extends JsonResource
                     $date_list[] = date("M,d", strtotime($prev_date));
                     $day_index += 1;
                 }
-
-                if($prev_day == "Saturday" && $week_day=="Sunday"){
-                    $week_list[] =  array( $week_start , $prev_day ) ;
-                    $week_start = $week_day;
-                    $week_index += 1;
-                }
-
                 
-                $list[$week_index][$day_index][$array->user_id] = [
+                $list[$day_index][$array->user_id] = [
                     "Name" => $array->user()->first()->getFullName( 3 ),
                     "Schedule" => $array->getSchedule(),
                     "type" =>  $status
@@ -63,9 +55,6 @@ class TeamScheduleResources extends JsonResource
 
                 $prev_day = $week_day;
             }
-            
-            $week_list[] = array( $week_start ,  $week_day ) ;
-
         }
 
 
@@ -75,7 +64,6 @@ class TeamScheduleResources extends JsonResource
             "last_page" => $this->team_schedule->lastPage(), 
             "data" => $list,
             "date_list" => $date_list,
-            "week_list" => $week_list
         );
     }
 }

@@ -28,7 +28,7 @@ class DailyScheduleReources extends JsonResource
         $list = null;
         $list = [];
         if(count( $this->resource ) > 0 ) {
-            foreach ( $this->team_schedule as $array) {
+            foreach ( $this->team_schedule->items() as $array) {
                 # Skip the dtr if it doesn't have schedule
                 if(!$array->hasSchedule()){
                     continue;
@@ -66,6 +66,8 @@ class DailyScheduleReources extends JsonResource
         }
 
         return array(
+            "current_page" => $this->team_schedule->currentPage(), 
+            "last_page" => $this->team_schedule->lastPage(), 
             "data" => $list,
         );
     }

@@ -62,22 +62,53 @@ export const fetchTeamSchedule = ( params = null ) => {
             params : params
         })
         .then(result => {
-            if(params.scope_type=="day"){
-                dispatch({
-                    'type'      : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
-                    'day'  : result.data.content.data,
-                })
-            }else if(params.scope_type=="week"){
-                dispatch({
-                    'type'      : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
-                    'week'  : result.data.content,
-                })
-            }else if(params.scope_type=="month"||params.scope_type=="custom"){
-                dispatch({
-                    'type'      : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
-                    'month'  : result.data.content,
-                })
+            if(params.export=="all"){
+            var fileURL = window.URL.createObjectURL(new Blob([result.data]));
+            var fileLink = document.createElement('a');
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'team_schedule.csv');
+            document.body.appendChild(fileLink);
+            fileLink.click();
+            }else{
+                if(params.scope_type=="day"){
+                    dispatch({
+                        'type'      : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
+                        'day'       :  result.data.content,
+                    })
+                }else if(params.scope_type=="week"){
+                    dispatch({
+                        'type'      : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
+                        'week'      : result.data.content,
+                    })
+                }else if(params.scope_type=="month" || params.scope_type=="custom"){
+                    dispatch({
+                        'type'      : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
+                        'month'     : result.data.content,
+                    })
+                }
             }
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+export const exportDtrSummary = ( data = null ) => {
+    return (dispatch, getState) => {
+        API.export({
+            method: "get",
+            url: "/report/dtr_summary/export",
+            params : data
+        })
+        .then(result => {
+            var fileURL = window.URL.createObjectURL(new Blob([result.data]));
+            var fileLink = document.createElement('a');
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'dtr_summary.csv');
+            document.body.appendChild(fileLink);
+            fileLink.click();
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

@@ -3,13 +3,15 @@
 namespace App\Modules\Report\Http\Controllers;
 
 use App\Exports\DtrSummaryExport;
+use App\Exports\TeamScheduleExport;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Resources\AnniversaryResources; 
 use App\Modules\Payroll\Resources\TeamAttendanceResources; 
 use App\Modules\Report\Resources\TeamScheduleResources; 
-use App\Modules\Report\Resources\DailyScheduleReources; 
+use App\Modules\Report\Resources\DailyScheduleReources;  
+use App\Modules\Report\Resources\WeeklyScheduleResources;
 use App\Modules\Payroll\Resources\HolidayResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -41,12 +43,14 @@ class ReportController extends Controller
                                  PayrollCutoffRepositoryInterface $payroll_cutoff,
                                  DtrRepositoryInterface $dtr, 
                                  DtrSummaryExport $dtr_summary_export,
+                                 TeamScheduleExport $team_schedule_export,
                                  UserRepositoryInterface $user){
         $this->report = $report;
         $this->holiday = $holiday;
         $this->payroll_cutoff = $payroll_cutoff;
         $this->dtr = $dtr;
         $this->dtr_summary_export = $dtr_summary_export;
+        $this->team_schedule_export = $team_schedule_export;
         $this->user = $user;
     }
 
@@ -260,19 +264,36 @@ class ReportController extends Controller
                 }
             }
 
-            if(request()->get('scope_type')=="day"){
+            if(request()->get('export')=="all"){
                 $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
-                return success_response(
-                    trans('messages.'.__FUNCTION__.'_success'), 
-                    new DailyScheduleReources($result, $date = new Carbon($time_from))
-                );
+                $this->team_schedule_export->data = $result;
+                return Excel::download($this->team_schedule_export , 'dtrsummary.csv');
+            }else{
+                if(request()->get('scope_type')=="day"){
+                    $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                    return success_response(
+                        trans('messages.'.__FUNCTION__.'_success'), 
+                        new DailyScheduleReources($result, $date = new Carbon($time_from))
+                    );
+                }elseif(request()->get('scope_type')=="week"){
+                    $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                    // return $result;
+                    return success_response(
+                        trans('messages.'.__FUNCTION__.'_success'), 
+                        new WeeklyScheduleResources($result)
+                    ); 
+                }else{
+                    $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                    // return $result;
+                    return success_response(
+                        trans('messages.'.__FUNCTION__.'_success'), 
+                        new TeamScheduleResources($result)
+                    );
+                }
+    
             }
 
-            $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
-                new TeamScheduleResources($result)
-            );
+  
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
