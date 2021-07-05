@@ -7,37 +7,6 @@ import Formatter from "../../../services/Formatter";
  *  A dedicated repository of Actions for Profile
  */
 
- export const setDateList = ( date_list ) => {
-    return (dispatch, getState) => {
-
-        dispatch({
-            'type'               : 'SET_DATE_LIST',
-            'date_list'          : date_list,
-        })
-    }
-}
-
-export const setScope = ( scope ) => {
-    return (dispatch, getState) => {
-
-        dispatch({
-            'type'               : 'SET_SCOPE',
-            'scope'          : scope,
-        })
-    }
-}
-
-export const setWeekList = ( data ) => {
-    return (dispatch, getState) => {
-
-        dispatch({
-            'type'               : 'SET_WEEK_LIST',
-            'data'               : data,
-        })
-    }
-}
-
-
 export const fetchProfile = ( id ) => {
     return (dispatch, getState) => {
 
@@ -157,48 +126,6 @@ export const fetchLeaveCredits = ( id ) => {
             dispatch({
                 'type'              : 'FETCH_LEAVE_CREDITS',
                 'leave_credits'     : result.data.content,
-            })
-
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    }
-}
-
-export const fetchSchedule = ( id ) => {
-    return (dispatch, getState) => {
-
-        API.call({
-            method: "get",
-            url: "/user/" + id + "/default_schedule/"
-        })
-        .then(result => {
-
-            dispatch({
-                'type'              : 'FETCH_SCHEDULE',
-                'schedule'     : result.data.content,
-            })
-
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    }
-}
-
-export const fetchTemporarySchedule = ( id ) => {
-    return (dispatch, getState) => {
-
-        API.call({
-            method: "get",
-            url: "/user/" + id + "/temporary_schedules/"
-        })
-        .then(result => {
-
-            dispatch({
-                'type'              : 'FETCH_TEMPORARY_SCHEDULE',
-                'schedule'     : result.data.content,
             })
 
         })
