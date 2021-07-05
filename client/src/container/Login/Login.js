@@ -77,12 +77,15 @@ class Login extends Component {
                                               &nbsp;{errors.password && touched.password && errors.password}
                                           </Form.Control.Feedback>
                                       </InputGroup>
+                                      <div className="btn-wrapper">
                                       <Button className="login_btn" variant="primary" type="submit">
                                         <i class="fa fa-sign-in" /> Log In
                                       </Button>
                                       <Link className="forgot-password-link" to={global.links.recover_password} >
                                         Forgot Password?
                                       </Link>
+                                      </div>
+                                      
                                   </form>
                                   )}
                               </Formik>

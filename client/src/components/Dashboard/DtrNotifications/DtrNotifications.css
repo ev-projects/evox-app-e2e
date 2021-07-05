@@ -33,7 +33,6 @@
 }
 
 .dtr-notifications .content-table{
-    height: 300px; 
     overflow-y: scroll;
     min-height: 150px;
     max-height: 280px;

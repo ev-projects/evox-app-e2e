@@ -37,7 +37,7 @@ class TeamScheduleResources extends JsonResource
             $week_start = date('l',strtotime($prev_date));
             $prev_day = $week_start;
             
-            foreach ( $this->team_schedule->items() as $array) {
+            foreach ( $this->team_schedule as $array) {
                 $status = $array->getDtrStatus();
                 $week_day = date('l',strtotime($array->date)  );
                 
@@ -71,8 +71,8 @@ class TeamScheduleResources extends JsonResource
 
 
         return array(
-            "current_page" => $this->team_schedule->currentPage(), 
-            "last_page" => $this->team_schedule->lastPage(), 
+            "current_page" => 1, 
+            "last_page" => 1, 
             "data" => $list,
             "date_list" => $date_list,
             "week_list" => $week_list

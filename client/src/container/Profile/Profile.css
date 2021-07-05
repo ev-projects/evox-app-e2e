@@ -55,7 +55,7 @@
     display: inline-block;
     overflow: hidden;
     flex: none;
-    width: 173px;
+    max-width: 123px;
     padding: 0 !important;
     margin: 0 15px 0 0 !important;
 }
@@ -71,11 +71,12 @@
 .profile-header .information{float: left; position: relative;top:40px;}
 .profile-header input{border:0 !important; background-color: transparent !important;}
 
-.profile-tabs{position: absolute;top:-6px; right: 5px}
+.profile-tabs{position: absolute;top:8px; right: 5px}
 .profile-tabs .nav-tabs{border: 0 !important;}
-.profile-tabs a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px;}
+.profile-tabs a{padding:5px 10px !important;  margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px;}
 .profile-tabs a.active {background-color: #82af13  !important; color: #fff !important;}
 .profile-tabs button.active a{color:#82af13 !important;}
+.report-navigator a{padding:5px 10px !important;}
 .card-header{background: transparent !important;}
 .user_form .row {margin-top: 15px; margin-bottom: 15px }
 .user_form .year-dropdown{padding: 0}

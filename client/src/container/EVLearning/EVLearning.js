@@ -14,7 +14,7 @@ class EVLearning extends Component {
 	  <li>Make sure to register via your work email address before working on a course.</li>
 	  <li>Once the course is completed, please send the total hours spent plus the screenshot for completion per completed course or&nbsp;forward the email notification that the e-learning site will send you after completing the course to happiness@eastvantage.com</li>
 	  <li>The targeted hours of completion is 10 hours until December 31 - spend a minimum of 1&nbsp;hour&nbsp;per month.</li>
-	  <li>If you are unable to access the website because it is generating errors, or if&nbsp;the video is blocked,&nbsp;please raise a helpdesk ticket to helpdesk@eastvantage.com and copy in anna.dave@eastvantage.com &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li>
+	  <li>If you are unable to access the website because it is generating errors, or if&nbsp;the video is blocked,&nbsp;please send an email to happiness@eastvantage.com </li>
 	</ol>
 	<p>&nbsp;</p>
 	<ul className="el-nav">

@@ -21,7 +21,7 @@ class TeamScheduleExport implements FromCollection,WithHeadings
             $row['id'] = $dtr->user()->first()->id;
             $row['name'] =  $dtr->user()->first()->getFullName( 3 );
             $row['department'] = $dtr->user()->first()->department()->first()->getCompleteName();
-
+            $row['date'] = $dtr->date;
             $row['on_duty'] = '';
             $row['off_duty'] = ''; 
             $row['flexy_start'] = '';

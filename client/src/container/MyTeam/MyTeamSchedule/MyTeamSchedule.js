@@ -165,12 +165,14 @@ class MyTeamSchedule extends Component {
   return(
     <Wrapper {...this.props} >
           <ContainerWrapper>
-          <h2>My Team Schedule</h2>  
+          <h2>My Team Schedule</h2>
+
           <div className="navigator-bar">
           <ReportNavigator start_date={this.state.start_date} end_date={this.state.end_date} scope_type={this.state.scope_type}  handleChangeDate={this.handleChangeDate} default_view_type={"day"} hide_filter_button={true}/>
           </div>
           <ContainerBody>  
               <Content col="12">
+                
                 <Row>
                 <Col className="dept"> 
                     <div className="form-group">
@@ -214,9 +216,7 @@ class MyTeamSchedule extends Component {
                       <Col size="2"> 
                           <Button variant="primary" type="submit" onClick={this.filterSchedule}>
                             <i className="fa fa-filter" /> Filter
-                          </Button>
-                      </Col>
-                      <Col size="2"> 
+                          </Button> &nbsp; 
                       <Dropdown className="export-drop-down">
                             <Dropdown.Toggle variant="success" id="dropdown-basic">
                               <i className="fa fa-download" /> Export
@@ -229,24 +229,38 @@ class MyTeamSchedule extends Component {
                       </Col>
   
                   </Row>
-
+                    <Row className="legends">
+                    <div className="early"><span className="box"></span><span className="status">Early In</span></div>
+                    <div className="late"><span className="box"></span><span className="status">Late</span></div>
+                    <div className="undertime"><span className="box"></span><span className="status">Undertime</span></div>
+                    <div className="holiday"><span className="box"></span><span className="status">Holiday</span></div>
+                    <div className="rest_day"><span className="box"></span><span className="status">Rest day</span></div>
+                    <div className="on_leave"><span className="box"></span><span className="status">On Leave</span></div>
+                    <div className="absent"><span className="box"></span><span className="status">Absent</span></div>
+                </Row>
                 {scope_type == "day" ? (
                 <React.Fragment>
-                <DayTeamSchedule data={day} />  
+                <div className="today-sched"><DayTeamSchedule data={day} />  </div>
               </React.Fragment>)
                 :  scope_type == "week"  ? ( 
                 <React.Fragment>
+                  <div className="calendar-sched">
                   <WeekTeamSchedule  data={week}/>
+                  </div>
               </React.Fragment>)
                 :  scope_type == "month" || scope_type == "custom" ? ( 
                 <React.Fragment>
+                <div className="calendar-sched">
                   <MonthTeamSchedule  data={month}/>
+                </div>
               </React.Fragment>)
                 : "Neither"}
                 { current_page < last_page &&
+              <div className="viewmore">
               <Button variant="primary" type="submit" onClick={(link) => { this.paginate(link) }}>
                  View More
               </Button>
+              </div>
               } 
               </Content>
               
@@ -260,8 +274,8 @@ class MyTeamSchedule extends Component {
     return (
     <React.Fragment> {  props.data.length > 0  ? (<React.Fragment> 
       <Row className="Hourframe">
-      <div>12AM</div><div>1AM</div><div>2AM</div><div>3AM</div><div>4AM</div><div>5AM</div><div>6AM</div><div>7AM</div><div>8AM</div><div>9AM</div><div>10AM</div><div>11AM</div><div>12NN</div>
-      <div>1PM</div><div>2PM</div><div>3PM</div><div>4PM</div><div>5PM</div><div>6PM</div><div>7PM</div><div>8PM</div><div>9PM</div><div>10PM</div><div>11PM</div><div>12AM</div>
+      <div><span>12AM</span></div><div><span>1AM</span></div><div><span>2AM</span></div><div><span>3AM</span></div><div><span>4AM</span></div><div><span>5AM</span></div><div><span>6AM</span></div><div><span>7AM</span></div><div><span>8AM</span></div><div><span>9AM</span></div><div><span>10AM</span></div><div><span>11AM</span></div><div><span>12NN</span></div>
+      <div><span>1PM</span></div><div><span>2PM</span></div><div><span>3PM</span></div><div><span>4PM</span></div><div><span>5PM</span></div><div><span>6PM</span></div><div><span>7PM</span></div><div><span>8PM</span></div><div><span>9PM</span></div><div><span>10PM</span></div><div><span>11PM</span></div><div><span>12AM</span></div>
       </Row>
       {props.data.map((page,index) => {
         return  <React.Fragment>{page.map((value,index) => {
@@ -284,30 +298,34 @@ class MyTeamSchedule extends Component {
           var card_text = card.text;
 
           if(value.day_type=="underlapped"){
+
             first_div.width = String(value.hour * 4) + "%";  
             second_div.width = String( value.hour  * 4 ) + "%";
-            first_div.content = value.Name + " - " + card_text
+            first_div.content = value.Name + " - "+ card_text;
 
             first_div.class = card_class;
-          }else if (value.day_type=="overlapped"){
+          }
+          else if (value.day_type=="overlapped"){
+
             first_div.width = String( ( 25 - value.hour ) * 4) + "%";
             second_div.width = String( value.hour  * 4 ) + "%";
-            second_div.content = value.Name + " - " + card_text;
+            second_div.content = value.Name  +" - "+ card_text;
             
             second_div.class = card_class;
           }else{  
             var schedule_in = moment(value.on_duty);
+            var schedule_out = moment(value.off_duty);
             var space = (Number( schedule_in.format("HH") ) + Number(schedule_in.format("mm"))/60) * 4 ;
             first_div.width = String( space ) + "%";
             second_div.width = String( value.hour * 4 ) + "%";
-            second_div.content = value.Name + " - " + card_text
+            second_div.content = value.Name +" - "+ card_text;
 
             second_div.class = card_class;
           }
 
-          return <Row className="emp_sched" >
+          return <Row className="emp_sched" title={second_div.content}>
           <div style={first_div} className={first_div.class}>{first_div.content}</div>
-          <div style={second_div} className={second_div.class}>{second_div.content}</div>
+          <div style={second_div} className={second_div.class}><span>{second_div.content}</span></div>
           <div></div>
           </Row>;
         })}</React.Fragment>;
@@ -322,8 +340,6 @@ class MyTeamSchedule extends Component {
     let  column = [];
     let  info = [];  
 
-    var prev_date = "";
-    var current_date = "";
     var day_index = 0;
     var unique_date = 0
     // Paging
@@ -338,13 +354,13 @@ class MyTeamSchedule extends Component {
           var card = {};
           card = displayStatus(data);
           var card_class = card.class;
-          var card_text = card.text;
-
+          var card_text = card.text ;
+          
           info.push(<Card>
             <div className={"card-body "+card_class}>
               <div className="schedule_info">
                 <div>{data.Name}</div>
-                <div> &nbsp; {card_text} &nbsp;</div>
+                <div> &nbsp; {card_text}  <br /></div>
               </div>
           </div>
           </Card>);
@@ -386,8 +402,7 @@ class MyTeamSchedule extends Component {
     let  info = [];
     let  column = []; 
 
-    var current_date = "";
-    var next_date = ""; 
+
     var day_index = 0;
     var week_index = 0;
 
@@ -462,30 +477,33 @@ class MyTeamSchedule extends Component {
 
     if(schedule_info.type.includes("early")){
       card.class = 'early';
-      card.text = "Early In";                           
+      card.text = "(Early In)";                           
     }else if(schedule_info.type.includes("on_leave")){
       card.class = 'on_leave';
-      card.text = 'On Leave';
+      card.text = '(On Leave)';
     }else if(schedule_info.type.includes("holiday")){
       card.class = 'holiday';
-      card.text = 'Holiday';
+      card.text = '(Holiday)';
     }else if(schedule_info.type.includes("rest_day")){
       card.class = 'rest_day';
-      card.text = 'Rest Day';
+      card.text = '(Rest Day)';
     }else if(schedule_info.type.includes("late")){
       card.class = 'late';
-      card.text = "Late"; 
+      card.text = "(Late)"; 
     }else if(schedule_info.type.includes("absent")){
       card.class = 'absent';
-      card.text = "Absent"; 
+      card.text = "(Absent)"; 
     }else if(schedule_info.type.includes("no_schedule")){
       card.class = 'no_schedule';
-      card.text = "No Schedule";
+      card.text = "(No Schedule)";
     }else if(schedule_info.type.includes("no_status")){
       card.class = 'no_status';
-      card.text = "No Status";
+      card.text = " ";
     }
 
+    if(schedule_info.Schedule.length > 0 ){
+      card.text = schedule_info.Schedule +  " " + card.text;
+    }
     return card;
   }
 

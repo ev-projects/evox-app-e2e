@@ -5,16 +5,17 @@
     display: block !important;
     margin: 0;
     position: relative;
-    top: 33px;
+    top: 28px;
     z-index: 1000;
 }
+td.actions .fa{margin-right: 5px;}
 
 .sortby > div
  {
     float: right;
-    max-width: 290px;
+    max-width: 250px;
     flex: unset;
-    margin-right: 10px;
+    margin-right: 0px;
 }
 .sortby label {
     float: left;
@@ -24,8 +25,8 @@
 }
 .sortby .form-group {
     float: left;
-    max-width: 200px;
-    margin-right: 13px;
+    max-width: 150px;
+    margin-right: 0px;
 }
 .sortby label{
     padding: 7px;

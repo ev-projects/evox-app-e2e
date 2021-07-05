@@ -728,7 +728,7 @@ class Dtr extends Model
                 }elseif( isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
                     $status[] = "undertime";
                 }else{
-                    $status[] = 'no_status';
+                    $status[] = '';
                 }
 
             }

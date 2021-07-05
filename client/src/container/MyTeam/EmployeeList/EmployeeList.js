@@ -225,6 +225,7 @@ const MyTeamListTable = (props) => {
                   <th>Job Title</th> 
                   <th>Department</th>
                   <th>Email</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -236,10 +237,8 @@ const MyTeamListTable = (props) => {
                     <td>{user.job_title} </td>
                     <td>{user.department} </td>
                     <td>{user.email} </td>
+                    <td className="emp-status"> <Status status={user.is_active} /></td>
                     <td className="actions">
-  
-                      
-                      &nbsp;&nbsp;&nbsp;
                       { !Authenticator.checkRole('client') ? 
                         <span>
                           { Authenticator.check('supervisor', 'view_employee_dtr') &&
@@ -252,7 +251,7 @@ const MyTeamListTable = (props) => {
                               <i className="fa fa-clock-o ev-color" aria-hidden="true"></i>
                             </Link>
                           }
-                          &nbsp;&nbsp;
+                          
                           { Authenticator.check('supervisor', 'manage_schedule') &&
                             <Link to={{
                                     pathname: global.links.schedule_assign_user + user.id
@@ -262,7 +261,6 @@ const MyTeamListTable = (props) => {
                               <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
                             </Link>
                           }
-                          &nbsp;&nbsp;
                         </span>
                         : 
                         null

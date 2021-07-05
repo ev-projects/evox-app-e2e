@@ -992,7 +992,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     if( request()->get('pagination')  == 'all'){
                         $dtr_collection = $dtr_collection->get();
                     }else{
-                        $dtr_collection = $dtr_collection->paginate(request()->get('pagination'));
+                        $dtr_collection = $dtr_collection->get();
                     }
                     
                 // If the parameter 'page' value is numeric, fetch the paginated list with offset.

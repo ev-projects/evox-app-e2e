@@ -140,9 +140,9 @@ class PayrollCutoff extends Component {
       return <Wrapper  {...this.props} >
         <ContainerWrapper>
             <ContainerBody>
-              <div style={{'flex': '1 1 auto', 'padding': '1.25rem'}}>
+              <div className="payrollCutoff-content">
                 <Row>  
-                  <Content col="6" title="Payroll Cut-Off List"  subtitle={<Button type="button" className="btn btn-secondary" onClick={()=> {this.showForm(); Authenticator.check();}}><i class="fa fa-plus" /> Add</Button>} >
+                  <Content col="7" title="Payroll Cut-Off List"  subtitle={<Button type="button" className="btn btn-secondary" onClick={()=> {this.showForm(); Authenticator.check();}}><i class="fa fa-plus" /> Add</Button>} >
                       <Col size="12"> 
                       
                       <DataTable
