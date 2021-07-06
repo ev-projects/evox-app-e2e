@@ -166,11 +166,12 @@ class MyTeamSchedule extends Component {
     <Wrapper {...this.props} >
           <ContainerWrapper>
           <h2>My Team Schedule</h2>
-
+          <div className="report-schedule">
           <div className="navigator-bar">
           <ReportNavigator start_date={this.state.start_date} end_date={this.state.end_date} scope_type={this.state.scope_type}  handleChangeDate={this.handleChangeDate} default_view_type={"day"} hide_filter_button={true}/>
           </div>
-          <ContainerBody>  
+          <ContainerBody>
+          
               <Content col="12">
                 
                 <Row>
@@ -261,10 +262,12 @@ class MyTeamSchedule extends Component {
                  View More
               </Button>
               </div>
-              } 
+              }
+              
               </Content>
               
-          </ContainerBody>  
+          </ContainerBody> 
+           </div> 
           </ContainerWrapper>
         </Wrapper>);
   }
@@ -430,7 +433,7 @@ class MyTeamSchedule extends Component {
                     <div className={"card-body "+card_class}>
                       <div className="schedule_info">
                         <div>{information.Name}</div>
-                        <div> &nbsp; {card_text} &nbsp;</div>
+                        <div>{card_text}</div>
                       </div>
                   </div>
                   </Card>);

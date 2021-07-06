@@ -71,7 +71,7 @@
 .profile-header .information{float: left; position: relative;top:40px;}
 .profile-header input{border:0 !important; background-color: transparent !important;}
 
-.profile-tabs{position: absolute;top:8px; right: 5px}
+.profile-tabs{position: absolute;top:-28px; right: 5px}
 .profile-tabs .nav-tabs{border: 0 !important;}
 .profile-tabs a{padding:5px 10px !important;  margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px;}
 .profile-tabs a.active {background-color: #82af13  !important; color: #fff !important;}
@@ -80,7 +80,10 @@
 .card-header{background: transparent !important;}
 .user_form .row {margin-top: 15px; margin-bottom: 15px }
 .user_form .year-dropdown{padding: 0}
-
+.profile-content .navigator-bar {
+    margin-bottom: -3px;}
+.profile-content .navigator-bar .nav-tabs #uncontrolled-tab-example-tab-day{display: none}
+.profile-content .card-header{display: none}
 @media only screen and (max-width: 650px) {
 .profile-header .picture{display: none !important;}
 .profile-header .information {

@@ -11,7 +11,8 @@ div.schedule_info div {
 div.schedule_info div:nth-child(2) {
     font-size: 10px;
 }
-
+.report-schedule .card-header{display: none}
+.report-schedule .navigator-bar{margin-bottom: 0 !important}
 .emp_sched .rest_day,
 .legends .rest_day .box{
     background-color: #d7d7d7;
@@ -28,7 +29,7 @@ div.schedule_info div:nth-child(2) {
     background-color: #ffe2e0;
     color: black !important;
 }
-
+.today-sched .emp_sched div:nth-child(2){background: #eee; line-height: 130%}
 .emp_sched .late,
 .legends .late .box{
     background-color: #ffefcd;

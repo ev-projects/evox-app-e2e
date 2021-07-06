@@ -20,7 +20,7 @@ h6,.h6{font-size: .75em !important}
 .page-title{margin-left:20px;}
 .team-request-page .col-lg-12{padding: 0 !important; margin:0 !important;}
 .pd30{margin:0;padding: 30px}
-
+.fadeOut{display: none;}
 
 .dashboard.client{background: #fff}
 .dashboard.client .row .select-dept{padding: 20px}
