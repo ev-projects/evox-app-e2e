@@ -50,7 +50,8 @@ class Dtr extends Model
      */
     public function hasValidTimelogs()
     {
-        return ( $this->hasCompleteTimelogs() && $this->time_out > $this->time_in ) ? true : false;
+        // && $this->time_out > $this->time_in logic for has valid time logs
+        return ( $this->hasCompleteTimelogs() ) ? true : false;
     }
 
     /**

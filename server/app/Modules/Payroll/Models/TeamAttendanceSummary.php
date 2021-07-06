@@ -45,9 +45,13 @@ class TeamAttendanceSummary
 
             $this->clear_properties();
 
+            
+
             $today = Carbon::now();
             $start_date = Carbon::parse($start_date);
             $end_date = Carbon::parse($end_date);
+            $default_start_date = $start_date ;
+            $default_end_date = $end_date ;
 
             // If the start date exceeds the current date, replace its value by today's date
             if( $start_date->gt( $today ) ) {
@@ -62,6 +66,8 @@ class TeamAttendanceSummary
             // Iterate the User collection that was fetched
             foreach( $user_collection->sortBy('emp_num') as $user) {
 
+                $start_date = $default_start_date;
+                $end_date = $default_end_date;
                 // Declare the variables for date hired and termination date to be used for conditions later.
                 $date_hired = Carbon::parse( $user->date_hired );
                 $termination_date = is_valid( $user->termination_date ) ? Carbon::parse( $user->termination_date ) : null;
@@ -80,11 +86,13 @@ class TeamAttendanceSummary
                     $this->result['total_headcount']++;
                     
                     // If the date hired is between the date range, replace the start date's value by the date hired
+                    // comment out because it chnages all the start date of aall emp
                     if( $date_hired->between( $start_date, $end_date) ) {
                         $start_date = $date_hired;
                     }
 
                     // If the termination date is between the date range, replace the end date's value by the termination date - 1 day for the final day
+                    // change all date of end date termination date
                     if( is_valid( $termination_date ) && $termination_date->between( $start_date, $end_date) ) {
                         $end_date = $termination_date->subDays(1);
                     }
@@ -242,7 +250,8 @@ class TeamAttendanceSummary
                 $this->result['attendance']['users'] = new TeamAttendanceSummaryResource( $this->result['attendance']['users']);
                 $this->result['total_rest_day_work']['users'] = new TeamAttendanceSummaryResource( $this->result['total_rest_day_work']['users']);
                 $this->result['total_overtime']['users'] = new TeamAttendanceSummaryResource( $this->result['total_overtime']['users']);
-                
+                $this->result['stdd']= $start_date->format('Y-m-d');
+                $this->result['eddd']= $end_date->format('Y-m-d');
             }
             
             return $this->result;
