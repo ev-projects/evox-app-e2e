@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./Profile.css";
 import { Container, Row, Col, Tabs, Tab, Table, Image, Spinner, Button, Form, InputGroup, FormControl } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { fetchTimeOff, fetchPersonalInformation, fetchProfile, fetchJobInformation, fetchLeaveCredits, fetchSchedule, fetchTemporarySchedule, setDateList, setWeekList } from '../../store/actions/profile/profileActions';
+import { fetchTimeOff, fetchPersonalInformation, fetchProfile, fetchJobInformation, fetchLeaveCredits, fetchSchedule, fetchTemporarySchedule, setDateList, setWeekList, setScope } from '../../store/actions/profile/profileActions';
 import Select from "react-select";
 import { ContainerHeader, Content, ContainerWrapper, ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import { Formik, FieldArray, Field, ErrorMessage, getIn } from 'formik';
@@ -88,7 +88,7 @@ class Profile extends Component {
         let week = getDaysArrayInWeek(moment().startOf('week'), moment().endOf('week'))
         this.props.setDateList(week.date_list)
         this.props.setWeekList({ week_list: week.week_list, dates_list: week.dates })
-
+        this.props.setScope('week')
         this.props.fetchProfile(this.props.params.id)
         this.setTab("personal_information")
         this.props.fetchPersonalInformation(this.props.params.id);
@@ -196,6 +196,7 @@ const mapDispatchToProps = (dispatch) => {
         fetchTemporarySchedule: (id) => dispatch(fetchTemporarySchedule(id)),
         setDateList: (dates) => dispatch(setDateList(dates)),
         setWeekList: (year, month) => dispatch(setWeekList(year, month)),
+        setScope: (scope) => dispatch(setScope(scope)),
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
