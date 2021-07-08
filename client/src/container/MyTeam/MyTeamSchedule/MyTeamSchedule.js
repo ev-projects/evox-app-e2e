@@ -6,7 +6,7 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../..
 import Wrapper from "../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import * as Yup from 'yup';
-import {fetchTeamSchedule    } from '../../../store/actions/filters/myTeamActions';
+import { fetchTeamSchedule } from '../../../store/actions/filters/myTeamActions';
 import { fetchTeamUnderDepartment } from '../../../store/actions/filters/myTeamActions';
 import moment from 'moment';
 import ReportNavigator from "../../../components/Template/ReportNavigator/ReportNavigator.js";
@@ -154,13 +154,10 @@ class MyTeamSchedule extends Component {
   }
 
   render = () => {  
-  var link = this.state;
   var scope_type = this.state.scope_type;
-  const validationSchema = Yup.object().shape({
-  });
   var { current_page , last_page } = this.props.team;
   var { team_list } = this.props.team;
-  var { day, week, month } = this.props.team;
+  var {  team_schedule } = this.props.team;
   var { user } = this.props; 
   return(
     <Wrapper {...this.props} >
@@ -241,18 +238,18 @@ class MyTeamSchedule extends Component {
                 </Row>
                 {scope_type == "day" ? (
                 <React.Fragment>
-                <div className="today-sched"><DayTeamSchedule data={day} />  </div>
+                <div className="today-sched"><DayTeamSchedule data={team_schedule.data} />  </div>
               </React.Fragment>)
                 :  scope_type == "week"  ? ( 
                 <React.Fragment>
                   <div className="calendar-sched">
-                  <WeekTeamSchedule  data={week}/>
+                  <WeekTeamSchedule  data={team_schedule}/>
                   </div>
               </React.Fragment>)
                 :  scope_type == "month" || scope_type == "custom" ? ( 
                 <React.Fragment>
                 <div className="calendar-sched">
-                  <MonthTeamSchedule  data={month}/>
+                  <MonthTeamSchedule  data={team_schedule}/>
                 </div>
               </React.Fragment>)
                 : "Neither"}
@@ -408,8 +405,7 @@ class MyTeamSchedule extends Component {
 
     var day_index = 0;
     var week_index = 0;
-
-    if(data.length > 0 ){
+    if(data.length > 0 && week_list.length > 0){
       var test = week_dictionary[week_list[week_index][0]];
       for ( var i = 0; i <  test; i++) {
         column.push(<Col></Col>);
@@ -480,28 +476,20 @@ class MyTeamSchedule extends Component {
 
     if(schedule_info.type.includes("early")){
       card.class = 'early';
-      card.text = "(Early In)";                           
     }else if(schedule_info.type.includes("on_leave")){
       card.class = 'on_leave';
-      card.text = '(On Leave)';
     }else if(schedule_info.type.includes("holiday")){
       card.class = 'holiday';
-      card.text = '(Holiday)';
     }else if(schedule_info.type.includes("rest_day")){
       card.class = 'rest_day';
-      card.text = '(Rest Day)';
     }else if(schedule_info.type.includes("late")){
       card.class = 'late';
-      card.text = "(Late)"; 
     }else if(schedule_info.type.includes("absent")){
       card.class = 'absent';
-      card.text = "(Absent)"; 
     }else if(schedule_info.type.includes("no_schedule")){
       card.class = 'no_schedule';
-      card.text = "(No Schedule)";
     }else if(schedule_info.type.includes("no_status")){
       card.class = 'no_status';
-      card.text = " ";
     }
 
     if(schedule_info.Schedule.length > 0 ){

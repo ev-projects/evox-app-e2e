@@ -72,18 +72,18 @@ export const fetchTeamSchedule = ( params = null ) => {
             }else{
                 if(params.scope_type=="day"){
                     dispatch({
-                        'type'      : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
-                        'day'       :  result.data.content,
+                        'type'          : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
+                        'team_schedule' :  result.data.content,
                     })
                 }else if(params.scope_type=="week"){
                     dispatch({
-                        'type'      : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
-                        'week'      : result.data.content,
+                        'type'          : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
+                        'team_schedule' :  result.data.content,
                     })
                 }else if(params.scope_type=="month" || params.scope_type=="custom"){
                     dispatch({
-                        'type'      : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
-                        'month'     : result.data.content,
+                        'type'          : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
+                        'team_schedule' :  result.data.content,
                     })
                 }
             }
