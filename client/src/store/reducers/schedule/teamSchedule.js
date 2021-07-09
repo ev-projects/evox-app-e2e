@@ -2,7 +2,7 @@
  *  A dedicated Reducer for My Team List
  */
 
-const initState = {
+ const initState = {
     list : null,
     team_list : [],
     team_schedule: { data: [], date_list: [], week_list: [] },
@@ -11,7 +11,7 @@ const initState = {
     last_page : 0
 }
 
-const myTeamListReducers = (state = initState, action) => {
+const teamSchedule = (state = initState, action) => {
     let message = "";
     let result = {...state};
     switch(action.type) {
@@ -93,4 +93,4 @@ const myTeamListReducers = (state = initState, action) => {
     return result;
 }
 
-export default myTeamListReducers;
+export default teamSchedule;

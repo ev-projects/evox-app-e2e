@@ -314,7 +314,6 @@ class MyTeamSchedule extends Component {
             second_div.class = card_class;
           }else{  
             var schedule_in = moment(value.on_duty);
-            var schedule_out = moment(value.off_duty);
             var space = (Number( schedule_in.format("HH") ) + Number(schedule_in.format("mm"))/60) * 4 ;
             first_div.width = String( space ) + "%";
             second_div.width = String( value.hour * 4 ) + "%";
@@ -342,44 +341,48 @@ class MyTeamSchedule extends Component {
 
     var day_index = 0;
     var unique_date = 0
-    // Paging
-    for (var i = 0; i < week.length; i++) {
-      // Data
 
-      for (var j = 0; j < week[i].length; j++) {
-        // Data Separated by date
+    if(week.length > 0 && date_list.length > 0){
+      // Paging
+      for (var i = 0; i < week.length; i++) {
+        // Data
 
-        for (var k = 0; k < week[i][j].length; k++) {
-          var data = week[i][j][k];
-          var card = {};
-          card = displayStatus(data);
-          var card_class = card.class;
-          var card_text = card.text ;
-          
-          info.push(<Card>
-            <div className={"card-body "+card_class}>
-              <div className="schedule_info">
-                <div>{data.Name}</div>
-                <div> &nbsp; {card_text}  <br /></div>
-              </div>
-          </div>
-          </Card>);
+        for (var j = 0; j < week[i].length; j++) {
+          // Data Separated by date
+
+          for (var k = 0; k < week[i][j].length; k++) {
+            var data = week[i][j][k];
+            var card = {};
+            card = displayStatus(data);
+            var card_class = card.class;
+            var card_text = card.text ;
+            
+            info.push(<Card>
+              <div className={"card-body "+card_class}>
+                <div className="schedule_info">
+                  <div>{data.Name}</div>
+                  <div> &nbsp; {card_text}  <br /></div>
+                </div>
+            </div>
+            </Card>);
+
+          }
+
+          if(date_list[day_index]!=date_list[day_index+1]){
+            column.push(<Col>{date_list[day_index]}{info}</Col>);
+            unique_date++;
+            info = [];
+          }
+          day_index++;
 
         }
-
-        if(date_list[day_index]!=date_list[day_index+1]){
-          column.push(<Col>{date_list[day_index]}{info}</Col>);
-          unique_date++;
-          info = [];
-        }
-        day_index++;
-
+      }
+      
+      for ( var i = 6; i >  unique_date - 1; i--) {
+        column.push(<Col></Col>);
       }
     }
-    
-    for ( var i = 6; i >  unique_date - 1; i--) {
-      column.push(<Col></Col>);
-    }
+
 
     return ( <Row  className="emp_sched">
        {column}
@@ -501,7 +504,7 @@ class MyTeamSchedule extends Component {
   const mapStateToProps = (state) => {
     return {
       user : state.user,
-      team : state.myTeamList,
+      team : state.myTeamSchedule,
     }
   }
   const mapDispatchToProps = (dispatch) => {
