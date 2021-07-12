@@ -15,20 +15,21 @@ class MyTeamSchedule extends Component {
 
   constructor(props){
     super(props);
-
     this.initialState = {
         filters: {
           start_date:       moment().startOf('day'),
           end_date:         moment().endOf('day'),
           department_id : this.props.user.departments_handled.length > 0?  this.props.user.departments_handled[0].id : null,  
-          name : this.props.filters?.name ?? null,  
-          team_id :this.props.filters?.team_id ?? null,  
-          scope_type : "day",
+          name : this.props.team.filters?.name ?? null,  
+          team_id :this.props.team.filters?.team_id ?? null,  
+          scope_type : this.props.team.filters?.scope_type ?? "day",  
           pagination: 60,
           page : 1
       }
     }
+
     this.state = this.initialState.filters; 
+    this.props.team.filters = this.initialState.filters; 
   }
 
   onSubmitHandler = (values) => {
@@ -81,7 +82,7 @@ class MyTeamSchedule extends Component {
 
   componentDidMount(){
     var formData = {};
-    var filter = this.state
+    var filter = this.state;
     for ( var key in filter) {
       if( filter[key] != null && filter[key] != ""  ) {
         switch( key ) {
