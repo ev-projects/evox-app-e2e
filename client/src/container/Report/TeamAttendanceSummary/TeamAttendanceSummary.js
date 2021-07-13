@@ -8,7 +8,7 @@ import "./TeamAttendanceSummary.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { getTeamAttendanceSummary } from '../../../store/actions/report/reportActions'
+import { exportAttendanceSummary, getTeamAttendanceSummary } from '../../../store/actions/report/reportActions'
 import { fetchTeamUnderDepartment } from '../../../store/actions/filters/myTeamActions';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
@@ -26,6 +26,7 @@ class TeamAttendanceSummary extends Component {
           department_id:    this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0].id : "",
           team_id:          "",
           name:             "",
+          scope_type:       "week"
         }
         this.state = this.initialState;
     }
@@ -49,8 +50,28 @@ class TeamAttendanceSummary extends Component {
       this.props.getTeamAttendanceSummary( this.state.start_date, this.state.end_date, formData )
     }
 
+    handleExport = () => {
+      var formData = {};
+
+      for ( var key in this.state) {
+        // console.log(this.state, key, this.state[key]);
+        if( this.state[key] != null && this.state[key] != ""  ) {
+          switch( key ) {
+            case "start_date":
+            case "end_date": 
+              break;
+            default:
+              formData[key] = this.state[key];
+              break;
+          }
+        } 
+      }
+      this.props.exportAttendanceSummary(this.state.start_date, this.state.end_date, formData)
+    }
+
     // Handles the change of date that'll be triggered by the ReportNavigator
     handleChangeDate = ( start_date, end_date, scope_type ) => {
+      this.state.scope_type = scope_type;
       this.setState({
         start_date : start_date,
         end_date : end_date,
@@ -138,11 +159,14 @@ class TeamAttendanceSummary extends Component {
                           <Button variant="primary" type="submit" onClick={this.handleSubmit}>
                             <i className="fa fa-filter" /> Filter
                           </Button>
+                          <Button variant="primary"  onClick={ this.handleExport }>
+                            <i className="fa fa-filter" /> Export
+                          </Button>
                       </Col> 
                     </Row>
                     <Row> 
                       { Validator.isValid(team_attendance_summary) && 
-                        <TeamAttendanceSummaryPanel team_attendance_summary={team_attendance_summary} selected_summary={this.props.report.selected_summary}/>
+                        <TeamAttendanceSummaryPanel team_attendance_summary={team_attendance_summary} selected_summary={this.props.report.selected_summary} scope_type={this.state.scope_type}/>
                       }
                     </Row>
                   </Content>
@@ -167,6 +191,7 @@ class TeamAttendanceSummary extends Component {
 	  return {
       getTeamAttendanceSummary  : ( start_date, end_date, params ) => dispatch( getTeamAttendanceSummary( start_date, end_date, params ) ),
       fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
+      exportAttendanceSummary : (start_date, end_date, params) => dispatch(exportAttendanceSummary(start_date, end_date, params))
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(TeamAttendanceSummary);

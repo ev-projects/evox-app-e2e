@@ -242,8 +242,10 @@ class TeamAttendanceSummary
                         array_push($this->result['attendance']['users'],$scheduled);
                     }
                 }
-
+                $this->result['dtr'] = $this->result['dtr_collection'];
+                $this->result['total_list_count_dtr'] = $this->result['dtr_collection']->count();
                 $this->result['dtr_collection'] = new TeamAttendanceSummaryResource( $this->result['dtr_collection'] );
+                
                 $this->result['scheduled_employees']['users'] = new TeamAttendanceSummaryResource( $this->result['scheduled_employees']['users']);
                 $this->result['unplanned_leaves']['users'] = new TeamAttendanceSummaryResource( $this->result['unplanned_leaves']['users']);
                 $this->result['planned_leaves']['users'] = new TeamAttendanceSummaryResource( $this->result['planned_leaves']['users']);
