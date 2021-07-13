@@ -44,7 +44,7 @@ class TeamSummaryAttendanceExport implements
                 'Label',
                 'Number',
                 'Percentage',
-                'Total',
+                'Target',
             ];
         }else {
             return [
