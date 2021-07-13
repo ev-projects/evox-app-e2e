@@ -6,7 +6,7 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../..
 import Wrapper from "../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import * as Yup from 'yup';
-import {fetchTeamSchedule    } from '../../../store/actions/filters/myTeamActions';
+import { fetchTeamSchedule } from '../../../store/actions/filters/myTeamActions';
 import { fetchTeamUnderDepartment } from '../../../store/actions/filters/myTeamActions';
 import moment from 'moment';
 import ReportNavigator from "../../../components/Template/ReportNavigator/ReportNavigator.js";
@@ -15,20 +15,21 @@ class MyTeamSchedule extends Component {
 
   constructor(props){
     super(props);
-
     this.initialState = {
         filters: {
           start_date:       moment().startOf('day'),
           end_date:         moment().endOf('day'),
           department_id : this.props.user.departments_handled.length > 0?  this.props.user.departments_handled[0].id : null,  
-          name : this.props.filters?.name ?? null,  
-          team_id :this.props.filters?.team_id ?? null,  
-          scope_type : "day",
+          name : this.props.team.filters?.name ?? null,  
+          team_id :this.props.team.filters?.team_id ?? null,  
+          scope_type : this.props.team.filters?.scope_type ?? "day",  
           pagination: 60,
           page : 1
       }
     }
+
     this.state = this.initialState.filters; 
+    this.props.team.filters = this.initialState.filters; 
   }
 
   onSubmitHandler = (values) => {
@@ -81,7 +82,7 @@ class MyTeamSchedule extends Component {
 
   componentDidMount(){
     var formData = {};
-    var filter = this.state
+    var filter = this.state;
     for ( var key in filter) {
       if( filter[key] != null && filter[key] != ""  ) {
         switch( key ) {
@@ -154,13 +155,10 @@ class MyTeamSchedule extends Component {
   }
 
   render = () => {  
-  var link = this.state;
   var scope_type = this.state.scope_type;
-  const validationSchema = Yup.object().shape({
-  });
   var { current_page , last_page } = this.props.team;
   var { team_list } = this.props.team;
-  var { day, week, month } = this.props.team;
+  var {  team_schedule } = this.props.team;
   var { user } = this.props; 
   return(
     <Wrapper {...this.props} >
@@ -241,18 +239,18 @@ class MyTeamSchedule extends Component {
                 </Row>
                 {scope_type == "day" ? (
                 <React.Fragment>
-                <div className="today-sched"><DayTeamSchedule data={day} />  </div>
+                <div className="today-sched"><DayTeamSchedule data={team_schedule.data} />  </div>
               </React.Fragment>)
                 :  scope_type == "week"  ? ( 
                 <React.Fragment>
                   <div className="calendar-sched">
-                  <WeekTeamSchedule  data={week}/>
+                  <WeekTeamSchedule  data={team_schedule}/>
                   </div>
               </React.Fragment>)
                 :  scope_type == "month" || scope_type == "custom" ? ( 
                 <React.Fragment>
                 <div className="calendar-sched">
-                  <MonthTeamSchedule  data={month}/>
+                  <MonthTeamSchedule  data={team_schedule}/>
                 </div>
               </React.Fragment>)
                 : "Neither"}
@@ -317,7 +315,6 @@ class MyTeamSchedule extends Component {
             second_div.class = card_class;
           }else{  
             var schedule_in = moment(value.on_duty);
-            var schedule_out = moment(value.off_duty);
             var space = (Number( schedule_in.format("HH") ) + Number(schedule_in.format("mm"))/60) * 4 ;
             first_div.width = String( space ) + "%";
             second_div.width = String( value.hour * 4 ) + "%";
@@ -345,44 +342,48 @@ class MyTeamSchedule extends Component {
 
     var day_index = 0;
     var unique_date = 0
-    // Paging
-    for (var i = 0; i < week.length; i++) {
-      // Data
 
-      for (var j = 0; j < week[i].length; j++) {
-        // Data Separated by date
+    if(week.length > 0 && date_list.length > 0){
+      // Paging
+      for (var i = 0; i < week.length; i++) {
+        // Data
 
-        for (var k = 0; k < week[i][j].length; k++) {
-          var data = week[i][j][k];
-          var card = {};
-          card = displayStatus(data);
-          var card_class = card.class;
-          var card_text = card.text ;
-          
-          info.push(<Card>
-            <div className={"card-body "+card_class}>
-              <div className="schedule_info">
-                <div>{data.Name}</div>
-                <div> &nbsp; {card_text}  <br /></div>
-              </div>
-          </div>
-          </Card>);
+        for (var j = 0; j < week[i].length; j++) {
+          // Data Separated by date
+
+          for (var k = 0; k < week[i][j].length; k++) {
+            var data = week[i][j][k];
+            var card = {};
+            card = displayStatus(data);
+            var card_class = card.class;
+            var card_text = card.text ;
+            
+            info.push(<Card>
+              <div className={"card-body "+card_class}>
+                <div className="schedule_info">
+                  <div>{data.Name}</div>
+                  <div> &nbsp; {card_text}  <br /></div>
+                </div>
+            </div>
+            </Card>);
+
+          }
+
+          if(date_list[day_index]!=date_list[day_index+1]){
+            column.push(<Col>{date_list[day_index]}{info}</Col>);
+            unique_date++;
+            info = [];
+          }
+          day_index++;
 
         }
-
-        if(date_list[day_index]!=date_list[day_index+1]){
-          column.push(<Col>{date_list[day_index]}{info}</Col>);
-          unique_date++;
-          info = [];
-        }
-        day_index++;
-
+      }
+      
+      for ( var i = 6; i >  unique_date - 1; i--) {
+        column.push(<Col></Col>);
       }
     }
-    
-    for ( var i = 6; i >  unique_date - 1; i--) {
-      column.push(<Col></Col>);
-    }
+
 
     return ( <Row  className="emp_sched">
        {column}
@@ -408,8 +409,7 @@ class MyTeamSchedule extends Component {
 
     var day_index = 0;
     var week_index = 0;
-
-    if(data.length > 0 ){
+    if(data.length > 0 && week_list.length > 0){
       var test = week_dictionary[week_list[week_index][0]];
       for ( var i = 0; i <  test; i++) {
         column.push(<Col></Col>);
@@ -480,28 +480,20 @@ class MyTeamSchedule extends Component {
 
     if(schedule_info.type.includes("early")){
       card.class = 'early';
-      card.text = "(Early In)";                           
     }else if(schedule_info.type.includes("on_leave")){
       card.class = 'on_leave';
-      card.text = '(On Leave)';
     }else if(schedule_info.type.includes("holiday")){
       card.class = 'holiday';
-      card.text = '(Holiday)';
     }else if(schedule_info.type.includes("rest_day")){
       card.class = 'rest_day';
-      card.text = '(Rest Day)';
     }else if(schedule_info.type.includes("late")){
       card.class = 'late';
-      card.text = "(Late)"; 
     }else if(schedule_info.type.includes("absent")){
       card.class = 'absent';
-      card.text = "(Absent)"; 
     }else if(schedule_info.type.includes("no_schedule")){
       card.class = 'no_schedule';
-      card.text = "(No Schedule)";
     }else if(schedule_info.type.includes("no_status")){
       card.class = 'no_status';
-      card.text = " ";
     }
 
     if(schedule_info.Schedule.length > 0 ){
@@ -513,7 +505,7 @@ class MyTeamSchedule extends Component {
   const mapStateToProps = (state) => {
     return {
       user : state.user,
-      team : state.myTeamList,
+      team : state.myTeamSchedule,
     }
   }
   const mapDispatchToProps = (dispatch) => {

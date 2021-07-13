@@ -96,9 +96,9 @@ class Dtr extends Model
         $schedule = array();
 
         if( $this->hasSchedule() ){
-            $schedule[] = date("h:i:s", $this->start_datetime) .  '-' .date("h:i:s", $this->end_datetime );
+            $schedule[] = date("H:i:s", $this->start_datetime) .  '-' .date("H:i:s", $this->end_datetime );
             if( $this->hasFlexibleSchedule() ){
-                $schedule[] = date("h:i:s", $this->start_flexy_datetime) .  '-' .date("h:i:s", $this->end_flexy_datetime );
+                $schedule[] = date("H:i:s", $this->start_flexy_datetime) .  '-' .date("H:i:s", $this->end_flexy_datetime );
             }
         }
 
