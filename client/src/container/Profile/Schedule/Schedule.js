@@ -25,7 +25,7 @@ const Schedule = (props) => {
 
     const { profile, user } = props;
     let { start_date, end_date } = props;
-
+    
     // Handles the change of date that'll be triggered by the ReportNavigator
     const handleChangeDate = (start_date, end_date, scope_type) => {
         props.setScope(scope_type)
@@ -35,7 +35,7 @@ const Schedule = (props) => {
         }
 
         if (scope_type == 'week') {
-            let week = getDaysArrayInWeek(start_date, end_date)
+            let week = getDaysArrayInWeek(start_date.add(1, 'days'), end_date.add(1, 'days'))
             props.setDateList(week.date_list)
             props.setWeekList({ week_list: week.week_list, dates_list: week.dates })
 
@@ -44,7 +44,6 @@ const Schedule = (props) => {
         if(scope_type == 'custom'){
             let custom = generateWeekListCustom(start_date,end_date,'custom')
             props.setDateList(custom.display_list)
-            props.setWeekList(generateWeekList(start_date.format('YYYY'), start_date.format('M')))
             props.setWeekList({ week_list: custom.week_list, dates_list: custom.dates_list })
         }
     }
@@ -59,11 +58,7 @@ const Schedule = (props) => {
                 <ContainerBody>
                     <Content col="12">
 
-                        {profile.scope == "day" ? (
-                            <React.Fragment>
-                                {/* <DayTeamSchedule data={day} /> */}
-                            </React.Fragment>)
-                            : profile.scope == "week" ? (
+                        { profile.scope == "week" ? (
                                 <React.Fragment>
                                     <WeekTeamSchedule data={profile.dates} date_list={profile.date_list} schedule={profile.schedule} temporary_schedule={profile.temporary_schedule} />
                                 </React.Fragment>)
@@ -83,61 +78,6 @@ const Schedule = (props) => {
 };
 
 
-const DayTeamSchedule = (props) => {
-    return (<React.Fragment> {props.data.length > 0 ? (<React.Fragment>
-        <Row className="Hourframe">
-            <div>12AM</div><div>1AM</div><div>2AM</div><div>3AM</div><div>4AM</div><div>5AM</div><div>6AM</div><div>7AM</div><div>8AM</div><div>9AM</div><div>10AM</div><div>11AM</div><div>12NN</div>
-            <div>1PM</div><div>2PM</div><div>3PM</div><div>4PM</div><div>5PM</div><div>6PM</div><div>7PM</div><div>8PM</div><div>9PM</div><div>10PM</div><div>11PM</div><div>12AM</div>
-        </Row>
-        {props.data.map((value, index) => {
-            var first_div = {
-                width: "0",
-                content: "",
-                class: ""
-            };
-
-            var second_div = {
-                width: "0",
-                content: "",
-                class: ""
-            };
-
-            var card = {};
-            card = displayStatus(value);
-
-            var card_class = card.class;
-            var card_text = card.text;
-
-            if (value.day_type == "underlapped") {
-                first_div.width = String(value.hour * 4) + "%";
-                second_div.width = String(value.hour * 4) + "%";
-                first_div.content = value.Name + " - " + card_text
-
-                first_div.class = card_class;
-            } else if (value.day_type == "overlapped") {
-                first_div.width = String((25 - value.hour) * 4) + "%";
-                second_div.width = String(value.hour * 4) + "%";
-                second_div.content = value.Name + " - " + card_text;
-
-                second_div.class = card_class;
-            } else {
-                var schedule_in = moment(value.on_duty);
-                var space = (Number(schedule_in.format("HH")) + Number(schedule_in.format("mm")) / 60) * 4;
-                first_div.width = String(space) + "%";
-                second_div.width = String(value.hour * 4) + "%";
-                second_div.content = value.Name + " - " + card_text
-
-                second_div.class = card_class;
-            }
-
-            return <Row className="emp_sched" >
-                <div style={first_div} className={first_div.class}>{first_div.content}</div>
-                <div style={second_div} className={second_div.class}>{second_div.content}</div>
-                <div></div>
-            </Row>;
-        })}
-    </React.Fragment>) : (<React.Fragment></React.Fragment>)}</React.Fragment>);
-}
 
 const WeekTeamSchedule = (props) => {
     // return "asdasd"
@@ -191,13 +131,14 @@ const MonthTeamSchedule = (props) => {
     var week_list = props.week_list
     // var date_list = this.profile.date_list
     const week_dictionary = {
-        "Sunday": 0,
-        "Monday": 1,
-        "Tuesday": 2,
-        "Wednesday": 3,
-        "Thursday": 4,
-        "Friday": 5,
-        "Saturday": 6,
+        
+        "Monday": 0,
+        "Tuesday": 1,
+        "Wednesday": 2,
+        "Thursday": 3,
+        "Friday": 4,
+        "Saturday": 5,
+        "Sunday": 6,
     };
 
     var day_number = 0;

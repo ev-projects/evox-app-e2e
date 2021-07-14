@@ -1,0 +1,11 @@
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>{{$data->stdd}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>

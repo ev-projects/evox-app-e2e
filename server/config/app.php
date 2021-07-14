@@ -172,6 +172,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Modules\Department\Providers\DepartmentServiceProvider::class,
         App\Modules\Team\Providers\TeamServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*

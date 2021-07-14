@@ -19,7 +19,7 @@ const TeamAttendanceSummaryPanel = (props) => {
     dtr_collection,
     total_headcount } = team_attendance_summary;
   const selected_summary = props.selected_summary
-
+  const scope_type = props.scope_type
 
   let show_list = props.show_list ?? true;
 
@@ -32,14 +32,14 @@ const TeamAttendanceSummaryPanel = (props) => {
         </div>
       </div>
       <div className="computed-summary-container">
-        <div className={selected_summary == "scheduled_employees" ? "summary-active" : "summary-inactive"}
+        <div hidden={scope_type != 'day' ? true : false} className={selected_summary == "scheduled_employees" ? "summary-active" : "summary-inactive"}
           onClick={() => {
             props.setSelectedAttendanceSummary("scheduled_employees")
           }}>
           <label className={selected_summary == "scheduled_employees" ? "active-text font-weight-bolder" : ""} >Scheduled Headcount</label><br />
-          <span className={(scheduled_employees?.total_percentage >= scheduled_employees?.target_percentage ? "green" : "red")}
-          >{scheduled_employees?.total_percentage}%</span>&nbsp;<small>({scheduled_employees?.total_count})</small> <br />
-          <div className="target"><small>TARGET: {scheduled_employees?.target_percentage}%</small></div>
+          <span>{scheduled_employees?.total_count}</span>
+          {/* &nbsp;<small>({scheduled_employees?.total_count})</small> <br /> */}
+          {/* <div className="target"><small>TARGET: {scheduled_employees?.target_percentage}%</small></div> */}
         </div>
         <div className={selected_summary == "attendance" ? "summary-active" : "summary-inactive"}
           onClick={() => {

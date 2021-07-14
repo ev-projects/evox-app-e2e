@@ -33,7 +33,7 @@ export const getDaysArrayInWeek = function(startDate, endDate) {
     dates.push(lastDate.format('YYYY')+ "-" + lastDate.format('MM') + "-" + lastDate.format('DD')  );
 
     
-    return {date_list:date_list , week_list : ['Sunday',"Saturday"], dates: dates};
+    return {date_list:date_list , week_list : ['Monday',"Sunday"], dates: dates};
 };
 
 export const generateWeekList = (year = +Moment().format("YYYY"), month = +Moment().format("MM")) => {
@@ -53,8 +53,8 @@ export const generateWeekList = (year = +Moment().format("YYYY"), month = +Momen
 
     const calendar = []
     weeks.forEach(week => {
-        const firstWeekDay = moment([year, month]).week(week).day(0)
-        const lastWeekDay = moment([year, month]).week(week).day(6)
+        const firstWeekDay = moment([year, month]).week(week).day(1)
+        const lastWeekDay = moment([year, month]).week(week).day(7)
         const weekRange = moment.range(firstWeekDay, lastWeekDay)
         calendar.push(Array.from(weekRange.by('day')));
     })
@@ -102,8 +102,8 @@ export const generateWeekListCustom = (start_date, end_date,scope_type) => {
     
     const calendar = []
     weeks.forEach(week => {
-        const firstWeekDay = start_date.week(week).day(0)
-        const lastWeekDay = end_date.week(week).day(6)
+        const firstWeekDay = start_date.week(week).day(1)
+        const lastWeekDay = end_date.week(week).day(7)
         const weekRange = moment.range(firstWeekDay, lastWeekDay)
         calendar.push(Array.from(weekRange.by('day')));
 

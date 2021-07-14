@@ -64,8 +64,8 @@ class Profile extends Component {
                 case "schedule":
 
                     this.setState({
-                        start_date: moment().startOf('week'),
-                        end_date: moment().endOf('week')
+                        start_date: moment().startOf('week').add(1, 'days'),
+                        end_date: moment().endOf('week').add(1, 'days')
                     })
 
 
@@ -85,7 +85,7 @@ class Profile extends Component {
     setInitialDetails() {
 
 
-        let week = getDaysArrayInWeek(moment().startOf('week'), moment().endOf('week'))
+        let week = getDaysArrayInWeek(moment().startOf('week').add(1, 'days'), moment().endOf('week').add(1, 'days'))
         this.props.setDateList(week.date_list)
         this.props.setWeekList({ week_list: week.week_list, dates_list: week.dates })
         this.props.setScope('week')
