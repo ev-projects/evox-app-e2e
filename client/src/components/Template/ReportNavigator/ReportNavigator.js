@@ -35,8 +35,8 @@ const ReportNavigator = (props) => {
  
                  // Change the view type to "week" and set the current start_date as the basis of the start and end date.
                  case "week":
-                     start_date.set(moment().startOf('week').toObject());
-                     end_date.set(start_date.toObject()).endOf('week');
+                     start_date.set(moment().startOf('isoWeek').toObject()); 
+                     end_date.set(start_date.toObject()).endOf('isoWeek');
                      break;
  
                  // Change the view type to "month" and set the current start_date as the basis of the start and end date.
@@ -68,8 +68,8 @@ const ReportNavigator = (props) => {
   
                       // If the viewType is "week", move 1 week forward.
                       case "week":
-                          start_date.add(1, 'week').startOf('week');
-                          end_date.set(start_date.toObject()).endOf('week');
+                          start_date.add(1, 'week').startOf('isoWeek');
+                          end_date.set(start_date.toObject()).endOf('isoWeek');
                           break;
   
                       // If the viewType is "month", move 1 month forward.
@@ -92,8 +92,8 @@ const ReportNavigator = (props) => {
   
                       // If the viewType is "week", move 1 week backward.
                       case "week":
-                          start_date.subtract(1, 'week').startOf('week');
-                          end_date.set(start_date.toObject()).endOf('week');
+                          start_date.subtract(1, 'week').startOf('isoWeek');
+                          end_date.set(start_date.toObject()).endOf('isoWeek');
                           break;
   
                       // If the viewType is "month", move 1 month backward.

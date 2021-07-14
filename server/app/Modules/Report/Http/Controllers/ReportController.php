@@ -250,9 +250,6 @@ class ReportController extends Controller
                 $time_to =  request()->get('end_date') ;
             }else{
                 if(request()->get('scope_type')=="week"){
-                    $date_from->setWeekStartsAt(Carbon::SUNDAY);
-                    $date_from->setWeekEndsAt(Carbon::SATURDAY);
-    
                     $time_from = $date_from->startOfWeek()->format('Y-m-d');
                     $time_to = $date_from->endOfWeek()->format('Y-m-d');
                 }elseif(request()->get('scope_type')=="month"){
@@ -265,25 +262,25 @@ class ReportController extends Controller
             }
 
             if(request()->get('export')=="all"){
-                $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                $result = $this->dtr->get_dtr_logs( $user_list->take(10)->get(), $time_from,  $time_to);
                 $this->team_schedule_export->data = $result;
                 return Excel::download($this->team_schedule_export , 'dtrsummary.csv');
             }else{
                 if(request()->get('scope_type')=="day"){
-                    $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                    $result = $this->dtr->get_dtr_logs($user_list->take(10)->get(), $time_from,  $time_to);
                     return success_response(
                         trans('messages.'.__FUNCTION__.'_success'), 
                         new DailyScheduleReources($result, $date = new Carbon($time_from))
                     );
                 }elseif(request()->get('scope_type')=="week"){
-                    $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                    $result = $this->dtr->get_dtr_logs( $user_list->take(10)->get(), $time_from,  $time_to);
                     // return $result;
                     return success_response(
                         trans('messages.'.__FUNCTION__.'_success'), 
                         new WeeklyScheduleResources($result)
                     ); 
                 }else{
-                    $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                    $result = $this->dtr->get_dtr_logs( $user_list->take(10)->get(), $time_from,  $time_to);
                     // return $result;
                     return success_response(
                         trans('messages.'.__FUNCTION__.'_success'), 

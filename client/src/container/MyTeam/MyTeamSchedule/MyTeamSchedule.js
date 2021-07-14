@@ -22,7 +22,7 @@ class MyTeamSchedule extends Component {
           department_id : this.props.user.departments_handled.length > 0?  this.props.user.departments_handled[0].id : null,  
           name : this.props.team.filters?.name ?? null,  
           team_id :this.props.team.filters?.team_id ?? null,  
-          scope_type : this.props.team.filters?.scope_type ?? "day",  
+          scope_type :  "day",  
           pagination: 60,
           page : 1
       }
@@ -239,7 +239,7 @@ class MyTeamSchedule extends Component {
                 </Row>
                 {scope_type == "day" ? (
                 <React.Fragment>
-                <div className="today-sched"><DayTeamSchedule data={team_schedule.data} />  </div>
+                <div className="today-sched"><DayTeamSchedule data={team_schedule} />  </div>
               </React.Fragment>)
                 :  scope_type == "week"  ? ( 
                 <React.Fragment>
@@ -272,14 +272,15 @@ class MyTeamSchedule extends Component {
   }
 
   const DayTeamSchedule = (props) => {
+    var { date_list, data, week_list } = props.data;
+
     return (
-    <React.Fragment> {  props.data.length > 0  ? (<React.Fragment> 
+    <React.Fragment> {  data.length > 0 && date_list.length == 0 && week_list.length == 0 ? (<React.Fragment> 
       <Row className="Hourframe">
       <div><span>12AM</span></div><div><span>1AM</span></div><div><span>2AM</span></div><div><span>3AM</span></div><div><span>4AM</span></div><div><span>5AM</span></div><div><span>6AM</span></div><div><span>7AM</span></div><div><span>8AM</span></div><div><span>9AM</span></div><div><span>10AM</span></div><div><span>11AM</span></div><div><span>12NN</span></div>
       <div><span>1PM</span></div><div><span>2PM</span></div><div><span>3PM</span></div><div><span>4PM</span></div><div><span>5PM</span></div><div><span>6PM</span></div><div><span>7PM</span></div><div><span>8PM</span></div><div><span>9PM</span></div><div><span>10PM</span></div><div><span>11PM</span></div><div><span>12AM</span></div>
       </Row>
-      {props.data.map((page,index) => {
-        return  <React.Fragment>{page.map((value,index) => {
+      <React.Fragment>{data.map((value,index) => {
           var first_div = {
             width: "0",
             content: "",
@@ -328,60 +329,28 @@ class MyTeamSchedule extends Component {
           <div style={second_div} className={second_div.class}><span>{second_div.content}</span></div>
           <div></div>
           </Row>;
-        })}</React.Fragment>;
-    })}
-
+        })}</React.Fragment>
     </React.Fragment>) : (<React.Fragment></React.Fragment>)}</React.Fragment>);
   }
 
   const WeekTeamSchedule = (props) => {
-    var week = props.data.data;
-    var date_list = props.data.date_list;
+    var { date_list, data, week_list } = props.data;
     let  column = [];
     let  info = [];  
-
     var day_index = 0;
-    var unique_date = 0
 
-    if(week.length > 0 && date_list.length > 0){
-      // Paging
-      for (var i = 0; i < week.length; i++) {
-        // Data
-
-        for (var j = 0; j < week[i].length; j++) {
-          // Data Separated by date
-
-          for (var k = 0; k < week[i][j].length; k++) {
-            var data = week[i][j][k];
-            var card = {};
-            card = displayStatus(data);
-            var card_class = card.class;
-            var card_text = card.text ;
+    if(data.length > 0 && date_list.length > 0 && week_list.length == 0){
+          for (var k = 0; k < data.length; k++) {
             
-            info.push(<Card>
-              <div className={"card-body "+card_class}>
-                <div className="schedule_info">
-                  <div>{data.Name}</div>
-                  <div> &nbsp; {card_text}  <br /></div>
-                </div>
-            </div>
-            </Card>);
-
-          }
-
-          if(date_list[day_index]!=date_list[day_index+1]){
+            var number = data[k].length;
+            for (var l = 0; l < number; l++) {
+              var information = data[k][l];
+              info.push(<CardComponent data={information} />);
+            }
             column.push(<Col>{date_list[day_index]}{info}</Col>);
-            unique_date++;
             info = [];
+            day_index++;
           }
-          day_index++;
-
-        }
-      }
-      
-      for ( var i = 6; i >  unique_date - 1; i--) {
-        column.push(<Col></Col>);
-      }
     }
 
 
@@ -390,16 +359,36 @@ class MyTeamSchedule extends Component {
     </Row>);
   } 
 
+  const CardComponent = (props) => {
+    var information =  props.data;
+    var card = {};
+    card = displayStatus(information);
+    var card_class = card.class;
+    var card_text = card.text;
+
+    return (
+            <Card>
+              <div className={"card-body "+card_class}>
+                <div className="schedule_info">
+                  <div>{information.Name}</div>
+                  <div>{card_text}</div>
+                </div>
+            </div>
+            </Card>
+    );
+  }
+
   const MonthTeamSchedule = (props) => {
     var { date_list, data, week_list } = props.data;
+
     const week_dictionary = {
-      "Sunday": 0,
-      "Monday" : 1,
-      "Tuesday" : 2, 
-      "Wednesday" : 3,
-      "Thursday" : 4,
-      "Friday" :5,
-      "Saturday" : 6,
+      "Monday" : 0,
+      "Tuesday" : 1, 
+      "Wednesday" : 2,
+      "Thursday" : 3,
+      "Friday" :4,
+      "Saturday" : 5,
+      "Sunday": 6,
     } ;
 
     let row = [];
@@ -414,49 +403,31 @@ class MyTeamSchedule extends Component {
       for ( var i = 0; i <  test; i++) {
         column.push(<Col></Col>);
       }
-      // PAGE
-      for (var i = 0; i < data.length; i++) {
-        // WEEK
-        for (var j = 0; j < data[i].length; j++) {
+
+        for (var j = 0; j < data.length; j++) {
           // DAY
-            for (var k = 0; k < data[i][j].length; k++) {
+            for (var k = 0; k < data[j].length; k++) {
                 //  INFO
-                var no_info = data[i][j][k].length;
+                var no_info = data[j][k].length;
                 for (var l = 0; l < ( no_info  ); l++) {
-                  var information =  data[i][j][k][l];
-                  var card = {};
-                  card = displayStatus(information);
-                  var card_class = card.class;
-                  var card_text = card.text;
-        
-                  info.push(<Card>
-                    <div className={"card-body "+card_class}>
-                      <div className="schedule_info">
-                        <div>{information.Name}</div>
-                        <div>{card_text}</div>
-                      </div>
-                  </div>
-                  </Card>);
+                  var information =  data[j][k][l];
+                  info.push(<CardComponent data={information} />);
                 }
-  
-                if(date_list[day_index]!=date_list[day_index+1]){
-                  column.push(<Col>{date_list[day_index]}{info}</Col>);
-                  info = [];
-                }
-  
+                
+                column.push(<Col>{date_list[day_index]}{info}</Col>);
+                info = [];
                 day_index++;
             }
   
   
-          if(week_list[week_index][1]=="Saturday" && week_index + 1 < week_list.length){
-            if(week_list[week_index+1][0]!="Saturday"){
+          if(week_list[week_index][1]=="Sunday" && week_index + 1 < week_list.length){
+            if(week_list[week_index+1][0]!="Sunday"){
               row.push(<Row>{column}</Row>);
               column = []
             }
           }
           week_index++;
         }
-      }
   
         var test = week_dictionary[week_list[week_list.length-1][1]];
         for ( var i = 6; i >  test; i--) {

@@ -48,7 +48,7 @@ class TeamScheduleResources extends JsonResource
                     $day_index += 1;
                 }
 
-                if($prev_day == "Saturday" && $week_day=="Sunday"){
+                if($prev_day == "Sunday" && $week_day=="Monday"){
                     $week_list[] =  array( $week_start , $prev_day ) ;
                     $week_start = $week_day;
                     $week_index += 1;
