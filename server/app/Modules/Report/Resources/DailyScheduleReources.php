@@ -67,8 +67,6 @@ class DailyScheduleReources extends JsonResource
         }
 
         return array(
-            "current_page" => 1, 
-            "last_page" => 1, 
             "data" => $list,
         );
     }

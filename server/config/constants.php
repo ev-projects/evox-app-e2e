@@ -256,6 +256,13 @@ return [
         "day"           => 86400,
     ],
 
+
+    'TEAM_SCHEDULE' => [
+        "records_per_date"        => 5
+    ],
+
+
+
     # 1 MONTH SCOPE FROM DATE TODAY
     'MONTH_SCOPE' => [
         "day_from"      => 1,

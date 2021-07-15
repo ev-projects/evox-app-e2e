@@ -13,12 +13,12 @@ class TeamScheduleResources extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function __construct($resource)
+    public function __construct($resource,$show_more)
     {
         // Ensure you call the parent constructor
         parent::__construct($resource);
         $this->team_schedule = $resource;
-        
+        $this->show_more = $show_more;
     }
 
     public function toArray($request)
@@ -29,7 +29,7 @@ class TeamScheduleResources extends JsonResource
         $week_list = [];
         if(count( $this->resource ) > 0 ) {
             $prev_date = $this->resource[0]->date;
-            $date_list[] =  date("M,d", strtotime($prev_date));
+            $date_list[] =  date("Y-m-d", strtotime($prev_date));
 
             $day_index = 0;
             $week_index = 0;
@@ -44,7 +44,7 @@ class TeamScheduleResources extends JsonResource
                 # Update the list of dates and index
                 if($prev_date!=$array->date){
                     $prev_date =$array->date;
-                    $date_list[] = date("M,d", strtotime($prev_date));
+                    $date_list[] = date("Y-m-d", strtotime($prev_date));
                     $day_index += 1;
                 }
 
@@ -71,11 +71,10 @@ class TeamScheduleResources extends JsonResource
 
 
         return array(
-            "current_page" => 1, 
-            "last_page" => 1, 
             "data" => $list,
             "date_list" => $date_list,
-            "week_list" => $week_list
+            "week_list" => $week_list,
+            "show_more" => $this->show_more,
         );
     }
 }

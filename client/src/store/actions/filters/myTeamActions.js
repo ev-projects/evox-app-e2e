@@ -89,6 +89,7 @@ export const fetchTeamSchedule = ( params = null ) => {
             }
         })
         .catch(e => {
+            console.log(e);
             dispatch( Formatter.alert_error( e ) ) 
         });
     }

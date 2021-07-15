@@ -7,8 +7,6 @@
     team_list : [],
     team_schedule: { data: [], date_list: [], week_list: [] },
     filters : {},
-    current_page : 0,
-    last_page : 0
 }
 
 const teamSchedule = (state = initState, action) => {

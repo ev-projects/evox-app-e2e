@@ -13,12 +13,12 @@ class WeeklyScheduleResources extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function __construct($resource)
+    public function __construct($resource,$show_more)
     {
         // Ensure you call the parent constructor
         parent::__construct($resource);
         $this->team_schedule = $resource;
-        
+        $this->show_more = $show_more;
     }
 
     public function toArray($request)
@@ -28,10 +28,36 @@ class WeeklyScheduleResources extends JsonResource
         $list = [];
         $week_list = [];
 
+        
+        $user_per_page = get_constant("TEAM_SCHEDULE.records_per_date");
+        $total_no_employee = $this->show_more["number_of_employee"];
+        $terminate_date_list = $this->show_more["termination_date_list"];
+        $terminate_date_index = 0;
+        $show_more = false;
+        if($user_per_page < $total_no_employee ){
+            $show_more = True;
+        }
 
         if(count( $this->resource ) > 0 ) {
+
             $prev_date = $this->resource[0]->date;
-            $date_list[] =  date("M,d", strtotime($prev_date));
+
+            if(count($terminate_date_list) > 0){
+                if( $terminate_date_list[$terminate_date_index]== date("Y-m-d", strtotime($prev_date)) ){
+                    $total_no_employee--;
+                    $terminate_date_index+=1;
+                }
+            }
+            if($user_per_page > $total_no_employee ){
+                $show_more = False;
+            }
+
+            
+            $date_list[] = array( 
+                "date" => date("Y-m-d", strtotime($prev_date)),
+                "show_more" => $show_more,
+            );
+
 
             $day_index = 0;
             $week_index = 0;
@@ -43,7 +69,21 @@ class WeeklyScheduleResources extends JsonResource
                 # Update the list of dates and index
                 if($prev_date!=$array->date){
                     $prev_date =$array->date;
-                    $date_list[] = date("M,d", strtotime($prev_date));
+                    if(count($terminate_date_list) > 0 && isset($terminate_date_list[$terminate_date_index])){
+                        if( $terminate_date_list[$terminate_date_index]== date("Y-m-d", strtotime($prev_date)) ){
+                            $total_no_employee--;
+                            $terminate_date_index++;
+                        }
+                    }
+                    if($user_per_page >= $total_no_employee ){
+                        $show_more = False;
+                    }
+
+                    
+                    $date_list[] = array( 
+                        "date" => date("Y-m-d", strtotime($prev_date)),
+                        "show_more" => $show_more,
+                    );
                     $day_index += 1;
                 }
                 
@@ -60,10 +100,9 @@ class WeeklyScheduleResources extends JsonResource
 
 
         return array(
-            "current_page" => 1, 
-            "last_page" => 1, 
             "data" => $list,
             "date_list" => $date_list,
+            "show_more" => $this->show_more,
         );
     }
 }

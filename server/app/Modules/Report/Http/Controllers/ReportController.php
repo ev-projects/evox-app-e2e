@@ -232,6 +232,7 @@ class ReportController extends Controller
         try {
             $date_from = Carbon::now();
             $user_list = auth()->user()->users_handled();
+            $no_user_limit = get_constant("TEAM_SCHEDULE.records_per_date");
 
             // Team Filter
             if( is_valid( request()->get('team_id') ) ) {
@@ -264,31 +265,55 @@ class ReportController extends Controller
                 }
             }
 
+            $user_list->orderBy('is_active', 'desc');
+
             if(request()->get('export')=="all"){
-                $result = $this->dtr->get_dtr_logs( $user_list->take(10)->get(), $time_from,  $time_to);
+                $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
                 $this->team_schedule_export->data = $result;
                 return Excel::download($this->team_schedule_export , 'dtrsummary.csv');
             }else{
                 if(request()->get('scope_type')=="day"){
-                    $result = $this->dtr->get_dtr_logs($user_list->take(10)->get(), $time_from,  $time_to);
+                    $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
                     return success_response(
                         trans('messages.'.__FUNCTION__.'_success'), 
                         new DailyScheduleReources($result, $date = new Carbon($time_from))
                     );
-                }elseif(request()->get('scope_type')=="week"){
-                    $result = $this->dtr->get_dtr_logs( $user_list->take(10)->get(), $time_from,  $time_to);
-                    // return $result;
-                    return success_response(
-                        trans('messages.'.__FUNCTION__.'_success'), 
-                        new WeeklyScheduleResources($result)
-                    ); 
                 }else{
-                    $result = $this->dtr->get_dtr_logs( $user_list->take(10)->get(), $time_from,  $time_to);
-                    // return $result;
-                    return success_response(
-                        trans('messages.'.__FUNCTION__.'_success'), 
-                        new TeamScheduleResources($result)
+                    // Get Employee that is active or will be terminated in a certain time
+                    $user_list = $user_list->where(function ($query) use ($time_from,$time_to) {
+                        $query
+                        ->where('termination_date', '=', null)
+                        ->orwhere(function ($query) use ($time_from,$time_to) {
+                            $query->whereDate('termination_date', '>' ,$time_to);
+                        })
+                        ->orwhere(function ($query) use ($time_from,$time_to) {
+                            $query->whereDate('termination_date', '<' ,$time_to)
+                            ->whereDate('termination_date', '>' ,$time_from);
+                        });
+                    })->get();
+
+                    $show_more = Array(
+                        "number_of_employee" => $user_list->count(),
+                        "termination_date_list" => $user_list->where('termination_date', "!=", null )->sortBy('termination_date')->pluck("termination_date")
                     );
+
+                    $user_collection = $user_list->take($no_user_limit);
+
+                    if(request()->get('scope_type')=="week"){
+                        $result = $this->dtr->get_dtr_logs( $user_collection , $time_from,  $time_to);
+                        // return $result;
+                        return success_response(
+                            trans('messages.'.__FUNCTION__.'_success'), 
+                            new WeeklyScheduleResources($result,$show_more)
+                        ); 
+                    }else{
+                        $result = $this->dtr->get_dtr_logs( $user_collection , $time_from,  $time_to);
+                        // return $result;
+                        return success_response(
+                            trans('messages.'.__FUNCTION__.'_success'), 
+                            new TeamScheduleResources($result,$show_more)
+                        );
+                    }
                 }
     
             }
