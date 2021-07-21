@@ -479,6 +479,13 @@ class ReportController extends Controller
                     // else, set status as Absent
                     }else {
                         $status = 'Absent';
+
+                        // if inside sched = absent 
+                        if($dtr->checkCurrentTime()){
+                            $status = 'Absent';
+                        }else {
+                            $status = 'Not yet started';
+                        }
                     }
                 
                 // If the DTR is Rest Day, set status as Rest Day

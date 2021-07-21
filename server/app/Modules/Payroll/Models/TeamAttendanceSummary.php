@@ -172,8 +172,56 @@ class TeamAttendanceSummary
                                 ||
                                 ( $holiday_collection > 0 && $dtr->hasValidTimeLogs() )
                             ) ){
-                            $this->result['scheduled_employees']['total_count'] += 1;
-                            array_push($this->result['scheduled_employees']['users'],$dtr);
+                            $allow_legal_holiday_policy = $dtr->get_policy_value( 'allow_legal_holiday' );
+                            $allow_special_holiday_policy = $dtr->get_policy_value( 'allow_special_holiday' );
+        
+                            // If the current Holiday type is allowed by the DTR Policy put it to planned leave
+                            if( ($allow_legal_holiday_policy === null || $allow_legal_holiday_policy == true )
+                                ||  ($allow_special_holiday_policy === null ||  $allow_special_holiday_policy == true )
+                            ) {
+        
+                                // check if has has logs is < 5 or less than 5 put it in planned and scheduled
+                                 $rendered_hours = $dtr->getTotalRenderedTime() / 3600 % 24;
+                                
+                                if($rendered_hours > 5 ){
+                                    // array_push($this->result['planned_leaves']['users'],$dtr);
+                                    // $this->result['planned_leaves']['total_count'] += 1;
+                                    // $this->result['attendance']['total_count'] += 1;
+                                    array_push($this->result['scheduled_employees']['users'],$dtr);
+                                    $this->result['scheduled_employees']['total_count'] += 1;
+                                } else {
+                                    if ( $rendered_hours == 0 ){
+                                        array_push($this->result['planned_leaves']['users'],$dtr);
+                                        $this->result['planned_leaves']['total_count'] += 1;
+                                    }else {
+                                        array_push($this->result['scheduled_employees']['users'],$dtr);
+                                        array_push($this->result['planned_leaves']['users'],$dtr);
+                                        $this->result['planned_leaves']['total_count'] += .5;
+                                        $this->result['scheduled_employees']['total_count'] += .5;
+                                        // $this->result['attendance']['total_count'] += .5;
+                                    }
+                                }
+                                // if not put the details to unplanned leave
+                            }else {
+                                // // check if has has logs is < 5 or less than 5 put it in unplanned and scheduled
+                                $rendered_hours = $dtr->getTotalRenderedTime() / 3600 % 24;
+                                if($rendered_hours > 5 ){
+                                    array_push($this->result['scheduled_employees']['users'],$dtr);
+                                    $this->result['scheduled_employees']['total_count'] += 1;
+                                } else {
+
+                                    if ( $rendered_hours == 0 ){
+                                        array_push($this->result['unplanned_leaves']['users'],$dtr);
+                                        $this->result['unplanned_leaves']['total_count'] += 1;
+                                    }else {
+                                        array_push($this->result['scheduled_employees']['users'],$dtr);
+                                        array_push($this->result['unplanned_leaves']['users'],$dtr);
+                                        array_push($this->result['attendance']['users'],$dtr);
+                                        $this->result['unplanned_leaves']['total_count'] += .5;
+                                        $this->result['scheduled_employees']['total_count'] += 1;
+                                    }
+                                }
+                            }
                         }
 
                         // If there is a approved Rest day work, count the instance
@@ -217,7 +265,7 @@ class TeamAttendanceSummary
 
                 // Computation for the total days 
                 $total_days = $this->result['scheduled_employees']['total_count'] + $this->result['planned_leaves']['total_count'];
-
+                $this->result['days'] = $total_days ;
                 // Computation for Scheduled Employee, Planned Leaves, and Unplanned Leaves if the total days are more than 0
                 if( $total_days > 0 ) {
                     $this->result['scheduled_employees']['total_percentage'] = (float) number_format(($this->result['scheduled_employees']['total_count'] / $total_days) * 100, 2);
