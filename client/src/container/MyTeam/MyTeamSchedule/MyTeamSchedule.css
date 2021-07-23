@@ -1,4 +1,4 @@
-.emp_sched .card-body{padding:2px !important;border-top:1px solid #ccc !important;}
+.emp_sched .card-body{padding:2px !important; margin-left:2px !important; margin-right:2px !important;border-top:1px solid #ccc !important;}
 .emp_sched .card{margin-bottom: 5px !important}
 
 div.schedule_info {
@@ -90,3 +90,28 @@ div.schedule_info div:nth-child(2) {
     top:2px;
 }
 .legends .status{font-size: 10px; color: #666}
+
+
+.emp_sched .row{
+    padding-bottom: 20px;
+}
+
+.emp_sched .col .employee_list{
+    max-height: 250px;
+    overflow-y: auto; 
+}
+.emp_sched ::-webkit-scrollbar {
+    height: 4px;              /* height of horizontal scrollbar ← You're missing this */
+    width: 4px;               /* width of vertical scrollbar */
+    border: 1px solid #d5d5d5;
+  }
+
+.emp_sched ::-webkit-scrollbar-track { 
+border-radius: 0;
+background: #eeeeee;
+}
+
+.emp_sched ::-webkit-scrollbar-thumb {
+border-radius: 0;
+background: #b0b0b0;
+}

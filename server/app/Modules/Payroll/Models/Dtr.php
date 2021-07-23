@@ -105,6 +105,23 @@ class Dtr extends Model
         return  $schedule;
     }
 
+
+        /**
+     * 
+     *  Get schedule
+     * @return bool 
+     */
+    public function getStartSchedule()
+    {
+        $schedule = array();
+
+        if( $this->hasSchedule() ){
+            $schedule[] = date("H:i:s", $this->start_datetime) .  '-' .date("H:i:s", $this->end_datetime );
+        }
+
+        return  $schedule;
+    }
+
     /**
      * 
      *  Check if the employee has flexi sched

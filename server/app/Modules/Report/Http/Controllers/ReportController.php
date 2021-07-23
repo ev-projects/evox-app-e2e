@@ -25,6 +25,7 @@ use App\Modules\Payroll\Resources\MyDtrNotificationsResource;
 use App\Modules\Report\Repositories\ReportRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Modules\Payroll\Models\Holiday;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\TeamSummaryAttendanceExport;
@@ -229,7 +230,7 @@ class ReportController extends Controller
      * @return array
      */
     public function team_schedule( Request $request ){
-        try {
+        // try {
             $date_from = Carbon::now();
             $user_list = auth()->user()->users_handled();
             $no_user_limit = get_constant("TEAM_SCHEDULE.records_per_date");
@@ -272,7 +273,7 @@ class ReportController extends Controller
                 $this->team_schedule_export->data = $result;
                 return Excel::download($this->team_schedule_export , 'dtrsummary.csv');
             }else{
-                if(request()->get('scope_type')=="day"){
+                if(request()->get('scope_type')=="day"){ 
                     $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
                     return success_response(
                         trans('messages.'.__FUNCTION__.'_success'), 
@@ -297,21 +298,28 @@ class ReportController extends Controller
                         "termination_date_list" => $user_list->where('termination_date', "!=", null )->sortBy('termination_date')->pluck("termination_date")
                     );
 
-                    $user_collection = $user_list->take($no_user_limit);
+                    $holiday_list = Holiday::whereRaw("(is_predefined = 1 AND (DAYOFYEAR(date) >= DAYOFYEAR('".$time_from."')) AND (DAYOFYEAR(date) <= DAYOFYEAR('".$time_to."') ) ) 
+                    OR (is_predefined = 0 AND date >= '".$time_from ."' AND date <= '". $time_to ."' ) ")->orderByRaw('Month(date),Day(date)')->get();
+                    
+                    if(!request()->get('show_more')){
+                        $user_collection = $user_list->take($no_user_limit);
+                    }else{
+                        $user_collection = $user_list;
+                    }
 
                     if(request()->get('scope_type')=="week"){
                         $result = $this->dtr->get_dtr_logs( $user_collection , $time_from,  $time_to);
                         // return $result;
                         return success_response(
                             trans('messages.'.__FUNCTION__.'_success'), 
-                            new WeeklyScheduleResources($result,$show_more)
+                            new WeeklyScheduleResources($result,$show_more, $holiday_list, $user_collection)
                         ); 
                     }else{
                         $result = $this->dtr->get_dtr_logs( $user_collection , $time_from,  $time_to);
                         // return $result;
                         return success_response(
                             trans('messages.'.__FUNCTION__.'_success'), 
-                            new TeamScheduleResources($result,$show_more)
+                            new TeamScheduleResources($result,$show_more, $holiday_list,$user_collection)
                         );
                     }
                 }
@@ -319,9 +327,9 @@ class ReportController extends Controller
             }
 
   
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
+        // } catch(Exception $e){
+        //     return error_response( trans('messages.error_default'), $e );
+        // }
     }
     
 

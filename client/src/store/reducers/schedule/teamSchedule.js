@@ -5,7 +5,7 @@
  const initState = {
     list : null,
     team_list : [],
-    team_schedule: { data: [], date_list: [], week_list: [] },
+    team_schedule: { data: [], date_list: [], week_list: [], holiday_list: [] },
     filters : {},
 }
 
@@ -33,14 +33,19 @@ const teamSchedule = (state = initState, action) => {
                     date_list: [], 
                     week_list: [] 
                 },
-            }
+            } 
+        case "FETCH_DAILY_TEAM_SCHEDULE_MORE_SUCCESS":
+            result.team_schedule.data[ action.date ] = action.team_schedule.data[ action.date ];
+            result.team_schedule.date_list[ action.date ] =false;
+            return result;
         case "FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS":
             return {
                 ...state,
                 team_schedule: { 
                     data: action.team_schedule.data, 
                     date_list:  action.team_schedule.date_list, 
-                    week_list: [] 
+                    holiday_list: action.team_schedule.holiday_list,
+                    week_list: [] ,
                 },
             }
         case "FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS":
@@ -49,6 +54,7 @@ const teamSchedule = (state = initState, action) => {
                 team_schedule: { 
                     data: action.team_schedule.data, 
                     date_list:  action.team_schedule.date_list, 
+                    holiday_list: action.team_schedule.holiday_list,
                     week_list: action.team_schedule.week_list, 
                 },
             }
