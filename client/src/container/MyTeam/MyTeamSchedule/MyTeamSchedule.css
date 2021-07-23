@@ -26,31 +26,31 @@ div.schedule_info div:nth-child(2) {
 }
 .emp_sched .absent,
 .legends .absent .box{
-    background-color: #ffe2e0;
-    color: black !important;
+    background-color: #fd2b1d;
+    color: #fff !important;
 }
 .today-sched .emp_sched div:nth-child(2){background: #eee; line-height: 130%}
 .emp_sched .late,
 .legends .late .box{
-    background-color: #ffefcd;
+    background-color: #fffe00;
     color: black !important;
 }
 
 .emp_sched .on_leave,
 .legends .on_leave .box{
-    background-color: #eefcfe;
-    color: black !important;
+    background-color: #17a2b8;
+    color: #fff !important;
 }
 
 .emp_sched .undertime,
 .legends .undertime .box{
-    background-color: #fedeb7;
+    background-color: #ffb700;
     color: black !important;
 }
 
 .emp_sched .early,
 .legends .early .box{
-    background-color: #f3ffe2;
+    background-color: #c5e86e;
     color: black !important;
 } 
 

@@ -39,7 +39,7 @@ h6,.h6{font-size: .75em !important}
 
 .dashboard > .row > div > .row,
 .dashboard > .row > div > .row > div >.row{margin-top: 10px !important}
-.dashboard .content-table table{margin:0px auto; width: 95%; border:0 !important; background: #fff}
+.dashboard .content-table table{margin:0px auto; width: 100%; border:0 !important; background: #fff}
 .dashboard .card-header{ border-bottom: 5px solid #82af13 !important; width: 100%; background: transparent !important; }
 .team-attendance .content-table{margin:0px; width: 100%; border:0 !important;}
 .team-attendance .content-table table thead th{background:#fff !important; color:#333 !important;text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
@@ -129,7 +129,7 @@ td.actions .fa{font-size: 18px}
 .filters{margin-top: 30px}
 .evbuddy{background:  #fff; padding: 20px}
 
-.evbuddy a{ text-decoration: none; color: #333 !important}
+.evbuddy a{ text-decoration: none; color: #333 !important; font-size: .875em}
 .btn{padding: 5px 10px !important;}
 a.btn-primary{color: #fff !important;}
 .card-header .back-button{position: fixed; top: 7%; right:2%;z-index: 1000}
@@ -149,15 +149,15 @@ a.btn-primary{color: #fff !important;}
 
 .team-attendance .content-table table tbody td:nth-child(2){font-size: .75rem; width: 35%}
 .team-attendance .content-table .holiday{color: orange !important}
-.team-attendance .content-table{height: 400px; overflow-y: scroll}
+.team-attendance .content-table{height: 400px; overflow-y: auto}
 .team-attendance .content-table td{background: #fff !important}
-.team-attendance .content-table tbody{overflow-y: scroll;}
+.team-attendance .content-table tbody{overflow-y: auto;}
 .company-announcement .card-body >.row{margin-bottom: 0px !important; background: #fff}
 .company-announcement .card-body >.row p{padding:10px;}
 .company-announcement .card-body{background: transparent;}
 
 table thead tr th{background: #82af13 ; color:#fff; font-size: 10px !important}
-table tbody tr td{ font-size: 12px !important}
+table tbody tr td{ font-size: .875em !important}
 .dashboard .dtr-table thead th{font-size:.5rem !important}
 .dashboard .dtr-table tbody td{}
 .dashboard .dtr-log .justify-content-center{font-size:.875rem !important;}

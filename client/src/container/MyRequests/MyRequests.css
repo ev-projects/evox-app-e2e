@@ -1,30 +1,61 @@
-.request_list_btn {
-    background-color: white !important;
+
+
+.request-tab {
+    position: relative;
+    top: 12px;
+    left: 21px;
+    z-index: 1000;
+}
+.request-tab .nav-tabs{border: 0 !important;}
+.request-tab a{padding: 5px 8px 3px 8px !important; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 3px; font-size: .875em !important}
+.request-tab a.active {
+     background-color: #82af13  !important; color: #fff !important;
+}
+.request_list_btn{
+    background-color:white !important;
     color: black !important;
-    font-size: .875em !important;
-    min-width: 100px;
-    margin: 5px;
-    padding: 5px !important;
-    border-color: #ccc !important;
-    border-radius: 15px !important;
-}
-.request_list_btn span{border-radius: 8px}
-.request_list_btn span.pending{background:#f1c40f !important}
-.request_list_btn  .badge {
-    padding: 3px 6px !important;
+    font-size: 12px;
+    margin: 10px;
+    border-color: gray !important;
+    border-radius: 25px !important;
 }
 
-.badge{padding: 5px 10px !important;}
-.badge-success{background: #edf2dc !important; color: #333 !important; font-weight: normal !important;}
-.badge-success span{background: #81b014  !important;}
-.badge-dark {background: #efefef  !important; color: #333 !important; font-weight: normal !important;}
-.badge-dark span{background: #717171  !important; }
-.badge-danger {background: #fce1e6  !important; color: #333 !important; font-weight: normal !important;}
-.badge-danger span{background: #c91313  !important;}
-.badge-secondary {background: #fdf6db  !important; color: #333 !important; font-weight: normal !important;}
-.badge-secondary span{background: #f1c40f  !important;}
+.filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: -5px; float: none;}
+.filters .date-range label,.bulk-action .form-group label {
+    float: left;
+    font-size: 10px;
+    padding: 9px 5px 8px;
+    text-transform: uppercase;
+    background: #ccc;
+}
+.filters .col{padding: 0px !important; margin:0 10px 0 0 !important;}
+.filters .date-range > div > div{width: 36%; float: left; margin-right: 5px}
+.filters .date-range {
+    width: 38% !important;
+    flex: 0 1 38%;
+    margin-left: 0% !important;
+}
+.filters.myrequest-filter .date-range {
+    width: 80% !important;
+    flex: 0 80%;
+}
+.filters .dept {
+    width: 27%;
+    flex: 10%;
+}
+.filters .search-name{width: 25%;flex: 10%;}
+.filters .filter-button{ width: 15%;flex: 5%; }
+.filters select, .filters input[type="textfield"]{font-size:1rem;}
+.bulk-action .form-group >div {float: left; margin-right: 10px}
+.denied{
+    background-color: red !important;
+    color: white !important;
+}
 
-
+.canceled{
+    background-color:gray !important;
+    color: white !important;
+}
 
 .approved, .nav-link .page-item.active .page-link{
     background-color: #82af13  !important;
@@ -32,7 +63,10 @@
     color: white !important;
 }
 
-
+.pending{
+    background-color: yellow !important;
+    color: white !important;
+}
 
 .pagination .nav-link{
     padding: 0px !important;
@@ -40,17 +74,8 @@
 }
 
 .badge-light{
-    border: 1px solid #ccc !important;
+    border: 1px solid gray !important;
 }
-.badge span {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 5px;
-    color: #333 !important;
-}
-
 
 .pagination_btn{
     margin-left: -1px;
@@ -79,9 +104,57 @@
     color: red  !important;
 }
 
-@media only screen and (max-width: 650px) {
-    .request-content .card-body {
-    padding: .35rem;
-}
+.btn.display-block{
+    display: block !important   ;
+    width: 100px!important;
+    font-size:12px;
+    padding:8px 0;
 }
 
+.input-feedback{
+    color: red !important;
+}
+.form-control{font-size: inherit !important}
+.react-datepicker-wrapper {
+    display: block;
+}
+
+@media only screen and (max-width: 650px) {
+.bulk-action .form-group label, .filters .date-range label {
+    font-size: .5rem;
+}
+.btn.display-block {
+    font-size: .75rem;
+    width: 90px!important;
+}
+.filters.myrequest-filter {margin:0; width: 100%; float: none;}
+.filters.myrequest-filter .date-range {
+    width: 75% !important;
+    flex: 0 75%;
+}
+.form-control{font-size:.75rem !important}
+.filters .date-range{flex: 0 1 100%;}
+.filters .date-range > div > div{width: 31%; float: left; margin-right: 5px}
+.filters .dept{width: 27%}
+.filters .search-name{width: 25%}
+.filters .btn.display-block{width:52px !important; overflow: hidden; word-break: break-all; height: 38px}
+.request-tab {
+    top: 18px;
+    left: 4px;
+}
+.request-tab .nav-tabs a{
+    display: none
+}
+.request-tab a{padding: 5px 10px}
+.request-tab .nav-tabs a {
+    font-size: .75rem;
+    margin: 0 1px 0 1px;
+    padding: 3px 7px;
+}
+.filters.myrequest-filter .btn
+ {
+    height: 34px;
+    width: 38px;
+    overflow:hidden;
+}
+}

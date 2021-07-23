@@ -170,7 +170,7 @@ const MonthTeamSchedule = (props) => {
                 }
 
 
-                return <React.Fragment><Row className="emp_sched"> {first_week_offset} {week.map((day, day_index) => {
+                return <React.Fragment><Row className="emp_sched profile"> {first_week_offset} {week.map((day, day_index) => {
                     day_number = day_number + 1;
                     var details = ''
                     var time_in = schedule?.schedule_details?.all?.start_time
