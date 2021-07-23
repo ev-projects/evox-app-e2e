@@ -259,22 +259,30 @@ class TeamAttendanceSummary
                     }
                 }   
             }
-
+            
             // If the total headcount has at least 1, proceed on computing the percentage.
             if( $this->result['total_headcount'] > 0 ){
-
+                // return $this->result['total_headcount'];
                 // Computation for the total days 
                 $total_days = $this->result['scheduled_employees']['total_count'] + $this->result['planned_leaves']['total_count'];
                 $this->result['days'] = $total_days ;
                 // Computation for Scheduled Employee, Planned Leaves, and Unplanned Leaves if the total days are more than 0
                 if( $total_days > 0 ) {
+                    // return $total_days;
                     $this->result['scheduled_employees']['total_percentage'] = (float) number_format(($this->result['scheduled_employees']['total_count'] / $total_days) * 100, 2);
                     $this->result['planned_leaves']['total_percentage'] = (float) number_format(($this->result['planned_leaves']['total_count'] / $total_days) * 100, 2);
-                    $this->result['unplanned_leaves']['total_percentage'] = (float) number_format(($this->result['unplanned_leaves']['total_count'] / $this->result['scheduled_employees']['total_count']) * 100, 2);    
-                
+                    // 
                     // Computation for Attendance's total count and percentage.
                     $this->result['attendance']['total_count'] = $this->result['scheduled_employees']['total_count'] - $this->result['unplanned_leaves']['total_count'];
-                    $this->result['attendance']['total_percentage'] = (float) number_format(($this->result['attendance']['total_count'] / $this->result['scheduled_employees']['total_count']) * 100, 2);    
+                    // \
+                    // return $this->result['scheduled_employees']['total_count'];
+                    if( $this->result['scheduled_employees']['total_count'] == 0 ){
+                        $this->result['attendance']['total_percentage'] = 0;    
+                        $this->result['unplanned_leaves']['total_percentage'] = 0;  
+                    }else {
+                        $this->result['attendance']['total_percentage'] = (float) number_format(($this->result['attendance']['total_count'] / $this->result['scheduled_employees']['total_count']) * 100, 2);    
+                        $this->result['unplanned_leaves']['total_percentage'] = (float) number_format(($this->result['unplanned_leaves']['total_count'] / $this->result['scheduled_employees']['total_count']) * 100, 2);    
+                    }
 
                 }
 
