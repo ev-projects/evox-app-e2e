@@ -70,25 +70,35 @@ export const fetchTeamSchedule = ( params = null ) => {
             document.body.appendChild(fileLink);
             fileLink.click();
             }else{
-                if(params.scope_type=="day"){
+                if(params.show_more==true){
                     dispatch({
-                        'type'          : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
+                        'type'          : 'FETCH_DAILY_TEAM_SCHEDULE_MORE_SUCCESS', 
                         'team_schedule' :  result.data.content,
+                        'date' :  params.start_date,
                     })
-                }else if(params.scope_type=="week"){
-                    dispatch({
-                        'type'          : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
-                        'team_schedule' :  result.data.content,
-                    })
-                }else if(params.scope_type=="month" || params.scope_type=="custom"){
-                    dispatch({
-                        'type'          : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
-                        'team_schedule' :  result.data.content,
-                    })
+                }else{
+                    if(params.scope_type=="day"){
+                        dispatch({
+                            'type'          : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
+                            'team_schedule' :  result.data.content,
+                        })
+                    }else if(params.scope_type=="week"){
+                        dispatch({
+                            'type'          : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
+                            'team_schedule' :  result.data.content,
+                        })
+                    }else if(params.scope_type=="month" || params.scope_type=="custom"){
+                        dispatch({
+                            'type'          : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
+                            'team_schedule' :  result.data.content,
+                        })
+                    }
                 }
+
             }
         })
         .catch(e => {
+            console.log(e);
             dispatch( Formatter.alert_error( e ) ) 
         });
     }

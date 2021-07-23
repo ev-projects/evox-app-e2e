@@ -27,52 +27,6 @@ const myTeamListReducers = (state = initState, action) => {
                 team_list : action.list
             }
             break;
-        case "FETCH_DAILY_TEAM_SCHEDULE_SUCCESS":
-            result.current_page = action.team_schedule.current_page;
-            result.last_page = action.team_schedule.last_page;
-            if(action.team_schedule.current_page == 1){
-                result.team_schedule.data = [];
-                result.team_schedule.data.push(action.team_schedule.data);
-                return result;
-            }else if(action.team_schedule.current_page > 1 && action.team_schedule.current_page <= action.team_schedule.last_page ){
-                result.team_schedule.push(action.team_schedule.data);
-                return result;
-            }
-            break;
-        case "FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS":
-            result.current_page = action.team_schedule.current_page;
-            result.last_page = action.team_schedule.last_page;
-            if(action.team_schedule.current_page == 1){
-                result.team_schedule.data = [];
-                result.team_schedule.date_list = [];
-                result.team_schedule.data.push(action.team_schedule.data); 
-                result.team_schedule.date_list = action.team_schedule.date_list;
-                return result;
-            }else if(action.week.current_page > 1 && action.week.current_page <= action.week.last_page ){
-                result.team_schedule.data.push(action.team_schedule.data);
-                result.team_schedule.date_list = result.team_schedule.date_list.concat(action.team_schedule.date_list);
-                return result;
-            }
-            break;
-        case "FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS":
-            result.current_page = action.team_schedule.current_page;
-            result.last_page = action.team_schedule.last_page;
-            if(action.team_schedule.current_page == 1){
-                result.team_schedule.data = [];
-                result.team_schedule.date_list = [];
-                result.team_schedule.week_list = [];
-
-                result.team_schedule.data.push(action.team_schedule.data);
-                result.team_schedule.date_list = action.team_schedule.date_list;
-                result.team_schedule.week_list = action.team_schedule.week_list;
-            }else if(action.team_schedule.current_page > 1 && action.team_schedule.current_page <= action.team_schedule.last_page ){
-                result.team_schedule.data.push(action.team_schedule.data);
-                result.team_schedule.date_list = result.team_schedule.date_list.concat(action.team_schedule.date_list);
-                result.team_schedule.week_list = result.team_schedule.week_list.concat(action.team_schedule.week_list);
-            }
-            return result;
-
-            break;
         case "SET_MY_TEAM_LIST_FILTERS":
             return {
                 ...state,
