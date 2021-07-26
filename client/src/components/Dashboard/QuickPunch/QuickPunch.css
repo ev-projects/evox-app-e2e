@@ -3,7 +3,11 @@
     background-color: #343a40;
     color: white;
 }
-.quickpunch h3{color: #fff !important; font-size: 2rem; margin-top: 5%;}
+.quickpunch h3 {
+    color: #fff !important;
+    font-size: 2rem;
+    margin-top: 20px;
+}
 .quickpunch .note{padding: 0 20px}
 .note{
     text-align: justify;
