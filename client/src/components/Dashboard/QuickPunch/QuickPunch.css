@@ -3,20 +3,24 @@
     background-color: #343a40;
     color: white;
 }
-.quickpunch h3{color: #fff !important; font-size: 2rem}
+.quickpunch h3 {
+    color: #fff !important;
+    font-size: 2rem;
+    margin-top: 20px;
+}
 .quickpunch .note{padding: 0 20px}
 .note{
     text-align: justify;
-    font-size: 12px;
+    font-size: .875em;
 }
 
 .quickpunch .time{
-    font-size: 50px;
+    font-size: 3em;
     margin-top: 20px;
 }
 
 .quickpunch .btn {
-    width: 130px;
+    width: 100px;
     margin: 30px 10px 10px;
 }
 

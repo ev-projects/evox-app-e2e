@@ -66,6 +66,14 @@ class TeamAttendanceSummaryResource extends JsonResource
                     // else, set status as Absent
                     }else {
                         $status = 'Absent';
+                        
+                        // if inside sched = absent 
+                        if($dtr->checkCurrentTime()){
+                            $status = 'Absent';
+                        }else {
+                            $status = 'Not yet started';
+                        }
+                        // if not blank duty not started yet
                     }
                 
                 // If the DTR is Rest Day, set status as Rest Day

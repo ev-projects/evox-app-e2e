@@ -5,7 +5,7 @@ namespace App\Modules\Report\Resources;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\User\Models\User;
-class TeamScheduleResources extends JsonResource
+class WeeklyScheduleResources extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -13,7 +13,7 @@ class TeamScheduleResources extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function __construct($resource,$show_more,$holiday_list, $user_collection)
+    public function __construct($resource,$show_more,$holiday_list,$user_collection)
     {
         // Ensure you call the parent constructor
         parent::__construct($resource);
@@ -26,13 +26,11 @@ class TeamScheduleResources extends JsonResource
     public function toArray($request)
     {
         $list = null;
-        $date_list = [];
         $list = [];
         $week_list = [];
+        $date_list = [];
         $user_list = $this->user;
 
-  
-        //  THESE VARIABLE IS FOR SHOW MORE
         $user_per_page = get_constant("TEAM_SCHEDULE.records_per_date");
         $total_no_employee = $this->show_more["number_of_employee"];
         $terminate_date_list = $this->show_more["termination_date_list"];
@@ -41,7 +39,9 @@ class TeamScheduleResources extends JsonResource
         if($user_per_page < $total_no_employee ){
             $show_more = True;
         }
+
         if(count( $this->resource ) > 0 ) {
+
             $prev_date = $this->resource[0]->date;
 
             if(count($terminate_date_list) > 0){
@@ -56,15 +56,14 @@ class TeamScheduleResources extends JsonResource
             
             $date_list[$prev_date] = $show_more;
 
-            
-            $week_start = date('l',strtotime($prev_date));
-            $prev_day = $week_start;
+            $day_index = 0;
+            $week_index = 0;
             
             foreach ( $this->team_schedule as $array) {
                 $status = $array->getDtrStatus();
                 $week_day = date('l',strtotime($array->date)  );
                 
-                # This condition for updating date in the loop for indexing
+                # Update the list of dates and index
                 if($prev_date!=$array->date){
                     if(count($user_list)>0){
                         foreach( $user_list as $user_id ){
@@ -78,8 +77,6 @@ class TeamScheduleResources extends JsonResource
                     }
 
                     $prev_date =$array->date;
-
-                    # This line is for the show more
                     if(count($terminate_date_list) > 0 && isset($terminate_date_list[$terminate_date_index])){
                         if( $terminate_date_list[$terminate_date_index]== date("Y-m-d", strtotime($prev_date)) ){
                             $total_no_employee--;
@@ -90,31 +87,21 @@ class TeamScheduleResources extends JsonResource
                         $show_more = False;
                     }
 
-                    
                     $date_list[$prev_date] = $show_more;
+                    $day_index += 1;
                 }
-
-                # Updating the week
-                if($prev_day == "Sunday" && $week_day=="Monday"){
-                    $week_list[] =  array( $week_start , $prev_day ) ;
-                    $week_start = $week_day;
-                }
-
                 $user =  $array->user()->first();
                 $user_list = array_diff($user_list,[$user->id]);
 
                 $list[$prev_date][] = [
-                    "Name" =>  $user->getFullName( 3 ),
+                    "Name" => $user->getFullName( 3 ),
                     "Schedule" => $array->getStartSchedule(),
                     "type" =>  $status
                 ];
 
                 $prev_day = $week_day;
             }
-            
-            $week_list[] = array( $week_start ,  $week_day ) ;
 
-            // Check if there is employe where there is no generated info
             if(count($user_list)>0){
                 foreach( $user_list as $user_id ){
                     $list[$prev_date][] = [
@@ -124,10 +111,7 @@ class TeamScheduleResources extends JsonResource
                     ];
                 }
             }
-
         }
-
- 
 
         $holiday_list = [];
         foreach ( $this->holiday_list as $array) {
@@ -141,7 +125,6 @@ class TeamScheduleResources extends JsonResource
         return array(
             "data" => $list,
             "date_list" => $date_list,
-            "week_list" => $week_list,
             "holiday_list" => $holiday_list
         );
     }

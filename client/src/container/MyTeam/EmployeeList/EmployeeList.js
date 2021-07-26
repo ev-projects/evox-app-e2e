@@ -27,7 +27,7 @@ class EmployeeList extends Component {
 
       this.initialState = {
           filters: {
-            status:         this.props.myTeamList?.filters?.status,
+            status:         1,
             department_id:  this.props.myTeamList?.filters?.department_id,
             team_id:        this.props.myTeamList?.filters?.team_id,
             job_title:      this.props.myTeamList?.filters?.job_title,
@@ -126,6 +126,18 @@ const MyTeamListFilter = (props) => {
                     </select>
                 </div>
               </Col> 
+              <Col size="4">
+                    <select
+                    className="form-control"
+                      name="status"
+                      value={values.status}
+                      onChange={handleChange}
+                    >
+                      <option label="Select Status..." />
+                      <option value="1" label="Active" />
+                      <option value="0" label="Inactive" />
+                    </select>
+              </Col>
               <Col size="2"> 
                 <div className="form-group">
                     <select
@@ -213,6 +225,7 @@ const MyTeamListTable = (props) => {
                   <th>Job Title</th> 
                   <th>Department</th>
                   <th>Email</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -224,10 +237,8 @@ const MyTeamListTable = (props) => {
                     <td>{user.job_title} </td>
                     <td>{user.department} </td>
                     <td>{user.email} </td>
+                    <td className="emp-status"> <Status status={user.is_active} /></td>
                     <td className="actions">
-  
-                      
-                      &nbsp;&nbsp;&nbsp;
                       { !Authenticator.checkRole('client') ? 
                         <span>
                           { Authenticator.check('supervisor', 'view_employee_dtr') &&
@@ -240,7 +251,7 @@ const MyTeamListTable = (props) => {
                               <i className="fa fa-clock-o ev-color" aria-hidden="true"></i>
                             </Link>
                           }
-                          &nbsp;&nbsp;
+                          
                           { Authenticator.check('supervisor', 'manage_schedule') &&
                             <Link to={{
                                     pathname: global.links.schedule_assign_user + user.id
@@ -250,7 +261,6 @@ const MyTeamListTable = (props) => {
                               <i className="fa fa-calendar-o ev-color" aria-hidden="true"></i>
                             </Link>
                           }
-                          &nbsp;&nbsp;
                         </span>
                         : 
                         null

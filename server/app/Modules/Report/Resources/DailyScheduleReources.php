@@ -55,6 +55,7 @@ class DailyScheduleReources extends JsonResource
                     "Name" => $array->user()->first()->getFullName( 3 ),
                     "on_duty" => date( 'Y-m-d H:i:s', $array->start_datetime ),
                     "off_duty" => date( 'Y-m-d H:i:s', $array->end_datetime ),
+                    "Schedule" => $array->getSchedule(),
                     "day_type" => $tag ,
                     "hour" => $hour,
                     "type" =>  $status

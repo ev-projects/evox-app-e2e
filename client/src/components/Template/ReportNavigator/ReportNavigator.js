@@ -35,8 +35,8 @@ const ReportNavigator = (props) => {
  
                  // Change the view type to "week" and set the current start_date as the basis of the start and end date.
                  case "week":
-                     start_date.set(moment().startOf('week').toObject());
-                     end_date.set(start_date.toObject()).endOf('week');
+                     start_date.set(moment().startOf('isoWeek').toObject()); 
+                     end_date.set(start_date.toObject()).endOf('isoWeek');
                      break;
  
                  // Change the view type to "month" and set the current start_date as the basis of the start and end date.
@@ -45,7 +45,7 @@ const ReportNavigator = (props) => {
                      end_date.set(start_date.toObject()).endOf('month');
                      break;
              }
-            props.handleChangeDate( start_date, end_date);
+            props.handleChangeDate( start_date, end_date, type);
         }
         setViewType(type);
         setForceChange(!forceChange);
@@ -68,8 +68,8 @@ const ReportNavigator = (props) => {
   
                       // If the viewType is "week", move 1 week forward.
                       case "week":
-                          start_date.add(1, 'week').startOf('week');
-                          end_date.set(start_date.toObject()).endOf('week');
+                          start_date.add(1, 'week').startOf('isoWeek');
+                          end_date.set(start_date.toObject()).endOf('isoWeek');
                           break;
   
                       // If the viewType is "month", move 1 month forward.
@@ -92,8 +92,8 @@ const ReportNavigator = (props) => {
   
                       // If the viewType is "week", move 1 week backward.
                       case "week":
-                          start_date.subtract(1, 'week').startOf('week');
-                          end_date.set(start_date.toObject()).endOf('week');
+                          start_date.subtract(1, 'week').startOf('isoWeek');
+                          end_date.set(start_date.toObject()).endOf('isoWeek');
                           break;
   
                       // If the viewType is "month", move 1 month backward.
@@ -104,7 +104,7 @@ const ReportNavigator = (props) => {
                   }
                   break;
         }
-        props.handleChangeDate( start_date, end_date);
+        props.handleChangeDate( start_date, end_date, viewType);
         setForceChange(!forceChange);
      }
 
@@ -112,10 +112,9 @@ const ReportNavigator = (props) => {
 
     // Handles the fetching of Customized filter
     function handleCustomFilter(){
-        
         start_date.set( moment(customStartDate).toObject())
         end_date.set( moment(customEndDate).toObject())
-        props.handleChangeDate( start_date, end_date);
+        props.handleChangeDate( start_date, end_date, "custom");
         setForceChange(!forceChange);
     }
 
@@ -145,7 +144,7 @@ const ReportNavigator = (props) => {
                         timeFormat="MMMM d, yyyy"
                         placeholder="Start Date"
                         selected={customStartDate}   
-                        onChange={date => setCustomStartDate(date)} 
+                        onChange={(date) => { setCustomStartDate(date); start_date.set( moment(date).toObject());}}
                     />
                         <span style={{marginTop: "5px"}}>to</span>
                     <DatePicker 
@@ -157,7 +156,7 @@ const ReportNavigator = (props) => {
                         timeFormat="MMMM d, yyyy"
                         placeholder="End Date"
                         selected={customEndDate}       
-                        onChange={date => setCustomEndDate(date)} 
+                        onChange={(date) => { setCustomEndDate(date); end_date.set( moment(date).toObject());}}
                     />   
                     <Button className="custom-filter-btn" variant="primary" onClick={handleCustomFilter} >
                         <i className="fa fa-filter" />

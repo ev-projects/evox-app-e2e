@@ -3,13 +3,15 @@
 namespace App\Modules\Report\Http\Controllers;
 
 use App\Exports\DtrSummaryExport;
+use App\Exports\TeamScheduleExport;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Resources\AnniversaryResources; 
 use App\Modules\Payroll\Resources\TeamAttendanceResources; 
 use App\Modules\Report\Resources\TeamScheduleResources; 
-use App\Modules\Report\Resources\DailyScheduleReources; 
+use App\Modules\Report\Resources\DailyScheduleReources;  
+use App\Modules\Report\Resources\WeeklyScheduleResources;
 use App\Modules\Payroll\Resources\HolidayResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -23,8 +25,12 @@ use App\Modules\Payroll\Resources\MyDtrNotificationsResource;
 use App\Modules\Report\Repositories\ReportRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Modules\Payroll\Models\Holiday;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use App\Exports\TeamSummaryAttendanceExport;
+use App\Exports\TeamSummaryAttendanceMultiSheetExport;
+use App\Modules\Payroll\Resources\TeamAttendanceSummaryResource;
 
 class ReportController extends Controller
 {
@@ -41,12 +47,14 @@ class ReportController extends Controller
                                  PayrollCutoffRepositoryInterface $payroll_cutoff,
                                  DtrRepositoryInterface $dtr, 
                                  DtrSummaryExport $dtr_summary_export,
+                                 TeamScheduleExport $team_schedule_export,
                                  UserRepositoryInterface $user){
         $this->report = $report;
         $this->holiday = $holiday;
         $this->payroll_cutoff = $payroll_cutoff;
         $this->dtr = $dtr;
         $this->dtr_summary_export = $dtr_summary_export;
+        $this->team_schedule_export = $team_schedule_export;
         $this->user = $user;
     }
 
@@ -222,9 +230,10 @@ class ReportController extends Controller
      * @return array
      */
     public function team_schedule( Request $request ){
-        try {
+        // try {
             $date_from = Carbon::now();
             $user_list = auth()->user()->users_handled();
+            $no_user_limit = get_constant("TEAM_SCHEDULE.records_per_date");
 
             // Team Filter
             if( is_valid( request()->get('team_id') ) ) {
@@ -241,36 +250,86 @@ class ReportController extends Controller
                 $user_list->whereRaw("(first_name LIKE '%".request()->get('name')."%' OR last_name LIKE '%".request()->get('name')."%')");
             }
 
-            if(request()->get('page')=="weekly"){
-                $date_from->setWeekStartsAt(Carbon::SUNDAY);
-                $date_from->setWeekEndsAt(Carbon::SATURDAY);
-
-                $time_from = $date_from->startOfWeek()->format('Y-m-d');
-                $time_to = $date_from->endOfWeek()->format('Y-m-d');
-            }elseif(request()->get('page')=="monthly"){
-                $time_from = $date_from->firstOfMonth()->format('Y-m-d');
-                $time_to = $date_from->endOfMonth()->format('Y-m-d');
-            }elseif(request()->get('page')=="daily"){
-
-                $time_from = $date_from->startOfDay()->format('Y-m-d');
-                $time_to = $date_from->endOfDay()->format('Y-m-d');
-                $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
-
-                return success_response(
-                    trans('messages.'.__FUNCTION__.'_success'), 
-                    new DailyScheduleReources($result,$date_from )
-                );
+            if( is_valid( request()->get('start_date') ) &&  is_valid( request()->get('end_date') )){
+                $time_from =  request()->get('start_date') ;
+                $time_to =  request()->get('end_date') ;
+            }else{
+                if(request()->get('scope_type')=="week"){
+                    $time_from = $date_from->startOfWeek()->format('Y-m-d');
+                    $time_to = $date_from->endOfWeek()->format('Y-m-d');
+                }elseif(request()->get('scope_type')=="month"){
+                    $time_from = $date_from->firstOfMonth()->format('Y-m-d');
+                    $time_to = $date_from->endOfMonth()->format('Y-m-d');
+                }elseif(request()->get('scope_type')=="day"){
+                    $time_from = $date_from->startOfDay()->format('Y-m-d');
+                    $time_to = $date_from->endOfDay()->format('Y-m-d');
+                }
             }
-            
-            $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
 
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
-                new TeamScheduleResources($result)
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
+            $user_list->orderBy('is_active', 'desc');
+
+            if(request()->get('export')=="all"){
+                $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                $this->team_schedule_export->data = $result;
+                return Excel::download($this->team_schedule_export , 'dtrsummary.csv');
+            }else{
+                if(request()->get('scope_type')=="day"){ 
+                    $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
+                    return success_response(
+                        trans('messages.'.__FUNCTION__.'_success'), 
+                        new DailyScheduleReources($result, $date = new Carbon($time_from))
+                    );
+                }else{
+                    // Get Employee that is active or will be terminated in a certain time
+                    $user_list = $user_list->where(function ($query) use ($time_from,$time_to) {
+                        $query
+                        ->where('termination_date', '=', null)
+                        ->orwhere(function ($query) use ($time_from,$time_to) {
+                            $query->whereDate('termination_date', '>' ,$time_to);
+                        })
+                        ->orwhere(function ($query) use ($time_from,$time_to) {
+                            $query->whereDate('termination_date', '<' ,$time_to)
+                            ->whereDate('termination_date', '>' ,$time_from);
+                        });
+                    })->get();
+
+                    $show_more = Array(
+                        "number_of_employee" => $user_list->count(),
+                        "termination_date_list" => $user_list->where('termination_date', "!=", null )->sortBy('termination_date')->pluck("termination_date")
+                    );
+
+                    $holiday_list = Holiday::whereRaw("(is_predefined = 1 AND (DAYOFYEAR(date) >= DAYOFYEAR('".$time_from."')) AND (DAYOFYEAR(date) <= DAYOFYEAR('".$time_to."') ) ) 
+                    OR (is_predefined = 0 AND date >= '".$time_from ."' AND date <= '". $time_to ."' ) ")->orderByRaw('Month(date),Day(date)')->get();
+                    
+                    if(!request()->get('show_more')){
+                        $user_collection = $user_list->take($no_user_limit);
+                    }else{
+                        $user_collection = $user_list;
+                    }
+
+                    if(request()->get('scope_type')=="week"){
+                        $result = $this->dtr->get_dtr_logs( $user_collection , $time_from,  $time_to);
+                        // return $result;
+                        return success_response(
+                            trans('messages.'.__FUNCTION__.'_success'), 
+                            new WeeklyScheduleResources($result,$show_more, $holiday_list, $user_collection)
+                        ); 
+                    }else{
+                        $result = $this->dtr->get_dtr_logs( $user_collection , $time_from,  $time_to);
+                        // return $result;
+                        return success_response(
+                            trans('messages.'.__FUNCTION__.'_success'), 
+                            new TeamScheduleResources($result,$show_more, $holiday_list,$user_collection)
+                        );
+                    }
+                }
+    
+            }
+
+  
+        // } catch(Exception $e){
+        //     return error_response( trans('messages.error_default'), $e );
+        // }
     }
     
 
@@ -395,8 +454,102 @@ class ReportController extends Controller
     }
 
 
+    public function export(Request $request, $start_date, $end_date) 
+    {   
+        $user_collection = $this->user->get_users_under_supervisee( $request );
+        $data =  $this->report->get_team_attendance_summary( $user_collection,  $start_date, $end_date );
+        $array = (array) $data['dtr_collection'];
+        $list = $this->getDetailsOfSummary($array['team_attendance_summary']);
+        ob_end_clean(); 
+        ob_start(); 
+
+        return Excel::download(new TeamSummaryAttendanceExport($data,$list), 'users.xlsx');
+
+    }
 
 
+    public function getDetailsOfSummary($data){    
+        
+        $team_attendance_summary = [];
+
+        foreach ( $data as $dtr) {
+            $status = '';
+            $schedule = array();
+            $has_holiday = false;
+            $has_leave = false;
+            $has_rest_day_work = false;
+            
+            // If DTR has holidays, tick the has_holiday flag
+            if( $dtr->holidays()->get()->count() > 0 ){
+                $status = 'Holiday';
+                $has_holiday = true;    
+            }
+            
+            $leave = $dtr->leaves()->first();
+            
+            // If DTR has valid leave, tick the has_leave flag
+            if( is_valid( $leave ) && $leave->isApproved() && $leave->amount > 0){
+                $status = $dtr->leaves()->get()->first()->type; 
+                $has_leave = true;
+            }
+
+            // If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
+            if( $dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')){
+                $status = 'Rest Day Work';
+                $has_rest_day_work = true;
+            }
+
+            # If There is No Rest Day, Holiday and Leave, check status
+            if( !$has_rest_day_work && !$has_holiday && !$has_leave ){
+
+                # Check if there is a schedule for the DTR
+                if( $dtr->hasSchedule() ){
+
+                    // If DTR has Log, set status as Present
+                    if( $dtr->hasValidTimelogs() ){
+                        $status = 'Present';
+
+                    // else, set status as Absent
+                    }else {
+                        $status = 'Absent';
+
+                        // if inside sched = absent 
+                        if($dtr->checkCurrentTime()){
+                            $status = 'Absent';
+                        }else {
+                            $status = 'Not yet started';
+                        }
+                    }
+                
+                // If the DTR is Rest Day, set status as Rest Day
+                }elseif($dtr->isRestDay()){
+                    $status = 'Rest Day';
+
+                // else, set as No Schedule
+                }else{
+                    $status = 'No Schedule';
+                }
+            
+            }
+            
+            // Fetch User of the DTR
+             $user = $dtr->user()->first();
+
+            // Assemble the array details for the Team Attendance Summary
+            array_push( $team_attendance_summary,
+            [
+                "date" => $dtr->date,
+                "user_id" => $user->id,
+                "name" => $user->getFullName( 2 ) ,
+                "job_title" =>  $user->job_title,
+                "department" =>  $user->department->department_name,
+                "status" => $status
+            ]);
+
+       }
+
+        return $team_attendance_summary;
+    }
 
 
 }

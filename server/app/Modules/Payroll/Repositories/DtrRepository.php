@@ -953,7 +953,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 //  This is for My Team Schedule
                 if( request()->get('link') == 'team_schedule' ){
-                    if( request()->get('page')== 'daily' ){
+                    if( request()->get('page')== 'day' ){
                         $dtr_collection ->whereRaw("
                            (    
                                 start_datetime BETWEEN ".strtotime($start_date)." AND ".strtotime($end_date)."
@@ -987,15 +987,8 @@ class DtrRepository implements DtrRepositoryInterface{
                 }
 
                 $dtr_collection->select('dtrs.*');
-                // If the parameter 'page' value is 'all', Get the whole DTR Collection
-                if( request()->get('pagination') == 'all' ){
-                    $dtr_collection = $dtr_collection->get();
-                    
-                // If the parameter 'page' value is numeric, fetch the paginated list with offset.
-                } else {
-                    $dtr_collection = $dtr_collection->paginate(30);
-                }
 
+                $dtr_collection = $dtr_collection->get();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$dtr_collection], "dtr_summary");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
 

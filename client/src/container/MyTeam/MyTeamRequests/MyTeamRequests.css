@@ -23,17 +23,17 @@
 .filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: -5px; float: none;}
 .filters .date-range label,.bulk-action .form-group label {
     float: left;
-    font-size: 12px;
-    padding: 10px;
+    font-size: 10px;
+    padding: 9px 5px 8px;
     text-transform: uppercase;
     background: #ccc;
 }
 .filters .col{padding: 0px !important; margin:0 10px 0 0 !important;}
-.filters .date-range > div > div{width: 38%; float: left; margin-right: 5px}
+.filters .date-range > div > div{width: 36%; float: left; margin-right: 5px}
 .filters .date-range {
     width: 38% !important;
     flex: 0 1 38%;
-    margin-left: 1% !important;
+    margin-left: 0% !important;
 }
 .filters.myrequest-filter .date-range {
     width: 80% !important;
@@ -107,7 +107,7 @@
 .btn.display-block{
     display: block !important   ;
     width: 100px!important;
-    font-size:.875rem;
+    font-size:12px;
     padding:8px 0;
 }
 

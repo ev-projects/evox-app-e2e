@@ -110,7 +110,7 @@ import Validator from "../../../services/Validator";
               }
               </Row>
               <Row>
-                <div className="col-lg-7 col-md-6 col-sm-12">
+                <div className="col-lg-6 col-md-6 col-sm-12">
                     {Authenticator.checkRole('client') ? 
                           <Row>
                             <Content title="This Week's Attendance Summary" col="12">
@@ -126,7 +126,7 @@ import Validator from "../../../services/Validator";
                         <Content title="Today's attendance" col="12"><TeamAttendance/></Content>                
                     </Row>
                 </div>    
-                <div className="birthday-anniv col-lg-5 col-md-6 col-sm-12"> 
+                <div className="birthday-anniv col-lg-6 col-md-6 col-sm-12"> 
                     {Authenticator.checkRole('client') ? 
                           <Row>
                             <Content title="Upcoming holidays" col="12">

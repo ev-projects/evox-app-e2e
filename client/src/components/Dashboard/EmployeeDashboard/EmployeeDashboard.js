@@ -86,16 +86,49 @@ const EmployeeDashboard = ( props ) => {
                             :
                             (null)
                       }
-                   <Row>
-                    <Content title="ICT Schedule" col="12">
-                      <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
-                        <ul>
-                          <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
-                          <li>To follow up, you may chat us on skype at ev.it.helpdesk</li>
-                          <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
-                        </ul>
-                    </Content>   
-                  </Row>
+                       <Row>
+                  <div className="col-lg-12">
+                  <div className="card">
+                    <div className="card-header">
+                        <h3 align="center" className="card-title">JOB OPENINGS</h3>
+                    </div>
+                    <div className="card-body evbuddy">
+                    <br />
+                    <h4 align="center"><strong>Refer a friend and earn as much as 20K!</strong></h4>
+                    <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
+                    <br />
+                    <ul>
+<li><a href="https://careers.eastvantage.com/content/us-mortgage-loan-disclosure-specialist-night-shift-mandaluyong" target="_blank">US Mortgage Loan Disclosure Specialist | Night Shift | Mandaluyong</a></li>
+<li><a href="https://careers.eastvantage.com/content/japanese-learning-specialist-customer-care-professional" target="_blank">Japanese Learning Specialist | Customer Care Professional</a></li>
+<li><a href="https://careers.eastvantage.com/content/spanish-portuguese-bilingual-csr-bgc-taguig" target="_blank">Spanish-Portuguese Learning Specialist</a></li>
+<li><a href="https://careers.eastvantage.com/content/german-learning-specialist-bgc" target="_blank">German Learning Specialist (BGC)</a></li>
+<li><a href="https://careers.eastvantage.com/content/italian-learning-specialist-bgc" target="_blank">Italian Learning Specialist (BGC)</a></li>
+<li><a href="https://careers.eastvantage.com/content/qa-test-engineer-6-mos-contract-mobile-internet-banking" target="_blank">QA Test Engineer | 6 mos contract (Mobile & Internet Banking)</a></li>
+<li><a href="https://careers.eastvantage.com/content/senior-qa-test-engineer-insurance-knowledge-makati" target="_blank">Senior QA Test Engineer with Insurance knowledge | Makati</a></li>
+<li><a href="https://careers.eastvantage.com/content/online-english-language-virtual-teacher" target="_blank">Online English Language Virtual Teacher</a></li>
+<li><a href="https://careers.eastvantage.com/content/engagement-specialist-executive-search-asap" target="_blank">Engagement Specialist | Executive Search | ASAP</a></li>
+<li><a href="https://careers.eastvantage.com/content/copywriter-business-development-bgc-taguig" target="_blank">Copywriter</a></li>
+<li><a href="https://careers.eastvantage.com/content/full-stack-developerreact-js-developer-bgc" target="_blank">Full Stack Developer/React JS Developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/software-engineer-pythonetl-mid-senior-bgc" target="_blank">Software Engineer (Python/ETL)</a></li>
+<li><a href="https://careers.eastvantage.com/content/senior-php-software-developer-backend-bgc" target="_blank">Senior PHP Software Developer (Laravel/Javascript)</a></li>
+<li><a href="https://careers.eastvantage.com/content/sr-python-web-developer-api-bgc" target="_blank">Sr. Python Web Developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/devops-engineer-docker-aws-kubernetes-temporary-wfh-bgc" target="_blank">DevOps Engineer | Docker, AWS & Kubernetes (Temporary WFH | BGC)</a></li>
+<li><a href="https://careers.eastvantage.com/content/etl-engineer-python-ci-bgc-taguig" target="_blank">ETL Engineer</a></li>
+<li><a href="https://careers.eastvantage.com/content/react-js-developer-mid-senior-bgc-taguig" target="_blank">React JS Developer (Mid - Senior)</a></li>
+
+<li><a href="https://careers.eastvantage.com/content/software-qa-automation-engineer-robot-framework-mid-senior-bgc" target="_blank">Software QA Automation Engineer (Robot Framework)</a></li>
+<li><a href="https://careers.eastvantage.com/content/elixir-software-engineer-full-stack-mid-senior-bgc" target="_blank">Functional Tester - Project Based (Makati)</a></li>
+<li><a href="https://careers.eastvantage.com/content/penetration-tester" target="_blank">Penetration Tester</a></li>
+<li><a href="https://careers.eastvantage.com/content/mid-senior-outsystems-developer-makati" target="_blank">Mid to Senior Outsystems Developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/billing-operations-specialist-customer-service" target="_blank">Billing Operations Specialist (Customer Service)</a></li>
+<li><a href="https://careers.eastvantage.com/content/powerbi-analyst-bgc-taguig" target="_blank">PowerBI Analyst | BGC, Taguig</a></li>
+<li><a href="https://careers.eastvantage.com/content/cloud-support-engineer-bgc-taguig-2" target="_blank">Cloud Support Engineer</a></li>
+</ul>
+                    
+                  </div>
+                  </div>
+                  </div>
+                    </Row>
                 </div>
                 <div className="col-lg-4 col-md-6 col-sm-12">
                   <Row className="company-announcement">
@@ -117,46 +150,23 @@ const EmployeeDashboard = ( props ) => {
                           /> }
                             
                             <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Click the link below to fill out the form </p>
-                            <p><a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a></p>
+                            <a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a>
                           </Row>
                             
                       </Content> 
 
                   </Row>
-                    <Row>
-                  <div className="col-lg-12">
-                  <div className="card">
-                    <div className="card-header">
-                        <h3 align="center" className="card-title">JOB OPENINGS</h3>
-                    </div>
-                    <div className="card-body evbuddy">
-                    <h4 align="center"><strong>Refer a friend and earn as much as 20K!</strong></h4>
-                    <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
-                    <br />
-                    <ul>
-                   <li><a href="https://careers.eastvantage.com/content/full-stack-developerreact-js-developer-bgc">Full Stack Developer/React JS Developer</a></li>
-<li><a href="https://careers.eastvantage.com/content/software-engineer-pythonetl-mid-senior-bgc">Software Engineer (Python/ETL)</a></li>
-<li><a href="https://careers.eastvantage.com/content/senior-php-software-developer-backend-bgc">Senior PHP Software Developer (Laravel/Javascript)</a></li>
-<li><a href="https://careers.eastvantage.com/content/sr-python-web-developer-api-bgc">Sr. Python Web Developer</a></li>
-<li><a href="https://careers.eastvantage.com/content/devops-engineer-docker-aws-kubernetes-temporary-wfh-bgc">DevOps Engineer | Docker AWS & Kubernetes (Temporary WFH | BGC)</a></li>
-<li><a href="https://careers.eastvantage.com/content/freightlogistics-customer-service-representative-e-commerce-account">Freight/Logistics Customer Service Representative (E-Commerce Account)</a></li>
-<li><a href="https://careers.eastvantage.com/content/etl-engineer-python-ci-bgc-taguig">ETL Engineer</a></li>
-<li><a href="https://careers.eastvantage.com/content/react-js-developer-mid-senior-bgc-taguig">React JS Developer (Mid - Senior)</a></li>
-<li><a href="https://careers.eastvantage.com/content/qa-test-engineer-6-mos-contract-mobile-internet-banking">QA Test Engineer | 6 mos contract (Mobile & Internet Banking)</a></li>
-<li><a href="https://careers.eastvantage.com/content/it-infrastructure-specialist-1-2-years-experience-work-site-bgc">IT Support Specialist | Shifting Schedule | BGC Taguig (1-3 years)</a></li>
-<li><a href="https://careers.eastvantage.com/content/us-mortgage-loan-disclosure-specialist-night-shift-mandaluyong">US Mortgage Loan Disclosure Specialist | Night Shift | Mandaluyong</a></li>
-<li><a href="https://careers.eastvantage.com/content/japanese-learning-specialist-customer-care-professional">Japanese Learning Specialist | Customer Care Professional</a></li>
-<li><a href="https://careers.eastvantage.com/content/advertising-operations-manager-bgc-taguig">Advertising Operations Manager</a></li>
-<li><a href="https://careers.eastvantage.com/content/au-traffic-planner-queensland-bgc-taguig">AU Traffic Planner</a></li>
-<li><a href="https://careers.eastvantage.com/content/spanish-portuguese-bilingual-csr-bgc-taguig">Spanish-Portuguese Learning Specialist</a></li>
-<li><a href="https://careers.eastvantage.com/content/german-learning-specialist-bgc">German Learning Specialist (BGC)</a></li>
-<li><a href="https://careers.eastvantage.com/content/customer-support-specialist-logisticsfreight-bgc-taguig">Customer Support Specialist (Logistics/Freight) | BGC Taguig</a></li>
-                    </ul>
-                    
-                  </div>
-                  </div>
-                  </div>
-                    </Row>
+                   
+                   <Row className="ITsched">
+                    <Content title="ICT Schedule" col="12">
+                      <img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
+                        <ul>
+                           <li>For IT concerns please send an email to helpdesk@eastvantage.com</li>
+                          <li>You may chat us via zoom or google chat at helpdesk@eastvantage.com</li>
+                          <li>For urgent emergency concerns reach out to: James (+63 917 8102 593)</li>
+                        </ul>
+                    </Content>   
+                  </Row>
                   
                  
                 </div>

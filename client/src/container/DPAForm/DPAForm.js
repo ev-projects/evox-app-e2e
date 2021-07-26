@@ -81,7 +81,7 @@ class DPAForm extends Component {
             <Wrapper {...this.props} >
                <ContainerWrapper>
                   <ContainerBody>
-                    <Content col="6" title="Webinar: Data Privacy"  >
+                    <Content col="12" title="Webinar: Data Privacy"  >
                         <Row>
                           <div className="col-lg-12 col-md-12 col-sm-12">
                             <h2></h2>

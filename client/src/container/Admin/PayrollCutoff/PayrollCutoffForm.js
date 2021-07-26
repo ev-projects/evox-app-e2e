@@ -101,7 +101,7 @@ class PayrollCutoffForm extends Component {
     // Sets the default title for the form.
     let title = (method == "store" ? 'Add' : 'Edit') + " Payroll Cut-Off";
     
-    return <Content col="6" title={title} >
+    return <Content col="4" title={title} >
                 <Formik 
                 enableReinitialize="true"
                 onSubmit={this.onSubmitHandler}

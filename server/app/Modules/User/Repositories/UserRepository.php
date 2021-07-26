@@ -522,6 +522,11 @@ class UserRepository implements UserRepositoryInterface{
                     $user_collection->where('job_title', 'like', '%' .request()->get('job_title'). '%');
                 }
 
+                if( is_valid( request()->get('status') ) ) {
+                    $user_collection->where('is_active', '=', request()->get('status') );
+                }
+
+
                 if( is_valid( request()->get('order_by') ) ) {
                     $order = explode(":", request()->get('order_by'));
 

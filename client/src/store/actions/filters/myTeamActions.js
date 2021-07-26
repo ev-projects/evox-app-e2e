@@ -58,26 +58,67 @@ export const fetchTeamSchedule = ( params = null ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/report/team_schedule?&page=all&link=team_schedule",
+            url: "/report/team_schedule?link=team_schedule",
             params : params
         })
         .then(result => {
-            if(params.page=="daily"){
-                dispatch({
-                    'type'      : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
-                    'daily'  : result.data.content,
-                })
-            }else if(params.page=="weekly"){
-                dispatch({
-                    'type'      : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
-                    'weekly'  : result.data.content,
-                })
-            }else if(params.page=="monthly"){
-                dispatch({
-                    'type'      : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
-                    'monthly'  : result.data.content,
-                })
+            if(params.export=="all"){
+            var fileURL = window.URL.createObjectURL(new Blob([result.data]));
+            var fileLink = document.createElement('a');
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'team_schedule.csv');
+            document.body.appendChild(fileLink);
+            fileLink.click();
+            }else{
+                if(params.show_more==true){
+                    dispatch({
+                        'type'          : 'FETCH_DAILY_TEAM_SCHEDULE_MORE_SUCCESS', 
+                        'team_schedule' :  result.data.content,
+                        'date' :  params.start_date,
+                    })
+                }else{
+                    if(params.scope_type=="day"){
+                        dispatch({
+                            'type'          : 'FETCH_DAILY_TEAM_SCHEDULE_SUCCESS', 
+                            'team_schedule' :  result.data.content,
+                        })
+                    }else if(params.scope_type=="week"){
+                        dispatch({
+                            'type'          : 'FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS', 
+                            'team_schedule' :  result.data.content,
+                        })
+                    }else if(params.scope_type=="month" || params.scope_type=="custom"){
+                        dispatch({
+                            'type'          : 'FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS', 
+                            'team_schedule' :  result.data.content,
+                        })
+                    }
+                }
+
             }
+        })
+        .catch(e => {
+            console.log(e);
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+export const exportDtrSummary = ( data = null ) => {
+    return (dispatch, getState) => {
+        API.export({
+            method: "get",
+            url: "/report/dtr_summary/export",
+            params : data
+        })
+        .then(result => {
+            var fileURL = window.URL.createObjectURL(new Blob([result.data]));
+            var fileLink = document.createElement('a');
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'dtr_summary.csv');
+            document.body.appendChild(fileLink);
+            fileLink.click();
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

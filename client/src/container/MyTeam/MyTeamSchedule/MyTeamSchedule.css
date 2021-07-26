@@ -1,31 +1,117 @@
-.empsched .card-body{padding:2px !important;border-top:1px solid #ccc !important;}
-.empsched .card{margin-bottom: 5px !important}
+.emp_sched .card-body{padding:2px !important; margin-left:2px !important; margin-right:2px !important;border-top:1px solid #ccc !important;}
+.emp_sched .card{margin-bottom: 5px !important}
+
 div.schedule_info {
-    font-size: 12px;
+    font-size: 11px;
     text-align: center;
 }
-
-.card .rest_day{
-    background-color: #e6e6e6;
+div.schedule_info div {
+    font-size: 11px;
+}
+div.schedule_info div:nth-child(2) {
+    font-size: 10px;
+}
+.report-schedule .card-header{display: none}
+.report-schedule .navigator-bar{margin-bottom: 0 !important}
+.emp_sched .rest_day,
+.legends .rest_day .box{
+    background-color: #d7d7d7;
     color: black !important;
 }
 
-.card .absent{
-    background-color: #ffe2e2;
+.emp_sched .holiday,
+.legends .holiday .box{
+    background-color: #b1faff !important;
+    color: black !important;
+}
+.emp_sched .absent,
+.legends .absent .box{
+    background-color: #fd2b1d;
+    color: #fff !important;
+}
+.today-sched .emp_sched div:nth-child(2){background: #eee; line-height: 130%}
+.emp_sched .late,
+.legends .late .box{
+    background-color: #fffe00;
     color: black !important;
 }
 
-.card .late{
-    background-color: #ffeece;
+.emp_sched .on_leave,
+.legends .on_leave .box{
+    background-color: #17a2b8;
+    color: #fff !important;
+}
+
+.emp_sched .undertime,
+.legends .undertime .box{
+    background-color: #ffb700;
     color: black !important;
 }
 
-.card .on_leave{
-    background-color: #eefcfe;
+.emp_sched .early,
+.legends .early .box{
+    background-color: #c5e86e;
+    color: black !important;
+} 
+
+.emp_sched .no_status,
+.legends .no_status .box{
+    background-color: #eee;
     color: black !important;
 }
+.Hourframe{margin:0 !important;padding-top: 10px; clear:both;}
 
-.card .early{
-    background-color: #f3ffe2;
-    color: black !important;
+.Hourframe div {
+    width: 4%;
+    font-size:.75em;
+    border-left:1px solid #999;
+}
+.Hourframe div span{position:relative;top:-14px; left:-10px; }
+
+.emp_sched{
+    margin: 5px;
+    margin: 2px 0 !important;
+    overflow: hidden;
+}
+.emp_sched span{display: block;padding:3px 5px;font-size:.75em;}
+.today-sched .emp_sched{height: 20px;}
+.calendar-sched{clear: both;}
+.viewmore {background: rgba(0,0,0,.25) !important;width: 100%;left:0; padding:10px 0;bottom: 0; position: fixed;z-index: 2000; text-align: center;}
+.viewmore button{width: 100px; border: 0; text-align: center;margin:0 auto;}
+.legends {margin-bottom: 20px;float: right;}
+.legends div{margin-right: 10px;font-size:10px}
+.legends .box {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 2px;
+    border: 1px solid #ccc;
+    position: relative;
+    top:2px;
+}
+.legends .status{font-size: 10px; color: #666}
+
+
+.emp_sched .row{
+    padding-bottom: 20px;
+}
+
+.emp_sched .col .employee_list{
+    max-height: 250px;
+    overflow-y: auto; 
+}
+.emp_sched ::-webkit-scrollbar {
+    height: 4px;              /* height of horizontal scrollbar ← You're missing this */
+    width: 4px;               /* width of vertical scrollbar */
+    border: 1px solid #d5d5d5;
+  }
+
+.emp_sched ::-webkit-scrollbar-track { 
+border-radius: 0;
+background: #eeeeee;
+}
+
+.emp_sched ::-webkit-scrollbar-thumb {
+border-radius: 0;
+background: #b0b0b0;
 }

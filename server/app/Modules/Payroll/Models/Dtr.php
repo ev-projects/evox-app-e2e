@@ -50,7 +50,8 @@ class Dtr extends Model
      */
     public function hasValidTimelogs()
     {
-        return ( $this->hasCompleteTimelogs() && $this->time_out > $this->time_in ) ? true : false;
+        // && $this->time_out > $this->time_in logic for has valid time logs
+        return ( $this->hasCompleteTimelogs() ) ? true : false;
     }
 
     /**
@@ -95,10 +96,27 @@ class Dtr extends Model
         $schedule = array();
 
         if( $this->hasSchedule() ){
-            $schedule[] = date("h:i:s", $this->start_datetime) .  '-' .date("h:i:s", $this->end_datetime );
+            $schedule[] = date("H:i:s", $this->start_datetime) .  '-' .date("H:i:s", $this->end_datetime );
             if( $this->hasFlexibleSchedule() ){
-                $schedule[] = date("h:i:s", $this->start_flexy_datetime) .  '-' .date("h:i:s", $this->end_flexy_datetime );
+                $schedule[] = date("H:i:s", $this->start_flexy_datetime) .  '-' .date("H:i:s", $this->end_flexy_datetime );
             }
+        }
+
+        return  $schedule;
+    }
+
+
+        /**
+     * 
+     *  Get schedule
+     * @return bool 
+     */
+    public function getStartSchedule()
+    {
+        $schedule = array();
+
+        if( $this->hasSchedule() ){
+            $schedule[] = date("H:i:s", $this->start_datetime) .  '-' .date("H:i:s", $this->end_datetime );
         }
 
         return  $schedule;
@@ -733,7 +751,7 @@ class Dtr extends Model
                 }elseif( isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
                     $status[] = "undertime";
                 }else{
-                    $status[] = 'no_status';
+                    $status[] = '';
                 }
 
             }

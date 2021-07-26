@@ -3,20 +3,27 @@
  */
 
 const initState = {
-    team_attendance_summary : [],
+    team_attendance_summary: [],
+    selected_summary: "attendance",
 }
 
 const reportReducers = (state = initState, action) => {
     let message = "";
-    let result = {...state};
-    switch(action.type) {
+    let result = { ...state };
+    switch (action.type) {
 
         case "FETCH_TEAM_ATTENDANCE_SUMMARY":
             result = {
                 ...state,
-                team_attendance_summary : action.data,
+                team_attendance_summary: action.data,
             }
-            break;    
+            break;
+        case "SET_SELECTED_ATTENDACE_SUMMARY":
+            result = {
+                ...state,
+                selected_summary: action.payload
+            }
+            break;
         default:
             result = state;
     }

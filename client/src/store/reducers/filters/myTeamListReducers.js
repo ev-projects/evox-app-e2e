@@ -5,17 +5,16 @@
 const initState = {
     list : null,
     team_list : [],
-    weekly : { data: [], date_list: [] },
-    monthly : { data: [], date_list: [] },
-    daily : [],
-    filters : {}
+    team_schedule: { data: [], date_list: [], week_list: [] },
+    filters : {},
+    current_page : 0,
+    last_page : 0
 }
 
 const myTeamListReducers = (state = initState, action) => {
     let message = "";
     let result = {...state};
     switch(action.type) {
-
         case "FETCH_MY_TEAM_LIST_SUCCESS":
             return {
                 ...state,
@@ -26,24 +25,6 @@ const myTeamListReducers = (state = initState, action) => {
             return {
                 ...state,
                 team_list : action.list
-            }
-            break;
-        case "FETCH_DAILY_TEAM_SCHEDULE_SUCCESS":
-            return {
-                ...state,
-                daily : action.daily.data
-            }
-            break;
-        case "FETCH_WEEKLY_TEAM_SCHEDULE_SUCCESS":
-            return {
-                ...state,
-                weekly : action.weekly
-            }
-            break;
-        case "FETCH_MONTHLY_TEAM_SCHEDULE_SUCCESS":
-            return {
-                ...state,
-                monthly : action.monthly
             }
             break;
         case "SET_MY_TEAM_LIST_FILTERS":

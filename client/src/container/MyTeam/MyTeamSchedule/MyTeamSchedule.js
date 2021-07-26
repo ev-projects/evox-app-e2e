@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card,Col,Badge,Table,Tabs,Tab,Row } from 'react-bootstrap';
+import { Card,Col,Badge,Table,Tabs,Tab,Row,Button,Dropdown } from 'react-bootstrap';
 import { connect,dispatch } from 'react-redux';
 import "./MyTeamSchedule.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
@@ -7,6 +7,9 @@ import Wrapper from "../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import * as Yup from 'yup';
 import { fetchTeamSchedule } from '../../../store/actions/filters/myTeamActions';
+import { fetchTeamUnderDepartment } from '../../../store/actions/filters/myTeamActions';
+import moment from 'moment';
+import ReportNavigator from "../../../components/Template/ReportNavigator/ReportNavigator.js";
 
 class MyTeamSchedule extends Component {
 
@@ -14,177 +17,494 @@ class MyTeamSchedule extends Component {
     super(props);
     this.initialState = {
         filters: {
-          url: 'my_team_requests'
+          start_date:       moment().startOf('day'),
+          end_date:         moment().endOf('day'),
+          department_id : this.props.user.departments_handled.length > 0?  this.props.user.departments_handled[0].id : null,  
+          name : this.props.team.filters?.name ?? null,  
+          team_id :this.props.team.filters?.team_id ?? null,  
+          scope_type :  "day",  
+          show_more: false
       }
     }
-    this.state = this.initialState; 
+
+    this.state = this.initialState.filters; 
+    this.props.team.filters = this.initialState.filters; 
   }
 
+  filterSchedule = () => {
+    this.handleSubmit();
+  }
   onSubmitHandler = (values) => {
+    var params = {};
+    for ( var key in values) {
+      if( values[key] != null && values[key] != ""  ) {
+        switch( key ) {
+          case "start_date":
+          case "end_date": 
+            params[key] = values[key].format("YYYY-MM-DD");
+            break;
+          default:
+            params[key] = values[key];
+            break;
+        }
+      } 
+    }
+  this.props.fetchTeamSchedule( params );
+  }
+
+  handleChangeDate = ( start_date, end_date, scope_type) => {
+    this.state.page = 1;
+    this.state.scope_type = scope_type;
+    this.handleSubmit();
+  }
+
+  showMoreSchedule = (date) => {
+    var formData = {};
+    var filter = this.state
+    for ( var key in filter) {
+      if( filter[key] != null && filter[key] != ""  ) {
+        switch( key ) {
+          case "start_date":
+          case "end_date": 
+            formData[key] = date;
+            break;
+          default:
+            formData[key] = filter[key];
+            break;
+        }
+      } 
+    }
+
+    formData["show_more"] = true;
+
+    this.props.fetchTeamSchedule( formData );
+  }
+
+  handleSubmit = () => {
+    var formData = {};
+    var filter = this.state
+    for ( var key in filter) {
+      if( filter[key] != null && filter[key] != ""  ) {
+        switch( key ) {
+          case "start_date":
+          case "end_date": 
+            formData[key] = filter[key].format("YYYY-MM-DD");
+            break;
+          default:
+            formData[key] = filter[key];
+            break;
+        }
+      } 
+    }
+    this.props.fetchTeamSchedule( formData );
   }
 
   componentDidMount(){
-    this.props.fetchTeamSchedule()
+    var formData = {};
+    var filter = this.state;
+    for ( var key in filter) {
+      if( filter[key] != null && filter[key] != ""  ) {
+        switch( key ) {
+          case "start_date":
+          case "end_date": 
+            formData[key] = filter[key].format("YYYY-MM-DD");
+            break;
+          default:
+            formData[key] = filter[key];
+            break;
+        }
+      } 
+    }
+    this.props.fetchTeamSchedule( formData );
   }
 
+  paginate = ()  => {
+    this.state.page += 1;
+    this.handleSubmit();
+  }
+
+  export = (export_type)  => {
+    var filter = this.state
+    var formData = {};
+
+    for ( var key in filter) {
+      if( filter[key] != null && filter[key] != ""  ) {
+        switch( key ) {
+          case "start_date":
+          case "end_date": 
+            formData[key] = filter[key].format("YYYY-MM-DD");
+            break;
+          default:
+            formData[key] = filter[key];
+            break;
+        }
+      } 
+    }
+
+    if(export_type=="all"){
+      delete formData.department_id;
+    }
+    formData["pagination"] = 'all';
+    formData["export"] = 'all';
+
+    this.props.fetchTeamSchedule( formData );
+  }
+
+  clearState = () =>{
+    this.props.team.week = { data: [], date_list: [] };
+    this.props.team.month = { data: [], date_list: [] , week_list: []};
+    this.props.team.day = [];
+  }
+
+  handleSelectDepartment = (department_id) => {
+    this.clearState();
+    if( department_id != '' ) {
+      this.state.department_id = department_id;
+      this.props.fetchTeamUnderDepartment(this.props.user.id, department_id);
+    }
+  }
+
+
+  handleFilterChange = (e) => {
+    this.clearState();
+    this.setState({ [e.target.name]: e.target.value });
+  }
+  
   componentDidUpdate(){
   }
 
   render = () => {  
-    
-  var { date_list, data } = this.props.team.team_schedule;
-
-  const validationSchema = Yup.object().shape({
-  });
-
-    return(<Formik 
-      enableReinitialize
-      onSubmit={this.onSubmitHandler} 
-      validationSchema={validationSchema} 
-      initialValues={this.state.filters}>
-      {
-      ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-      <form onSubmit={handleSubmit}>
-      <Wrapper {...this.props} >
-            <ContainerWrapper>
-            <h2>My Team Schedule</h2> 
-            <div className="request-tab">
-                <Tabs defaultActiveKey="home" id="uncontrolled-tab-example">
-                  <Tab eventKey="all" title="Today" >
-                  </Tab>
-                  <Tab eventKey="alteration" title="Weekly" >
-                  </Tab>
-                  <Tab eventKey="overtime" title="Monthly">
-                  </Tab>
-                </Tabs> 
-                </div>  
-            <ContainerBody>  
-                <Content col="12">
-                  <Row>
-                    <Col>
-                      SUNDAY
-                    </Col>
-                    <Col>
-                      MONDAY
-                    </Col>
-                    <Col>
-                      TUESDAY
-                    </Col>
-                    <Col>
-                      WEDNESDAY
-                    </Col>
-                    <Col>
-                        THURSDAY
-                    </Col>
-                    <Col>
-                        FRIDAY
-                    </Col>
-                    <Col>
-                      SATURDAY
-                    </Col>
+  var scope_type = this.state.scope_type;
+  var { team_list } = this.props.team;
+  var {  team_schedule } = this.props.team;
+  var { user } = this.props; 
+  return(
+    <Wrapper {...this.props} >
+          <ContainerWrapper>
+          <h2>My Team Schedule</h2>
+          <div className="report-schedule">
+          <div className="navigator-bar">
+          <ReportNavigator start_date={this.state.start_date} end_date={this.state.end_date} scope_type={this.state.scope_type}  handleChangeDate={this.handleChangeDate} default_view_type={"day"} hide_filter_button={true}/>
+          </div>
+          <ContainerBody>
+          
+              <Content col="12">
+                
+                <Row>
+                <Col className="dept"> 
+                    <div className="form-group">
+                          <select
+                          className="form-control" 
+                            name="department_id"
+                            value={this.state.department_id}
+                            onChange={(e) => { 
+                              this.handleSelectDepartment(e.target.value)
+                            }}
+                            style={{ display: 'block' }}
+                          >
+                          <option label="Select Department" value="" />
+                          {user.departments_handled.map(function(item){
+                            return <option value={item.id} label={item.department_name} />;
+                          })}
+                          </select>
+                      </div>
+                  </Col> 
+                  <Col size="2"> 
+                  <div className="form-group">
+                            <select
+                            className="form-control" 
+                              name="team_id"
+                              value={this.state.team_id}
+                              onChange={this.handleFilterChange}
+                              style={{ display: 'block' }}
+                            >
+                            <option label="Select Team" value="" />
+                            {team_list.length > 0 && team_list.map(function(item){
+                              return <option value={item.id} label={item.name} />;
+                            })}
+                            </select>
+                        </div>
+                  </Col> 
+                  <Col size="2"> 
+                        <div className="form-group">
+                            <input type="textfield" className="form-control" variant="primary" placeholder="Enter Name" name="name" onChange={this.handleFilterChange} value={this.state.name} />
+                        </div>
+                      </Col> 
+                      <Col size="2"> 
+                          <Button variant="primary" type="submit" onClick={this.filterSchedule}>
+                            <i className="fa fa-filter" /> Filter
+                          </Button> &nbsp; 
+                      <Dropdown className="export-drop-down">
+                            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                              <i className="fa fa-download" /> Export
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                              <Dropdown.Item  as="button" type="submit" onClick={() =>  this.export("department") }>Export</Dropdown.Item>
+                              <Dropdown.Item  as="button" type="submit" onClick={() =>  this.export("all") }>Export All</Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                      </Col>
+  
                   </Row>
-                    <Row className="empsched">
-                    {  data.length > 0  ? (<React.Fragment> 
-                      {data.map((value,index) => {
-                          return <Col>{date_list[index]}{value.map((schedule_info,index) => {
+                    <Row className="legends">
+                    <div className="early"><span className="box"></span><span className="status">Early In</span></div>
+                    <div className="late"><span className="box"></span><span className="status">Late</span></div>
+                    <div className="undertime"><span className="box"></span><span className="status">Undertime</span></div>
+                    <div className="holiday"><span className="box"></span><span className="status">Holiday</span></div>
+                    <div className="rest_day"><span className="box"></span><span className="status">Rest day</span></div>
+                    <div className="on_leave"><span className="box"></span><span className="status">On Leave</span></div>
+                    <div className="absent"><span className="box"></span><span className="status">Absent</span></div>
+                </Row>
+                {scope_type == "day" ? (
+                <React.Fragment>
+                <div className="today-sched"><DayTeamSchedule data={team_schedule} />  </div>
+              </React.Fragment>)
+                :  scope_type == "week"  ? ( 
+                <React.Fragment>
+                  <div className="calendar-sched">
+                  <WeekTeamSchedule  data={team_schedule} showmore={this.showMoreSchedule} />
+                  </div>
+              </React.Fragment>)
+                :  scope_type == "month" || scope_type == "custom" ? ( 
+                <React.Fragment>
+                <div className="calendar-sched">
+                  <MonthTeamSchedule  data={team_schedule} showmore={this.showMoreSchedule} />
+                </div>
+              </React.Fragment>)
+                : "Neither"}
+              
+              </Content>
+              
+          </ContainerBody> 
+           </div> 
+          </ContainerWrapper>
+        </Wrapper>);
+  }
+  }
 
-                            var card_class = '';
-                            var card_text = ''; 
+  const DayTeamSchedule = (props) => {
+    var { date_list, data, week_list } = props.data;
+    return (
+    <React.Fragment> {  data.length > 0 && date_list.length == 0 && week_list.length == 0 ? (<React.Fragment> 
+      <Row className="Hourframe">
+      <div><span>12AM</span></div><div><span>1AM</span></div><div><span>2AM</span></div><div><span>3AM</span></div><div><span>4AM</span></div><div><span>5AM</span></div><div><span>6AM</span></div><div><span>7AM</span></div><div><span>8AM</span></div><div><span>9AM</span></div><div><span>10AM</span></div><div><span>11AM</span></div><div><span>12NN</span></div>
+      <div><span>1PM</span></div><div><span>2PM</span></div><div><span>3PM</span></div><div><span>4PM</span></div><div><span>5PM</span></div><div><span>6PM</span></div><div><span>7PM</span></div><div><span>8PM</span></div><div><span>9PM</span></div><div><span>10PM</span></div><div><span>11PM</span></div><div><span>12AM</span></div>
+      </Row>
+      <React.Fragment>{data.map((value,index) => {
+          var first_div = {
+            width: "0",
+            content: "",
+            class: ""
+          };
 
-                            if(schedule_info.type.includes("early")){
-                              card_class = 'early';
-                              card_text = schedule_info.Schedule[0];                           
-                            }else if(schedule_info.type.includes("on_leave")){
-                              card_class = 'on_leave';
-                              card_text = 'On Leave';
-                            }else if(schedule_info.type.includes("rest_day")){
-                              card_class = 'rest_day';
-                              card_text = 'Rest Day';
-                            }else if(schedule_info.type.includes("late")){
-                              card_class = 'late';
-                              card_text = schedule_info.Schedule[0]; 
-                            }else if(schedule_info.type.includes("absent")){
-                              card_class = 'absent';
-                              card_text = schedule_info.Schedule[0]; 
-                            }
+          var second_div = {
+            width: "0",
+            content: "",
+            class: ""
+          };
 
-                              return <Card>
-                                <div className={"card-body "+card_class}>
-                                  <div class="schedule_info">
-                                    <div>{schedule_info.Name}</div>
-                                    <div> &nbsp; {card_text} &nbsp;</div>
-                                  </div>
-                              </div>
-                              </Card>;
-                          })}</Col>;
-                      })}
-                    </React.Fragment>) : (<React.Fragment></React.Fragment>)}
-                    </Row>
-                </Content>
-            </ContainerBody>  
-            </ContainerWrapper>
-          </Wrapper>
-      </form>
-      )}
+          var card = {};
+          card = displayStatus(value);
+
+          var card_class = card.class;
+          var card_text = card.text;
+
+          if(value.day_type=="underlapped"){
+
+            first_div.width = String(value.hour * 4) + "%";  
+            second_div.width = String( value.hour  * 4 ) + "%";
+            first_div.content = value.Name + " - "+ card_text;
+
+            first_div.class = card_class;
+          }
+          else if (value.day_type=="overlapped"){
+
+            first_div.width = String( ( 25 - value.hour ) * 4) + "%";
+            second_div.width = String( value.hour  * 4 ) + "%";
+            second_div.content = value.Name  +" - "+ card_text;
+            
+            second_div.class = card_class;
+          }else{  
+            var schedule_in = moment(value.on_duty);
+            var space = (Number( schedule_in.format("HH") ) + Number(schedule_in.format("mm"))/60) * 4 ;
+            first_div.width = String( space ) + "%";
+            second_div.width = String( value.hour * 4 ) + "%";
+            second_div.content = value.Name +" - "+ card_text;
+
+            second_div.class = card_class;
+          }
+
+          return <Row key={value.Name} className="emp_sched" title={second_div.content}>
+          <div style={first_div} className={first_div.class}>{first_div.content}</div>
+          <div style={second_div} className={second_div.class}><span>{second_div.content}</span></div>
+          <div></div>
+          </Row>;
+        })}</React.Fragment>
+    </React.Fragment>) : (<React.Fragment></React.Fragment>)}</React.Fragment>);
+  }
+
+  const WeekTeamSchedule = (props) => {
+    var { data, date_list, holiday_list } = props.data;
+    console.log(holiday_list);
+    let  column = [];
+    let info = [];
+
+    for (let key in data) {
+      var number = data[key].length;
+      let date_record = moment(key, "YYYY-MM-DD");
+      for (var l = 0; l < number; l++) {
+        var information = data[key][l];
+        info.push(<CardComponent key={key + "-" + l} data={information} />);
+      }
+      var date =  key;
+      column.push(
+        <Col key={date} > {date_record.format('MMMM DD')} 
+          {holiday_list[date_record.format('MM-DD')]!= undefined &&
+            <span>{holiday_list[date_record.format('MM-DD')].name}</span> 
+          }
+
+        {info}
+          {date_list[key] &&
+            <a onClick={() =>  props.showmore(key) }>Show More...</a> 
+          }
+        </Col>
+      );
+      info = [];
+      }
     
-      </Formik>);
-  }
- 
+    return ( <Row  className="emp_sched">
+       {column}
+    </Row>);
+  } 
+
+  const CardComponent = (props) => {
+    var information =  props.data;
+    var card = {};
+    card = displayStatus(information);
+    var card_class = card.class;
+    var card_text = card.text;
+
+    return (
+            <Card>
+              <div className={"card-body "+card_class}>
+                <div className="schedule_info">
+                  <div>{information.Name}</div>
+                  <div>&nbsp; {card_text} &nbsp;</div>
+                </div>
+            </div>
+            </Card>
+    );
   }
 
-  const selectAllChecklist = (setFieldValue,values,request_list) => {
-    if(!values.isAll){
-      var list = [];
+  const MonthTeamSchedule = (props) => {
+    var { date_list, data, week_list, holiday_list } = props.data;
 
-      // Iterate each variable and apply it to the checkedList
-      for (var i = 0; i < request_list.length; i++) {
-        if(request_list[i].status!="Canceled"){
-          list.push(request_list[i].id.toString()+"."+request_list[i].table_name)
-        }
+    const week_dictionary = {
+      "Monday" : 0,
+      "Tuesday" : 1, 
+      "Wednesday" : 2,
+      "Thursday" : 3,
+      "Friday" :4,
+      "Saturday" : 5,
+      "Sunday": 6,
+    } ;
+
+    let row = [];
+    let  info = [];
+    let  column = []; 
+
+
+    var day_index = 0;
+    var week_index = 0;
+
+    if( week_list.length > 0){
+      var test = week_dictionary[week_list[week_index][0]];
+      for ( var i = 0; i <  test; i++) {
+        column.push(<Col></Col>);
       }
 
-      setFieldValue( "checkedList",list ) ;
-    }else{
-      // Reset the checklist if uncheck
-      setFieldValue( "checkedList",[]  ) ;
+      for (let key in data) {
+        let date_record = moment(key, "YYYY-MM-DD");
+        let holiday = "";
+        if(holiday_list[date_record.format('MM-DD')]!= undefined){
+          holiday = "(" + holiday_list[date_record.format('MM-DD')].name + ")";
+        }
+          for (var l = 0; l < data[key].length ; l++) {
+            var information =  data[key][l];
+            info.push(<CardComponent key={key + "-" + l} data={information} />);
+          }
+          column.push(
+          <Col key={key}> {date_record.format('MMMM DD')} {holiday}
+          <div className="employee_list">
+          {info} 
+          </div>
+          {date_list[key] &&
+            <a onClick={() =>  props.showmore(key) }>Show More...</a> 
+          }
+          </Col>
+          );
+          info = [];
+
+          if(date_record.format('dddd')=="Sunday"){
+            row.push(<Row > {column}</Row>);
+            column = []
+          }
+      }
+
+        var test = week_dictionary[week_list[week_list.length-1][1]];
+        for ( var i = 6; i >  test; i--) {
+          column.push(<Col></Col>);
+        }
     }
-    
-  };
 
-  const resetValues = (setFieldValue,number) => {
-    setFieldValue("page",number); 
-    setFieldValue("action", "");
-    setFieldValue( "checkedList",[]  ) ;
-    setFieldValue( "isAll",false  ) ;
-  };
 
-  const Status = (props) => {
-    let pagination = [];
-    switch( props.status ) { 
-      case "Pending":
-          pagination.push( <Badge variant="secondary"><span></span>{props.status}</Badge>);
-          break;
-      case "Canceled":
-          pagination.push(<Badge variant="dark"><span></span>{props.status}</Badge>);
-          break;
-      case "Approved":
-          pagination.push(<Badge variant="success"><span></span>{props.status}</Badge>);
-          break;
-      case "Declined":
-          pagination.push(<Badge variant="danger"><span></span>{props.status}</Badge>);
-      break;
-   }
-    return pagination;
+    row.push(<Row>{column}</Row>)
+    return (
+      <div  className="emp_sched">{row}</div>
+    );
+
+  }
+
+  function displayStatus(schedule_info){
+    var card = {
+      class : "",
+      text : ""
+    }
+
+    if(schedule_info.type.includes("early")){
+      card.class = 'early';
+    }else if(schedule_info.type.includes("on_leave")){
+      card.class = 'on_leave';
+    }else if(schedule_info.type.includes("holiday")){
+      card.class = 'holiday';
+    }else if(schedule_info.type.includes("rest_day")){
+      card.class = 'rest_day';
+    }else if(schedule_info.type.includes("late")){
+      card.class = 'late';
+    }else if(schedule_info.type.includes("absent")){
+      card.class = 'absent';
+    }else if(schedule_info.type.includes("no_schedule")){
+      card.class = 'no_schedule';
+    }else if(schedule_info.type.includes("no_status")){
+      card.class = 'no_status';
+    }
+
+    if(schedule_info.Schedule.length > 0 ){
+      card.text = schedule_info.Schedule +  " " + card.text;
+    }
+    return card;
   }
 
   const mapStateToProps = (state) => {
     return {
-      team : state.myTeamList
+      user : state.user,
+      team : state.myTeamSchedule,
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchTeamSchedule : (  ) => dispatch( fetchTeamSchedule(  ) ),
+      fetchTeamSchedule : ( params  ) => dispatch( fetchTeamSchedule( params ) ),
+      fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
     }
   }
   

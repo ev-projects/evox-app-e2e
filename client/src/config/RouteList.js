@@ -29,10 +29,7 @@ import RestDayWork from "../container/Request/RestDayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
 
 import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
-import WeeklySchedule from "../container/MyTeam/MyTeamSchedule/Weekly";
-import MonthlySchedule from "../container/MyTeam/MyTeamSchedule/Monthly";
-import DailySchedule from "../container/MyTeam/MyTeamSchedule/Daily";
-import CustomSchedule from "../container/MyTeam/MyTeamSchedule/Custom";
+import MyTeamSchedule from "../container/MyTeam/MyTeamSchedule";
 
 import MyRequests from "../container/MyRequests/MyRequests";
 
@@ -139,23 +136,11 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.my_team_requests}>
           <MyTeamRequests role={['supervisor', 'team_leader']} permission={['view_employee_requests', 'team_leader_access']} />
-        </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.weekly_team_schedule}>
-          <WeeklySchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
-        </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.monthly_team_schedule}>
-          <MonthlySchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
         </ProtectedRoute> 
 
-        <ProtectedRoute exact path={global.links.daily_team_schedule}>
-          <DailySchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
-        </ProtectedRoute>  
-
-        <ProtectedRoute exact path={global.links.custom_team_schedule}>
-          <CustomSchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
-        </ProtectedRoute> 
+        <ProtectedRoute exact path={global.links.my_team_schedule}>
+          <MyTeamSchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+        </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_summary}>
           <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
