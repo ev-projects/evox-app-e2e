@@ -46,14 +46,14 @@ class generateMonthlyDtr extends Command
     public function handle()
     {
         try {
-            return $date_today =  Carbon::tomorrow();
-            $end_date = 7;
+            $start = new Carbon('first day of next month');
+            $end = new Carbon('last day of next month');
 
             # Fetches all the Active Users
             $user_collection = $this->user->get_all_active_users();
 
             # Generates the Date Range that would be generated as DTR for each Active Employees
-            $date_array = generate_date_array($start_date, $end_date );
+            $date_array = generate_date_array($start, $end );
             
             # Test Data for Debugging
             // $date_array = generate_date_array( "2019-07-01", '2020-06-30' );
