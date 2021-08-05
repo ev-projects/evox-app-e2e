@@ -56,7 +56,7 @@ class generateWeeklyDtr extends Command
             $date_array = generate_date_array($start_date, $end_date );
             
             # Test Data for Debugging
-            $date_array = generate_date_array( "2021-08-02", '2021-08-08' );
+            // $date_array = generate_date_array( "2021-08-02", '2021-08-08' );
             
             $result = $this->dtr->generate_dtr( $user_collection, $date_array );
 
