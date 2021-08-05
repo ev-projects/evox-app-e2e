@@ -403,7 +403,7 @@ const Sidebar = (props) => {
                       </ul>
                     </li>
                   }
-                  {Authenticator.check('admin', ['assign_department_handlers', 'assign_employee_supervisors', 'assign_role_permission']) &&
+                  {Authenticator.check('admin', ['assign_department_handlers','assign_client_handlers', 'assign_employee_supervisors', 'assign_role_permission']) &&
                     <li className="nav-item has-treeview ">
                       <a className="nav-link">
                         <i className="nav-icon fa fa-tags" />
@@ -413,6 +413,14 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                       <ul className="nav nav-treeview">
+                      {Authenticator.check('admin', 'assign_client_handlers') &&
+                          <li className="nav-item">
+                            <Link className="nav-link" to={global.links.assign_client_handlers}>
+                              <i className="nav-icon fa fa-address-card nav-icon" />
+                              <p style={{ 'fontSize': 13 }}>Client Handlers</p>
+                            </Link>
+                          </li>
+                        }
                         {Authenticator.check('admin', 'assign_department_handlers') &&
                           <li className="nav-item">
                             <Link className="nav-link" to={global.links.assign_department_handlers}>

@@ -20,14 +20,16 @@ import LeaveCredits from "../LeaveCredits";
 import DatePicker from "react-datepicker";
 import ReportNavigator from "../../../components/Template/ReportNavigator";
 import { getDaysArrayInMonth, generateWeekList, getDaysArrayInWeek, generateWeekListCustom } from "../../../services/Helper";
+import { viewEmployeeDtr, } from '../../../store/actions/dtr/dtrActions';
 
 const Schedule = (props) => {
 
-    const { profile, user } = props;
+    const { profile, user, dtr, id } = props;
     let { start_date, end_date } = props;
-    
+
     // Handles the change of date that'll be triggered by the ReportNavigator
     const handleChangeDate = (start_date, end_date, scope_type) => {
+        props.viewEmployeeDtr(id, start_date.format('YYYY-MM-DD'), end_date.format('YYYY-MM-DD'))
         props.setScope(scope_type)
         if (scope_type == 'month') {
             props.setDateList(getDaysArrayInMonth(start_date.format('YYYY'), start_date.format('M')))
@@ -35,14 +37,13 @@ const Schedule = (props) => {
         }
 
         if (scope_type == 'week') {
-            let week = getDaysArrayInWeek(start_date.add(1, 'days'), end_date.add(1, 'days'))
+            let week = getDaysArrayInWeek(start_date, end_date)
             props.setDateList(week.date_list)
             props.setWeekList({ week_list: week.week_list, dates_list: week.dates })
-
         }
 
-        if(scope_type == 'custom'){
-            let custom = generateWeekListCustom(start_date,end_date,'custom')
+        if (scope_type == 'custom') {
+            let custom = generateWeekListCustom(start_date, end_date, 'custom')
             props.setDateList(custom.display_list)
             props.setWeekList({ week_list: custom.week_list, dates_list: custom.dates_list })
         }
@@ -58,15 +59,15 @@ const Schedule = (props) => {
                 <ContainerBody>
                     <Content col="12">
 
-                        { profile.scope == "week" ? (
+                        {profile.scope == "week" ? (
+                            <React.Fragment>
+                                <WeekTeamSchedule dtr={dtr} data={profile.dates} date_list={profile.date_list} schedule={profile.schedule} temporary_schedule={profile.temporary_schedule} />
+                            </React.Fragment>)
+                            : profile.scope == "month" || profile.scope == "custom" ? (
                                 <React.Fragment>
-                                    <WeekTeamSchedule data={profile.dates} date_list={profile.date_list} schedule={profile.schedule} temporary_schedule={profile.temporary_schedule} />
+                                    <MonthTeamSchedule dtr={dtr} data={profile.dates} date_list={profile.date_list} week_list={profile.week_list} schedule={profile.schedule} temporary_schedule={profile.temporary_schedule} />
                                 </React.Fragment>)
-                                : profile.scope == "month" || profile.scope == "custom" ? (
-                                    <React.Fragment>
-                                        <MonthTeamSchedule data={profile.dates} date_list={profile.date_list} week_list={profile.week_list} schedule={profile.schedule} temporary_schedule={profile.temporary_schedule} />
-                                    </React.Fragment>)
-                                    : "Neither"}
+                                : "Neither"}
                     </Content>
                 </ContainerBody>
 
@@ -80,8 +81,8 @@ const Schedule = (props) => {
 
 
 const WeekTeamSchedule = (props) => {
-    // return "asdasd"
     var week = props.data;
+    var dtr = props.dtr;
     var date_list = props.date_list;
     var schedule = props.schedule
     var temporary_schedule = props.temporary_schedule
@@ -99,39 +100,133 @@ const WeekTeamSchedule = (props) => {
                     details = 'early'
                 }
 
-                return <Col>{date_list[index]}
+                if (week.length == dtr.length) {
 
-                    <Card>
-                        <div className={"card-body " + details}>
-                            <div class="schedule_info" >
-                                {schedule?.rest_day?.includes(moment(value).format('ddd').toLowerCase()) ? "REST DAY" :
+                    if (dtr[index].attendance_status.name == 'Rest Day') {
+                        details = 'rest_day'
+                    } else {
+                        details = 'early'
+                    }
+                    time_in = moment(dtr[index].start_datetime).format('HH:mm')
+                    time_out = moment(dtr[index].end_datetime).format('HH:mm')
+                    flex_time_in = moment(dtr[index].start_flexy_datetime).format('HH:mm')
+                    flex_time_out = moment(dtr[index].end_flexy_datetime).format('HH:mm')
+                    return <Col>{moment(date_list[index]).format("MMM, D")}
 
-                                    <div>
-                                        {time_in} - {time_out}
-                                        <br></br>
-                                        {flex_time_in} - {flex_time_out}
-                                    </div>
-                                }
+                        <Card>
+                            <div className={"card-body " + details}>
+                                <div class="schedule_info" >
+                                    {dtr[index].attendance_status.name == 'Rest Day' ? "REST DAY" :
+
+                                        <div>
+                                            {time_in} - {time_out}
+                                            <br></br>
+                                            {flex_time_in} - {flex_time_out}
+                                        </div>
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    </Card>
-                </Col>;
+                        </Card>
+                    </Col>;
+                } else {
+                    if (dtr[index]) {
+
+                        if (dtr[index].attendance_status.name == 'Rest Day') {
+                            details = 'rest_day'
+                        } else {
+                            details = 'early'
+                        }
+                        time_in = moment(dtr[index].start_datetime).format('HH:mm')
+                        time_out = moment(dtr[index].end_datetime).format('HH:mm')
+                        flex_time_in = moment(dtr[index].start_flexy_datetime).format('HH:mm')
+                        flex_time_out = moment(dtr[index].end_flexy_datetime).format('HH:mm')
+                        return <Col>{moment(date_list[index]).format("MMM, D")}
+
+                            <Card>
+                                <div className={"card-body " + details}>
+                                    <div class="schedule_info" >
+                                        {dtr[index].attendance_status.name == 'Rest Day' ? "REST DAY" :
+
+                                            <div>
+                                                {time_in} - {time_out}
+                                                <br></br>
+                                                {flex_time_in} - {flex_time_out}
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </Card>
+                        </Col>;
+                    } else {
+                        var rest_day = schedule?.rest_day;
+                        temporary_schedule.map((temp) => {
+
+                            if (temp.valid_from == temp.valid_to && moment(date_list[index]).isSame(temp.valid_from)) {
+                                time_in = temp?.schedule_details?.all?.start_time
+                                time_out = temp?.schedule_details?.all?.end_time
+                                flex_time_in = temp?.schedule_details?.all?.start_flexy_time
+                                flex_time_out = temp?.schedule_details?.all?.end_flexy_time
+                                rest_day = temp.rest_day;
+                            }
+
+
+                            if (temp.valid_from != temp.valid_to) {
+
+                                if (moment(date_list[index]).isBetween(temp.valid_from, temp.valid_to)) {
+                                    time_in = temp?.schedule_details?.all?.start_time
+                                    time_out = temp?.schedule_details?.all?.end_time
+                                    flex_time_in = temp?.schedule_details?.all?.start_flexy_time
+                                    flex_time_out = temp?.schedule_details?.all?.end_flexy_time
+                                    rest_day = temp.rest_day;
+                                } else {
+                                    if (moment(date_list[index]).isSame(temp.valid_from) || moment(date_list[index]).isSame(temp.valid_to)) {
+                                        time_in = temp?.schedule_details?.all?.start_time
+                                        time_out = temp?.schedule_details?.all?.end_time
+                                        flex_time_in = temp?.schedule_details?.all?.start_flexy_time
+                                        flex_time_out = temp?.schedule_details?.all?.end_flexy_time
+                                        rest_day = temp.rest_day;
+                                    }
+                                }
+                            }
+
+
+                        })
+                    }
+                    return <Col>{moment(date_list[index]).format("MMM, D")}
+
+                        <Card>
+                            <div className={"card-body " + details}>
+                                <div class="schedule_info" >
+                                    {rest_day?.includes(moment(value).format('ddd').toLowerCase()) ? "REST DAY" :
+
+                                        <div>
+                                            {time_in} - {time_out}
+                                            <br></br>
+                                            {flex_time_in} - {flex_time_out}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </Card>
+                    </Col>;
+                }
+
             })}
         </React.Fragment>) : (<React.Fragment></React.Fragment>)}
     </Row>);
 }
 
 const MonthTeamSchedule = (props) => {
+    var dtr = props.dtr;
 
     var data = props.data;
     var date_list = props.date_list
     var week_list = props.week_list
     var schedule = props.schedule
     var temporary_schedule = props.temporary_schedule
-    var week_list = props.week_list
-    // var date_list = this.profile.date_list
+
     const week_dictionary = {
-        
+
         "Monday": 0,
         "Tuesday": 1,
         "Wednesday": 2,
@@ -143,7 +238,6 @@ const MonthTeamSchedule = (props) => {
 
     var day_number = 0;
     var length = data.length - 1;
-
     return (<React.Fragment>
         {data.length > 0 ? (<React.Fragment>
             {data.map((week, week_index) => {
@@ -183,118 +277,133 @@ const MonthTeamSchedule = (props) => {
                         details = 'early'
                     }
 
-                    return <Col>{date_list[day_number - 1]}
-                        <Card>
-                            <div className={"card-body " + details}>
-                                <div class="schedule_info" >
-                                    {schedule?.rest_day?.includes(day.format('ddd').toLowerCase()) ? "REST DAY" :
+                    if (date_list.length == dtr.length) {
+                        if (dtr[day_number - 1].attendance_status.name == 'Rest Day') {
+                            details = 'rest_day'
+                        } else {
+                            details = 'early'
+                        }
+                        time_in = moment(dtr[day_number - 1].start_datetime).format('HH:mm')
+                        time_out = moment(dtr[day_number - 1].end_datetime).format('HH:mm')
+                        flex_time_in = moment(dtr[day_number - 1].start_flexy_datetime).format('HH:mm')
+                        flex_time_out = moment(dtr[day_number - 1].end_flexy_datetime).format('HH:mm')
+                        return <Col>{moment(date_list[day_number - 1]).format("MMM, D")}
 
-                                        <div>
-                                            {time_in} - {time_out}
-                                            <br></br>
-                                            {flex_time_in} - {flex_time_out}
-                                        </div>
-                                    }
+                            <Card>
+                                <div className={"card-body " + details}>
+                                    <div class="schedule_info" >
+                                        {dtr[day_number - 1].attendance_status.name == 'Rest Day' ? "REST DAY" :
+
+                                            <div>
+                                                {time_in} - {time_out}
+                                                <br></br>
+                                                {flex_time_in} - {flex_time_out}
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                        </Card>
-                    </Col>
+                            </Card>
+                        </Col>;
+                    } else {
+
+                        if (dtr[day_number - 1]) {
+
+                            if (dtr[day_number - 1].attendance_status.name == 'Rest Day') {
+                                details = 'rest_day'
+                            } else {
+                                details = 'early'
+                            }
+                            time_in = moment(dtr[day_number - 1].start_datetime).format('HH:mm')
+                            time_out = moment(dtr[day_number - 1].end_datetime).format('HH:mm')
+                            flex_time_in = moment(dtr[day_number - 1].start_flexy_datetime).format('HH:mm')
+                            flex_time_out = moment(dtr[day_number - 1].end_flexy_datetime).format('HH:mm')
+                            return <Col>{moment(date_list[day_number - 1]).format("MMM, D")}
+
+                                <Card>
+                                    <div className={"card-body " + details}>
+                                        <div class="schedule_info" >
+                                            {dtr[day_number - 1].attendance_status.name == 'Rest Day' ? "REST DAY" :
+
+                                                <div>
+                                                    {time_in} - {time_out}
+                                                    <br></br>
+                                                    {flex_time_in} - {flex_time_out}
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Col>;
+                        } else {
+                            var rest_day = schedule?.rest_day;
+                            temporary_schedule.map((temp) => {
+
+                                if (temp.valid_from == temp.valid_to && moment(date_list[day_number - 1]).isSame(temp.valid_from)) {
+                                    time_in = temp?.schedule_details?.all?.start_time
+                                    time_out = temp?.schedule_details?.all?.end_time
+                                    flex_time_in = temp?.schedule_details?.all?.start_flexy_time
+                                    flex_time_out = temp?.schedule_details?.all?.end_flexy_time
+                                    rest_day = temp.rest_day;
+                                }
+
+
+                                if (temp.valid_from != temp.valid_to) {
+
+                                    if (moment(date_list[day_number - 1]).isBetween(temp.valid_from, temp.valid_to)) {
+                                        time_in = temp?.schedule_details?.all?.start_time
+                                        time_out = temp?.schedule_details?.all?.end_time
+                                        flex_time_in = temp?.schedule_details?.all?.start_flexy_time
+                                        flex_time_out = temp?.schedule_details?.all?.end_flexy_time
+                                        rest_day = temp.rest_day;
+                                    } else {
+                                        if (moment(date_list[day_number - 1]).isSame(temp.valid_from) || moment(date_list[day_number - 1]).isSame(temp.valid_to)) {
+                                            time_in = temp?.schedule_details?.all?.start_time
+                                            time_out = temp?.schedule_details?.all?.end_time
+                                            flex_time_in = temp?.schedule_details?.all?.start_flexy_time
+                                            flex_time_out = temp?.schedule_details?.all?.end_flexy_time
+                                            rest_day = temp.rest_day;
+                                        }
+                                    }
+                                }
+
+
+                            })
+
+                            return <Col>{moment(date_list[day_number - 1]).format("MMM, D")}
+                                <Card>
+                                    <div className={"card-body " + details}>
+                                        <div class="schedule_info" >
+                                            {rest_day.includes(day.format('ddd').toLowerCase()) ? "REST DAY" :
+
+                                                <div>
+                                                    {time_in} - {time_out}
+                                                    <br></br>
+                                                    {flex_time_in} - {flex_time_out}
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Col>;
+                        }
+
+                    }
+
+
+
                 })}{last_week_offset} </Row></React.Fragment>;
             })}
         </React.Fragment>) : (<React.Fragment></React.Fragment>)}
     </React.Fragment>);
 }
 
-function displayStatus(schedule_info) {
-    var card = {
-        class: "",
-        text: ""
-    }
-
-    if (schedule_info.type.includes("early")) {
-        card.class = 'early';
-        card.text = schedule_info.Schedule[0];
-    } else if (schedule_info.type.includes("on_leave")) {
-        card.class = 'on_leave';
-        card.text = 'On Leave';
-    } else if (schedule_info.type.includes("holiday")) {
-        card.class = 'holiday';
-        card.text = 'Holiday';
-    } else if (schedule_info.type.includes("rest_day")) {
-        card.class = 'rest_day';
-        card.text = 'Rest Day';
-    } else if (schedule_info.type.includes("late")) {
-        card.class = 'late';
-        card.text = "Late";
-    } else if (schedule_info.type.includes("absent")) {
-        card.class = 'absent';
-        card.text = "Absent";
-    } else if (schedule_info.type.includes("no_schedule")) {
-        card.class = 'no_schedule';
-        card.text = "No Schedule";
-    } else if (schedule_info.type.includes("no_status")) {
-        card.class = 'no_status';
-        card.text = "No Status";
-    }
-
-    return card;
-}
 
 
 
 
 
-// Component for the Leave Icon
-export const LeaveIcon = (props) => {
 
-    let icon = "";
-    switch (Formatter.title_to_slug(props.type)) {
-        case "vacation_leave":
-            icon = <i class="fa fa-plane fa-icon" />
-            break;
-        case "sick_leave":
-            icon = <i className="fa fa-medkit fa-icon" />
-            break;
-        case "magna_carta_leave_for_woman":
-            icon = <i className="fa fa-female fa-icon" />
-            break;
-        case "maternity_leave":
-        case "paternity_leave":
-            icon = <i className="fa fa-child fa-icon" />
-            break;
-        case "birthday_leave":
-            icon = <i className="fa fa-birthday-cake fa-icon" />
-            break;
-        case "bereavement_leave":
-            icon = <i className="fa fa-handshake-o fa-icon" />
-            break;
-        default:
-            icon = <i className="fa fa-user fa-icon" />
-            break;
-    }
-    return icon;
-}
 
-// Component for the Leave Status
-export const LeaveStatus = (props) => {
-
-    let status = "";
-    switch (props.status) {
-        case "requested":
-            status = <i className="fa fa-hourglass" style={{ "color": '#ffc84d' }} />
-            break;
-        case "approved":
-            status = <i className="fa fa-check-circle" style={{ "color": '#82af13' }} />
-            break;
-        case "denied":
-            status = <i className="fa fa-times-circle" style={{ "color": '#bd2130' }} />
-            break;
-        case "canceled":
-            status = <i className="fa fa-ban" style={{ "color": '#999' }} />
-            break;
-    }
-    return status;
-}
 
 
 const mapStateToProps = (state) => {
@@ -310,6 +419,7 @@ const mapDispatchToProps = (dispatch) => {
         setDateList: (date_list) => dispatch(setDateList(date_list)),
         setWeekList: (year, month) => dispatch(setWeekList(year, month)),
         setScope: (scope) => dispatch(setScope(scope)),
+        viewEmployeeDtr: (user_id, from, to) => dispatch(viewEmployeeDtr(user_id, from, to)),
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Schedule);
