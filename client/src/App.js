@@ -14,14 +14,15 @@ import Validator from "./services/Validator";
 
 // Import fetchUser from userActions
 import { fetchUser } from './store/actions/userActions'
+import { fetchStatusNumbers } from './store/actions/filters/requestListActions';
 
 class App extends Component {
 
-  componentDidMount () {
+  componentDidMount() {
 
     // Analyze the site only if there's a valid Google Analytics Link and ID
-    if( Validator.isValid( process?.env?.REACT_APP_GOOGLE_ANALYTICS_LINK ) && Validator.isValid( process?.env?.REACT_APP_GOOGLE_ANALYTICS_ID ) ){
-      
+    if (Validator.isValid(process?.env?.REACT_APP_GOOGLE_ANALYTICS_LINK) && Validator.isValid(process?.env?.REACT_APP_GOOGLE_ANALYTICS_ID)) {
+
       // Append Google Analytics Script
       const script = document.createElement("script");
       script.src = process.env.REACT_APP_GOOGLE_ANALYTICS_LINK;
@@ -30,17 +31,18 @@ class App extends Component {
 
       // Append data on dataLayer
       window.dataLayer = window.dataLayer || [];
-      function gtag(){window.dataLayer.push(arguments);}
+      function gtag() { window.dataLayer.push(arguments); }
       gtag('js', new Date());
       gtag('config', process.env.REACT_APP_GOOGLE_ANALYTICS_ID);
     }
   }
-  
-  render(){
+
+  render() {
 
     // If there's an Existing Access Token, fetch the Users and render it on Redux.
-    if( localStorage.getItem("access_token") != null ) {
+    if (localStorage.getItem("access_token") != null) {
       this.props.fetchUser();
+      this.props.fetchStatusNumbers();
     }
 
     return (
@@ -55,9 +57,23 @@ class App extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchUser:  () => {
-       dispatch( fetchUser() )
-    }
+    fetchUser: () => {
+      dispatch(fetchUser())
+    },
+    fetchStatusNumbers: () => dispatch(fetchStatusNumbers({
+      status: "pending",
+      valid_from: null,
+      valid_to: null,
+      department_id: null,
+      name: null,
+      page: 1,
+      checkedList: [],
+      isAll: false,
+      action: null,
+      request_type: 'all',
+      bulk_action: null,
+      url: 'my_team_requests'
+    })),
   }
 }
 export default connect(null, mapDispatchToProps)(App);

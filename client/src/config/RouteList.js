@@ -52,6 +52,7 @@ import ForgotPasswordRequest from "../container/ForgotPasswordRequest";
 import DPAForm from "../container/DPAForm";
 import DPAList from "../container/MyTeam/DPAList";
 import RegisterUser from "../container/Admin/RegisterUser";
+import GenerateDate from "../container/Admin/GenerateDate";
 import SyncBiometrics from "../container/Admin/SyncBiometrics/SyncBiometrics";
 import EmployeeList from "../container/MyTeam/EmployeeList";
 import ManageTeams from "../container/MyTeam/ManageTeams";
@@ -194,6 +195,10 @@ const RoutesList = (props) => {
           <AssignDepartmentHandlers  role={['admin']} permission={['assign_department_handlers']} />
         </ProtectedRoute>
 
+        <ProtectedRoute exact path={global.links.assign_client_handlers}>
+          <AssignDepartmentHandlers  role={['admin']} permission={['assign_client_handlers']} />
+        </ProtectedRoute>
+
         <ProtectedRoute exact path={global.links.assign_employee_supervisors}>
           <AssignEmployeeSupervisors  role={['admin']} permission={['assign_employee_supervisors']} />
         </ProtectedRoute>
@@ -216,6 +221,10 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.register_user}>
           <RegisterUser  role={['admin']} permission={['allow_register_user']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.generate_date}>
+          <GenerateDate  role={['admin']}  />
         </ProtectedRoute>
         
         <Route exact path="*" component={PageNotFound} />

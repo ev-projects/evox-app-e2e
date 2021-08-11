@@ -65,7 +65,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     ]);
                 } 
             }
-
+            
             foreach( array_chunk( $dtr_insert_array, 5000 ) as $dtr_insert_array_chunk ){
                 # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
                 $dtr_insert_query = "INSERT INTO dtrs (
@@ -131,7 +131,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                     # Check if there's an Approved Rest Day Work for the current DTR. If yes, apply the Rest Day Work instead of the Schedule.
                     if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {
-
+                        
                         $this->apply_rest_day_work_to_dtr( $rest_day_work );
                     
                     # Checks if there's a valid schedule to apply on the DTR.
@@ -139,21 +139,25 @@ class DtrRepository implements DtrRepositoryInterface{
                         
                         # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
                         $schedule_detail = ( is_valid( $schedule ) ? $schedule->getPerDay( get_day_from_date( $date ) ) : null);
-                        
+                       
                         # Get the Parsed Schedule Detail to Date
                         $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $date ) : null);
-    
-                        # Update the DTR properties
-                        $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
-                        $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
-                        $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
-                        $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
-                        $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                        
+                        
+
+                        if($parsed_schedule_detail != null){
+                            # Update the DTR properties
+                            $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
+                            $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
+                            $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
+                            $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
+                            $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                        }
                         
                         $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
                         $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
                         $dtr->update();
-    
+                        
                         # Delete the existing DTR Policies before saving the new ones.
                         $dtr->policies()->delete();
     
@@ -164,7 +168,7 @@ class DtrRepository implements DtrRepositoryInterface{
             }
 
             
-
+            
             
             $result = [
                 // "result" => , 

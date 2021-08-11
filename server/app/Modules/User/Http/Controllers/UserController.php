@@ -16,6 +16,7 @@ use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
 use App\Modules\User\Http\Requests\RegisterUserRequest;
+use App\Modules\User\Http\Requests\GenerateDtrRequest;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\UserListResourceCollection;
@@ -644,6 +645,48 @@ class UserController extends Controller
             );
 
         } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+     /**
+     * generate dtr date for emp.
+     *
+     * @return mixed
+     */
+    public function generateDtrDate(GenerateDtrRequest $request){
+        try {
+            // return $request->ids;
+            // $start_date =  new Carbon($request->start_date);
+            // $end_date = new Carbon($request->end_date);
+
+            $ids = array_column($request->ids, 'value');
+            $user_collection = new Collection();
+            # Fetches all the Active Users
+            // $user_collection = $this->user->get_all_active_users();
+            foreach ($ids as $id) {
+                $user_collection->push((object)User::findOrFail($id));
+                // $user_collection->push((object)User::where('id', $id)->whereHas('roles', function( $query ) {
+                //     $query->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
+                // })->get());
+            }
+            
+            // return $user_collection ;
+            # Generates the Date Range that would be generated as DTR for each Active Employees
+            $date_array = generate_date_array($request->start_date, $request->end_date );
+            
+            # Test Data for Debugging
+            // $date_array = generate_date_array( "2021-08-02", '2021-08-08' );
+            
+            $result = $this->dtr->generate_dtr( $user_collection, $date_array );
+               
+            return success_response(
+                trans('Generate Success'), 
+                $result,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch(Exception $e){
+            log_to_file( 'info', $e->getMessage(), [], "cron_errors");
             return error_response( trans('messages.error_default'), $e );
         }
     }
