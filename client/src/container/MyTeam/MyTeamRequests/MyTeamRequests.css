@@ -7,19 +7,25 @@
     z-index: 1000;
 }
 .request-tab .nav-tabs{border: 0 !important;}
-.request-tab a{padding-bottom: 10px; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 5px}
+.request-tab a{padding: 5px 8px 3px 8px !important; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 3px; font-size: .875em !important}
 .request-tab a.active {
      background-color: #82af13  !important; color: #fff !important;
 }
 .request_list_btn{
     background-color:white !important;
     color: black !important;
-    font-size: 12px;
+    font-size: .875em !important;
     margin: 10px;
-    border-color: gray !important;
+    border: 1px solid #ccc !important;
     border-radius: 25px !important;
 }
+.request_list_btn.active {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(130, 175, 19, 0.2) !important;
+}
 
+.request_list_btn .badge{border:1px solid #ccc;}
+.request_list_btn .badge-light{background: #eee;}
 .filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: -5px; float: none;}
 .filters .date-range label,.bulk-action .form-group label {
     float: left;
@@ -47,6 +53,20 @@
 .filters .filter-button{ width: 15%;flex: 5%; }
 .filters select, .filters input[type="textfield"]{font-size:1rem;}
 .bulk-action .form-group >div {float: left; margin-right: 10px}
+.badge-success{background-color: #82af13 }
+.request_list .status div > span { color:#000; display: inline-block;padding: 3px 5px; font-weight: normal !important;}
+.request_list .status .Approved > span { background-color: #e2e3c8  !important; }
+.request_list .status .Declined > span { background-color: #ffd3d3  !important; }
+.request_list .status .Canceled > span { background-color: #ccc  !important;}
+.request_list .status .Pending > span { background-color: #fbfabe  !important; }
+
+.request_list .status div > span > span{ height: 5px; width: 5px; border-radius: 50%; display: inline-block; margin-right: 5px}
+.request_list .status .Approved > span > span{ background-color: #82af13  !important; border-color: #82af13; }
+.request_list .status .Declined > span > span{ background-color: #ff0000  !important; border-color: #ff0000; }
+.request_list .status .Canceled > span > span{ background-color: #888  !important; border-color: #999; }
+.request_list .status .Pending > span > span{ background-color: #ffb400  !important; border-color: #ffb400; }
+
+
 .denied{
     background-color: red !important;
     color: white !important;
@@ -64,7 +84,7 @@
 }
 
 .pending{
-    background-color: yellow !important;
+    background-color: #ffc107 !important;
     color: white !important;
 }
 
@@ -73,9 +93,6 @@
     border-radius: 0px !important;
 }
 
-.badge-light{
-    border: 1px solid gray !important;
-}
 
 .pagination_btn{
     margin-left: -1px;
@@ -86,10 +103,7 @@
     border-radius: 0px !important;
 }
 
-.request_list_btn.active {
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(130, 175, 19, 0.2) !important;
-}
+
 
 .pagination .active{
     background-color: #82af13 !important;

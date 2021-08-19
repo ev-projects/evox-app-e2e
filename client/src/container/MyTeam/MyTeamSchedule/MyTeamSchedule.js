@@ -246,7 +246,7 @@ class MyTeamSchedule extends Component {
                       </Col>
   
                   </Row>
-                    <Row className="legends">
+                  <Row className="legends">
                     <div className="early"><span className="box"></span><span className="status">Early In</span></div>
                     <div className="late"><span className="box"></span><span className="status">Late</span></div>
                     <div className="undertime"><span className="box"></span><span className="status">Undertime</span></div>
@@ -255,18 +255,37 @@ class MyTeamSchedule extends Component {
                     <div className="on_leave"><span className="box"></span><span className="status">On Leave</span></div>
                     <div className="absent"><span className="box"></span><span className="status">Absent</span></div>
                 </Row>
+                
                 {scope_type == "day" ? (
                 <React.Fragment>
                 <div className="today-sched"><DayTeamSchedule data={team_schedule} />  </div>
               </React.Fragment>)
                 :  scope_type == "week"  ? ( 
                 <React.Fragment>
+                <Row className="days cl">
+                    <Col>Monday</Col>
+                    <Col>Tuesday</Col>
+                    <Col>Wednesday</Col>
+                    <Col>Thursday</Col>
+                    <Col>Friday</Col>
+                    <Col>Saturday</Col>
+                    <Col>Sunday</Col>
+                </Row>
                   <div className="calendar-sched">
                   <WeekTeamSchedule  data={team_schedule} showmore={this.showMoreSchedule} />
                   </div>
               </React.Fragment>)
                 :  scope_type == "month" || scope_type == "custom" ? ( 
                 <React.Fragment>
+                <Row className="days cl">
+                    <Col>Monday</Col>
+                    <Col>Tuesday</Col>
+                    <Col>Wednesday</Col>
+                    <Col>Thursday</Col>
+                    <Col>Friday</Col>
+                    <Col>Saturday</Col>
+                    <Col>Sunday</Col>
+                </Row>
                 <div className="calendar-sched">
                   <MonthTeamSchedule  data={team_schedule} showmore={this.showMoreSchedule} />
                 </div>
@@ -358,10 +377,15 @@ class MyTeamSchedule extends Component {
       }
       var date =  key;
       column.push(
-        <Col key={date} > {date_record.format('MMMM DD')} 
-          {holiday_list[date_record.format('MM-DD')]!= undefined &&
-            <span>{holiday_list[date_record.format('MM-DD')].name}</span> 
+        <Col key={date} >
+            <div className="schedule-col">
+                <div className="schedule-date"> {date_record.format('MMMM DD')} </div>
+                {holiday_list[date_record.format('MM-DD')]!= undefined &&
+            <div className="schedule-holiday">PH Holiday</div>
           }
+            </div>
+        
+          
 
         {info}
           {date_list[key] &&
@@ -420,7 +444,7 @@ class MyTeamSchedule extends Component {
     if( week_list.length > 0){
       var test = week_dictionary[week_list[week_index][0]];
       for ( var i = 0; i <  test; i++) {
-        column.push(<Col></Col>);
+        column.push(<Col className="schedule-col"></Col>);
       }
 
       for (let key in data) {
@@ -434,7 +458,13 @@ class MyTeamSchedule extends Component {
             info.push(<CardComponent key={key + "-" + l} data={information} />);
           }
           column.push(
-          <Col key={key}> {date_record.format('MMMM DD')} {holiday}
+          <Col key={key}>
+            <div className="schedule-col">
+                <div className="schedule-date">{date_record.format('MMMM DD')}</div>
+                {holiday_list[date_record.format('MM-DD')]!= undefined &&
+                    <div className="schedule-holiday">PH Holiday</div>
+                  }
+            </div>
           <div className="employee_list">
           {info} 
           </div>
@@ -453,7 +483,7 @@ class MyTeamSchedule extends Component {
 
         var test = week_dictionary[week_list[week_list.length-1][1]];
         for ( var i = 6; i >  test; i--) {
-          column.push(<Col></Col>);
+          column.push(<Col className="schedule-col"></Col>);
         }
     }
 

@@ -58,7 +58,15 @@ const Schedule = (props) => {
                 </div>
                 <ContainerBody>
                     <Content col="12">
-
+                        <Row className="days cl">
+                            <Col>Monday</Col>
+                            <Col>Tuesday</Col>
+                            <Col>Wednesday</Col>
+                            <Col>Thursday</Col>
+                            <Col>Friday</Col>
+                            <Col>Saturday</Col>
+                            <Col>Sunday</Col>
+                        </Row>
                         {profile.scope == "week" ? (
                             <React.Fragment>
                                 <WeekTeamSchedule dtr={dtr} data={profile.dates} date_list={profile.date_list} schedule={profile.schedule} temporary_schedule={profile.temporary_schedule} />
@@ -111,7 +119,7 @@ const WeekTeamSchedule = (props) => {
                     time_out = moment(dtr[index].end_datetime).format('HH:mm')
                     flex_time_in = moment(dtr[index].start_flexy_datetime).format('HH:mm')
                     flex_time_out = moment(dtr[index].end_flexy_datetime).format('HH:mm')
-                    return <Col>{moment(date_list[index]).format("MMM, D")}
+                    return <Col><div className="schedule-date">{moment(date_list[index]).format("MMM DD")}</div>
 
                         <Card>
                             <div className={"card-body " + details}>
@@ -140,7 +148,7 @@ const WeekTeamSchedule = (props) => {
                         time_out = moment(dtr[index].end_datetime).format('HH:mm')
                         flex_time_in = moment(dtr[index].start_flexy_datetime).format('HH:mm')
                         flex_time_out = moment(dtr[index].end_flexy_datetime).format('HH:mm')
-                        return <Col>{moment(date_list[index]).format("MMM, D")}
+                        return <Col><div className="schedule-date">{moment(date_list[index]).format("MMM DD")}</div>
 
                             <Card>
                                 <div className={"card-body " + details}>
@@ -192,7 +200,7 @@ const WeekTeamSchedule = (props) => {
 
                         })
                     }
-                    return <Col>{moment(date_list[index]).format("MMM, D")}
+                    return <Col><div className="schedule-date">{moment(date_list[index]).format("MMM DD")}</div>
 
                         <Card>
                             <div className={"card-body " + details}>

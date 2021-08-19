@@ -98,31 +98,37 @@ const EmployeeDashboard = ( props ) => {
                     <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
                     <br />
                     <ul>
+<li><a href="https://careers.eastvantage.com/content/senior-euc-platform-engineer-bgc-taguig" target="_blank">Senior EUC Platform Engineer</a></li>
+<li><a href="https://careers.eastvantage.com/content/l2-frontline-desktop-support"  target="_blank">L2 Frontline Desktop Support</a></li>
+<li><a href="https://careers.eastvantage.com/content/software-development-manager-bgc-taguig" target="_blank">Software Development Manager</a></li>
+<li><a href="https://careers.eastvantage.com/content/senior-full-stack-developer-laravel-reactjs">Senior Full Stack Developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/senior-qa-engineer-robot-framework" target="_blank">Senior QA Engineer</a></li>
+<li><a href="https://careers.eastvantage.com/content/senior-python-backendapi-developer-bgc-taguig" target="_blank">Senior Python Backend/API developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/data-enginer-pythonetl-bgc-taguig" target="_blank">ETL Data Engineer</a></li>
+<li><a href="https://careers.eastvantage.com/content/senior-full-stack-developer-laravelreact-bgc-taguig" target="_blank">Senior Full Stack Developer (Laravel/React)</a></li>
+<li><a href="https://careers.eastvantage.com/content/react-js-developer-mid-senior-bgc-taguig" target="_blank">React JS Developer (Mid - Senior)</a></li>
+<li><a href="https://careers.eastvantage.com/content/aws-devops-engineer-bgc-taguig" target="_blank">AWS DevOps Engineer</a></li>
+<li><a href="https://careers.eastvantage.com/content/functional-tester-project-based-makati" target="_blank">Functional Tester - Project Based (Makati)</a></li>
+<li><a href="https://careers.eastvantage.com/content/mid-senior-outsystems-developer-makati" target="_blank">Mid to Senior Outsystems Developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/elixir-software-engineer-full-stack-mid-senior-bgc" target="_blank">Elixir Software Engineer</a></li>
+<li><a href="https://www.careers.eastvantage.com/content/us-recruiter-bgc" target="_blank">US Recruiter (BGC)</a></li>
+<li><a href="https://careers.eastvantage.com/content/victoria-australia-mortgage-broker-support-day-shift" target="_blank">Victoria Australia Mortgage Broker Support | Day Shift</a></li>
+<li><a href="https://careers.eastvantage.com/content/content-and-proposal-copywriter-bgc-taguig" target="_blank">Content and Proposal Writer</a></li>
 <li><a href="https://careers.eastvantage.com/content/us-mortgage-loan-disclosure-specialist-night-shift-mandaluyong" target="_blank">US Mortgage Loan Disclosure Specialist | Night Shift | Mandaluyong</a></li>
 <li><a href="https://careers.eastvantage.com/content/japanese-learning-specialist-customer-care-professional" target="_blank">Japanese Learning Specialist | Customer Care Professional</a></li>
-<li><a href="https://careers.eastvantage.com/content/spanish-portuguese-bilingual-csr-bgc-taguig" target="_blank">Spanish-Portuguese Learning Specialist</a></li>
-<li><a href="https://careers.eastvantage.com/content/german-learning-specialist-bgc" target="_blank">German Learning Specialist (BGC)</a></li>
-<li><a href="https://careers.eastvantage.com/content/italian-learning-specialist-bgc" target="_blank">Italian Learning Specialist (BGC)</a></li>
-<li><a href="https://careers.eastvantage.com/content/qa-test-engineer-6-mos-contract-mobile-internet-banking" target="_blank">QA Test Engineer | 6 mos contract (Mobile & Internet Banking)</a></li>
-<li><a href="https://careers.eastvantage.com/content/senior-qa-test-engineer-insurance-knowledge-makati" target="_blank">Senior QA Test Engineer with Insurance knowledge | Makati</a></li>
-<li><a href="https://careers.eastvantage.com/content/online-english-language-virtual-teacher" target="_blank">Online English Language Virtual Teacher</a></li>
-<li><a href="https://careers.eastvantage.com/content/engagement-specialist-executive-search-asap" target="_blank">Engagement Specialist | Executive Search | ASAP</a></li>
-<li><a href="https://careers.eastvantage.com/content/copywriter-business-development-bgc-taguig" target="_blank">Copywriter</a></li>
-<li><a href="https://careers.eastvantage.com/content/full-stack-developerreact-js-developer-bgc" target="_blank">Full Stack Developer/React JS Developer</a></li>
-<li><a href="https://careers.eastvantage.com/content/software-engineer-pythonetl-mid-senior-bgc" target="_blank">Software Engineer (Python/ETL)</a></li>
-<li><a href="https://careers.eastvantage.com/content/senior-php-software-developer-backend-bgc" target="_blank">Senior PHP Software Developer (Laravel/Javascript)</a></li>
-<li><a href="https://careers.eastvantage.com/content/sr-python-web-developer-api-bgc" target="_blank">Sr. Python Web Developer</a></li>
-<li><a href="https://careers.eastvantage.com/content/devops-engineer-docker-aws-kubernetes-temporary-wfh-bgc" target="_blank">DevOps Engineer | Docker, AWS & Kubernetes (Temporary WFH | BGC)</a></li>
-<li><a href="https://careers.eastvantage.com/content/etl-engineer-python-ci-bgc-taguig" target="_blank">ETL Engineer</a></li>
-<li><a href="https://careers.eastvantage.com/content/react-js-developer-mid-senior-bgc-taguig" target="_blank">React JS Developer (Mid - Senior)</a></li>
-
-<li><a href="https://careers.eastvantage.com/content/software-qa-automation-engineer-robot-framework-mid-senior-bgc" target="_blank">Software QA Automation Engineer (Robot Framework)</a></li>
-<li><a href="https://careers.eastvantage.com/content/elixir-software-engineer-full-stack-mid-senior-bgc" target="_blank">Functional Tester - Project Based (Makati)</a></li>
-<li><a href="https://careers.eastvantage.com/content/penetration-tester" target="_blank">Penetration Tester</a></li>
-<li><a href="https://careers.eastvantage.com/content/mid-senior-outsystems-developer-makati" target="_blank">Mid to Senior Outsystems Developer</a></li>
+<li><a href="https://careers.eastvantage.com/content/customer-service-representative-sales-background-bgc" target="_blank">Customer Service Representative (BGC)</a></li>
 <li><a href="https://careers.eastvantage.com/content/billing-operations-specialist-customer-service" target="_blank">Billing Operations Specialist (Customer Service)</a></li>
-<li><a href="https://careers.eastvantage.com/content/powerbi-analyst-bgc-taguig" target="_blank">PowerBI Analyst | BGC, Taguig</a></li>
-<li><a href="https://careers.eastvantage.com/content/cloud-support-engineer-bgc-taguig-2" target="_blank">Cloud Support Engineer</a></li>
+<li><a href="https://careers.eastvantage.com/content/inbound-sales-representative-bgc-taguig" target="_blank">Inbound Sales Representative | BGC, Taguig</a></li>
+<li><a href="https://careers.eastvantage.com/jobs/us-mortgage-disclosure-loan-specialist-mandaluyong" target="_blank">US Mortgage Disclosure Loan Specialist (Mandaluyong)</a></li>
+<li><a href="https://careers.eastvantage.com/jobs/content-and-proposal-writer-bgc-taguig-city" target="_blank">Content and Proposal Writer (BGC, Taguig City)</a></li>
+<li><a href="https://careers.eastvantage.com/jobs/learning-and-development-consultant-bgc-taguig-city" target="_blank">Learning and Development Consultant (BGC, Taguig City)</a></li>
+<li><a href="https://careers.eastvantage.com/jobs/us-recruiter-night-shift-bgc-taguig-city" target="_blank">US Recruiter- Night Shift (BGC, Taguig City)</a></li>
+<li><a href="https://careers.eastvantage.com/jobs/logistic-support-team-leader-bgc-taguig-city" target="_blank">Logistic Support-Team Leader (BGC, Taguig City)</a></li>
+<li><a href="https://careers.eastvantage.com/content/logistics-support-bgc" target="_blank">Logistics Support (BGC)</a></li>
+<li><a href="https://careers.eastvantage.com/jobs/billing-operations-specialist-csr-bgc-taguig-city" target="_blank">Billing Operations Specialist- CSR (BGC, Taguig City)</a></li>
+<li><a href="https://careers.eastvantage.com/jobs/credit-analyst-bgc-taguig-city" target="_blank">Credit Analyst (BGC, Taguig City)</a></li>
+<li><a href="https://careers.eastvantage.com/content/technical-virtual-assistant-service-desk" target="_blank">Technical Virtual Assistant (Service Desk)</a></li>
+
 </ul>
                     
                   </div>

@@ -36,7 +36,7 @@ h6,.h6{font-size: .75em !important}
 .content-table.bdr0{margin:0px; width: 100%; border:0;}
 .content-table.bdr0 table thead th{text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
 .content-table.bdr0 table tbody td{background: #fff !important;text-align: left; vertical-align: middle;border-top:0 !important; border-left:0 !important; border-right:0 !important;}
-
+.content-table.bdr0 table tbody td.date{width: 100px}
 .dashboard > .row > div > .row,
 .dashboard > .row > div > .row > div >.row{margin-top: 10px !important}
 .dashboard .content-table table{margin:0px auto; width: 100%; border:0 !important; background: #fff}
@@ -127,7 +127,7 @@ h6,.h6{font-size: .75em !important}
 td.actions .fa{font-size: 18px}
 .pagination .page button{ font-size: inherit}
 .filters{margin-top: 30px}
-.evbuddy{background:  #fff; padding: 20px}
+.evbuddy{background:  #fff; padding: 20px; max-height: 407px; overflow-y:auto;}
 
 .evbuddy a{ text-decoration: none; color: #333 !important; font-size: .875em}
 .btn{padding: 5px 10px !important;}
@@ -160,8 +160,8 @@ table thead tr th{background: #82af13 ; color:#fff; font-size: 10px !important}
 table tbody tr td{ font-size: .875em !important}
 .dashboard .dtr-table thead th{font-size:.5rem !important}
 .dashboard .dtr-table tbody td{}
-.dashboard .dtr-log .justify-content-center{font-size:.875rem !important;}
-.dashboard .month.justify-content-center{font-size:.75rem !important;}
+.dashboard .dtr-log .justify-content-center{font-size:.75rem !important;}
+.dashboard .month.justify-content-center{font-size:.65rem !important;}
 .dashboard .dtr-table tbody td.dtr-status{font-size:.75rem !important;}
 .dashboard .dtr-table tbody td.dtr-schedule{font-size:.75rem !important}
 .dashboard .dtr-notifications .card-header{border:0 !important;}
