@@ -164,6 +164,26 @@ export const fetchDepartmentUsersList = ( id ) => {
     }
 }
 
+export const fetchEmployeesClientUserLists = ( client_id , department_id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/client/" + client_id + "/" + department_id + "/users"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 
 

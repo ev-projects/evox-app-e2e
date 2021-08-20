@@ -53,7 +53,7 @@ global.links = {
     // Admin Links
     payroll_cutoff                  :  "/app/admin/PayrollCutoff/",
     assign_department_handlers      :  "/app/admin/AssignDepartmentHandlers/",
-    assign_client_handlers          :  "/app/admin/AssignClientHandlers/",
+    assign_employees_client          :  "/app/admin/AssignClientHandlers/",
     assign_employee_supervisors     :  "/app/admin/AssignEmployeeSupervisors/",
     sync_biometrics                 :  "/app/admin/SyncBiometrics/",
     sync_bhr_leaves                 :  "/app/admin/SyncBhrLeaves/",

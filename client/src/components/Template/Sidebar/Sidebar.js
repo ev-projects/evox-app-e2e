@@ -191,7 +191,7 @@ const Sidebar = (props) => {
                   <li className="nav-item">
                     <Link className="nav-link" to={global.links.my_team_requests} >
                       <i className="nav-icon fa fa-users" aria-hidden="true"></i>
-                      <p> My Team Request ({my_team_pending_request}) </p>
+                      <p> My Team Request {my_team_pending_request == 0 ? "" : '(' + my_team_pending_request + ')'}  ) </p>
                     </Link>
                   </li>
                   <li className="nav-item">
@@ -404,7 +404,7 @@ const Sidebar = (props) => {
                       </ul>
                     </li>
                   }
-                  {Authenticator.check('admin', ['assign_department_handlers', 'assign_client_handlers', 'assign_employee_supervisors', 'assign_role_permission']) &&
+                  {Authenticator.check('admin', ['assign_department_handlers', 'assign_employees_client', 'assign_employee_supervisors', 'assign_role_permission']) &&
                     <li className="nav-item has-treeview ">
                       <a className="nav-link">
                         <i className="nav-icon fa fa-tags" />
@@ -414,11 +414,11 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                       <ul className="nav nav-treeview">
-                        {Authenticator.check('admin', 'assign_client_handlers') &&
+                        {Authenticator.check('admin', 'assign_employees_client') &&
                           <li className="nav-item">
-                            <Link className="nav-link" to={global.links.assign_client_handlers}>
+                            <Link className="nav-link" to={global.links.assign_employees_client}>
                               <i className="nav-icon fa fa-address-card nav-icon" />
-                              <p style={{ 'fontSize': 13 }}>Client Handlers</p>
+                              <p style={{ 'fontSize': 13 }}>Employee's Client</p>
                             </Link>
                           </li>
                         }

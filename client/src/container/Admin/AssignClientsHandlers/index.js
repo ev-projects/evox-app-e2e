@@ -1,1 +1,1 @@
-export { default } from './AssignDepartmentHandlers.js';
+export { default } from './AssignEmployeesClient.js';
