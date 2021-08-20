@@ -191,7 +191,7 @@ const Sidebar = (props) => {
                   <li className="nav-item">
                     <Link className="nav-link" to={global.links.my_team_requests} >
                       <i className="nav-icon fa fa-users" aria-hidden="true"></i>
-                      <p> My Team Request {my_team_pending_request == 0 ? "" : '(' + my_team_pending_request + ')'}  ) </p>
+                      <p> My Team Request {my_team_pending_request == 0 || my_team_pending_request == null ? "" : '(' + my_team_pending_request + ')'}  </p>
                     </Link>
                   </li>
                   <li className="nav-item">
