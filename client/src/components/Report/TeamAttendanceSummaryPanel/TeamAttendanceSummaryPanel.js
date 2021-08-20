@@ -6,6 +6,7 @@ import Validator from "../../../services/Validator.js";
 import "./TeamAttendanceSummaryPanel.css";
 import { connect } from 'react-redux'
 import { setSelectedAttendanceSummary } from "../../../store/actions/report/reportActions";
+import Authenticator from "../../../services/Authenticator";
 
 const TeamAttendanceSummaryPanel = (props) => {
 
@@ -105,7 +106,8 @@ const TeamAttendanceSummaryPanel = (props) => {
 
               return (
                 <tr >
-                  <td><Link to={global.links.profile + item.user_id}>{item.name} </Link> </td>
+                  
+                  <td><Link to={Authenticator.checkRole('supervisor')? global.links.dtr + item.user_id : global.links.profile + item.user_id}>{item.name} </Link> </td>
                   <td>{item.job_title}</td>
                   <td>{moment(item.date).format("MMM D")}</td>
                   <td className={"status " + item.status.replace(/\s+/g, '-').toLowerCase()}>
