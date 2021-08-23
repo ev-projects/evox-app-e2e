@@ -59,7 +59,7 @@ import ManageTeams from "../container/MyTeam/ManageTeams";
 import TimeOff from "../container/Profile/TimeOff";
 import Profile from "../container/Profile";
 import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
-import AssignEmployeesClient from "../container/Admin/AssignClientsHandlers";
+import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 
 const RoutesList = (props) => {
 
