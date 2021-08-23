@@ -8,10 +8,11 @@ import "./Sidebar.css";
 import { setSelectedAttendanceSummary } from "../../../store/actions/report/reportActions";
 import { useHistory } from "react-router-dom";
 
+
 const Sidebar = (props) => {
 
 
-  const { user, settings, selected_summary } = props;
+  const { user, settings, selected_summary,my_team_pending_request } = props;
   const history = useHistory();
   var name = 'Loading...';
   if (user.first_name != null && user.last_name != null) {
@@ -190,7 +191,7 @@ const Sidebar = (props) => {
                   <li className="nav-item">
                     <Link className="nav-link" to={global.links.my_team_requests} >
                       <i className="nav-icon fa fa-users" aria-hidden="true"></i>
-                      <p> My Team Request</p>
+                      <p> My Team Request {my_team_pending_request == 0 || my_team_pending_request == null ? "" : '(' + my_team_pending_request + ')'}  </p>
                     </Link>
                   </li>
                   <li className="nav-item">
@@ -403,7 +404,7 @@ const Sidebar = (props) => {
                       </ul>
                     </li>
                   }
-                  {Authenticator.check('admin', ['assign_department_handlers', 'assign_employee_supervisors', 'assign_role_permission']) &&
+                  {Authenticator.check('admin', ['assign_department_handlers', 'assign_employees_client', 'assign_employee_supervisors', 'assign_role_permission']) &&
                     <li className="nav-item has-treeview ">
                       <a className="nav-link">
                         <i className="nav-icon fa fa-tags" />
@@ -413,6 +414,14 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                       <ul className="nav nav-treeview">
+                        {Authenticator.check('admin', 'assign_employees_client') &&
+                          <li className="nav-item">
+                            <Link className="nav-link" to={global.links.assign_employees_client}>
+                              <i className="nav-icon fa fa-address-card nav-icon" />
+                              <p style={{ 'fontSize': 13 }}>Employee's Client</p>
+                            </Link>
+                          </li>
+                        }
                         {Authenticator.check('admin', 'assign_department_handlers') &&
                           <li className="nav-item">
                             <Link className="nav-link" to={global.links.assign_department_handlers}>
@@ -448,6 +457,13 @@ const Sidebar = (props) => {
                       </Link>
                     </li>
                   }
+
+                  <li className="nav-item">
+                    <Link className="nav-link" to={global.links.generate_date} >
+                      <i className="nav-icon fa fa-bars nav-icon" />
+                      <p>Generate Date</p>
+                    </Link>
+                  </li>
                 </ul>
               </li>
             }
@@ -467,17 +483,20 @@ const Sidebar = (props) => {
 
 
 const mapStateToProps = (state) => {
+  
   return {
     user: state.user,
     settings: state.settings,
-    selected_summary: state.report.selected_summary
+    selected_summary: state.report.selected_summary,
+    my_team_pending_request: state.myTeamRequestList?.statusNumbers?.pending? state.myTeamRequestList.statusNumbers.pending : null
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     logOut: () => dispatch(logOut()),
-    setSelectedAttendanceSummary: (data) => dispatch(setSelectedAttendanceSummary(data))
+    setSelectedAttendanceSummary: (data) => dispatch(setSelectedAttendanceSummary(data)),
+    
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

@@ -73,14 +73,7 @@ class TeamSummaryAttendanceExport implements
     {
         if($this->type == 'report'){
             return [
-                [
-                    'Total Headcount',
-                    $this->data['total_headcount'] == 0 ? '0' : $this->data['total_headcount'],
-                ],
-                [
-                    'Scheduled Headcount',
-                    $this->data['scheduled_employees']['total_count'] == 0 ? '0' : $this->data['scheduled_employees']['total_count'],
-                ],
+               
                 [
                     'Attendance',
                     $this->data['attendance']['total_count'] == 0 ? '0' : $this->data['attendance']['total_count'] ,

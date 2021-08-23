@@ -36,7 +36,7 @@ class AssignRolesPermissions extends Component {
 			roles : values.roles,
 			permissions : values.permissions
 		};
-
+		console.log(formData);
 		this.props.assignRolesPermissions(user_id, formData);
 	}
 
@@ -117,6 +117,7 @@ class AssignRolesPermissions extends Component {
 							 <div className="form-group">
 								<label>Select Role and Permission:</label>
 								{ this.state.roles.map(function(role){
+									console.log(role);
 									return 	<React.Fragment>
 										<label className="role-label">
 												<Field type="checkbox" label={role.name} name="roles" value={role.name} /> &nbsp; { Formatter.slug_to_title(role.name) }

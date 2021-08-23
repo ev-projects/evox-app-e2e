@@ -27,6 +27,7 @@ class CreateNewPermissions extends Migration
             Permission::create(['name' => 'sync_bhr_leaves', 'label' => 'Sync BHR Leaves']),
             Permission::create(['name' => 'assign_role_permission', 'label' => 'Assign Role/Permission']),
             Permission::create(['name' => 'assign_department_handlers', 'label' => 'Assign Department Handlers']),
+            Permission::create(['name' => 'assign_employees_client', 'label' => 'Assign Client Handlers']),
             Permission::create(['name' => 'assign_employee_supervisors', 'label' => 'Assign Employee Supervisors']),
             Permission::create(['name' => 'allow_register_user', 'label' => 'Allow Register User']),
         ];

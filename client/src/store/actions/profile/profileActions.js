@@ -17,12 +17,22 @@ import Formatter from "../../../services/Formatter";
     }
 }
 
+export const setEmpSchedule = ( emp_sched ) => {
+    return (dispatch, getState) => {
+
+        dispatch({
+            'type'               : 'SET_EMP_SCHEDULE',
+            'emp_sched'          : emp_sched,
+        })
+    }
+}
+
 export const setScope = ( scope ) => {
     return (dispatch, getState) => {
 
         dispatch({
             'type'               : 'SET_SCOPE',
-            'scope'          : scope,
+            'scope'              : scope,
         })
     }
 }

@@ -4,6 +4,7 @@
 
 .main-sidebar{position: fixed !important}
 .sidebar{height: 90vh; overflow-y: auto}
+.sidebar .mt-2{margin-left:1rem;}
 .activeAttendanceSummaryReport {
     background-color: rgb(255,255,255,.1);
     color: white

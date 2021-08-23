@@ -77,7 +77,7 @@ class QuickPunch extends Component {
 				<Col>Minutes</Col>
 				<Col>Seconds </Col>
 			</Row>
-			<Button  type="submit" onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button><Button onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+			<Button  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button><Button onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
 			<p class="note" >NOTE: Please make sure that the schedule that is assigned to your account is correct, especially for Night Shift Employees</p>
 		</div>
 	</div>
@@ -95,7 +95,8 @@ class QuickPunch extends Component {
   
   const mapStateToProps = (state) => {
 	return {
-		user : state.user
+		user : state.user,
+		dashboard : state.dashboard,
 	}
   }
   const mapDispatchToProps = (dispatch) => {

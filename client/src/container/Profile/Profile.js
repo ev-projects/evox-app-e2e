@@ -21,12 +21,15 @@ import Schedule from "./Schedule";
 import Formatter from "../../services/Formatter";
 import LeaveCredits from "./LeaveCredits";
 import { generateWeekList, getDaysArrayInMonth, getDaysArrayInWeek } from "../../services/Helper";
+import {  viewEmployeeDtr, } from '../../store/actions/dtr/dtrActions';
 
 class Profile extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            current_tab: null
+            current_tab: null,
+            start_date: moment().startOf('week').add(1, 'days'),
+            end_date: moment().endOf('week').add(1, 'days')
         }
     }
 
@@ -67,8 +70,7 @@ class Profile extends Component {
                         start_date: moment().startOf('week').add(1, 'days'),
                         end_date: moment().endOf('week').add(1, 'days')
                     })
-
-
+                    
                     this.props.fetchSchedule(this.props.params.id);
                     this.props.fetchTemporarySchedule(this.props.params.id);
 
@@ -83,8 +85,7 @@ class Profile extends Component {
     }
 
     setInitialDetails() {
-
-
+        this.props.viewEmployeeDtr(this.props.params.id , this.state.start_date.format('YYYY-MM-DD'), this.state.end_date.format('YYYY-MM-DD'))
         let week = getDaysArrayInWeek(moment().startOf('week').add(1, 'days'), moment().endOf('week').add(1, 'days'))
         this.props.setDateList(week.date_list)
         this.props.setWeekList({ week_list: week.week_list, dates_list: week.dates })
@@ -92,6 +93,7 @@ class Profile extends Component {
         this.props.fetchProfile(this.props.params.id)
         this.setTab("personal_information")
         this.props.fetchPersonalInformation(this.props.params.id);
+
     }
 
     setTab(tab) {
@@ -101,8 +103,8 @@ class Profile extends Component {
     }
 
     render() {
-
-        const { profile, user, page } = this.props;
+        
+        const { profile, user, page,dtr } = this.props;
         let allow_view_personal_info = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_personal_info'));
         let allow_view_job_info = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_job_info'));
         let allow_view_time_off = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_time_off'));
@@ -159,7 +161,7 @@ class Profile extends Component {
                                             null
                                         }
                                         {this.state.current_tab == "schedule" && profile.leaves_list != [] ?
-                                            <Schedule start_date={this.state.start_date} end_date={this.state.end_date} schedule={profile.schedule} />
+                                            <Schedule id={this.props.params.id} dtr={dtr.list} start_date={this.state.start_date} end_date={this.state.end_date} schedule={profile.schedule} />
                                             :
                                             null
                                         }
@@ -181,6 +183,7 @@ const mapStateToProps = (state) => {
     return {
         profile: state.profile,
         user: state.user,
+        dtr: state.dtr,
         page: state.page
     }
 }
@@ -197,6 +200,7 @@ const mapDispatchToProps = (dispatch) => {
         setDateList: (dates) => dispatch(setDateList(dates)),
         setWeekList: (year, month) => dispatch(setWeekList(year, month)),
         setScope: (scope) => dispatch(setScope(scope)),
+        viewEmployeeDtr: (user_id, from, to) => dispatch(viewEmployeeDtr(user_id, from, to)),
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

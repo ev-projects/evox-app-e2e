@@ -46,8 +46,8 @@ class generateWeeklyDtr extends Command
     public function handle()
     {
         try {
-            $start_date =  Carbon::tomorrow();
-            $end_date = 7;
+            $start_date =  new Carbon('first day of next month');
+            $end_date = new Carbon('last day of next month');
 
             # Fetches all the Active Users
             $user_collection = $this->user->get_all_active_users();
@@ -56,7 +56,7 @@ class generateWeeklyDtr extends Command
             $date_array = generate_date_array($start_date, $end_date );
             
             # Test Data for Debugging
-            // $date_array = generate_date_array( "2019-07-01", '2020-06-30' );
+            // $date_array = generate_date_array( "2021-08-02", '2021-08-08' );
             
             $result = $this->dtr->generate_dtr( $user_collection, $date_array );
 

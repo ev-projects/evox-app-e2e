@@ -5,6 +5,7 @@ import Formatter from "../../../services/Formatter";
 
 
 import { setRedirect, clearRedirect } from '../../actions/redirectActions';
+import { fetchRequestList, fetchStatusNumbers } from "../filters/requestListActions";
 
 /**
  *  A dedicated repository of Actions for Change Schedule
@@ -21,7 +22,36 @@ export const addChangeSchedule = ( post_data ) => {
         })
         .then(result => {
             dispatch( Formatter.alert_success( result, 3000 ));
-            
+            dispatch(fetchRequestList({
+                status:           "pending",
+                valid_from:       null,
+                valid_to:         null,
+                department_id:    null,
+                name:             null,
+                page:             1,
+                checkedList:      [],
+                isAll:            false,
+                action:           null,
+                request_type:     'all',
+                bulk_action:      null,
+                url:              'my_team_requests'
+            }));
+
+            dispatch(fetchStatusNumbers({
+                status:           "pending",
+                valid_from:       null,
+                valid_to:         null,
+                department_id:    null,
+                name:             null,
+                page:             1,
+                checkedList:      [],
+                isAll:            false,
+                action:           null,
+                request_type:     'all',
+                bulk_action:      null,
+                url:              'my_team_requests'
+            }));
+
             dispatch({
                 'type'      : 'SET_REDIRECT',
                 'link'      : global.links.dashboard

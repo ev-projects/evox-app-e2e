@@ -143,3 +143,10 @@ Route::group(['prefix' => 'team/{team_id}', 'middleware' => ['jwtauth', 'auth.ap
 
 
 });
+
+Route::group(['prefix' => 'generate/dtr', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Generate DTR dates for Employee(s)
+    Route::post('/', 'UserController@generateDtrDate');
+
+});

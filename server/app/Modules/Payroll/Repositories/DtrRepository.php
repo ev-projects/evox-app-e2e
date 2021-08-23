@@ -65,7 +65,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     ]);
                 } 
             }
-
+            
             foreach( array_chunk( $dtr_insert_array, 5000 ) as $dtr_insert_array_chunk ){
                 # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
                 $dtr_insert_query = "INSERT INTO dtrs (
@@ -131,7 +131,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                     # Check if there's an Approved Rest Day Work for the current DTR. If yes, apply the Rest Day Work instead of the Schedule.
                     if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {
-
+                        
                         $this->apply_rest_day_work_to_dtr( $rest_day_work );
                     
                     # Checks if there's a valid schedule to apply on the DTR.
@@ -139,21 +139,25 @@ class DtrRepository implements DtrRepositoryInterface{
                         
                         # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
                         $schedule_detail = ( is_valid( $schedule ) ? $schedule->getPerDay( get_day_from_date( $date ) ) : null);
-                        
+                       
                         # Get the Parsed Schedule Detail to Date
                         $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $date ) : null);
-    
-                        # Update the DTR properties
-                        $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
-                        $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
-                        $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
-                        $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
-                        $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                        
+                        
+
+                        if($parsed_schedule_detail != null){
+                            # Update the DTR properties
+                            $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
+                            $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
+                            $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
+                            $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
+                            $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                        }
                         
                         $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
                         $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
                         $dtr->update();
-    
+                        
                         # Delete the existing DTR Policies before saving the new ones.
                         $dtr->policies()->delete();
     
@@ -164,7 +168,7 @@ class DtrRepository implements DtrRepositoryInterface{
             }
 
             
-
+            
             
             $result = [
                 // "result" => , 
@@ -801,53 +805,62 @@ class DtrRepository implements DtrRepositoryInterface{
             $processed_data = array();
             // Iterate the fetched Employee Leaves that was fetched from BHr.
             foreach( $bhr_leaves_array as $row ) {
-
                 // Proceed only if the Status of the Leave Request is in the LEAVE REQUEST STATUS constant Array
-                if( in_array( $row->status->status, get_constant('LEAVE_REQUEST_STATUS') ) )   {
-                    $user = $this->user->show_via_bhr_number( $row->employeeId );
-                    // Get the DTR related on the Leave Request's Date Range
-                    $dtr_collection = Dtr::select('dtrs.*')
-                                            ->join('users', 'dtrs.user_id', '=', 'users.id')
-                                            ->whereRaw("
-                                                    users.bhr_num = ?
-                                                    AND date BETWEEN ? AND ?
-                                                ", array(
-                                                    $row->employeeId,
-                                                    $row->start,
-                                                    $row->end
-                                                )
-                                            )->get();
-                    
-                    // Iterate each DTR in order to bind the Leave on each DTR.
-                    foreach( $dtr_collection as $dtr ) {
-                        
-                        # Setting the Amount of Leave from the Leave request for the Corresponding Date
-                        $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
+                try {
 
-                        # Create the Leave Insert Value Array Structure
-                        $leave_insert_values =  [
-                            'dtr_id'              => ( is_valid( $dtr->id ) ) ?  "'".$dtr->id."'" : 'null',
-                            'type'                => ( is_valid( $row->type ) && isset( $row->type->name ) ) ?  "'".$row->type->name."'" : 'null',
-                            'status'              => ( is_valid( $row->status->status ) ) ?  "'".$row->status->status."'" : 'null',
-                            'amount'              =>  "'". ( $amount == 0 ? 0 : ( $amount <= 0.5 ? 0.5 : 1 ) ) ."'",
-                            'employee_note'       => ( is_valid( $row->notes ) && isset( $row->notes->employee ) ) ?  "'".addslashes($row->notes->employee)."'" : 'null',
-                            'manager_note'        => ( is_valid( $row->notes ) && isset( $row->notes->manager ) ) ?  "'".addslashes($row->notes->manager)."'" : 'null',
-                            'updated_by'          => 'NOW()',
-                            'created_by'          => 'NOW()'
+                    if( in_array( $row->status->status, get_constant('LEAVE_REQUEST_STATUS') ) )   {
+                        $user = $this->user->show_via_bhr_number( $row->employeeId );
+                        // Get the DTR related on the Leave Request's Date Range
+                        $dtr_collection = Dtr::select('dtrs.*')
+                                                ->join('users', 'dtrs.user_id', '=', 'users.id')
+                                                ->whereRaw("
+                                                        users.bhr_num = ?
+                                                        AND date BETWEEN ? AND ?
+                                                    ", array(
+                                                        $row->employeeId,
+                                                        $row->start,
+                                                        $row->end
+                                                    )
+                                                )->get();
+                        
+                        // Iterate each DTR in order to bind the Leave on each DTR.
+                        foreach( $dtr_collection as $dtr ) {
+                            
+                            # Setting the Amount of Leave from the Leave request for the Corresponding Date
+                            $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
+
+                            # Create the Leave Insert Value Array Structure
+                            $leave_insert_values =  [
+                                'dtr_id'              => ( is_valid( $dtr->id ) ) ?  "'".$dtr->id."'" : 'null',
+                                'type'                => ( is_valid( $row->type ) && isset( $row->type->name ) ) ?  "'".$row->type->name."'" : 'null',
+                                'status'              => ( is_valid( $row->status->status ) ) ?  "'".$row->status->status."'" : 'null',
+                                'amount'              =>  "'". ( $amount == 0 ? 0 : ( $amount <= 0.5 ? 0.5 : 1 ) ) ."'",
+                                'employee_note'       => ( is_valid( $row->notes ) && isset( $row->notes->employee ) ) ?  "'".addslashes($row->notes->employee)."'" : 'null',
+                                'manager_note'        => ( is_valid( $row->notes ) && isset( $row->notes->manager ) ) ?  "'".addslashes($row->notes->manager)."'" : 'null',
+                                'updated_by'          => 'NOW()',
+                                'created_by'          => 'NOW()'
+                            ];
+
+                            # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
+                            $leave_insert_array[] = implode(",", $leave_insert_values);
+                            $this->compute_payroll_items( $dtr );
+
+                        }
+                    
+                        $processed_data[] = [
+                            "date" => $row->start .' - '.  $row->end,
+                            "employee_no" =>  $user->emp_num,
+                            "employee_name" => $user->first_name . ' ' . $user->last_name ,
+                            "leave_type" =>( is_valid( $row->type ) && isset( $row->type->name ) ) ? $row->type->name: 'null',
+                            "status" => ( is_valid( $row->status->status ) ) ? $row->status->status : 'null',
+                            "amount" =>   ( is_valid( $row->amount->amount ) ) ? $row->amount->amount : 'null',
                         ];
 
-                        # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
-                        $leave_insert_array[] = implode(",", $leave_insert_values);
+                        
                     }
-                
-                    $processed_data[] = [
-                        "date" => $row->start .' - '.  $row->end,
-                        "employee_no" =>  $user->emp_num,
-                        "employee_name" => $user->first_name . ' ' . $user->last_name ,
-                        "leave_type" =>( is_valid( $row->type ) && isset( $row->type->name ) ) ? $row->type->name: 'null',
-                        "status" => ( is_valid( $row->status->status ) ) ? $row->status->status : 'null',
-                        "amount" =>   ( is_valid( $row->amount->amount ) ) ? $row->amount->amount : 'null',
-                    ];
+                } catch (Exception $t) {
+                    log_to_file( 'info', '[FOR LOOP ERROR - ' . "$row->id" . "]" . __FUNCTION__ , [], "dtr");
+                    continue;
                 }
             }
                                     
@@ -878,6 +891,11 @@ class DtrRepository implements DtrRepositoryInterface{
                 "total_dtr_count" => count( $leave_insert_array ),
                 "dtr_leaves"   => $leave_insert_array
             ];
+
+            // Update DTR Computations
+            foreach( $dtr_collection as $dtr ) {
+                $this->compute_payroll_items( $dtr );
+            }
 
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");

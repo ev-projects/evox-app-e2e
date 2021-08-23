@@ -136,4 +136,23 @@ class DepartmentController extends Controller
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
+
+
+    /**
+     * update Department Handlers
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update_handlers( AssignDepartmentHandlersRequest $request, $id ){
+        try {
+            log_activity( trans('messages.department_assign_handlers_attempt') );
+            $department = $this->department->assign_handlers( $id, $request->get('user_id') );
+
+            return success_response(
+                trans('messages.department_assign_handlers_success'), 
+                new DepartmentResource( $department ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
 }

@@ -339,7 +339,7 @@ class MyTeamRequests extends Component {
                       <th>Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="request_list">
                     {request_list.data.map(function(item){
                         var fourthColumn = [];
                         var fifthColumn = [];
@@ -410,7 +410,7 @@ class MyTeamRequests extends Component {
                         <td>{item.date_requested}</td>
                         <td>{fourthColumn}</td>
                         <td>{fifthColumn}</td>
-                        <td> <Status status={item.status} /></td>
+                        <td className="status"><div className={item.status}><Status status={item.status} /></div></td>
                         <td>{item.updated_by} <br/><small>{item.updated_at}</small></td>
                         <td> <Link to={{ pathname: link, previousPath:  global.links.base +'team/MyTeamRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
                       </tr>         
