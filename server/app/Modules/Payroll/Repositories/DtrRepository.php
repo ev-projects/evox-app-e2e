@@ -738,36 +738,41 @@ class DtrRepository implements DtrRepositoryInterface{
             
             // Iterate the Fetched Holidays.
             foreach( $holiday_collection as $holiday ){
-
-                // Parses the Proper Date of the Holiday ( To automate the condition for Pre-defined and non Pre-defined Holiday Dates. )
-                $date = $holiday->getProperDate( $start_date, $end_date );
-
-                // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration.
-                $dtr_collection = Dtr::select('dtrs.*')
-                                        ->whereRaw(
-                                            "dtrs.date = ?
-                                                AND 
-                                                NOT EXISTS (
-                                                    SELECT * 
-                                                    FROM dtr_holidays
-                                                    WHERE dtrs.id = dtr_holidays.dtr_id 
-                                                        AND dtr_holidays.holiday_id = ?
-                                                )
-                                            ",
-                                            array(
-                                                $date,
-                                                $holiday->id
-                                            )
-                                        )
-                                        ->get();
                 
-                // Iterates the Fetched DTRs. 
-                foreach( $dtr_collection as $dtr ) {
+                try{
+                    // Parses the Proper Date of the Holiday ( To automate the condition for Pre-defined and non Pre-defined Holiday Dates. )
+                    $date = $holiday->getProperDate( $start_date, $end_date );
 
-                    $dtr->holidays()->save( $holiday );
-                    $result->push( $dtr );
-                    log_to_file( 'info', 'Holiday Inserted on this DTR.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
+                    // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration.
+                    $dtr_collection = Dtr::select('dtrs.*')
+                                            ->whereRaw(
+                                                "dtrs.date = ?
+                                                    AND 
+                                                    NOT EXISTS (
+                                                        SELECT * 
+                                                        FROM dtr_holidays
+                                                        WHERE dtrs.id = dtr_holidays.dtr_id 
+                                                            AND dtr_holidays.holiday_id = ?
+                                                    )
+                                                ",
+                                                array(
+                                                    $date,
+                                                    $holiday->id
+                                                )
+                                            )
+                                            ->get();
+                    
+                    foreach( $dtr_collection as $dtr ) {
+                        $dtr->holidays()->save( $holiday );
+                        $result->push( $dtr );
+                        log_to_file( 'info', 'Holiday Inserted on this DTR.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
+                    }
+                
+                } catch (Exception $e) {
+                    log_to_file( 'info', '[RECORD ERROR: ID - '. $holiday->id. ' ' . __FUNCTION__ , ['holiday' => $holiday ] , "holiday");
+                    continue;
                 }
+
             }
 
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
@@ -929,15 +934,24 @@ class DtrRepository implements DtrRepositoryInterface{
             if( $biometrics_collection->count() > 0 ) {
                 
                 foreach( $biometrics_collection as $biometrics ){
-                    $dtr = $this->apply_biometrics_to_dtr( $biometrics );
-                    
-                    if( is_valid( $dtr ) ){
-                        
-                        $result->push( $dtr );
 
-                        // If the DTR has Valid Time Logs, trigger the computation for Payroll items.
-                            $this->compute_payroll_items( $dtr );
+                    try{
+
+                        $dtr = $this->apply_biometrics_to_dtr( $biometrics );
+                        
+                        if( is_valid( $dtr ) ){
+                            
+                            $result->push( $dtr );
+
+                            // If the DTR has Valid Time Logs, trigger the computation for Payroll items.
+                                $this->compute_payroll_items( $dtr );
+                        }
+
+                    } catch (Exception $e) {
+                        log_to_file( 'info', '[RECORD ERROR' . __FUNCTION__ . ']',  ['biometrics'=> $biometrics], "biometrix");
+                        continue;
                     }
+
                 } 
             }
 
