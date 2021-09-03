@@ -88,50 +88,56 @@ class syncBhrUsers extends Command
             # Iterate the actual BHR User Numbers array
             foreach( $bhr_user_number_array as $bhr_user_number ){
 
-                // Fetch the User if it's already existing in the System
-                $user = $this->user->show_via_bhr_number( $bhr_user_number );
-                
-                # Fetch the BHr User Details
-                $bhr_user = $this->bhr->get_user( $bhr_user_number, true );
-                
-                # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
-                if( is_valid( $user ) ){
-                    $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
+                try{
+
+                    // Fetch the User if it's already existing in the System
+                    $user = $this->user->show_via_bhr_number( $bhr_user_number );
                     
-                # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
-                } else {
-                    $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
+                    # Fetch the BHr User Details
+                    $bhr_user = $this->bhr->get_user( $bhr_user_number, true );
+                    
+                    # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
+                    if( is_valid( $user ) ){
+                        $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
+                        
+                    # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
+                    } else {
+                        $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
 
-                    if( is_valid( $user ) ) {
+                        if( is_valid( $user ) ) {
 
-                        # Fetch the Department of the User.
-                        $department =  $user->department()->first();
+                            # Fetch the Department of the User.
+                            $department =  $user->department()->first();
 
-                        # Added generating of Schedule for the newly inserted user using the User's department default schedule
-                        if( is_valid( $department ) ) {
+                            # Added generating of Schedule for the newly inserted user using the User's department default schedule
+                            if( is_valid( $department ) ) {
 
-                            $schedule = $department->defaultSchedule()->first();
-                            $this->schedule->copy_schedule_to_user( $schedule, $user );
-                            
-                        }
+                                $schedule = $department->defaultSchedule()->first();
+                                $this->schedule->copy_schedule_to_user( $schedule, $user );
+                                
+                            }
 
-                        # Checks if the Date Hired is less than or equal to the nearest saturday date.
-                        $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
-                        if( Carbon::parse( $user->date_hired )->lte( $nearest_saturday_date ) ){
+                            # Checks if the Date Hired is less than or equal to the nearest saturday date.
+                            $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
+                            if( Carbon::parse( $user->date_hired )->lte( $nearest_saturday_date ) ){
 
-                            # Generate DTR from the Date Hired up to the Saturday of this week.
-                            $date_array = generate_date_array($user->date_hired, $nearest_saturday_date );
-                            $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
+                                # Generate DTR from the Date Hired up to the Saturday of this week.
+                                $date_array = generate_date_array($user->date_hired, $nearest_saturday_date );
+                                $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
+                            }
                         }
                     }
-                }
 
 
-                # 3.
-                if( is_valid( $user ) ) {
-                    $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
+                    # 3.
+                    if( is_valid( $user ) ) {
+                        $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
+                    }
+                     
+                } catch (Exception $e) {
+                    log_to_file( 'info', '[RECORD ERROR: BHRID - '. $bhr_user_number. ' ' . __FUNCTION__ , [], "sync_bhr_user");
+                    continue;
                 }
-                        
             }
 
             # 4
