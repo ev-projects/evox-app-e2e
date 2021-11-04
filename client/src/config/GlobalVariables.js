@@ -3,7 +3,7 @@
  *  All the static data that are not too often to change should be stored here.
  */
 
-global.links = {
+ global.links = {
 
     // Outside Links
     login                           :  "/login",
@@ -20,6 +20,7 @@ global.links = {
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
     ev_learning                      :  "/app/EVLearning",
+    ops_schedule                      :  "/app/OpsSchedule",
 
     // Request Links
     overtime                        :  "/app/request/Overtime/",
@@ -49,6 +50,7 @@ global.links = {
 
     // Report Links
     team_attendance_summary         :  "/app/report/TeamAttendanceSummary/",
+    KPIReport                       :  "/app/report/KPIReport/",
 
     // Admin Links
     payroll_cutoff                  :  "/app/admin/PayrollCutoff/",
@@ -60,6 +62,9 @@ global.links = {
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
     assign_role_permission          :  "/app/admin/AssignRolePermission/",
     register_user                   :  "/app/admin/RegisterUser/",
+
+    // Performance Measure
+    kpi_upload                      :  "/app/performance/KpiUpload",
     generate_date                   :  "/app/admin/GenerateDate/",
 };
 

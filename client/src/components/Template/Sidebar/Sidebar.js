@@ -12,7 +12,7 @@ import { useHistory } from "react-router-dom";
 const Sidebar = (props) => {
 
 
-  const { user, settings, selected_summary,my_team_pending_request } = props;
+  const { user, settings, selected_summary, my_team_pending_request } = props;
   const history = useHistory();
   var name = 'Loading...';
   if (user.first_name != null && user.last_name != null) {
@@ -123,8 +123,16 @@ const Sidebar = (props) => {
                   <p>EV Learning</p>
                 </Link>
               </li>
-            }
 
+             
+            }
+            
+             <li className="nav-item">
+                <Link className="nav-link" to={global.links.ops_schedule}>
+                  <i className="nav-icon fa fa-address-book nav-icon" />
+                  <p>EV Support Team Schedule</p>
+                </Link>
+              </li>
 
             {/* SUPERVISOR Links */}
             {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
@@ -341,6 +349,18 @@ const Sidebar = (props) => {
                     :
                     null
                   }
+
+                  {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.KPIReport} >
+                        <i className="nav-icon fa fa-list-alt" aria-hidden="true"></i>
+                        <p>KPI Reports</p>
+                      </Link>
+                    </li>
+                    :
+                    null
+                  }
+                  
                 </ul>
 
               </li>
@@ -359,14 +379,8 @@ const Sidebar = (props) => {
                   </p>
                 </a>
                 <ul className="nav nav-treeview">
-                  {Authenticator.check('admin', 'manage_payroll_cutoff') &&
-                    <li className="nav-item">
-                      <Link className="nav-link" to={global.links.payroll_cutoff}>
-                        <i className="nav-icon fa fa-table nav-icon" />
-                        <p>Payroll Cutoff</p>
-                      </Link>
-                    </li>
-                  }
+
+
                   {Authenticator.check('admin', ['sync_biometrics', 'sync_bhr_user_updates', 'sync_bhr_leaves']) &&
                     <li className="nav-item has-treeview ">
                       <a className="nav-link">
@@ -404,7 +418,7 @@ const Sidebar = (props) => {
                       </ul>
                     </li>
                   }
-                  {Authenticator.check('admin', ['assign_department_handlers', 'assign_employees_client', 'assign_employee_supervisors', 'assign_role_permission']) &&
+                  {Authenticator.check('admin', ['assign_department_handlers', 'assign_employee_supervisors', 'assign_role_permission']) &&
                     <li className="nav-item has-treeview ">
                       <a className="nav-link">
                         <i className="nav-icon fa fa-tags" />
@@ -414,14 +428,6 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                       <ul className="nav nav-treeview">
-                        {Authenticator.check('admin', 'assign_employees_client') &&
-                          <li className="nav-item">
-                            <Link className="nav-link" to={global.links.assign_employees_client}>
-                              <i className="nav-icon fa fa-address-card nav-icon" />
-                              <p style={{ 'fontSize': 13 }}>Employee's Client</p>
-                            </Link>
-                          </li>
-                        }
                         {Authenticator.check('admin', 'assign_department_handlers') &&
                           <li className="nav-item">
                             <Link className="nav-link" to={global.links.assign_department_handlers}>
@@ -449,9 +455,19 @@ const Sidebar = (props) => {
                       </ul>
                     </li>
                   }
+
+
+                  {Authenticator.check('admin', 'manage_payroll_cutoff') &&
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.KPIReport}>
+                        <i className="nav-icon fa fa-table nav-icon" />
+                        <p>Payroll Cutoff</p>
+                      </Link>
+                    </li>
+                  }
                   {Authenticator.check('admin', 'allow_register_user') &&
                     <li className="nav-item">
-                      <Link className="nav-link" to={global.links.register_user}>
+                      <Link className="nav-link" to={global.links.kpi_upload}>
                         <i className="nav-icon fa fa-user-plus nav-icon" />
                         <p style={{ 'fontSize': 13 }}>Register User</p>
                       </Link>
@@ -483,12 +499,12 @@ const Sidebar = (props) => {
 
 
 const mapStateToProps = (state) => {
-  
+
   return {
     user: state.user,
     settings: state.settings,
     selected_summary: state.report.selected_summary,
-    my_team_pending_request: state.myTeamRequestList?.statusNumbers?.pending? state.myTeamRequestList.statusNumbers.pending : null
+    my_team_pending_request: state.myTeamRequestList?.statusNumbers?.pending ? state.myTeamRequestList.statusNumbers.pending : null
   }
 }
 
@@ -496,7 +512,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     logOut: () => dispatch(logOut()),
     setSelectedAttendanceSummary: (data) => dispatch(setSelectedAttendanceSummary(data)),
-    
+
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
