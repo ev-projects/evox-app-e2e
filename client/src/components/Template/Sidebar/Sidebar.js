@@ -349,18 +349,6 @@ const Sidebar = (props) => {
                     :
                     null
                   }
-
-                  {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
-                    <li className="nav-item">
-                      <Link className="nav-link" to={global.links.KPIReport} >
-                        <i className="nav-icon fa fa-list-alt" aria-hidden="true"></i>
-                        <p>KPI Reports</p>
-                      </Link>
-                    </li>
-                    :
-                    null
-                  }
-                  
                 </ul>
 
               </li>
