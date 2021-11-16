@@ -447,7 +447,7 @@ const Sidebar = (props) => {
 
                   {Authenticator.check('admin', 'manage_payroll_cutoff') &&
                     <li className="nav-item">
-                      <Link className="nav-link" to={global.links.PayrollCutoff}>
+                      <Link className="nav-link" to={global.links.payroll_cutoff}>
                         <i className="nav-icon fa fa-table nav-icon" />
                         <p>Payroll Cutoff</p>
                       </Link>
