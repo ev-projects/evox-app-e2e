@@ -138,7 +138,7 @@ class ReportController extends Controller
      */
     public function summary_list( $request ) {
 
-        $user_collection = $this->user->get_users_under_supervisee( $request );
+        $user_collection = $this->user->get_users_under_supervisee( $request , $start_date, $end_date);
         
         $result = $this->report->get_dtr_summary( $user_collection,  $request->valid_from, $request->valid_to);
         
@@ -187,7 +187,7 @@ class ReportController extends Controller
      */
     public function logs_list($request) {
 
-        $user_collection = $this->user->get_users_under_supervisee( $request );
+        $user_collection = $this->user->get_users_under_supervisee( $request , $start_date, $end_date);
      
         $result = $this->dtr->get_dtr_logs( $user_collection, $request->valid_from, $request->valid_to);
         
@@ -442,7 +442,7 @@ class ReportController extends Controller
                 'end_date' => 'date_format:Y-m-d',
             ]);
 
-            $user_collection = $this->user->get_users_under_supervisee( $request );
+            $user_collection = $this->user->get_users_under_supervisee( $request , $start_date, $end_date );
 
             return success_response(
                 trans('messages.get_attendance_summary_success'),  $this->report->get_team_attendance_summary( $user_collection,  $start_date, $end_date )
@@ -456,7 +456,7 @@ class ReportController extends Controller
 
     public function export(Request $request, $start_date, $end_date) 
     {   
-        $user_collection = $this->user->get_users_under_supervisee( $request );
+        $user_collection = $this->user->get_users_under_supervisee( $request , $start_date, $end_date );
         $data =  $this->report->get_team_attendance_summary( $user_collection,  $start_date, $end_date );
         $array = (array) $data['dtr_collection'];
         $list = $this->getDetailsOfSummary($array['team_attendance_summary']);

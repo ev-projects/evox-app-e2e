@@ -594,7 +594,7 @@ class UserRepository implements UserRepositoryInterface{
      * @param Request $request
      * @return User $user_collection ( Collection )
      */
-    public function get_users_under_supervisee( Request $request ){
+    public function get_users_under_supervisee( Request $request , $start_date, $end_date ){
         try {
             $user_collection =  auth()->user()->users_handled(); 
 
@@ -605,6 +605,8 @@ class UserRepository implements UserRepositoryInterface{
             if( is_valid( $request->name ) ){
                 $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
             }
+            
+            $user_collection->whereRaw('(is_active = 1 or termination_date BETWEEN "'. $start_date .'" AND "'. $end_date .'")');
             
             if( is_valid( $request->team_id ) ){
                 $user_collection->whereIn('id', Team::find( $request->team_id )->team_users()->pluck('id'));

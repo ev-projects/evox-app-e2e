@@ -668,18 +668,13 @@ class Computation
                 // If the Overtime Type is a Pre-Overtime.
                 if( $overtime_request->type == get_constant('OVERTIME_TYPE.pre') ) {
 
+                    $start_time = $this->actual_time_start_datetime == null? $this->dtr->start_datetime : $this->actual_time_start_datetime ;
+
                     // Set the Overtime Start-Datetime by subtracting the Overtime Amount from the Actual Time Start-Datetime.
-                    $overtime_start_datetime = $this->actual_time_start_datetime -  $overtime_request->amount;
+                    $overtime_start_datetime = $start_time -  $overtime_request->amount;
 
                     // Set the Overtime End-Datetime using the Actual Time Start-Datetime.
-                    $overtime_end_datetime   = $this->actual_time_start_datetime;
-
-                    // If the Time-In is between the Overtime Datetime, use the Time-In as Overtime Start-Datetime to gate this Scenario below:
-                    //  - The User files Higher Overtime Amount vs the Actual Overtime Amount base from the Timelogs.
-                    if( $this->dtr->time_in >= $overtime_start_datetime && 
-                        $this->dtr->time_in <= $overtime_end_datetime ){
-                        $overtime_start_datetime = $this->dtr->time_in;
-                    }
+                    $overtime_end_datetime   = $start_time;
                     
                     # Sets the Date to compare to 12AM of the current Day
                     $date_to_compare = datetime_to_timestamp($this->dtr->date);
@@ -687,18 +682,11 @@ class Computation
                 // If the Overtime Type is a Post-Overtime.
                 } elseif( $overtime_request->type == get_constant('OVERTIME_TYPE.post') ) {
 
-                    // Set the Overtime Start-Datetime using the Actual Time End-Datetime.
-                    $overtime_start_datetime = $this->actual_time_end_datetime;
-
-                    // Set the Overtime Start-Datetime by adding the Overtime Amount to the Actual Time End-Datetime.
-                    $overtime_end_datetime   = $this->actual_time_end_datetime + $overtime_request->amount;
-
-                    // If the Time-Out is between the Overtime Datetime, use the Time-Out as Overtime End-Datetime to gate this Scenario below:
-                    //  - The User files Higher Overtime Amount vs the Actual Overtime Amount base from the Timelogs.
-                    if( $this->dtr->time_out >= $overtime_start_datetime && 
-                        $this->dtr->time_out <= $overtime_end_datetime ){
-                        $overtime_end_datetime = $this->dtr->time_out;
-                    }
+                    $start_time = $this->actual_time_end_datetime==null? $this->dtr->end_datetime :$this->actual_time_end_datetime ;
+                    
+                    $overtime_start_datetime = $start_time;
+                    
+                    $overtime_end_datetime   = $start_time + $overtime_request->amount;
 
                     # Sets the Date to compare to 12AM of the Next Day
                     $date_to_compare = add_days_to_timestamp( $this->dtr->date, 1);
@@ -804,16 +792,6 @@ class Computation
                         
                     }
                 }
-
-
-                // dd( 'overtime = ' . seconds_to_time( $overtime ), 
-                //     'overtime_night_diff = ' . seconds_to_time( $overtime_night_diff ), 
-                //     'overtime_night_diff_underlapped = ' . seconds_to_time( $overtime_night_diff_underlapped ), 
-                //     'overtime_underlapped = ' . seconds_to_time( $overtime_underlapped ), 
-                //     'overtime_night_diff_overlapped = ' . seconds_to_time( $overtime_night_diff_overlapped ), 
-                //     'overtime_overlapped = ' . seconds_to_time( $overtime_overlapped ), 
-                //     timestamp_to_datetime( $overtime_start_datetime ), 
-                //     timestamp_to_datetime( $overtime_end_datetime ) );
 
             
            /* Double checks the Validity of the Computed Overtime, Overtime Night Diff., Overtime Night Diff. Overlapped, and Overtime Overlapped. If not valid, set it to Default value (0) */
@@ -977,8 +955,6 @@ class Computation
                 }
 
             }
-            
-            // dd( seconds_to_time( $rendered_hours ), seconds_to_time( $rendered_hours_overlapped ) );
 
             # Double checks the Validity of the Computed Rendered Hours. If not valid, set it to Default value (0)
             # 1. If Rendered Hours is LESS THAN 0 (Negative values)

@@ -600,6 +600,8 @@ class DtrRepository implements DtrRepositoryInterface{
                 # Updates the DTR properties
                 $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
                 $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
+                $dtr->time_in               =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
+                $dtr->time_out              =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
                 $dtr->start_flexy_datetime  =  null;
                 $dtr->end_flexy_datetime    =  null;
                 $dtr->break_time            =  $rest_day_work->break_time;
