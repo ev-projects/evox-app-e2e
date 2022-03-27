@@ -31,7 +31,7 @@ interface UserRepositoryInterface
 
     public function get_all_active_users();
 
-    public function get_users_under_supervisee( Request $request);
+    public function get_users_under_supervisee( Request $request, $start_date, $end_date );
 
     public function get_dpa_list( Request $request);
 
