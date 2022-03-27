@@ -138,7 +138,7 @@ class ReportController extends Controller
      */
     public function summary_list( $request ) {
 
-        $user_collection = $this->user->get_users_under_supervisee( $request , $start_date, $end_date);
+        $user_collection = $this->user->get_users_under_supervisee( $request ,  $request->valid_from, $request->valid_to);
         
         $result = $this->report->get_dtr_summary( $user_collection,  $request->valid_from, $request->valid_to);
         
@@ -187,7 +187,7 @@ class ReportController extends Controller
      */
     public function logs_list($request) {
 
-        $user_collection = $this->user->get_users_under_supervisee( $request , $start_date, $end_date);
+        $user_collection = $this->user->get_users_under_supervisee( $request , $request->valid_from, $request->valid_to);
      
         $result = $this->dtr->get_dtr_logs( $user_collection, $request->valid_from, $request->valid_to);
         
