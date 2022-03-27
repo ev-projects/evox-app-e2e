@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\User\Repositories\UserRepositoryInterface;
+use Auth;
 
 class DtrRepository implements DtrRepositoryInterface{
     protected $user;
@@ -88,40 +89,9 @@ class DtrRepository implements DtrRepositoryInterface{
             # Apply the Schedule of the Dates that's been generated.
             
             foreach( $user_collection as $user ) {
-
-                // # Fetch the Default Schedule for the current User.
-                // $default_schedule = $user->defaultSchedule()->first();
-    
-                // # Fetch the Temporary Schedules for the current User within the Date Range
-                // $temporary_schedule_collection = $user->temporarySchedules( $start_date, $end_date )->get();
-
-                // $change_schedule_collection = $user->changeSchedules( $start_date, $end_date )->get(); 
-
                 
                 foreach( $user->dtr( $start_date, $end_date )->get() as $dtr ) {
                     $date = $dtr->date;
-
-                    // # Gets the Latest Temporary Schedule that the current $date is in scope.
-                    // $temporary_schedule = $temporary_schedule_collection->filter(function ( $schedule ) use ( $date ) {
-                    //     return ( $date >= $schedule->valid_from && $date <= $schedule->valid_to) ;
-                    // })
-                    // ->sortByDesc('updated_at')
-                    // ->first();
-
-                    // # Gets the Change Schedule that the current $date is in scope
-                    // $change_schedule = $change_schedule_collection->filter(function ( $schedule ) use ( $date ) {
-                    //     return ( $date >= $schedule->valid_from && $date <= $schedule->valid_to) ;
-                    // })
-                    // ->first();
-
-                    // if($change_schedule!=null){
-                    //     $change_schedule = Schedule::find($change_schedule->schedule_id);
-                    // }
-
-                    // # Setting the Schedule that would be used for that specific Day.
-                    // # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
-                    // $schedule = ( is_valid( $temporary_schedule ) ? $temporary_schedule : 
-                    //                 ( is_valid( $change_schedule ) ? $change_schedule : $default_schedule ) );
                     
                     # Uses this getBestSchedule to check what is the best Schedule for the given Date of specific user.
                     $schedule = $dtr->getBestSchedule();
@@ -193,6 +163,96 @@ class DtrRepository implements DtrRepositoryInterface{
     }
 
 
+    /**
+     *  Responsible for Generating DTR for a specific user starting from a specific date
+     */
+    public function generate_dtr2( $date , $emp_id )
+    {
+        DB::beginTransaction();
+        try {
+            $days = 7;
+            $dates = get_succeeding_days( $date , $days ) ;
+
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $date ], "dtr");
+
+            $emp_nump = $emp_id;
+            
+            # THIS SQL CREATES RECORD OF 7 DAYS RECORDS OF DTR
+            $records_to_be_insert =  "SELECT ".$emp_nump." as user_id," . implode(" as date UNION ALL SELECT  ".$emp_nump." as user_id,", $dates);
+            
+            
+            # THIS SQL CREATES A RELATION
+            $record_that_dont_exist = " FROM (" .$records_to_be_insert ." ) as table1 
+            LEFT JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id 
+            LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id 
+                AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
+            LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id 
+            LEFT JOIN schedule_details as sched_details ON sched_details.schedule_id = sched.id 
+                AND ( sched_details.day = LOWER(SUBSTRING(DAYNAME(table1.date),1, 3)) or sched_details.day='all')
+            LEFT JOIN users on table1.user_id = users.id
+            WHERE dtr.date is NULL AND dtr.user_id is NULL AND table1.date >= users.date_hired AND is_active = 1
+            AND ( change_sched.status = 'approved' OR change_sched.status is null )
+            GROUP BY table1.date";
+
+            $delete_sched_pol = "DELETE dtr_policies from dtr_policies JOIN dtrs ON dtrs.id = dtr_policies.dtr_id WHERE dtrs.date in ( ". implode(" ,", $dates) ." ) AND dtrs.user_id = ".  $emp_nump .";";
+
+            $insert_sched_policy =  "INSERT INTO dtr_policies (dtr_id, policy, value) SELECT dtr.id,sched_pol.policy, sched_pol.value  FROM (" .$records_to_be_insert ." ) as table1              
+            JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id 
+            LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id 
+                AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
+            LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id 
+            LEFT JOIN users on table1.user_id = users.id
+            LEFT JOIN schedule_policies as sched_pol ON sched_pol.schedule_id = sched.id 
+            WHERE table1.date >= users.date_hired AND is_active = 1
+            AND ( change_sched.status = 'approved' OR change_sched.status is null )
+            GROUP BY table1.date,sched_pol.policy";
+
+            $columns_to_selected[] = "table1.user_id";
+                
+            $columns_to_selected[] = "table1.date";
+
+            $columns_to_selected[] = "sched_details.break_time as break_time";
+            
+            # Make sure the start time has correct date
+            $start_time = "sched_details.start_time";
+            $columns_to_selected[] = check_column_exist( $start_time , "unix_timestamp( table1.date ) + ". $start_time ) . " as start_datetime";
+    
+            # Make sure end time is always greater than the start time
+            $end_time = "sched_details.end_time";
+            $columns_to_selected[] = check_column_exist( $end_time ,check_column_end_datetime( "unix_timestamp( table1.date ) + ". $start_time , "unix_timestamp( table1.date ) + " . $end_time) ) ." as end_datetime";
+    
+            # Make sure flexy time is always greater that on duty / start time
+            $start_flexy_time = "sched_details.start_flexy_time";
+            $columns_to_selected[] = check_column_exist( $start_flexy_time ,check_column_start_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $end_time , "unix_timestamp( table1.date ) + " . $start_flexy_time) ) ." as start_flexy_datetime";
+            
+            # Make sure the end flexy time is greater than on duty, off duty and start flexy time
+            $end_flexy_time = "sched_details.end_flexy_time";
+            $columns_to_selected[] = check_column_exist( $end_flexy_time ,check_column_end_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $start_flexy_time , "unix_timestamp( table1.date ) + " . $end_time, "unix_timestamp( table1.date ) + " .$end_flexy_time) ) ." as start_flexy_datetime";
+            
+            $columns_to_selected[] = check_if_restday( "table1.date" , "sched.rest_days") . " as is_rest_day";
+            
+            $columns_to_selected[] = "NOW() as created_at";
+            $columns_to_selected[] = "NOW() as updated_at";
+            
+            $insert_sql_raw = "INSERT INTO dtrs ( user_id, date, break_time, start_datetime, end_datetime, start_flexy_datetime, end_flexy_datetime, is_rest_day, created_at, updated_at) SELECT ". implode( "," ,$columns_to_selected ). $record_that_dont_exist . ";";
+
+            $sql_raw = $insert_sql_raw. $delete_sched_pol. $insert_sched_policy;
+
+            $result = DB::unprepared( $sql_raw );
+            DB::commit();
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [] , "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            
+            return $result;
+        } catch (Exception $e) {
+            DB::rollback();
+            log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "dtr");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+
+            throw $e;
+        }
+    }
 
     /**
      *  Responsible for Applying the newly fetched Drupal DTR to the new DTR
@@ -1125,6 +1185,11 @@ class DtrRepository implements DtrRepositoryInterface{
                 DB::commit();
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
+                $days = 7;
+                $dates = get_succeeding_days(  $biometrics->CheckTime , $days ) ;
+                $emp_nump = Auth::user()->id;
+                $result = $this->generate_dtr2( $date , $emp_nump );
+
                 log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
             }
 
