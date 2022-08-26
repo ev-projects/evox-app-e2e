@@ -24,6 +24,7 @@ class DtrLogs extends Component {
         valid_to:   ( this.props.settings?.current_payroll_cutoff?.end_date ? new Date( this.props.settings.current_payroll_cutoff.end_date) : null),
         department_id: null,
         name: null,
+        is_active: 1,
         export: false,
       }
     }; 
@@ -107,7 +108,18 @@ class DtrLogs extends Component {
                           <input type="textfield" className="form-control" variant="primary" placeholder="Name" name="name" onChange={handleChange} value={values.name} />
                       </div>
                     
-                    </Col> 
+                    </Col>
+                    <Col>
+                    <select
+                    className="form-control"
+                      name="is_active"
+                      value={values.is_active}
+                      onChange={handleChange}
+                    >
+                      <option value="1" label="Active" />
+                      <option value="0" label="Inactive" />
+                    </select>
+              </Col>
                     <Col className="btns filter-button">   
                       <div className="form-group">
                       <label> </label>

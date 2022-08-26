@@ -1,4 +1,7 @@
 
+/*
+Adjust column size to gice space for additional filter
+*/
 .filters.filter-dtr {width: 100%; float: none;margin:0; padding: 0 20px}
 .filters.filter-dtr .filter-button {
     width: 25%;
