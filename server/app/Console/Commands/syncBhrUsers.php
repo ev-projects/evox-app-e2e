@@ -2,16 +2,17 @@
 
 namespace App\Console\Commands;
 
+use Exception;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+use App\Modules\User\Models\User;
+use Illuminate\Http\JsonResponse;
+use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
-use App\Modules\User\Models\User;
-use App\Modules\User\Repositories\UserRepositoryInterface;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 
 class syncBhrUsers extends Command
 {
@@ -142,6 +143,17 @@ class syncBhrUsers extends Command
 
             # 4
             $apply_user_supervisor_pivot_result = $this->user->apply_user_supervisor_pivot( $user_supervisor_pivot_array );
+
+                # 5.
+                if( is_valid( $user ) )
+                {
+                    # get list of users who are admin
+                    $admin_collection = Role::findByName( 'admin' )->users()->get();
+                    
+                    foreach( $admin_collection as $admin ) {
+                        $admin->supervisee()->attach( $user );
+                    }
+                }
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 

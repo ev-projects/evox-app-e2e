@@ -33,6 +33,8 @@ interface UserRepositoryInterface
 
     public function get_users_under_supervisee( Request $request, $start_date, $end_date );
 
+    public function get_users_under_supervisee_with_inactive( Request $request, $start_date, $end_date );
+
     public function get_dpa_list( Request $request);
 
     public function apply_temporary_password( $email, $temporary_password );
@@ -43,12 +45,14 @@ interface UserRepositoryInterface
 
     public function assign_roles_to_user( $id, array $roles_array );
 
-    public function assign_permissions_to_user( $id, array $permissions_array );
+    public function assign_permissions_to_user( $id, array $permissions_array, array $roles_array );
 
     public function assign_employees_to_user( $id, array $employee_id_array );
 
     public function list_via_role( $role );
 
     public function list_via_department( $department_id );
+
+    public function adminRoleConditions($user_id, array $request);
 
 }

@@ -138,7 +138,7 @@ class ReportController extends Controller
      */
     public function summary_list( $request ) {
 
-        $user_collection = $this->user->get_users_under_supervisee( $request ,  $request->valid_from, $request->valid_to);
+        $user_collection = $this->user->get_users_under_supervisee_with_inactive( $request ,  $request->valid_from, $request->valid_to);
         
         $result = $this->report->get_dtr_summary( $user_collection,  $request->valid_from, $request->valid_to);
         
@@ -154,7 +154,7 @@ class ReportController extends Controller
         try {
             
             $result = $this->summary_list($request);
-
+            
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
                 $result  

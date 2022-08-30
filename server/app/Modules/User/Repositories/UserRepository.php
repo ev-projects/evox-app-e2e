@@ -618,6 +618,35 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+     /**
+     *  Responsible for fetching all the Active Users under supervisee with inactive status
+     * @param Request $request
+     * @return User $user_collection ( Collection )
+     */
+    public function get_users_under_supervisee_with_inactive( Request $request , $start_date, $end_date ){
+        try {
+            $user_collection =  auth()->user()->users_handled(); 
+
+            if( is_valid( $request->department_id ) ){
+                $user_collection->where('department_id',$request->department_id );
+            }
+            
+            if( is_valid( $request->name ) ){
+                $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
+            }
+            
+            // $user_collection->whereRaw('(is_active = 1 or termination_date BETWEEN "'. $start_date .'" AND "'. $end_date .'")');
+            
+            if( is_valid( $request->team_id ) ){
+                $user_collection->whereIn('id', Team::find( $request->team_id )->team_users()->pluck('id'));
+            }
+
+            return $user_collection->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
     
 
 
@@ -775,10 +804,16 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function assign_roles_to_user( $id , array $roles_array){
         try {
-            
+          
             if( is_under_supervisee( $id ) ) {
 
                 $user =  User::findOrFail( $id );
+
+                if(in_array('admin', $roles_array)){
+                    if(!in_array('supervisor', $roles_array)){
+                     array_push($roles_array,"supervisor");
+                    }
+                 }
 
                 $user->syncRoles( $roles_array );
             }
@@ -798,12 +833,27 @@ class UserRepository implements UserRepositoryInterface{
      * @param $id
      * @return User $user
      */
-    public function assign_permissions_to_user( $id, array $permissions_array ){
+    public function assign_permissions_to_user( $id, array $permissions_array , array $roles_array ){
         try {
 
             if( is_under_supervisee( $id ) ) {
 
                 $user =  User::findOrFail( $id );
+
+                $permissions_list_supervisor = Role::findByName('supervisor')->permissions->pluck('name')->toArray();
+
+                if(in_array('admin', $roles_array)){
+                        $permissions_array = array_merge($permissions_array,$permissions_list_supervisor);
+                        $permissions_array = array_unique($permissions_array);
+                 }
+
+                if(in_array('admin', $roles_array)){
+                    if(!in_array('supervisor', $roles_array)){
+                        $permissions_array = array_merge($permissions_array,$permissions_list_supervisor);
+                        $permissions_array = array_unique($permissions_array);
+                    }
+                 }
+
 
                 $user->syncPermissions( $permissions_array );
             }
@@ -938,7 +988,57 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
-    
+    /**
+     *  Responsible for assigned special conditions if user was assigned as admin
+     * @param $id
+     * @param array $request
+     */
+    public function adminRoleConditions($user_id, array $request){
+        try {
+
+            $user =  User::findOrFail( $user_id );
+
+            // check if there is a role called admin 1st
+            foreach($request as $key => $role){
+                if($role == 'admin'){
+                    $department_col = Department::all()->pluck('id')->toArray();
+
+
+                    // User became a supervisor for each department
+                    foreach($department_col as $department_id){
+                        $department = Department::find($department_id);
+                        $dep_array = $department->department_supervisors()->get()->pluck('id')->toArray();
+                        $department->department_supervisors()->sync(  array_merge($dep_array, [$user->id]));
+
+
+                        $user_array = $department->users()
+                        ->orderBy('first_name', 'asc')
+                        ->orderBy('last_name', 'asc')
+                        ->get()->pluck('id')->toArray();
+                        
+                        // user become supervisee for each employee
+                        if( is_valid( $department->id ) ){
+
+                            if( is_valid(  $user_array) ) {
+                            $user->supervisee()->detach( Department::find($department->id)->users()->get() );
+                            $user->supervisee()->syncWithoutDetaching(   $user_array);
+                            }
+                           
+                            
+                        }
+                        else {
+
+                            $user->supervisee()->syncWithoutDetaching( $user_array);
+                        }
+                    }
+
+                }
+            }
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
     
     ###############################################################################################
     ##################################### Protected functions #####################################
