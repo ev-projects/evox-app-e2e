@@ -254,6 +254,21 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
+     /**
+     *  Responsible for Generating DTR for a new hired user
+     */
+    public function generate_dtr_on_new_hire($user )
+    {
+        $days = 5;
+        $dates = get_succeeding_days( $user->date_hired, $days ) ;
+        
+        $user_collection = new Collection();
+        $user_collection->push((object)User::findOrFail($user->id));
+        $this->generate_dtr( $user_collection, $dates );
+
+        
+    }
+
     /**
      *  Responsible for Applying the newly fetched Drupal DTR to the new DTR
      * @param array $drupal_evox_dtr_array

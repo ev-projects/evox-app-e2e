@@ -41,6 +41,7 @@ interface DtrRepositoryInterface
     
     public function compute_payroll_items(Dtr $dtr);
 
+    public function generate_dtr_on_new_hire($user );
 
     public function get_leaves_from_dtr( Collection $dtr_collection );
     

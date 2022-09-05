@@ -241,6 +241,7 @@ return [
         "change_schedule" => "change_schedule",
         "rest_day_work" => "rest_day_work",
     ],
+    
 
 
     'ATTENDANCE_STATUS' => [
@@ -256,10 +257,18 @@ return [
         "day"           => 86400,
     ],
 
+    "DEFAULT_SCHEDULE" => [
+        'schedule_type'         => "standard",
+        'work_days'             => ["mon","tue","wed","thu","fri"],
+        'updated_by'            => 2,
+        'created_by'            => 2,
+    ],
+
+
 
     'TEAM_SCHEDULE' => [
         "records_per_date"        => 5
-    ],
+],
 
 
 
