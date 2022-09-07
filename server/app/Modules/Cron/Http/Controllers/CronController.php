@@ -2,29 +2,30 @@
 
 namespace App\Modules\Cron\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Exception;
 
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Modules\User\Models\User;
+use Illuminate\Http\JsonResponse;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
-use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
-use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
-use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
-use App\Modules\Payroll\Repositories\PayrollRepository;
-use App\Modules\Payroll\Resources\DtrBiometricsResource;
+use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Payroll\Resources\DtrResource;
+use App\Modules\Payroll\Repositories\PayrollRepository;
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\Payroll\Resources\DtrBiometricsResource;
+use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
-use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
-use App\Modules\User\Models\User;
-use App\Modules\User\Repositories\UserRepositoryInterface;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Http\JsonResponse;
+use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 
+use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
-use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
+use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
 
 class CronController extends Controller
 {
@@ -129,9 +130,12 @@ class CronController extends Controller
              *  2. Iterate ever User and check if it's for Insert/Update (generate Department if existing)
              *  3. Every iteration, save the Supervisor ID x User ID
              *  4. After iteration, insert the Supervisor ID x User ID on the matrix table.
+             *  5. Assign 
+             * 
              * 
              */
             $user_supervisor_pivot_array = [];
+            $admin_collection = Role::findByName( 'admin' )->users()->get();
 
             // If a $since_date_to_sync has parameter, use it as since date to sync. If not, use the date yesterday.
             if( is_valid( $since_date_to_sync ) ){
@@ -189,7 +193,16 @@ class CronController extends Controller
                             $schedule = $department->defaultSchedule()->first();
                             $this->schedule->copy_schedule_to_user( $schedule, $user );
                             
+                            
                         }
+
+                         # Added generating of DTR to new user
+                        //  if( is_valid( $department ) ) {
+
+                        
+                        //     $this->dtr->generate_dtr_on_new_hire( $user);
+                            
+                        // }
 
                         # Checks if the Date Hired is less than or equal to the nearest saturday date.
                         $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
@@ -199,7 +212,24 @@ class CronController extends Controller
                             $date_array = generate_date_array($user->date_hired, $nearest_saturday_date );
                             $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                         }
+
+                        
                     }
+                     # Assign admin as supervisor to new user
+                    if( is_valid( $user ) )
+                        {
+                            # get list of users who are admin
+                            foreach( $admin_collection as $admin ) {
+                                $admin->supervisee()->syncWithoutDetaching( $user );
+                            }
+                        }
+
+                    // New hires should be inheriting the schedule for that specific department from the date hires 
+                        if( is_valid( $user ) )
+                        {
+                         
+                          
+                        }
                     $action = 'New User';
                 }
 
@@ -225,6 +255,12 @@ class CronController extends Controller
                 $processed_user,
                 JsonResponse::HTTP_CREATED
             );
+            
+           
+
+            
+
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
