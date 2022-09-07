@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Modules\User\Repositories;
 
@@ -18,7 +18,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 
 class UserRepository implements UserRepositoryInterface{
-    
+
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
@@ -33,7 +33,7 @@ class UserRepository implements UserRepositoryInterface{
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
 
         DB::beginTransaction();
-        try {  
+        try {
             /**
              *  1. Insert the User
              *  2. Attach the Role/s to User
@@ -63,28 +63,28 @@ class UserRepository implements UserRepositoryInterface{
             // Save the User and it will generate the User ID
             $user->save();
 
-            
+
             # 2.
             // Iterate the roles to be assigned to the User
             foreach( $request->roles as $role_name ){
 
-                //Fetch the Role to attach on the User 
+                //Fetch the Role to attach on the User
                 $role = Role::findByName( $role_name );
 
                 // Assign the Role
                 $user->assignRole( $role );
-    
+
                 # 3.
                 // Total Permissions that are not synced yet on the User
                 $permissions_to_sync = [];
-    
+
                 // Iterate and filter out all the Permissions that are already existing for the User.
                 foreach( $role->permissions()->get() as $permission ){
                     if( ! $user->hasDirectPermission( $permission ) ) {
                         $permissions_to_sync[] = $permission;
                     }
                 }
-                
+
                 // Assign the User's Permissions
                 $user->givePermissionTo( $permissions_to_sync );
             }
@@ -92,7 +92,7 @@ class UserRepository implements UserRepositoryInterface{
             # 4.
             // Attach the Departments Supervised to User
             $user->departments_supervised()->sync( $request->departments_handled );
-            
+
             log_to_file( 'info', 'User Registered Successfully', [$user], 'user_sync');
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
@@ -113,7 +113,7 @@ class UserRepository implements UserRepositoryInterface{
             throw $e;
         }
     }
-    
+
 
 
     /**
@@ -126,7 +126,7 @@ class UserRepository implements UserRepositoryInterface{
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
 
         DB::beginTransaction();
-        try {  
+        try {
 
             /**
              *  1. Insert the User
@@ -134,7 +134,7 @@ class UserRepository implements UserRepositoryInterface{
              *  3. Attach Default Permissions to User
              */
             $user = User::where('bhr_num', $bhr_user->id)->first();
-            
+
             // Check first if the User is already existing before creating new User.
             if( $user == null ) {
 
@@ -156,7 +156,7 @@ class UserRepository implements UserRepositoryInterface{
                     $user->first_name = $bhr_user->firstName;
                     $user->middle_name = $bhr_user->middleName;
                     $user->last_name = $bhr_user->lastName;
-                    $user->nickname = $bhr_user->nickname; 
+                    $user->nickname = $bhr_user->nickname;
                     $user->employment_status = $bhr_user->employmentHistoryStatus;
                     $user->date_hired = $bhr_user->hireDate;
                     $user->is_active = true;
@@ -166,12 +166,12 @@ class UserRepository implements UserRepositoryInterface{
                     if($bhr_user->dateOfBirth != "0000-00-00" && $bhr_user->dateOfBirth != null){
                         $user->birthdate =$bhr_user->dateOfBirth;
                     }
-    
+
                     if($bhr_user->terminationDate != "0000-00-00" && $bhr_user->terminationDate != null){
                         $user->termination_date = $bhr_user->terminationDate;
                     }
 
-                    /** Fetch Department if existing. Insert new department if not.*/ 
+                    /** Fetch Department if existing. Insert new department if not.*/
                     $department = $this->generate_department( $bhr_user->department );
                     if( is_valid( $department ) ) {
                         $user->department_id = $department->id;
@@ -180,9 +180,9 @@ class UserRepository implements UserRepositoryInterface{
                     // Save the User and it will generate the User ID
                     $user->save();
 
-                    
+
                     # 2.
-                    //Fetch the Employee Role to attach on the User 
+                    //Fetch the Employee Role to attach on the User
                     $employee_role = Role::findByName( get_constant('USER_ROLES.employee') );
 
                     // Assign the Employee Role
@@ -199,25 +199,25 @@ class UserRepository implements UserRepositoryInterface{
                             $permissions_to_sync[] = $permission;
                         }
                     }
-                    
+
                     // Assign the Employee's Permissions
                     $user->givePermissionTo( $permissions_to_sync );
                     /** */
-                    
+
                     log_to_file( 'info', 'User Inserted', [$user], 'user_sync');
                     log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
                     log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
 
-                    
+
                 } else {
-                
+
                     log_to_file( 'info', 'User not valid to Sync', [$bhr_user], 'user_sync');
                     log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user, "user_sync");
                     log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
                 }
 
             } else {
-                
+
                 log_to_file( 'info', 'User Existing', [$user], 'user_sync');
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
@@ -236,7 +236,7 @@ class UserRepository implements UserRepositoryInterface{
             throw $e;
         }
     }
-    
+
     /**
      *  Responsible for Updating the BHR Users to EVOX
      * @param object $bhr_user_number
@@ -247,16 +247,16 @@ class UserRepository implements UserRepositoryInterface{
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
 
         DB::beginTransaction();
-        try {  
-            
+        try {
+
             // If BHr User has E-mail and valid Employment history status, insert the user
             if( is_valid( $bhr_user->bestEmail ) /*&& is_valid( $bhr_user->employmentHistoryStatus ) */ ) {
 
                 if(strlen($bhr_user->employeeNumber)==2){
                     $bhr_user->employeeNumber = "0" . $bhr_user->employeeNumber;
                 }
-                
-                $user->emp_num = $bhr_user->employeeNumber; 
+
+                $user->emp_num = $bhr_user->employeeNumber;
                 $user->bhr_num = $bhr_user->id;
                 $user->email = $bhr_user->bestEmail;
                 $user->first_name = $bhr_user->firstName;
@@ -273,30 +273,30 @@ class UserRepository implements UserRepositoryInterface{
                 if($bhr_user->dateOfBirth!="0000-00-00"&&$bhr_user->dateOfBirth!=null){
                     $user->birthdate =$bhr_user->dateOfBirth;
                 }
-    
+
                 if($bhr_user->terminationDate!="0000-00-00"&&$bhr_user->terminationDate!=null){
                     $user->termination_date = $bhr_user->terminationDate;
                 }
-                /** Fetch Department if existing. Insert new department if not.*/ 
+                /** Fetch Department if existing. Insert new department if not.*/
                 $department = $this->generate_department( $bhr_user->department );
                 if( is_valid( $department ) ) {
                     $user->department_id = $department->id;
                 }
 
-                // Update the User 
+                // Update the User
                 $user->update();
-                
+
                 log_to_file( 'info', 'User Updated', [$user], 'user_sync');
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
-                        
+
             } else {
-            
+
                 log_to_file( 'info', 'User not valid to Sync', [$bhr_user], 'user_sync');
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user, "user_sync");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
             }
-            
+
             DB::commit();
             return $user;
 
@@ -318,11 +318,11 @@ class UserRepository implements UserRepositoryInterface{
      * @return array $result
      */
     public function apply_user_supervisor_pivot( $user_supervisor_pivot_array ){
-        
+
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
 
         DB::beginTransaction();
-        try {  
+        try {
             $result = [];
 
             // Apply the Pivot for Supervisor BHR Number x User ID Relationship
@@ -330,11 +330,11 @@ class UserRepository implements UserRepositoryInterface{
 
                 // Fetch the Supervisor via Supervisor's BHR Number
                 $supervisor = User::where('bhr_num', $supervisor_bhr_number)->first();
-                
+
                 if( is_valid( $supervisor ) ) {
-                    
+
                     log_to_file( 'info', 'Superisee Inserted', ['supervisor'=> $supervisor->id, 'user_id' => $user_id_array], 'user_sync');
-                    
+
                     $supervisor->supervisee()->syncWithoutDetaching( $user_id_array );
 
                     /**  Fetch the Supervisor Role to attach on the Supervisor  */
@@ -355,7 +355,7 @@ class UserRepository implements UserRepositoryInterface{
                                     $permissions_to_sync[] = $permission;
                                 }
                             }
-                            
+
                             // Assign the Supervisor's Permissions
                             $supervisor->givePermissionTo( $permissions_to_sync );
                         }
@@ -386,7 +386,7 @@ class UserRepository implements UserRepositoryInterface{
     }
 
     /**
-     *  Responsible for Storing the User. 
+     *  Responsible for Storing the User.
      * @param array (Post Variables) $data
      * @return User $user
      */
@@ -457,7 +457,7 @@ class UserRepository implements UserRepositoryInterface{
     public function show( $id ){
         try {
             $user = null;
-            
+
             if( get_authenticated_user( $id )  ) {
                 $user = User::findOrFail( $id );
             }
@@ -469,7 +469,7 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
-    
+
 
     /**
      *  Responsible for fetching the User via Bhr User Number
@@ -495,7 +495,7 @@ class UserRepository implements UserRepositoryInterface{
     }
 
     /**
-     *  Responsible for fetching all the Supervisee of the User 
+     *  Responsible for fetching all the Supervisee of the User
      * @param $id
      * @return User $user_collection
      */
@@ -505,7 +505,7 @@ class UserRepository implements UserRepositoryInterface{
             if( get_authenticated_user( $id )  ) {
 
                 $user_collection = User::findOrFail( $id )->users_handled();
-                
+
                 if( is_valid( request()->get('team_id') ) ) {
                     $user_collection->join('team_users', 'team_users.user_id', '=', 'users.id')->where('team_id', '=', request()->get('team_id'));
                 }else{
@@ -546,11 +546,11 @@ class UserRepository implements UserRepositoryInterface{
                     $user_collection->orderBy('emp_num',  'asc');
                 }
 
-                
+
                 if( request()->get('page') == 'all' ){
-                    
+
                     $user_collection->get();
-    
+
                 } else {
                     $user_collection = $user_collection->orderBy('first_name', 'asc')
                                                         ->orderBy('last_name', 'asc')
@@ -585,7 +585,7 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
-    
+
 
 
 
@@ -596,28 +596,37 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function get_users_under_supervisee( Request $request , $start_date, $end_date ){
         try {
-            $user_collection =  auth()->user()->users_handled(); 
+            $user_collection =  auth()->user()->users_handled();
+            $user_collection->leftJoin('departments', 'users.department_id', '=', 'departments.id');
 
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
             }
-            
+
             if( is_valid( $request->name ) ){
                 $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
             }
-            
-            $user_collection->whereRaw('(is_active = 1 or termination_date BETWEEN "'. $start_date .'" AND "'. $end_date .'")');
-            
+
+            $user_collection->whereRaw('(is_active = ' . (is_valid($request->is_active) ? $request->is_active : '1') .' or termination_date BETWEEN "'. $start_date .'" AND "'. $end_date .'")');
+
             if( is_valid( $request->team_id ) ){
                 $user_collection->whereIn('id', Team::find( $request->team_id )->team_users()->pluck('id'));
             }
 
-            return $user_collection->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
+            //paginate user collection to prevent request timeout
+
+            //return $user_collection->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
+            if (is_valid($request->page)) {
+                return $user_collection/*->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)*/->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->paginate(100);
+            } else {
+                return $user_collection/*->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)*/->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
+            }
         } catch (Exception $e) {
             throw $e;
         }
     }
-
+    
+    
      /**
      *  Responsible for fetching all the Active Users under supervisee with inactive status
      * @param Request $request
@@ -647,9 +656,6 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
-    
-
-
 
     /**
      *  Responsible for fetching all the DPA Userl ist
@@ -669,7 +675,7 @@ class UserRepository implements UserRepositoryInterface{
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
             }
-            
+
             // For the Employee Name filtering
             if( is_valid( $request->name ) ){
                 $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
@@ -687,7 +693,7 @@ class UserRepository implements UserRepositoryInterface{
                     $user_collection->whereNull('dpa_ticked_at');
                 }
             }
-            
+
             // For Active User filtering
             if( !is_null( $request->is_active ) ){
                 $user_collection->where('is_active',$request->is_active );
@@ -709,7 +715,7 @@ class UserRepository implements UserRepositoryInterface{
      * @return User $user
      */
     public function apply_temporary_password( $email, $temporary_password ){
-        
+
         try {
             $user =  User::where( 'email', $email )->first();
             $user->password = Hash::make( $temporary_password );
@@ -732,17 +738,17 @@ class UserRepository implements UserRepositoryInterface{
      * @return User $user
      */
     public function change_password( $id, $data ){
-        
+
         try {
             $user =  User::findOrFail( $id );
-            
+
             if( get_authenticated_user( $user->id ) ) {
 
                 $credentials = [
                     'username' => $user->username,
                     'password'  => $data['current_password']
                 ];
-        
+
                 if( auth()->attempt( $credentials ) ){
 
                     $user->password = Hash::make( $data['new_password'] );
@@ -756,12 +762,12 @@ class UserRepository implements UserRepositoryInterface{
 
                     log_to_file('info', 'Success', $user->id, 'user');
                     return $user;
-                    
+
                 } else {
 
                     return false;
                 }
-                
+
             }
 
         } catch (Exception $e) {
@@ -776,10 +782,10 @@ class UserRepository implements UserRepositoryInterface{
      * @return User $user
      */
     public function tick_dpa( $id ){
-        
+
         try {
             $user =  User::findOrFail( $id );
-            
+
             # allow the tick only if the User in the ID is the user currently logged in
             if( auth()->user()->id == $user->id ) {
 
@@ -788,7 +794,7 @@ class UserRepository implements UserRepositoryInterface{
 
                 log_to_file('info', 'Successfully ticked DPA of User', $user->id, 'user');
                 return $user;
-                
+
             }
 
         } catch (Exception $e) {
@@ -804,7 +810,7 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function assign_roles_to_user( $id , array $roles_array){
         try {
-          
+
             if( is_under_supervisee( $id ) ) {
 
                 $user =  User::findOrFail( $id );
@@ -857,7 +863,7 @@ class UserRepository implements UserRepositoryInterface{
 
                 $user->syncPermissions( $permissions_array );
             }
-            
+
             log_to_file('info', 'Success', [$id, $permissions_array], 'assign');
             return $user;
         } catch (Exception $e) {
@@ -893,8 +899,8 @@ class UserRepository implements UserRepositoryInterface{
 
                 $user->supervisee()->syncWithoutDetaching( $post_data['user_id'] );
             }
-            
-            
+
+
             log_to_file('info', 'Success', [$id, $post_data], 'assign');
             return $user;
         } catch (Exception $e) {
@@ -902,7 +908,7 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
-    
+
 
 
 
@@ -922,8 +928,8 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection = Role::findByName( $role )->users()->orderBy('first_name', 'asc')
                                                                      ->orderBy('last_name', 'asc')
                                                                      ->paginate(15);
-            }                                     
-        
+            }
+
             return $user_collection;
         } catch (Exception $e) {
             throw $e;
@@ -950,15 +956,15 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection = Department::find( $department_id )->users()->orderBy('first_name', 'asc')
                                                                               ->orderBy('last_name', 'asc')
                                                                               ->paginate(15);
-            }     
-        
+            }
+
             return $user_collection;
         } catch (Exception $e) {
             throw $e;
         }
     }
 
-    
+
 
 
     /**
@@ -980,13 +986,14 @@ class UserRepository implements UserRepositoryInterface{
                                                          ->orderBy('first_name', 'asc')
                                                          ->orderBy('last_name', 'asc')
                                                          ->paginate(15);
-            }     
-        
+            }
+
             return $user_collection;
         } catch (Exception $e) {
             throw $e;
         }
     }
+
 
     /**
      *  Responsible for assigned special conditions if user was assigned as admin
@@ -1049,15 +1056,15 @@ class UserRepository implements UserRepositoryInterface{
      * @param $department_name
      * @return Department $department
      */
-    
+
     private function generate_department( $department_name ){
 
         try{
-            /** Fetch Department if existing */ 
+            /** Fetch Department if existing */
             if( is_valid( $department_name ) ) {
-                    
+
                 $department = Department::where('department_name', $department_name)->first();
-                
+
                 // If the Department is not existing, create it manually.
                 if($department == null) {
 
@@ -1066,11 +1073,11 @@ class UserRepository implements UserRepositoryInterface{
                     $department->description = null;
                     $department->created_at = date('Y-m-d H:i:s');
                     $department->updated_at = date('Y-m-d H:i:s');
-                
+
                     log_to_file( 'info', 'Department Generated', [$department], 'user_sync');
                     $department->save();
                 }
-                
+
                 return $department;
             } else {
                 return null;
