@@ -196,20 +196,12 @@ class CronController extends Controller
                             
                         }
 
-                         # Added generating of DTR to new user
-                        //  if( is_valid( $department ) ) {
-
-                        
-                        //     $this->dtr->generate_dtr_on_new_hire( $user);
-                            
-                        // }
-
-                        # Checks if the Date Hired is less than or equal to the nearest saturday date.
-                        $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
-                        if( Carbon::parse( $user->date_hired )->lte( $nearest_saturday_date ) ){
+                       
+                        $next_new_date = Carbon::now()->addDays(10);
+                        if( Carbon::parse( $user->date_hired )->lte( $next_new_date ) ){
 
                             # Generate DTR from the Date Hired up to the Saturday of this week.
-                            $date_array = generate_date_array($user->date_hired, $nearest_saturday_date );
+                            $date_array = generate_date_array($user->date_hired, $next_new_date );
                             $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                         }
 
@@ -224,12 +216,7 @@ class CronController extends Controller
                             }
                         }
 
-                    // New hires should be inheriting the schedule for that specific department from the date hires 
-                        if( is_valid( $user ) )
-                        {
-                         
-                          
-                        }
+                   
                     $action = 'New User';
                 }
 

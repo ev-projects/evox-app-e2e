@@ -503,6 +503,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             if( is_valid( $schedule ) ) {
                 
+
                 // Replicate the Schedule parameter into a new Schedule and change the bindings and names specifically for the user.
                 $new_schedule = $schedule->replicate();
                 $new_schedule->bind_to =  'user';
@@ -540,6 +541,35 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                 $new_schedule->created_by = get_constant('DEFAULT_SCHEDULE')['created_by']; 
                 $new_schedule->valid_from = Carbon::now()->toDateString(); 
                 $new_schedule->save();
+                
+                SchedulePolicy::insert([
+                    [
+                        'schedule_id'           => $new_schedule->id, 
+                        'policy'                => 'allow_late',
+                        'value'                 => 1
+                    ],
+                    [
+                        'schedule_id'           => $new_schedule->id, 
+                        'policy'                => 'allow_night_diff',
+                        'value'                 => 0
+                    ],
+                    [
+                        'schedule_id'           => $new_schedule->id, 
+                        'policy'                => 'allow_undertime',
+                        'value'                 => 1
+                    ],
+                ]);
+                
+                ScheduleDetail::insert([
+                        [
+                        'schedule_id'           => $new_schedule->id, 
+                        'day'                   => get_constant('DEFAULT_SCHEDULE_DETAILS')['day'],
+                        'start_time'            => get_constant('DEFAULT_SCHEDULE_DETAILS')['start_time'],
+                        'end_time'              => get_constant('DEFAULT_SCHEDULE_DETAILS')['end_time'],
+                        'break_time'            => get_constant('DEFAULT_SCHEDULE_DETAILS')['break_time'],
+                        ]
+                    ],
+                );
 
             }
             
