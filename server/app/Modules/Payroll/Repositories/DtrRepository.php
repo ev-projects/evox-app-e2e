@@ -259,7 +259,7 @@ class DtrRepository implements DtrRepositoryInterface{
      */
     public function generate_dtr_on_new_hire($user )
     {
-        $days = 5;
+        $days = 10;
         $dates = get_succeeding_days( $user->date_hired, $days ) ;
         
         $user_collection = new Collection();
