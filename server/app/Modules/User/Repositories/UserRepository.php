@@ -281,7 +281,12 @@ class UserRepository implements UserRepositoryInterface{
                 $department = $this->generate_department( $bhr_user->department );
                 if( is_valid( $department ) ) {
                     $user->department_id = $department->id;
+                    $admin_collection = Role::findByName( 'admin' )->users()->get()->pluck('id')->toArray();
+                    $dep_array = $department->department_supervisors()->get()->pluck('id')->toArray();
+                    $department->department_supervisors()->syncWithoutDetaching(  array_merge($dep_array,  $admin_collection));
+
                 }
+
 
                 // Update the User 
                 $user->update();
