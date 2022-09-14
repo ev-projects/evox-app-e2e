@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container,Col,Tabs,Tab,Badge,Table,Button,FormControl,Row,ToggleButton,ButtonGroup } from 'react-bootstrap';
+import { Container,Col,Tabs,Tab,Badge,Table,Button,FormControl,Row,ToggleButton,ButtonGroup,Dropdown } from 'react-bootstrap';
 import { connect,dispatch } from 'react-redux';
 import { useFormikContext } from 'formik';
 import Select from "react-select";
@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
-import { fetchDpaList } from '../../../store/actions/filters/dpaActions';
+import { fetchDpaList, exportDpaList } from '../../../store/actions/filters/dpaActions';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import Validator from "../../../services/Validator";
 
@@ -37,9 +37,7 @@ class DPAList extends Component {
     }
 
   onSubmitHandler = (values) => {
-    console.log(values);
     var formData = {};
-
     for (var key in values) {
       if( values[key] != null && values[key] != ""  ) {
           switch( key ) {
@@ -48,10 +46,32 @@ class DPAList extends Component {
             break;
           }
       } 
-  }
-
-  this.props.fetchDpaList( formData );
-  
+  }    
+    if(values.export == "filtered"){
+        var formData = {export: "filtered"};
+        for (var key in values) {
+          if( values[key] != null && values[key] != ""  ) {
+              switch( key ) {
+                case "export":
+                    break;
+                default:
+                  formData[key] = values[key];
+                break;
+              }
+          } 
+      }   
+        
+        this.props.exportDpaList( formData );
+    }else if(values.export == "all"){
+        var formData = {export: "all"};
+        
+    
+        this.props.exportDpaList( formData );
+    }
+    else{
+        this.props.fetchDpaList( formData );
+    }
+    
   }
 
   componentWillMount(){
@@ -163,9 +183,19 @@ const DPAListFilter = (props) => {
               </Col> 
               <Col size="2"> 
                 
-                  <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
+                  <Button variant="primary" className="mr-2" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("export", false);}}>
                     <i className="fa fa-filter" /> Filter
                   </Button>
+
+                  <Dropdown className="export-drop-down">
+                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                        <i className="fa fa-download" /> Export
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "filtered")}>Export</Dropdown.Item>
+                        <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 
               </Col> 
             </Row>;
@@ -245,6 +275,7 @@ const Status = (props) => {
   const mapDispatchToProps = (dispatch) => {
     return {
       fetchDpaList : ( params ) => dispatch( fetchDpaList( params ) ),
+      exportDpaList : ( params ) => dispatch( exportDpaList( params ) ),
     }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(DPAList);
