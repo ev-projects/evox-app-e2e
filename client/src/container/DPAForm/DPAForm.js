@@ -149,7 +149,10 @@ class DPAForm extends Component {
                                   : null
                                 )
                                 : 
-                                <p> <br/> Thank you for watching the video! </p>
+                                <p>
+                                  <br/> Thank you for watching the video! <br/>
+                                  DPA Submission Date: <strong>{user.dpa_ticked_at}</strong>
+                                </p>
                               }
                             </form>
                             )}
