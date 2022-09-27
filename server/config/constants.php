@@ -259,6 +259,7 @@ return [
 
     "DEFAULT_SCHEDULE" => [
         'schedule_type'         => "standard",
+        'source_type'         => "default",
         'work_days'             => ["mon","tue","wed","thu","fri"],
         'updated_by'            => 2,
         'created_by'            => 2,
