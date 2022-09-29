@@ -311,8 +311,8 @@ class DailyTimeRecord extends Component {
                                   <td className="requests-list">{<DtrRequest requests={dtr.requests}/>}</td>
                                   <td className="dtr-actions">
                                       {
-                                        ( this.props.params.id == this.props.user.id 
-                                          && alter_log_status != "approved" ) ?
+                                        // ( this.props.params.id == this.props.user.id 
+                                        //   && alter_log_status != "approved" ) ?
                                         <Link className="btn btn-primary" 
                                               title="Alter Log"
                                               to={{
@@ -326,8 +326,8 @@ class DailyTimeRecord extends Component {
                                         <i className="fa fa-edit" 
                                            style={{color : "#ffffff" }}></i>
                                         </Link>
-                                        :
-                                        null
+                                        // :
+                                        // null
                                       }
                                     </td>
                                 </tr>
