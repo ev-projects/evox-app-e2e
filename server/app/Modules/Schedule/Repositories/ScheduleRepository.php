@@ -502,7 +502,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $new_schedule = null;
 
             if( is_valid( $schedule ) ) {
-                
+            
 
                 // Replicate the Schedule parameter into a new Schedule and change the bindings and names specifically for the user.
                 $new_schedule = $schedule->replicate();
@@ -529,20 +529,22 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             }
             // Create Default Schedule for user if the department does not have a set schedule for user to be based on
             else{
+              
                 $source_type =  get_constant('DTR_SOURCE_TYPE_TAGGING')['default'];
 
                 $new_schedule = new Schedule();
                 $new_schedule->bind_to =  'user';
                 $new_schedule->bind_id =  $user->id;
                 $new_schedule->name =  '['.strtoupper( $source_type) . '] - '. $user->getFullName() . ' ('. $user->id .')';
+                $new_schedule->source_type = get_constant('DEFAULT_SCHEDULE')['source_type']; 
                 $new_schedule->schedule_type = get_constant('DEFAULT_SCHEDULE')['schedule_type']; 
                 $new_schedule->rest_days = array_values(array_diff( get_constant('DAYS'), get_constant('DEFAULT_SCHEDULE')['work_days'] ));
                 $new_schedule->updated_by = get_constant('DEFAULT_SCHEDULE')['updated_by']; 
                 $new_schedule->created_by = get_constant('DEFAULT_SCHEDULE')['created_by']; 
                 $new_schedule->valid_from = Carbon::now()->toDateString(); 
                 $new_schedule->save();
-                
-                SchedulePolicy::insert([
+            
+                $insertedpolicy = SchedulePolicy::insert([
                     [
                         'schedule_id'           => $new_schedule->id, 
                         'policy'                => 'allow_late',
@@ -560,7 +562,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                     ],
                 ]);
                 
-                ScheduleDetail::insert([
+                $inserteddetails =ScheduleDetail::insert([
                         [
                         'schedule_id'           => $new_schedule->id, 
                         'day'                   => get_constant('DEFAULT_SCHEDULE_DETAILS')['day'],
@@ -570,7 +572,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                         ]
                     ],
                 );
-
+             
             }
             
             DB::commit();
