@@ -4,6 +4,9 @@ REACT_APP_BASE_URL=http://127.0.0.1:3000
 # Base URL of the API (Backend) Application
 REACT_APP_API_BASE_URL=http://127.0.0.1:8000/api
 
+# Root URL of the EVOX Backend
+REACT_APP_BACKED_ROOT_URL=http://localhost:8000
+
 # API Key that will be included as header every call in API
 REACT_APP_API_KEY=70Tr5sr2vBY9B8uSyf1CRAt9BeUBQmBEyN03kQiQCULKlxgoD5ETQOIgIW1RknLH
 

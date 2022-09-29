@@ -174,6 +174,8 @@ return [
         App\Modules\Client\Providers\ClientServiceProvider::class,
         App\Modules\Team\Providers\TeamServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+
+        'Laravel\Socialite\SocialiteServiceProvider',
     ],
 
     /*
@@ -224,6 +226,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Socialite' => 'Laravel\Socialite\Facades\Socialite',
 
     ],
 

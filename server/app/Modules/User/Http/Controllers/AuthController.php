@@ -81,6 +81,46 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Get a Authenticate Client using the Access Token from Google Login.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function authenticateClient(User $user){   
+        try {
+            $user = auth()->user();
+            auth()->logout();
+            // Attempt to check the Credentials. If credentials not found, return User Not Found.
+            if (!$token = auth()->login($user)) {
+                return error_response( trans('messages.user_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+            }
+
+            // Attempt to check if the User is active. If not active, return User not active.
+            if ( ! auth()->user()->is_active ) {
+                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                    return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+               
+            }
+
+            log_activity( trans('messages.login') );
+
+            // Set the User that was fetched into Session
+            $result = [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60
+            ];
+
+            $result = $this->get_default_payload( $result );
+
+            log_to_file('info', 'Success', [], 'user');
+            return success_response( trans('messages.login_success'), $result );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 
     /**
      * Log the user out (Invalidates the token).
