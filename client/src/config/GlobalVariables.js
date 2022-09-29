@@ -7,6 +7,7 @@
 
     // Outside Links
     login                           :  "/login",
+    authenticate_client             :  "/authenticate-client",
     request_approval                :  "/request/approval/",
     recover_password                :  "/recover/password/",
 

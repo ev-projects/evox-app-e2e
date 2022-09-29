@@ -11,6 +11,7 @@ import Footer from "../components/Template/Footer";
 
 // Containers
 import Login from "../container/Login";
+import AuthenticateClient from "../container/AuthenticateClient";
 import Dashboard from "../container/Dashboard";
 import TemplateCreate from "../container/Schedule/TemplateCreate";
 import ScheduleAssign from "../container/Schedule/ScheduleAssign";
@@ -231,6 +232,7 @@ const RoutesList = (props) => {
           <GenerateDate  role={['admin']}  />
         </ProtectedRoute>
         
+        <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
         <Route exact path="*" component={PageNotFound} />
       </Switch>
       <Footer />
