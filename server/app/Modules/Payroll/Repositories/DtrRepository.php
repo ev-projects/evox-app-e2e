@@ -259,7 +259,7 @@ class DtrRepository implements DtrRepositoryInterface{
      */
     public function generate_dtr_on_new_hire($user )
     {
-        $days = 5;
+        $days = 10;
         $dates = get_succeeding_days( $user->date_hired, $days ) ;
         
         $user_collection = new Collection();
@@ -1201,9 +1201,12 @@ class DtrRepository implements DtrRepositoryInterface{
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
                 $days = 7;
-                $dates = get_succeeding_days(  $biometrics->CheckTime , $days ) ;
-                $emp_nump = Auth::user()->id;
-                $result = $this->generate_dtr2( $date , $emp_nump );
+                $dates = get_succeeding_days_basic(  $biometrics->CheckTime , $days ) ;
+                error_log(implode(', ', $dates));
+                $user_collection = new Collection();
+                $user_collection->push((object)User::findOrFail(Auth::user()->id));
+                $result = $this->generate_dtr( $user_collection, $dates );
+                $result =$this->apply_biometrics_to_dtr($biometrics);
 
                 log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
             }
@@ -1211,6 +1214,7 @@ class DtrRepository implements DtrRepositoryInterface{
             DB::commit();
             return $result;
         } catch (Exception $e) {
+            error_log($e->getMessage());
             DB::rollback();
             
             log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "biometrics");

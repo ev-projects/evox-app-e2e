@@ -264,6 +264,15 @@ return [
         'created_by'            => 2,
     ],
 
+    "DEFAULT_SCHEDULE_DETAILS" => [
+        'day' => 'all',
+        'start_time' => 32400,
+        'end_time' => 64800,
+        // 'start_flexy_time' => null,
+        // 'end_flexy_time' => null,
+        'break_time' => 3600,
+    ],
+
 
 
     'TEAM_SCHEDULE' => [

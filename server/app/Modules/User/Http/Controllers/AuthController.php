@@ -6,6 +6,7 @@ use Exception;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Modules\User\Resources\UserProfileResource;
@@ -56,7 +57,7 @@ class AuthController extends Controller
 
             // Attempt to check if the User is active. If not active, return User not active.
             if ( ! auth()->user()->is_active ) {
-                if ( Carbon::now()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
                     return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
                 }
                

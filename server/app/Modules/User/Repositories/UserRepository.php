@@ -281,9 +281,14 @@ class UserRepository implements UserRepositoryInterface{
                 $department = $this->generate_department( $bhr_user->department );
                 if( is_valid( $department ) ) {
                     $user->department_id = $department->id;
+                    $admin_collection = Role::findByName( 'admin' )->users()->get()->pluck('id')->toArray();
+                    $dep_array = $department->department_supervisors()->get()->pluck('id')->toArray();
+                    $department->department_supervisors()->syncWithoutDetaching(  array_merge($dep_array,  $admin_collection));
+
                 }
 
-                // Update the User
+
+                // Update the User 
                 $user->update();
 
                 log_to_file( 'info', 'User Updated', [$user], 'user_sync');
@@ -601,6 +606,8 @@ class UserRepository implements UserRepositoryInterface{
 
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
+            } else {
+                $user_collection->whereRaw('department_id IS NOT NULL');
             }
 
             if( is_valid( $request->name ) ){
@@ -638,6 +645,8 @@ class UserRepository implements UserRepositoryInterface{
 
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
+            } else {
+                $user_collection->whereRaw('department_id IS NOT NULL');
             }
             
             if( is_valid( $request->name ) ){

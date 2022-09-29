@@ -33,6 +33,8 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Modules\Payroll\Models\Holiday;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DpaListExport;
 
 use App\Modules\User\Models\User;
 use App\Modules\User\Resources\DpaUserListResource;
@@ -49,14 +51,17 @@ class UserController extends Controller
     protected $dtr;
     protected $bhr;
     protected $email;
+    protected $dpa_list_export;
 
     public function __construct(UserRepositoryInterface $user, 
                                 DtrRepositoryInterface $dtr, 
                                 BhrRepositoryInterface $bhr,
+                                DpaListExport $dpa_list_export,
                                 EmailRepositoryInterface $email){
         $this->user = $user;
         $this->dtr = $dtr;
         $this->bhr = $bhr;
+        $this->dpa_list_export = $dpa_list_export;
         $this->email = $email;
     }
 
@@ -348,6 +353,32 @@ class UserController extends Controller
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
+    }
+
+    /**
+     * Returns the raw DTR Logs of the User
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function dpa_list($request) {
+
+        // $user_collection = $this->user->get_users_under_supervisee( $request );
+     
+        $result = $this->user->get_dpa_list( $request);
+        
+        return $result;
+    }
+
+    /**
+     * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export_dpa_list( Request $request ){
+
+        $result = $this->dpa_list($request);
+
+        $this->dpa_list_export->data = $result ;
+         return Excel::download( $this->dpa_list_export , 'dtrlogs.csv');
+    
     }
 
     /**

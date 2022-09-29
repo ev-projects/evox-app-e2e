@@ -71,6 +71,33 @@ if (! function_exists('get_succeeding_days_basic')) {
     }
 }
 
+if (! function_exists('get_succeeding_days_basic')) {   
+    /**
+     * 
+     *
+     */
+    function get_succeeding_days_basic( $date , $days) 
+    {
+        try {
+            $start = new Carbon($date);
+            $end = new Carbon($date);
+            $end ->addDays( $days );
+
+            $stack = [];
+            $date = $start;
+
+            while ($date <= $end) {
+                $stack[] = $date->format("Y-m-d");
+                $date->addDays(1);
+            }
+            return $stack;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+
 if (! function_exists('check_column_exist')) {   
     /**
      * 
