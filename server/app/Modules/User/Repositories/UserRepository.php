@@ -606,6 +606,8 @@ class UserRepository implements UserRepositoryInterface{
 
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
+            } else {
+                $user_collection->whereRaw('department_id IS NOT NULL');
             }
 
             if( is_valid( $request->name ) ){
@@ -643,6 +645,8 @@ class UserRepository implements UserRepositoryInterface{
 
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
+            } else {
+                $user_collection->whereRaw('department_id IS NOT NULL');
             }
             
             if( is_valid( $request->name ) ){
