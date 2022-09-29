@@ -364,10 +364,14 @@ class UserController extends Controller
             ]), [
                 'id' => 'int'
             ]);
+//special conditions is assigned as admin included
+            $this->user->adminRoleConditions( $id ,$request->get('roles'));
 
             $this->user->assign_roles_to_user( $id , $request->get('roles'), );
 
-            $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions') );
+            $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions'), $request->get('roles') );
+
+            
             
             return success_response(
                 trans('messages.user_assign_roles_permissions_success'), 
