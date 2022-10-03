@@ -43,8 +43,8 @@ class RecentDtr extends Component {
                                                 <>
                                                   { recent_dtr[1].start_datetime === null &  recent_dtr[1].time_in !== null ?
                                                             <div  class="fade alert-container alert alert-danger alert-dismissible show" >
-                                                              You <u>clocked in</u> on a day with no <b>default</b> schedule assigned to you, this could affect quickpunch with night shifts 
-                                                              or you would be recieving errors and missing payout hours. Confirm with your supervisor about your schedule.
+                                                              You <u>clocked in</u> on a day with no <b>default</b> schedule assigned to you, this could affect quickpunch/DTR with night shifts 
+                                                              or you would be recieving errors, missing overtimes and missing payout hours. Confirm with your supervisor about your schedule.
                                                             </div>
                                                             :
                                                             null
@@ -54,8 +54,8 @@ class RecentDtr extends Component {
                                         <>
                                                   { recent_dtr[0].start_datetime === null &  recent_dtr[0].time_in !== null ?
                                                             <div  class="fade alert-container alert alert-danger alert-dismissible show" >
-                                                              You <u>clocked in</u> on a day with no <b>default</b> schedule assigned to you, this could affect quickpunch with night shifts 
-                                                              or you would be recieving errors and missing payout hours. Confirm with your supervisor about your schedule.
+                                                            You <u>clocked in</u> on a day with no <b>default</b> schedule assigned to you, this could affect quickpunch/DTR with night shifts 
+                                                              or you would be recieving errors, missing overtimes and missing payout hours. Confirm with your supervisor about your schedule.
                                                             </div>
                                                             :
                                                             null
