@@ -73,7 +73,7 @@ class LoginController extends Controller
             return redirect()->away(env('FRONT_END_URL') . "authenticate-client?token=$token");
             //return redirect("get-token?$token");
         } else {
-            return redirect()->away(env('FRONT_END_URL') . "login");
+            return redirect()->away(env('FRONT_END_URL') . "authenticate-client");
         }
     }
 

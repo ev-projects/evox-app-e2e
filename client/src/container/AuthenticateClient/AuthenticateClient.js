@@ -15,12 +15,17 @@ import styles from "./AuthenticateClient.css";
 class AuthenticateClient extends Component {
     
   componentWillMount() {
-    let token = new URLSearchParams(this.props.location.search).get('token');
-    if (token)
-    this.props.authenticateClient(token)
+    
   }
 
   render = () => {  
+    let token = new URLSearchParams(this.props.location.search).get('token');
+    if (token) {
+      this.props.authenticateClient(token)
+    } else {
+      alert('Your email address is not linked to an EVOX account, please contact HR for assistance.');
+      return <Redirect to={global.links.login} />
+    }
 
     const { user } = this.props
 
