@@ -7,10 +7,10 @@ use App\Exports\TeamScheduleExport;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Payroll\Resources\AnniversaryResources; 
-use App\Modules\Payroll\Resources\TeamAttendanceResources; 
-use App\Modules\Report\Resources\TeamScheduleResources; 
-use App\Modules\Report\Resources\DailyScheduleReources;  
+use App\Modules\Payroll\Resources\AnniversaryResources;
+use App\Modules\Payroll\Resources\TeamAttendanceResources;
+use App\Modules\Report\Resources\TeamScheduleResources;
+use App\Modules\Report\Resources\DailyScheduleReources;
 use App\Modules\Report\Resources\WeeklyScheduleResources;
 use App\Modules\Payroll\Resources\HolidayResource;
 use Exception;
@@ -32,6 +32,8 @@ use App\Exports\TeamSummaryAttendanceExport;
 use App\Exports\TeamSummaryAttendanceMultiSheetExport;
 use App\Modules\Payroll\Resources\TeamAttendanceSummaryResource;
 
+use Illuminate\Support\Facades\Storage;
+
 class ReportController extends Controller
 {
     protected $report;
@@ -45,7 +47,7 @@ class ReportController extends Controller
     public function __construct( ReportRepositoryInterface $report,
                                  HolidayRepositoryInterface $holiday,
                                  PayrollCutoffRepositoryInterface $payroll_cutoff,
-                                 DtrRepositoryInterface $dtr, 
+                                 DtrRepositoryInterface $dtr,
                                  DtrSummaryExport $dtr_summary_export,
                                  TeamScheduleExport $team_schedule_export,
                                  UserRepositoryInterface $user){
@@ -58,7 +60,7 @@ class ReportController extends Controller
         $this->user = $user;
     }
 
-    
+
 
     /**
      * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
@@ -80,14 +82,14 @@ class ReportController extends Controller
                 'start_date' => 'date_format:Y-m-d',
                 'end_date' => 'date_format:Y-m-d',
             ]);
-            
+
             $user_collection->push(  get_authenticated_user( $user_id )  );
 
             $result = $this->report->get_dtr_summary( $user_collection, $start_date, $end_date);
 
             return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
-                $result[ $user_id ]  
+                trans('messages.'.__FUNCTION__.'_success'),
+                $result[ $user_id ]
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -108,7 +110,7 @@ class ReportController extends Controller
                 'start_date' => 'date_format:Y-m-d',
                 'end_date' => 'date_format:Y-m-d',
             ]);
-            
+
             $user_collection->push(  get_authenticated_user( $user_id )  );
 
             # Limit the date that will be fetched by yesterday
@@ -123,8 +125,8 @@ class ReportController extends Controller
             $result["column_names"] = get_constant('DTR_SUMMARY_COLUMN');
 
             return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
-                $result 
+                trans('messages.'.__FUNCTION__.'_success'),
+                $result
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -138,10 +140,10 @@ class ReportController extends Controller
      */
     public function summary_list( $request ) {
 
-        $user_collection = $this->user->get_users_under_supervisee( $request ,  $request->valid_from, $request->valid_to);
+        $user_collection = $this->user->get_users_under_supervisee_with_inactive( $request ,  $request->valid_from, $request->valid_to);
         
         $result = $this->report->get_dtr_summary( $user_collection,  $request->valid_from, $request->valid_to);
-        
+
         return $result;
     }
 
@@ -150,17 +152,30 @@ class ReportController extends Controller
      * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function team_dtr_summary(  Request $request  ){
+    public function team_dtr_summary(Request $request)
+    {
         try {
-            
-            $result = $this->summary_list($request);
+
+            //$result = $this->summary_list($request);
+            $user_collection_paginated = [];
+            $user_collection = $this->user->get_users_under_supervisee( $request ,  $request->valid_from, $request->valid_to );
+            $current_page = $user_collection->currentPage();
+            $last_page = $user_collection->lastPage();
+            foreach($user_collection as $user) {
+                array_push($user_collection_paginated, $user);
+            }
+
+            $result = $this->report->get_dtr_summary( new Collection($user_collection_paginated),  $request->valid_from, $request->valid_to);
+            $result['current_page'] = $current_page;
+            $result['last_page'] = $last_page;
+            $result['has_next_page'] = $current_page < $last_page;
 
             return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
-                $result  
+                trans('messages.' . __FUNCTION__ . '_success'),
+                $result
             );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
         }
     }
 
@@ -169,17 +184,54 @@ class ReportController extends Controller
      * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function export_team_dtr_summary( Request $request ){
+    public function export_team_dtr_summary(Request $request)
+    {
 
-        $result = $this->summary_list($request);
-
-        $this->dtr_summary_export->data = $result ;
-        return Excel::download( $this->dtr_summary_export , 'dtrsummary.csv');
-    
+        //$result = $this->summary_list($request);
+        $user_collection_paginated = [];
+        $user_collection = $this->user->get_users_under_supervisee( $request ,  $request->valid_from, $request->valid_to );
+        $current_page = $user_collection->currentPage();
+        $last_page = $user_collection->lastPage();
+        foreach($user_collection as $user) {
+            array_push($user_collection_paginated, $user);
+        }
+        $for_export = $this->report->get_dtr_summary( new Collection($user_collection_paginated),  $request->valid_from, $request->valid_to);
+        $content_array = $for_export['summary'];
+        if ($current_page == 1) { //create empty file
+            Storage::disk('local')->put('app/export/dtrsummary.temp', json_encode($content_array));
+        } else {//append to file
+            $contents = Storage::disk('local')->get('app/export/dtrsummary.temp');
+            $content_array = json_decode($contents);
+            foreach($for_export['summary'] as $sum) {
+                array_push($content_array, $sum);
+            }
+            Storage::disk('local')->put('app/export/dtrsummary.temp', json_encode($content_array));
+        }
+        $result['current_page'] = $current_page;
+        $result['last_page'] = $last_page;
+        $result['has_next_page'] = $current_page < $last_page;
+        $result['content_array'] = $content_array;
+        if ($current_page < $last_page) {
+            return success_response(
+                trans('messages.' . __FUNCTION__ . '_success'),
+                $result
+            );
+        } else {
+            //$this->dtr_summary_export->data = $for_export;
+            $contents = Storage::disk('local')->get('app/export/dtrsummary.temp');
+            $content_array = json_decode($contents, true);
+            $result = array(
+                'summary' => $content_array,
+                'column' =>  $for_export['column']
+            );
+            $this->dtr_summary_export->data = $result;
+            Storage::disk('local')->delete('app/export/dtrsummary.temp');
+            return Excel::download($this->dtr_summary_export, 'dtrsummary.csv');
+        }
     }
 
 
-    
+
 
     /**
      * Returns the raw DTR Logs of the User
@@ -188,9 +240,9 @@ class ReportController extends Controller
     public function logs_list($request) {
 
         $user_collection = $this->user->get_users_under_supervisee( $request , $request->valid_from, $request->valid_to);
-     
+
         $result = $this->dtr->get_dtr_logs( $user_collection, $request->valid_from, $request->valid_to);
-        
+
         return $result;
     }
 
@@ -201,9 +253,9 @@ class ReportController extends Controller
      */
     public function team_dtr_logs(  Request $request  ){
         try {
-            
+
             return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
+                trans('messages.'.__FUNCTION__.'_success'),
                 new DtrLogResourceCollection( $this->logs_list($request) )
             );
         } catch(Exception $e){
@@ -221,7 +273,7 @@ class ReportController extends Controller
 
         $this->export->data = $result ;
          return Excel::download( $this->export , 'dtrsummary.csv');
-       
+
     }
 
 
@@ -273,10 +325,10 @@ class ReportController extends Controller
                 $this->team_schedule_export->data = $result;
                 return Excel::download($this->team_schedule_export , 'dtrsummary.csv');
             }else{
-                if(request()->get('scope_type')=="day"){ 
+                if(request()->get('scope_type')=="day"){
                     $result = $this->dtr->get_dtr_logs( $user_list->get(), $time_from,  $time_to);
                     return success_response(
-                        trans('messages.'.__FUNCTION__.'_success'), 
+                        trans('messages.'.__FUNCTION__.'_success'),
                         new DailyScheduleReources($result, $date = new Carbon($time_from))
                     );
                 }else{
@@ -298,9 +350,9 @@ class ReportController extends Controller
                         "termination_date_list" => $user_list->where('termination_date', "!=", null )->sortBy('termination_date')->pluck("termination_date")
                     );
 
-                    $holiday_list = Holiday::whereRaw("(is_predefined = 1 AND (DAYOFYEAR(date) >= DAYOFYEAR('".$time_from."')) AND (DAYOFYEAR(date) <= DAYOFYEAR('".$time_to."') ) ) 
+                    $holiday_list = Holiday::whereRaw("(is_predefined = 1 AND (DAYOFYEAR(date) >= DAYOFYEAR('".$time_from."')) AND (DAYOFYEAR(date) <= DAYOFYEAR('".$time_to."') ) )
                     OR (is_predefined = 0 AND date >= '".$time_from ."' AND date <= '". $time_to ."' ) ")->orderByRaw('Month(date),Day(date)')->get();
-                    
+
                     if(!request()->get('show_more')){
                         $user_collection = $user_list->take($no_user_limit);
                     }else{
@@ -311,27 +363,27 @@ class ReportController extends Controller
                         $result = $this->dtr->get_dtr_logs( $user_collection , $time_from,  $time_to);
                         // return $result;
                         return success_response(
-                            trans('messages.'.__FUNCTION__.'_success'), 
+                            trans('messages.'.__FUNCTION__.'_success'),
                             new WeeklyScheduleResources($result,$show_more, $holiday_list, $user_collection)
-                        ); 
+                        );
                     }else{
                         $result = $this->dtr->get_dtr_logs( $user_collection , $time_from,  $time_to);
                         // return $result;
                         return success_response(
-                            trans('messages.'.__FUNCTION__.'_success'), 
+                            trans('messages.'.__FUNCTION__.'_success'),
                             new TeamScheduleResources($result,$show_more, $holiday_list,$user_collection)
                         );
                     }
                 }
-    
+
             }
 
-  
+
         // } catch(Exception $e){
         //     return error_response( trans('messages.error_default'), $e );
         // }
     }
-    
+
 
 
 
@@ -345,7 +397,7 @@ class ReportController extends Controller
 
             return success_response(
                 trans('messages.get_holidays_success'),
-                new HolidayResource( $this->holiday->get_holidays( $date_from, $date_to ) ) 
+                new HolidayResource( $this->holiday->get_holidays( $date_from, $date_to ) )
             );
 
         } catch(Exception $e){
@@ -356,11 +408,11 @@ class ReportController extends Controller
 
 
     /**
-     * Function for Getting Team Birthday, Anniversary and Regularization 
+     * Function for Getting Team Birthday, Anniversary and Regularization
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function my_dtr_notifications(){   
+    public function my_dtr_notifications(){
         try {
             log_activity( trans('messages.get_my_dtr_notifications_attempt') );
 
@@ -369,11 +421,11 @@ class ReportController extends Controller
             // Start date as the start of the payroll cutoff
             $start_date = $payroll_cutoff->start_date;
 
-            // End date as the date yesterday. 
+            // End date as the date yesterday.
             $end_date = Carbon::yesterday()->format('Y-m-d');
 
             return success_response(
-                trans('messages.get_my_dtr_notifications_success'), 
+                trans('messages.get_my_dtr_notifications_success'),
                 new MyDtrNotificationsResource( $this->report->get_my_dtr_notifications( $start_date, $end_date) )
             );
         } catch(Exception $e){
@@ -384,16 +436,16 @@ class ReportController extends Controller
 
 
     /**
-     * Function for Getting Team Birthday, Anniversary and Regularization 
+     * Function for Getting Team Birthday, Anniversary and Regularization
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function team_birthday_anniversary( ){   
+    public function team_birthday_anniversary( ){
         try {
             log_activity( trans('messages.get_anniversary_birthday_attempt') );
 
             return success_response(
-                trans('messages.get_anniversary_birthday_success'), 
+                trans('messages.get_anniversary_birthday_success'),
                 new AnniversaryResources( $this->report->get_team_birthday_anniversary() )
             );
         } catch(Exception $e){
@@ -408,17 +460,17 @@ class ReportController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function team_attendance( ){   
+    public function team_attendance( ){
         try {
             log_activity( trans('messages.get_team_attendance_attempt') );
 
             $time_today = Carbon::now();
 
             return success_response(
-                trans('messages.get_team_attendance_success'), 
+                trans('messages.get_team_attendance_success'),
                  new TeamAttendanceResources( $this->report->get_team_attendance( $time_today ) )
             );
-            
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -430,7 +482,7 @@ class ReportController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function team_attendance_summary( Request $request, $start_date, $end_date ){   
+    public function team_attendance_summary( Request $request, $start_date, $end_date ){
         try {
             log_activity( trans('messages.get_attendance_summary_attempt') );
 
@@ -447,29 +499,29 @@ class ReportController extends Controller
             return success_response(
                 trans('messages.get_attendance_summary_success'),  $this->report->get_team_attendance_summary( $user_collection,  $start_date, $end_date )
             );
-            
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
     }
 
 
-    public function export(Request $request, $start_date, $end_date) 
-    {   
+    public function export(Request $request, $start_date, $end_date)
+    {
         $user_collection = $this->user->get_users_under_supervisee( $request , $start_date, $end_date );
         $data =  $this->report->get_team_attendance_summary( $user_collection,  $start_date, $end_date );
         $array = (array) $data['dtr_collection'];
         $list = $this->getDetailsOfSummary($array['team_attendance_summary']);
-        ob_end_clean(); 
-        ob_start(); 
+        ob_end_clean();
+        ob_start();
 
         return Excel::download(new TeamSummaryAttendanceExport($data,$list), 'users.xlsx');
 
     }
 
 
-    public function getDetailsOfSummary($data){    
-        
+    public function getDetailsOfSummary($data){
+
         $team_attendance_summary = [];
 
         foreach ( $data as $dtr) {
@@ -478,18 +530,18 @@ class ReportController extends Controller
             $has_holiday = false;
             $has_leave = false;
             $has_rest_day_work = false;
-            
+
             // If DTR has holidays, tick the has_holiday flag
             if( $dtr->holidays()->get()->count() > 0 ){
                 $status = 'Holiday';
-                $has_holiday = true;    
+                $has_holiday = true;
             }
-            
+
             $leave = $dtr->leaves()->first();
-            
+
             // If DTR has valid leave, tick the has_leave flag
             if( is_valid( $leave ) && $leave->isApproved() && $leave->amount > 0){
-                $status = $dtr->leaves()->get()->first()->type; 
+                $status = $dtr->leaves()->get()->first()->type;
                 $has_leave = true;
             }
 
@@ -513,14 +565,14 @@ class ReportController extends Controller
                     }else {
                         $status = 'Absent';
 
-                        // if inside sched = absent 
+                        // if inside sched = absent
                         if($dtr->checkCurrentTime()){
                             $status = 'Absent';
                         }else {
                             $status = 'Not yet started';
                         }
                     }
-                
+
                 // If the DTR is Rest Day, set status as Rest Day
                 }elseif($dtr->isRestDay()){
                     $status = 'Rest Day';
@@ -529,9 +581,9 @@ class ReportController extends Controller
                 }else{
                     $status = 'No Schedule';
                 }
-            
+
             }
-            
+
             // Fetch User of the DTR
              $user = $dtr->user()->first();
 

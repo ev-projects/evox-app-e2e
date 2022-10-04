@@ -17,19 +17,39 @@ class DtrSummary extends Component {
 
   constructor(props){
     super(props);
-    
+    //Added status filter for employment status
     this.state = {
       initialState : {
         valid_from: ( this.props.settings?.current_payroll_cutoff?.start_date ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
         valid_to:   ( this.props.settings?.current_payroll_cutoff?.end_date ? new Date( this.props.settings.current_payroll_cutoff.end_date) : null),
         department_id: null,
         name: null,
-        export: false,
+        is_active: 1,
+        export: false
       }
     }; 
   }
+  componentDidMount() {
+    //console.log(this.props.user);
+    if ((this.props.user) && (this.props.user.departments_handled.length > 0)) {
+      //console.log(this.state.initialState);
+      if (!this.state.initialState.department_id) {
+        this.setState({ initialState: {
+          ...this.state.initialState,
+          department_id: this.props.user.departments_handled[0].id
+        }}, () => {
+          //console.log(this.state.initialState);
+          if (this.state.initialState.valid_from && this.state.initialState.valid_to)
+          this.onSubmitHandler(this.state.initialState);
+        });
+      }
+    }
+  }
 	onSubmitHandler = (values) => {
     var formData = {};
+    formData['page'] = (this.props.dtrSummary?.pagination?.current_page ? this.props.dtrSummary?.pagination?.current_page : 1);
+    if (this.props.dtrSummary?.pagination?.has_next_page == true)
+    formData['page'] = formData['page'] + 1;
 
     for (var key in values) {
       if( values[key] != null && values[key] != ""  ) {
@@ -48,10 +68,14 @@ class DtrSummary extends Component {
     }
     
     if(values.export == "department"){
+      formData['export'] = 'department';
       this.props.exportDtrSummary( formData );
     }else if(values.export == "all"){
 
       var formData = {};
+      formData['page'] = (this.props.dtrSummary?.pagination?.current_page ? this.props.dtrSummary?.pagination?.current_page : 1);
+      if (this.props.dtrSummary?.pagination?.has_next_page == true)
+      formData['page'] = formData['page'] + 1;
       
       for (var key in values) {
         if( values[key] != null && values[key] != ""  ) {
@@ -60,7 +84,7 @@ class DtrSummary extends Component {
             case "valid_to":
             formData[key] = moment( values[key] ).format("YYYY-MM-DD")
           break;
-            case "export":
+            //case "export":
             case "department_id":
             case "name":
           break;
@@ -70,7 +94,6 @@ class DtrSummary extends Component {
           }
         } 
       }
-    
       
       this.props.exportDtrSummary( formData );
     }
@@ -146,10 +169,21 @@ class DtrSummary extends Component {
                       </div>
                     
                     </Col> 
+                    <Col>
+                    <select
+                    className="form-control"
+                      name="is_active"
+                      value={values.is_active}
+                      onChange={handleChange}
+                    >
+                      <option value="1" label="Active" />
+                      <option value="0" label="Inactive" />
+                    </select>
+              </Col>
                     <Col className="btns filter-button">   
                       <div className="form-group">
                       <label> </label>
-                        <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
+                        <Button id="btn-generate" variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
                         
                         { Authenticator.check('supervisor', 'allow_dtr_summary_export') &&
                           <Dropdown className="export-drop-down">
@@ -158,8 +192,8 @@ class DtrSummary extends Component {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
-                              <Dropdown.Item  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
+                              <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
+                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
                         }
@@ -190,9 +224,9 @@ class DtrSummary extends Component {
       </tr>
     </thead>
     <tbody>
-    {this.props.dtrSummary.instance.summary.map((list, index) => {
+    {this.props.dtrSummary.dtrItems.map((list, index) => {
         var holiday = [];
-        console.log(this.props.dtrSummary.instance.column);
+        //console.log(this.props.dtrSummary.instance.column);
 
       for (var key in this.props.dtrSummary.instance.column) {
 

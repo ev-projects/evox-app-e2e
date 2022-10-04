@@ -2,15 +2,17 @@
 
 namespace App\Modules\User\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\Controller;
-use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
-use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
-use App\Modules\Payroll\Resources\PayrollCutoffResource;
-use App\Modules\User\Resources\UserProfileResource;
 use Exception;
+
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use App\Modules\User\Resources\UserProfileResource;
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\Payroll\Resources\PayrollCutoffResource;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 
 class AuthController extends Controller
 {
@@ -55,7 +57,10 @@ class AuthController extends Controller
 
             // Attempt to check if the User is active. If not active, return User not active.
             if ( ! auth()->user()->is_active ) {
-                return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
+                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                    return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+               
             }
 
             log_activity( trans('messages.login') );

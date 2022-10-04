@@ -14,14 +14,20 @@ export const fetchDtrSummary = ( data = null ) => {
             params : data
         })
         .then(result => {
-        
             dispatch({
                 'type'      : 'FETCH_DTR_SUMMARY_SUCCESS', 
-                'dtrSummary'  : result.data.content
+                'dtrSummary'  : result.data.content,
             })
+            if (result.data.content.has_next_page) {
+                var btnGenerate = document.getElementById('btn-generate');
+                btnGenerate.click();
+            }
         })
         .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
+            dispatch( {
+                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
+                'e'  : e,
+            } ) 
         });
     }
 }
@@ -31,22 +37,37 @@ export const fetchDtrSummary = ( data = null ) => {
 
 
 export const exportDtrSummary = ( data = null ) => {
+    console.log('Params', data)
     return (dispatch, getState) => {
-        API.export({
+        API.call({
             method: "get",
             url: "/report/dtr_summary/export",
             params : data
         })
         .then(result => {
-            var fileURL = window.URL.createObjectURL(new Blob([result.data]));
-            var fileLink = document.createElement('a');
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'dtr_summary.csv');
-            document.body.appendChild(fileLink);
-            fileLink.click();
+            console.log(result.data.content)
+            if (result.data.content) {
+                dispatch({
+                    'type'      : 'FETCH_DTR_EXPORT_BACTH_SUCCESS', 
+                    'dtrSummary'  : result.data.content,
+                })
+                //generate next page and append to the previous result
+                if (result.data.content.has_next_page) {
+                    var btnExport = document.getElementById('btn-export-' + (data?.export ? data.export : (data?.department_id ? 'department' : 'all')));
+                    btnExport.click();
+                }
+            } else {
+                dispatch({
+                    'type'      : 'FETCH_DTR_EXPORT_SUCCESS',
+                    'data'      : result.data
+                })
+            }
         })
         .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
+            dispatch( {
+                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
+                'e'  : e,
+            } )
         });
     }
 }

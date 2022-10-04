@@ -2,16 +2,17 @@
 
 namespace App\Modules\Schedule\Repositories;
 
-use App\Modules\Department\Models\Department;
+use Exception;
+use Carbon\Carbon;
+use App\Modules\User\Models\User;
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
 use App\Modules\Schedule\Models\Schedule;
+use App\Modules\Department\Models\Department;
 use App\Modules\Schedule\Models\ScheduleDetail;
 use App\Modules\Schedule\Models\SchedulePolicy;
-
-use App\Modules\User\Models\User;
-use Exception;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ScheduleRepository implements ScheduleRepositoryInterface{
     
@@ -502,12 +503,15 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             if( is_valid( $schedule ) ) {
                 
+
                 // Replicate the Schedule parameter into a new Schedule and change the bindings and names specifically for the user.
                 $new_schedule = $schedule->replicate();
                 $new_schedule->bind_to =  'user';
                 $new_schedule->bind_id =  $user->id;
                 $new_schedule->name =  generate_schedule_name( $new_schedule->toArray() );
                 $new_schedule->save();
+
+
 
                 // Iterate the Schedule Details into a new Schedule details and change the schedule ID with the newly generated Schedule
                 foreach( $schedule->schedule_details()->get() as $schedule_detail ){
@@ -522,6 +526,51 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
                     $new_schedule_policy->schedule_id = $new_schedule->id;
                     $new_schedule_policy->save();
                 }
+            }
+            // Create Default Schedule for user if the department does not have a set schedule for user to be based on
+            else{
+                $source_type =  get_constant('DTR_SOURCE_TYPE_TAGGING')['default'];
+
+                $new_schedule = new Schedule();
+                $new_schedule->bind_to =  'user';
+                $new_schedule->bind_id =  $user->id;
+                $new_schedule->name =  '['.strtoupper( $source_type) . '] - '. $user->getFullName() . ' ('. $user->id .')';
+                $new_schedule->schedule_type = get_constant('DEFAULT_SCHEDULE')['schedule_type']; 
+                $new_schedule->rest_days = array_values(array_diff( get_constant('DAYS'), get_constant('DEFAULT_SCHEDULE')['work_days'] ));
+                $new_schedule->updated_by = get_constant('DEFAULT_SCHEDULE')['updated_by']; 
+                $new_schedule->created_by = get_constant('DEFAULT_SCHEDULE')['created_by']; 
+                $new_schedule->valid_from = Carbon::now()->toDateString(); 
+                $new_schedule->save();
+                
+                SchedulePolicy::insert([
+                    [
+                        'schedule_id'           => $new_schedule->id, 
+                        'policy'                => 'allow_late',
+                        'value'                 => 1
+                    ],
+                    [
+                        'schedule_id'           => $new_schedule->id, 
+                        'policy'                => 'allow_night_diff',
+                        'value'                 => 0
+                    ],
+                    [
+                        'schedule_id'           => $new_schedule->id, 
+                        'policy'                => 'allow_undertime',
+                        'value'                 => 1
+                    ],
+                ]);
+                
+                ScheduleDetail::insert([
+                        [
+                        'schedule_id'           => $new_schedule->id, 
+                        'day'                   => get_constant('DEFAULT_SCHEDULE_DETAILS')['day'],
+                        'start_time'            => get_constant('DEFAULT_SCHEDULE_DETAILS')['start_time'],
+                        'end_time'              => get_constant('DEFAULT_SCHEDULE_DETAILS')['end_time'],
+                        'break_time'            => get_constant('DEFAULT_SCHEDULE_DETAILS')['break_time'],
+                        ]
+                    ],
+                );
+
             }
             
             DB::commit();

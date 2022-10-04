@@ -1,4 +1,6 @@
 body{font-size: 11px}
+.center{text-align: center;}
+
 .card {background: transparent !important; }
 .card-title{
 	background-color: #3a3a3a;
@@ -11,7 +13,9 @@ body{font-size: 11px}
 .card-text{
 	padding: 10px 40px 30px 40px
     }
-
+.login-wrapper .card-text{
+	padding: 0px 40px 0px 40px
+    }
 .card-body{
     box-shadow: 0 1px 1px 1px rgba(9,9,9,0.25) !important;
     border-bottom: 0px solid #82af13 !important;
@@ -23,14 +27,17 @@ body{font-size: 11px}
 	border-color: #82af13 !important;
     background-color: #82af13 !important;
 }
-.login-wrapper .btn-wrapper {text-align: left;
-}
+.login-wrapper .card{margin:8px 0;}
+.login-wrapper .btn-wrapper {text-align: center;}
 .login-wrapper .btn-primary {
     max-width: 150px;
     margin: 0 auto;
     padding: 8px 0 !important;
     min-width: 100px;
 }
+.login-wrapper  .banner{background: #f4f4f4; padding:10px 0; text-align: center; margin-top: 20px; display: none}
+.login-wrapper .banner p{margin-bottom: 5px}
+.login-wrapper  .banner .btn-primary{padding: 8px !important; border-radius: 4px}
  
 button:focus {
  	outline: #82af13 !important;
@@ -84,11 +91,12 @@ input:focus
 }
 
 .powered_by{
-	font-size: 11px;
-	margin-top: 5px; 
+	font-size: 9px;
+	margin-top: 0px; 
 	margin-right: 2.5px; 
 	float: right;
 }
+.powered_by img{height: 15px; width: auto}
 
 .min-vh-80{
 	min-height: 80vh!important;

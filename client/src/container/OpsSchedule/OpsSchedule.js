@@ -18,7 +18,7 @@ class OpsSchedule extends Component {
 				<div className="col-11 card-body">
 					<div className="h3">IT Department</div>
 						<p>For IT concerns please send an email or chat us via google chat at helpdesk@eastvantage.com</p>
-						<img src="https://eastvantage.com/evox/ITSched.jpg" width="100%" />
+						<img src="/images/ITSched.jpg" width="100%" />
 					
 					
 				</div>
@@ -41,20 +41,26 @@ class OpsSchedule extends Component {
 						</thead>
 						<tbody>
 							<tr>
-								<td rowspan="4">HR</td>
+								<td rowspan="5">HR</td>
+								<td>Hardy<br/><small>HR Head</small></td>
+								<td><small>M-F <br/>9am-6pm</small></td>
+								<td rowspan="5">happiness@eastvantage.com</td>
+							</tr>
+							<tr>
+
 								<td>Denver<br/><small>HR Manager</small></td>
 								<td><small>M-F <br/>9am-6pm</small></td>
-								<td rowspan="4">happiness@eastvantage.com</td>
+
 							</tr>
 							<tr>
 								
-								<td>Rejean<br/><small>HR Generalist</small></td>
+								<td>Jen<br/><small>HR Generalist</small></td>
 								<td><small>M-F <br/>9am-6pm</small></td>
 								
 							</tr>
 							<tr>
 								
-								<td>Zea<br/><small>HR Admin</small></td>
+								<td>Justin<br/><small>HR Admin</small></td>
 								<td><small>M-F <br/>9am-6pm</small></td>
 								
 							</tr>
@@ -66,7 +72,7 @@ class OpsSchedule extends Component {
 							</tr>
 							<tr>
 								<td rowspan="2">Recruitment</td>
-								<td>Rain<br/><small>Recruitment Manager</small></td>
+								<td>Anna<br/><small>Recruitment Head</small></td>
 								<td><small>M-F <br/>9am-6pm</small></td>
 								<td rowspan="2">recruit@eastvantage.com</td>
 							</tr>
@@ -77,13 +83,13 @@ class OpsSchedule extends Component {
 							
 							<tr>
 								<td>Procurement</td>
-								<td>Pam<br/><small>Admin Specialist</small></td>
+								<td>Ivan<br/><small>Senior Procurement Officer</small></td>
 								<td><small>M-F <br/>9am-6pm</small></td>
 								<td>procurement@eastvantage.com</td>
 							</tr>
 							<tr>
 								<td rowspan="3">Facilities</td>
-								<td>Pam<br/><small>Admin Specialist</small></td>
+								<td>Ivan<br/><small>Senior Procurement Officer</small></td>
 								<td><small>M-F <br/>9am-6pm</small></td>
 								<td rowspan="3">facilities@eastvantage.com</td>
 							</tr>
