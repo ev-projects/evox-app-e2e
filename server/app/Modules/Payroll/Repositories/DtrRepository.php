@@ -1174,6 +1174,8 @@ class DtrRepository implements DtrRepositoryInterface{
     {
         DB::beginTransaction();
         try {
+
+    
             # Sets the Result as null by default.
             $result = null;
 
@@ -1200,9 +1202,9 @@ class DtrRepository implements DtrRepositoryInterface{
                 DB::commit();
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
-                $days = 7;
-                $dates = get_succeeding_days_basic(  $biometrics->CheckTime , $days ) ;
-                error_log(implode(', ', $dates));
+                $days = 11;
+                $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
+                $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
                 $user_collection = new Collection();
                 $user_collection->push((object)User::findOrFail(Auth::user()->id));
                 $result = $this->generate_dtr( $user_collection, $dates );
