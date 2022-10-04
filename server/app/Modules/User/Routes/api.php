@@ -54,6 +54,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
 
     # Get the Role of the user
     Route::get('get_dpa_list', 'UserController@get_dpa_list');
+
+    Route::get('export_dpa_list', 'UserController@export_dpa_list');
 });
 #####################################################################################################
 

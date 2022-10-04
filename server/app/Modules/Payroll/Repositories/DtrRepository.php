@@ -253,6 +253,21 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
+    
+    /**
+     *  Responsible for Generating DTR for a new hired user
+     */
+    public function generate_dtr_on_new_hire($user )
+    {
+        $days = 10;
+        $dates = get_succeeding_days( $user->date_hired, $days ) ;
+        
+        $user_collection = new Collection();
+        $user_collection->push((object)User::findOrFail($user->id));
+        $this->generate_dtr( $user_collection, $dates );
+
+        
+    }
 
     /**
      *  Responsible for Applying the newly fetched Drupal DTR to the new DTR
@@ -1187,10 +1202,83 @@ class DtrRepository implements DtrRepositoryInterface{
             } else {
                 $days = 7;
                 $dates = get_succeeding_days(  $biometrics->CheckTime , $days ) ;
+        
                 $emp_nump = Auth::user()->id;
-                $result = $this->generate_dtr2( $date , $emp_nump );
+                
+                $columns_to_selected = [];
+        
+                if( $biometrics->CheckType == 'I' ){
+                    $columns_to_selected[] = "table1.time_in";
+                    $time_sql = " as time_in";
+                    $table = "time_in";
+                }elseif( $biometrics->CheckType == 'O' ){
+                    $time_sql = " as time_out";
+                    $columns_to_selected[] = "table1.time_out";
+                    $table = "time_out";
+                }
+                
+                # THIS SQL CREATES RECORD OF 7 DAYS RECORDS OF DTR
+                $records_to_be_insert =  "SELECT ".$emp_nump." as user_id,".strtotime($biometrics->CheckType) ." ".$time_sql."," . implode(" as date UNION ALL SELECT  ".$emp_nump." as user_id, null ".$time_sql.",", $dates);
+                
+                
+                # THIS SQL CREATES A RELATION
+                $record_that_dont_exist = " FROM (" .$records_to_be_insert ." ) as table1 
+                LEFT JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id 
+                LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id 
+                    AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
+                LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id 
+                LEFT JOIN schedule_details as sched_details ON sched_details.schedule_id = sched.id 
+                    AND ( sched_details.day = LOWER(SUBSTRING(DAYNAME(table1.date),1, 3)) or sched_details.day='all')
+                LEFT JOIN users on table1.user_id = users.id
+                WHERE dtr.date is NULL AND dtr.user_id is NULL AND table1.date >= users.date_hired AND is_active = 1
+                AND ( change_sched.status = 'approved' OR change_sched.status is null )
+                GROUP BY table1.date";
 
-                log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
+                $delete_sched_pol = "DELETE dtr_policies from dtr_policies JOIN dtrs ON dtrs.id = dtr_policies.dtr_id WHERE dtrs.date in ( ". implode(" ,", $dates) ." ) AND dtrs.user_id = ".  $emp_nump .";";
+
+                $insert_sched_policy =  "INSERT INTO dtr_policies (dtr_id, policy, value) SELECT dtr.id,sched_pol.policy, sched_pol.value  FROM (" .$records_to_be_insert ." ) as table1              
+                JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id 
+                LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id 
+                    AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
+                LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id 
+                LEFT JOIN users on table1.user_id = users.id
+                LEFT JOIN schedule_policies as sched_pol ON sched_pol.schedule_id = sched.id 
+                WHERE table1.date >= users.date_hired AND is_active = 1
+                AND ( change_sched.status = 'approved' OR change_sched.status is null )
+                GROUP BY table1.date,sched_pol.policy";
+
+                $columns_to_selected[] = "table1.user_id";
+                
+                $columns_to_selected[] = "table1.date";
+                
+                $columns_to_selected[] = "sched_details.break_time as break_time";
+
+                $start_time = "sched_details.start_time";
+                $columns_to_selected[] = check_column_exist( $start_time , "unix_timestamp( table1.date ) + ". $start_time ) . " as start_datetime";
+        
+                $end_time = "sched_details.end_time";
+                $columns_to_selected[] = check_column_exist( $end_time ,check_column_end_datetime( "unix_timestamp( table1.date ) + ". $start_time , "unix_timestamp( table1.date ) + " . $end_time) ) ." as end_datetime";
+        
+                $start_flexy_time = "sched_details.start_flexy_time";
+                $columns_to_selected[] = check_column_exist( $start_flexy_time ,check_column_start_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $end_time , "unix_timestamp( table1.date ) + " . $start_flexy_time) ) ." as start_flexy_datetime";
+                
+        
+                $end_flexy_time = "sched_details.end_flexy_time";
+                $columns_to_selected[] = check_column_exist( $end_flexy_time ,check_column_end_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $start_flexy_time , "unix_timestamp( table1.date ) + " . $end_time, "unix_timestamp( table1.date ) + " .$end_flexy_time) ) ." as start_flexy_datetime";
+                
+                $columns_to_selected[] = check_if_restday( "table1.date" , "sched.rest_days") . " as is_rest_day";
+                
+                $columns_to_selected[] = "NOW() as created_at";
+                $columns_to_selected[] = "NOW() as updated_at";
+                
+                $insert_sql_raw = "INSERT INTO dtrs (".$table.",  user_id , date, break_time, start_datetime, end_datetime, start_flexy_datetime, end_flexy_datetime, is_rest_day, created_at, updated_at) SELECT ". implode( "," ,$columns_to_selected ). $record_that_dont_exist . ";";
+                $sql_raw = $insert_sql_raw. $delete_sched_pol. $insert_sched_policy;
+
+                DB::unprepared($sql_raw);
+                
+                $result = null;
+
+                log_to_file( 'info', "DTR not Existing. 1 week generation is performed." , ['biometrics'=> $biometrics], "biometrics" );
             }
 
             DB::commit();

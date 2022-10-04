@@ -241,6 +241,7 @@ return [
         "change_schedule" => "change_schedule",
         "rest_day_work" => "rest_day_work",
     ],
+    
 
 
     'ATTENDANCE_STATUS' => [
@@ -256,10 +257,27 @@ return [
         "day"           => 86400,
     ],
 
+    "DEFAULT_SCHEDULE" => [
+        'schedule_type'         => "standard",
+        'work_days'             => ["mon","tue","wed","thu","fri"],
+        'updated_by'            => 2,
+        'created_by'            => 2,
+    ],
+
+    "DEFAULT_SCHEDULE_DETAILS" => [
+        'day' => 'all',
+        'start_time' => 32400,
+        'end_time' => 64800,
+        // 'start_flexy_time' => null,
+        // 'end_flexy_time' => null,
+        'break_time' => 3600,
+    ],
+
+
 
     'TEAM_SCHEDULE' => [
         "records_per_date"        => 5
-    ],
+],
 
 
 

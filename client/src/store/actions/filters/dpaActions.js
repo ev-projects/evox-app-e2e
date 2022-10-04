@@ -33,3 +33,24 @@ export const fetchDpaList = ( params = null ) => {
     }
 }
 
+export const exportDpaList = ( data = null ) => {
+    return (dispatch, getState) => {
+        API.export({
+            method: "get",
+            url: "/user/export_dpa_list",
+            params : data
+        })
+        .then(result => {
+            var fileURL = window.URL.createObjectURL(new Blob([result.data]));
+            var fileLink = document.createElement('a');
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'dpa_list.csv');
+            document.body.appendChild(fileLink);
+            fileLink.click();
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+

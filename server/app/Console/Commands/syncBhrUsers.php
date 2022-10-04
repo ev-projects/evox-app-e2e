@@ -2,16 +2,17 @@
 
 namespace App\Console\Commands;
 
+use Exception;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+use App\Modules\User\Models\User;
+use Illuminate\Http\JsonResponse;
+use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
-use App\Modules\User\Models\User;
-use App\Modules\User\Repositories\UserRepositoryInterface;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 
 class syncBhrUsers extends Command
 {
@@ -67,7 +68,7 @@ class syncBhrUsers extends Command
             $user_supervisor_pivot_array = [];
         
             // Use the date yesterday.
-            $since_date_to_sync = Carbon::today()->subDays(1)->format('Y-m-d') . 'T00:00:00-00:00';
+            $since_date_to_sync = Carbon::today()->subDays(14)->format('Y-m-d') . 'T00:00:00-00:00';
 
             # 1.
             # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
@@ -97,11 +98,12 @@ class syncBhrUsers extends Command
                     $bhr_user = $this->bhr->get_user( $bhr_user_number, true );
                     
                     # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
-                    if( is_valid( $user ) ){
+                    if( is_valid( $user ) && is_valid( $bhr_user ) ){
                         $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
                         
                     # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
-                    } else {
+		    } else {
+                if ( is_valid( $bhr_user ) ){
                         $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
 
                         if( is_valid( $user ) ) {
@@ -125,12 +127,13 @@ class syncBhrUsers extends Command
                                 $date_array = generate_date_array($user->date_hired, $nearest_saturday_date );
                                 $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                             }
-                        }
+			}
+			}
                     }
 
 
                     # 3.
-                    if( is_valid( $user ) ) {
+                    if( is_valid( $user ) && is_valid( $bhr_user ) ) {
                         $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
                     }
                      
@@ -142,6 +145,17 @@ class syncBhrUsers extends Command
 
             # 4
             $apply_user_supervisor_pivot_result = $this->user->apply_user_supervisor_pivot( $user_supervisor_pivot_array );
+
+            # 5.
+            if( is_valid( $user ) )
+            {
+                # get list of users who are admin
+                $admin_collection = Role::findByName( 'admin' )->users()->get();
+
+                foreach( $admin_collection as $admin ) {
+                    $admin->supervisee()->attach( $user );
+                }
+            }
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
