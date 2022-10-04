@@ -16,7 +16,7 @@ class DPAForm extends Component {
       super(props)
 
       this.state = {
-          url: 'https://www.eastvantage.com/webinar/2020_Data_Privacy_Orientation.mp4',
+          url: '/images/webinar/2020_Data_Privacy_Orientation.mp4',
           pip: false,
           playing: ( this.props.user?.dpa_ticked_at != null ? false : true ),
           controls: true,
