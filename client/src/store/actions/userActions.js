@@ -49,7 +49,7 @@ export const logIn = (credentials) => {
             
 
             // Dispatch Alert of Login Success
-            dispatch( Formatter.alert_success( result, 3000 )  );
+            //dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
             // Please take note that I used e.response here since I am not using the API.call function. That function already handles the 'e' to get it's response.
@@ -60,7 +60,6 @@ export const logIn = (credentials) => {
 }
 
 export const authenticateClient = (token) => {
-
     return (dispatch, getState) => {
 
         dispatch({'type': 'REQUEST_START'});
@@ -78,7 +77,6 @@ export const authenticateClient = (token) => {
 
             // Set the Returned token on localStorage
             localStorage.setItem("access_token", result.data.content.access_token);
-
             // Dispatch Login Success
             dispatch({
                 'type'      : 'LOGIN_SUCCESS', 
@@ -100,12 +98,12 @@ export const authenticateClient = (token) => {
             
 
             // Dispatch Alert of Login Success
-            dispatch( Formatter.alert_success( result, 3000 )  );
+            //dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
             // Please take note that I used e.response here since I am not using the API.call function. That function already handles the 'e' to get it's response.
             // I'm doing it manually for the manual AXIOS calls only.
-            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
+            //dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
         });
     }
 }
@@ -125,7 +123,7 @@ export const logOut = () => {
             dispatch({'type': 'LOGOUT_SUCCESS'})
 
             // Dispatch Alert of Login Success
-            dispatch( Formatter.alert_success( result, 3000 )  );
+            //dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
