@@ -1195,31 +1195,20 @@ class DtrRepository implements DtrRepositoryInterface{
 
             # If the fetched DTR exist, update the Specific Time Type with the Biometrics' Check Time.
             if( is_valid( $dtr ) ) {
-                if (!is_valid($dtr->start_datetime) && !is_valid($dtr->end_datetime) && !is_valid(Auth::user()->defaultSchedule())) {
-                    $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
-                    $dtr->update();
-                    $result = $dtr;
-
-                    DB::commit();
-                    log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
-                }
 
                 # Check if no schedule on specific DTR, if none then assign schedule from user's default schedule details
-                if (!is_valid($dtr->start_datetime) && !is_valid($dtr->end_datetime)) {
+                if (!is_valid($dtr->start_datetime) && !is_valid($dtr->end_datetime) && !is_valid(Auth::user()->defaultSchedule())) {
+                    $schedule = $dtr->getBestSchedule();
+                    $schedule_detail = $schedule->schedule_details[0];
 
-                    if (is_valid(Auth::user()->defaultSchedule())) {
-                        $schedule = $dtr->getBestSchedule();
-                        $schedule_detail = $schedule->schedule_details[0];
+                    # Get the Parsed Schedule Detail to Date
+                    $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
 
-                        # Get the Parsed Schedule Detail to Date
-                        $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
-
-                        $dtr->start_datetime        = $parsed_schedule_detail['start_datetime'];
-                        $dtr->end_datetime          = $parsed_schedule_detail['end_datetime'];
-                        $dtr->start_flexy_datetime  = $parsed_schedule_detail['start_flexy_datetime'];
-                        $dtr->end_flexy_datetime    = $parsed_schedule_detail['end_flexy_datetime'];
-                        $dtr->break_time            = $parsed_schedule_detail['break_time'];
-                    }
+                    $dtr->start_datetime        = $parsed_schedule_detail['start_datetime'];
+                    $dtr->end_datetime          = $parsed_schedule_detail['end_datetime'];
+                    $dtr->start_flexy_datetime  = $parsed_schedule_detail['start_flexy_datetime'];
+                    $dtr->end_flexy_datetime    = $parsed_schedule_detail['end_flexy_datetime'];
+                    $dtr->break_time            = $parsed_schedule_detail['break_time'];
                 }
 
                 $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
