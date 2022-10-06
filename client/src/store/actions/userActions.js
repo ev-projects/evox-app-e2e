@@ -49,12 +49,61 @@ export const logIn = (credentials) => {
             
 
             // Dispatch Alert of Login Success
-            dispatch( Formatter.alert_success( result, 3000 )  );
+            //dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
             // Please take note that I used e.response here since I am not using the API.call function. That function already handles the 'e' to get it's response.
             // I'm doing it manually for the manual AXIOS calls only.
             dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
+        });
+    }
+}
+
+export const authenticateClient = (token) => {
+    return (dispatch, getState) => {
+
+        dispatch({'type': 'REQUEST_START'});
+
+        trackPromise( axios({
+            method: "get",
+            url: process.env.REACT_APP_API_BASE_URL + "/auth/authenticate-client",
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization"   : "Bearer " + token,
+                'X-Authorization' : process.env.REACT_APP_API_KEY 
+            }
+        }) )
+        .then(result => {
+
+            // Set the Returned token on localStorage
+            localStorage.setItem("access_token", result.data.content.access_token);
+            // Dispatch Login Success
+            dispatch({
+                'type'      : 'LOGIN_SUCCESS', 
+                'payload'   : result.data.content.payload,
+                'user'      : result.data.content.user
+            })
+
+            // Render the Constant Variables on React
+            dispatch({
+                'type'      : 'RENDER_CONSTANT', 
+                'constant'   : result.data.content.constant
+            })
+
+            // Render the Settings that will be used on React
+            dispatch({
+                'type'      : 'RENDER_SETTINGS', 
+                'settings'   : result.data.content.settings
+            })
+            
+
+            // Dispatch Alert of Login Success
+            //dispatch( Formatter.alert_success( result, 3000 )  );
+        })
+        .catch(e => {
+            // Please take note that I used e.response here since I am not using the API.call function. That function already handles the 'e' to get it's response.
+            // I'm doing it manually for the manual AXIOS calls only.
+            //dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
         });
     }
 }
@@ -74,7 +123,7 @@ export const logOut = () => {
             dispatch({'type': 'LOGOUT_SUCCESS'})
 
             // Dispatch Alert of Login Success
-            dispatch( Formatter.alert_success( result, 3000 )  );
+            //dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

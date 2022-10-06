@@ -7,6 +7,8 @@
 
     // Outside Links
     login                           :  "/login",
+    authenticate_client             :  "/authenticate-client",
+    email_not_found                 :  "/email-not-found",
     request_approval                :  "/request/approval/",
     recover_password                :  "/recover/password/",
 

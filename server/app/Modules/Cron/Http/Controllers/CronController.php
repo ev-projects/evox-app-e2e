@@ -197,13 +197,14 @@ class CronController extends Controller
                         }
 
                        
-                        $next_new_date = Carbon::now()->addDays(10);
-                        if( Carbon::parse( $user->date_hired )->lte( $next_new_date ) ){
-
+                        $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
+                        if( Carbon::parse( $user->date_hired )->lte( $nearest_saturday_date ) ){
+                            
                             # Generate DTR from the Date Hired up to the Saturday of this week.
-                            $date_array = generate_date_array($user->date_hired, $next_new_date );
+                            $date_array = generate_date_array($user->date_hired,  $nearest_saturday_date );
                             $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                         }
+                       
 
                         
                     }

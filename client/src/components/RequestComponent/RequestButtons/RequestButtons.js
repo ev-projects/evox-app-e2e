@@ -7,7 +7,7 @@ import BackButton from "../../Template/BackButton";
 const RequestButtons = (context) => {
   
   const { handleSubmit, setFieldValue } = useFormikContext();
-  
+    console.log(context.props.instance.status);
     return (
       
       <span>
@@ -30,7 +30,12 @@ const RequestButtons = (context) => {
                 
               </span>
           : 
-
+                  context.method == 'update' ?
+                  <span>
+                    <Button type="submit" className="btn btn-primary" onClick={(e)=> { setFieldValue('action',null); handleSubmit(e); }}><i className="fa fa-edit" /> Update and Reopen</Button>&nbsp;
+                    
+                  </span>
+              : 
           /** If Approval  */
           context.method == 'approval' ?
             /** ... and the Status is Approved, show the Decline button */
