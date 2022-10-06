@@ -1197,7 +1197,7 @@ class DtrRepository implements DtrRepositoryInterface{
             if( is_valid( $dtr ) ) {
 
                 # Check if no schedule on specific DTR, if none then assign schedule from user's default schedule details
-                if (!is_valid($dtr->start_datetime) && !is_valid($dtr->end_datetime)) {
+                if (!is_valid($dtr->start_datetime) && !is_valid($dtr->end_datetime) && !is_valid(Auth::user()->defaultSchedule())) {
                     $schedule = $dtr->getBestSchedule();
                     $schedule_detail = $schedule->schedule_details[0];
 
@@ -1209,13 +1209,6 @@ class DtrRepository implements DtrRepositoryInterface{
                     $dtr->start_flexy_datetime  = $parsed_schedule_detail['start_flexy_datetime'];
                     $dtr->end_flexy_datetime    = $parsed_schedule_detail['end_flexy_datetime'];
                     $dtr->break_time            = $parsed_schedule_detail['break_time'];
-                } else {
-                    $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
-                    $dtr->update();
-                    $result = $dtr;
-
-                    DB::commit();
-                    log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
                 }
 
                 $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
