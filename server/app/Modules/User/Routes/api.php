@@ -27,6 +27,9 @@ Route::group(['prefix' => 'auth'], function () {
     # Logout (Checks as well if there's a valid token before logging out.)
     Route::post('logout', 'AuthController@logout')->middleware('jwtauth', 'auth.apikey');
 
+    # API Call for Generating new Access Token from Google Login
+    Route::get('authenticate-client', 'AuthController@authenticateClient')->middleware('jwtauth', 'auth.apikey');
+
     # API Call for Refreshing of Token (Checks as well if there's a valid token before logging out.)
     // Route::post('refresh', 'AuthController@refresh')->middleware('jwtauth', 'auth.apikey');
 

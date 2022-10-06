@@ -1174,6 +1174,8 @@ class DtrRepository implements DtrRepositoryInterface{
     {
         DB::beginTransaction();
         try {
+
+    
             # Sets the Result as null by default.
             $result = null;
 
@@ -1193,6 +1195,22 @@ class DtrRepository implements DtrRepositoryInterface{
 
             # If the fetched DTR exist, update the Specific Time Type with the Biometrics' Check Time.
             if( is_valid( $dtr ) ) {
+
+                # Check if no schedule on specific DTR, if none then assign schedule from user's default schedule details
+                if (!is_valid($dtr->start_datetime) && !is_valid($dtr->end_datetime)) {
+                    $schedule = $dtr->getBestSchedule();
+                    $schedule_detail = $schedule->schedule_details[0];
+
+                    # Get the Parsed Schedule Detail to Date
+                    $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
+
+                    $dtr->start_datetime        = $parsed_schedule_detail['start_datetime'];
+                    $dtr->end_datetime          = $parsed_schedule_detail['end_datetime'];
+                    $dtr->start_flexy_datetime  = $parsed_schedule_detail['start_flexy_datetime'];
+                    $dtr->end_flexy_datetime    = $parsed_schedule_detail['end_flexy_datetime'];
+                    $dtr->break_time            = $parsed_schedule_detail['break_time'];
+                }
+
                 $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
                 $dtr->update();
                 $result = $dtr;
@@ -1200,6 +1218,17 @@ class DtrRepository implements DtrRepositoryInterface{
                 DB::commit();
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
+                $days = 11;
+                $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
+                $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
+                $user_collection = new Collection();
+                $user_collection->push((object)User::findOrFail(Auth::user()->id));
+                $result = $this->generate_dtr( $user_collection, $dates );
+                $result =$this->apply_biometrics_to_dtr($biometrics);
+
+                log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
+
+                /* Commented old implementation of generate dtr upon quickpunch
                 $days = 7;
                 $dates = get_succeeding_days(  $biometrics->CheckTime , $days ) ;
         
@@ -1279,6 +1308,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 $result = null;
 
                 log_to_file( 'info', "DTR not Existing. 1 week generation is performed." , ['biometrics'=> $biometrics], "biometrics" );
+                */
             }
 
             DB::commit();

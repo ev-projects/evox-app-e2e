@@ -30,12 +30,29 @@ class RecentDtr extends Component {
 
 	render = () => {  
 		const { recent_dtr } = this.props.dashboard;
+    
+    let showErr =  recent_dtr.length > 0  ? 
+                      recent_dtr[1]?.start_datetime === null &  recent_dtr[1]?.time_in !== null &  recent_dtr[1]?.is_rest_day  === 0? true : 
+                      recent_dtr[0].start_datetime === null &  recent_dtr[0].time_in !== null &  recent_dtr[0]?.is_rest_day  === 0 ? true : false : false;
     return(
       <div >
-  
+      
       <div >
         { recent_dtr.length > 0  ? 
-             <Table className="responsive hover dtr-table">
+        
+         <div>
+                                      { showErr   ?   
+                                                <>
+                                                  
+                                                            <div  class="fade alert-container alert alert-danger alert-dismissible show" >
+                                                              You <u>clocked in</u> on a day with no <b>default</b> schedule assigned to you, this could affect quickpunch/DTR with night shifts 
+                                                              or you would be recieving errors, missing overtimes and missing payout hours. Confirm with your supervisor about your schedule.
+                                                            </div>
+                                                </>                
+                                       :null
+                                      }
+            
+              <Table className="responsive hover dtr-table">
              <thead>
                  <tr>
                      <th className="dtr-date">Date</th>
@@ -72,6 +89,7 @@ class RecentDtr extends Component {
              })}
              </tbody>
          </Table>
+         </div>
               :
               <div className="no-previous-dtr">No Previous DTR</div>
               } 
