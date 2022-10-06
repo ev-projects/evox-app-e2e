@@ -19,7 +19,7 @@ import moment from 'moment';
 const EmployeeDashboard = ( props ) => {
 
   let state = {
-        url: 'https://www.eastvantage.com/newsletter/2020/october/EVSafe.mp4',
+        url: '/images/webinar/EVS_EV_Safe.mp4',
         pip: false,
         playing:  false,
         controls: true,
@@ -81,7 +81,7 @@ const EmployeeDashboard = ( props ) => {
                       
                        <Row>
                   <div className="col-lg-12">
-                  <a href="https://careers.eastvantage.com/tech4tech" target="_blank"><img width="100%" src="https://eastvantage.com/evox/icn/Tech4Tech_EVOX.jpg" /></a>
+                  <a href="https://careers.eastvantage.com/tech4tech" target="_blank"><img width="100%" src="/images/icn/Tech4Tech_EVOX.png" /></a>
                   <div className="card">
                     <div className="card-header">
                         <h3 align="center" className="card-title">JOB OPENINGS</h3>
@@ -90,7 +90,7 @@ const EmployeeDashboard = ( props ) => {
                     <div className="card-body evbuddy">
                     <br />
 
-                    <h4 align="center"><strong>Refer a friend and earn as much as 20K!</strong></h4>
+                    <h4 align="center"><strong>Refer a friend and earn as much as 30K!</strong></h4>
                     <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
                     <br />
                     <ul>
@@ -154,6 +154,11 @@ const EmployeeDashboard = ( props ) => {
                   <Row className="company-announcement">
                       <Content title="Company Announcements" col="12">
                         <Row>
+                          <p>
+                            <a href="https://www.glassdoor.com/mz-survey/employer/collectReview_input.htm?i=1084085&j=true&y=&c=PAGE_INFOSITE_TOP" target="_blank">
+                              <img width="100%" src="/images/icn/Glassdoorbanner-1.png" />
+                            </a>
+                          </p>
                           { <ReactPlayer 
                               width={width}
                               height={height}
@@ -171,6 +176,7 @@ const EmployeeDashboard = ( props ) => {
                             
                             <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Click the link below to fill out the form </p>
                             <a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a>
+	    		    <p><img width="100%" src="/images/icn/EVOX-Safety-Protocols.png" /></p>
                           </Row>
                             
                       </Content> 
