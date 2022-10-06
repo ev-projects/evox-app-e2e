@@ -1209,6 +1209,13 @@ class DtrRepository implements DtrRepositoryInterface{
                     $dtr->start_flexy_datetime  = $parsed_schedule_detail['start_flexy_datetime'];
                     $dtr->end_flexy_datetime    = $parsed_schedule_detail['end_flexy_datetime'];
                     $dtr->break_time            = $parsed_schedule_detail['break_time'];
+                } else {
+                    $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
+                    $dtr->update();
+                    $result = $dtr;
+
+                    DB::commit();
+                    log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
                 }
 
                 $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
