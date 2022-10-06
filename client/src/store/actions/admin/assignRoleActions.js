@@ -45,6 +45,30 @@ export const fetchUser = ( name_string ) => {
 
 
 export const assignRolesPermissions = ( user_id , post_data ) => {
+    // Add or Remove supervisor access
+    if (post_data.roles.includes('supervisor')) {
+        if (!post_data.permissions.includes('supervisor_access')) {
+            post_data.permissions.push('supervisor_access');
+        }
+    } else {
+        const index = post_data.permissions.indexOf('supervisor_access');
+        if (index > -1) {
+            post_data.permissions.splice(index, 1);
+        }
+    }
+
+    // Add or Remove admin access
+    if (post_data.roles.includes('admin')) {
+        if (!post_data.permissions.includes('full_access')) {
+            post_data.permissions.push('full_access');
+        }
+    } else {
+        const index = post_data.permissions.indexOf('full_access');
+        if (index > -1) {
+            post_data.permissions.splice(index, 1);
+        }
+    }
+
     return (dispatch, getState) => {
         API.call({
             method: "POST",
