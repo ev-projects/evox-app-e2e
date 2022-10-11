@@ -120,9 +120,12 @@ class API  {
         && Validator.isValid( e.response.data.error.content.code ) 
         && global.invalid_token_response.includes( e.response.data.error.content.code )){
       localStorage.removeItem("access_token");
-      alert( e.response.data.error.message )
+      // alert( e.response.data.error.message )
+      
       history.push(global.links.login)
       window.location.reload(true);
+     
+      return this.format(e.response);
 
     // If the Response is NOT FALSE, return the response.
     }  else {

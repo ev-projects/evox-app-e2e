@@ -30,6 +30,9 @@ return [
 
     'logout' => 'Logout',
     'logout_success' => 'Successfully Logout!',
+
+    'session_expire' => 'Session Expired',
+    'session_expire_message' => 'You have been logged out due to inactivity.',
     
     'payload' => 'Payload',
     'payload_success' => 'Payload successfully loaded!',
