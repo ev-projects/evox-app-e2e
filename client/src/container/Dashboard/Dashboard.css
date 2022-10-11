@@ -127,7 +127,7 @@ h6,.h6{font-size: .75em !important}
 td.actions .fa{font-size: 18px}
 .pagination .page button{ font-size: inherit}
 .filters{margin-top: 30px}
-.evbuddy{background:  #fff; padding: 20px; max-height: 207px; overflow-y:auto;}
+.evbuddy{background:  #fff; padding: 20px; max-height: 500px; overflow-y:auto;}
 
 .evbuddy a{ text-decoration: none; color: #333 !important; font-size: .875em}
 .btn{padding: 5px 10px !important;}
