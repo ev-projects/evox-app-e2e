@@ -276,5 +276,11 @@ return [
     // 'valid_to' => ''
     // 'work_days' => ''
 
+    /**
+     *  Change Logs
+     */
+    'create_change_log_attempt' => 'Create Change Log Attempt',
+    'create_change_log_success' => 'A new change log is now created!',
+    'fetch_change_log_success' => 'List of all change logs'
 
 ];

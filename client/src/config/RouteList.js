@@ -62,6 +62,7 @@ import TimeOff from "../container/Profile/TimeOff";
 import Profile from "../container/Profile";
 import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
 import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
+import ChangeLogs from "../container/Admin/ChangeLogs";
 
 const RoutesList = (props) => {
 
@@ -231,6 +232,10 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.generate_date}>
           <GenerateDate  role={['admin']}  />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.manage_change_logs}>
+          <ChangeLogs  role={['admin']}  />
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

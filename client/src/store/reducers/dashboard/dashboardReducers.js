@@ -7,7 +7,8 @@ const initState = {
     birthday_and_anniv : [],
     team_attendance : [],
     recent_dtr : [],
-    holidays:[]
+    holidays:[],
+    changelogs:[]
 }
 
 const dashboardReducers = (state = initState, action) => {
@@ -44,7 +45,13 @@ const dashboardReducers = (state = initState, action) => {
                 ...state,
                 holidays : action.data,
             }
-            break;   
+            break;
+        case "FETCH_CHANGE_LOGS":
+            result = {
+                ...state,
+                changelogs : action.data,
+            }
+            break;
         default:
             result = state;
     }
