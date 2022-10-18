@@ -27,3 +27,8 @@
 .quickpunch .date,.quickpunch .label {
     color: #d4d4d4;
 }
+.request-rest-day-link {
+    padding: 5px !important;
+    background-color: #82af13 !important;
+    color: #fff !important;
+}
