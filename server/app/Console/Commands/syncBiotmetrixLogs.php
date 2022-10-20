@@ -46,7 +46,7 @@ class syncBiotmetrixLogs extends Command
     {
         try {
             // fetch the Default 30 minutes gap from the current time.
-                $start_datetime = Carbon::now()->subMinutes(30)->format('Y-m-d H:i:s');
+                $start_datetime = Carbon::now()->subHours(7)->format('Y-m-d H:i:s');
                 $end_datetime = Carbon::now()->format('Y-m-d H:i:s'); 
 
 
