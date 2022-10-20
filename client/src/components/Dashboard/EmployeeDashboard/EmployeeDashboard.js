@@ -14,6 +14,7 @@ import Holiday from "../../../components/Dashboard/Holiday";
 import Authenticator from "../../../services/Authenticator";
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 import RecentDtr from "../../../components/Dashboard/RecentDtr";
+import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 import moment from 'moment';
 
 const EmployeeDashboard = ( props ) => {
@@ -214,7 +215,14 @@ const EmployeeDashboard = ( props ) => {
                     </Row>
 
                 </div>
+
                 <div className="col-lg-4 col-md-6 col-sm-12">
+                  <Row>
+                    <Content title="Release Notes" col="12">
+                      <ChangeLogs/>
+                    </Content>
+                  </Row>
+
                 { !Authenticator.checkRole('client')  ? 
                             <Row>
                             <Content title="Upcoming holidays" col="12">

@@ -1,0 +1,6 @@
+{
+    "name": "ChangeLogs",
+    "slug": "changelogs",
+    "version": "1.0",
+    "description": "Responsible for adding and updating of change logs to be displayed on EVOX dashboard."
+}
