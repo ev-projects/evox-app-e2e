@@ -14,7 +14,6 @@ function ChangeLogsInfo(props) {
           </div>
 
           <div className="modal-body">
-            <h3>Change Logs</h3>
             <h2>{ props.changelogInfo.title }</h2>
             <p>{ props.changelogInfo.log_date }</p>
             <p><pre>{ props.changelogInfo.description }</pre></p>
