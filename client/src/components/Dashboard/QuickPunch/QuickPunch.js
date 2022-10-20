@@ -1,13 +1,13 @@
 import React, { Component, useState, useEffect  } from "react";
 import DatePicker from "react-datepicker";
-import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
+import { Container,Row,Col,Table,Image, Spinner,Button, Badge  } from 'react-bootstrap';
 import "./QuickPunch.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
 import * as Yup from 'yup';
-import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions'
+import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions';
 
 class QuickPunch extends Component {
 	constructor(props){
@@ -77,8 +77,24 @@ class QuickPunch extends Component {
 				<Col>Minutes</Col>
 				<Col>Seconds </Col>
 			</Row>
-			<Button  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button><Button onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
-			<p class="note" >NOTE: Please make sure that the schedule that is assigned to your account is correct, especially for Night Shift Employees</p>
+			{this.props.dashboard?.recent_dtr[1] ? (
+				this.props.dashboard?.recent_dtr[1]?.is_rest_day == 1 ? (
+					<div>
+						<br />
+						<p class="note" >NOTE: You can not clock in on a rest day, please click <a href={global.links.rest_day_work}><span className="request-rest-day-link badge">here</span></a> to request a "Rest Day Work".</p>
+					</div>
+				) : (
+					<div>
+						<Button  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button><Button onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+						<p class="note" >NOTE: Please make sure that the schedule that is assigned to your account is correct, especially for Night Shift Employees</p>
+					</div>
+				)
+			) : (
+				<div>
+					<Button  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button><Button onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+					<p class="note" >NOTE: Please make sure that the schedule that is assigned to your account is correct, especially for Night Shift Employees</p>
+				</div>
+			)}
 		</div>
 	</div>
 	</form>
