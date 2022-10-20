@@ -17,8 +17,7 @@ class CreateChangeLogsTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->text('description');
-            $table->date('log_from');
-            $table->date('log_to');
+            $table->date('log_date');
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
             $table->timestamps();

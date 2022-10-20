@@ -5,7 +5,6 @@ import { getChangeLogs } from '../../../store/actions/dashboard/dashboardActions
 import { connect } from 'react-redux';
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
 
-
 function ChangeLogsInfo(props) {
     return (
       <div id="myModal" className="modal-main">
@@ -15,8 +14,9 @@ function ChangeLogsInfo(props) {
           </div>
 
           <div className="modal-body">
-            <h2>Change Logs</h2>
-            <p>{ props.changelogInfo.title } ({props.changelogInfo.log_from} - {props.changelogInfo.log_to})</p>
+            <h3>Change Logs</h3>
+            <h2>{ props.changelogInfo.title }</h2>
+            <p>{ props.changelogInfo.log_date }</p>
             <p><pre>{ props.changelogInfo.description }</pre></p>
           </div>
         </div>
@@ -46,7 +46,7 @@ class ChangeLogs extends Component {
     });
   }
 
-  handleOnhide = () =>{
+  handleOnhide = () => {
     this.setState({
         isShowModel: false
     });
@@ -61,8 +61,8 @@ class ChangeLogs extends Component {
             <tbody>
                 {changelogs.map(data =>
                 <tr className="changelogs-tr" onClick={ () => { this.handleShow(data); }}>
-                    <td className="date log-title"><span className="icn"></span><span className="date">{data.title}</span></td>
-                    <td className="desc"> {data.log_from_short} to {data.log_to_short} </td>
+                    <td className="log-title"><span className="icn"></span> <span className="date">{data.log_date}</span></td>
+                    <td className="desc">{data.title ?? '(No title given)'}</td>
                 </tr>
                 )}
             </tbody>

@@ -35,10 +35,7 @@ class ChangeLogs extends Component {
     for (var key in values) {
       if( values[key] != null ) {
         switch( key ) {
-          case "log_from":
-            formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
-            break;
-          case "log_to":
+          case "log_date":
             formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
             break;
           default:
@@ -71,8 +68,7 @@ class ChangeLogs extends Component {
     const initialValue = {
         action:             null,
         method:             method,
-        log_from:           this.props.instance.log_from != undefined ? new Date( this.props.instance.log_from ) : null,
-        log_to:             this.props.instance.log_to != undefined ? new Date( this.props.instance.log_to ) : null,
+        log_date:           this.props.instance.log_date != undefined ? new Date( this.props.instance.log_date ) : null,
         title:              this.props.instance.title != undefined ? this.props.instance.title : null,
         description:        this.props.instance.description != undefined ? this.props.instance.description : null,
     }
@@ -96,44 +92,36 @@ class ChangeLogs extends Component {
           <form onSubmit={handleSubmit}>
             <input type="hidden" name="action" value={values.action} />
             <input type="hidden" name="method" value={method} />
-            <input type="hidden" name="date" value={values.date} />
+            <input type="hidden" name="date" value={values.log_date} />
             <input type="hidden" name="id"  value={values.id} />
             <input type="hidden" name="status"  value={values.status} />
             <ContainerWrapper>
               <ContainerBody>
                 <Content col="6" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
                   <Row>
-                    <Col size="4">
-                      <div className="form-group">
-                        <label>Date Range: </label>
-                        <InputDate name="log_from" value={values.date}/>
-                      </div>
-                    </Col>
-                    <Col size="4">
-                      <div className="form-group">
-                        <label>&nbsp;</label>
-                        <InputDate name="log_to" value={values.date}/>
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col size="8">
+                    <Col size="6">
                       <div className="form-group">
                         <label>Title:</label>
                         <InputGroup>
-                            <FormControl variant="primary" name="title" onChange={handleChange} value={values.title} />
+                            <FormControl variant="primary" name="title" className="title" onChange={handleChange} value={values.title} />
                             <Form.Control.Feedback type="invalid">
-                            &nbsp;{errors.title && touched.title && errors.title}
+                              &nbsp;{errors.title && touched.title && errors.title}
                             </Form.Control.Feedback>
                         </InputGroup>
                       </div>
                     </Col>
-                  </Row> 
+                    <Col size="6">
+                      <div className="form-group">
+                        <label>Date:</label>
+                        <InputDate name="log_date" value={values.log_date}/>
+                      </div>
+                    </Col>
+                  </Row>
                   <Row>
                     <Col size="12">
                       <div className="form-group">
                         <label>Description:</label>
-                        <textarea className="form-control" rows="3" name="description" onChange={handleChange} value={values.description??''} placeholder="Change log summary..."></textarea>
+                        <textarea className="form-control" rows="10" name="description" onChange={handleChange} value={values.description??''} placeholder="Change log summary..."></textarea>
                         <Form.Control.Feedback type="invalid">
                           &nbsp;{errors.description && touched.description && errors.description}
                         </Form.Control.Feedback>
@@ -164,10 +152,9 @@ class ChangeLogs extends Component {
 /** Form Validation */
 
 const validationSchema = Yup.object().shape({
-    title:        Yup.string().required("This field is required").nullable(),
-    description:  Yup.string().required("This field is required").nullable(),
-    log_from:     Yup.date().required("This field is required").nullable(),
-    log_to:       Yup.date().required("This field is required").nullable(),
+    title         : Yup.string().required("This field is required").nullable(),
+    description   : Yup.string().required("This field is required").nullable(),
+    log_date      : Yup.date().required("This field is required").nullable(),
 });
 
 const mapStateToProps = (state) => {

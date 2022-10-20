@@ -19,16 +19,14 @@ class ChangeLogsController extends Controller
     public function getChangeLogs()
     {
         // get all change logs
-        $changelogs = ChangeLogs::orderBy('id', 'DESC')->get();
+        $changelogs = ChangeLogs::orderBy('log_date', 'DESC')->get();
 
+        $changelogs_array = [];
         foreach ($changelogs as $key => $changelog) {
             $changelogs_array[$key]['id'] = $changelog->id;
             $changelogs_array[$key]['title'] = $changelog->title;
             $changelogs_array[$key]['description'] = htmlspecialchars_decode($changelog->description);
-            $changelogs_array[$key]['log_from_short'] = date_format(new \DateTime($changelog->log_from), "F d");
-            $changelogs_array[$key]['log_to_short'] = date_format(new \DateTime($changelog->log_to), "F d");
-            $changelogs_array[$key]['log_from'] = date_format(new \DateTime($changelog->log_from), "F d, Y");
-            $changelogs_array[$key]['log_to'] = date_format(new \DateTime($changelog->log_to), "F d, Y");
+            $changelogs_array[$key]['log_date'] = date_format(new \DateTime($changelog->log_date), "F d, Y");
         }
 
         return success_response(
@@ -52,8 +50,7 @@ class ChangeLogsController extends Controller
             // set all values before saving
             $changelogs->title = $request->title;
             $changelogs->description = $request->description;
-            $changelogs->log_from = $request->log_from;
-            $changelogs->log_to = $request->log_to;
+            $changelogs->log_date = $request->log_date;
             $changelogs->created_by = auth()->user()->id;
 
             $changelogs->save();

@@ -218,7 +218,7 @@ const EmployeeDashboard = ( props ) => {
 
                 <div className="col-lg-4 col-md-6 col-sm-12">
                   <Row>
-                    <Content title="Change Logs" col="12">
+                    <Content title="Release Notes" col="12">
                       <ChangeLogs/>
                     </Content>
                   </Row>
