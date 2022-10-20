@@ -1001,7 +1001,7 @@ class DtrRepository implements DtrRepositoryInterface{
      */
     public function sync_biometrics_to_dtr( Collection $biometrics_collection )
     {
-        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "biometrics");
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [debug_backtrace()[1]['function']], "biometrics");
 
         try {
 
