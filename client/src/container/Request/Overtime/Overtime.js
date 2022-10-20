@@ -122,6 +122,7 @@ class Overtime extends Component {
 
   
   render = () => {  
+    console.log(this.props.user);
     // Checks if the Instance is On Approval state.
     const onApproval = this.props.instance?.is_under_supervisee && Authenticator.check('supervisor', 'manage_employee_request') ? this.props.instance.is_under_supervisee : false;
 
@@ -157,6 +158,10 @@ class Overtime extends Component {
     if( method == 'store' || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
       
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
+    if(this.props.user.user_has_schedule == false && this.props.user.user_has_schedule !=undefined)
+    {  
+      return <NoScheduleInfo></NoScheduleInfo>
+    }
 
       return <Wrapper {...this.props} >
         <Formik 
@@ -292,6 +297,24 @@ const mapDispatchToProps = (dispatch) => {
       resetOvertimeInstance : () => dispatch( resetOvertimeInstance() ),
       clearOvertimeInstance : () => dispatch( clearOvertimeInstance() )
     }
+}
+
+function NoScheduleInfo(props) {
+  return (
+        
+
+    <ContainerWrapper>
+      <ContainerBody>
+        <Content col="6">
+          <h5><b>You have no Default or Temporary Schedule!</b></h5>
+          <p>User should have Schedule to apply OT request and in order for the system to know when to calculate additional Pre or Post OVERTIME Hours.</p>
+          <p>Coordinate with you supervisor to assign Default Schedule in you account.</p>
+        </Content>
+      </ContainerBody>
+    </ContainerWrapper>
+ 
+
+)
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Overtime);
 

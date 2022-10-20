@@ -5,7 +5,7 @@ namespace App\Modules\User\Models;
 use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\Dtr;
-
+use App\Modules\Payroll\Models\PayrollCutoff;
 use App\Modules\Schedule\Models\Schedule;
 
 use Illuminate\Notifications\Notifiable;
@@ -536,6 +536,21 @@ class User extends Authenticatable implements JWTSubject
         return Department::whereIn('departments.id', array_unique($departments_id_array));
     }
 
+    public function getHasSchedule(){
+
+       
+    
+        # Fetch the Default Schedule for the current User.
+        $checkDefault_schedule = is_valid($this->defaultSchedule()->first());
+
+            $temporary_schedule_condition = [
+                'bind_to' => 'user',
+                'source_type' => get_constant('DTR_SOURCE_TYPE_TAGGING.temporary')
+            ];
+        $checkTemp_schedule = is_valid( $this->hasMany(Schedule::class, 'bind_id', 'id')->where($temporary_schedule_condition)->latest()->first());
+          
+            return ($checkDefault_schedule ||  $checkTemp_schedule);
+    }
 
     ########################################################################
 }
