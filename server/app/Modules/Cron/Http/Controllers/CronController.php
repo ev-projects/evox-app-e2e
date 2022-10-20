@@ -304,7 +304,7 @@ class CronController extends Controller
      */
     public function sync_realtime_biometrics($start_datetime = null, $end_datetime = null){   
         try {
-            
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "biometrics cron controller");
             // If Start Datetime and End Datetime is not set, fetch the Default 30 minutes gap from the current time.
             if( !is_valid( $start_datetime ) && !is_valid( $end_datetime ) ) {
                 $start_datetime = Carbon::now()->subMinutes(30)->format('Y-m-d H:i:s');
