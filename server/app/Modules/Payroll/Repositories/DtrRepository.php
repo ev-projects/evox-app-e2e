@@ -1218,15 +1218,17 @@ class DtrRepository implements DtrRepositoryInterface{
                 DB::commit();
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
-                $days = 11;
-                $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
-                $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
-                $user_collection = new Collection();
-                $user_collection->push((object)User::findOrFail(Auth::user()->id));
-                $result = $this->generate_dtr( $user_collection, $dates );
-                $result =$this->apply_biometrics_to_dtr($biometrics);
+                if (Auth::user()) {
+                    $days = 11;
+                    $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
+                    $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
+                    $user_collection = new Collection();
+                    $user_collection->push((object)User::findOrFail(Auth::user()->id));
+                    $result = $this->generate_dtr( $user_collection, $dates );
+                    $result =$this->apply_biometrics_to_dtr($biometrics);
 
-                log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
+                    log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
+                }
 
                 /* Commented old implementation of generate dtr upon quickpunch
                 $days = 7;
