@@ -23,10 +23,11 @@ class ChangeLogsController extends Controller
 
         $changelogs_array = [];
         foreach ($changelogs as $key => $changelog) {
-            $changelogs_array[$key]['id'] = $changelog->id;
-            $changelogs_array[$key]['title'] = $changelog->title;
-            $changelogs_array[$key]['description'] = htmlspecialchars_decode($changelog->description);
-            $changelogs_array[$key]['log_date'] = date_format(new \DateTime($changelog->log_date), "F d, Y");
+            $changelogs_array[$key]['id']           = $changelog->id;
+            $changelogs_array[$key]['title']        = $changelog->title;
+            $changelogs_array[$key]['category']     = $changelog->category;
+            $changelogs_array[$key]['description']  = htmlspecialchars_decode($changelog->description);
+            $changelogs_array[$key]['log_date']     = date_format(new \DateTime($changelog->log_date), "F d, Y");
         }
 
         return success_response(
@@ -48,10 +49,11 @@ class ChangeLogsController extends Controller
             $changelogs = new ChangeLogs();
 
             // set all values before saving
-            $changelogs->title = $request->title;
-            $changelogs->description = $request->description;
-            $changelogs->log_date = $request->log_date;
-            $changelogs->created_by = auth()->user()->id;
+            $changelogs->title          = $request->title;
+            $changelogs->category       = $request->category;
+            $changelogs->description    = $request->description;
+            $changelogs->log_date       = $request->log_date;
+            $changelogs->created_by     = auth()->user()->id;
 
             $changelogs->save();
 
