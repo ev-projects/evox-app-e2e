@@ -17,6 +17,7 @@ class CreateChangeLogsTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->text('description');
+            $table->string('category');
             $table->date('log_date');
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
