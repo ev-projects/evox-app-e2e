@@ -89,3 +89,7 @@
   font-size: 22px !important;
   margin-bottom: 50px;
 }
+
+.tox-editor-header {
+  z-index: 0 !important;
+}
