@@ -91,7 +91,7 @@ class ChangeLogs extends Component {
     }
 
     // Sets the default title for the Request. Checks aswell if it's for approval.
-    let title = 'Change Logs';
+    let title = 'EVOX Updates';
 
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
     if( (method == 'store') || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
@@ -114,9 +114,9 @@ class ChangeLogs extends Component {
             <input type="hidden" name="status"  value={values.status} />
             <ContainerWrapper>
               <ContainerBody>
-                <Content col="6" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
+                <Content col="12" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
                   <Row>
-                    <Col size="4">
+                    <Col size="3">
                       <div className="form-group">
                         <label>Title:</label>
                         <InputGroup>
@@ -127,20 +127,21 @@ class ChangeLogs extends Component {
                         </InputGroup>
                       </div>
                     </Col>
-                    <Col size="4">
+                    <Col size="3">
                       <div className="form-group">
                         <label>Category:</label>
                         <select name="category" value={ values.category } className="form-control" onChange={handleChange}>
                             <option></option>
-                            <option value="Change Log">Change Log</option>
-                            <option value="Announcement">Announcement</option>
+                            <option value="Announcements">Announcements</option>
+                            <option value="Updates">Updates</option>
+                            <option value="Release Notes">Release Notes</option>
                         </select>
                         <Form.Control.Feedback type="invalid">
                             &nbsp;{errors.category && touched.category && errors.category}
                         </Form.Control.Feedback>
                       </div>
                     </Col>
-                    <Col size="4">
+                    <Col size="3">
                       <div className="form-group">
                         <label>Date:</label>
                         <InputDate name="log_date" value={values.log_date}/>
