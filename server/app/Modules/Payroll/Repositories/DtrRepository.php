@@ -999,7 +999,7 @@ class DtrRepository implements DtrRepositoryInterface{
      * @param Collection $biometrics_collection
      * @return Collection $result
      */
-    public function sync_biometrics_to_dtr( Collection $biometrics_collection )
+    public function sync_biometrics_to_dtr( Collection $biometrics_collection, $dtr_id = null )
     {
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "biometrics");
 
@@ -1014,7 +1014,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                     try{
 
-                        $dtr = $this->apply_biometrics_to_dtr( $biometrics );
+                        $dtr = $this->apply_biometrics_to_dtr( $biometrics, $dtr_id );
                         
                         if( is_valid( $dtr ) ){
                             
@@ -1170,7 +1170,7 @@ class DtrRepository implements DtrRepositoryInterface{
      * @param Biometrics $biometrics
      * @return Dtr $result
      */
-    protected function apply_biometrics_to_dtr( Biometrics $biometrics )
+    protected function apply_biometrics_to_dtr( Biometrics $biometrics, $dtr_id = null )
     {
         DB::beginTransaction();
         try {
@@ -1180,18 +1180,22 @@ class DtrRepository implements DtrRepositoryInterface{
             $result = null;
 
             # Fetches the Respective First DTR for the Biometrics parameter. This DTR will be updated with the CheckTime from the Biometrics.
-            $dtr = Dtr::select('dtrs.*')
-                        ->join('users', 'dtrs.user_id', '=', 'users.id')
-                                ->whereRaw(
-                                    "users.emp_num = '".$biometrics->getParsedEmpNum()."'
-                                        AND (
-                                        ". $biometrics->getDutyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
-                                        OR 
-                                        ". $biometrics->getFlexyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
-                                        OR 
-                                         date = '".date("Y-m-d" , datetime_to_timestamp( $biometrics->CheckTime ))."'
-                                        )"
-                                )->first();
+            if ($dtr_id) {
+                $dtr = Dtr::find($dtr_id);
+            } else {
+                $dtr = Dtr::select('dtrs.*')
+                            ->join('users', 'dtrs.user_id', '=', 'users.id')
+                                    ->whereRaw(
+                                        "users.emp_num = '".$biometrics->getParsedEmpNum()."'
+                                            AND (
+                                            ". $biometrics->getDutyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
+                                            OR 
+                                            ". $biometrics->getFlexyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
+                                            OR 
+                                            date = '".date("Y-m-d" , datetime_to_timestamp( $biometrics->CheckTime ))."'
+                                            )"
+                                    )->first();
+            }
 
             # If the fetched DTR exist, update the Specific Time Type with the Biometrics' Check Time.
             if( is_valid( $dtr ) ) {
