@@ -91,10 +91,15 @@ class DtrController extends Controller
             $biometrics->Userid          = '20'.Auth::user()->emp_num;
             $biometrics->CheckTime       = date("Y-m-d H:i:s");
             $biometrix_collection->push( $biometrics );
+
+            $dtr_id = null;
+            if ($request->dtr_id) {
+                $dtr_id = $request->dtr_id;
+            }
             
             return success_response(
                 trans('messages.quickpunch_'.$request->quickpunch.'_success'), 
-                DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrix_collection ) )
+                DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrix_collection, $dtr_id ) )
             );
 
         } catch(Exception $e){

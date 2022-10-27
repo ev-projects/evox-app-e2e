@@ -7,6 +7,7 @@ import "./RecentDtr.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
 import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions'
 import * as Yup from 'yup';
 import DtrFormatter from '../../../services/DtrFormatter';
@@ -14,21 +15,64 @@ import DtrFormatter from '../../../services/DtrFormatter';
 class RecentDtr extends Component {
 	constructor(props){
     	super(props);
+      this.timer = 0;
+    	this.state = {
+        compare_to_clock_in: new Date()
+      };
 	}
 	
 	onSubmitHandler = (values) => {
-	}
-
-  componentWillMount(){
-    var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
-    var to = moment().format("YYYY-MM-DD");
-    this.props.getRecentDtr(this.props.user.id, from , to );
-	}
+		// Setting of Form Data to be passed in the submission
+		var formData = new FormData();
 	
-    componentWillUnmount(){
-    }
+		for (var key in values) {
+	
+			if( values[key] != null ) {
+				switch( key ) {
+					default:
+						formData.set(key, values[key]);
+						break;
+				}
+			}
+		}
+		this.props.biometrixLog(  formData , this.props.user.id );
+	}
 
-	render = () => {  
+componentWillMount(){
+  var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
+  var to = moment().format("YYYY-MM-DD");
+  this.props.getRecentDtr(this.props.user.id, from , to );
+
+  this.timer = setInterval(() => {
+    this.setState({
+      compare_to_clock_in: new Date()
+    });
+    //console.log(  this.state.compare_to_clock_in)
+    //this.componentWillMount();
+  }, 1000);
+}
+
+componentWillUnmount(){
+  clearTimeout(this.timer);
+  //console.log("Timer cleared")
+}
+
+canClockOut(clock_in) {
+  console.log(new Date(clock_in));
+  console.log(this.state.compare_to_clock_in);
+  if (!clock_in && !this.state.compare_to_clock_in)
+  return 0;
+  var diff =(this.state.compare_to_clock_in.getTime() - new Date(clock_in)) / 1000;
+  diff /= 60;
+  diff /= 60;
+  console.log(Math.abs(Math.round(diff)));
+  return Math.abs(Math.round(diff));
+}
+
+	render = () => {
+    const initialValue = {
+      quickpunch : null
+    }
 		const { recent_dtr } = this.props.dashboard;
     
     let showErr =  recent_dtr.length > 0  ? 
@@ -84,7 +128,29 @@ class RecentDtr extends Component {
                            
                            <td className="dtr-schedule"><div className="dtr-status">{status}</div><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
                            <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
-                           <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
+                           <td className="dtr-log"><div>{
+                            dtr.time_out ? (
+                              DtrFormatter.displayLog(dtr.time_out)
+                            ) : (
+                              dtr.time_in && (this.canClockOut(dtr.time_in) < 22) ? (
+                                <>
+                                <Formik 
+                                  enableReinitialize
+                                  onSubmit={this.onSubmitHandler} 
+                                  validationSchema={validationSchema} 
+                                  initialValues={initialValue}>
+                                  {
+                                    ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                                      <form onSubmit={handleSubmit}>
+                                        <Button onClick={(e)=> { setFieldValue('quickpunch','out'); setFieldValue('dtr_id', dtr.id);   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+                                      </form>
+                                    )
+                                  }
+                                  </Formik>
+                                </>
+                              ) : (<></>)
+                            )
+                           }</div></td>
                          </tr>
              })}
              </tbody>
@@ -112,7 +178,8 @@ class RecentDtr extends Component {
   }
   const mapDispatchToProps = (dispatch) => {
 	  return {
-      getRecentDtr : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) )
+      getRecentDtr : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) ),
+      biometrixLog    : ( post_data , id ) => dispatch( biometrixLog( post_data , id ) )
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(RecentDtr);
