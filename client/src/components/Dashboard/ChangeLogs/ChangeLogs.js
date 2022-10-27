@@ -15,7 +15,7 @@ function ChangeLogsInfo(props) {
 
           <div className="modal-body">
             <h2>{ props.changelogInfo.title }</h2>
-            <h4>{ props.changelogInfo.log_date }</h4>
+            <h3><span className="update-category">{ props.changelogInfo.category }</span> &nbsp; { props.changelogInfo.log_date }</h3>
             <div dangerouslySetInnerHTML={{ __html: props.changelogInfo.description}} />
           </div>
         </div>
