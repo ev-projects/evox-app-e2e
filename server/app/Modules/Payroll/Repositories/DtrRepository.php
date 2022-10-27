@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Modules\Payroll\Repositories;
 
@@ -33,7 +33,7 @@ class DtrRepository implements DtrRepositoryInterface{
     ###############################################################################################
     ###################################### Public functions #######################################
     ###############################################################################################
-    
+
 
     /**
      *  Responsible for Generating DTR for set of Users with the given date/dates
@@ -46,11 +46,11 @@ class DtrRepository implements DtrRepositoryInterface{
         try {
             $start_date = reset($date_array);
             $end_date = end($date_array);
-            
+
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date], "dtr");
 
             $dtr_insert_array = [];
-            
+
             # Iterates per User per Date.
             foreach( $user_collection as $user ) {
 
@@ -64,56 +64,56 @@ class DtrRepository implements DtrRepositoryInterface{
                         'updated_by'            => 'NOW()',
                         'created_by'            => 'NOW()'
                     ]);
-                } 
+                }
             }
-            
+
             foreach( array_chunk( $dtr_insert_array, 5000 ) as $dtr_insert_array_chunk ){
                 # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
                 $dtr_insert_query = "INSERT INTO dtrs (
-                                        user_id, 
+                                        user_id,
                                         date,
-                                        updated_at, 
-                                        created_at) 
-                                    VALUES (".implode( "), (", $dtr_insert_array_chunk ).") 
+                                        updated_at,
+                                        created_at)
+                                    VALUES (".implode( "), (", $dtr_insert_array_chunk ).")
                                     ON DUPLICATE KEY UPDATE
-                                        user_id                 = VALUES(user_id), 
-                                        date                    = VALUES(date), 
+                                        user_id                 = VALUES(user_id),
+                                        date                    = VALUES(date),
                                         created_at              = IF(created_at IS NULL, VALUES(created_at), created_at),
                                         updated_at              = VALUES(updated_at)";
-                
+
                 # Executes the Batch Insert Query
                 DB::insert($dtr_insert_query);
             }
-                
-            
+
+
             # Apply the Schedule of the Dates that's been generated.
-            
+
             foreach( $user_collection as $user ) {
-                
+
                 foreach( $user->dtr( $start_date, $end_date )->get() as $dtr ) {
                     $date = $dtr->date;
-                    
+
                     # Uses this getBestSchedule to check what is the best Schedule for the given Date of specific user.
                     $schedule = $dtr->getBestSchedule();
-                    
+
                     # Fetch Rest Day Work of the DTR Instance.
                     $rest_day_work = $dtr->rest_day_work()->first();
 
                     # Check if there's an Approved Rest Day Work for the current DTR. If yes, apply the Rest Day Work instead of the Schedule.
                     if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {
-                        
+
                         $this->apply_rest_day_work_to_dtr( $rest_day_work );
-                    
+
                     # Checks if there's a valid schedule to apply on the DTR.
                     } elseif( is_valid( $schedule ) ) {
-                        
+
                         # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
                         $schedule_detail = ( is_valid( $schedule ) ? $schedule->getPerDay( get_day_from_date( $date ) ) : null);
-                       
+
                         # Get the Parsed Schedule Detail to Date
                         $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $date ) : null);
-                        
-                        
+
+
 
                         if($parsed_schedule_detail != null){
                             # Update the DTR properties
@@ -123,25 +123,25 @@ class DtrRepository implements DtrRepositoryInterface{
                             $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
                             $dtr->break_time            =  $parsed_schedule_detail['break_time'];
                         }
-                        
+
                         $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
                         $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
                         $dtr->update();
-                        
+
                         # Delete the existing DTR Policies before saving the new ones.
                         $dtr->policies()->delete();
-    
+
                         # Save the DTR Policies base on the Schedule Policies.
                         $this->save_dtr_policies( $dtr, $schedule->schedule_policies()->get() );
                     }
                 }
             }
 
-            
-            
-            
+
+
+
             $result = [
-                // "result" => , 
+                // "result" => ,
                 "total_dtr_count" => count( $dtr_insert_array ),
                 "dtr"   => $dtr_insert_array
             ];
@@ -153,7 +153,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
         } catch (Exception $e) {
             DB::rollback();
-            
+
             log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "dtr");
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
@@ -176,18 +176,18 @@ class DtrRepository implements DtrRepositoryInterface{
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $date ], "dtr");
 
             $emp_nump = $emp_id;
-            
+
             # THIS SQL CREATES RECORD OF 7 DAYS RECORDS OF DTR
             $records_to_be_insert =  "SELECT ".$emp_nump." as user_id," . implode(" as date UNION ALL SELECT  ".$emp_nump." as user_id,", $dates);
-            
-            
+
+
             # THIS SQL CREATES A RELATION
-            $record_that_dont_exist = " FROM (" .$records_to_be_insert ." ) as table1 
-            LEFT JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id 
-            LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id 
+            $record_that_dont_exist = " FROM (" .$records_to_be_insert ." ) as table1
+            LEFT JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id
+            LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id
                 AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
-            LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id 
-            LEFT JOIN schedule_details as sched_details ON sched_details.schedule_id = sched.id 
+            LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id
+            LEFT JOIN schedule_details as sched_details ON sched_details.schedule_id = sched.id
                 AND ( sched_details.day = LOWER(SUBSTRING(DAYNAME(table1.date),1, 3)) or sched_details.day='all')
             LEFT JOIN users on table1.user_id = users.id
             WHERE dtr.date is NULL AND dtr.user_id is NULL AND table1.date >= users.date_hired AND is_active = 1
@@ -196,44 +196,44 @@ class DtrRepository implements DtrRepositoryInterface{
 
             $delete_sched_pol = "DELETE dtr_policies from dtr_policies JOIN dtrs ON dtrs.id = dtr_policies.dtr_id WHERE dtrs.date in ( ". implode(" ,", $dates) ." ) AND dtrs.user_id = ".  $emp_nump .";";
 
-            $insert_sched_policy =  "INSERT INTO dtr_policies (dtr_id, policy, value) SELECT dtr.id,sched_pol.policy, sched_pol.value  FROM (" .$records_to_be_insert ." ) as table1              
-            JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id 
-            LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id 
+            $insert_sched_policy =  "INSERT INTO dtr_policies (dtr_id, policy, value) SELECT dtr.id,sched_pol.policy, sched_pol.value  FROM (" .$records_to_be_insert ." ) as table1
+            JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id
+            LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id
                 AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
-            LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id 
+            LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id
             LEFT JOIN users on table1.user_id = users.id
-            LEFT JOIN schedule_policies as sched_pol ON sched_pol.schedule_id = sched.id 
+            LEFT JOIN schedule_policies as sched_pol ON sched_pol.schedule_id = sched.id
             WHERE table1.date >= users.date_hired AND is_active = 1
             AND ( change_sched.status = 'approved' OR change_sched.status is null )
             GROUP BY table1.date,sched_pol.policy";
 
             $columns_to_selected[] = "table1.user_id";
-                
+
             $columns_to_selected[] = "table1.date";
 
             $columns_to_selected[] = "sched_details.break_time as break_time";
-            
+
             # Make sure the start time has correct date
             $start_time = "sched_details.start_time";
             $columns_to_selected[] = check_column_exist( $start_time , "unix_timestamp( table1.date ) + ". $start_time ) . " as start_datetime";
-    
+
             # Make sure end time is always greater than the start time
             $end_time = "sched_details.end_time";
             $columns_to_selected[] = check_column_exist( $end_time ,check_column_end_datetime( "unix_timestamp( table1.date ) + ". $start_time , "unix_timestamp( table1.date ) + " . $end_time) ) ." as end_datetime";
-    
+
             # Make sure flexy time is always greater that on duty / start time
             $start_flexy_time = "sched_details.start_flexy_time";
             $columns_to_selected[] = check_column_exist( $start_flexy_time ,check_column_start_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $end_time , "unix_timestamp( table1.date ) + " . $start_flexy_time) ) ." as start_flexy_datetime";
-            
+
             # Make sure the end flexy time is greater than on duty, off duty and start flexy time
             $end_flexy_time = "sched_details.end_flexy_time";
             $columns_to_selected[] = check_column_exist( $end_flexy_time ,check_column_end_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $start_flexy_time , "unix_timestamp( table1.date ) + " . $end_time, "unix_timestamp( table1.date ) + " .$end_flexy_time) ) ." as start_flexy_datetime";
-            
+
             $columns_to_selected[] = check_if_restday( "table1.date" , "sched.rest_days") . " as is_rest_day";
-            
+
             $columns_to_selected[] = "NOW() as created_at";
             $columns_to_selected[] = "NOW() as updated_at";
-            
+
             $insert_sql_raw = "INSERT INTO dtrs ( user_id, date, break_time, start_datetime, end_datetime, start_flexy_datetime, end_flexy_datetime, is_rest_day, created_at, updated_at) SELECT ". implode( "," ,$columns_to_selected ). $record_that_dont_exist . ";";
 
             $sql_raw = $insert_sql_raw. $delete_sched_pol. $insert_sched_policy;
@@ -242,7 +242,7 @@ class DtrRepository implements DtrRepositoryInterface{
             DB::commit();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [] , "dtr");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
-            
+
             return $result;
         } catch (Exception $e) {
             DB::rollback();
@@ -253,7 +253,7 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
-    
+
     /**
      *  Responsible for Generating DTR for a new hired user
      */
@@ -261,22 +261,22 @@ class DtrRepository implements DtrRepositoryInterface{
     {
         $days = 10;
         $dates = get_succeeding_days( $user->date_hired, $days ) ;
-        
+
         $user_collection = new Collection();
         $user_collection->push((object)User::findOrFail($user->id));
         $this->generate_dtr( $user_collection, $dates );
 
-        
+
     }
 
     /**
      *  Responsible for Applying the newly fetched Drupal DTR to the new DTR
      * @param array $drupal_evox_dtr_array
-     * 
+     *
      * @return Collection $dtr_collection
      */
     public function apply_drupal_evox_data_to_dtr( $drupal_evox_dtr_array )
-    {   
+    {
         DB::beginTransaction();
         try {
 
@@ -293,45 +293,45 @@ class DtrRepository implements DtrRepositoryInterface{
                 // Checks if the user is existing
                 if( is_valid( $user ) ) {
 
-                    // Fetch the DTR of the User via the Date 
+                    // Fetch the DTR of the User via the Date
                     $dtr = $user->dtr($drupal_evox_dtr->date, $drupal_evox_dtr->date)->first();
-    
+
                     // Checks if the DTR is existing
                     if( is_valid( $dtr ) ) {
-    
+
                         # Update the DTR properties
                         $dtr->start_datetime        =  $drupal_evox_dtr->start_datetime;
                         $dtr->end_datetime          =  $drupal_evox_dtr->end_datetime;
                         $dtr->start_flexy_datetime  =  $drupal_evox_dtr->start_flexy_datetime;
                         $dtr->end_flexy_datetime    =  $drupal_evox_dtr->end_flexy_datetime;
                         $dtr->break_time            =  $drupal_evox_dtr->break_time;
-    
+
                         $dtr->time_in               =  $drupal_evox_dtr->time_in;
                         $dtr->time_out              =  $drupal_evox_dtr->time_out;
-                        
+
                         $dtr->is_rest_day           =  $drupal_evox_dtr->is_rest_day;
                         $dtr->source_type_tagging   =  'default';
                         $dtr->update();
-    
+
                         // Delete the existing DTR Policies before saving the new ones.
                         $dtr->policies()->delete();
-                        
+
                         // Create the Policies of the DTR
                         $dtr_collection = collect([
                             (object) ['policy' => 'allow_late',         'value' => $drupal_evox_dtr->allow_late],
                             (object) ['policy' => 'allow_undertime',    'value' => $drupal_evox_dtr->allow_undertime],
                             (object) ['policy' => 'allow_night_diff',   'value' => $drupal_evox_dtr->allow_night_diff]
                         ]);
-    
+
                         // Save the DTR Policies base on the DTR Policies fetched .
                         $this->save_dtr_policies( $dtr, $dtr_collection );
-    
+
                         // Compute for the Items
                         $this->compute_payroll_items( $dtr );
-    
-                        
+
+
                         $result[] = $dtr;
-    
+
                         log_to_file( 'info', 'Success', [$dtr->getAttributes()], "drupal_migration");
 
                     } else {
@@ -341,9 +341,9 @@ class DtrRepository implements DtrRepositoryInterface{
                 } else {
                     log_to_file( 'info', 'User not existing', [$drupal_evox_dtr], "drupal_migration");
                 }
-                
+
             }
-            
+
             DB::commit();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
@@ -365,7 +365,7 @@ class DtrRepository implements DtrRepositoryInterface{
      * @param User|user_id $user_or_user_id
      * @param Schedule $schedule
      * @param $bypass
-     * 
+     *
      * @return array $result
      */
     public function apply_schedule_to_dtr( $user_or_user_id, Schedule $schedule, $bypass = false )
@@ -398,12 +398,12 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Iteration of DTR Collection that was fetched.
                 foreach( $dtr_collection as $dtr ) {
-        
+
                     # Default Flag value
                     $to_update_flag = true;
-        
+
                     # Heirarchy: (Temporary Schedule | Change Schedule) > Default Schedule
-                    
+
                     // ## Removed this code since we're not applyng the Schedule Heirarchy when we apply a specific schedule.
                     // # If the Schedule Instance is Change Schedule AND the current DTR tagging was already set as Temporary/Rest Day Work, sets the Update Flag to FALSE
                     // if( $schedule->isChangeSchedule() && ($dtr->isTemporary() || $dtr->isRestDayWork()) ) {
@@ -416,22 +416,22 @@ class DtrRepository implements DtrRepositoryInterface{
                         $to_update_flag = false;
                         $result['not_updated'][] = $dtr;
                     }
-                    
+
                     if( $to_update_flag ) {
-                        
+
                         # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
                         $schedule_detail = ( is_valid( $schedule ) ? $schedule->getPerDay( get_day_from_date( $dtr->date ) ) : null);
-                        
+
                         # Get the Parsed Schedule Detail to Date
                         $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
-                        
+
                         # Update the DTR properties
                         $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
                         $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
                         $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
                         $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
                         $dtr->break_time            =  $parsed_schedule_detail['break_time'];
-                        
+
                         $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
                         $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
                         $dtr->update();
@@ -447,7 +447,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                         $result['updated'][] = $dtr;
                     }
-        
+
                 }
             }
 
@@ -504,23 +504,23 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Iteration of DTR Collection that was fetched.
                 foreach( $dtr_collection as $dtr ) {
-                    
+
                     // Gets the Best Schedule for the DTR
                     $best_schedule = $dtr->getBestSchedule();
-                        
+
                     # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
                     $schedule_detail = ( is_valid( $best_schedule ) ? $best_schedule->getPerDay( get_day_from_date( $dtr->date ) ) : null);
-                    
+
                     # Get the Parsed Schedule Detail to Date
                     $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
-                    
+
                     # Update the DTR properties
                     $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
                     $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
                     $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
                     $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
                     $dtr->break_time            =  $parsed_schedule_detail['break_time'];
-                    
+
                     $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
                     $dtr->source_type_tagging   =  ( is_valid($best_schedule) ) ? $best_schedule->source_type : $dtr->source_type_tagging;
 
@@ -536,7 +536,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     $this->compute_payroll_items( $dtr );
 
                     $result['updated'][] = $dtr;
-        
+
                 }
             }
 
@@ -585,7 +585,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Compute for the Items
                 $this->compute_payroll_items( $dtr );
-                
+
                 DB::commit();
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
@@ -601,7 +601,7 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-    
+
 
     /**
      *  Responsible for Removing the Alter Log from DTR and revert it from the original state.
@@ -632,7 +632,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Compute for the Items
                 $this->compute_payroll_items( $dtr );
-                
+
                 DB::commit();
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
@@ -648,7 +648,7 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-    
+
 
     /**
      *  Responsible for Applying of Rest Day Work to DTR.
@@ -693,7 +693,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Compute for the Items
                 $this->compute_payroll_items( $dtr );
-                
+
                 DB::commit();
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
@@ -709,7 +709,7 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-    
+
 
 
     /**
@@ -729,7 +729,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Gets the DTR related on the Rest Day Work.
                 $dtr = $rest_day_work->dtr()->first();
-                
+
                 if ($dtr === null) {
                     return get_constant('DTR_NOT_EXISTS');
                 }
@@ -747,7 +747,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 # Compute for the Items
                 $this->compute_payroll_items( $dtr );
-                
+
                 DB::commit();
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
@@ -766,7 +766,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
 
 
-    
+
     /**
      *  Responsible for Binding the Holiday that was fetched between the Date Range to the DTR Related by Date.
      * @param string $start_date
@@ -781,9 +781,9 @@ class DtrRepository implements DtrRepositoryInterface{
         try {
 
             $result = new Collection;
-            
+
             /** This Holiday date range query and wildcard is created for the following scenarios:
-             *  1. Incase the Date Range is overlapping to next year like "2019" to "2020", we cannot query the Month-Date Range (ex. DATE BETWEEN 12-01 AND 01-01 ) 
+             *  1. Incase the Date Range is overlapping to next year like "2019" to "2020", we cannot query the Month-Date Range (ex. DATE BETWEEN 12-01 AND 01-01 )
              *  2. This fetches all the Months between the Date Range and iterates manually the Start and End date of those months that will be converted as Query.
              */
                 $holiday_date_range['query_array'] = [];
@@ -794,28 +794,28 @@ class DtrRepository implements DtrRepositoryInterface{
                     array_push($holiday_date_range['wildcard_array'], $row->start_date, $row->end_date);
                 }
             /** */
-            
+
             // Fetch all the Holidays within the Start and End date as Parameter.
             $holiday_collection = Holiday::whereRaw("
-                                                ( is_predefined = 1 
+                                                ( is_predefined = 1
                                                   AND (". implode( " OR ", $holiday_date_range['query_array'] ) ."))
                                             OR
-                                                ( is_predefined = 0 
+                                                ( is_predefined = 0
                                                   AND date BETWEEN ? AND ? )
-                                            ", array_merge( 
+                                            ", array_merge(
                                                     $holiday_date_range['wildcard_array'],
                                                     array(
                                                         $start_date,
                                                         $end_date
-                                                    )  
-                                                ) 
+                                                    )
+                                                )
                                             )
                                             ->orderBy('date', 'asc')
                                             ->get();
-            
+
             // Iterate the Fetched Holidays.
             foreach( $holiday_collection as $holiday ){
-                
+
                 try{
                     // Parses the Proper Date of the Holiday ( To automate the condition for Pre-defined and non Pre-defined Holiday Dates. )
                     $date = $holiday->getProperDate( $start_date, $end_date );
@@ -824,11 +824,11 @@ class DtrRepository implements DtrRepositoryInterface{
                     $dtr_collection = Dtr::select('dtrs.*')
                                             ->whereRaw(
                                                 "dtrs.date = ?
-                                                    AND 
+                                                    AND
                                                     NOT EXISTS (
-                                                        SELECT * 
+                                                        SELECT *
                                                         FROM dtr_holidays
-                                                        WHERE dtrs.id = dtr_holidays.dtr_id 
+                                                        WHERE dtrs.id = dtr_holidays.dtr_id
                                                             AND dtr_holidays.holiday_id = ?
                                                     )
                                                 ",
@@ -838,13 +838,13 @@ class DtrRepository implements DtrRepositoryInterface{
                                                 )
                                             )
                                             ->get();
-                    
+
                     foreach( $dtr_collection as $dtr ) {
                         $dtr->holidays()->save( $holiday );
                         $result->push( $dtr );
                         log_to_file( 'info', 'Holiday Inserted on this DTR.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
                     }
-                
+
                 } catch (Exception $e) {
                     log_to_file( 'info', '[RECORD ERROR: ID - '. $holiday->id. ' ' . __FUNCTION__ , ['holiday' => $holiday ] , "holiday");
                     continue;
@@ -867,9 +867,9 @@ class DtrRepository implements DtrRepositoryInterface{
     }
 
 
-    
 
-    
+
+
     /**
      *  Responsible for Binding the Leaves that was fetched between the Date Range to the DTR Related by Date.
      * @param string $start_date
@@ -904,10 +904,10 @@ class DtrRepository implements DtrRepositoryInterface{
                                                         $row->end
                                                     )
                                                 )->get();
-                        
+
                         // Iterate each DTR in order to bind the Leave on each DTR.
                         foreach( $dtr_collection as $dtr ) {
-                            
+
                             # Setting the Amount of Leave from the Leave request for the Corresponding Date
                             $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
 
@@ -928,7 +928,7 @@ class DtrRepository implements DtrRepositoryInterface{
                             $this->compute_payroll_items( $dtr );
 
                         }
-                    
+
                         $processed_data[] = [
                             "date" => $row->start .' - '.  $row->end,
                             "employee_no" =>  $user->emp_num,
@@ -938,38 +938,38 @@ class DtrRepository implements DtrRepositoryInterface{
                             "amount" =>   ( is_valid( $row->amount->amount ) ) ? $row->amount->amount : 'null',
                         ];
 
-                        
+
                     }
                 } catch (Exception $t) {
                     log_to_file( 'info', '[FOR LOOP ERROR - ' . "$row->id" . "]" . __FUNCTION__ , [], "dtr");
                     continue;
                 }
             }
-                                    
+
             # Creates the Customized Query for Batch inserting the To-be-generated Leaves.
             $leave_insert_query = "INSERT INTO leaves (
-                                                dtr_id, 
-                                                type, 
+                                                dtr_id,
+                                                type,
                                                 status,
                                                 amount,
                                                 employee_note,
                                                 manager_note,
-                                                updated_at, 
-                                                created_at) 
-                                            VALUES (".implode( "), (", $leave_insert_array ).") 
+                                                updated_at,
+                                                created_at)
+                                            VALUES (".implode( "), (", $leave_insert_array ).")
                                             ON DUPLICATE KEY UPDATE
-                                                dtr_id          = VALUES(dtr_id), 
-                                                type            = VALUES(type), 
-                                                status          = VALUES(status), 
-                                                amount          = VALUES(amount), 
-                                                employee_note   = VALUES(employee_note), 
-                                                manager_note    = VALUES(manager_note), 
+                                                dtr_id          = VALUES(dtr_id),
+                                                type            = VALUES(type),
+                                                status          = VALUES(status),
+                                                amount          = VALUES(amount),
+                                                employee_note   = VALUES(employee_note),
+                                                manager_note    = VALUES(manager_note),
                                                 created_at      = IF(created_at IS NULL, VALUES(created_at), created_at),
                                                 updated_at      = VALUES(updated_at)";
-            
+
             # Executes the Batch Insert Query
             $result = [
-                "result" => DB::insert($leave_insert_query), 
+                "result" => DB::insert($leave_insert_query),
                 "total_dtr_count" => count( $leave_insert_array ),
                 "dtr_leaves"   => $leave_insert_array
             ];
@@ -1001,23 +1001,22 @@ class DtrRepository implements DtrRepositoryInterface{
      */
     public function sync_biometrics_to_dtr( Collection $biometrics_collection, $dtr_id = null )
     {
-        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "biometrics");
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__, [], "biometrics");
 
         try {
 
             $result = new Collection;
-            
+
             # If the Biometrics has value, proceed on the Iteration.
             if( $biometrics_collection->count() > 0 ) {
-                
+
                 foreach( $biometrics_collection as $biometrics ){
 
                     try{
 
                         $dtr = $this->apply_biometrics_to_dtr( $biometrics, $dtr_id );
-                        
                         if( is_valid( $dtr ) ){
-                            
+
                             $result->push( $dtr );
 
                             // If the DTR has Valid Time Logs, trigger the computation for Payroll items.
@@ -1029,7 +1028,7 @@ class DtrRepository implements DtrRepositoryInterface{
                         continue;
                     }
 
-                } 
+                }
             }
 
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "biometrics");
@@ -1043,7 +1042,7 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
-    
+
 
     /**
      *  Responsible for Computing the DTR Payroll Items Summary base from the User Collection and the Date Range.
@@ -1054,7 +1053,7 @@ class DtrRepository implements DtrRepositoryInterface{
      */
     public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
-        
+
         try{
             // Get the DTR Collection via the User ID from the collection and the date between the start_date and end_date. Added sorting for the Emp number, First and Last name, then DTR's date.
             $dtr_collection = Dtr::whereIn('user_id', $user_collection->pluck('id')->toArray())
@@ -1064,18 +1063,18 @@ class DtrRepository implements DtrRepositoryInterface{
                 if( request()->get('link') == 'team_schedule' ){
                     if( request()->get('page')== 'day' ){
                         $dtr_collection ->whereRaw("
-                           (    
+                           (
                                 start_datetime BETWEEN ".strtotime($start_date)." AND ".strtotime($end_date)."
                                     OR
                                 end_datetime BETWEEN ".strtotime($start_date)." AND ".strtotime($end_date)."
                                     OR
-                                date BETWEEN '".$start_date."' AND  '".$end_date."' 
+                                date BETWEEN '".$start_date."' AND  '".$end_date."'
                             )
                         ");
                     }else{
                         $dtr_collection ->whereRaw("
-                        (    
-                             date BETWEEN '".$start_date."' AND  '".$end_date."' 
+                        (
+                             date BETWEEN '".$start_date."' AND  '".$end_date."'
                          )
                      ");
                     }
@@ -1121,11 +1120,11 @@ class DtrRepository implements DtrRepositoryInterface{
         DB::beginTransaction();
         try{
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'dtr' => $dtr], "dtr_computation");
-            
+
             $dtr->payroll_items()->delete();
 
             $payroll_items = $this->computation->get_computed_payroll_items( $dtr );
-            
+
             $dtr->payroll_items()->saveMany($payroll_items);
 
             DB::commit();
@@ -1141,9 +1140,9 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-    
 
-    
+
+
     /**
      * Gets the leaves binded from the specific DTR collections
      * @param Collection $dtr_collection
@@ -1175,7 +1174,7 @@ class DtrRepository implements DtrRepositoryInterface{
         DB::beginTransaction();
         try {
 
-    
+
             # Sets the Result as null by default.
             $result = null;
 
@@ -1222,24 +1221,26 @@ class DtrRepository implements DtrRepositoryInterface{
                 DB::commit();
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
-                $days = 11;
-                $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
-                $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
-                $user_collection = new Collection();
-                $user_collection->push((object)User::findOrFail(Auth::user()->id));
-                $result = $this->generate_dtr( $user_collection, $dates );
-                $result =$this->apply_biometrics_to_dtr($biometrics);
+                if (Auth::user()) {
+                    $days = 11;
+                    $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
+                    $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
+                    $user_collection = new Collection();
+                    $user_collection->push((object)User::findOrFail(Auth::user()->id));
+                    $result = $this->generate_dtr( $user_collection, $dates );
+                    $result =$this->apply_biometrics_to_dtr($biometrics);
 
-                log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
+                    log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
+                }
 
                 /* Commented old implementation of generate dtr upon quickpunch
                 $days = 7;
                 $dates = get_succeeding_days(  $biometrics->CheckTime , $days ) ;
-        
+
                 $emp_nump = Auth::user()->id;
-                
+
                 $columns_to_selected = [];
-        
+
                 if( $biometrics->CheckType == 'I' ){
                     $columns_to_selected[] = "table1.time_in";
                     $time_sql = " as time_in";
@@ -1249,18 +1250,18 @@ class DtrRepository implements DtrRepositoryInterface{
                     $columns_to_selected[] = "table1.time_out";
                     $table = "time_out";
                 }
-                
+
                 # THIS SQL CREATES RECORD OF 7 DAYS RECORDS OF DTR
                 $records_to_be_insert =  "SELECT ".$emp_nump." as user_id,".strtotime($biometrics->CheckType) ." ".$time_sql."," . implode(" as date UNION ALL SELECT  ".$emp_nump." as user_id, null ".$time_sql.",", $dates);
-                
-                
+
+
                 # THIS SQL CREATES A RELATION
-                $record_that_dont_exist = " FROM (" .$records_to_be_insert ." ) as table1 
-                LEFT JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id 
-                LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id 
+                $record_that_dont_exist = " FROM (" .$records_to_be_insert ." ) as table1
+                LEFT JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id
+                LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id
                     AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
-                LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id 
-                LEFT JOIN schedule_details as sched_details ON sched_details.schedule_id = sched.id 
+                LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id
+                LEFT JOIN schedule_details as sched_details ON sched_details.schedule_id = sched.id
                     AND ( sched_details.day = LOWER(SUBSTRING(DAYNAME(table1.date),1, 3)) or sched_details.day='all')
                 LEFT JOIN users on table1.user_id = users.id
                 WHERE dtr.date is NULL AND dtr.user_id is NULL AND table1.date >= users.date_hired AND is_active = 1
@@ -1269,46 +1270,46 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 $delete_sched_pol = "DELETE dtr_policies from dtr_policies JOIN dtrs ON dtrs.id = dtr_policies.dtr_id WHERE dtrs.date in ( ". implode(" ,", $dates) ." ) AND dtrs.user_id = ".  $emp_nump .";";
 
-                $insert_sched_policy =  "INSERT INTO dtr_policies (dtr_id, policy, value) SELECT dtr.id,sched_pol.policy, sched_pol.value  FROM (" .$records_to_be_insert ." ) as table1              
-                JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id 
-                LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id 
+                $insert_sched_policy =  "INSERT INTO dtr_policies (dtr_id, policy, value) SELECT dtr.id,sched_pol.policy, sched_pol.value  FROM (" .$records_to_be_insert ." ) as table1
+                JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id
+                LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id
                     AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
-                LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id 
+                LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id
                 LEFT JOIN users on table1.user_id = users.id
-                LEFT JOIN schedule_policies as sched_pol ON sched_pol.schedule_id = sched.id 
+                LEFT JOIN schedule_policies as sched_pol ON sched_pol.schedule_id = sched.id
                 WHERE table1.date >= users.date_hired AND is_active = 1
                 AND ( change_sched.status = 'approved' OR change_sched.status is null )
                 GROUP BY table1.date,sched_pol.policy";
 
                 $columns_to_selected[] = "table1.user_id";
-                
+
                 $columns_to_selected[] = "table1.date";
-                
+
                 $columns_to_selected[] = "sched_details.break_time as break_time";
 
                 $start_time = "sched_details.start_time";
                 $columns_to_selected[] = check_column_exist( $start_time , "unix_timestamp( table1.date ) + ". $start_time ) . " as start_datetime";
-        
+
                 $end_time = "sched_details.end_time";
                 $columns_to_selected[] = check_column_exist( $end_time ,check_column_end_datetime( "unix_timestamp( table1.date ) + ". $start_time , "unix_timestamp( table1.date ) + " . $end_time) ) ." as end_datetime";
-        
+
                 $start_flexy_time = "sched_details.start_flexy_time";
                 $columns_to_selected[] = check_column_exist( $start_flexy_time ,check_column_start_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $end_time , "unix_timestamp( table1.date ) + " . $start_flexy_time) ) ." as start_flexy_datetime";
-                
-        
+
+
                 $end_flexy_time = "sched_details.end_flexy_time";
                 $columns_to_selected[] = check_column_exist( $end_flexy_time ,check_column_end_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $start_flexy_time , "unix_timestamp( table1.date ) + " . $end_time, "unix_timestamp( table1.date ) + " .$end_flexy_time) ) ." as start_flexy_datetime";
-                
+
                 $columns_to_selected[] = check_if_restday( "table1.date" , "sched.rest_days") . " as is_rest_day";
-                
+
                 $columns_to_selected[] = "NOW() as created_at";
                 $columns_to_selected[] = "NOW() as updated_at";
-                
+
                 $insert_sql_raw = "INSERT INTO dtrs (".$table.",  user_id , date, break_time, start_datetime, end_datetime, start_flexy_datetime, end_flexy_datetime, is_rest_day, created_at, updated_at) SELECT ". implode( "," ,$columns_to_selected ). $record_that_dont_exist . ";";
                 $sql_raw = $insert_sql_raw. $delete_sched_pol. $insert_sched_policy;
 
                 DB::unprepared($sql_raw);
-                
+
                 $result = null;
 
                 log_to_file( 'info', "DTR not Existing. 1 week generation is performed." , ['biometrics'=> $biometrics], "biometrics" );
@@ -1319,7 +1320,7 @@ class DtrRepository implements DtrRepositoryInterface{
             return $result;
         } catch (Exception $e) {
             DB::rollback();
-            
+
             log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "biometrics");
             log_error($e, 'biometrics');
             throw $e;
@@ -1336,7 +1337,7 @@ class DtrRepository implements DtrRepositoryInterface{
         DB::beginTransaction();
         try{
             $dtr_policies_array = [];
-            
+
             # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
             foreach( $schedule_policies_collection as $schedule_policy ){
                 $dtr_policies_array[ $schedule_policy->policy ] = new DtrPolicy();
@@ -1345,7 +1346,7 @@ class DtrRepository implements DtrRepositoryInterface{
             }
 
             $dtr->policies()->saveMany( $dtr_policies_array );
-            
+
             DB::commit();
             log_to_file('info', 'Success', [$dtr_policies_array]);
             return true;
@@ -1365,13 +1366,13 @@ class DtrRepository implements DtrRepositoryInterface{
 
     /**
      *  Responsible for fetching the Time-off for the current DTR Instance.
-     *   
+     *
      * @param Dtr $dtr
      * @param Collection $dtr_leaves_collection (Leave)
      * @return timestamp $timeoff
      */
     private function get_timeoff(Dtr $dtr, $dtr_leaves_collection){
-        try{    
+        try{
             $timeoff = 0;
 
             # Iterate the DTR Leave Collection

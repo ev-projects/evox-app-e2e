@@ -56,8 +56,9 @@ class UserProfileResource extends JsonResource
             'mobile_number' => $this->mobile_number,
             'force_change_password' => $this->force_change_password,
             'dpa_ticked_at' => $this->dpa_ticked_at,
-            'full_name' => $this->getFullName()
-        );
+            'full_name' => $this->getFullName(),
+            'user_has_schedule' => $this->getHasSchedule(),
+                );
 
         if( $this->show_full_info ) {
 

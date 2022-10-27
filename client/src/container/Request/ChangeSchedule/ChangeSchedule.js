@@ -34,17 +34,68 @@ import Validator from "../../../services/Validator";
 import Authenticator from "../../../services/Authenticator";
 
 class ChangeSchedule extends Component {
-
+	
+	handleShow = () => {    
+		    this.setState({
+		    //   changelogInfo: data,
+		      isShowModel: true
+		    });
+		  }
+		
+		  handleOnhide = () => {
+		    this.setState({
+		        isShowModel: false
+		    });
+		  }
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = (values) => {
 
 	values.schedule_details = Formatter.format_schedule_details(values);
 
     // Setting of Form Data to be passed in the submission Not using the Form Data object of Javascript since it does not support objects.
-    var formData = {};
-
+	var formData = {};
+	let newValues = {};
+	let nsdAlertCall =false;
+	
+	
+	let i = 0;
     for (var key in values) {
-      
+
+		
+// -------------create new dates depending on timezone -------------
+	  if(key =='cst_schedule_details'){
+		
+		for(var keyList in  values[key]){
+			newValues[key] = newValues[key]!=  undefined ? newValues[key] : {};
+			
+			for(var keyDate in  values[key][keyList]){
+				newValues[key][keyList] =newValues[key][keyList]!=  undefined ? newValues[key][keyList] : {};
+				if(keyDate != 'break_time'){
+					
+					newValues[key][keyList][keyDate] = values[key][keyList][keyDate];
+
+				}
+				
+			}
+			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).format('HH')) || 
+			parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HH'))){
+				nsdAlertCall = true;
+				console.log(1);
+			}
+			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) < 7 ){
+				nsdAlertCall = true;
+				console.log(2);
+			}
+			if(parseInt(moment(newValues[key][keyList]['end_time']).format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HHmm')) > 2200 ){
+				nsdAlertCall = true;
+				console.log(3);
+			}
+			
+			
+		}
+	  }
+	  
+	  
         if( values[key] != null ) {
             switch( key ) {
                 case "valid_from":
@@ -57,46 +108,56 @@ class ChangeSchedule extends Component {
             }
         } 
     }
-    
+    console.log(newValues,nsdAlertCall, formData.schedule_policies.allow_night_diff == 0);
+	if(!nsdAlertCall || !(formData.schedule_policies.allow_night_diff == 0)){
+		switch( values.action ) { 
+
+			// If action is NULL, it means it's either store/update
+			case null:
+				if (window.confirm("Are you sure you want to submit/update this request?")) {
+					switch( values.method ) {
+	
+					  case "store":
+						  this.props.addChangeSchedule( formData );
+						  break;
+				
+					  case "update":
+						  formData['_method'] = 'PUT';
+						  this.props.updateChangeSchedule( values.id, formData );
+						  break;
+	
+					  default:
+						  break;
+	
+					}
+				}
+				break;
+	
+			// If action is approve/decline/cancel, it means it's a change of Status
+			case "approve":
+			case "decline":
+			case "cancel":
+				if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
+					formData['_method'] = 'PUT';
+					this.props.updateChangeScheduleStatus( values.id, formData, values.action );
+				}
+				break;
+		}
+	}else{
+		// alert("Alert one of your schedules days NSD Applicable");
+		// nsdAlertMsg = true;
+		this.handleShow();
+	}
     // Checks on what action to use depending on the values.action
-    switch( values.action ) { 
-
-        // If action is NULL, it means it's either store/update
-        case null:
-            if (window.confirm("Are you sure you want to submit/update this request?")) {
-                switch( values.method ) {
-
-                  case "store":
-                      this.props.addChangeSchedule( formData );
-                      break;
-            
-                  case "update":
-                      formData['_method'] = 'PUT';
-                      this.props.updateChangeSchedule( values.id, formData );
-                      break;
-
-                  default:
-                      break;
-
-                }
-            }
-            break;
-
-        // If action is approve/decline/cancel, it means it's a change of Status
-        case "approve":
-        case "decline":
-        case "cancel":
-            if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
-				formData['_method'] = 'PUT';
-                this.props.updateChangeScheduleStatus( values.id, formData, values.action );
-            }
-            break;
-    }
+   
   }
 
   
+  
   componentWillMount(){
-      
+	this.setState({
+		isShowModel: false
+	});
       // Clear the Instance of Change Schedule before rendering new Instance (If applicable)
       this.props.clearChangeScheduleInstance();
 
@@ -113,7 +174,6 @@ class ChangeSchedule extends Component {
 		// if( this.props.instance.id != undefined && ['canceled', 'declined'].includes( this.props.instance.status ) ) {
 		// 	this.props.resetChangeScheduleInstance();
 		// }
-
 		// Checks if the Instance is On Approval state.
 		const onApproval = this.props.instance?.is_under_supervisee && Authenticator.check('supervisor', 'manage_employee_request') ? this.props.instance.is_under_supervisee : false;
 
@@ -169,6 +229,9 @@ class ChangeSchedule extends Component {
 			schedule_type : 'customize',
 			bind_to : 'user',
 			bind_id :  this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(),
+
+			nsdAlertMsg : false,
+			
 		}
 
 
@@ -192,8 +255,18 @@ class ChangeSchedule extends Component {
 						<input type="hidden" name="id"  value={values.id} />
             			{ onApproval ? <input type="hidden" name="status"  value={values.status} /> : null}
 						<ContainerWrapper>
+							
 							<ContainerBody>
+						
 								<Content col="7" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
+								{
+								this.state.isShowModel &&
+								<NightShiftModal 
+								changelogInfo = { this.state.changelogInfo }
+								showModel = {this.state.isShowModel}
+								handleModalClose = {() => {this.handleOnhide()}}
+								/>
+								}
 									<Row>
 										<Col size="4">
 											<div className="form-group">
@@ -285,7 +358,30 @@ class ChangeSchedule extends Component {
 	}
 }
 
+/** other functions */
+function NightShiftModal(props) {
+	return (
+	  <div id="myModal" className="modal-main">
+		<div className="modal-content">
+		  <div className="modal-header">
+			<span className="close" onClick = {() => props.handleModalClose()}>&times;</span>
+		  </div>
 
+		  <div className="modal-body">
+			<h5>Night Shift Applicable</h5>
+			<p>One of the days is "Night Differential" applicable and should be toggled on.</p>
+			<p>Having it on would assist the system on calculating  night shift hours and allow clock out on next day or early clock in.</p>
+			<p>Conditions for this to apply is only if one or more of your days has:</p>
+				<ul>
+					<li>a schedule that has time in and time out after after 10 PM</li>
+					<li>or before 7 AM</li>
+				</ul>
+			<></>
+		  </div>
+		</div>
+	  </div>    
+	)
+  }
 
 /** Form Validation */
 
