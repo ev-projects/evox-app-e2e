@@ -93,14 +93,17 @@ class ChangeSchedule extends Component {
 			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).format('HH')) || 
 			parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HH'))){
 				nsdAlertCall = true;
+				// console.log("1a");
 				
 			}
 			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) < 7 ){
 				nsdAlertCall = true;
+				// console.log("1b");
 			
 			}
 			if(parseInt(moment(newValues[key][keyList]['end_time']).format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HHmm')) > 2200 ){
 				nsdAlertCall = true;
+				// console.log("1c");
 				
 			}
 			
@@ -108,12 +111,12 @@ class ChangeSchedule extends Component {
 
 			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HHmm'))  >  parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HHmm'))  ){
 				beforeFlexAlertCall = true;
-				console.log(beforeFlexAlertCall);
-				console.log("1");
+				// console.log(beforeFlexAlertCall);
+				// console.log("1");
 			}else if(parseInt(moment(newValues[key][keyList]['start_time']).format('HHmm'))  <  parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HHmm')) - 1200){
 				beforeFlexAlertCall = true;
-				console.log(beforeFlexAlertCall);
-				console.log("2");
+				// console.log(beforeFlexAlertCall);
+				// console.log("2");
 			}
 		
 		}
@@ -168,8 +171,8 @@ class ChangeSchedule extends Component {
 				break;
 		}
 	}else{
-		
-		if((nsdAlertCall || (formData.schedule_policies.allow_night_diff == 0))){
+		// console.log(nsdAlertCall && formData.schedule_policies.allow_night_diff == 0, nsdAlertCall, (formData.schedule_policies.allow_night_diff == 0));
+		if((nsdAlertCall && (formData.schedule_policies.allow_night_diff == 0))){
 			this.handleShow();
 		}
 		if(beforeFlexAlertCall){
