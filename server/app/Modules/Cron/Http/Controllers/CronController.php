@@ -702,8 +702,13 @@ class CronController extends Controller
 
                 $list_of_reminders[$i] = [  $supervisor,
                                             $employee_list ];
-                //note: keep invoking of sendSupervisorReminderNoSchedEmail per array to in which having the payload stay below the allowed packets in mySql
-                $this->email->sendSupervisorReminderNoSchedEmail($list_of_reminders[$i]);
+
+                if($employee_list->isNotEmpty() && is_valid($employee_list)){
+                    //note: keep the invoking of sendSupervisorReminderNoSchedEmail() per array to in which having the 
+                    // payload not go above the allowed max packets in mySql
+                    $this->email->sendSupervisorReminderNoSchedEmail($list_of_reminders[$i]);
+                }
+                
                 $i = $i +1 ;
                 
             }
