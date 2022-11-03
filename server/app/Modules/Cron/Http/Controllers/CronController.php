@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Payroll\Repositories\PayrollRepository;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrBiometricsResource;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
@@ -49,7 +50,8 @@ class CronController extends Controller
                                 DrupalEvoxRepositoryInterface $drupal_evox,
                                 RestDayWorkRepositoryInterface $rest_day_work,
                                 ChangeScheduleRepositoryInterface $change_schedule,
-                                AlterLogRepositoryInterface $alter_log){
+                                AlterLogRepositoryInterface $alter_log,
+                                EmailRepositoryInterface $email){
         $this->bhr = $bhr;
         $this->payroll_cutoff = $payroll_cutoff;
         $this->user = $user;
@@ -61,6 +63,7 @@ class CronController extends Controller
         $this->rest_day_work    = $rest_day_work;
         $this->change_schedule  = $change_schedule;
         $this->alter_log        = $alter_log;
+        $this->email        = $email;
     }
 
 
@@ -672,6 +675,44 @@ class CronController extends Controller
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+
+
+
+/**
+     * Syncs the Temporary Schedule from Existing EVOX to this new EVOX 
+     *  1. Fetch Temporary Schedule from EVOX base from the Start & End Date
+     *  2. Update/Generate the Temporary Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function weekly_email_supervisor_notification(){
+        try {
+
+            // NOTE: Transferred to folder Command/sendSupervisorReminderNoSchedEmail.php called and set by cmd and set time by cron tab
+           
+            $supervisor_collection = $this->user->get_all_supervisors();
+
+            $list_of_reminders = [];
+            $i = 0;
+            foreach ($supervisor_collection as $supervisor){
+                
+                $employee_list = $this->user->get_users_under_supervisee_active_with_no_schedule( $supervisor);
+
+                $list_of_reminders[$i] = [  $supervisor,
+                                            $employee_list ];
+                //note: keep invoking of sendSupervisorReminderNoSchedEmail per array to in which having the payload stay below the allowed packets in mySql
+                $this->email->sendSupervisorReminderNoSchedEmail($list_of_reminders[$i]);
+                $i = $i +1 ;
+                
+            }
+            
+
+            
+           
+        } catch(Exception $e){
+            throw $e;
         }
     }
 

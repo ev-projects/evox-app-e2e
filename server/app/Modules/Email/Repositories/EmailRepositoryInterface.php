@@ -31,4 +31,8 @@ interface EmailRepositoryInterface
     public function sendChangeScheduleRequestEmail( ChangeSchedule $change_schedule );
 
     public function sendChangeScheduleRequestChangeStatusEmail( ChangeSchedule $change_schedule );
+
+    public function sendSupervisorReminderNoSchedEmail( $reminders );
+
 }
+

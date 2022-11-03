@@ -590,8 +590,20 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+    public function get_all_supervisors(){
+        try {
+            $users = User::where('is_active', 1)
+                            ->whereHas('roles', function( $query ) {
+                                $query->whereIn('name', [ get_constant('USER_ROLES.supervisor')])->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
+                            })
+                        ->get();
+     
+            return $users;
 
-
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
 
 
     /**
@@ -666,7 +678,38 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+             /**
+     *  Responsible for fetching all the Active Users under supervisee with inactive status
+     * @param Request $request
+     * @return User $user_collection ( Collection )
+     */
+    public function get_users_under_supervisee_active_with_no_schedule(User $user){
+        try {
 
+           
+            $user_collection =  $user->users_handled()
+                                
+                                ->where('is_active', 1)
+                                ->whereHas('roles', function( $query ) {
+                                    $query->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
+                                })
+                                ->doesntHave("defaultSchedule")
+                                ->join('departments', 'departments.id', '=', 'users.department_id')
+                                ->select('users.id','emp_num','first_name','last_name', 'email','departments.department_name')
+                                ->orderBy('departments.department_name', 'asc')
+                                ->get(); 
+           
+            
+
+             return $user_collection;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+
+
+    
     /**
      *  Responsible for fetching all the DPA Userl ist
      * @param Request $request

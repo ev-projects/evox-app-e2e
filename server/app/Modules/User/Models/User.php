@@ -163,6 +163,8 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Team::class, 'team_users', 'user_id', 'team_id');
     }
 
+
+
     # Fetch the User's Schedule (Source type is Default)
     public function defaultSchedule(){
         return $this->hasOne(Schedule::class, 'bind_id', 'id')->where([
