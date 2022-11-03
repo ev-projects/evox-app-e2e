@@ -2,29 +2,33 @@
 
 namespace App\Modules\Email\Repositories;
 
-use App\Modules\Department\Models\Department;
-use App\Modules\Email\Jobs\SendAlterLogRequestEmailJob;
-use App\Modules\Email\Jobs\SendChangeScheduleRequestEmailJob;
-use App\Modules\Email\Jobs\SendForgotPasswordRequestEmailJob;
-use App\Modules\Email\Jobs\SendOvertimeRequestEmailJob;
-use App\Modules\Email\Jobs\SendRegisteredUserEmailJob;
-use App\Modules\Email\Jobs\SendRestDayWorkRequestEmailJob;
-use App\Modules\Request\Models\AlterLog;
-use App\Modules\Request\Models\ChangeSchedule;
-use App\Modules\Request\Models\Overtime;
-use App\Modules\Request\Models\RestDayWork;
-use App\Modules\User\Models\User;
+use Exception;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
-use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
+
+
+
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Database\Eloquent\Model;
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\Overtime;
+use App\Modules\Request\Models\RestDayWork;
+use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Department\Models\Department;
+use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Email\Jobs\SendRegisteredUserEmailJob;
+use App\Modules\Email\Jobs\SendAlterLogRequestEmailJob;
+use App\Modules\Email\Jobs\SendOvertimeRequestEmailJob;
+use App\Modules\Email\Jobs\SendRestDayWorkRequestEmailJob;
+use App\Modules\Email\Jobs\SendChangeScheduleRequestEmailJob;
+use App\Modules\Email\Jobs\SendForgotPasswordRequestEmailJob;
+use App\Modules\Email\Jobs\SendSupervisorReminderNoSchedEmailJob;
 
 class EmailRepository implements EmailRepositoryInterface{
     
@@ -230,4 +234,28 @@ class EmailRepository implements EmailRepositoryInterface{
         }
     }
 
+
+    public function sendSupervisorReminderNoSchedEmail( $reminder){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendSupervisorReminderNoSchedEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
+
+            // dump("reached");
+            // dump( $user ,$employee_list->toArray());
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            
+            
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
+            throw $e;
+        }
+    }
 }

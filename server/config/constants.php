@@ -102,7 +102,8 @@ return [
 
 
     
-    'EASTVANTAGE_DEV_EMAIL' => 'eastvantage.dev@gmail.com',
+    // 'EASTVANTAGE_DEV_EMAIL' => 'eastvantage.dev@gmail.com',
+    'EASTVANTAGE_DEV_EMAIL' => 'reignald.tolentino@eastvantage.com',
 
 
     'BCC_EMAIL_ADDRESS' => [
@@ -110,9 +111,8 @@ return [
     ],
 
     'BCC_EMAIL_ADDRESS_FOR_NON_PROD' => [
-        'aaron.colina@eastvantage.com',
-        'carmela.garcia@eastvantage.com',
-        'mel.ugaddan@eastvantage.com'
+        'reignald.tolentino@eastvantage.com',
+    
     ],    
 
     'LEAVE_REQUEST_STATUS' => [
@@ -150,6 +150,11 @@ return [
         'overtime' => 'overtime', 
         'rest_day_work' => 'rest_day_work',
         'change_schedule' => 'change_schedule'
+    ],
+
+    'REMINDER_TYPE' => [
+        'no_sched' => 'Employees_without_Scheduled', 
+       
     ],
 
     'UNPAID_LEAVE_TYPES' => [

@@ -31,9 +31,13 @@ interface UserRepositoryInterface
 
     public function get_all_active_users();
 
+    public function get_all_supervisors();
+
     public function get_users_under_supervisee( Request $request, $start_date, $end_date );
 
     public function get_users_under_supervisee_with_inactive( Request $request, $start_date, $end_date );
+
+    public function get_users_under_supervisee_active_with_no_schedule(User $user);
 
     public function get_dpa_list( Request $request);
 
