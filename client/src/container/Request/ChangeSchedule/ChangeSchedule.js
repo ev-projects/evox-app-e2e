@@ -37,14 +37,26 @@ class ChangeSchedule extends Component {
 	
 	handleShow = () => {    
 		    this.setState({
-		    //   changelogInfo: data,
-		      isShowModel: true
+		    //   messageInfo: data,
+		      isShowModelNsd: true
 		    });
 		  }
 		
 		  handleOnhide = () => {
 		    this.setState({
-		        isShowModel: false
+		        isShowModelNsd: false
+		    });
+		  }
+		  handleShow2 = () => {    
+		    this.setState({
+		    //   messageInfo: data,
+		      isShowModelBeforeFlex: true
+		    });
+		  }
+		
+		  handleOnhide2 = () => {
+		    this.setState({
+		        isShowModelBeforeFlex: false
 		    });
 		  }
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
@@ -56,6 +68,7 @@ class ChangeSchedule extends Component {
 	var formData = {};
 	let newValues = {};
 	let nsdAlertCall =false;
+	let beforeFlexAlertCall =false;
 	
 	
 	let i = 0;
@@ -80,18 +93,32 @@ class ChangeSchedule extends Component {
 			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).format('HH')) || 
 			parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HH'))){
 				nsdAlertCall = true;
-				console.log(1);
+				// console.log("1a");
+				
 			}
 			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) < 7 ){
 				nsdAlertCall = true;
-				console.log(2);
+				// console.log("1b");
+			
 			}
 			if(parseInt(moment(newValues[key][keyList]['end_time']).format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HHmm')) > 2200 ){
 				nsdAlertCall = true;
-				console.log(3);
+				// console.log("1c");
+				
 			}
 			
 			
+
+			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HHmm'))  >  parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HHmm'))  ){
+				beforeFlexAlertCall = true;
+				// console.log(beforeFlexAlertCall);
+				// console.log("1");
+			}else if(parseInt(moment(newValues[key][keyList]['start_time']).format('HHmm'))  <  parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HHmm')) - 1200){
+				beforeFlexAlertCall = true;
+				// console.log(beforeFlexAlertCall);
+				// console.log("2");
+			}
+		
 		}
 	  }
 	  
@@ -108,8 +135,8 @@ class ChangeSchedule extends Component {
             }
         } 
     }
-    console.log(newValues,nsdAlertCall, formData.schedule_policies.allow_night_diff == 0);
-	if(!nsdAlertCall || !(formData.schedule_policies.allow_night_diff == 0)){
+    // console.log(newValues,nsdAlertCall, formData.schedule_policies.allow_night_diff == 0);
+	if((!nsdAlertCall || !(formData.schedule_policies.allow_night_diff == 0)) && (!beforeFlexAlertCall)){
 		switch( values.action ) { 
 
 			// If action is NULL, it means it's either store/update
@@ -144,9 +171,14 @@ class ChangeSchedule extends Component {
 				break;
 		}
 	}else{
-		// alert("Alert one of your schedules days NSD Applicable");
-		// nsdAlertMsg = true;
-		this.handleShow();
+		// console.log(nsdAlertCall && formData.schedule_policies.allow_night_diff == 0, nsdAlertCall, (formData.schedule_policies.allow_night_diff == 0));
+		if((nsdAlertCall && (formData.schedule_policies.allow_night_diff == 0))){
+			this.handleShow();
+		}
+		if(beforeFlexAlertCall){
+			this.handleShow2();
+		}
+	
 	}
     // Checks on what action to use depending on the values.action
    
@@ -156,7 +188,8 @@ class ChangeSchedule extends Component {
   
   componentWillMount(){
 	this.setState({
-		isShowModel: false
+		isShowModelNsd: false,
+		isShowModelBeforeFlex: false
 	});
       // Clear the Instance of Change Schedule before rendering new Instance (If applicable)
       this.props.clearChangeScheduleInstance();
@@ -170,10 +203,7 @@ class ChangeSchedule extends Component {
 
   	render = () => {  
 
-		// If there's an existing instance and it's status is Canceled/Declined, reset the Change Schedule instance but retain the ID to reuse the existing record.
-		// if( this.props.instance.id != undefined && ['canceled', 'declined'].includes( this.props.instance.status ) ) {
-		// 	this.props.resetChangeScheduleInstance();
-		// }
+	
 		// Checks if the Instance is On Approval state.
 		const onApproval = this.props.instance?.is_under_supervisee && Authenticator.check('supervisor', 'manage_employee_request') ? this.props.instance.is_under_supervisee : false;
 
@@ -260,11 +290,20 @@ class ChangeSchedule extends Component {
 						
 								<Content col="7" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
 								{
-								this.state.isShowModel &&
+								this.state.isShowModelNsd &&
 								<NightShiftModal 
-								changelogInfo = { this.state.changelogInfo }
-								showModel = {this.state.isShowModel}
+								messageInfo = { this.state.messageInfo }
+								showModel = {this.state.isShowModelNsd}
 								handleModalClose = {() => {this.handleOnhide()}}
+								/>
+								}
+
+								{
+								this.state.isShowModelBeforeFlex &&
+								<BeforeFlex 
+								messageInfo = { this.state.messageInfo }
+								showModel = {this.state.isShowModelBeforeFlex}
+								handleModalClose = {() => {this.handleOnhide2()}}
 								/>
 								}
 									<Row>
@@ -375,6 +414,40 @@ function NightShiftModal(props) {
 				<ul>
 					<li>a schedule that has time in and time out after after 10 PM</li>
 					<li>or before 7 AM</li>
+				</ul>
+			<></>
+		  </div>
+		</div>
+	  </div>    
+	)
+  }
+
+  /** other functions */
+function BeforeFlex(props) {
+	return (
+	  <div id="myModal" className="modal-main">
+		<div className="modal-content">
+		  <div className="modal-header">
+			<span className="close" onClick = {() => props.handleModalClose()}>&times;</span>
+		  </div>
+
+		  <div className="modal-body">
+			<h5>Incorrect Flex Time</h5>
+			<p>One of your days has an incorrect flex time where the flex time is earlier than the standard flex.</p>
+			<p>Please change it to prevent to prevent DTR miscalculation.</p>
+			<p>Conditions for this to apply is only if one or more of your days has :</p>
+				<ul>
+					<li> A flex time is earlier than scheduled on-duty time   </li>	
+				</ul>
+			<p>Unacceptable examples of schedules are: </p>
+				<ul>
+					<li> 1:00 AM On DUTY |  23:00 PM On DUTY FLEX - previous Day </li>	
+					<li> 9:00 AM On DUTY |  8:00  AM  On DUTY FLEX</li>	
+				</ul>
+			<p>Keep the flexibility extension of hour a maximum of 1-4 hours, acceptable examples of schedules are: </p>
+				<ul>
+					<li> 8:00 AM On DUTY  |  10:00 AM On DUTY FLEX </li>	
+					<li> 11:00 AM On DUTY |  12:00 AM On DUTY FLEX </li>	
 				</ul>
 			<></>
 		  </div>
