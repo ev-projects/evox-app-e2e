@@ -158,10 +158,10 @@ class Overtime extends Component {
     if( method == 'store' || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
       
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
-    if(this.props.user.user_has_schedule == false && this.props.user.user_has_schedule !=undefined)
-    {  
-      return <NoScheduleInfo></NoScheduleInfo>
-    }
+    // if(this.props.user.user_has_schedule == false && this.props.user.user_has_schedule !=undefined)
+    // {  
+    //   return <NoScheduleInfo></NoScheduleInfo>
+    // }
 
       return <Wrapper {...this.props} >
         <Formik 
