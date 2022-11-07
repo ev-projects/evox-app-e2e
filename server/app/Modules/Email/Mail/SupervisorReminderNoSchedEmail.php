@@ -57,7 +57,7 @@ class SupervisorReminderNoSchedEmail extends Mailable
             $this->bcc( get_constant('BCC_EMAIL_ADDRESS_FOR_NON_PROD') );
         }
         
-        $this->subject( "Reminder for " . slug_to_text( get_constant('REMINDER_TYPE.no_sched') ) )
+        $this->subject( "Reminder for Employees without Schedules" )
              ->markdown('emails.reminders.no-schedule-reminder');
 
         return $this;

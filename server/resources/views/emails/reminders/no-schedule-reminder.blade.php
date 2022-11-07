@@ -2,13 +2,15 @@
     <div style="width:600px;margin:0 auto 0 auto;background:#fff;border: 1px solid #8fd400;font-family:BhrHeaderFont,Trebuchet MS;">
       <div>
         <div style="height: 50px;background-color: #A0CD32;">
-          <h1 style="font-weight:normal;font-size:1.5em;text-align:center;color:white;padding-top:11px;margin:0px;">Reminder for {{ slug_to_text( get_constant('REMINDER_TYPE.no_sched')) }}</h1>
+          {{-- <h1 style="font-weight:normal;font-size:1.5em;text-align:center;color:white;padding-top:11px;margin:0px;">Reminder for {{ slug_to_text( get_constant('REMINDER_TYPE.no_sched')) }}</h1> --}}
+          <h1 style="font-weight:normal;font-size:1.5em;text-align:center;color:white;padding-top:11px;margin:0px;">Reminder regarding employees with out default schedule</h1>
+
         </div>
         
         
         <div style="padding: 0px 25px 10px 25px;">
           <p><strong>Dear {{ $recepient->getFullName() }},</strong><br></p>
-          <p>Listed below are employees without schedule:</p>
+          <p>Listed below are employees without default schedule:</p>
         </div>
         <div style="padding: 0px 25px 0px 25px;">
           <table width="100%" style="margin-left:auto;margin-right:auto;">
