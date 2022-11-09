@@ -134,6 +134,11 @@ class syncBhrUsers extends Command
                             }
 			}
 			}
+
+            if( is_valid( $user ) && is_valid( $bhr_user ) ) {
+                                                                            //call user again but with department name
+                $new_user_list_for_reminder[ $bhr_user->supervisorEId ][] = User::with("department")->find($user->id);
+            }
                     }
 
 
@@ -141,10 +146,7 @@ class syncBhrUsers extends Command
 
                     # 3.
                     if( is_valid( $user ) && is_valid( $bhr_user ) ) {
-
                         $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
-                                                                                    //call user again but with department name
-                        $new_user_list_for_reminder[ $bhr_user->supervisorEId ][] = User::with("department")->find($user->id);
                     }
 
                    
