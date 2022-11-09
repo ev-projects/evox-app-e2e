@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
         // $schedule->call('App\Modules\Cron\Http\Controllers\CronController@sync_realtime_biometrics')->cron('*/3 * * * *'); 
 
         # Run function to send supervisors about list of employees that have no schedule assigned to them.
-        $schedule->call('App\Modules\Cron\Http\Controllers\CronController@weekly_email_supervisor_notification')->cron('30 7 * * 6'); 
+        // $schedule->call('App\Modules\Cron\Http\Controllers\CronController@weekly_email_supervisor_notification')->cron('30 7 * * 6'); 
     }
 
     /**

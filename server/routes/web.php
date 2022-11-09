@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\User\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,8 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::group(['middleware' => 'web'], function () {
     Route::get('/google-login', 'Auth\LoginController@redirectToProvider')->name('login');
     Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');
     //Route::get('/get-token', 'Auth\LoginController@getToken');
 });
+
