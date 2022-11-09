@@ -34,5 +34,8 @@ interface EmailRepositoryInterface
 
     public function sendSupervisorReminderNoSchedEmail( $reminders );
 
+    public function sendSupervisorReminderofNewUser($new_user_list_for_reminder );
+
+
 }
 

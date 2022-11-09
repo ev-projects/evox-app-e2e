@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\App;
 use App\Modules\User\Models\User;
 
-class SupervisorReminderNoSchedEmail extends Mailable
+class SupervisorReminderOfNewUserEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -30,6 +30,7 @@ class SupervisorReminderNoSchedEmail extends Mailable
         # Declare the variables to be used for this Email
         $this->recepient     = $reminder[0]; // the supervisor
         $this->list_employees = $reminder[1];
+        
 
         # If the App is on Production, send on the actual recepient email
         if( App::environment('production') ) {
@@ -56,8 +57,8 @@ class SupervisorReminderNoSchedEmail extends Mailable
             $this->bcc( get_constant('BCC_EMAIL_ADDRESS_FOR_NON_PROD') );
         }
         
-        $this->subject( "Reminder for Employees without Schedules" )
-             ->markdown('emails.reminders.no-schedule-reminder');
+        $this->subject( "Notfication: New Employees" )
+             ->markdown('emails.reminders.new-users-to-supervisor-reminder');
 
         return $this;
     }

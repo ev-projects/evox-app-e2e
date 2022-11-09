@@ -29,6 +29,7 @@ use App\Modules\Email\Jobs\SendRestDayWorkRequestEmailJob;
 use App\Modules\Email\Jobs\SendChangeScheduleRequestEmailJob;
 use App\Modules\Email\Jobs\SendForgotPasswordRequestEmailJob;
 use App\Modules\Email\Jobs\SendSupervisorReminderNoSchedEmailJob;
+use App\Modules\Email\Jobs\SendSupervisorReminderOfNewUserEmailJob;
 
 class EmailRepository implements EmailRepositoryInterface{
     
@@ -255,6 +256,49 @@ class EmailRepository implements EmailRepositoryInterface{
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
 
+            throw $e;
+        }
+    }
+
+    public function sendSupervisorReminderofNewUser( $new_user_list_for_reminder ){
+
+    
+
+       
+        DB::beginTransaction();
+        try {
+            $result = [];
+
+            foreach($new_user_list_for_reminder as $supervisor_bhr_number => $user_array ) {
+
+               
+                $supervisor = User::where('bhr_num', $supervisor_bhr_number)->first();
+                // error_log( $supervisor->first_name);
+                if( is_valid( $supervisor ) ) {
+
+
+                           
+                        $supervisor_role = Role::findByName( get_constant('USER_ROLES.supervisor') );
+
+                        if($supervisor->hasRole($supervisor_role) ){
+                            $reminder = [ $supervisor , $user_array ];
+                             SendSupervisorReminderOfNewUserEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
+                        }
+                 
+
+
+                } 
+            }
+
+            DB::commit();
+     
+
+    
+
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            DB::rollback();
+            log_error($e);
             throw $e;
         }
     }

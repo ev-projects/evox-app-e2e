@@ -11,6 +11,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
 
@@ -21,6 +22,7 @@ class syncBhrUsers extends Command
      *
      * @var string
      */
+    // protected $signature = 'sync_bhr_users:send {all?}';
     protected $signature = 'sync_bhr_users:send {all?}';
 
     /**
@@ -38,12 +40,14 @@ class syncBhrUsers extends Command
     public function __construct(BhrRepositoryInterface $bhr,
                                 UserRepositoryInterface $user,
                                 ScheduleRepositoryInterface $schedule,
-                                DtrRepositoryInterface $dtr )
+                                DtrRepositoryInterface $dtr ,
+                                EmailRepositoryInterface $email)
     {
         $this->bhr = $bhr;
         $this->user = $user;
         $this->schedule = $schedule;
         $this->dtr = $dtr;
+        $this->email = $email;
 
         parent::__construct();
     }
@@ -61,12 +65,13 @@ class syncBhrUsers extends Command
              *  Steps:
              *  1. Fetch all the list User's BHR Number which was changed yesterday
              *  2. Iterate ever User and check if it's for Insert/Update (generate Department if existing)
-             *  3. Every iteration, save the Supervisor ID x User ID
+             *  3.1. Apply employee to all admins
+             *  3.2. Every iteration, save the Supervisor ID x User ID
              *  4. After iteration, insert the Supervisor ID x User ID on the matrix table.
-             * 
              */
+            $admin_collection = Role::findByName( 'admin' )->users()->get();
             $user_supervisor_pivot_array = [];
-        
+            $new_user_list_for_reminder = [];
             // Use the date yesterday.
             $since_date_to_sync = Carbon::today()->subDays(1)->format('Y-m-d') . 'T00:00:00-00:00';
 
@@ -129,12 +134,25 @@ class syncBhrUsers extends Command
                         }
                     }
 
-
-                    # 3.
+            
                     if( is_valid( $user ) ) {
                         $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
+                                                                                    //call user gaing but with department name
+                        $new_user_list_for_reminder[ $bhr_user->supervisorEId ][] = User::with("department")->find($user->id);
                     }
-                     
+
+                   
+                    if( is_valid( $user ) )
+                    {
+                        # get list of users who are admin
+                        
+                        
+                        foreach( $admin_collection as $admin ) {
+                            $admin->supervisee()->attach( $user );
+                        }
+                    }
+
+                   
                 } catch (Exception $e) {
                     log_to_file( 'info', '[RECORD ERROR: BHRID - '. $bhr_user_number. ' ' . __FUNCTION__ , [], "sync_bhr_user");
                     continue;
@@ -144,17 +162,10 @@ class syncBhrUsers extends Command
             # 4
             $apply_user_supervisor_pivot_result = $this->user->apply_user_supervisor_pivot( $user_supervisor_pivot_array );
 
-                # 5.
-                if( is_valid( $user ) )
-                {
-                    # get list of users who are admin
-                    $admin_collection = Role::findByName( 'admin' )->users()->get();
-                    
-                    foreach( $admin_collection as $admin ) {
-                        $admin->supervisee()->attach( $user );
-                    }
-                }
+            $new_user_supervisor_reminder = $this->email->sendSupervisorReminderofNewUser( $new_user_list_for_reminder );
 
+            
+            
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
                 $apply_user_supervisor_pivot_result,
