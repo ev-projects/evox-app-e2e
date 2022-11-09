@@ -1,5 +1,5 @@
 <div style="width:100%;">
-    <div style="width:800px;margin:0 auto 0 auto;background:#fff;border: 1px solid #8fd400;font-family:BhrHeaderFont,Trebuchet MS;">
+    <div style="width:900px;margin:0 auto 0 auto;background:#fff;border: 1px solid #8fd400;font-family:BhrHeaderFont,Trebuchet MS;">
       <div>
         <div style="height: 50px;background-color: #A0CD32;">
           {{-- <h1 style="font-weight:normal;font-size:1.5em;text-align:center;color:white;padding-top:11px;margin:0px;">Reminder for {{ slug_to_text( get_constant('REMINDER_TYPE.no_sched')) }}</h1> --}}
