@@ -35,7 +35,7 @@ interface DtrRepositoryInterface
 
     public function bind_leaves_to_dtr( array $bhr_leaves_array );
  
-    public function sync_biometrics_to_dtr( Collection $biometrics_collection );
+    public function sync_biometrics_to_dtr( Collection $biometrics_collection, $dtr_id = null );
 
     public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date );
     

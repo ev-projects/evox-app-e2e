@@ -17,15 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/sync_users',    'CronController@sync_users');
-Route::get('/2', function () {
-    $user = User::with("department")->find(2);
-   dump($user ->department->department_name);
+
+Route::group(['middleware' => 'web'], function () {
+    Route::get('/google-login', 'Auth\LoginController@redirectToProvider')->name('login');
+    Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');
+    //Route::get('/get-token', 'Auth\LoginController@getToken');
 });
 
-
-Route::get('/3', function () {
-    $recepient = User::with("department")->find(2);
-    $list_employees = User::with("department")->take(5)->get();
-    return view('emails.reminders.new-users-to-supervisor-reminder', compact("recepient","list_employees"));
-});

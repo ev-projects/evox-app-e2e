@@ -30,6 +30,8 @@ class Login extends Component {
 
     const { user } = this.props
 
+    let googleLoginUrl = process.env.REACT_APP_BACKED_ROOT_URL + "/google-login";
+
     // Check if there's a redirect link and if so, use that redirect link instead of the default dashboard link.
     let redirect_link = global.links.dashboard;
     if( Validator.isValid( this.props.location?.search ) ){
@@ -85,10 +87,18 @@ class Login extends Component {
                                         Forgot Password?
                                       </Link>
                                       </div>
-                                      
+                                      <br />
+                                      <Button className="login_btn" variant="secondary" size="lg" href={googleLoginUrl}>
+                                        <i class="fa fa-google" /> Log In with Google
+                                      </Button>
                                   </form>
                                   )}
                               </Formik>
+                              <div className="banner">
+                                  <img src="https://eastvantage.com/evox/covidvac_banner.jpg" />
+                                  <p>Get your covid vaccine!</p>
+                                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe6fott4pDTudcBWCg0mX9u1CepNkQrhah7Ok19vJClxUGnSA/viewform" target="_blank" className="btn-primary small">Register here</a>
+                              </div>
                           </div>
                       </Card.Body>
                   </Card>

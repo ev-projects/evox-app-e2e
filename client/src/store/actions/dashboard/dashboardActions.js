@@ -106,3 +106,22 @@ export const getRecentDtr = ( user_id, from ,to ) => {
         });
     }
 }
+
+// CHANGE LOGS
+export const getChangeLogs = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/changelogs",
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_CHANGE_LOGS',
+                'data'   : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}

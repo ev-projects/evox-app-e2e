@@ -73,7 +73,7 @@ class syncBhrUsers extends Command
             $user_supervisor_pivot_array = [];
             $new_user_list_for_reminder = [];
             // Use the date yesterday.
-            $since_date_to_sync = Carbon::today()->subDays(1)->format('Y-m-d') . 'T00:00:00-00:00';
+            $since_date_to_sync = Carbon::today()->subDays(14)->format('Y-m-d') . 'T00:00:00-00:00';
 
             # 1.
             # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
@@ -103,11 +103,12 @@ class syncBhrUsers extends Command
                     $bhr_user = $this->bhr->get_user( $bhr_user_number, true );
                     
                     # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
-                    if( is_valid( $user ) ){
+                    if( is_valid( $user ) && is_valid( $bhr_user ) ){
                         $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
                         
                     # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
-                    } else {
+		    } else {
+                if ( is_valid( $bhr_user ) ){
                         $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
 
                         if( is_valid( $user ) ) {
@@ -131,13 +132,18 @@ class syncBhrUsers extends Command
                                 $date_array = generate_date_array($user->date_hired, $nearest_saturday_date );
                                 $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                             }
-                        }
+			}
+			}
                     }
 
-            
-                    if( is_valid( $user ) ) {
+
+
+
+                    # 3.
+                    if( is_valid( $user ) && is_valid( $bhr_user ) ) {
+
                         $user_supervisor_pivot_array[ $bhr_user->supervisorEId ][] = $user->id;
-                                                                                    //call user gaing but with department name
+                                                                                    //call user again but with department name
                         $new_user_list_for_reminder[ $bhr_user->supervisorEId ][] = User::with("department")->find($user->id);
                     }
 
@@ -162,7 +168,9 @@ class syncBhrUsers extends Command
             # 4
             $apply_user_supervisor_pivot_result = $this->user->apply_user_supervisor_pivot( $user_supervisor_pivot_array );
 
+
             $new_user_supervisor_reminder = $this->email->sendSupervisorReminderofNewUser( $new_user_list_for_reminder );
+
 
             
             

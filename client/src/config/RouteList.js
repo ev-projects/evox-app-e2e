@@ -11,6 +11,8 @@ import Footer from "../components/Template/Footer";
 
 // Containers
 import Login from "../container/Login";
+import AuthenticateClient from "../container/AuthenticateClient";
+import EmailNotFound from "../container/EmailNotFound";
 import Dashboard from "../container/Dashboard";
 import TemplateCreate from "../container/Schedule/TemplateCreate";
 import ScheduleAssign from "../container/Schedule/ScheduleAssign";
@@ -60,6 +62,7 @@ import TimeOff from "../container/Profile/TimeOff";
 import Profile from "../container/Profile";
 import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
 import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
+import ChangeLogs from "../container/Admin/ChangeLogs";
 
 const RoutesList = (props) => {
 
@@ -230,7 +233,13 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.generate_date}>
           <GenerateDate  role={['admin']}  />
         </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.manage_change_logs}>
+          <ChangeLogs  role={['admin']}  />
+        </ProtectedRoute>
         
+        <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
+        <Route exact path={["/", global.links.email_not_found ]} component={EmailNotFound} />
         <Route exact path="*" component={PageNotFound} />
       </Switch>
       <Footer />

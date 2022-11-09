@@ -1,2 +1,19 @@
 .dtr-teaser .card-header{border:0 !important;}
 .dtr-teaser .card-body{border:0 !important; padding: 0 !important;}
+
+.jobs-tab {
+    position: relative;
+    top: 12px;
+}
+.jobs-tab .nav-tabs{border: 0 !important;}
+.jobs-tab a{padding: 5px 8px 3px 8px !important; margin-bottom: 0 !important; border:0 !important; color:#333 !important; margin-right: 3px; font-size: .875em !important}
+.jobs-tab a.active {
+     background-color: #82af13  !important; color: #fff !important;
+}
+/* .jobs-tab a{padding: 5px 10px} */
+.jobs-tab .nav-tabs a {
+    font-size: .75rem;
+    margin: 0 1px 0 1px;
+    padding: 3px 7px;
+    background: #ccc;
+}

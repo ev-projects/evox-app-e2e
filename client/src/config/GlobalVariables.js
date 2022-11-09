@@ -7,6 +7,8 @@
 
     // Outside Links
     login                           :  "/login",
+    authenticate_client             :  "/authenticate-client",
+    email_not_found                 :  "/email-not-found",
     request_approval                :  "/request/approval/",
     recover_password                :  "/recover/password/",
 
@@ -62,6 +64,7 @@
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
     assign_role_permission          :  "/app/admin/AssignRolePermission/",
     register_user                   :  "/app/admin/RegisterUser/",
+    manage_change_logs              :  "/app/admin/ManageChangeLogs/",
 
     // Performance Measure
     kpi_upload                      :  "/app/performance/KpiUpload",

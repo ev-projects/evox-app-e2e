@@ -45,17 +45,18 @@ class syncBiotmetrixLogs extends Command
     public function handle()
     {
         try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__, [], "biometrics");
             // fetch the Default 30 minutes gap from the current time.
-                $start_datetime = Carbon::now()->subMinutes(30)->format('Y-m-d H:i:s');
-                $end_datetime = Carbon::now()->format('Y-m-d H:i:s'); 
+                $start_datetime = Carbon::now()->subHours(7)->format('Y-m-d H:i:s');
+                $end_datetime = Carbon::now()->format('Y-m-d H:i:s');
 
 
             $biometrics_collection = $this->biometrics->get_biometrics( $start_datetime, $end_datetime );
-            
+
             $result = DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrics_collection ) );
 
             return success_response(
-                trans('messages.'.__FUNCTION__.'_success'), 
+                trans('messages.'.__FUNCTION__.'_success'),
                 $result
             );
         } catch(Exception $e){
