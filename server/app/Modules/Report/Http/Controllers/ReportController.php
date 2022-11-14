@@ -2,37 +2,38 @@
 
 namespace App\Modules\Report\Http\Controllers;
 
-use App\Exports\DtrSummaryExport;
-use App\Exports\TeamScheduleExport;
+use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\Controller;
-use App\Modules\Payroll\Resources\AnniversaryResources;
-use App\Modules\Payroll\Resources\TeamAttendanceResources;
-use App\Modules\Report\Resources\TeamScheduleResources;
-use App\Modules\Report\Resources\DailyScheduleReources;
-use App\Modules\Report\Resources\WeeklyScheduleResources;
-use App\Modules\Payroll\Resources\HolidayResource;
-use Exception;
+use App\Exports\DtrSummaryExport;
 use Illuminate\Http\JsonResponse;
-use Spatie\Permission\Models\Permission;
-use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
-use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Payroll\Repositories\HolidayRepositoryInterface;
-use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
-use App\Modules\Payroll\Resources\DtrLogResourceCollection;
-use App\Modules\Payroll\Resources\MyDtrNotificationsResource;
-use App\Modules\Report\Repositories\ReportRepositoryInterface;
-use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Exports\TeamScheduleExport;
+use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Modules\Payroll\Models\Holiday;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Permission;
 use App\Exports\TeamSummaryAttendanceExport;
+use Illuminate\Database\Eloquent\Collection;
+use App\Exports\EmployeeAttendanceReportExport;
+use App\Modules\Payroll\Resources\HolidayResource;
 use App\Exports\TeamSummaryAttendanceMultiSheetExport;
+use App\Modules\Payroll\Resources\AnniversaryResources;
+use App\Modules\Report\Resources\DailyScheduleReources;
+use App\Modules\Report\Resources\TeamScheduleResources;
+use App\Modules\Report\Resources\WeeklyScheduleResources;
+use App\Modules\Payroll\Resources\TeamAttendanceResources;
+use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Modules\Payroll\Resources\DtrLogResourceCollection;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Payroll\Resources\MyDtrNotificationsResource;
+use App\Modules\Report\Repositories\ReportRepositoryInterface;
+use App\Modules\Payroll\Repositories\HolidayRepositoryInterface;
 use App\Modules\Payroll\Resources\TeamAttendanceSummaryResource;
 
-use Illuminate\Support\Facades\Storage;
+use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 
 class ReportController extends Controller
 {
@@ -603,5 +604,26 @@ class ReportController extends Controller
         return $team_attendance_summary;
     }
 
+
+
+       /**
+     * Return
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export_sample_summary()
+    {
+        
+        // $excel = new EmployeeAttendanceReportExport;
+        // return $excel->download("sample.csv");
+
+
+        // return Excel::download($excel , 'sample.xlsx' ,  \Maatwebsite\Excel\Excel::XLSX);
+        // ob_end_clean();
+
+        $response = Excel::download(new EmployeeAttendanceReportExport(Carbon::now()->format("Y-m-d"),Carbon::now()->format("Y-m-d")), 'kingdoms.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+        ob_end_clean();
+    
+        return $response;
+    }
 
 }
