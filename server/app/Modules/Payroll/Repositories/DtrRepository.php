@@ -2,24 +2,25 @@
 
 namespace App\Modules\Payroll\Repositories;
 
-use App\Modules\Payroll\Models\Biometrics;
-use App\Modules\Payroll\Models\Computation;
-use App\Modules\Payroll\Models\Dtr;
-use App\Modules\Payroll\Models\DtrSummary;
-use App\Modules\Payroll\Models\DtrPolicy;
-use App\Modules\Payroll\Models\Holiday;
-use App\Modules\Payroll\Models\Leave;
-use App\Modules\Request\Models\AlterLog;
-use App\Modules\Request\Models\RestDayWork;
-use App\Modules\Schedule\Models\Schedule;
-use App\Modules\User\Models\User;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use App\Modules\Request\Models\ChangeSchedule;
-use App\Modules\User\Repositories\UserRepositoryInterface;
 use Auth;
+use Exception;
+use Carbon\Carbon;
+use App\Modules\User\Models\User;
+use Illuminate\Support\Facades\DB;
+use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Payroll\Models\Leave;
+use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Payroll\Models\DtrPolicy;
+use App\Modules\Schedule\Models\Schedule;
+use App\Modules\Payroll\Models\Biometrics;
+use App\Modules\Payroll\Models\DtrSummary;
+use App\Modules\Payroll\Models\Computation;
+use App\Modules\Request\Models\RestDayWork;
+use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Schedule\Models\SchedulePolicy;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 
 class DtrRepository implements DtrRepositoryInterface{
     protected $user;
@@ -1400,6 +1401,92 @@ class DtrRepository implements DtrRepositoryInterface{
 
     //....
 
+    /**
+     *  Responsible for Applying of Schedule to DTR.
+     * @param User|user_id $user_or_user_id
+     * @param Schedule $schedule
+     * @param $bypass
+     *
+     * @return array $result
+     */
+    public function apply_dtr_to_simcorp_dtr( $user, $bypass = false ,  $valid_from, $valid_to , $sched_policy)
+    // public function apply_dtr_to_simcorp_dtr( $user, $bypass = false )
+    {
+        DB::beginTransaction();
+        try {
 
+
+
+            $result = [
+                'updated' => [],
+                'not_updated' => []
+            ];
+
+            $user = ( $user->id instanceof User ) ? $user->id : User::findOrFail($user->id);
+            if( is_valid( $user ) ) {
+
+                    $dtr_collection = $user->dtr($valid_from, $valid_to)->get();
+
+
+                foreach( $dtr_collection as $dtr ) {
+                    
+                    # Default Flag
+                    $to_update_flag = true;
+
+                    if( !$bypass  && ($dtr->isTemporary() || $dtr->isChangeSchedule() || $dtr->isRestDayWork()) ) {
+                        $to_update_flag = false;
+                        $result['not_updated'][] = $dtr;
+                    }
+       
+
+                    if( ($dtr->rest_day_work()->where('status','=','pending')->get()->count() > 0  
+                    && ($dtr->holidays()->count() > 0) )){
+                        $to_update_flag = false;
+                       
+                    }
+                    if( ($dtr->rest_day_work()->where('status','=','approved')->get()->count() == 0  
+                    && ($dtr->holidays()->count() > 0) )){
+                        $to_update_flag = false;
+                    }
+                    if($dtr->isRestDay() && $dtr->rest_day_work()->where('status','=','approved')->get()->count() > 0 && !($dtr->holidays()->count() > 0) ){
+                        $to_update_flag = false;
+                    }
+                    if (!($dtr->hasSchedule())){
+                        $to_update_flag = false;
+                    }
+                    if( $to_update_flag ) {
+
+                        
+                                $dtr->time_in                  =$dtr->start_datetime;
+                                $dtr->time_out                 =$dtr->end_datetime ;
+
+                                $dtr->update();
+
+                                $dtr->policies()->delete();
+
+                                $this->save_dtr_policies( $dtr,  $sched_policy);
+
+                                $this->compute_payroll_items( $dtr );
+                    // }
+                                
+
+                                
+
+                    $result['updated'][] = $dtr;
+                    //    } // has sched
+                    }
+
+                }
+            }
+
+            DB::commit();
+          
+            return $result;
+
+        } catch (Exception $e) {
+          
+            throw $e;
+        }
+    }
 
 }

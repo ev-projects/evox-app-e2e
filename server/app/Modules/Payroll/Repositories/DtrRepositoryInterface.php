@@ -44,5 +44,9 @@ interface DtrRepositoryInterface
     public function generate_dtr_on_new_hire($user );
 
     public function get_leaves_from_dtr( Collection $dtr_collection );
+
+
+
+    public function apply_dtr_to_simcorp_dtr( $user, $bypass = false ,  $valid_from, $valid_to , $sched_policy);
     
 }
