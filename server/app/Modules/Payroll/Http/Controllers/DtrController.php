@@ -3,23 +3,25 @@
 namespace App\Modules\Payroll\Http\Controllers;
 
 
-use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Http\Request;
+use App\Exports\DtrSummaryExport;
+use App\Modules\User\Models\User;
+use Illuminate\Http\JsonResponse;
 use App\Modules\Payroll\Models\Dtr;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Modules\Payroll\Models\Biometrics;
+use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Department\Models\Department;
+
 use App\Modules\Payroll\Resources\DtrResource;
+use App\Modules\Schedule\Models\SchedulePolicy;
+use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
-use App\Modules\User\Models\User;
-use App\Modules\Payroll\Models\Biometrics;
-use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
-use App\Exports\DtrSummaryExport;
-use App\Modules\Payroll\Resources\DtrLogResourceCollection;
-use App\Modules\User\Repositories\UserRepositoryInterface;
-use Maatwebsite\Excel\Facades\Excel;
 
 class DtrController extends Controller
 {    
@@ -156,5 +158,33 @@ class DtrController extends Controller
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
+    }
+
+
+
+
+
+    public function simcorp(){    
+        try { 
+
+            $deparment = Department::with("users")->find(112);
+
+            // dump($deparment->users);
+            // dd($deparment->users->where('id',1767));
+            // $user_collection = $deparment->users->where('id',1767);
+            // $user_collection = $deparment->users->where('id',1658);
+            // $user_collection = $deparment->users->where('id',1691);
+            $user_collection = $deparment->users;
+            $sched_policy = SchedulePolicy::where("schedule_id", 10012)->get();
+            foreach(   $user_collection as $user ){
+                $this->dtr->apply_dtr_to_simcorp_dtr( $user, $bypass = true ,  "2022-10-19", "2022-11-15", $sched_policy );
+            }
+            
+            
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+        
     }
 }
