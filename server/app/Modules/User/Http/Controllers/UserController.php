@@ -2,48 +2,49 @@
 
 namespace App\Modules\User\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\Controller;
-use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
-use App\Modules\Email\Repositories\EmailRepositoryInterface;
-use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Payroll\Resources\DtrResource;
-use App\Modules\Schedule\Resources\ScheduleCollection;
-use App\Modules\Schedule\Resources\ScheduleResource;
-use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
-use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
-use App\Modules\User\Http\Requests\ChangePasswordRequest;
-use App\Modules\User\Http\Requests\ForgotPasswordRequest;
-use App\Modules\User\Http\Requests\RegisterUserRequest;
-use App\Modules\User\Http\Requests\GenerateDtrRequest;
-use App\Modules\User\Repositories\UserRepositoryInterface;
-use App\Modules\User\Resources\UserListResource;
-use App\Modules\User\Resources\UserListResourceCollection;
-use App\Modules\User\Resources\UserProfileResource; 
-use App\Modules\User\Resources\AnniversaryResources; 
-use Carbon\Carbon;
-use App\Modules\User\Resources\EmploymentStatusResource; 
-use App\Modules\User\Resources\JobInformationResource;   
-use App\Modules\User\Resources\HolidayResource;
 use Auth;
-use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use App\Modules\Payroll\Models\Holiday;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\DpaListExport;
 
+use Exception;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Exports\DpaListExport;
 use App\Modules\User\Models\User;
-use App\Modules\User\Resources\DpaUserListResource;
-use App\Modules\User\Resources\DpaUserListResourceCollection;
-use App\Modules\User\Resources\LeaveCreditsListResource;
-use App\Modules\User\Resources\LeavesListResource;
-use App\Modules\User\Resources\PersonalInformationResource;
+use Illuminate\Http\JsonResponse;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\AssignAllUserToAdminJob;
+use App\Modules\Payroll\Models\Holiday;
+use Spatie\Permission\Models\Permission;
 use App\Modules\User\Resources\RoleResource;
 use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Payroll\Resources\DtrResource;
+use App\Modules\User\Resources\HolidayResource;
+use App\Modules\User\Resources\UserListResource;
+use App\Modules\User\Resources\LeavesListResource;
+use App\Modules\User\Resources\DpaUserListResource;
+use App\Modules\Schedule\Resources\ScheduleResource;
+use App\Modules\User\Resources\UserProfileResource; 
+use App\Modules\User\Resources\AnniversaryResources; 
+use App\Modules\Schedule\Resources\ScheduleCollection;
+use App\Modules\User\Http\Requests\GenerateDtrRequest;
+use App\Modules\User\Http\Requests\RegisterUserRequest;
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\User\Resources\LeaveCreditsListResource;
+use App\Modules\User\Http\Requests\ChangePasswordRequest;
+use App\Modules\User\Http\Requests\ForgotPasswordRequest;
+use App\Modules\User\Resources\EmploymentStatusResource; 
+
+use App\Modules\User\Resources\JobInformationResource;   
+use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Modules\User\Resources\UserListResourceCollection;
+use App\Modules\User\Resources\PersonalInformationResource;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\User\Resources\DpaUserListResourceCollection;
+use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
+use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 
 class UserController extends Controller
 {
@@ -396,13 +397,14 @@ class UserController extends Controller
                 'id' => 'int'
             ]);
 //special conditions is assigned as admin included
-            $this->user->adminRoleConditions( $id ,$request->get('roles'));
+            // $this->user->adminRoleConditions( $id ,$request->get('roles'));
+
+            AssignAllUserToAdminJob::dispatch( $id ,$request->get('roles') )->delay(Carbon::now()->addSeconds(2));
 
             $this->user->assign_roles_to_user( $id , $request->get('roles'), );
 
             $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions'), $request->get('roles') );
 
-            
             
             return success_response(
                 trans('messages.user_assign_roles_permissions_success'), 

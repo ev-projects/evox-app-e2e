@@ -678,11 +678,6 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
-             /**
-     *  Responsible for fetching all the Active Users under supervisee with inactive status
-     * @param Request $request
-     * @return User $user_collection ( Collection )
-     */
     public function get_users_under_supervisee_active_with_no_schedule(User $user){
         try {
 
@@ -706,7 +701,6 @@ class UserRepository implements UserRepositoryInterface{
             throw $e;
         }
     }
-
 
 
     
@@ -1055,7 +1049,7 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function adminRoleConditions($user_id, array $request){
         try {
-
+            
             $user =  User::findOrFail( $user_id );
 
             // check if there is a role called admin 1st
