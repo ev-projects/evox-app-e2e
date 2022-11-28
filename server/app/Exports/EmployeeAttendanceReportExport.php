@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Modules\Report\Repositories\ReportRepository;
 use Carbon\Carbon;
 
 
@@ -9,6 +10,7 @@ use Carbon\CarbonPeriod;
 
 
 use App\Modules\User\Models\User;
+use App\Modules\User\Repositories\UserRepository;
 // use phpDocumentor\Reflection\Types\This;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\FromArray;
@@ -37,49 +39,129 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
     private $start;
     private $end;
-    public function __construct($start = null, $end = null)
+    protected $data;
+    protected $list;
+    protected $total_row;
+    protected $segragated_total_row;
+    protected $list_count;
+    protected $period;
+    protected $count_period;
+
+    public function __construct($start = null, $end = null, $data, $list, $total_row, $segragated_total_row)
     {
         $this->start = $start;
         $this->end = $end;
+        $this->data = $data;
+        $this->list = $list;
+
+        $this->total_row = $total_row;
+        $this->segragated_total_row = $segragated_total_row;
+
+        $this->list_count = count($list);
+        $parsed_start = Carbon::parse($this->start)->format('y-m-d');
+        $parsed_end = Carbon::parse($this->end)->format('y-m-d');
+        $this->period = CarbonPeriod::between($parsed_start,  $parsed_end);
+        $this->count_period = count(CarbonPeriod::between($parsed_start,  $parsed_end));
+        
+      
     }
+
 
 
 
     public function registerEvents(): array
     {
-      
+
         return [
             AfterSheet::class    => function (AfterSheet $event) {
 
 
-                // $cellValue = $event->sheet->appendRow(2, array(
-                //     'appended', 'appended'
-                // ));
-                // dd($cellValue);
-                $event->sheet->setFontSize('A1', 26);
-                
+
+                $coordinate = $event->sheet->getCellByColumnAndRow(12 + $this->count_period, 1)->getCoordinate();
+                $month_col_coordinate = substr($coordinate, 0, -1);
+             
+                $event->sheet->setNumFormatPercent('E4:E' . ($this->list_count + 4));
+                $this->addZeroPercent($event, "E", 4, $this->list_count);
+
+                $event->sheet->setNumFormatPercent('D4:D' . ($this->list_count + 4));
+                $this->addZeroPercent($event, "D", 4, $this->list_count);
+
+                $event->sheet->setNumFormatPercent('C4:C' . ($this->list_count + 4));
+                $this->addZeroPercent($event, "C", 4, $this->list_count);
+
+
+
+
+
+                $this->colorFillStatusMonth($event, 'P', '38bf0d');
+                $this->colorFillStatusMonth($event, 'H', 'FFFF00');
+                $this->colorFillStatusMonth($event, 'A', 'ffb0b4');
+                $this->colorFillStatusMonth($event, 'UL', 'cf6969');
+                $this->colorFillStatusMonth($event, 'RD', 'BEBEBE');
+                $this->colorFillStatusMonth($event, 'SL', 'dca4ed');
+                $this->colorFillStatusMonth($event, 'VL', '72eddb');
+                $this->colorFillStatusMonth($event, 'X', 'fcf6e1');
+                // $this->colorFillStatusMonth($event, 'XH', 'fcf6e1'); // no shedule holiday
+                $this->colorFillStatusMonth($event, 'TBD', 'dcfce4');
+                $this->setMonthWidth($event);
+
+
+
                 $event->sheet->getDelegate()->getStyle('2')->getFont()->setSize(12);
+                $event->sheet->setFontSize('A2:L2', 10);
                 // ->setBold(true);
                 $event->sheet->getDelegate()->getStyle('3')->getFont()->setSize(12);
                 // ->setBold(true);
                 $event->sheet->getDelegate()->getStyle('A')->getFont()->setSize(12);
                 // ->setBold(true);
-                $event->sheet->setFontSize('A2:L2', 10);
+
+
+
                 $event->sheet->getStyle('A2:L2')->getAlignment()->setWrapText(true);
-                $event->sheet->verticalAlign('A2:L2',"top");
-                $event->sheet->horizontalAlign('M2:AP3',"center");
-                $cellRange = 'B5:L5';
-                                                            $event->sheet->getDelegate()->getStyle("M2:AP3")->getFill() //YELLOW
-                                                                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                                                                ->getStartColor()->setARGB('49be25');
-                // $event->sheet->getDelegate()->getStyle("A4:AK12")->getFill() //YELLOW
-                //     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                //     ->getStartColor()->setARGB('f7e516');
-                                                            // $event->sheet->getDelegate()->getStyle("A13:AK13")->getFill() //BLUE
-                                                            //     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                                                            //     ->getStartColor()->setARGB('46bdc6');
+                $event->sheet->verticalAlign('A2:L2', "top");
+                $event->sheet->horizontalAlign('M2:'.$month_col_coordinate.'3', "center");
+
+                $event->sheet->getDelegate()->getStyle("M2:".$month_col_coordinate."2")->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('55e629');
+                $event->sheet->getDelegate()->getStyle("M3:".$month_col_coordinate."3")->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('BEBEBE');
+
+                $total_row_coordinate = (4 + $this->list_count);
+                $event->sheet->getDelegate()->getStyle("C" . $total_row_coordinate . ":L" . $total_row_coordinate)->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('6184d4');
+
+                    $event->sheet->styleCells(
+                        "A2:".$month_col_coordinate . (4 + $this->list_count),
+                        [
+                            'borders' => [
+                                'allBorders' => [
+                                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+                                ],
+                            ]
+                        ]
+                    );
+
+                // ACCOUNT ROWS EVENTS
+                $acc_total_row_coordinate = (4 + 5 + $this->list_count);
+                $event->sheet->getDelegate()->getStyle("A" . $acc_total_row_coordinate . ":L" . $acc_total_row_coordinate)->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('6184d4');
+
+                $event->sheet->getRowDimension($acc_total_row_coordinate)->setRowHeight(40);
+                $event->sheet->getStyle($acc_total_row_coordinate)->getAlignment()->setWrapText(true);
+                $event->sheet->getDelegate()->getStyle($acc_total_row_coordinate)->getFont()->setSize(12);
+                $event->sheet->setFontSize('A'.$acc_total_row_coordinate.':L'.$acc_total_row_coordinate, 10);
+                $event->sheet->verticalAlign($acc_total_row_coordinate, "top");
+
+                $event->sheet->setFontSize('A'.$acc_total_row_coordinate.':B'.$acc_total_row_coordinate, 13);
+
+                $acc_total_w_list = count($this->segragated_total_row)+$acc_total_row_coordinate;
+
                 $event->sheet->styleCells(
-                    "A2:AP13",
+                    "A".$acc_total_row_coordinate.":L" . $acc_total_w_list,
                     [
                         'borders' => [
                             'allBorders' => [
@@ -89,28 +171,32 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                     ]
                 );
 
-                // $event->sheet->getStyle('A1:AK3')->applyFromArray([
-                //     'font' => [
-                //         'bold' => true
-                //     ]
-                // ]);
+
+                $event->sheet->setNumFormatPercent('E'.$acc_total_row_coordinate.':E' . $acc_total_w_list);
+                
+
+                $event->sheet->setNumFormatPercent('D'.$acc_total_row_coordinate.':D' . $acc_total_w_list);
+
+
+                $event->sheet->setNumFormatPercent('C'.$acc_total_row_coordinate.':C' . $acc_total_w_list);
+                
+                $event->sheet->setFontSize('A1', 24);
             }
 
         ];
     }
     public function array(): array
     {
-        
 
-        $month_start = Carbon::parse($this->end)->startOfMonth()->format('y-m-d');
-        $month_end = Carbon::parse($this->end)->endOfMonth()->format('y-m-d');
-        $period = CarbonPeriod::between($month_start,  $month_end);
+
+
+
 
 
         $i = 1;
         $d = 1;
 
-        foreach ($period as $key => $date) {
+        foreach ($this->period as $key => $date) {
             $dates[$d]    = $date->format("Y-m-d , D");
             $datesday[$d] = $date->format("D");
             $specdate[$d] = $date->format("M-d");
@@ -123,142 +209,80 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             $d++;
         }
 
-        
-        // $service = [
-        //     // "Vaccination" => [],
-        //     // "Check up" => [],
-        //     // "Follow up" => [],
-        //     // "Grooming" => [],
-        //     // "Labratory" => [],
-        //     // "X-Ray" => [],
-        //     // "Surgery" => [],
-        //     // "Board and Lodging" => [],
-        //     // "Other" => [],
-        // ];
-        // $service2 =  $service; // make temporary duplicate
+        $excel_employees = $this->list;
+        $excel_employees[] = $this->total_row;
 
-        // $clinic = session('selectedClinic')->id;
-        // $clinic = session('selectedClinic')->id;
-        // $stackweek = [];
-        // $stackint = 0;
-        // $serviceSUM  =  [
-        //     "Vaccination" => 0,
-        //     "Check up" => 0,
-        //     "Follow up" => 0,
-        //     "Grooming" => 0,
-        //     "Labratory" => 0,
-        //     "X-Ray" => 0,
-        //     "Surgery" => 0,
-        //     "Board and Lodging" => 0,
-        //     "Other" => 0,
-        // ];
-        // $serviceTotal  = $serviceSUM;
-        // $i = 0;
-        // $total = [];
+        $excel_accounts = $this->segragated_total_row;
 
-        // foreach ($specdate as $key => $d) {
-        //     if (!str_contains($d, "WEEK")) {
-        //         $get = Clinic::with('appointments')->where("id", $clinic)->first()->appointments->where("date", $d);
-
-        //         foreach ($service as $keyser => $s) { // read each for service
-        //             $variableService = $get->where('service', $keyser);
-
-        //             if ( $variableService->sum('bill') > 0) {
-        //                 $service[$keyser][] =   $variableService->sum('bill');
-
-        //                 $service2[$keyser][] =   $variableService->sum('bill');
-        //             } else {
-        //                 $service[$keyser][] = 0; // temp from "0"
-        //             }
-
-        //             $serviceTotal[$keyser] = array_sum($service2[$keyser]);
-        //         }
-        //     } else {
-        //         foreach ($service as $keyser => $s) {
-        //             $service[$keyser][] =
-        //                 array_sum($service[$keyser]) -   $serviceSUM[$keyser];
-        //             $serviceSUM[$keyser] = array_sum($service[$keyser]);
-        //         }
-        //     }
-        // }
-        // // dd( $serviceTotal);
-        // foreach ($service as $keyser => $s) {
-        //     $service[$keyser][] =  $serviceTotal[$keyser];
-        // }
-        // // dd($service );
-        // foreach ($service as $key => $single) {
-
-        //     for ($x = 0; $x <= count($single) - 1; $x++) {
-
-        //         // if (!str_contains($single[$x], "WEEK")) {
-        //         $total[$x] =
-
-        //             $service["Vaccination"][$x] +
-        //             $service["Check up"][$x] +
-        //             $service["Follow up"][$x] +
-        //             $service["Grooming"][$x] +
-        //             $service["Labratory"][$x] +
-        //             $service["X-Ray"][$x] +
-        //             $service["Surgery"][$x] +
-        //             $service["Board and Lodging"][$x] +
-        //             $service["Other"][$x];
-        //         // } else {
-        //         //     $total[$x] = "WEEK";
-        //         // }
-        //     }
-        // }
-        // dd($total);
-
-            $excel_employees = [];
-            $supervisor = User::with(['supervisee','supervisee.department'=>function($q){$q->orderBy('department_name', 'DESC');}])->find(2);
-            $employee_list = $supervisor->supervisee->take(10);
-            foreach( $employee_list as $key => $employee){
-                $excel_employees[$key]["fullname"] = $employee->getFullName();
-                $excel_employees[$key]["department"] = $employee->department->department_name;
-            }
         $excel = [];
         array_push(
             $excel,
-            ["ATTENDANCE" ],
+            ["ATTENDANCE"],
 
-            array_merge(["Name"],
-            ["Account"],
-            ["Attendance\nRate"],
-            ["Unplanned %"],
-            ["Planned %"],
-            ["Scheduled\n+\nVL"],
-            ["Present\nDays"],
-            ["Scheduled\nDays"],
-            ["Unplanned\nLeaves"],
-            ["Absent"],
-            ["SL"],
-            ["VL"], 
-            $specdate),
-            array_merge([""],[""],[""],[""],[""],[""],[""],[""],[""],[""],[""],[""], 
-            $datesday),
-            $excel_employees
+            array_merge(   //HEADERS
+                ["Name"],
+                ["Account"],
+                ["Attendance\nRate"],
+                ["Unplanned %"],
+                ["Planned %"],
+                ["Scheduled\n+\nVL"],
+                ["Present\nDays"],
+                ["Scheduled\nDays"],
+                ["Unplanned\nLeaves"],
+                ["Absent"],
+                ["SL"],
+                ["VL"],
+                $specdate
+            ),
+            array_merge(
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""], //BLANK HEADERS + DAYS 
+                $datesday
+            ),
+            $excel_employees,
 
-            
-
-            // array_merge(["Vaccination"], $service["Vaccination"]),
-            // array_merge(["Check up"], $service["Check up"]),
-            // array_merge(["Follow up"], $service["Follow up"]),
-            // array_merge(["Grooming"], $service["Grooming"]),
-            // array_merge(["Labratory"], $service["Labratory"]),
-            // array_merge(["X-Ray"], $service["X-Ray"]),
-            // array_merge(["Surgery"], $service["Surgery"]),
-            // array_merge(["Board and Lodging"], $service["Board and Lodging"]),
-            // array_merge(["Other"], $service["Other"]),
-            // array_merge(["Total"], $total),
+            [""],
+            [""],
+            [""],
+            [""],
+            array_merge(   //HEADERS
+                ["HEAD COUNT"],
+                ["ACCOUNT"],
+                ["Attendance\nRate"],
+                ["Unplanned %"],
+                ["Planned %"],
+                ["Scheduled\n+\nVL"],
+                ["Present\nDays"],
+                ["Scheduled\nDays"],
+                ["Unplanned\nLeaves"],
+                ["Absent"],
+                ["SL"],
+                ["VL"]
+            ),
+            $excel_accounts
 
         );
         return $excel;
     }
 
 
-    public function columnWidths(): array {
-        return[
-            'A' => 35,
+    public function columnWidths(): array
+    {
+
+
+
+        return [
+            'A' => 40,
             'B' => 35,
             'C' => 10,
             'D' => 10,
@@ -270,7 +294,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             'J' => 10,
             'K' => 10,
             'L' => 10,
-            
+
 
         ];
     }
@@ -285,7 +309,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
     public function title(): string
     {
-        return 'Monthly/Weekly Sales Report';
+        return 'Monthly Attendance Report';
     }
 
     private function daydate($i)
@@ -306,6 +330,54 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
         }
         return  $excelLine;
     }
+
+    private function addZeroPercent($event, $column, $start, $count)
+    {
+        for ($x = 0; $x <=  $count; $x++) {
+            $val = $event->sheet->getCell($column . ($start + $x))->getValue();
+            if ($val == null) {
+                $event->sheet->SetCellValue($column . ($start + $x), 0);
+            }
+        }
+    }
+
+    private function colorFillStatusMonth($event, $status, $color)
+    {
+
+        // $start = $event->sheet->getCellByColumnAndRow(13, 4 )->getCoordinate();
+        for ($x = 0; $x <= $this->count_period - 1; $x++) {
+            $new_x = $x + 13; // col M
+            for ($y = 0; $y <=  $this->list_count - 1; $y++) {
+                $new_y = $y + 4; // row 4
+                $coordinate = $event->sheet->getCellByColumnAndRow($new_x, $new_y)->getCoordinate();
+                $value =  $event->sheet->getCell($coordinate)->getValue();
+
+                if ($value ==  $status) {
+                    $event->sheet->getDelegate()->getStyle($coordinate)->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()->setARGB($color);
+                }
+            }
+        }
+    }
+
+
+    private function setMonthWidth($event)
+    {
+        $col_list = [];
+
+        for ($x = 0; $x <= $this->count_period - 1; $x++) {
+            $new_x = $x + 13; // col M
+
+            $coordinate = $event->sheet->getCellByColumnAndRow($new_x, 1)->getCoordinate();
+
+            $col_coordinate = substr($coordinate, 0, -1);
+            $event->sheet->getColumnDimension($col_coordinate)->setWidth(7);
+
+
+            $col_list[] = $col_coordinate;
+        }
+
+        $event->sheet->horizontalAlign(reset($col_list) . ':' . end($col_list), "center");
+    }
 }
-
-

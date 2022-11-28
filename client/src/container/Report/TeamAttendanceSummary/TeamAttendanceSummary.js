@@ -52,13 +52,20 @@ class TeamAttendanceSummary extends Component {
 
     handleExport = () => {
       var formData = {};
-
+      const { user } = this.props; 
+      const { team_list } = this.props.myTeamList;
       for ( var key in this.state) {
-        // console.log(this.state, key, this.state[key]);
+        console.log(this.state, key, this.state[key]);
         if( this.state[key] != null && this.state[key] != ""  ) {
           switch( key ) {
             case "start_date":
             case "end_date": 
+            // formData[key] = this.state[key];
+              break;
+            case "department_id": 
+         
+            // formData["department_name"] = user.departments_handled.find(x => x.id === this.state[key]).department_name
+            formData[key] = this.state[key];
               break;
             default:
               formData[key] = this.state[key];
@@ -66,6 +73,8 @@ class TeamAttendanceSummary extends Component {
           }
         } 
       }
+  
+      console.log(formData );
       this.props.exportAttendanceSummary(this.state.start_date, this.state.end_date, formData)
     }
 

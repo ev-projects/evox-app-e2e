@@ -40,10 +40,19 @@ class PHPExcelMacroServiceProvider extends ServiceProvider
         });
  
         Sheet::macro('setNumFormatPeso', function (Sheet $sheet, string $cellRange) {
-            $sheet->getDelegate()->getStyle($cellRange)->getNumberFormat()
-                ->setFormatCode('"₱"#,##0.00_-');
+            $sheet->getDelegate()->getStyle($cellRange) ->getNumberFormat()->applyFromArray( 
+                array( 
+                    'code' => PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00
+                )
+            );
         });
  
+        Sheet::macro('setNumFormatPercent', function (Sheet $sheet, string $cellRange) {
+            $sheet->getDelegate()->getStyle($cellRange)->getNumberFormat()
+                ->setFormatCode('#,##0.00"%"');
+        });
+ 
+
         Sheet::macro('horizontalAlign', function (Sheet $sheet, string $cellRange, string $align) {
             $sheet->getDelegate()->getStyle($cellRange)->getAlignment()->setHorizontal($align);
         });

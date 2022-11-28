@@ -27,7 +27,7 @@ class TeamSummaryAttendanceExport implements
 {
     use Exportable;
     protected $data;
-    protected $list;
+    protected $lis;
     protected $type ;
     public function __construct($data,$list ,$type =  null )
     {
