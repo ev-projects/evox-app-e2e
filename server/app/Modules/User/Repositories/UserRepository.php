@@ -2,20 +2,21 @@
 
 namespace App\Modules\User\Repositories;
 
-use App\Modules\Department\Models\Department;
-use App\Modules\Team\Models\Team;
-use App\Modules\User\Models\User;
+use Exception;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
-use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use App\Modules\Team\Models\Team;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Department\Models\Department;
 
 class UserRepository implements UserRepositoryInterface{
 
@@ -611,12 +612,21 @@ class UserRepository implements UserRepositoryInterface{
      * @param Request $request
      * @return User $user_collection ( Collection )
      */
-    public function get_users_under_supervisee( Request $request , $start_date, $end_date ){
+    public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false){
         try {
+            $log_user = User::find(3522);
+            Auth::login($log_user);
+
+            
+            
             $user_collection =  auth()->user()->users_handled();
             
             $user_collection->join('departments', 'users.department_id', '=', 'departments.id')->select('users.*', 'departments.department_name');
 
+            if( $hired_strict){
+                $user_collection->where('date_hired', '<=',  Carbon::parse($end_date)->format("Y-m-d"));
+            }
+           
             if( is_valid( $request->department_id ) ){
                 $user_collection->where('department_id',$request->department_id );
             } else {
@@ -633,6 +643,7 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection->whereIn('id', Team::find( $request->team_id )->team_users()->pluck('id'));
             }
 
+           
             //paginate user collection to prevent request timeout
 
             //return $user_collection->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();

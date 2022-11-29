@@ -23,10 +23,13 @@ export const exportAttendanceSummary = (start_date, end_date, params) => {
             params: params  
         })
         .then(result => {
+            
             var fileURL = window.URL.createObjectURL(new Blob([result.data]));
             var fileLink = document.createElement('a');
             fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'team_summary_report.xlsx');
+
+            // console.log(params,result.data.content);
+            fileLink.setAttribute('download', 'Attendance_report.xlsx');
             document.body.appendChild(fileLink);
             fileLink.click();
             })
