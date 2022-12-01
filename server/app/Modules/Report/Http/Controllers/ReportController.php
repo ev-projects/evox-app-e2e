@@ -507,43 +507,12 @@ class ReportController extends Controller
             ]);
 
             $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date);
-            //                     $data =  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-            //                     $array = (array) $data['dtr_collection'];
-                        
-            //                     $list = $this->getDetailsOfSummaryForExcel($array['team_attendance_summary']);
-                        
-                        
-            //                     // dd($list, $user_collection, $array['team_attendance_summary']->where('user_id', 3485));
-            //                     $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period , $user_collection);
-            //                     // dump("here");
-            //                     // dd($excel_employees);
-                                
-                        
-                                
-                        
-            //                     $information_array = [
-            //                         "FullName",
-            //                         "Account",
-            //                         "Attendance_Rate",
-            //                         "Unplanned",
-            //                         "Planned",
-            //                         "Scheduled_+_VL",
-            //                         "Present_Days",
-            //                         "Scheduled_Days",
-            //                         "Unplanned_Leaves",
-            //                         "Absent",
-            //                         "SL",
-            //                         "VL"
-            //                     ];
-                        
-            //                     $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-                        
-                                
-            //                     $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-            // // dd($this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date));
-
-
-            $temp_override = $data;
+    
+           
+            
+            // dd($array,"here");
+            // $temp_override = $data;
+            // dd(  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date),"get_team_attendance_summary");
             
             return success_response(
                 trans('messages.get_attendance_summary_success'),
@@ -724,58 +693,7 @@ class ReportController extends Controller
      * Return
      * @return \Illuminate\Http\JsonResponse
      */
-    public function export_sample_summary()
-    {
-        $request = new Request;
-
-
-
-        $start_date = Carbon::parse()->format('y-m-d');
-        $end_date = Carbon::parse()->format('y-m-d');
-        $period = CarbonPeriod::between($start_date,  $end_date);
-        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date);
-        $data =  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-        $array = (array) $data['dtr_collection'];
-
-        $list = $this->getDetailsOfSummaryForExcel(($array['team_attendance_summary']));
-
-        $list = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
-
-
-        
-
-        $information_array = [
-            "FullName",
-            "Account",
-            "Attendance_Rate",
-            "Unplanned",
-            "Planned",
-            "Scheduled_+_VL",
-            "Present_Days",
-            "Scheduled_Days",
-            "Unplanned_Leaves",
-            "Absent",
-            "SL",
-            "VL"
-        ];
-
-        $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-        $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-
-        $segragated_total_row = $this->compute_account_attendance_total_row($ordered_row,  $information_array);
-
-
-        // dd(  $ordered_row);
-
-        $response = Excel::download(
-            new EmployeeAttendanceReportExport($start_date, $end_date, $data,  $ordered_row, $total_row, $segragated_total_row),
-            'atte.xlsx',
-            \Maatwebsite\Excel\Excel::XLSX
-        );
-        ob_end_clean();
-
-        return $response;
-    }
+   
 
 
 
