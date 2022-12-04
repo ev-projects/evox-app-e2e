@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
 use App\Modules\Payroll\Resources\HolidayResource;
 use App\Exports\TeamSummaryAttendanceMultiSheetExport;
+use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Resources\AnniversaryResources;
 use App\Modules\Report\Resources\DailyScheduleReources;
 use App\Modules\Report\Resources\TeamScheduleResources;
@@ -507,13 +508,13 @@ class ReportController extends Controller
             ]);
 
             $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date);
-    
-           
-            
+
+
+
             // dd($array,"here");
             // $temp_override = $data;
             // dd(  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date),"get_team_attendance_summary");
-            
+
             return success_response(
                 trans('messages.get_attendance_summary_success'),
                 $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date)
@@ -524,17 +525,17 @@ class ReportController extends Controller
     }
 
 
-    public function export_old(Request $request, $start_date, $end_date)
-    {
-        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date);
-        $data =  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-        $array = (array) $data['dtr_collection'];
-        $list = $this->getDetailsOfSummary($array['team_attendance_summary']);
-        ob_end_clean();
-        ob_start();
+    // public function export_old(Request $request, $start_date, $end_date)
+    // {
+    //     $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date);
+    //     $data =  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
+    //     $array = (array) $data['dtr_collection'];
+    //     $list = $this->getDetailsOfSummary($array['team_attendance_summary']);
+    //     ob_end_clean();
+    //     ob_start();
 
-        return Excel::download(new TeamSummaryAttendanceExport($data, $list), 'users.xlsx');
-    }
+    //     return Excel::download(new TeamSummaryAttendanceExport($data, $list), 'users.xlsx');
+    // }
 
 
     public function getDetailsOfSummary($data)
@@ -630,8 +631,6 @@ class ReportController extends Controller
     {
 
 
-
-
         $new_start_date = Carbon::parse($start_date)->format('y-m-d');
         $new_end_date = Carbon::parse($end_date)->format('y-m-d');
         $period = CarbonPeriod::between($new_start_date,  $new_end_date);
@@ -640,17 +639,12 @@ class ReportController extends Controller
         $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true);
         $data =  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
         $array = (array) $data['dtr_collection'];
-
+        
         $list = $this->getDetailsOfSummaryForExcel($array['team_attendance_summary']);
 
-
-        // dd($list, $user_collection, $array['team_attendance_summary']->where('user_id', 3485));
-        $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period , $user_collection);
-        // dump("here");
-        // dd($excel_employees);
         
+        $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
 
-        
 
         $information_array = [
             "FullName",
@@ -669,14 +663,14 @@ class ReportController extends Controller
 
         $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
 
-        
+
         $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
 
         $segragated_total_row = $this->compute_account_attendance_total_row($ordered_row,  $information_array);
 
 
 
-        
+
         $response = Excel::download(
             new EmployeeAttendanceReportExport($start_date, $end_date, $data,  $ordered_row, $total_row, $segragated_total_row),
             'attendance_rep.xlsx',
@@ -693,118 +687,123 @@ class ReportController extends Controller
      * Return
      * @return \Illuminate\Http\JsonResponse
      */
-   
 
 
 
+    public function getAvailableToList($data)
+    {
+    }
 
 
     public function getDetailsOfSummaryForExcel($data)
     {
 
-  try {
-    $employee_list_summary = [];
+        try {
+            $employee_list_summary = [];
+            $employee_list_summary_for_collection = [];
+            foreach ($data as $dtr) {
+                $status = '';
+                $schedule = array();
+                $has_holiday = false;
+                $has_leave = false;
+                $has_rest_day_work = false;
 
-    foreach ($data as $dtr) {
-        $status = '';
-        $schedule = array();
-        $has_holiday = false;
-        $has_leave = false;
-        $has_rest_day_work = false;
 
-        // If DTR has holidays, tick the has_holiday flag
-        if ($dtr->holidays()->get()->count() > 0) {
-            $status = 'H';
-            $has_holiday = true;
-        }
 
-        $leave = $dtr->leaves()->first();
+                // If DTR has holidays, tick the has_holiday flag
+                if ($dtr->holidays()->get()->count() > 0) {
+                    $status = 'H';
+                    $has_holiday = true;
+                }
 
-        // If DTR has valid leave, tick the has_leave flag
-        if (is_valid($leave) && $leave->isApproved() && $leave->amount > 0) {
-            // $status = $dtr->leaves()->get()->first()->type;
-            $status = $dtr->leavesToAcronym(true);
-            $has_leave = true;
-        }
+                $leave = $dtr->leaves()->first();
 
-        // If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
-        if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
-            $status = 'P-RDW';
-            $has_rest_day_work = true;
-        }
+                // If DTR has valid leave, tick the has_leave flag
+                if (is_valid($leave) && $leave->isApproved() && $leave->amount > 0) {
+                    // $status = $dtr->leaves()->get()->first()->type;
+                    $status = $dtr->leavesToAcronym(true);
+                    $has_leave = true;
+                }
 
-        # If There is No Rest Day, Holiday and Leave, check status
-        if (!$has_rest_day_work && !$has_holiday && !$has_leave) {
+                // If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
+                if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
+                    $status = 'P-RDW';
+                    $has_rest_day_work = true;
+                }
 
-            # Check if there is a schedule for the DTR
-            if ($dtr->hasSchedule()) {
+                # If There is No Rest Day, Holiday and Leave, check status
+                if (!$has_rest_day_work && !$has_holiday && !$has_leave) {
 
-                // If DTR has Log, set status as Present
-                if ($dtr->hasValidTimelogs()) {
-                    $status = 'P';
+                    # Check if there is a schedule for the DTR
+                    if ($dtr->hasSchedule()) {
 
-                    // else, set status as Absent
-                } else {
-                    $status = 'A';
+                        // If DTR has Log, set status as Present
+                        if ($dtr->hasValidTimelogs()) {
+                            $status = 'P';
 
-                    // if inside sched = absent
-                    if ($dtr->checkCurrentTime()) {
-                        $status = 'A';
+                            // else, set status as Absent
+                        } else {
+                            $status = 'A';
+
+                            // if inside sched = absent
+                            if ($dtr->checkCurrentTime()) {
+                                $status = 'A';
+                            } else {
+                                $status = "TBD";
+                            }
+                        }
+
+                        // If the DTR is Rest Day, set status as Rest Day
+                    } elseif ($dtr->isRestDay()) {
+                        $status = 'RD';
+
+                        // else, set as No Schedule
                     } else {
-                        $status = "TBD";
+                        $status = 'X';
                     }
                 }
 
-                // If the DTR is Rest Day, set status as Rest Day
-            } elseif ($dtr->isRestDay()) {
-                $status = 'RD';
+                // Fetch User of the DTR
+                $user = $dtr->user()->first();
 
-                // else, set as No Schedule
-            } else {
-                $status = 'X';
+
+
+                $employee_list_summary[$user->id][] = [
+                    "dtr" => $dtr,
+                    "date" => $dtr->date,
+                    "name" => $user->getFullName(2),
+                    "has_holiday" =>   $has_holiday,
+                    "status" => $status
+                ];
+               
             }
+
+          return $employee_list_summary;
+        } catch (Exception $e) {
+            throw $e;
         }
-
-        // Fetch User of the DTR
-        $user = $dtr->user()->first();
-
-
-
-        $employee_list_summary[$user->id][] = [
-            "date" => $dtr->date,
-            "name" => $user->getFullName(2),
-            "has_holiday" =>   $has_holiday,
-            "status" => $status
-        ];
-    }
-
-    return $employee_list_summary;
-  }catch(Exception $e) {
-    throw $e;
-  }
     }
 
 
-    public function ammendDetailsOfSummaryForExcel($employee_dtr_list, $period,$user_collection)
+    public function ammendDetailsOfSummaryForExcel($employee_dtr_list, $period, $user_collection)
     {
         $ammended_list = [];
         foreach ($employee_dtr_list as $key => $dtr_list) {
-        $temp_list = [];
- 
-        foreach ($dtr_list as $keyd =>$dtr){
-            $temp_list[$dtr["date"]] = $dtr;
-     
-        }
-       foreach($period as $day) {
-            if( isset( $temp_list[$day->format("Y-m-d")])){
-                $ammended_list[$key][] =   $temp_list[$day->format("Y-m-d")];
-            }else{
-                $ammended_list[$key][] = [ "date" => $day->format('Y-m-d'),
-                                                                "status" => "M"];
-            }
-          }
+            $temp_list = [];
 
-         
+            foreach ($dtr_list as $keyd => $dtr) {
+                $temp_list[$dtr["date"]] = $dtr;
+            }
+            foreach ($period as $day) {
+                if (isset($temp_list[$day->format("Y-m-d")])) {
+                    $ammended_list[$key][] =   $temp_list[$day->format("Y-m-d")];
+                } else {
+                    $ammended_list[$key][] = [
+                        "date" => $day->format('Y-m-d'),
+                        "status" => "M"
+                    ];
+                }
+            }
         }
 
         $list =  $ammended_list;
@@ -825,15 +824,16 @@ class ReportController extends Controller
             $excel_employees[$key]["information"]["VL"]                     = 0;
 
 
-            if(isset($list[$employee->id])){
-                $excel_employees[$key]["dates"]                                 =  $list[$employee->id] ;
-            }else{
-                foreach($period as $day) {
-                    $excel_employees[$key]["dates"][] = [ "date" => $day->format('Y-m-d'),
-                    "status" => "X"];
+            if (isset($list[$employee->id])) {
+                $excel_employees[$key]["dates"]                                 =  $list[$employee->id];
+            } else {
+                foreach ($period as $day) {
+                    $excel_employees[$key]["dates"][] = [
+                        "date" => $day->format('Y-m-d'),
+                        "status" => "X"
+                    ];
                 }
             }
-           
         }
 
         return $excel_employees;
@@ -849,6 +849,7 @@ class ReportController extends Controller
     {
 
         $ordered_excel_row = [];
+        $type_dtr_collection = [];
         $i = 1;
         $d = 1;
 
@@ -868,14 +869,13 @@ class ReportController extends Controller
                 $ordered_excel_row[$keyd][] = $row["information"][$type];
                 $r = $r + 1;
             }
-          
+
             foreach ($period as $keyp => $date) {
                 if ($current_date->gte($date)) {
                     if (isset($row["dates"][$keyp]) && $date->format('Y-m-d') == $row["dates"][$keyp]["date"]) {
-                   
+
 
                         $ordered_excel_row[$keyd][] = $row["dates"][$keyp]["status"];
-                        
                     } else {
                         $ordered_excel_row[$keyd][] =  null;
                     }
@@ -888,31 +888,36 @@ class ReportController extends Controller
                 $VL_key = array_search('VL', $information_array);
                 if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "VL") {
                     $ordered_excel_row[$keyd][$VL_key] += 1;
+                    $type_dtr_collection['VL'] =  $row["dates"][$keyp]["dtr"];
                 }
 
                 ///////////////CALCULATION for SL 
                 $SL_key = array_search('SL', $information_array);
                 if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "SL") {
                     $ordered_excel_row[$keyd][$SL_key] += 1;
+                    $type_dtr_collection['SL'] =  $row["dates"][$keyp]["dtr"];
                 }
 
                 //////////////CALCULATION for A 
                 $A_key = array_search('Absent', $information_array);
                 if (isset($row["dates"][$keyp])) {
-                    if( $row["dates"][$keyp]["status"] == "A"){
+                    if ($row["dates"][$keyp]["status"] == "A") {
                         $ordered_excel_row[$keyd][$A_key] += 1;
+                        $type_dtr_collection['Absent'] =  $row["dates"][$keyp]["dtr"];
                     }
-                    if( $row["dates"][$keyp]["status"] == "UL"){
+                    if ($row["dates"][$keyp]["status"] == "UL") {
                         $ordered_excel_row[$keyd][$A_key] += 1;
+                        $type_dtr_collection["UL"] =  $row["dates"][$keyp]["dtr"];
                     }
 
-                    if( $row["dates"][$keyp]["status"] == "X"){
+                    if ($row["dates"][$keyp]["status"] == "X") {
                         $ordered_excel_row[$keyd][$A_key] += 1;
+                        $type_dtr_collection["X"] =  $row["dates"][$keyp]["dtr"];
                     }
-                    if( $row["dates"][$keyp]["status"] == "Xd"){
-                        $ordered_excel_row[$keyd][$A_key] += 1;
-                    }
-                    
+                    // if( $row["dates"][$keyp]["status"] == "Xd"){
+                    //     $ordered_excel_row[$keyd][$A_key] += 1;
+                    // }
+
                 }
 
                 //////////////CALCULATION for Unplanned_Leaves 
@@ -923,14 +928,14 @@ class ReportController extends Controller
                 //////////////CALCULATION for Present_Days 
                 $P_key = array_search('Present_Days', $information_array);
                 if (isset($row["dates"][$keyp])) {
-                    if ($row["dates"][$keyp]["status"] == "P" ) {
+                    if ($row["dates"][$keyp]["status"] == "P") {
                         $ordered_excel_row[$keyd][$P_key] += 1;
                     }
                     if ($row["dates"][$keyp]["status"] == "H" && Carbon::now()->gte(Carbon::parse($row["dates"][$keyp]["date"]))) {
                         $ordered_excel_row[$keyd][$P_key] += 1;
                     }
                 }
-                   
+
 
                 //////////////CALCULATION for Scheduled_Days 
                 $SchDa_key = array_search('Scheduled_Days', $information_array);
@@ -1064,4 +1069,8 @@ class ReportController extends Controller
 
         return $segregated_account_total;
     }
+
+
+
+    
 }

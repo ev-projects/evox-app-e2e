@@ -421,6 +421,7 @@ class TeamAttendanceSummary
                         $has_leave = false;
                         $has_rest_day_work = false;
                         $is_unplanned = false;
+                        $in_dtr = false;
                 
                       
                 
@@ -431,10 +432,12 @@ class TeamAttendanceSummary
                             
                             if($dtr->isUnplanned()){
                                 $this->result['unplanned_leaves']['users'][] =$dtr;
-                                $is_unplanned == true;
+                                $is_unplanned = true;
                             }else{
                                 $this->result['planned_leaves']['users'][] = $dtr;
                                 $this->result['scheduled_employees']['users'][] = $dtr;
+                                // $this->result['attendance']['users'][] = $dtr;
+                                $in_dtr = true;
                             }
                             
                             $has_leave = true;
@@ -442,34 +445,43 @@ class TeamAttendanceSummary
                 
                         
 
-                    
+                        if ($dtr->holidays()->get()->count() > 0 && Carbon::now()->gte(Carbon::parse($dtr->date)) ) {
+                            if(!$in_dtr){
+                            $in_dtr = true;
+                            $this->result['scheduled_employees']['users'][] = $dtr;
+                            $this->result['attendance']['users'][] = $dtr;
+                            }
+                        }
                         
                         {
-                        if ($dtr->holidays()->get()->count() > 0 && Carbon::now()->gte(Carbon::parse($dtr->date)) ) {
-                            
-                            // $has_holiday = true;
-                            $this->result['scheduled_employees']['users'][] = $dtr;
-                        }
+                    
                             # Check if there is a schedule for the DTR
                             if ($dtr->hasSchedule()) {
-                
-                                // If DTR has Log, set status as Present
-                                if ($dtr->hasValidTimelogs()) {
+                                if ($dtr->holidays()->get()->count() > 0 && Carbon::now()->gte(Carbon::parse($dtr->date) ) ) {
+                            
+                                   if(!$in_dtr){
+                                     // $has_holiday = true;
+                                     $this->result['scheduled_employees']['users'][] = $dtr;
+                                     $this->result['attendance']['users'][] = $dtr;
+                                   }
+                                }else if ($dtr->hasValidTimelogs()) {
                                     $status = 'P';
+                                    if(!$in_dtr){
                                     $this->result['scheduled_employees']['users'][] = $dtr;
                                     $this->result['attendance']['users'][] = $dtr;
+                                    }
                                     // else, set status as Absent
                                 } else {
                                     
                                     $status = 'A';
-                                    if(!$is_unplanned ){
+                                    if(!$is_unplanned  == false && $has_leave == false){
                                         $this->result['unplanned_leaves']['users'][] =$dtr;
                                     }
 
                                     // if inside sched = absent
-                                    if ($dtr->checkCurrentTime()) {
+                                    if ($dtr->checkCurrentTime() ) {
                                         $status = 'A';
-                                        if(!$is_unplanned ){
+                                        if(!$is_unplanned && $has_leave == false){
                                             $this->result['unplanned_leaves']['users'][] =$dtr;
                                         }
                                         
@@ -553,7 +565,7 @@ class TeamAttendanceSummary
 
 
                     $this->result['total_rest_day_work']['total_hours'] = seconds_to_time( $this->result['total_rest_day_work']['total_hours'], true );
-                $this->result['total_overtime']['total_hours'] = seconds_to_time( $this->result['total_overtime']['total_hours'], true );
+                    $this->result['total_overtime']['total_hours'] = seconds_to_time( $this->result['total_overtime']['total_hours'], true );
                     $this->result['stdd']= $start_date->format('Y-m-d');
                     $this->result['eddd']= $end_date->format('Y-m-d');
                 //     error_log("eddd");
