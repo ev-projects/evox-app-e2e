@@ -512,12 +512,50 @@ class ReportController extends Controller
 
 
             // dd($array,"here");
-            // $temp_override = $data;
-            // dd(  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date),"get_team_attendance_summary");
+            $override = $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
+           
+            
+            $new_start_date = Carbon::parse($start_date)->format('y-m-d');
+            $new_end_date = Carbon::parse($end_date)->format('y-m-d');
+            $period = CarbonPeriod::between($new_start_date,  $new_end_date);
+            $array = (array) $override['dtr_collection'];
+            $list = $this->getDetailsOfSummaryForExcel($array['team_attendance_summary']);
+            // dd();
+
+            $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
+
+
+            $information_array = [
+                "FullName",
+                "Account",
+                "Attendance_Rate",
+                "Unplanned",
+                "Planned",
+                "Scheduled_+_VL",
+                "Present_Days",
+                "Scheduled_Days",
+                "Unplanned_Leaves",
+                "Absent",
+                "SL",
+                "VL"
+            ];
+
+            $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
+
+        
+            $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
+
+            
+            $override["attendance"]['total_percentage'] = number_format($total_row[2], 2);
+
+            $override["unplanned_leaves"]['total_percentage'] = number_format($total_row[3], 2);
+            $override["planned_leaves"]['total_percentage'] = number_format($total_row[4], 2);
+
+
 
             return success_response(
                 trans('messages.get_attendance_summary_success'),
-                $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date)
+                $override
             );
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
@@ -639,10 +677,10 @@ class ReportController extends Controller
         $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true);
         $data =  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
         $array = (array) $data['dtr_collection'];
-        
+
         $list = $this->getDetailsOfSummaryForExcel($array['team_attendance_summary']);
 
-        
+
         $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
 
 
@@ -775,10 +813,9 @@ class ReportController extends Controller
                     "has_holiday" =>   $has_holiday,
                     "status" => $status
                 ];
-               
             }
 
-          return $employee_list_summary;
+            return $employee_list_summary;
         } catch (Exception $e) {
             throw $e;
         }
@@ -1069,8 +1106,4 @@ class ReportController extends Controller
 
         return $segregated_account_total;
     }
-
-
-
-    
 }

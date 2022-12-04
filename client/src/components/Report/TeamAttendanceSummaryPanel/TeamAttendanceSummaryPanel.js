@@ -47,7 +47,7 @@ const TeamAttendanceSummaryPanel = (props) => {
             props.setSelectedAttendanceSummary("attendance")
           }}>
           <label className={selected_summary == "attendance" ? "active-text font-weight-bolder" : ""}
-          >Attendance</label><br />
+          >Recorded Attendance</label><br />
           <span className={(attendance?.total_percentage >= attendance?.target_percentage ? "green" : "red")}>{attendance?.total_percentage}%</span>&nbsp;<small>({attendance?.total_count})</small> <br />
           <div className="target"><small>TARGET: {attendance?.target_percentage}%</small></div>
         </div>
@@ -56,7 +56,7 @@ const TeamAttendanceSummaryPanel = (props) => {
           onClick={() => {
             props.setSelectedAttendanceSummary("planned_leaves")
           }}>
-          <label className={selected_summary == "planned_leaves" ? "active-text font-weight-bolder" : ""}>Planned Leaves</label><br />
+          <label className={selected_summary == "planned_leaves" ? "active-text font-weight-bolder" : ""}>Recorded Planned Leaves</label><br />
           <span className={(planned_leaves?.total_percentage <= planned_leaves?.target_percentage ? "green" : "red")}>{planned_leaves?.total_percentage}%</span>&nbsp;<small>({planned_leaves?.total_count})</small> <br />
           <div className="target"><small>TARGET: {planned_leaves?.target_percentage}%</small></div>
         </div>
@@ -66,7 +66,7 @@ const TeamAttendanceSummaryPanel = (props) => {
             props.setSelectedAttendanceSummary("unplanned_leaves")
           }}>
           <label className={selected_summary == "unplanned_leaves" ? "active-text font-weight-bolder" : ""}
-          >Unplanned Leaves</label><br />
+          >Recorded Unplanned Leaves</label><br />
           <span className={(unplanned_leaves?.total_percentage <= unplanned_leaves?.target_percentage ? "green" : "red")}>{unplanned_leaves?.total_percentage}%</span>&nbsp;<small>({unplanned_leaves?.total_count})</small> <br />
           <div className="target"><small>TARGET: {unplanned_leaves?.target_percentage}%</small></div>
         </div>
