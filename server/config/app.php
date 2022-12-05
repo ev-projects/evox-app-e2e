@@ -176,6 +176,8 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
         'Laravel\Socialite\SocialiteServiceProvider',
+
+        Barryvdh\DomPDF\ServiceProvider::class,
     ],
 
     /*
@@ -227,6 +229,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Socialite' => 'Laravel\Socialite\Facades\Socialite',
+        'PDF' => Barryvdh\DomPDF\Facade::class
 
     ],
 
