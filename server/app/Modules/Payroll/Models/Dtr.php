@@ -676,8 +676,8 @@ class Dtr extends Model
         return $this->hasMany(Leave::class);
     }   
     
-/**
-     * leaves Tyep to acronym
+    /**
+     * leaves Type to acronym
      */
     public function leavesToAcronym($simple = false){
         $type = explode(" ",$this->leaves()->get()->first()->type);
@@ -691,7 +691,7 @@ class Dtr extends Model
             if($acronym == "SL"){
                 $acronym = $acronym;
             }else{
-                if($this->leaves()->get()->first()->type == "Unpaid Leave"){
+                if($this->isUnplanned()){
                     $acronym = "UL";
                 }else{
                     $acronym = "VL";
@@ -702,6 +702,13 @@ class Dtr extends Model
         return $acronym;
     }   
 
+    /**
+     * leaves Type to acronym
+     */
+    public function isUnplanned(){
+       
+        return in_array( $this->leaves()->get()->first()->type, get_constant('UNPLANNED_LEAVE_TYPES')) ? true : false;
+    }   
     /**
      * Returns true if has Schedule but has no Valid time logs and if there are no holidays and leaves on that day and the DTR Type is regular.
      */

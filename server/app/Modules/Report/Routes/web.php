@@ -18,16 +18,20 @@ Route::group(['prefix' => 'report'], function () {
         dd('This is the Report module index page. Build something great!');
     });
 });
-Route::get('/2', "ReportController@export_sample_summary");
+// // Route::get('/2', "ReportController@export_sample_summary");
 
-Route::get('/3',  function () {
-    $user = User::with('supervisee','supervisee.department')->find(2);
-    $user_list = $user->supervisee->take(4);
+// Route::get('/3',  function () {
+//     $user = User::with('supervisee','supervisee.department')->find(2);
+//     $user_list = $user->supervisee->take(4);
 
-    foreach( $user_list as $key => $employee){
-        dump($key);
-    }
-dump( $user,$user_list);
+//     foreach( $user_list as $key => $employee){
+//         dump($key);
+//     }
+// dump( $user,$user_list);
 
-}
-);
+// }
+// );
+
+// // Route::get('attendance/summary/export/{start_date}/{end_date}', "ReportController@team_attendance_summary");
+// Route::get('attendance/summary/export/{start_date}/{end_date}', 'ReportController@export');
+// Route::get('attendance_summary/{start_date}/{end_date}', 'ReportController@team_attendance_summary');

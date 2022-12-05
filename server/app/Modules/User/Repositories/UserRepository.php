@@ -614,8 +614,7 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false){
         try {
-            $log_user = User::find(3522);
-            Auth::login($log_user);
+            
 
             
             
