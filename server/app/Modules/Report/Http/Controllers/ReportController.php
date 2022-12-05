@@ -737,9 +737,11 @@ class ReportController extends Controller
     {
 
         try {
+            
             $employee_list_summary = [];
             $employee_list_summary_for_collection = [];
             foreach ($data as $dtr) {
+               
                 $status = '';
                 $schedule = array();
                 $has_holiday = false;
@@ -886,7 +888,6 @@ class ReportController extends Controller
     {
 
         $ordered_excel_row = [];
-        $type_dtr_collection = [];
         $i = 1;
         $d = 1;
 
@@ -925,14 +926,14 @@ class ReportController extends Controller
                 $VL_key = array_search('VL', $information_array);
                 if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "VL") {
                     $ordered_excel_row[$keyd][$VL_key] += 1;
-                    $type_dtr_collection['VL'] =  $row["dates"][$keyp]["dtr"];
+
                 }
 
                 ///////////////CALCULATION for SL 
                 $SL_key = array_search('SL', $information_array);
                 if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "SL") {
                     $ordered_excel_row[$keyd][$SL_key] += 1;
-                    $type_dtr_collection['SL'] =  $row["dates"][$keyp]["dtr"];
+                    
                 }
 
                 //////////////CALCULATION for A 
@@ -940,16 +941,16 @@ class ReportController extends Controller
                 if (isset($row["dates"][$keyp])) {
                     if ($row["dates"][$keyp]["status"] == "A") {
                         $ordered_excel_row[$keyd][$A_key] += 1;
-                        $type_dtr_collection['Absent'] =  $row["dates"][$keyp]["dtr"];
+                        
                     }
                     if ($row["dates"][$keyp]["status"] == "UL") {
                         $ordered_excel_row[$keyd][$A_key] += 1;
-                        $type_dtr_collection["UL"] =  $row["dates"][$keyp]["dtr"];
+                        
                     }
 
                     if ($row["dates"][$keyp]["status"] == "X") {
                         $ordered_excel_row[$keyd][$A_key] += 1;
-                        $type_dtr_collection["X"] =  $row["dates"][$keyp]["dtr"];
+                       
                     }
                     // if( $row["dates"][$keyp]["status"] == "Xd"){
                     //     $ordered_excel_row[$keyd][$A_key] += 1;
