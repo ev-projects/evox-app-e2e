@@ -242,8 +242,7 @@ class EmailRepository implements EmailRepositoryInterface{
 
             SendSupervisorReminderNoSchedEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
 
-            // dump("reached");
-            // dump( $user ,$employee_list->toArray());
+
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
 
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
