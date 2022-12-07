@@ -2,20 +2,20 @@ import React, { Component, useState, useEffect  } from "react";
 import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { Container,Row,Col,Table,Tabs,Tab,Image, Spinner,Button  } from 'react-bootstrap';
-
+import MultiSelect from "react-multi-select-component";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js'
 import "./TeamAttendanceSummary.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { exportAttendanceSummary, getTeamAttendanceSummary } from '../../../store/actions/report/reportActions'
-import { fetchTeamUnderDepartment } from '../../../store/actions/filters/myTeamActions';
+import { fetchTeamUnderDepartment , fetchDepartmentsTeams} from '../../../store/actions/filters/myTeamActions';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import ReportNavigator from "../../../components/Template/ReportNavigator/ReportNavigator.js";
 import Validator from "../../../services/Validator.js";
 import TeamAttendanceSummaryPanel from "../../../components/Report/TeamAttendanceSummaryPanel";
-
+import Formatter from "../../../services/Formatter";
 class TeamAttendanceSummary extends Component {
     constructor(props){
         super(props);
@@ -26,7 +26,9 @@ class TeamAttendanceSummary extends Component {
           department_id:    this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0].id : "",
           team_id:          "",
           name:             "",
-          scope_type:       "week"
+          scope_type:       "week",
+          selectedDepartments:    (Formatter.array_to_multiselect_array( [ this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0] : ""], 'department_name', 'id')),
+          selectedTeams:    []
         }
         this.state = this.initialState;
     }
@@ -55,7 +57,7 @@ class TeamAttendanceSummary extends Component {
       const { user } = this.props; 
       const { team_list } = this.props.myTeamList;
       for ( var key in this.state) {
-        console.log(this.state, key, this.state[key]);
+
         if( this.state[key] != null && this.state[key] != ""  ) {
           switch( key ) {
             case "start_date":
@@ -77,6 +79,22 @@ class TeamAttendanceSummary extends Component {
       console.log(formData );
       this.props.exportAttendanceSummary(this.state.start_date, this.state.end_date, formData)
     }
+  // Function for handling the onChange of Selected Supervisor
+  setSelectedTeams = ( values ) => {
+    this.setState({
+        selectedTeams: values
+    });
+  }
+
+  setSelectedDepartments = ( values ) => {
+    this.setState({
+      selectedDepartments: values
+    });
+    const params = {
+      "departments" : values
+    }
+    this.props.fetchDepartmentsTeams(this.props.user.id, params);
+  }
 
     // Handles the change of date that'll be triggered by the ReportNavigator
     handleChangeDate = ( start_date, end_date, scope_type ) => {
@@ -112,7 +130,13 @@ class TeamAttendanceSummary extends Component {
       const { team_attendance_summary } = this.props.report;
       const { start_date, end_date } = this.state; 
       const { user } = this.props; 
-      const { team_list } = this.props.myTeamList;
+  
+      const department_list = this.props.user.departments_handled.length > 0 ?(Formatter.array_to_multiselect_array( this.props.user.departments_handled, 'department_name', 'id')): [];;
+
+      const  team_list =  this.props?.myDepartmentsTeamsList?.team_list.length > 0 ?  (Formatter.array_to_multiselect_array( this.props?.myDepartmentsTeamsList?.team_list, 'name', 'id')): [];
+
+     
+      
 
       return(
           <Wrapper {...this.props} >
@@ -126,7 +150,7 @@ class TeamAttendanceSummary extends Component {
                   <Content col="12">
                     <Row className="filters filter-dtr">  
                       <Col size="2"> 
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <select
                             className="form-control" 
                               name="department_id"
@@ -141,10 +165,16 @@ class TeamAttendanceSummary extends Component {
                               return <option key={item.id} value={item.id} label={item.department_name} />;
                             })}
                             </select>
-                        </div>
+                        </div> */}  <MultiSelect
+                        name="team_id[]"
+                        options={department_list}
+                        value={this.state.selectedDepartments}
+                        onChange={this.setSelectedDepartments}
+                        labelledBy={"Select Teams"}
+          />
                       </Col> 
                       <Col size="2"> 
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <select
                             className="form-control" 
                               name="team_id"
@@ -158,6 +188,14 @@ class TeamAttendanceSummary extends Component {
                             })}
                             </select>
                         </div>
+                         */}
+                          <MultiSelect
+                                          name="team_id[]"
+                                          options={team_list}
+                                          value={this.state.selectedTeams}
+                                          onChange={this.setSelectedTeams}
+                                          labelledBy={"Select Teams"}
+                            />
                       </Col> 
                       <Col size="2"> 
                         <div className="form-group">
@@ -193,14 +231,16 @@ class TeamAttendanceSummary extends Component {
     return {
       user : state.user,
       report : state.report,
-      myTeamList  : state.myTeamList
+      myTeamList  : state.myTeamList,
+      myDepartmentsTeamsList  : state.myDepartmentsTeamsList
     }
   }
   const mapDispatchToProps = (dispatch) => {
 	  return {
       getTeamAttendanceSummary  : ( start_date, end_date, params ) => dispatch( getTeamAttendanceSummary( start_date, end_date, params ) ),
       fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
-      exportAttendanceSummary : (start_date, end_date, params) => dispatch(exportAttendanceSummary(start_date, end_date, params))
+      exportAttendanceSummary : (start_date, end_date, params) => dispatch(exportAttendanceSummary(start_date, end_date, params)),
+      fetchDepartmentsTeams : ( user_id, params ) => dispatch( fetchDepartmentsTeams( user_id, params ) ),
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(TeamAttendanceSummary);

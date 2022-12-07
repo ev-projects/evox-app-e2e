@@ -40,7 +40,6 @@ export const exportAttendanceSummary = (start_date, end_date, params) => {
 }
 
 export const getTeamAttendanceSummary = (start_date, end_date, params) => {
-
     return (dispatch, getState) => {
         API.call({
             method: "get",

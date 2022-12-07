@@ -39,6 +39,7 @@ import dpaListReducers from "./filters/dpaListReducers";
 import dashboardReducers from "./dashboard/dashboardReducers";
 
 import myTeamListReducers from "./filters/myTeamListReducers";
+import myDepartmentsTeamsListReducers from "./filters/myDepartmentsTeamsListReducers";
 import myTeamSchedule from "./schedule/teamSchedule";
 
 import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
@@ -75,6 +76,7 @@ const rootReducer = combineReducers({
     myRequestList       : myRequestListReducers,
     dpaList             : dpaListReducers,
     myTeamList          : myTeamListReducers,
+    myDepartmentsTeamsList          : myDepartmentsTeamsListReducers,
     myTeamSchedule      : myTeamSchedule,
     myTeamRequestList   : myTeamRequestListReducers,
     

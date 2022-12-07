@@ -311,6 +311,30 @@ class UserController extends Controller
         }
     }
 
+    public function my_team_list_under_selected_department( Request $request,  $id ){   
+        try {
+            $dep_list = [];
+
+
+            if( is_valid( $request->departments )  ){
+                foreach($request->departments as $deparment){
+
+                    $dep_id =  json_decode($deparment)->value;
+    
+                        $dep_list[] = $dep_id ;
+                }
+            }
+            $user_collection = Auth::user()->selected_departments_team( $dep_list );
+
+            return success_response(
+                trans('messages.show_my_team_list'), 
+                $user_collection
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     /**
      * Returns the Temporary Schedules of the User by the User ID
      * @param string $id

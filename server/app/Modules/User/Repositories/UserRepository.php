@@ -615,8 +615,7 @@ class UserRepository implements UserRepositoryInterface{
     public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false){
         try {
             
-
-            
+           
             
             $user_collection =  auth()->user()->users_handled();
             
@@ -625,24 +624,49 @@ class UserRepository implements UserRepositoryInterface{
             if( $hired_strict){
                 $user_collection->where('date_hired', '<=',  Carbon::parse($end_date)->format("Y-m-d"));
             }
-           
-            if( is_valid( $request->department_id ) ){
+            if( is_valid( $request->selectedDepartments ) ){
+            $dep_list = [];
+            foreach($request->selectedDepartments as $deparment){
+
+                $dep_id =  json_decode($deparment)->value;
+
+                    $dep_list[] = $dep_id ;
+            }
+            $user_collection->whereIn('users.department_id',array_unique($dep_list) );
+        }
+
+            if( is_valid( $request->department_id ) && !is_valid( $request->selectedDepartments ) ){
                 $user_collection->where('department_id',$request->department_id );
             } else {
                 $user_collection->whereRaw('department_id IS NOT NULL');
             }
 
+            if( is_valid( $request->selectedTeams ) ){
+                $team_list = [];
+            foreach($request->selectedTeams as $team){
+
+                $team_id =  json_decode($team)->value;
+
+                $team_users_id =  Team::find( $team_id )->team_users()->pluck('id')->toArray();
+                foreach( $team_users_id as $id){
+                    $team_list[] = $id;
+                }
+            }
+            $user_collection->whereIn('users.id',array_unique($team_list) );
+            }
+
+            if( is_valid( $request->team_id ) ){
+                $user_collection->whereIn('users.id', Team::find( $request->team_id )->team_users()->pluck('id') );
+            }
             if( is_valid( $request->name ) ){
                 $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
             }
 
             $user_collection->whereRaw('(is_active = ' . (is_valid($request->is_active) ? $request->is_active : '1') .' or termination_date BETWEEN "'. $start_date .'" AND "'. $end_date .'")');
-           
-            if( is_valid( $request->team_id ) ){
-                $user_collection->whereIn('id', Team::find( $request->team_id )->team_users()->pluck('id'));
-            }
 
            
+
+
             //paginate user collection to prevent request timeout
 
             //return $user_collection->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();

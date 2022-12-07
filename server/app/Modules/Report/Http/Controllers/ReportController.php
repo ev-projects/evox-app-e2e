@@ -1040,7 +1040,7 @@ class ReportController extends Controller
                     $total_row[] = array_sum(array_column($ordered_row, $info_key));
                 } else {
                     $info_key = array_search($info, $information_array);
-                    $total_row[] = array_sum(array_column($ordered_row, $info_key)) / $count_rows;
+                    $total_row[] = $count_rows > 0 ? array_sum(array_column($ordered_row, $info_key)) / $count_rows : 0;
                 }
             } else {
                 $total_row[] = null;

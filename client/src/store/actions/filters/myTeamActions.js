@@ -37,6 +37,7 @@ export const fetchMyTeamList = ( user_id, params = null ) => {
 // THIS FILTER 
 export const fetchTeamUnderDepartment = ( user_id, department_id) => {
     return (dispatch, getState) => {
+        
         API.call({
             method: "get",
             url: "/user/" + user_id + "/team_list/" + department_id 
@@ -45,6 +46,28 @@ export const fetchTeamUnderDepartment = ( user_id, department_id) => {
             dispatch({
                 'type'  : 'FETCH_TEAM_UNDER_DEPARTMENT_LIST_SUCCESS', 
                 'list'  : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const fetchDepartmentsTeams = ( user_id, params = null) => {
+    return (dispatch, getState) => {
+
+
+        API.call({
+            method: "get",
+            url: "/user/" + user_id + "/team_list_all/",
+            params : params
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_DEPS_TEAM_UNDER_DEPARTMENT_LIST_SUCCESS', 
+                'list'  : result.data.content,
+                
             })
         })
         .catch(e => {
