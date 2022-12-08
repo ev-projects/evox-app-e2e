@@ -169,11 +169,14 @@ class AuthController extends Controller
 
         $result['constant'] = get_constant();
 
+        $bhr_details = $this->bhr->get_user( auth()->user()->bhr_num);
+
         $result['settings'] = [
             'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll_cutoff->get_payroll_cutoff()),
-            'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num )
+            'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num ),
+            'country' =>  $bhr_details->country
         ];
-
+        
 
         return $result;
     }

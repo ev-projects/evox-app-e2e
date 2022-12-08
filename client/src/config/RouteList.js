@@ -52,6 +52,7 @@ import ScheduleAssignDepartment from "../container/Schedule/ScheduleAssignDepart
 import DtrLogs from "../container/MyTeam/DtrLogs";
 import ForgotPasswordRequest from "../container/ForgotPasswordRequest";
 import DPAForm from "../container/DPAForm";
+import DPAFormIndia from "../container/DPAFormIndia";
 import DPAList from "../container/MyTeam/DPAList";
 import RegisterUser from "../container/Admin/RegisterUser";
 import GenerateDate from "../container/Admin/GenerateDate";
@@ -65,9 +66,10 @@ import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
 
 const RoutesList = (props) => {
-
+  const  country = props.settings?.country ? props.settings?.country : "";
   // Register all the Routes that will be used in the Application (excluding the Login)
   const DefaultContainer = () => (
+    
     <div>
       <Switch>
 
@@ -77,8 +79,12 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dpa} >
-          <DPAForm  role={['employee']} permission={['employee_access']}/>
-        </ProtectedRoute>
+            {country.toLowerCase() == "india" ? 
+              <><DPAFormIndia  role={['employee']} permission={['employee_access']}/> </> 
+              :
+              <><DPAForm  role={['employee']} permission={['employee_access']}/></>
+            }
+      </ProtectedRoute>
 
 
         
