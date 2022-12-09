@@ -513,8 +513,8 @@ class ReportController extends Controller
 
             // dd($array,"here");
             $override = $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-           
-            
+
+
             $new_start_date = Carbon::parse($start_date)->format('y-m-d');
             $new_end_date = Carbon::parse($end_date)->format('y-m-d');
             $period = CarbonPeriod::between($new_start_date,  $new_end_date);
@@ -542,10 +542,10 @@ class ReportController extends Controller
 
             $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
 
-        
+
             $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
 
-            
+
             $override["attendance"]['total_percentage'] = number_format($total_row[2], 2);
 
             $override["unplanned_leaves"]['total_percentage'] = number_format($total_row[3], 2);
@@ -578,86 +578,89 @@ class ReportController extends Controller
 
     public function getDetailsOfSummary($data)
     {
+        try {
+            $team_attendance_summary = [];
 
-        $team_attendance_summary = [];
+            foreach ($data as $dtr) {
+                $status = '';
+                $schedule = array();
+                $has_holiday = false;
+                $has_leave = false;
+                $has_rest_day_work = false;
 
-        foreach ($data as $dtr) {
-            $status = '';
-            $schedule = array();
-            $has_holiday = false;
-            $has_leave = false;
-            $has_rest_day_work = false;
-
-            // If DTR has holidays, tick the has_holiday flag
-            if ($dtr->holidays()->get()->count() > 0) {
-                $status = 'Holiday';
-                $has_holiday = true;
-            }
-
-            $leave = $dtr->leaves()->first();
-
-            // If DTR has valid leave, tick the has_leave flag
-            if (is_valid($leave) && $leave->isApproved() && $leave->amount > 0) {
-                $status = $dtr->leaves()->get()->first()->type;
-                $has_leave = true;
-            }
-
-            // If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
-            if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
-                $status = 'Rest Day Work';
-                $has_rest_day_work = true;
-            }
-
-            # If There is No Rest Day, Holiday and Leave, check status
-            if (!$has_rest_day_work && !$has_holiday && !$has_leave) {
-
-                # Check if there is a schedule for the DTR
-                if ($dtr->hasSchedule()) {
-
-                    // If DTR has Log, set status as Present
-                    if ($dtr->hasValidTimelogs()) {
-                        $status = 'Present';
-
-                        // else, set status as Absent
-                    } else {
-                        $status = 'Absent';
-
-                        // if inside sched = absent
-                        if ($dtr->checkCurrentTime()) {
-                            $status = 'Absent';
-                        } else {
-                            $status = 'Not yet started';
-                        }
-                    }
-
-                    // If the DTR is Rest Day, set status as Rest Day
-                } elseif ($dtr->isRestDay()) {
-                    $status = 'Rest Day';
-
-                    // else, set as No Schedule
-                } else {
-                    $status = 'No Schedule';
+                // If DTR has holidays, tick the has_holiday flag
+                if ($dtr->holidays()->get()->count() > 0) {
+                    $status = 'Holiday';
+                    $has_holiday = true;
                 }
+
+                $leave = $dtr->leaves()->first();
+
+                // If DTR has valid leave, tick the has_leave flag
+                if (is_valid($leave) && $leave->isApproved() && $leave->amount > 0) {
+                    $status = $dtr->leaves()->get()->first()->type;
+                    $has_leave = true;
+                }
+
+                // If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
+                if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
+                    $status = 'Rest Day Work';
+                    $has_rest_day_work = true;
+                }
+
+                # If There is No Rest Day, Holiday and Leave, check status
+                if (!$has_rest_day_work && !$has_holiday && !$has_leave) {
+
+                    # Check if there is a schedule for the DTR
+                    if ($dtr->hasSchedule()) {
+
+                        // If DTR has Log, set status as Present
+                        if ($dtr->hasValidTimelogs()) {
+                            $status = 'Present';
+
+                            // else, set status as Absent
+                        } else {
+                            $status = 'Absent';
+
+                            // if inside sched = absent
+                            if ($dtr->checkCurrentTime()) {
+                                $status = 'Absent';
+                            } else {
+                                $status = 'Not yet started';
+                            }
+                        }
+
+                        // If the DTR is Rest Day, set status as Rest Day
+                    } elseif ($dtr->isRestDay()) {
+                        $status = 'Rest Day';
+
+                        // else, set as No Schedule
+                    } else {
+                        $status = 'No Schedule';
+                    }
+                }
+
+                // Fetch User of the DTR
+                $user = $dtr->user()->first();
+
+                // Assemble the array details for the Team Attendance Summary
+                array_push(
+                    $team_attendance_summary,
+                    [
+                        "date" => $dtr->date,
+                        "user_id" => $user->id,
+                        "name" => $user->getFullName(2),
+                        "job_title" =>  $user->job_title,
+                        "department" =>  $user->department->department_name,
+                        "status" => $status
+                    ]
+                );
             }
 
-            // Fetch User of the DTR
-            $user = $dtr->user()->first();
-
-            // Assemble the array details for the Team Attendance Summary
-            array_push(
-                $team_attendance_summary,
-                [
-                    "date" => $dtr->date,
-                    "user_id" => $user->id,
-                    "name" => $user->getFullName(2),
-                    "job_title" =>  $user->job_title,
-                    "department" =>  $user->department->department_name,
-                    "status" => $status
-                ]
-            );
+            return $team_attendance_summary;
+        } catch (Exception $e) {
+            throw $e;
         }
-
-        return $team_attendance_summary;
     }
 
 
@@ -725,23 +728,15 @@ class ReportController extends Controller
      * Return
      * @return \Illuminate\Http\JsonResponse
      */
-
-
-
-    public function getAvailableToList($data)
-    {
-    }
-
-
     public function getDetailsOfSummaryForExcel($data)
     {
 
         try {
-            
+
             $employee_list_summary = [];
             $employee_list_summary_for_collection = [];
             foreach ($data as $dtr) {
-               
+
                 $status = '';
                 $schedule = array();
                 $has_holiday = false;
@@ -826,56 +821,60 @@ class ReportController extends Controller
 
     public function ammendDetailsOfSummaryForExcel($employee_dtr_list, $period, $user_collection)
     {
-        $ammended_list = [];
-        foreach ($employee_dtr_list as $key => $dtr_list) {
-            $temp_list = [];
+        try {
+            $ammended_list = [];
+            foreach ($employee_dtr_list as $key => $dtr_list) {
+                $temp_list = [];
 
-            foreach ($dtr_list as $keyd => $dtr) {
-                $temp_list[$dtr["date"]] = $dtr;
-            }
-            foreach ($period as $day) {
-                if (isset($temp_list[$day->format("Y-m-d")])) {
-                    $ammended_list[$key][] =   $temp_list[$day->format("Y-m-d")];
-                } else {
-                    $ammended_list[$key][] = [
-                        "date" => $day->format('Y-m-d'),
-                        "status" => "M"
-                    ];
+                foreach ($dtr_list as $keyd => $dtr) {
+                    $temp_list[$dtr["date"]] = $dtr;
                 }
-            }
-        }
-
-        $list =  $ammended_list;
-
-        $excel_employees = [];
-        foreach ($user_collection as $key => $employee) {
-            $excel_employees[$key]["information"]["FullName"]               = /*$employee->emp_num ." ".*/ $employee->getFullName();
-            $excel_employees[$key]["information"]["Account"]                = $employee->department->department_name;
-            $excel_employees[$key]["information"]["Attendance_Rate"]        = 0;
-            $excel_employees[$key]["information"]["Unplanned"]              = 0;
-            $excel_employees[$key]["information"]["Planned"]                = 0;
-            $excel_employees[$key]["information"]["Scheduled_+_VL"]         = 0;
-            $excel_employees[$key]["information"]["Present_Days"]           = 0;
-            $excel_employees[$key]["information"]["Scheduled_Days"]         = 0;
-            $excel_employees[$key]["information"]["Unplanned_Leaves"]       = 0;
-            $excel_employees[$key]["information"]["Absent"]                 = 0;
-            $excel_employees[$key]["information"]["SL"]                     = 0;
-            $excel_employees[$key]["information"]["VL"]                     = 0;
-
-
-            if (isset($list[$employee->id])) {
-                $excel_employees[$key]["dates"]                                 =  $list[$employee->id];
-            } else {
                 foreach ($period as $day) {
-                    $excel_employees[$key]["dates"][] = [
-                        "date" => $day->format('Y-m-d'),
-                        "status" => "X"
-                    ];
+                    if (isset($temp_list[$day->format("Y-m-d")])) {
+                        $ammended_list[$key][] =   $temp_list[$day->format("Y-m-d")];
+                    } else {
+                        $ammended_list[$key][] = [
+                            "date" => $day->format('Y-m-d'),
+                            "status" => "M"
+                        ];
+                    }
                 }
             }
-        }
 
-        return $excel_employees;
+            $list =  $ammended_list;
+
+            $excel_employees = [];
+            foreach ($user_collection as $key => $employee) {
+                $excel_employees[$key]["information"]["FullName"]               = /*$employee->emp_num ." ".*/ $employee->getFullName();
+                $excel_employees[$key]["information"]["Account"]                = $employee->department->department_name;
+                $excel_employees[$key]["information"]["Attendance_Rate"]        = 0;
+                $excel_employees[$key]["information"]["Unplanned"]              = 0;
+                $excel_employees[$key]["information"]["Planned"]                = 0;
+                $excel_employees[$key]["information"]["Scheduled_+_VL"]         = 0;
+                $excel_employees[$key]["information"]["Present_Days"]           = 0;
+                $excel_employees[$key]["information"]["Scheduled_Days"]         = 0;
+                $excel_employees[$key]["information"]["Unplanned_Leaves"]       = 0;
+                $excel_employees[$key]["information"]["Absent"]                 = 0;
+                $excel_employees[$key]["information"]["SL"]                     = 0;
+                $excel_employees[$key]["information"]["VL"]                     = 0;
+
+
+                if (isset($list[$employee->id])) {
+                    $excel_employees[$key]["dates"]                                 =  $list[$employee->id];
+                } else {
+                    foreach ($period as $day) {
+                        $excel_employees[$key]["dates"][] = [
+                            "date" => $day->format('Y-m-d'),
+                            "status" => "X"
+                        ];
+                    }
+                }
+            }
+
+            return $excel_employees;
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
 
@@ -886,167 +885,168 @@ class ReportController extends Controller
 
     public function attendance_order_row($data, $information_array, $start_date, $end_date)
     {
+        try {
+            $ordered_excel_row = [];
+            $i = 1;
+            $d = 1;
 
-        $ordered_excel_row = [];
-        $i = 1;
-        $d = 1;
-
-        $month_start = Carbon::parse($start_date)->format('y-m-d');
-        $month_end = Carbon::parse($end_date)->format('y-m-d');
-        $period = CarbonPeriod::between($month_start,  $month_end);
-
-
+            $month_start = Carbon::parse($start_date)->format('y-m-d');
+            $month_end = Carbon::parse($end_date)->format('y-m-d');
+            $period = CarbonPeriod::between($month_start,  $month_end);
 
 
 
 
-        $r = 0;
-        $current_date = Carbon::now();
-        foreach ($data as $keyd => $row) {
-            foreach ($information_array as $keyi => $type) {
-                $ordered_excel_row[$keyd][] = $row["information"][$type];
-                $r = $r + 1;
-            }
-
-            foreach ($period as $keyp => $date) {
-                if ($current_date->gte($date)) {
-                    if (isset($row["dates"][$keyp]) && $date->format('Y-m-d') == $row["dates"][$keyp]["date"]) {
 
 
-                        $ordered_excel_row[$keyd][] = $row["dates"][$keyp]["status"];
+            $r = 0;
+            $current_date = Carbon::now();
+            foreach ($data as $keyd => $row) {
+                foreach ($information_array as $keyi => $type) {
+                    $ordered_excel_row[$keyd][] = $row["information"][$type];
+                    $r = $r + 1;
+                }
+
+                foreach ($period as $keyp => $date) {
+                    if ($current_date->gte($date)) {
+                        if (isset($row["dates"][$keyp]) && $date->format('Y-m-d') == $row["dates"][$keyp]["date"]) {
+
+
+                            $ordered_excel_row[$keyd][] = $row["dates"][$keyp]["status"];
+                        } else {
+                            $ordered_excel_row[$keyd][] =  null;
+                        }
                     } else {
-                        $ordered_excel_row[$keyd][] =  null;
-                    }
-                } else {
-                    $ordered_excel_row[$keyd][] = null;
-                }
-
-
-                ///////////////CALCULATION for VL 
-                $VL_key = array_search('VL', $information_array);
-                if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "VL") {
-                    $ordered_excel_row[$keyd][$VL_key] += 1;
-
-                }
-
-                ///////////////CALCULATION for SL 
-                $SL_key = array_search('SL', $information_array);
-                if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "SL") {
-                    $ordered_excel_row[$keyd][$SL_key] += 1;
-                    
-                }
-
-                //////////////CALCULATION for A 
-                $A_key = array_search('Absent', $information_array);
-                if (isset($row["dates"][$keyp])) {
-                    if ($row["dates"][$keyp]["status"] == "A") {
-                        $ordered_excel_row[$keyd][$A_key] += 1;
-                        
-                    }
-                    if ($row["dates"][$keyp]["status"] == "UL") {
-                        $ordered_excel_row[$keyd][$A_key] += 1;
-                        
+                        $ordered_excel_row[$keyd][] = null;
                     }
 
-                    if ($row["dates"][$keyp]["status"] == "X") {
-                        $ordered_excel_row[$keyd][$A_key] += 1;
-                       
+
+                    ///////////////CALCULATION for VL 
+                    $VL_key = array_search('VL', $information_array);
+                    if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "VL") {
+                        $ordered_excel_row[$keyd][$VL_key] += 1;
                     }
-                    // if( $row["dates"][$keyp]["status"] == "Xd"){
-                    //     $ordered_excel_row[$keyd][$A_key] += 1;
-                    // }
 
-                }
-
-                //////////////CALCULATION for Unplanned_Leaves 
-                $UnplL_key = array_search('Unplanned_Leaves', $information_array);
-                $ordered_excel_row[$keyd][$UnplL_key] =
-                    ($ordered_excel_row[$keyd][$A_key] + $ordered_excel_row[$keyd][$SL_key]);
-
-                //////////////CALCULATION for Present_Days 
-                $P_key = array_search('Present_Days', $information_array);
-                if (isset($row["dates"][$keyp])) {
-                    if ($row["dates"][$keyp]["status"] == "P") {
-                        $ordered_excel_row[$keyd][$P_key] += 1;
+                    ///////////////CALCULATION for SL 
+                    $SL_key = array_search('SL', $information_array);
+                    if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "SL") {
+                        $ordered_excel_row[$keyd][$SL_key] += 1;
                     }
-                    if ($row["dates"][$keyp]["status"] == "H" && Carbon::now()->gte(Carbon::parse($row["dates"][$keyp]["date"]))) {
-                        $ordered_excel_row[$keyd][$P_key] += 1;
+
+                    //////////////CALCULATION for A 
+                    $A_key = array_search('Absent', $information_array);
+                    if (isset($row["dates"][$keyp])) {
+                        if ($row["dates"][$keyp]["status"] == "A") {
+                            $ordered_excel_row[$keyd][$A_key] += 1;
+                        }
+                        if ($row["dates"][$keyp]["status"] == "UL") {
+                            $ordered_excel_row[$keyd][$A_key] += 1;
+                        }
+
+                        if ($row["dates"][$keyp]["status"] == "X") {
+                            $ordered_excel_row[$keyd][$A_key] += 1;
+                        }
+                        // if( $row["dates"][$keyp]["status"] == "Xd"){
+                        //     $ordered_excel_row[$keyd][$A_key] += 1;
+                        // }
+
                     }
-                }
+
+                    //////////////CALCULATION for Unplanned_Leaves 
+                    $UnplL_key = array_search('Unplanned_Leaves', $information_array);
+                    $ordered_excel_row[$keyd][$UnplL_key] =
+                        ($ordered_excel_row[$keyd][$A_key] + $ordered_excel_row[$keyd][$SL_key]);
+
+                    //////////////CALCULATION for Present_Days 
+                    $P_key = array_search('Present_Days', $information_array);
+                    if (isset($row["dates"][$keyp])) {
+                        if ($row["dates"][$keyp]["status"] == "P") {
+                            $ordered_excel_row[$keyd][$P_key] += 1;
+                        }
+                        if ($row["dates"][$keyp]["status"] == "H" && Carbon::now()->gte(Carbon::parse($row["dates"][$keyp]["date"]))) {
+                            $ordered_excel_row[$keyd][$P_key] += 1;
+                        }
+                    }
 
 
-                //////////////CALCULATION for Scheduled_Days 
-                $SchDa_key = array_search('Scheduled_Days', $information_array);
-                $ordered_excel_row[$keyd][$SchDa_key] =
-                    ($ordered_excel_row[$keyd][$UnplL_key] + $ordered_excel_row[$keyd][$P_key]);
+                    //////////////CALCULATION for Scheduled_Days 
+                    $SchDa_key = array_search('Scheduled_Days', $information_array);
+                    $ordered_excel_row[$keyd][$SchDa_key] =
+                        ($ordered_excel_row[$keyd][$UnplL_key] + $ordered_excel_row[$keyd][$P_key]);
 
-                //////////////CALCULATION for Scheduled_+_VL 
-                $Sch_VL_key = array_search('Scheduled_+_VL', $information_array);
-                $ordered_excel_row[$keyd][$Sch_VL_key] =
-                    ($ordered_excel_row[$keyd][$SchDa_key] + $ordered_excel_row[$keyd][$VL_key]);
+                    //////////////CALCULATION for Scheduled_+_VL 
+                    $Sch_VL_key = array_search('Scheduled_+_VL', $information_array);
+                    $ordered_excel_row[$keyd][$Sch_VL_key] =
+                        ($ordered_excel_row[$keyd][$SchDa_key] + $ordered_excel_row[$keyd][$VL_key]);
 
 
-                //////////////CALCULATION for Planned 
-                $Plan_key = array_search('Planned', $information_array);
-                if ($ordered_excel_row[$keyd][$Sch_VL_key] > 0) {
-                    $ordered_excel_row[$keyd][$Plan_key] =
-                        ($ordered_excel_row[$keyd][$VL_key] / $ordered_excel_row[$keyd][$Sch_VL_key]) * 100;
-                }
+                    //////////////CALCULATION for Planned 
+                    $Plan_key = array_search('Planned', $information_array);
+                    if ($ordered_excel_row[$keyd][$Sch_VL_key] > 0) {
+                        $ordered_excel_row[$keyd][$Plan_key] =
+                            ($ordered_excel_row[$keyd][$VL_key] / $ordered_excel_row[$keyd][$Sch_VL_key]) * 100;
+                    }
 
-                //////////////CALCULATION for Unplanned 
-                $UnPlan_key = array_search('Unplanned', $information_array);
-                if ($ordered_excel_row[$keyd][$SchDa_key] > 0) {
-                    $ordered_excel_row[$keyd][$UnPlan_key] =
-                        ($ordered_excel_row[$keyd][$UnplL_key] / $ordered_excel_row[$keyd][$SchDa_key]) * 100;
-                }
+                    //////////////CALCULATION for Unplanned 
+                    $UnPlan_key = array_search('Unplanned', $information_array);
+                    if ($ordered_excel_row[$keyd][$SchDa_key] > 0) {
+                        $ordered_excel_row[$keyd][$UnPlan_key] =
+                            ($ordered_excel_row[$keyd][$UnplL_key] / $ordered_excel_row[$keyd][$SchDa_key]) * 100;
+                    }
 
-                //////////////CALCULATION for Attendance_Rate 
-                $AR_key = array_search('Attendance_Rate', $information_array);
-                if ($ordered_excel_row[$keyd][$SchDa_key] > 0) {
-                    $ordered_excel_row[$keyd][$AR_key] =
-                        ($ordered_excel_row[$keyd][$P_key] / $ordered_excel_row[$keyd][$SchDa_key]) * 100;
+                    //////////////CALCULATION for Attendance_Rate 
+                    $AR_key = array_search('Attendance_Rate', $information_array);
+                    if ($ordered_excel_row[$keyd][$SchDa_key] > 0) {
+                        $ordered_excel_row[$keyd][$AR_key] =
+                            ($ordered_excel_row[$keyd][$P_key] / $ordered_excel_row[$keyd][$SchDa_key]) * 100;
+                    }
                 }
             }
-        }
 
-        return $ordered_excel_row;
+            return $ordered_excel_row;
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
 
     public function compute_attendance_total_row($ordered_row, $information_array)
     {
 
+        try {
+            $total_row = [];
 
-        $total_row = [];
+            $disregard = [
+                "FullName",
+                "Account",
+            ];
 
-        $disregard = [
-            "FullName",
-            "Account",
-        ];
+            $count_rows = count($ordered_row);
 
-        $count_rows = count($ordered_row);
+            $percentage_info = [
+                "Attendance_Rate",
+                "Unplanned",
+                "Planned",
+            ];
 
-        $percentage_info = [
-            "Attendance_Rate",
-            "Unplanned",
-            "Planned",
-        ];
+            foreach ($information_array as $key => $info) {
+                if (!(in_array($info, $disregard))) {
 
-        foreach ($information_array as $key => $info) {
-            if (!(in_array($info, $disregard))) {
-
-                if (!(in_array($info, $percentage_info))) {
-                    $info_key = array_search($info, $information_array);
-                    $total_row[] = array_sum(array_column($ordered_row, $info_key));
+                    if (!(in_array($info, $percentage_info))) {
+                        $info_key = array_search($info, $information_array);
+                        $total_row[] = array_sum(array_column($ordered_row, $info_key));
+                    } else {
+                        $info_key = array_search($info, $information_array);
+                        $total_row[] = $count_rows > 0 ? array_sum(array_column($ordered_row, $info_key)) / $count_rows : 0;
+                    }
                 } else {
-                    $info_key = array_search($info, $information_array);
-                    $total_row[] = $count_rows > 0 ? array_sum(array_column($ordered_row, $info_key)) / $count_rows : 0;
+                    $total_row[] = null;
                 }
-            } else {
-                $total_row[] = null;
             }
+            return $total_row;
+        } catch (Exception $e) {
+            throw $e;
         }
-        return $total_row;
     }
 
 
@@ -1054,57 +1054,60 @@ class ReportController extends Controller
     public function compute_account_attendance_total_row($ordered_row, $information_array)
     {
 
+        try {
+            // $total_row = [];
 
-        // $total_row = [];
+            $disregard = [
+                "FullName",
+                "Account",
+            ];
 
-        $disregard = [
-            "FullName",
-            "Account",
-        ];
+            $segregated_count_rows = [];
 
-        $segregated_count_rows = [];
-
-        $segregated_accounts = [];
-        $segregated_account_total = [];
-        $percentage_info = [
-            "Attendance_Rate",
-            "Unplanned",
-            "Planned",
-        ];
-        foreach ($ordered_row as $row) {
-            $info_key = array_search("Account", $information_array);
-            $account_name = $row[$info_key];
-            $segregated_accounts[$account_name][] = $row;
-        }
+            $segregated_accounts = [];
+            $segregated_account_total = [];
+            $percentage_info = [
+                "Attendance_Rate",
+                "Unplanned",
+                "Planned",
+            ];
+            foreach ($ordered_row as $row) {
+                $info_key = array_search("Account", $information_array);
+                $account_name = $row[$info_key];
+                $segregated_accounts[$account_name][] = $row;
+            }
 
 
-        foreach ($segregated_accounts as $segkey => $segregated_account_rows) {
-            $segregated_count_rows = count($segregated_account_rows);
-            foreach ($information_array as $key => $info) {
-                if (!(in_array($info, $disregard))) {
+            foreach ($segregated_accounts as $segkey => $segregated_account_rows) {
+                $segregated_count_rows = count($segregated_account_rows);
+                foreach ($information_array as $key => $info) {
+                    if (!(in_array($info, $disregard))) {
 
-                    if (!(in_array($info, $percentage_info))) {
-                        $info_key = array_search($info, $information_array);
-                        $segregated_account_total[$segkey][] = array_sum(array_column($segregated_account_rows, $info_key));
+                        if (!(in_array($info, $percentage_info))) {
+                            $info_key = array_search($info, $information_array);
+                            $segregated_account_total[$segkey][] = array_sum(array_column($segregated_account_rows, $info_key));
+                        } else {
+                            $info_key = array_search($info, $information_array);
+                            $segregated_account_total[$segkey][] = array_sum(array_column($segregated_account_rows, $info_key)) / $segregated_count_rows;
+                        }
                     } else {
-                        $info_key = array_search($info, $information_array);
-                        $segregated_account_total[$segkey][] = array_sum(array_column($segregated_account_rows, $info_key)) / $segregated_count_rows;
-                    }
-                } else {
 
-                    if ((in_array($info, $disregard)) && $info ==  "FullName") { // Replaced as headcount in excel
+                        if ((in_array($info, $disregard)) && $info ==  "FullName") { // Replaced as headcount in excel
 
-                        $segregated_account_total[$segkey][] = $segregated_count_rows;
-                    }
+                            $segregated_account_total[$segkey][] = $segregated_count_rows;
+                        }
 
-                    if ((in_array($info, $disregard)) && $info ==  "Account") {
+                        if ((in_array($info, $disregard)) && $info ==  "Account") {
 
-                        $segregated_account_total[$segkey][] = $segkey;
+                            $segregated_account_total[$segkey][] = $segkey;
+                        }
                     }
                 }
             }
-        }
 
-        return $segregated_account_total;
+            return $segregated_account_total;
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }
