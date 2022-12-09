@@ -625,15 +625,10 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection->where('date_hired', '<=',  Carbon::parse($end_date)->format("Y-m-d"));
             }
             if( is_valid( $request->selectedDepartments ) ){
-            $dep_list = [];
-            foreach($request->selectedDepartments as $deparment){
 
-                $dep_id =  json_decode($deparment)->value;
-
-                    $dep_list[] = $dep_id ;
-            }
-            $user_collection->whereIn('users.department_id',array_unique($dep_list) );
-        }
+         
+            $user_collection->whereIn('users.department_id',array_unique($request->selectedDepartments) );
+            }   
 
             if( is_valid( $request->department_id ) && !is_valid( $request->selectedDepartments ) ){
                 $user_collection->where('department_id',$request->department_id );
