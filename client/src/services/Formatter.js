@@ -151,12 +151,12 @@ class Formatter {
       for (var i = 0; i < array.length; i++) {
         
         // Create the item object
-        var item = {
-          value  : array[i]["value"]
-        };
+        // var item = {
+        //   value  : array[i]["value"]
+        // };
         
         // Push the item object to the list array
-        list.push(item);
+        list.push(array[i]["value"]);
       }
   
     }
