@@ -35,20 +35,26 @@ class TeamAttendanceSummary extends Component {
 
     handleSubmit = () => {
       var formData = {};
-
+      var selectedDepartments = [];
       for ( var key in this.state) {
-        // console.log(this.state, key, this.state[key]);
+        
         if( this.state[key] != null && this.state[key] != ""  ) {
           switch( key ) {
             case "start_date":
             case "end_date": 
               break;
+
+            case "selectedDepartments":
+            formData[key] =   Formatter.array_to_getvalue(this.state[key]);
+              break;
+
             default:
               formData[key] = this.state[key];
               break;
           }
         } 
       }
+    
       this.props.getTeamAttendanceSummary( this.state.start_date, this.state.end_date, formData )
     }
 
@@ -69,6 +75,10 @@ class TeamAttendanceSummary extends Component {
             // formData["department_name"] = user.departments_handled.find(x => x.id === this.state[key]).department_name
             formData[key] = this.state[key];
               break;
+
+              case "selectedDepartments":
+                formData[key] =   Formatter.array_to_getvalue(this.state[key]);
+                  break;
             default:
               formData[key] = this.state[key];
               break;
@@ -87,6 +97,7 @@ class TeamAttendanceSummary extends Component {
   }
 
   setSelectedDepartments = ( values ) => {
+    console.log(values);
     this.setState({
       selectedDepartments: values
     });
