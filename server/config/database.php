@@ -54,6 +54,21 @@ return [
             'engine' => null,
         ],
 
+        'evox_logs' => [
+            'driver' => 'mysql',
+            'host' => env('DB_EVOX_LOGS_HOST', '127.0.0.1'),
+            'port' => env('DB_EVOX_LOGS_PORT', '3306'),
+            'database' => env('DB_EVOX_LOGS_DATABASE', 'forge'),
+            'username' => env('DB_EVOX_LOGS_USERNAME', 'forge'),
+            'password' => env('DB_EVOX_LOGS_PASSWORD', ''),
+            'unix_socket' => env('DB_EVOX_LOGS_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+
         
 
         'drupal_portal' => [
