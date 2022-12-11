@@ -23,8 +23,8 @@ class TeamAttendanceSummary extends Component {
         this.initialState = {
           start_date:       moment().startOf('week'),
           end_date:         moment().endOf('week'),
-          department_id:    this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0].id : "",
-          team_id:          "",
+          // department_id:    this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0].id : "",
+          // team_id:          "",
           name:             "",
           scope_type:       "week",
           selectedDepartments:    (Formatter.array_to_multiselect_array( [ this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0] : ""], 'department_name', 'id')),
@@ -45,16 +45,18 @@ class TeamAttendanceSummary extends Component {
               break;
 
             case "selectedDepartments":
-            formData[key] =   Formatter.array_to_getvalue(this.state[key]);
+            formData[key] =   (Formatter.array_to_getvalue(this.state[key]))
               break;
-
+              case "selectedTeams":
+                formData[key] =   (Formatter.array_to_getvalue(this.state[key]))                 
+                break;
             default:
               formData[key] = this.state[key];
               break;
           }
         } 
       }
-    
+      console.log( formData);
       this.props.getTeamAttendanceSummary( this.state.start_date, this.state.end_date, formData )
     }
 
@@ -77,8 +79,12 @@ class TeamAttendanceSummary extends Component {
               break;
 
               case "selectedDepartments":
-                formData[key] =   Formatter.array_to_getvalue(this.state[key]);
-                  break;
+                formData[key] =   (Formatter.array_to_getvalue(this.state[key])).toString();
+                break;
+                
+              case "selectedTeams":
+                formData[key] =   (Formatter.array_to_getvalue(this.state[key])).toString();
+                break;
             default:
               formData[key] = this.state[key];
               break;
@@ -86,24 +92,25 @@ class TeamAttendanceSummary extends Component {
         } 
       }
   
-      console.log(formData );
       this.props.exportAttendanceSummary(this.state.start_date, this.state.end_date, formData)
     }
   // Function for handling the onChange of Selected Supervisor
   setSelectedTeams = ( values ) => {
     this.setState({
-        selectedTeams: values
+        selectedTeams: values,
     });
   }
 
   setSelectedDepartments = ( values ) => {
-    console.log(values);
+
     this.setState({
-      selectedDepartments: values
+      selectedDepartments: values,
+      selectedTeams:    []
     });
     const params = {
-      "departments" : values
+      "departments" : Formatter.array_to_getvalue(values)
     }
+
     this.props.fetchDepartmentsTeams(this.props.user.id, params);
   }
 
@@ -133,7 +140,7 @@ class TeamAttendanceSummary extends Component {
 
     componentWillMount(){ 
       // this.handleChangeDate( this.state.start_date, this.state.end_date );
-      this.handleSubmit();
+      // this.handleSubmit();
     }
       
     render = () => {  

@@ -615,8 +615,6 @@ class UserRepository implements UserRepositoryInterface{
     public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false){
         try {
             
-           
-            
             $user_collection =  auth()->user()->users_handled();
             
             $user_collection->join('departments', 'users.department_id', '=', 'departments.id')->select('users.*', 'departments.department_name');
@@ -624,10 +622,14 @@ class UserRepository implements UserRepositoryInterface{
             if( $hired_strict){
                 $user_collection->where('date_hired', '<=',  Carbon::parse($end_date)->format("Y-m-d"));
             }
-            if( is_valid( $request->selectedDepartments ) ){
 
-         
-            $user_collection->whereIn('users.department_id',array_unique($request->selectedDepartments) );
+
+            if( is_valid( $request->selectedDepartments ) ){
+                $dep_ids = $request->selectedDepartments;
+                if(gettype($dep_ids) === "string"){
+                    $dep_ids = preg_split("/\,/", $dep_ids );
+                }
+                $user_collection->whereIn('users.department_id',array_unique($dep_ids) );
             }   
 
             if( is_valid( $request->department_id ) && !is_valid( $request->selectedDepartments ) ){
@@ -636,23 +638,28 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection->whereRaw('department_id IS NOT NULL');
             }
 
-            if( is_valid( $request->selectedTeams ) ){
-                $team_list = [];
-            foreach($request->selectedTeams as $team){
-
-                $team_id =  json_decode($team)->value;
-
-                $team_users_id =  Team::find( $team_id )->team_users()->pluck('id')->toArray();
-                foreach( $team_users_id as $id){
-                    $team_list[] = $id;
-                }
-            }
-            $user_collection->whereIn('users.id',array_unique($team_list) );
-            }
-
             if( is_valid( $request->team_id ) ){
                 $user_collection->whereIn('users.id', Team::find( $request->team_id )->team_users()->pluck('id') );
             }
+
+            if( is_valid( $request->selectedTeams ) ){
+                $team_ids = $request->selectedTeams;
+                if(gettype($team_ids) === "string"){
+                    $team_ids = preg_split("/\,/", $team_ids );
+                }
+
+                $team_list = [];
+                foreach($team_ids as $team_id){
+
+                    $team_users_id =  Team::find( $team_id )->team_users()->pluck('id')->toArray();
+                    foreach( $team_users_id as $id){
+                        $team_list[] = $id;
+                    }
+                }
+            $user_collection->whereIn('users.id',array_unique($team_list) );
+            }
+
+  
             if( is_valid( $request->name ) ){
                 $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
             }

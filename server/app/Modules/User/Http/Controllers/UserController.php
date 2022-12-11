@@ -315,14 +315,10 @@ class UserController extends Controller
         try {
             $dep_list = [];
 
-
+            
             if( is_valid( $request->departments )  ){
-                foreach($request->departments as $deparment){
 
-                    $dep_id =  json_decode($deparment)->value;
-    
-                        $dep_list[] = $dep_id ;
-                }
+                        $dep_list = $request->departments ;
             }
             $user_collection = Auth::user()->selected_departments_team( $dep_list );
 
