@@ -577,7 +577,7 @@ class ReportController extends Controller
     public function export(Request $request, $start_date, $end_date)
     {
 
-        dd( $request->all());
+
         $new_start_date = Carbon::parse($start_date)->format('y-m-d');
         $new_end_date = Carbon::parse($end_date)->format('y-m-d');
         $period = CarbonPeriod::between($new_start_date,  $new_end_date);
