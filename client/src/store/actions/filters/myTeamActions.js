@@ -59,9 +59,9 @@ export const fetchDepartmentsTeams = ( user_id, params = null) => {
 
 
         API.call({
-            method: "get",
+            method: "post",
             url: "/user/" + user_id + "/team_list_all/",
-            params : params
+            data : params
         })
         .then(result => {
             dispatch({

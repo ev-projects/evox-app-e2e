@@ -45,6 +45,7 @@ class ReportController extends Controller
     protected $dtr;
     protected $dtr_summary_export;
     protected $user;
+    protected $info_array;
 
 
     public function __construct(
@@ -63,6 +64,21 @@ class ReportController extends Controller
         $this->dtr_summary_export = $dtr_summary_export;
         $this->team_schedule_export = $team_schedule_export;
         $this->user = $user;
+
+        $this->info_array =  [
+                                "FullName",
+                                "Account",
+                                "Attendance_Rate",
+                                "Unplanned",
+                                "Planned",
+                                "Scheduled_+_VL",
+                                "Present_Days",
+                                "Scheduled_Days",
+                                "Unplanned_Leaves",
+                                "Absent",
+                                "SL",
+                                "VL"
+                            ];
     }
 
 
@@ -496,6 +512,7 @@ class ReportController extends Controller
      */
     public function team_attendance_summary(Request $request, $start_date, $end_date)
     {
+
         try {
             log_activity(trans('messages.get_attendance_summary_attempt'));
 
@@ -507,38 +524,29 @@ class ReportController extends Controller
                 'end_date' => 'date_format:Y-m-d',
             ]);
 
-            $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date);
-
-
-
-            // dd($array,"here");
-            $override = $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-
 
             $new_start_date = Carbon::parse($start_date)->format('y-m-d');
             $new_end_date = Carbon::parse($end_date)->format('y-m-d');
             $period = CarbonPeriod::between($new_start_date,  $new_end_date);
-            $array = (array) $override['dtr_collection'];
-            $list = $this->getDetailsOfSummaryForExcel($array['team_attendance_summary']);
-            // dd();
+
+            $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date,  true);
+
+
+
+
+            $override = $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
+  
+
+           
+            
+            $list = (array) $override['employee_list_summary'];
+
+
 
             $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
 
 
-            $information_array = [
-                "FullName",
-                "Account",
-                "Attendance_Rate",
-                "Unplanned",
-                "Planned",
-                "Scheduled_+_VL",
-                "Present_Days",
-                "Scheduled_Days",
-                "Unplanned_Leaves",
-                "Absent",
-                "SL",
-                "VL"
-            ];
+            $information_array = $this->info_array;
 
             $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
 
@@ -562,6 +570,51 @@ class ReportController extends Controller
         }
     }
 
+    /**
+     * Return
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export(Request $request, $start_date, $end_date)
+    {
+
+
+        $new_start_date = Carbon::parse($start_date)->format('y-m-d');
+        $new_end_date = Carbon::parse($end_date)->format('y-m-d');
+        $period = CarbonPeriod::between($new_start_date,  $new_end_date);
+
+
+        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true);
+        $data =  $this->report->get_team_attendance_summary_dtr($user_collection,  $start_date, $end_date);
+
+        $list = (array) $data['employee_list_summary'];
+        // dd( $list);
+
+
+
+        $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
+
+
+        $information_array = $this->info_array;
+
+        $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
+
+
+        $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
+
+        $segragated_total_row = $this->compute_account_attendance_total_row($ordered_row,  $information_array);
+
+
+        $response = Excel::download(
+            new EmployeeAttendanceReportExport($start_date, $end_date, $data,  $ordered_row, $total_row, $segragated_total_row),
+            'attendance_rep.xlsx',
+            \Maatwebsite\Excel\Excel::XLSX,
+            ["sampleName" => 'sample']
+
+        );
+        ob_end_clean();
+
+        return $response;
+    }
 
     // public function export_old(Request $request, $start_date, $end_date)
     // {
@@ -664,65 +717,7 @@ class ReportController extends Controller
     }
 
 
-    /**
-     * Return
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function export(Request $request, $start_date, $end_date)
-    {
-
-
-        $new_start_date = Carbon::parse($start_date)->format('y-m-d');
-        $new_end_date = Carbon::parse($end_date)->format('y-m-d');
-        $period = CarbonPeriod::between($new_start_date,  $new_end_date);
-
-
-        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true);
-        $data =  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-        $array = (array) $data['dtr_collection'];
-
-        $list = $this->getDetailsOfSummaryForExcel($array['team_attendance_summary']);
-
-
-        $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
-
-
-        $information_array = [
-            "FullName",
-            "Account",
-            "Attendance_Rate",
-            "Unplanned",
-            "Planned",
-            "Scheduled_+_VL",
-            "Present_Days",
-            "Scheduled_Days",
-            "Unplanned_Leaves",
-            "Absent",
-            "SL",
-            "VL"
-        ];
-
-        $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-
-
-        $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-
-        $segragated_total_row = $this->compute_account_attendance_total_row($ordered_row,  $information_array);
-
-
-
-
-        $response = Excel::download(
-            new EmployeeAttendanceReportExport($start_date, $end_date, $data,  $ordered_row, $total_row, $segragated_total_row),
-            'attendance_rep.xlsx',
-            \Maatwebsite\Excel\Excel::XLSX,
-            ["sampleName" => 'sample']
-
-        );
-        ob_end_clean();
-
-        return $response;
-    }
+   
 
     /**
      * Return
@@ -734,11 +729,10 @@ class ReportController extends Controller
         try {
 
             $employee_list_summary = [];
-            $employee_list_summary_for_collection = [];
             foreach ($data as $dtr) {
 
                 $status = '';
-                $schedule = array();
+                
                 $has_holiday = false;
                 $has_leave = false;
                 $has_rest_day_work = false;
@@ -963,6 +957,12 @@ class ReportController extends Controller
                         if ($row["dates"][$keyp]["status"] == "P") {
                             $ordered_excel_row[$keyd][$P_key] += 1;
                         }
+                        if ($row["dates"][$keyp]["status"] == "P-RDW") {
+                            $ordered_excel_row[$keyd][$P_key] += 1;
+                        }
+                        if ($row["dates"][$keyp]["status"] == "H-RDW") {
+                            $ordered_excel_row[$keyd][$P_key] += 1;
+                        }
                         if ($row["dates"][$keyp]["status"] == "H" && Carbon::now()->gte(Carbon::parse($row["dates"][$keyp]["date"]))) {
                             $ordered_excel_row[$keyd][$P_key] += 1;
                         }
@@ -1078,28 +1078,28 @@ class ReportController extends Controller
             }
 
 
-            foreach ($segregated_accounts as $segkey => $segregated_account_rows) {
+            foreach ($segregated_accounts as $seg_key => $segregated_account_rows) {
                 $segregated_count_rows = count($segregated_account_rows);
                 foreach ($information_array as $key => $info) {
                     if (!(in_array($info, $disregard))) {
 
                         if (!(in_array($info, $percentage_info))) {
                             $info_key = array_search($info, $information_array);
-                            $segregated_account_total[$segkey][] = array_sum(array_column($segregated_account_rows, $info_key));
+                            $segregated_account_total[$seg_key][] = array_sum(array_column($segregated_account_rows, $info_key));
                         } else {
                             $info_key = array_search($info, $information_array);
-                            $segregated_account_total[$segkey][] = array_sum(array_column($segregated_account_rows, $info_key)) / $segregated_count_rows;
+                            $segregated_account_total[$seg_key][] = array_sum(array_column($segregated_account_rows, $info_key)) / $segregated_count_rows;
                         }
                     } else {
 
                         if ((in_array($info, $disregard)) && $info ==  "FullName") { // Replaced as headcount in excel
 
-                            $segregated_account_total[$segkey][] = $segregated_count_rows;
+                            $segregated_account_total[$seg_key][] = $segregated_count_rows;
                         }
 
                         if ((in_array($info, $disregard)) && $info ==  "Account") {
 
-                            $segregated_account_total[$segkey][] = $segkey;
+                            $segregated_account_total[$seg_key][] = $seg_key;
                         }
                     }
                 }

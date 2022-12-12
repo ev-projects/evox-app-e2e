@@ -152,6 +152,25 @@ class ReportRepository implements ReportRepositoryInterface{
             throw $e;
         }
     }
+     /**
+     *  Responsible for fetching all the team attendance summary.
+     * @param Carbon $current_time
+     * @return array
+     */
+    public function get_team_attendance_summary_dtr(  Collection $user_collection, string $start_date, string $end_date ){
+        try {
+
+            $result = $this->team_attendance_summary->get_summary_dtr( $user_collection, $start_date, $end_date );
+            
+
+            // log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$result], "dtr_summary");
+            // log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            return $result;
+            
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
 
 
     
