@@ -86,6 +86,7 @@ class DepartmentController extends Controller
     public function users($id){
         try {
             $user_collection = $this->department->find( $id )->users()
+                                                             ->where('is_active', 1)
                                                              ->orderBy('first_name', 'asc')
                                                              ->orderBy('last_name', 'asc')
                                                              ->get();
