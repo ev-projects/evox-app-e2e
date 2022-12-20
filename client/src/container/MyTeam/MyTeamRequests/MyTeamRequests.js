@@ -23,8 +23,12 @@ class MyTeamRequests extends Component {
     this.initialState = {
         filters: {
           status:           this.props.filters?.status ?? "pending",
-          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : null,
-          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : null,
+          valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : 
+                              Validator.isValid(this.props.settings?.current_payroll_cutoff) ?  
+                              new Date(this.props.settings.current_payroll_cutoff.start_date) : null,
+          valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : 
+                              Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
+                              new Date(this.props.settings.current_payroll_cutoff.end_date) : null,
           department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled.length == 1 ? this.props.user.departments_handled[0].id : null,
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
@@ -33,15 +37,17 @@ class MyTeamRequests extends Component {
           action:           this.props.filters?.action ?? null,
           request_type:     this.props.filters?.request_type ?? 'all',
           bulk_action:      this.props.filters?.bulk_action ?? null,
+          first_load:      this.props.filters?.first_load ?? true,
           url:              'my_team_requests'
       }
     }
     this.state = this.initialState; 
+
   }
 
   onSubmitHandler = (values) => {
     var formData = { url: "my_team_requests"  };
-
+    // console.log(values)
     switch(values.action) {
       case "bulk_action":
         for (var key in values) {
@@ -84,14 +90,25 @@ class MyTeamRequests extends Component {
 
 
   componentDidMount(){
-    
+
     var filters = {
       ...this.state.filters,
-      valid_from: Validator.isValid(this.state.filters.valid_from) ? this.state.filters.valid_from.toISOString().substring(0, 10) : null,
-      valid_to  : Validator.isValid(this.state.filters.valid_to) ? this.state.filters.valid_to.toISOString().substring(0, 10) : null
+      valid_from: Validator.isValid(this.state.filters.valid_from) ?  new Date(this.state.filters.valid_from).toISOString().substring(0, 10) : null,
+      valid_to  : Validator.isValid(this.state.filters.valid_to) ?  new Date(this.state.filters.valid_to).toISOString().substring(0, 10) : null,
+
     };
 
+    // if(Validator.isValid(this.state.filters.first_load)){
+    //   filters =this.state.filters.first_load == true ? {
+    //     ...this.state.filters,
+    //     valid_from: Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
+    // new Date(this.props.settings.current_payroll_cutoff.start_date).toISOString().substring(0, 10) : null,
+    //     valid_to  : Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
+    // new Date ( this.props.settings.current_payroll_cutoff.end_date).toISOString().substring(0, 10) : null,
+  
+    //   } : filters;
 
+    // }
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
     if( ! this.props.isListLoaded ) {
       this.props.fetchRequestList( filters );
