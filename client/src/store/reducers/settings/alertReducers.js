@@ -37,7 +37,7 @@ const alertReducer = (state = initState, action) => {
                     variant         : 'success',
                     header          : ( action.header ? action.header : ""),
                     body            : ( action.body ? action.body : ""),
-                    timeOut         : ( action.timeOut ?  action.timeOut : 0 ),
+                    timeOut         : ( action.timeOut ?  action.timeOut : 4500 ),
                     isTimeOutActive : ( action.timeOut != 0 ?  true : false )
                 }
             }
