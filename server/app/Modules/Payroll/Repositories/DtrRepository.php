@@ -417,8 +417,16 @@ class DtrRepository implements DtrRepositoryInterface{
                         $to_update_flag = false;
                         $result['not_updated'][] = $dtr;
                     }
+                    $rest_day_work = $dtr->rest_day_work()->first();
 
-                    if( $to_update_flag ) {
+                    # Check if there's an Approved Rest Day Work for the current DTR. If yes, apply the Rest Day Work instead of the Schedule.
+                    if( is_valid( $rest_day_work ) && $rest_day_work->isApproved() ) {
+
+                        $this->apply_rest_day_work_to_dtr( $rest_day_work );
+
+                    # Else Checks Normal Updates the DTR
+                    } 
+                    else if( $to_update_flag ) {
 
                         # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
                         $schedule_detail = ( is_valid( $schedule ) ? $schedule->getPerDay( get_day_from_date( $dtr->date ) ) : null);
