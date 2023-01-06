@@ -49,7 +49,25 @@ class ScheduleAssignDepartment extends Component {
     values.schedule_details = Formatter.format_schedule_details(values);
     values.valid_from = values.from.toISOString().substring(0, 10);
     values.valid_to = values.to.toISOString().substring(0, 10);
-    this.props.scheduleAssign(values)
+    var confirm_msg  = "h";
+    switch (values.action) {
+      case "update":
+        confirm_msg = "Update Department Schedule";
+        break;
+      case "assign_schedule_holiday_policy":
+        confirm_msg = "Assign this Holiday policies to ALL Employees of this department.";
+        break;
+      case "assign_schedule_policy":
+        confirm_msg = "Assign this Schedule policies to ALL Employees of this department.";
+        break;
+      case "assign":
+        confirm_msg = "Assign this Schedule with policies to ALL Employees of this department this will also update their DTR records Please Confirm.";
+        break;
+    }
+    if (window.confirm("Are you sure you want to "+ confirm_msg)) {
+      this.props.scheduleAssign(values)
+    }
+    
   }
 
   loadTemplateSched = (template_id) => {
