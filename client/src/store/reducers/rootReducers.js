@@ -45,6 +45,7 @@ import myTeamSchedule from "./schedule/teamSchedule";
 import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
 import reportReducers from './report/reportReducers';
 
+import departmentListReducers from "./admin/departmentListReducers"
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 
@@ -90,7 +91,8 @@ const rootReducer = combineReducers({
 
     dashboard  : dashboardReducers,
 
-    report  : reportReducers
+    report  : reportReducers,
+    departmentList:   departmentListReducers,
 });
 
 export default rootReducer;

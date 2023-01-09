@@ -4,7 +4,7 @@ namespace App\Modules\Department\Repositories;
 
 use App\Modules\Department\Models\Department;
 use Exception;
-
+use Auth;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -56,6 +56,34 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     }
 
     
+    /**
+     *  Responsible for Disabling a Department with the ID given.
+     * @param $id
+     * @return Department $department
+     */
+    public function destroy_department($id)
+    {
+        try {
+
+            $user = Auth::user();
+            $department = Department::find($id);
+
+            $department->disabled_by = $user->id;
+
+            $department->disabled_on =  date('Y-m-d H:i:s');
+            $department->save();
+            $department->delete();
+            
+
+            log_to_file('info', 'Success', [$department]);
+            return true;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
     /**
      *  Responsible for assigning the Department Handlers
      * @param $id
