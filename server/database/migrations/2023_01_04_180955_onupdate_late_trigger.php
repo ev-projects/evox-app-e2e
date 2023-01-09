@@ -96,6 +96,6 @@ END");
     public function down()
     {
         //
-        DB::unprepared("DROP TRIGGER 'onupdatelate'");
+        DB::unprepared("DROP TRIGGER onupdatelate");
     }
 }

@@ -177,6 +177,6 @@ class EVSPUnderTimeCalProc extends Migration
     public function down()
     {
         //
-        DB::unprepared("DROP PROCEDURE 'EVSP_UnderTime_Cal'");
+        DB::unprepared("DROP PROCEDURE EVSP_UnderTime_Cal");
     }
 }

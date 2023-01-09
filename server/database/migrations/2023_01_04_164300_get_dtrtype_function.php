@@ -96,6 +96,6 @@ class GetDtrtypeFunction extends Migration
      */
     public function down()
     {
-        DB::unprepared("DROP FUNCTION 'get_dtrtype'");
+        DB::unprepared("DROP FUNCTION get_dtrtype");
     }
 }

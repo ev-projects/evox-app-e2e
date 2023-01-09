@@ -292,6 +292,6 @@ class EVSPOverTimeCalProc extends Migration
     public function down()
     {
         //
-        DB::unprepared("DROP PROCEDURE 'EVSP_OverTime_Cal'");
+        DB::unprepared("DROP PROCEDURE EVSP_OverTime_Cal");
     }
 }

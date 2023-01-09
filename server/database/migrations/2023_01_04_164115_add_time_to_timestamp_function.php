@@ -42,6 +42,6 @@ class AddTimeToTimestampFunction extends Migration
      */
     public function down()
     {
-        DB::unprepared("DROP FUNCTION 'add_time_to_timestamp'");
+        DB::unprepared("DROP FUNCTION add_time_to_timestamp");
     }
 }

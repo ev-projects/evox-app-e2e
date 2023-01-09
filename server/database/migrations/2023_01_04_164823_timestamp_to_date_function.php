@@ -35,6 +35,6 @@ END");
      */
     public function down()
     {
-        DB::unprepared("DROP FUNCTION 'timestamp_to_date'");
+        DB::unprepared("DROP FUNCTION timestamp_to_date");
     }
 }

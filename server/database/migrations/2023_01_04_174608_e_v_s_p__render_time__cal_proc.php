@@ -206,6 +206,6 @@ class EVSPRenderTimeCalProc extends Migration
     public function down()
     {
         //
-        DB::unprepared("DROP PROCEDURE 'EVSP_RenderTime_Cal'");
+        DB::unprepared("DROP PROCEDURE EVSP_RenderTime_Cal");
     }
 }

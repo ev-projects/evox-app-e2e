@@ -158,6 +158,6 @@ END");
     public function down()
     {
         //
-        DB::unprepared("DROP TRIGGER 'onupdate_undertime'");
+        DB::unprepared("DROP TRIGGER onupdate_undertime");
     }
 }

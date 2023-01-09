@@ -34,6 +34,6 @@ END");
     public function down()
     {
         //
-        DB::unprepared("DROP TRIGGER 'onupdate_leave'");
+        DB::unprepared("DROP TRIGGER onupdate_leave");
     }
 }

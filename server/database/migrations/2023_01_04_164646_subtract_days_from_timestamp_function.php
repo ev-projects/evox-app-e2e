@@ -40,6 +40,6 @@ END");
      */
     public function down()
     {
-        DB::unprepared("DROP FUNCTION 'subtract_days_from_timestamp'");
+        DB::unprepared("DROP FUNCTION subtract_days_from_timestamp");
     }
 }

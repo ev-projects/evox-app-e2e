@@ -86,6 +86,6 @@ END");
      */
     public function down()
     {
-        DB::unprepared("DROP FUNCTION 'get_total_night_diff'");
+        DB::unprepared("DROP FUNCTION get_total_night_diff");
     }
 }

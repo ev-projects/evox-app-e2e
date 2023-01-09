@@ -52,6 +52,6 @@ END");
     public function down()
     {
         //
-        DB::unprepared("DROP PROCEDURE 'update_absentscheduler'");
+        DB::unprepared("DROP PROCEDURE update_absentscheduler");
     }
 }

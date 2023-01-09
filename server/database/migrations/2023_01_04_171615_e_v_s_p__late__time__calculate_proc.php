@@ -109,6 +109,6 @@ class EVSPLateTimeCalculateProc extends Migration
     public function down()
     {
         //
-        DB::unprepared("DROP PROCEDURE 'EVSP_Late_Time_Calculate'");
+        DB::unprepared("DROP PROCEDURE EVSP_Late_Time_Calculate");
     }
 }

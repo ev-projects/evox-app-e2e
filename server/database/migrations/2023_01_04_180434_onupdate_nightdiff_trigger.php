@@ -252,6 +252,6 @@ END");
     public function down()
     {
         //
-        DB::unprepared("DROP TRIGGER 'onupdate_nightdiff'");
+        DB::unprepared("DROP TRIGGER onupdate_nightdiff");
     }
 }

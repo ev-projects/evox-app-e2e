@@ -87,6 +87,6 @@ class EVSPLeaveCalProc extends Migration
     public function down()
     {
         //
-        DB::unprepared("DROP PROCEDURE 'EVSP_Leave_Cal'");
+        DB::unprepared("DROP PROCEDURE EVSP_Leave_Cal");
     }
 }

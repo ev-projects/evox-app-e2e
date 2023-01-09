@@ -42,6 +42,6 @@ class AddDayToTimestampFunction extends Migration
      */
     public function down()
     {
-        DB::unprepared("DROP FUNCtiON 'add_day_to_timestamp'");
+        DB::unprepared("DROP FUNCtiON add_day_to_timestamp");
     }
 }

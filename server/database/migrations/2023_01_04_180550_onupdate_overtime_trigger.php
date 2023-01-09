@@ -299,6 +299,6 @@ END");
     public function down()
     {
         //
-        DB::unprepared("DROP TRIGGER 'onupdate_overtime'");
+        DB::unprepared("DROP TRIGGER onupdate_overtime");
     }
 }
