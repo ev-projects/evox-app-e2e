@@ -213,6 +213,6 @@ class EVSPNightDiffTimeCalProc extends Migration
     public function down()
     {
         //
-        DB::unprepared("DROP PROCEDURE 'EVSP_NightDiffTime_Cal'");
+        DB::unprepared("DROP PROCEDURE EVSP_NightDiffTime_Cal");
     }
 }
