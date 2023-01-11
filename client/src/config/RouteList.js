@@ -246,7 +246,7 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.department_list}>
-          <DepartmentList  role={['admin']}  />
+          <DepartmentList  role={['admin']} permission={['access_department_list']} />
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
