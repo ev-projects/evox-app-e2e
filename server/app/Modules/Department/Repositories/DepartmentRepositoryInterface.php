@@ -9,4 +9,6 @@ interface DepartmentRepositoryInterface
     public function find( $id );
 
     public function assign_handlers( $id, array $users_array );
+
+    public function destroy_department($id);
 }

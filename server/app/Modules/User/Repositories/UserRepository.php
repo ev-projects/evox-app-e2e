@@ -455,6 +455,28 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+      /**
+     *  Responsible for Soft-Deleting the User by the User ID
+     * @param $id
+     * @return bool
+     */
+    public function destroy_department_users($id){
+        DB::beginTransaction();
+        try {
+
+            $user_list = User::where("department_id", $id);
+            $user_list->delete();
+            DB::commit();
+            log_to_file('info', 'Success', [ /**  Variable */]);
+            return null;  /**  Variable */;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
+
     /**
      *  Responsible for fetching the User with the User ID given.
      * @param $id

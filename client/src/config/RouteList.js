@@ -64,6 +64,7 @@ import Profile from "../container/Profile";
 import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
 import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
+import DepartmentList from "../container/Admin/DepartmentList";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -242,6 +243,10 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.manage_change_logs}>
           <ChangeLogs  role={['admin']}  />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.department_list}>
+          <DepartmentList  role={['admin']} permission={['access_department_list']} />
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

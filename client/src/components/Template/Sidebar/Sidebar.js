@@ -477,8 +477,18 @@ const Sidebar = (props) => {
                       </Link>
                     </li>
                   }
+                {Authenticator.check('admin', 'access_department_list') &&
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.department_list}>
+                        <i className="nav-icon fa fa-bars nav-icon" />
+                        <p>Department List</p>
+                      </Link>
+                    </li>
+                }
                 </ul>
               </li>
+
+          
             }
 
             <li className="nav-item">

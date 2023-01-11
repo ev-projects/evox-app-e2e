@@ -66,6 +66,8 @@
     register_user                   :  "/app/admin/RegisterUser/",
     manage_change_logs              :  "/app/admin/ManageChangeLogs/",
 
+    department_list                 :  "/app/admin/DepartmentList/",
+
     // Performance Measure
     kpi_upload                      :  "/app/performance/KpiUpload",
     generate_date                   :  "/app/admin/GenerateDate/",

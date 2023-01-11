@@ -2,14 +2,15 @@
 
 namespace App\Modules\Department\Models;
 
-use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Team\Models\Team;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Schedule\Models\Schedule;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Department extends Model
 {
-    // use SoftDeletes;
+    use SoftDeletes;
 
     protected $guarded = [];
 

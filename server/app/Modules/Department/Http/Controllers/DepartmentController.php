@@ -10,6 +10,7 @@ use App\Modules\Department\Resources\DepartmentResource;
 use App\Modules\Department\Repositories\DepartmentRepositoryInterface;
 use App\Modules\Department\Resources\DepartmentListResource;
 use App\Modules\Schedule\Resources\ScheduleResource;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -19,8 +20,9 @@ class DepartmentController extends Controller
 
     private $department;
     
-    public function __construct(DepartmentRepositoryInterface $department){
+    public function __construct(DepartmentRepositoryInterface $department, UserRepositoryInterface $user){
         $this->department = $department;
+        $this->user = $user;
     }
 
     /**
@@ -51,6 +53,27 @@ class DepartmentController extends Controller
             return success_response(
                 trans('messages.find_department_success'), 
                 new DepartmentResource( $department ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Deletes/SoftDelete an existing Department
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id){
+        try {
+
+
+            $deleted = $this->department->destroy_department($id);
+            if($deleted){
+                $this->user->destroy_department_users($id);
+            }
+            return success_response(
+                trans('messages.soft_delete_department_success'), 
+                // new DepartmentResource( $department ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
