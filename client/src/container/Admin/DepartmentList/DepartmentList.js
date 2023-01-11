@@ -46,7 +46,11 @@ class DepartmentList extends Component {
       return <Wrapper  {...this.props} >
         <ContainerWrapper>   
           <Content col="12" title="Department List">
-
+          <p>Department list and control</p>
+          <p>Options:</p>
+          <ul>
+            <li>Soft Delete -  Delete marks a Department and the employees under it as no longer active or valid without actually deleting it from the database, and is recoverable by contacting Dev OPS Team.</li>
+          </ul> 
           <Table striped bordered hover>
             <thead>
               <tr>
