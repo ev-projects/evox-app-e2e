@@ -21,7 +21,7 @@ class CreateCoesTable extends Migration
             $table->string('address')->nullable()->default('');
             $table->date('hire_date')->nullable();
             $table->date('separation_date')->nullable();
-            $table->string('position')->nullable()->default('');;
+            $table->string('position')->nullable()->default('');
             $table->string('basic_pay')->default('0');
             $table->decimal('de_minimis', 8, 2)->default(0);
             $table->string('de_minimis_currency_code')->nullable()->default('');
