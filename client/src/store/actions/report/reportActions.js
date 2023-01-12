@@ -20,13 +20,17 @@ export const exportAttendanceSummary = (start_date, end_date, params) => {
         API.export({
             method: "get",
             url: "/report/attendance/summary/export/" + start_date.format("YYYY-MM-DD") + "/" + end_date.format("YYYY-MM-DD"),
+            // data: params,  
             params: params  
         })
         .then(result => {
+            
             var fileURL = window.URL.createObjectURL(new Blob([result.data]));
             var fileLink = document.createElement('a');
             fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'team_summary_report.xlsx');
+
+
+            fileLink.setAttribute('download', 'Attendance_report.xlsx');
             document.body.appendChild(fileLink);
             fileLink.click();
             })
@@ -37,12 +41,11 @@ export const exportAttendanceSummary = (start_date, end_date, params) => {
 }
 
 export const getTeamAttendanceSummary = (start_date, end_date, params) => {
-
     return (dispatch, getState) => {
         API.call({
-            method: "get",
+            method: "post",
             url: "/report/team_attendance_summary/" + start_date.format("YYYY-MM-DD") + "/" + end_date.format("YYYY-MM-DD"),
-            params: params
+            data: params
         })
             .then(result => {
                 dispatch({

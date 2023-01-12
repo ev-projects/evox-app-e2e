@@ -2,20 +2,21 @@
 
 namespace App\Modules\User\Repositories;
 
-use App\Modules\Department\Models\Department;
-use App\Modules\Team\Models\Team;
-use App\Modules\User\Models\User;
+use Exception;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
-use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use App\Modules\Team\Models\Team;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Department\Models\Department;
 
 class UserRepository implements UserRepositoryInterface{
 
@@ -454,6 +455,28 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+      /**
+     *  Responsible for Soft-Deleting the User by the User ID
+     * @param $id
+     * @return bool
+     */
+    public function destroy_department_users($id){
+        DB::beginTransaction();
+        try {
+
+            $user_list = User::where("department_id", $id);
+            $user_list->delete();
+            DB::commit();
+            log_to_file('info', 'Success', [ /**  Variable */]);
+            return null;  /**  Variable */;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
+
     /**
      *  Responsible for fetching the User with the User ID given.
      * @param $id
@@ -611,27 +634,62 @@ class UserRepository implements UserRepositoryInterface{
      * @param Request $request
      * @return User $user_collection ( Collection )
      */
-    public function get_users_under_supervisee( Request $request , $start_date, $end_date ){
+    public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false){
         try {
+            
             $user_collection =  auth()->user()->users_handled();
             
             $user_collection->join('departments', 'users.department_id', '=', 'departments.id')->select('users.*', 'departments.department_name');
 
-            if( is_valid( $request->department_id ) ){
+            if( $hired_strict){
+                $user_collection->where('date_hired', '<=',  Carbon::parse($end_date)->format("Y-m-d"));
+            }
+
+
+            if( is_valid( $request->selectedDepartments ) ){
+                $dep_ids = $request->selectedDepartments;
+                if(gettype($dep_ids) === "string"){
+                    $dep_ids = preg_split("/\,/", $dep_ids );
+                }
+                $user_collection->whereIn('users.department_id',array_unique($dep_ids) );
+            }   
+
+            if( is_valid( $request->department_id ) && !is_valid( $request->selectedDepartments ) ){
                 $user_collection->where('department_id',$request->department_id );
             } else {
                 $user_collection->whereRaw('department_id IS NOT NULL');
             }
 
+            if( is_valid( $request->team_id ) ){
+                $user_collection->whereIn('users.id', Team::find( $request->team_id )->team_users()->pluck('id') );
+            }
+
+            if( is_valid( $request->selectedTeams ) ){
+                $team_ids = $request->selectedTeams;
+                if(gettype($team_ids) === "string"){
+                    $team_ids = preg_split("/\,/", $team_ids );
+                }
+
+                $team_list = [];
+                foreach($team_ids as $team_id){
+
+                    $team_users_id =  Team::find( $team_id )->team_users()->pluck('id')->toArray();
+                    foreach( $team_users_id as $id){
+                        $team_list[] = $id;
+                    }
+                }
+            $user_collection->whereIn('users.id',array_unique($team_list) );
+            }
+
+  
             if( is_valid( $request->name ) ){
                 $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
             }
 
             $user_collection->whereRaw('(is_active = ' . (is_valid($request->is_active) ? $request->is_active : '1') .' or termination_date BETWEEN "'. $start_date .'" AND "'. $end_date .'")');
+
            
-            if( is_valid( $request->team_id ) ){
-                $user_collection->whereIn('id', Team::find( $request->team_id )->team_users()->pluck('id'));
-            }
+
 
             //paginate user collection to prevent request timeout
 
@@ -678,11 +736,6 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
-             /**
-     *  Responsible for fetching all the Active Users under supervisee with inactive status
-     * @param Request $request
-     * @return User $user_collection ( Collection )
-     */
     public function get_users_under_supervisee_active_with_no_schedule(User $user){
         try {
 
@@ -706,7 +759,6 @@ class UserRepository implements UserRepositoryInterface{
             throw $e;
         }
     }
-
 
 
     
@@ -974,11 +1026,13 @@ class UserRepository implements UserRepositoryInterface{
         try {
 
             if( request()->get('page') == 'all' ){
-                $user_collection = Role::findByName( $role )->users()->orderBy('first_name', 'asc')
+                $user_collection = Role::findByName( $role )->users()->where('is_active', 1)
+                                                                     ->orderBy('first_name', 'asc')
                                                                      ->orderBy('last_name', 'asc')
                                                                      ->get();
             } else {
-                $user_collection = Role::findByName( $role )->users()->orderBy('first_name', 'asc')
+                $user_collection = Role::findByName( $role )->users()->where('is_active', 1)
+                                                                     ->orderBy('first_name', 'asc')
                                                                      ->orderBy('last_name', 'asc')
                                                                      ->paginate(15);
             }
@@ -1001,12 +1055,14 @@ class UserRepository implements UserRepositoryInterface{
         try {
 
             if( request()->get('page') == 'all' ){
-                $user_collection = Department::find( $department_id )->users()->orderBy('first_name', 'asc')
+                $user_collection = Department::find( $department_id )->users()->where('is_active', 1)
+                                                                              ->orderBy('first_name', 'asc')
                                                                               ->orderBy('last_name', 'asc')
                                                                               ->get();
 
             } else {
-                $user_collection = Department::find( $department_id )->users()->orderBy('first_name', 'asc')
+                $user_collection = Department::find( $department_id )->users()->where('is_active', 1)
+                                                                              ->orderBy('first_name', 'asc')
                                                                               ->orderBy('last_name', 'asc')
                                                                               ->paginate(15);
             }
@@ -1055,7 +1111,7 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function adminRoleConditions($user_id, array $request){
         try {
-
+            
             $user =  User::findOrFail( $user_id );
 
             // check if there is a role called admin 1st

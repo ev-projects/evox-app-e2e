@@ -26,7 +26,7 @@ class DPAList extends Component {
 
       this.initialState = {
           filters: {
-            is_active:      this.props.dpaList?.filters?.is_active,
+            is_active:      this.props.dpaList?.filters?.is_active ? this.props.dpaList?.filters?.is_active :1 ,
             submitted_dpa:  this.props.dpaList?.filters?.submitted_dpa,
             department_id:  this.props.dpaList?.filters?.department_id,
             page:           this.props.dpaList?.filters?.page

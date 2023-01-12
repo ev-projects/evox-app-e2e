@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('attendance/summary/export/{start_date}/{end_date}', 'ReportController@export');
+
 # API Call for Reports
 Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
@@ -27,7 +27,7 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
     Route::get('team_attendance', 'ReportController@team_attendance');
 
     # Get Team Attendance Summary
-    Route::get('team_attendance_summary/{start_date}/{end_date}', 'ReportController@team_attendance_summary');
+    Route::post('team_attendance_summary/{start_date}/{end_date}', 'ReportController@team_attendance_summary');
 
     # Get Team Schedule
     Route::get('team_schedule/', 'ReportController@team_schedule');

@@ -140,6 +140,23 @@ class Formatter {
     return list;
   }
 
+  array_to_getvalue( array ){
+
+    let list = [];
+  
+    if( array instanceof Array  ) {
+  
+      for (var i = 0; i < array.length; i++) {
+  
+        list.push(array[i]["value"]);
+      }
+  
+    }
+  
+    return list;
+  }
+  
+
 }
 
 export default new Formatter();

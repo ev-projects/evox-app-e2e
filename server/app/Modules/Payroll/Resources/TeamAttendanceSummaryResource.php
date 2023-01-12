@@ -10,6 +10,7 @@ class TeamAttendanceSummaryResource extends JsonResource
 
     public function __construct($resource)
     {
+        
         // Ensure you call the parent constructor
         parent::__construct($resource);
         $this->team_attendance_summary = $resource;
@@ -32,8 +33,8 @@ class TeamAttendanceSummaryResource extends JsonResource
             $has_leave = false;
             $has_rest_day_work = false;
             $hours = 0;
-            
-            // If DTR has holidays, tick the has_holiday flag
+
+       
             if( $dtr->holidays()->get()->count() > 0 ){
                 $status = 'Holiday';
                 $has_holiday = true;    

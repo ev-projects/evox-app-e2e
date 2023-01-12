@@ -677,6 +677,39 @@ class Dtr extends Model
     }   
     
     /**
+     * leaves Type to acronym
+     */
+    public function leavesToAcronym($simple = false){
+        $type = explode(" ",$this->leaves()->get()->first()->type);
+        $acronym = "";
+
+        foreach ($type as $w) {
+        $acronym .= mb_substr($w, 0, 1);
+        }
+
+        if($simple){
+            if($acronym == "SL"){
+                $acronym = $acronym;
+            }else{
+                if($this->isUnplanned()){
+                    $acronym = "UL";
+                }else{
+                    $acronym = "VL";
+                }
+                
+            }
+        }
+        return $acronym;
+    }   
+
+    /**
+     * leaves Type to acronym
+     */
+    public function isUnplanned(){
+       
+        return in_array( $this->leaves()->get()->first()->type, get_constant('UNPLANNED_LEAVE_TYPES')) ? true : false;
+    }   
+    /**
      * Returns true if has Schedule but has no Valid time logs and if there are no holidays and leaves on that day and the DTR Type is regular.
      */
     public function isAbsent(){

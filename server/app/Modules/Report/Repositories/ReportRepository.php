@@ -141,7 +141,27 @@ class ReportRepository implements ReportRepositoryInterface{
     public function get_team_attendance_summary(  Collection $user_collection, string $start_date, string $end_date ){
         try {
 
-            $result = $this->team_attendance_summary->get_summary( $user_collection, $start_date, $end_date );
+            $result = $this->team_attendance_summary->get_summary2( $user_collection, $start_date, $end_date );
+            
+
+            // log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$result], "dtr_summary");
+            // log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            return $result;
+            
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+     /**
+     *  Responsible for fetching all the team attendance summary.
+     * @param Carbon $current_time
+     * @return array
+     */
+    public function get_team_attendance_summary_dtr(  Collection $user_collection, string $start_date, string $end_date ){
+        try {
+
+            $result = $this->team_attendance_summary->get_summary_dtr( $user_collection, $start_date, $end_date );
+            
 
             // log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$result], "dtr_summary");
             // log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
@@ -199,6 +219,89 @@ class ReportRepository implements ReportRepositoryInterface{
     }
     
 
+
+    public function getDetailsOfSummary($data){
+
+        $team_attendance_summary = [];
+
+        foreach ( $data as $dtr) {
+            $status = '';
+            $schedule = array();
+            $has_holiday = false;
+            $has_leave = false;
+            $has_rest_day_work = false;
+
+            // If DTR has holidays, tick the has_holiday flag
+            if( $dtr->holidays()->get()->count() > 0 ){
+                $status = 'Holiday';
+                $has_holiday = true;
+            }
+
+            $leave = $dtr->leaves()->first();
+
+            // If DTR has valid leave, tick the has_leave flag
+            if( is_valid( $leave ) && $leave->isApproved() && $leave->amount > 0){
+                $status = $dtr->leaves()->get()->first()->type;
+                $has_leave = true;
+            }
+
+            // If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
+            if( $dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')){
+                $status = 'Rest Day Work';
+                $has_rest_day_work = true;
+            }
+
+            # If There is No Rest Day, Holiday and Leave, check status
+            if( !$has_rest_day_work && !$has_holiday && !$has_leave ){
+
+                # Check if there is a schedule for the DTR
+                if( $dtr->hasSchedule() ){
+
+                    // If DTR has Log, set status as Present
+                    if( $dtr->hasValidTimelogs() ){
+                        $status = 'Present';
+
+                    // else, set status as Absent
+                    }else {
+                        $status = 'Absent';
+
+                        // if inside sched = absent
+                        if($dtr->checkCurrentTime()){
+                            $status = 'Absent';
+                        }else {
+                            $status = 'Not yet started';
+                        }
+                    }
+
+                // If the DTR is Rest Day, set status as Rest Day
+                }elseif($dtr->isRestDay()){
+                    $status = 'Rest Day';
+
+                // else, set as No Schedule
+                }else{
+                    $status = 'No Schedule';
+                }
+
+            }
+
+            // Fetch User of the DTR
+             $user = $dtr->user()->first();
+
+            // Assemble the array details for the Team Attendance Summary
+            array_push( $team_attendance_summary,
+            [
+                "date" => $dtr->date,
+                "user_id" => $user->id,
+                "name" => $user->getFullName( 2 ) ,
+                "job_title" =>  $user->job_title,
+                "department" =>  $user->department->department_name,
+                "status" => $status
+            ]);
+
+       }
+
+        return $team_attendance_summary;
+    }
 
     ###############################################################################################
     ##################################### Validation functions ####################################

@@ -33,7 +33,7 @@ interface UserRepositoryInterface
 
     public function get_all_supervisors();
 
-    public function get_users_under_supervisee( Request $request, $start_date, $end_date );
+    public function get_users_under_supervisee( Request $request, $start_date, $end_date, $hired_strict = false);
 
     public function get_users_under_supervisee_with_inactive( Request $request, $start_date, $end_date );
 

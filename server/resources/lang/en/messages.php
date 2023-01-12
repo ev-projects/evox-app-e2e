@@ -97,6 +97,7 @@ return [
      */
     'all_department_success' => 'Successfully fetched all Department!',
     'find_department_success' => 'Successfully found a Department!',
+    'soft_delete_department_success' => 'Successfully Soft Deleted a Department and Employees under Department!',
     'department_assign_handlers_attempt' => 'Attempt for Assigning of Department Handlers',
     'department_assign_handlers_success' => 'Successfully Assigned Department Handlers!',
 

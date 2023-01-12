@@ -188,8 +188,8 @@ class Overtime extends Component {
                     </Col> 
                     <Col size="3">   
                       <div className="form-group">
-                        <label>Amount:</label>
-                        <InputTime name="amount" value={values.amount}/>
+                        <label>Amount(Hours):</label>
+                        <InputTime name="amount" type= "overtime" value={values.amount}/>
                       </div>
                     </Col> 
                     <Col size="5">   
@@ -273,7 +273,8 @@ class Overtime extends Component {
 
 const validationSchema = Yup.object().shape({
     date:           Yup.string().required("This field is required").nullable(),
-    amount:         Yup.date().required("This field is required").nullable().min( DateFormatter.get_specific_datetime( null, '00:00:59' ) , 'Please select valid time.'),
+    amount:         Yup.date().required("This field is required").nullable().min( DateFormatter.get_specific_datetime( null, '00:59:59' ) , 'Please select valid time.')
+                                                                            .max( DateFormatter.get_specific_datetime( null, '16:00:01' ) , 'Please select valid time.'),
     type:           Yup.string().required("This field is required").nullable(),
     employee_note:  Yup.string().nullable(),
     approver_note:  Yup.string().nullable()

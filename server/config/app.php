@@ -177,9 +177,8 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
         'Laravel\Socialite\SocialiteServiceProvider',
-
         Barryvdh\DomPDF\ServiceProvider::class,
-        
+        App\Providers\PHPExcelMacroServiceProvider ::class,
     ],
 
     /*

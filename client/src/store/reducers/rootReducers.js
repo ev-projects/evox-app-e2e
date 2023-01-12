@@ -40,11 +40,13 @@ import dpaListReducers from "./filters/dpaListReducers";
 import dashboardReducers from "./dashboard/dashboardReducers";
 
 import myTeamListReducers from "./filters/myTeamListReducers";
+import myDepartmentsTeamsListReducers from "./filters/myDepartmentsTeamsListReducers";
 import myTeamSchedule from "./schedule/teamSchedule";
 
 import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
 import reportReducers from './report/reportReducers';
 
+import departmentListReducers from "./admin/departmentListReducers"
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 
@@ -77,6 +79,7 @@ const rootReducer = combineReducers({
     myRequestList       : myRequestListReducers,
     dpaList             : dpaListReducers,
     myTeamList          : myTeamListReducers,
+    myDepartmentsTeamsList          : myDepartmentsTeamsListReducers,
     myTeamSchedule      : myTeamSchedule,
     myTeamRequestList   : myTeamRequestListReducers,
     
@@ -90,7 +93,8 @@ const rootReducer = combineReducers({
 
     dashboard  : dashboardReducers,
 
-    report  : reportReducers
+    report  : reportReducers,
+    departmentList:   departmentListReducers,
 });
 
 export default rootReducer;

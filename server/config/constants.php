@@ -76,7 +76,8 @@ return [
         'state',
         'zipcode',
         'bestEmail',
-        'status'
+        'status',
+        'country'
     ],
 
     'BHR_USER_PERSONAL' => [

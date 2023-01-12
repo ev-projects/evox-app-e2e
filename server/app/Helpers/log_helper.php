@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Log;
+use App\Classes\EvoxActivityLogger;
 
 if (! function_exists('log_activity')) {   
     /**
@@ -12,7 +13,7 @@ if (! function_exists('log_activity')) {
      */
     function log_activity( $message ) {
         try{    
-            activity()->useLog('activity')
+            evox_activity()->useLog('activity')
                         ->withProperties([
                             'REMOTE_ADDR'           => request()->server('REMOTE_ADDR'),
                             'REMOTE_PORT'           => request()->server('REMOTE_PORT'),
@@ -25,6 +26,16 @@ if (! function_exists('log_activity')) {
         }catch(Exception $e){
             throw $e;
         }
+    }
+}
+
+if (!function_exists('evox_activity')) {
+    
+    function evox_activity(string $logName = null): EvoxActivityLogger
+    {
+        $defaultLogName = config('laravel-activitylog.default_log_name');
+
+        return app(EvoxActivityLogger::class)->useLog($logName ?? $defaultLogName);
     }
 }
 
