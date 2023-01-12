@@ -21,8 +21,8 @@
     dtr                             :  "/app/dtr/",
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
-    ev_learning                      :  "/app/EVLearning",
-    ops_schedule                      :  "/app/OpsSchedule",
+    ev_learning                     :  "/app/EVLearning",
+    ops_schedule                    :  "/app/OpsSchedule",
 
     // Request Links
     overtime                        :  "/app/request/Overtime/",
@@ -30,6 +30,7 @@
     change_schedule                 :  "/app/request/ChangeSchedule/",
     rest_day_work                   :  "/app/request/RestDayWork/",
     work_from_home                  :  "/app/request/WorkFromHome/",
+    coe                             :  "/app/request/CertificateOfEmployment/",
 
     // Team Links
     manage_teams                    :  "/app/team/Manage",

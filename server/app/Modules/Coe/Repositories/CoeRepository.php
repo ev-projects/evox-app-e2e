@@ -1,0 +1,91 @@
+<?php 
+
+namespace App\Modules\Coe\Repositories;
+
+use App\Modules\Coe\Models\COE;
+use Exception;
+
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class COERepository implements COERepositoryInterface{
+    
+    ###############################################################################################
+    ###################################### Public functions #######################################
+    ###############################################################################################
+
+    public function __construct(){
+
+    }
+
+    /**
+     *  Responsible for fetching all the Departments
+     * 
+     * @return Collection $coe_collection
+     */
+    public function all()
+    {
+        try {
+            $coe_collection = COE::where('user_id', auth()->user()->id)->orderBy('created_at', 'asc')->get();
+            log_to_file('info', 'Success', [$coe_collection]);
+            return $coe_collection;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+    /**
+     *  Responsible for fetching the COE with the ID given.
+     *  @param $id
+     *  @return COE $coe
+     */
+    public function create($user_id, $purpose_index, $show_compensation, $employee)
+    {
+        try {
+            // $c = "AHAHA1,234.56789Hello";
+            // echo floatval(preg_replace("/[^0-9.]/", "", $c)) . "<br>";
+            $address = "{$employee['address1']} {$employee['address2']} {$employee['city']}, {$employee['state']} {$employee['zipcode']} {$employee['country']}";
+            $coe = COE::create([
+                'user_id' => $user_id,
+                'purpose_index' => $purpose_index,
+                'full_name' => $employee['fullName2'],
+                'address' => $address,
+                'hire_date' => $employee['hireDate'],
+                //'separation_date' => $employee,
+                'position' => $employee['jobTitle'],
+                'basic_pay' => $employee['payRate'],
+                'de_minimis' => floatval($employee['4206.4']),
+                'de_minimis_currency_code' => $employee['4206.7'],
+                'other_allowance' => 0,
+                'other_allowance_currency_code' => '',
+                'show_compensation' => $show_compensation,
+            ]);
+            return $coe;
+
+        } catch (Exception $e) {
+            log_error($e, 'coelog');
+            throw $e;
+        }
+    }
+    
+    /**
+     *  Responsible for fetching the COE with the ID given.
+     *  @param $id
+     *  @return COE $coe
+     */
+    public function find($id)
+    {
+        try {
+            $coe = COE::find($id);
+            log_to_file('info', 'Success', [$coe]);
+            return $coe;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+}

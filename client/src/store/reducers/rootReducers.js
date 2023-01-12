@@ -15,6 +15,7 @@ import settingsReducers from "./settings/settingsReducers";
 import alterLogReducers from "./requests/alterLogReducers";
 import changeScheduleReducers from "./requests/changeScheduleReducers";
 import overtimeReducers from "./requests/overtimeReducers";
+import coeReducers from './requests/coeReducers';
 import restDayWorkReducers from "./requests/restDayWorkReducers"
 
 import requestApprovalReducers from "./approvals/requestApprovalReducers";
@@ -64,6 +65,7 @@ const rootReducer = combineReducers({
     alterLog : alterLogReducers,
     changeSchedule: changeScheduleReducers,
     overtime : overtimeReducers,
+    coe: coeReducers,
     restDayWork : restDayWorkReducers,
     requestApproval : requestApprovalReducers,
 

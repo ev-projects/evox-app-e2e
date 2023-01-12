@@ -106,6 +106,14 @@ return [
             'permission' => 0666,
         ],
 
+        'coelog' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/coe.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+
         'biometrics' => [
             'driver' => 'single',
             'path' => storage_path('logs/biometrics.log'),

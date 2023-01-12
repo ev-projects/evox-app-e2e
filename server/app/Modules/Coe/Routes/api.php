@@ -12,7 +12,11 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+########################### CLIENT ##########################################################################
+Route::group(['prefix' => 'request/coe', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    # List employee COEs
+    Route::get('/', 'COEController@all');
 
-Route::get('/coe', function (Request $request) {
-    // return $request->coe();
-})->middleware('auth:api');
+    # Create employee COE
+    Route::post('/', 'COEController@create');
+});

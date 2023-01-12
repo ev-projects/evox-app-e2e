@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Certificate of Employment</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +25,9 @@
 
       .header-company-info p {
         font-size: 9pt;
+      }
+      #coe-details td {
+        padding: 3px;
       }
       .signature-wrapper {
         position: relative;
@@ -58,47 +62,55 @@
     <p>&nbsp;</p>
     <h1>Certificate of Employment</h1>
     <p>This is to certify that the employee whose name and details appear below is an official employee of <strong>EASTVANTAGE BUSINESS SOLUTIONS, INC.,</strong> a business process outsourcing (BPO) company:</p>
-    <table style="border-collapse: collapse;  width: 90%; margin-left: auto; margin-right: auto;" border="1">
+    <table id="coe-details" style="border-collapse: collapse;  width: 90%; margin-left: auto; margin-right: auto;" border="1">
       <tbody>
         <tr>
           <td style="width: 200px;">Name</td>
-          <td>&nbsp;</td>
+          <td>{{$coe->full_name}}</td>
         </tr>
         <tr>
           <td style="width: 200px;">Residence</td>
-          <td>&nbsp;</td>
+          <td>{{$coe->address}}</td>
         </tr>
         <tr>
           <td style="width: 200px;">Hire Date</td>
-          <td>&nbsp;</td>
+          <td>{{$coe->hire_date}}</td>
         </tr>
+        @if($coe->separation_date)
         <tr>
           <td style="width: 200px;">Separation Date</td>
-          <td>&nbsp;</td>
+          <td>{{$coe->separation_date}}</td>
         </tr>
+        @endif
         <tr>
           <td style="width: 200px;">Position Help</td>
-          <td>&nbsp;</td>
+          <td>{{$coe->position}}</td>
         </tr>
+        @if($coe->show_compensation)
         <tr>
           <td style="width: 200px;">Basic Salary</td>
-          <td>&nbsp;</td>
+          <td>{{$coe->basic_pay}}</td>
         </tr>
-        <tr>
-          <td style="width: 200px;">De Minimis Benefit</td>
-          <td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td style="width: 200px;">Other Allowances</td>
-          <td>&nbsp;</td>
-        </tr>
+          @if($coe->de_minimis > 0)
+          <tr>
+            <td style="width: 200px;">De Minimis Benefit</td>
+            <td>{{$coe->de_minimis}} {{$coe->de_minimis_currency_code}}</td>
+          </tr>
+          @endif
+          @if($coe->other_allowance > 0)
+          <tr>
+            <td style="width: 200px;">Other Allowances</td>
+            <td>{{$coe->other_allowance}} {{$coe->other_allowance_currency_code}}</td>
+          </tr>
+          @endif
+        @endif
         <tr>
           <td style="width: 200px;">Reason for Issuance</td>
-          <td>&nbsp;</td>
+          <td>{{$coe->purpose}}</td>
         </tr>
         <tr>
           <td style="width: 200px;">Date of Issuance</td>
-          <td>&nbsp;</td>
+          <td>{{$coe->created_at}}</td>
         </tr>
       </tbody>
     </table>

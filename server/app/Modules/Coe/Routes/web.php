@@ -12,7 +12,7 @@
 */
 
 Route::group(['prefix' => 'coe'], function () {
-    Route::get('/', function () {
+    Route::get('/test', function () {
         dd('This is the COE module index page. Build something great!');
     });
 });

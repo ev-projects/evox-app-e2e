@@ -164,6 +164,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Modules\Bhr\Providers\BhrServiceProvider::class,
+        App\Modules\Coe\Providers\COEServiceProvider::class,
         App\Modules\Payroll\Providers\PayrollServiceProvider::class,
         App\Modules\Report\Providers\ReportServiceProvider::class,
         App\Modules\Schedule\Providers\ScheduleServiceProvider::class,
@@ -178,6 +179,7 @@ return [
         'Laravel\Socialite\SocialiteServiceProvider',
 
         Barryvdh\DomPDF\ServiceProvider::class,
+        
     ],
 
     /*

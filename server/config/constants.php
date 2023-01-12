@@ -283,8 +283,36 @@ return [
 
     'TEAM_SCHEDULE' => [
         "records_per_date"        => 5
-],
+    ],
 
+    'BHR_REPORT_ID' => [
+        'COE' => '2908',
+    ],
+
+
+    'COE_PURPOSES' => [
+        0 => [
+            'purpose' => 'Auto/Car Loan'
+        ],
+        1 => [
+            'purpose' => 'Bank Loan'
+        ],
+        2 => [
+            'purpose' => 'Housing Loan'
+        ],
+        3 => [
+            'purpose' => 'Personal Loan'
+        ],
+        4 => [
+            'purpose' => 'Proof of Employment'
+        ],
+        5 => [
+            'purpose' => 'Vaccine'
+        ],
+        6 => [
+            'purpose' => 'Visa Application'
+        ],
+    ],
 
 
     # 1 MONTH SCOPE FROM DATE TODAY

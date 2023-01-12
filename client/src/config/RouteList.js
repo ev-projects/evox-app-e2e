@@ -29,6 +29,7 @@ import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
 import RestDayWork from "../container/Request/RestDayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
+import COE from "../container/Request/COE/COE";
 
 import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
 import MyTeamSchedule from "../container/MyTeam/MyTeamSchedule";
@@ -126,8 +127,9 @@ const RoutesList = (props) => {
           <WorkFromHome onApproval={false} role={['employee']} permission={['employee_access']}/>
         </ProtectedRoute>
 
-
-        
+        <ProtectedRoute exact path={global.links.coe+":id?"}>
+          <COE onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
 
         { /* Team Links */ }
         <ProtectedRoute exact path={global.links.manage_teams}>
