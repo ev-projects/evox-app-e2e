@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Modules\Coe\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class COE extends Model
+{
+    protected $table = 'coes';
+
+    protected $fillable = [
+        'user_id',
+        'purpose_index',
+        'full_name',
+        'address',
+        'hire_date',
+        'separation_date',
+        'position',
+        'basic_pay',
+        'de_minimis',
+        'de_minimis_currency_code',
+        'other_allowance',
+        'other_allowance_currency_code',
+        'show_compensation',
+    ];
+
+    public function getPurposeAttribute()
+    {
+        return get_constant('COE_PURPOSES')[$this->purpose_index]['purpose'];
+    }
+}

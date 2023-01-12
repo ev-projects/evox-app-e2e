@@ -93,6 +93,12 @@ const Sidebar = (props) => {
                       <p>Change of Schedule</p>
                     </Link>
                   </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to={global.links.base + 'request/CertificateOfEmployment/'}>
+                      <i className="nav-icon fa fa-certificate nav-icon" />
+                      <p>Certificate Of Employment</p>
+                    </Link>
+                  </li>
 
                 </ul>
               </li>
