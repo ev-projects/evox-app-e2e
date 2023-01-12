@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Spatie\Permission\Models\Role;
+use App\Modules\User\Models\UtcTimelog;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
@@ -69,6 +70,7 @@ class syncBhrUsers extends Command
              *  3.2. Every iteration, save the Supervisor ID x User ID
              *  4. After iteration, insert the Supervisor ID x User ID on the matrix table.
              */
+            $utc = UtcTimelog::all();
             $admin_collection = Role::findByName( 'admin' )->users()->get();
             $user_supervisor_pivot_array = [];
             $new_user_list_for_reminder = [];
@@ -104,12 +106,12 @@ class syncBhrUsers extends Command
                     
                     # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
                     if( is_valid( $user ) && is_valid( $bhr_user ) ){
-                        $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
+                        $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user , $utc);
                         
                     # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
 		    } else {
                 if ( is_valid( $bhr_user ) ){
-                        $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
+                        $user = $this->user->insert_bhr_user_to_evox( $bhr_user, $utc );
 
                         if( is_valid( $user ) ) {
 

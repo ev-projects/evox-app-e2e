@@ -27,6 +27,7 @@ use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
+use App\Modules\User\Models\UtcTimelog;
 
 class CronController extends Controller
 {
@@ -84,7 +85,7 @@ class CronController extends Controller
              */
 
             $user_supervisor_pivot_array = [];
-
+            $utc = UtcTimelog::all();
             # 1
             # Fetches all BHR Users Numbers and set it as a collection
             $bhr_user_number_collection = $this->bhr->get_all_bhr_user_numbers();
@@ -97,7 +98,7 @@ class CronController extends Controller
 
                 if( is_valid( $bhr_user ) ) {
 
-                    $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
+                    $user = $this->user->insert_bhr_user_to_evox( $bhr_user ,$utc );
 
                     if( is_valid( $user ) ) {
                         # 3.
@@ -137,6 +138,8 @@ class CronController extends Controller
              *
              *
              */
+            
+            $utc = UtcTimelog::all();
             $user_supervisor_pivot_array = [];
             $admin_collection = Role::findByName( 'admin' )->users()->get();
 
@@ -178,12 +181,12 @@ class CronController extends Controller
 
                 # If the User is existing in EVOX, Proceed on Updating the BHR User Instance
                 if( is_valid( $user ) ){
-                    $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user );
+                    $user = $this->user->update_bhr_user_to_evox( $user, $bhr_user, $utc );
                     $action = 'Update';
 
                 # If the User is not existing in EVOX, Proceed on Inserting the BHR User Instance
                 } else {
-                    $user = $this->user->insert_bhr_user_to_evox( $bhr_user );
+                    $user = $this->user->insert_bhr_user_to_evox( $bhr_user, $utc );
 
                     if( is_valid( $user ) ) {
 

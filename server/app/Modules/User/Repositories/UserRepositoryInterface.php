@@ -2,18 +2,18 @@
 
 namespace App\Modules\User\Repositories;
 
+use Illuminate\Http\Request;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 
 interface UserRepositoryInterface
 {
 
     public function register_user( Request $request );
 
-    public function insert_bhr_user_to_evox(object $bhr_user);
+    public function insert_bhr_user_to_evox(object $bhr_user, object $utc);
 
-    public function update_bhr_user_to_evox(User $user, object $bhr_user);
+    public function update_bhr_user_to_evox(User $user, object $bhr_user, object $utc);
 
     public function apply_user_supervisor_pivot( array $user_supervisor_pivot_array );
 
@@ -58,5 +58,7 @@ interface UserRepositoryInterface
     public function list_via_department( $department_id );
 
     public function adminRoleConditions($user_id, array $request);
+
+    public function update_bhr_user_country_to_evox(User $user, object $bhr_user, object $utc);
 
 }
