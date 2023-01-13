@@ -21,6 +21,8 @@ interface ReportRepositoryInterface
 
     public function get_dtr_summary( Collection $user_collection, string $start_date, string $end_date );
 
+    public function get_dtr_summary_new( Request $request);
+
     
     
 

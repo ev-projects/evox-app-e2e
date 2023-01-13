@@ -5,6 +5,7 @@ namespace App\Modules\Payroll\Repositories;
 use Auth;
 use Exception;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use App\Modules\User\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Payroll\Models\Dtr;
@@ -16,6 +17,7 @@ use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Payroll\Models\Biometrics;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\Computation;
+use App\Modules\Payroll\Models\DtrSummaryReport;
 use App\Modules\Request\Models\RestDayWork;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Request\Models\ChangeSchedule;
@@ -1120,6 +1122,101 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
+    public function new_get_dtr_logs(Collection $user_collection, string $start_date, string $end_date){
+        try {  
+            $user_collection_paginated = [];
+            $result = 
+            // DB::table('drt_summary_report')
+            DtrSummaryReport::whereIn('user_id', $user_collection->pluck('id')->toArray())
+                ->select(
+                    DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),
+                                                IF(users.middle_name IS NOT NULL,users.middle_name,''),
+                                                IF(users.last_name IS NOT NULL,users.last_name,'')) 
+                                                AS EmployeeName"),
+                    'users.emp_num',
+                    'users.email',
+                    'users.username',
+                    DB::raw("sum(drt_summary_report.unpaid_leave) as ul"),
+                    DB::raw("sum(drt_summary_report.on_leave) as vl_sl"),
+                    DB::raw("sum(drt_summary_report.reg_late) as reg_late"),
+                    DB::raw("sum(drt_summary_report.reg_undertime) as reg_under_time"),
+                    DB::raw("sum(drt_summary_report.reg_rendered_hours 
+                                                            + IF(drt_summary_report.render_status=1,drt_summary_report.reg_rendered_hours_overlapp,0)) 
+                                                            -sum(drt_summary_report.reg_night_diff + 
+                                                            IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as reg_rendered_hr"),
+                    DB::raw("sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as reg_night_dif"),
+                    DB::raw("sum(drt_summary_report.reg_overtime) as reg_over_time"),
+                    DB::raw("sum(drt_summary_report.reg_overtime_night_diff) as reg_over_night_dif"),
+                    DB::raw("sum(drt_summary_report.rd_rendered_hours + drt_summary_report.rd_rendered_hours_overlapp) as rd_rendered_hr"),
+                    DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as rd_night_dif"),
+                    DB::raw("sum(drt_summary_report.rd_overtime) as rd_over_time"),
+                    DB::raw("sum(drt_summary_report.rd_overtime_night_diff) as rd_over_night_dif"),
+                    DB::raw("sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) 
+                                                            -sum(drt_summary_report.lh_night_diff 
+                                                            + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as lh_rendered_hr"),
+                    DB::raw("sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as lh_night_dif"),
+                    DB::raw("sum(drt_summary_report.lh_overtime) as lh_over_time"),
+                    DB::raw("sum(drt_summary_report.lh_overtime_night_diff) as lh_over_night_dif"),
+                    DB::raw("sum(drt_summary_report.sh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.sh_rendered_hours_overlapp,0)) 
+                                                            -sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as sh_rendered_hr"),
+                    DB::raw("sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as sh_night_dif"),
+                    DB::raw("sum(drt_summary_report.sh_overtime) as sh_over_time"),
+                    DB::raw("sum(drt_summary_report.sh_overtime_night_diff) as sh_over_night_dif"),
+                    DB::raw("sum(drt_summary_report.dsh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dsh_rendered_hours_overlapp,0)) 
+                                                            -sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as dsh_rendered_hr"),
+                    DB::raw("sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as dsh_night_dif"),
+                    DB::raw("sum(drt_summary_report.dsh_overtime) as dsh_over_time"),
+                    DB::raw("sum(drt_summary_report.dsh_overtime_night_diff) as dsh_over_night_dif"),
+                    DB::raw("sum(drt_summary_report.dlh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dlh_rendered_hours_overlapp,0)) 
+                                                            -sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as dlh_rendered_hr"),
+                    DB::raw("sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as dlh_night_dif"),
+                    DB::raw("sum(drt_summary_report.dlh_overtime) as dlh_over_time"),
+                    DB::raw("sum(drt_summary_report.dlh_overtime_night_diff) as dlh_over_night_dif"),
+                    DB::raw("sum(drt_summary_report.slh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.slh_rendered_hours_overlapp,0)) 
+                                                            -sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as slh_rendered_hr"),
+                    DB::raw("sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as slh_night_dif"),
+                    DB::raw("sum(drt_summary_report.slh_overtime) as slh_over_time"),
+                    DB::raw("sum(drt_summary_report.slh_overtime_night_diff) as slh_over_night_dif")
+                )
+
+                ->whereIn('user_id', $user_collection->pluck('id')->toArray()) // NEW
+
+                ->join('users', 'users.id', '=', 'drt_summary_report.user_id')
+                ->join('users_supervisors', 'users_supervisors.user_id', '=', 'drt_summary_report.user_id')
+                ->join('departments', 'users.department_id', '=', 'departments.id');
+            // if (is_valid($request->department_id)) {
+            //     if (is_valid($request->sup_id)) {
+            //         $result->where('users_supervisors.supervisor_id', '=', $request->sup_id);
+            //     }
+            // }
+
+            //$result->whereBetween('drt_summary_report.login_date', [$request->valid_from, $request->valid_to]);
+            $result->whereBetween('drt_summary_report.login_date', [$start_date,  $end_date]); // note to self, is this 00:00 start and 59:59 end? 
+        
+        
+        
+            // if (is_valid($request->department_id)) {
+            //     $result->where('users.department_id', '=', $request->department_id);
+            // } else {
+            //     $result->whereRaw('users.department_id IS NOT NULL');
+            // }
+        
+            // if (is_valid($request->name)) {
+            //     $result->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%' . trim($request->name) . '%', '%' . trim($request->name) . '%', '%' . trim($request->name) . '%'));
+            // }
+            $result
+            // ->whereRaw('(is_active = ' . (is_valid($request->is_active) ? $request->is_active : '1') . ' or termination_date BETWEEN "' . $request->valid_from . '" AND "' . $request->valid_to . '")')
+                ->groupBy('users.first_name', 'users.middle_name', 'users.last_name', 'users.emp_num', 'users.email', 'users.username', 'users.id');
+            
+
+
+            return $result;
+
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        }
+        
+    }
 
 
     /**
@@ -1168,6 +1265,10 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
+
+
+
+
 
     ###############################################################################################
     ##################################### Protected functions #####################################
