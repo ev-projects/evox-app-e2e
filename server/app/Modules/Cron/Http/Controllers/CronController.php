@@ -396,6 +396,11 @@ class CronController extends Controller
             // Fetch the Leaves from BHr within the Payroll Cutoff as Date Range.
             $bhr_leaves_array = $this->bhr->get_leaves( $start_date, $end_date );
 
+            // Sort leaves based on lastChanged field
+            usort($bhr_leaves_array, function($a, $b) {
+                return $a->status->lastChanged <=> $b->status->lastChanged;
+            });
+
             // Binding of the Leaves fetched from BHr within the Date Range to the DTR within the Date Range.
             $result = $this->dtr->bind_leaves_to_dtr( $bhr_leaves_array );
 
