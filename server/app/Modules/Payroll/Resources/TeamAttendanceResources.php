@@ -125,7 +125,7 @@ class TeamAttendanceResources extends JsonResource
                 array_push( $team_attendance ,
                 [
                     "date" => $array->date,
-                    "name" => $user->getFullName( 2 ) ,
+                    "name" => $user->getFullName(2) ,
                     "job_title" =>  $user->job_title,
                     "schedule" =>  $schedule,
                     "values" => $values,

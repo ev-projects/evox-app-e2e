@@ -547,7 +547,7 @@ class TeamAttendanceSummary
                                 $this->result['total_overtime']['total_hours'] += (int) $payroll_item->value;
                             }
                         };
-
+                       
                         $employee_list_summary[$user->id][] = [
                             "date" => $dtr->date,
                             "name" => $user->getFullName(2),

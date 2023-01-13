@@ -27,6 +27,9 @@ use Illuminate\Http\Request;
 class ReportRepository implements ReportRepositoryInterface{
     
     protected $user;
+    protected $computation;
+    protected $dtr_summary;
+    protected $team_attendance_summary;
 
     function __construct(UserRepositoryInterface $user){
         $this->user = $user;
