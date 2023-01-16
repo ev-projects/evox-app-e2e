@@ -43,6 +43,8 @@ class Schedule extends Component {
       return <Wrapper  {...this.props} >
         <ContainerWrapper>   
           <Content col="12" title="List of Template Schedules">
+            <p>Schedule templates are designed for specific time or day schedules that are saved and can be reused and copied by other employees and department which their DTR can follow. </p>
+            <p>Supervisors can make, edit, and use template on assigning schedule on a department or employees under his/her span.</p>
           <Table striped bordered hover>
             <thead>
               <tr>
