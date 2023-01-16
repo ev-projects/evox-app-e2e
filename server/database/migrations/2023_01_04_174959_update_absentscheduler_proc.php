@@ -62,7 +62,7 @@ create temporary table dtrs_user
 
 
 insert into temp_user
-SELECT ROW_NUMBER() OVER(order by id),id  FROM users 
+SELECT ROW_NUMBER() ,id  FROM users 
 WHERE is_active='1' AND employment_status<>'Terminated' AND termination_date IS NOT NULL;
 
 select count(1) into usercount from temp_user;
