@@ -72,6 +72,40 @@ export const exportDtrSummary = ( data = null ) => {
     }
 }
 
-
+export const exportNewDtrSummary = ( data = null) => {
+    console.log('Params', data)
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/report/dtr_summary/new_export",
+            params : data
+        })
+        .then(result => {
+            console.log(result.data.content)
+            if (result.data.content) {
+                dispatch({
+                    'type'      : 'FETCH_DTR_EXPORT_BACTH_SUCCESS', 
+                    'dtrSummary'  : result.data.content,
+                })
+                //generate next page and append to the previous result
+                if (result.data.content.has_next_page) {
+                    var btnExport = document.getElementById('btn-export-' + (data?.export ? data.export : (data?.department_id ? 'department' : 'all_new')));
+                    btnExport.click();
+                }
+            } else {
+                dispatch({
+                    'type'      : 'FETCH_DTR_EXPORT_SUCCESS',
+                    'data'      : result.data
+                })
+            }
+        })
+        .catch(e => {
+            dispatch( {
+                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
+                'e'  : e,
+            } )
+        });
+    }
+}
 
 
