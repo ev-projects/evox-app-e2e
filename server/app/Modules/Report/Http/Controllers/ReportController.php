@@ -46,8 +46,11 @@ class ReportController extends Controller
     protected $payroll_cutoff;
     protected $dtr;
     protected $dtr_summary_export;
+    protected $team_schedule_export;
     protected $user;
     protected $info_array;
+    protected $new_added;
+
 
 
     public function __construct(
@@ -67,8 +70,11 @@ class ReportController extends Controller
         $this->team_schedule_export = $team_schedule_export;
         $this->user = $user;
 
+        $this->new_added =  ["EmployeeNumber",];
+
         $this->info_array =  [
                                 "FullName",
+                                "EmployeeNumber",
                                 "Account",
                                 "Attendance_Rate",
                                 "Unplanned",
@@ -80,6 +86,18 @@ class ReportController extends Controller
                                 "Absent",
                                 "SL",
                                 "VL"
+                            ];
+
+        $this->disregard =  [
+                                "FullName",
+                                "EmployeeNumber",
+                                "Account",
+                                
+                            ];
+        $this->percentage_info =  [
+                                "Attendance_Rate",
+                                "Unplanned",
+                                "Planned",
                             ];
     }
 
@@ -556,10 +574,10 @@ class ReportController extends Controller
             $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
 
 
-            $override["attendance"]['total_percentage'] = number_format($total_row[2], 2);
+            $override["attendance"]['total_percentage'] = number_format($total_row[3], 2);
 
-            $override["unplanned_leaves"]['total_percentage'] = number_format($total_row[3], 2);
-            $override["planned_leaves"]['total_percentage'] = number_format($total_row[4], 2);
+            $override["unplanned_leaves"]['total_percentage'] = number_format($total_row[4], 2);
+            $override["planned_leaves"]['total_percentage'] = number_format($total_row[5], 2);
 
 
 
@@ -843,6 +861,7 @@ class ReportController extends Controller
             foreach ($user_collection as $key => $employee) {
                 $excel_employees[$key]["information"]["FullName"]               = /*$employee->emp_num ." ".*/ $employee->getFullName();
                 $excel_employees[$key]["information"]["Account"]                = $employee->department->department_name;
+                $excel_employees[$key]["information"]["EmployeeNumber"]         = $employee->emp_num;
                 $excel_employees[$key]["information"]["Attendance_Rate"]        = 0;
                 $excel_employees[$key]["information"]["Unplanned"]              = 0;
                 $excel_employees[$key]["information"]["Planned"]                = 0;
@@ -1018,18 +1037,11 @@ class ReportController extends Controller
         try {
             $total_row = [];
 
-            $disregard = [
-                "FullName",
-                "Account",
-            ];
+            $disregard = $this->disregard;
 
             $count_rows = count($ordered_row);
 
-            $percentage_info = [
-                "Attendance_Rate",
-                "Unplanned",
-                "Planned",
-            ];
+            $percentage_info = $this->percentage_info;
 
             foreach ($information_array as $key => $info) {
                 if (!(in_array($info, $disregard))) {
@@ -1045,7 +1057,9 @@ class ReportController extends Controller
                     $total_row[] = null;
                 }
             }
+
             return $total_row;
+            
         } catch (Exception $e) {
             throw $e;
         }
@@ -1059,20 +1073,13 @@ class ReportController extends Controller
         try {
             // $total_row = [];
 
-            $disregard = [
-                "FullName",
-                "Account",
-            ];
+            $disregard = $this->disregard;
 
             $segregated_count_rows = [];
 
             $segregated_accounts = [];
             $segregated_account_total = [];
-            $percentage_info = [
-                "Attendance_Rate",
-                "Unplanned",
-                "Planned",
-            ];
+            $percentage_info =  $this->percentage_info;
             foreach ($ordered_row as $row) {
                 $info_key = array_search("Account", $information_array);
                 $account_name = $row[$info_key];
@@ -1081,6 +1088,9 @@ class ReportController extends Controller
 
 
             foreach ($segregated_accounts as $seg_key => $segregated_account_rows) {
+                foreach ($this->new_added as $new_col){
+                    $segregated_account_total[$seg_key][] = "";
+                }
                 $segregated_count_rows = count($segregated_account_rows);
                 foreach ($information_array as $key => $info) {
                     if (!(in_array($info, $disregard))) {

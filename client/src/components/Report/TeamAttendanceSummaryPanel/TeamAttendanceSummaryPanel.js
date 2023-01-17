@@ -96,6 +96,7 @@ const TeamAttendanceSummaryPanel = (props) => {
           <thead>
             <tr>
               <th className="name">Name</th>
+              <th className="name">Employee Number</th>
               <th className="job-title">Job Title</th>
               <th className="date">Date</th>
               <th className="status">Status</th>
@@ -108,6 +109,7 @@ const TeamAttendanceSummaryPanel = (props) => {
                 <tr >
                   
                   <td><Link to={Authenticator.checkRole('supervisor')? global.links.dtr + item.user_id : global.links.profile + item.user_id}>{item.name} </Link> </td>
+                  <td>{item.emp_num}</td>
                   <td>{item.job_title}</td>
                   <td>{moment(item.date).format("MMM D")}</td>
                   <td className={"status " + item.status.replace(/\s+/g, '-').toLowerCase()}>

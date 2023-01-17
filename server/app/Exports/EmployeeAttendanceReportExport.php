@@ -76,8 +76,8 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             AfterSheet::class    => function (AfterSheet $event) {
 
 
-
-                $coordinate = $event->sheet->getCellByColumnAndRow(12 + $this->count_period, 1)->getCoordinate();
+                                                                        // 12 or more number of fields like name, emp_num
+                $coordinate = $event->sheet->getCellByColumnAndRow(13 + $this->count_period, 1)->getCoordinate();
                 $month_col_coordinate = substr($coordinate, 0, -1);
              
                 $event->sheet->setNumFormatPercent('E4:E' . ($this->list_count + 4));
@@ -86,10 +86,11 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                 $event->sheet->setNumFormatPercent('D4:D' . ($this->list_count + 4));
                 $this->addZeroPercent($event, "D", 4, $this->list_count);
 
-                $event->sheet->setNumFormatPercent('C4:C' . ($this->list_count + 4));
-                $this->addZeroPercent($event, "C", 4, $this->list_count);
+                // $event->sheet->setNumFormatPercent('C4:C' . ($this->list_count + 4));
+                // $this->addZeroPercent($event, "C", 4, $this->list_count);
 
-
+                $event->sheet->setNumFormatPercent('F4:F' . ($this->list_count + 4));
+                $this->addZeroPercent($event, "F", 4, $this->list_count);
 
 
 
@@ -109,7 +110,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
 
                 $event->sheet->getDelegate()->getStyle('2')->getFont()->setSize(12);
-                $event->sheet->setFontSize('A2:L2', 10);
+                $event->sheet->setFontSize('A2:M2', 10);
                 // ->setBold(true);
                 $event->sheet->getDelegate()->getStyle('3')->getFont()->setSize(12);
                 // ->setBold(true);
@@ -118,19 +119,19 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
 
 
-                $event->sheet->getStyle('A2:L2')->getAlignment()->setWrapText(true);
-                $event->sheet->verticalAlign('A2:L2', "top");
-                $event->sheet->horizontalAlign('M2:'.$month_col_coordinate.'3', "center");
+                $event->sheet->getStyle('A2:M2')->getAlignment()->setWrapText(true);
+                $event->sheet->verticalAlign('A2:M2', "top");
+                $event->sheet->horizontalAlign('N2:'.$month_col_coordinate.'3', "center");
 
-                $event->sheet->getDelegate()->getStyle("M2:".$month_col_coordinate."2")->getFill()
+                $event->sheet->getDelegate()->getStyle("N2:".$month_col_coordinate."2")->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('55e629');
-                $event->sheet->getDelegate()->getStyle("M3:".$month_col_coordinate."3")->getFill()
+                $event->sheet->getDelegate()->getStyle("N3:".$month_col_coordinate."3")->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('BEBEBE');
 
                 $total_row_coordinate = (4 + $this->list_count);
-                $event->sheet->getDelegate()->getStyle("C" . $total_row_coordinate . ":L" . $total_row_coordinate)->getFill()
+                $event->sheet->getDelegate()->getStyle("D" . $total_row_coordinate . ":M" . $total_row_coordinate)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('6184d4');
 
@@ -144,25 +145,26 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                             ]
                         ]
                     );
+                    
 
                 // ACCOUNT ROWS EVENTS
                 $acc_total_row_coordinate = (4 + 5 + $this->list_count);
-                $event->sheet->getDelegate()->getStyle("A" . $acc_total_row_coordinate . ":L" . $acc_total_row_coordinate)->getFill()
+                $event->sheet->getDelegate()->getStyle("B" . $acc_total_row_coordinate . ":M" . $acc_total_row_coordinate)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('6184d4');
 
                 $event->sheet->getRowDimension($acc_total_row_coordinate)->setRowHeight(40);
                 $event->sheet->getStyle($acc_total_row_coordinate)->getAlignment()->setWrapText(true);
                 $event->sheet->getDelegate()->getStyle($acc_total_row_coordinate)->getFont()->setSize(12);
-                $event->sheet->setFontSize('A'.$acc_total_row_coordinate.':L'.$acc_total_row_coordinate, 10);
+                $event->sheet->setFontSize('B'.$acc_total_row_coordinate.':M'.$acc_total_row_coordinate, 10);
                 $event->sheet->verticalAlign($acc_total_row_coordinate, "top");
 
-                $event->sheet->setFontSize('A'.$acc_total_row_coordinate.':B'.$acc_total_row_coordinate, 13);
+                $event->sheet->setFontSize('B'.$acc_total_row_coordinate.':C'.$acc_total_row_coordinate, 13);
 
                 $acc_total_w_list = count($this->segragated_total_row)+$acc_total_row_coordinate;
 
                 $event->sheet->styleCells(
-                    "A".$acc_total_row_coordinate.":L" . $acc_total_w_list,
+                    "B".$acc_total_row_coordinate.":M" . $acc_total_w_list,
                     [
                         'borders' => [
                             'allBorders' => [
@@ -222,6 +224,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
             array_merge(   //HEADERS
                 ["Name"],
+                ["Employee\nNumber"],
                 ["Account"],
                 ["Attendance\nRate"],
                 ["Unplanned %"],
@@ -247,6 +250,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                 [""],
                 [""],
                 [""],
+                [""],
                 [""], //BLANK HEADERS + DAYS 
                 $datesday
             ),
@@ -257,6 +261,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             [""],
             [""],
             array_merge(   //HEADERS
+                [""],
                 ["HEAD COUNT"],
                 ["ACCOUNT"],
                 ["Attendance\nRate"],
@@ -284,8 +289,8 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
         return [
             'A' => 40,
-            'B' => 35,
-            'C' => 10,
+            'B' => 12,
+            'C' => 35,
             'D' => 10,
             'E' => 10,
             'F' => 10,
@@ -295,6 +300,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             'J' => 10,
             'K' => 10,
             'L' => 10,
+            'M' => 10,
 
 
         ];
@@ -347,7 +353,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
         // $start = $event->sheet->getCellByColumnAndRow(13, 4 )->getCoordinate();
         for ($x = 0; $x <= $this->count_period - 1; $x++) {
-            $new_x = $x + 13; // col M
+            $new_x = $x + 14; // col M
             for ($y = 0; $y <=  $this->list_count - 1; $y++) {
                 $new_y = $y + 4; // row 4
                 $coordinate = $event->sheet->getCellByColumnAndRow($new_x, $new_y)->getCoordinate();
@@ -368,7 +374,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
         $col_list = [];
 
         for ($x = 0; $x <= $this->count_period - 1; $x++) {
-            $new_x = $x + 13; // col M
+            $new_x = $x + 14; // col M
 
             $coordinate = $event->sheet->getCellByColumnAndRow($new_x, 1)->getCoordinate();
 

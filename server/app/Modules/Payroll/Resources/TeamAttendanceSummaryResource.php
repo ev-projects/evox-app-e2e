@@ -115,7 +115,8 @@ class TeamAttendanceSummaryResource extends JsonResource
             [
                 "date" => $dtr->date,
                 "user_id" => $user->id,
-                "name" => $user->getFullName( 2 ) ,
+                "name" => $user->getFullName(2) ,
+                "emp_num" => $user->emp_num,
                 "job_title" =>  $user->job_title,
                 "schedule" =>  $schedule,
                 "hours" => $hours > 0 ? seconds_to_time($hours,true) : null,
