@@ -240,7 +240,7 @@ const EmployeeDashboard = ( props ) => {
                               <img width="100%" src="/images/icn/Glassdoorbanner-1.png" />
                             </a>
                           </p>
-                          { <ReactPlayer 
+                          {/* { <ReactPlayer 
                               width={width}
                               height={height}
                               url={url}
@@ -257,7 +257,7 @@ const EmployeeDashboard = ( props ) => {
                             
                             <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Click the link below to fill out the form </p>
                             <a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a>
-	    		    <p><img width="100%" src="/images/icn/EVOX-Safety-Protocols.png" /></p>
+	    		    <p><img width="100%" src="/images/icn/EVOX-Safety-Protocols.png" /></p> */}
                           </Row>
                             
                       </Content> 
