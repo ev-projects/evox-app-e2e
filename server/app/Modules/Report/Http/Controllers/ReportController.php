@@ -1179,6 +1179,7 @@ class ReportController extends Controller
 
     public function newdtrsummaryreportcsvexport(Request $request)
     {
+        // dd($request->all());
         try {           
         
             $user_collection_paginated = [];
@@ -1219,7 +1220,7 @@ class ReportController extends Controller
             // //simple PHP File Open file pointer.
             // $fp = fopen($csvFileName, 'w');
             // fputcsv($fp, array_keys($jsonAllDecoded[0]));
-            // //PHP Loop through the associative an array.
+        // //PHP Loop through the associative an array.
             // foreach($jsonAllDecoded as $row){
             // //Write the json row all the data to the CSV file.
             // fputcsv($fp, $row);
