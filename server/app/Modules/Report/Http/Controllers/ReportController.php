@@ -20,6 +20,7 @@ use Spatie\Permission\Models\Permission;
 use App\Exports\TeamSummaryAttendanceExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
+use App\Exports\NewExportDTRSummary;
 use App\Modules\Payroll\Resources\HolidayResource;
 use App\Exports\TeamSummaryAttendanceMultiSheetExport;
 use App\Modules\Payroll\Resources\AnniversaryResources;
@@ -1209,7 +1210,7 @@ class ReportController extends Controller
             }else{
                 $result1= $result->orderBy('departments.department_name')->orderby('users.date_hired', 'DESC')->orderBy('users.last_name', 'asc')->orderBy('users.first_name', 'asc');
             }
-
+            // dump($result1);
             // $jsonAllDecoded = json_decode($result1, true);
 
             // //here simple add our CSV file a (pakainfo.csv)name.
@@ -1238,8 +1239,8 @@ class ReportController extends Controller
     
             // ];
             // $this->dtr_summary_export->data =  $export_result;
-            Storage::disk('local')->delete('app/export/dtrsummary.temp');
-            return Excel::download($result1, 'newdtrsummary.csv');
+            // Storage::disk('local')->delete('app/export/dtrsummary.temp');
+            return Excel::download(new NewExportDTRSummary($result1), 'newdtrsummary.csv');
      
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
