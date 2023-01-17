@@ -67,7 +67,7 @@ class EVSPLeaveCalProc extends Migration
         SET totalleave = 0; 
           ELSE
           
-            IF EXISTS (SELECT 1 FROM Leaves Where dtr_id=v_dtr_id and status='approved')
+            IF EXISTS (SELECT 1 FROM leaves Where dtr_id=v_dtr_id and status='approved')
             THEN
            
             SELECT amount into v_Leave from leaves where dtr_id=v_dtr_id and status='approved' Order by id desc limit 1;
