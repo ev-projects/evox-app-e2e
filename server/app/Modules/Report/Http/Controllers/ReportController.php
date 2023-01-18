@@ -1127,7 +1127,7 @@ class ReportController extends Controller
             ->join('users_supervisors','users_supervisors.user_id','=','drt_summary_report.user_id')
             ->join('departments', 'users.department_id', '=', 'departments.id');
             if( is_valid( $request->department_id ) ){
-               $result->where('users_supervisors.supervisor_id','=',$request->sup_id);
+            //    $result->where('users_supervisors.supervisor_id','=',$request->sup_id);
             }
             $result->whereBetween('drt_summary_report.login_date', [$request->valid_from, $request->valid_to]);
             
@@ -1189,7 +1189,7 @@ class ReportController extends Controller
             ->join('users_supervisors','users_supervisors.user_id','=','drt_summary_report.user_id')
             ->join('departments', 'users.department_id', '=', 'departments.id');
             if( is_valid( $request->department_id ) ){
-            $result->where('users_supervisors.supervisor_id','=',$request->sup_id);
+            // $result->where('users_supervisors.supervisor_id','=',$request->sup_id);
             }
             $result->whereBetween('drt_summary_report.login_date', [$request->valid_from, $request->valid_to]);
             
