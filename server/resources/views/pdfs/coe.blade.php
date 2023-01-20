@@ -16,6 +16,8 @@
       h1 {
         text-align: center;
         margin-bottom: 30px;
+		    font-weight: normal;
+		    text-transform: uppercase;
       }
 
       .header-company-info p,
@@ -32,11 +34,25 @@
       .signature-wrapper {
         position: relative;
         padding-top: 45PX;
+        width: 210px;
+        text-align: center;
       }
       .signature-wrapper img {
         position: absolute;
         top: 0;
         left: -10px;
+      }
+      p.p-highlight {
+        margin-top: 30px;
+        margin-bottom: 50px;
+        background-color: #92c83e;
+      }
+      footer {
+        margin-top: 50px;
+        text-align: center;
+      }
+      a {
+        color: #92c83e;
       }
     </style>
   </head>
@@ -53,13 +69,13 @@
             <p style="text-align: right; margin-bottom: 0;">Bonifacio Global City, Taguig 1634</p>
             <p style="text-align: right; margin-bottom: 0;">Phone: +63 (2) 8876 1444 local 6832</p>
             <p style="text-align: right; margin-bottom: 0;">
-              <a href="http://www.eastvantage.com">www.eastvantage.com</a>
+              <a href="https://www.eastvantage.com">www.eastvantage.com</a>
             </p>
           </td>
         </tr>
       </tbody>
     </table>
-    <p>&nbsp;</p>
+    <p class="p-highlight">&nbsp;</p>
     <h1>Certificate of Employment</h1>
     <p>This is to certify that the employee whose name and details appear below is an official employee of <strong>EASTVANTAGE BUSINESS SOLUTIONS, INC.,</strong> a business process outsourcing (BPO) company:</p>
     <table id="coe-details" style="border-collapse: collapse;  width: 90%; margin-left: auto; margin-right: auto;" border="1">
@@ -74,16 +90,16 @@
         </tr>
         <tr>
           <td style="width: 200px;">Hire Date</td>
-          <td>{{$coe->hire_date}}</td>
+          <td>{{date_create($coe->hire_date)->format('F d, Y')}}</td>
         </tr>
         @if($coe->separation_date)
         <tr>
           <td style="width: 200px;">Separation Date</td>
-          <td>{{$coe->separation_date}}</td>
+          <td>{{date_create($coe->separation_date)->format('F d, Y')}}</td>
         </tr>
         @endif
         <tr>
-          <td style="width: 200px;">Position Help</td>
+          <td style="width: 200px;">Job Role</td>
           <td>{{$coe->position}}</td>
         </tr>
         @if($coe->show_compensation)
@@ -105,12 +121,12 @@
           @endif
         @endif
         <tr>
-          <td style="width: 200px;">Reason for Issuance</td>
+          <td style="width: 200px;">Purpose</td>
           <td>{{$coe->purpose}}</td>
         </tr>
         <tr>
-          <td style="width: 200px;">Date of Issuance</td>
-          <td>{{$coe->created_at}}</td>
+          <td style="width: 200px;">Date Generated</td>
+          <td>{{$coe->created_at->format('F d, Y h:i:s A')}}</td>
         </tr>
       </tbody>
     </table>
@@ -121,9 +137,9 @@
         <strong>Precious Delos Reyes</strong>
       </p>
       <p>HR Manager</p>
-      <p>
-        <a href="mailto:happiness@eastvantage.com">happiness@eastvantage.com</a>
-      </p>
     </div>
+    <footer>
+      <p>This is a system generated document.<br />For verification, please send an email to <a href="mailto:happiness@eastvantage.com">happiness@eastvantage.com</a>.</p>
+    </footer>
   </body>
 </html>
