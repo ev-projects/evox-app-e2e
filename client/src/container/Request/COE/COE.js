@@ -88,7 +88,7 @@ class COE extends Component {
               <ContainerBody>
                 <Content col="6"  title={title} subtitle={<RequestSubtitle method={'store'} user={this.props.instance.user} />}>
                   <Row>
-                    <Col size="9">   
+                    <Col size="8">   
                       <div className="form-group">
                         <label>Type:</label>
                         <select name="purpose_index" value={ values.purpose_index } className="form-control" onChange={handleChange}>
@@ -107,9 +107,9 @@ class COE extends Component {
                         </Form.Control.Feedback> 
                       </div>
                     </Col>
-                    <Col size="3">   
+                    <Col size="4">   
                       <div className="form-group">
-                        <label>Type:</label>
+                        <label>With Salary:</label>
                         <select name="show_compensation" value={ values.show_compensation } className="form-control" onChange={handleChange}>
                             <option></option>
                             <option value={'0'}>No</option>
@@ -121,6 +121,7 @@ class COE extends Component {
                       </div>
                     </Col> 
                   </Row>
+                  <p class="note" >NOTE: For employees with special allowances, please email <a href="mailto:happiness@eastvantage.com">happiness@eastvantage.com</a>.</p>
                   <RequestButtons method={'store'} {...this} />
                 </Content>
               </ContainerBody>
