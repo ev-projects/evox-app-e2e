@@ -22,6 +22,9 @@ return [
     /**
      *  User Authentication
      */
+    'user_email_not_found' => 'Sorry, looks like you entered the wrong email address. Kindly ask the HR which email address is registered on your profile.',
+    'user_name_not_found' => 'Sorry, looks like you entered the wrong username. You may try using your registred email address to login.',
+    'user_password_incorrect' => 'Sorry, looks like you entered the wrong password. If your password doesn\'t work, you may use the "Forgot Password?" feature to get a new temporary password on your registered email address.',
     'user_not_found' => 'Sorry, Unrecognized Username or Password.',
     'user_not_active' => 'Sorry, your account is suspended. Please email helpdesk@eastvantage.com to activate your account.',
     
