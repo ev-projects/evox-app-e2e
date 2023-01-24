@@ -41,18 +41,28 @@ class AuthController extends Controller
 
             // Get the Credentials inputted by the User.
             $credentials = request(['username', 'password']);
-
+            $credIsEmail = false;
             // Validate if the User Inputted is an E-mail. If yes, Check on the E-mail field. If not, default is the User.
             if( filter_var(request('username'), FILTER_VALIDATE_EMAIL) ) {
+                $credIsEmail = true;
                 $credentials = array(
                     'email' => request('username'),
                     'password' => request('password')
                 );
             }
+            if ($credIsEmail) {
+                if (!User::where('email', $credentials['email'])->exists()) {
+                    return error_response( trans('messages.user_email_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+            } else {
+                if (!User::where('username', $credentials['username'])->exists()) {
+                    return error_response( trans('messages.user_name_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+            }
 
             // Attempt to check the Credentials. If credentials not found, return User Not Found.
             if (!$token = auth()->attempt($credentials)) {
-                return error_response( trans('messages.user_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+                return error_response( trans('messages.user_password_incorrect'), [], JsonResponse::HTTP_NOT_FOUND);
             }
 
             // Attempt to check if the User is active. If not active, return User not active.
