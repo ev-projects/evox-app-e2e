@@ -165,7 +165,7 @@ class UserRepository implements UserRepositoryInterface{
                     $user->job_title = $bhr_user->jobTitle;
                     $user->mobile_number = $bhr_user->mobilePhone;
 
-                    $utc_check = $utc->where('country_name', '=', $bhr_user->country)->first();
+                    $utc_check = $utc->where('country_name', '=', is_valid( $bhr_user->country )? $bhr_user->country: "Philippines")->first();
                         if ($utc_check !== null) {
                         $user->country_id  = $utc_check->country_id;
                         }
@@ -351,7 +351,7 @@ class UserRepository implements UserRepositoryInterface{
                 
                 
 
-                $utc_check = $utc->where('country_name', '=', $bhr_user->country)->first();
+                $utc_check = $utc->where('country_name', '=', is_valid( $bhr_user->country )? $bhr_user->country: "Philippines")->first();
                 if ($utc_check !== null) {
                     $user->country_id  = $utc_check->country_id;
                 }
