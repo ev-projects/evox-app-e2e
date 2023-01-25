@@ -48,6 +48,22 @@ class COERepository implements COERepositoryInterface{
             // $c = "AHAHA1,234.56789Hello";
             // echo floatval(preg_replace("/[^0-9.]/", "", $c)) . "<br>";
             $address = "{$employee['address1']} {$employee['address2']} {$employee['city']}, {$employee['state']} {$employee['zipcode']} {$employee['country']}";
+            /*
+            "4500.4" => Rice Allowance Company pays,                DMB
+            "4527.4" => Actual Medical Assistance Company pays,     DMB
+            "4526.4" => Laundry Allowance Company pays,             DMB
+            "4529.4" => Medical Allowance (DMB) Company pays,       DMB
+            "4525.4" => Clothing Allowance Company pays,            DMB
+            "4200.2" => Transportation Allowance (non-taxable) Coverage,    OTHER
+            */
+            $de_minimis = str_to_float($employee['4206.4']);
+            if ($de_minimis <= 0) {
+                $de_minimis += str_to_float($employee['4500.4']);
+                $de_minimis += str_to_float($employee['4527.4']);
+                $de_minimis += str_to_float($employee['4526.4']);
+                $de_minimis += str_to_float($employee['4529.4']);
+                $de_minimis += str_to_float($employee['4525.4']);
+            }
             $coe = COE::create([
                 'user_id' => $user_id,
                 'purpose_index' => $purpose_index,
@@ -57,9 +73,9 @@ class COERepository implements COERepositoryInterface{
                 //'separation_date' => $employee,
                 'position' => $employee['jobTitle'],
                 'basic_pay' => $employee['payRate'],
-                'de_minimis' => floatval($employee['4206.4']),
+                'de_minimis' => $de_minimis,
                 'de_minimis_currency_code' => $employee['4206.7'],
-                'other_allowance' => 0,
+                'other_allowance' => str_to_float($employee['4200.2']),
                 'other_allowance_currency_code' => '',
                 'show_compensation' => $show_compensation,
             ]);
