@@ -101,10 +101,11 @@ const EmployeeDashboard = ( props ) => {
                                 <li><a href="https://careers.eastvantage.com/jobs/senior-service-desk-analyst-bcg-taguig" target="_blank">Senior Service Desk Analyst</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/euc-engineer" target="_blank">EUC Engineer</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/it-fleet-and-asset-management-coordinator-bgc" target="_blank">IT Fleet and Management Coordinator</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/native-php-developer" target="_blank">Software Engineer</a></li>
+                                <li><a href="https://careers.eastvantage.com/jobs/senior-software-engineer-php" target="_blank">Senior Software Engineer</a></li>
+
+                                <li><a href="https://careers.eastvantage.com/jobs/student-enrolment-assistant" target="_blank">Student Enrolment Assistant</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/telemarketer-bgc-taguig-city" target="_blank">Telemarketer | BGC, Taguig City</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/senior-technical-recruiter-hybrid-setup" target="_blank">Senior Technical Recruiter | Hybrid Setup</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/student-enrollment-assistant" target="_blank">Student Enrollment Assistant</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/financial-analyst-wfh-nightshift" target="_blank">Financial Analyst | WFH | Nighshift</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/operations-workflow-associate-wfh-nightshift" target="_blank">Operations Workflow Associate | WFH | Nightshift</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/staff-accountant-wfh-nightshift-urgent-hiring" target="_blank">Staff Accountant | WFH | Nightshift</a></li>
@@ -119,17 +120,26 @@ const EmployeeDashboard = ( props ) => {
                                 <li><a href="https://careers.eastvantage.com/jobs/us-recruitment-manager-site-ortigas" target="_blank">US Recruitment Manager</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/financial-business-partner-bgc-taguig-ortigas-pasig-city" target="_blank">Financial Business Partner (BGC / Ortigas)</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/insurance-operations-admin-bgc" target="_blank">Operations Admin (Life Insurance Account)</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/team-leader-must-have-experience-life-insurance-account-onsite-bgc-taguig" target="_blank">Team Leader | must have experience with Life Insurance Account (On-site/BGC)</a></li>
+
                                 <li><a href="https://careers.eastvantage.com/jobs/customer-service-representative-onsite-bgc-taguig-city" target="_blank">Customer Service Representative (On-site/BGC)</a></li>
+
+                                <li><a href="https://careers.eastvantage.com/jobs/database-developer-sql-and-t-sql" target="_blank">Database Developer (SQL and T-SQL)</a></li>
+                                <li><a href="https://careers.eastvantage.com/jobs/dev-ops-engineer-aws-permanent-remote-set" target="_blank">Dev Ops Engineer | AWS | Permanent Remote Set Up</a></li>
+                                <li><a href="https://careers.eastvantage.com/jobs/senior-qa-tester-permanent-wfh" target="_blank">Senior QA Tester | Permanent WFH</a></li>
+                                <li><a href="https://careers.eastvantage.com/jobs/qa-tester-permanent-wfh" target="_blank">QA Tester | Permanent WFH</a></li>
+                                <li><a href="https://careers.eastvantage.com/jobs/etl-developer-permanent-remote-set" target="_blank">ETL Developer | Permanent Remote Set Up</a></li>
+                                <li><a href="https://careers.eastvantage.com/jobs/automation-tester-permanent-remote-set" target="_blank">Automation Tester | Permanent Remote Set Up</a></li>
+                                <li><a href="https://careers.eastvantage.com/jobs/power-bi-report-developer-permanent-remote-set" target="_blank">Power BI Report Developer | Permanent Remote Set Up</a></li>
+                                <li><a href="https://careers.eastvantage.com/jobs/scrum-master-permanent-remote-set" target="_blank">Scrum Master | Permanent Remote Set Up</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/application-performance-engineer-permanent-remote-set" target="_blank">Application Performance Engineer | Permanent Remote Setup</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/ux-designer-permanent-wfh" target="_blank">UX Designer | Permanent WFH</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/senior-net-developer-remote-set" target="_blank">Senior .Net Developer | Remote Set Up</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/solutions-architect-front-end-software-engineer" target="_blank">Solutions Architect (Front-End Software Engineer)</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/senior-system-architect-permanent-wfh" target="_blank">Senior System Architect | Permanent WFH </a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/cloud-engineer-aws-permanent-wfh" target="_blank">Cloud Engineer (AWS) | Permanent WFH</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/senior-performance-tester-full-time-remote-work" target="_blank">Senior Performance Tester | Full-Time Remote Work</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/senior-database-developer-permanent-wfh" target="_blank">Senior Database Developer | Permanent WFH</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/senior-it-business-analyst-remote-work" target="_blank">Senior IT Business Analyst | Remote Work</a></li>
+
                                 <li><a href="https://careers.eastvantage.com/jobs/service-management-consultant-testing-services-bgc" target="_blank">Service Management Consultant | Testing Services (BGC)</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/senior-devops-engineer-vt-bgc" target="_blank">Senior DevOps Engineer | V&T (BGC)</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/site-reliability-engineer-sre-bgc" target="_blank">Site Reliability Engineer | SRE (BGC)</a></li>
@@ -150,7 +160,6 @@ const EmployeeDashboard = ( props ) => {
                               <br />
                               <ul>
                                 <li><a href="https://careers.eastvantage.com/jobs/network-and-security-engineer-blr" target="_blank">Network and Security Engineer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/system-analyst-2" target="_blank">Systems Analyst</a></li>
                                 <li><a href="https://careers.eastvantage.com/jobs/outsystems-developer" target="_blank">Outsystems Engineer</a></li>
                               </ul>
                             </div>
