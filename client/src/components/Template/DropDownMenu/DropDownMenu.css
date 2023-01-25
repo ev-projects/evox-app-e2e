@@ -1,0 +1,21 @@
+
+
+.image-smaller {
+    height: auto; 
+    width: auto; 
+    max-width: 29px; 
+    max-height: 29px;
+
+  }
+
+.dropdown-menu {
+    min-width:10px;
+}
+
+.main-dropdown-menu .dropdown-item p{
+    margin-bottom: 0;
+    font-size: 13px
+
+}
+
+

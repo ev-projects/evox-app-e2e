@@ -25,35 +25,36 @@ const Sidebar = (props) => {
   }
 
 
-  return <div>
+  return <div >
     <aside className="main-sidebar sidebar-dark-primary elevation-4">
-      <a href="/" className="brand-link">
+      <a href="/" className="brand-link brand-link-color">
         <img src="/images/icon.jpg" className="brand-image img-circle elevation-3" alt="User Image" />
-        <span className="brand-text font-weight-light"><b>EVOX</b></span>
+        {/* <span className="brand-text font-weight-light"><b>EVOX</b></span> */}
+        <span className="brand-text font-weight-light"><b className="green">EV</b><b>OX</b></span>
       </a>
       <div className="sidebar">
-        <div className="user-panel mt-3 pb-3 mb-3 d-flex">
+        {/* <div className="user-panel mt-3 pb-3 mb-3 d-flex">
           <div className="image">
             <img className="img-circle elevation-2" src={profile_picture_url} alt="User Image" />
           </div>
           <div className="info">
-            <a href="/" className="d-block">{name}</a>
+            <p>{name}</p>
           </div>
-        </div>
-        <nav className="mt-2">
+        </div> */}
+        <nav className="mt-2 ml-3">
           <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <li className="nav-item">
               <Link className="nav-link" to={global.links.dashboard}>
                 <i className="nav-icon fa fa-dashboard " />
-                <p> Dashboard</p>
+                <p className="blue"> Dashboard</p>
               </Link>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <Link className="nav-link" to={global.links.profile + user.id}>
                 <i className="nav-icon fa fa-user" />
                 <p> My Profile</p>
               </Link>
-            </li>
+            </li> */}
 
             {/*  EMPLOYEE Links */}
             {Authenticator.check('employee', 'employee_access') &&
@@ -67,7 +68,7 @@ const Sidebar = (props) => {
 
             {Authenticator.check('employee', 'employee_access') &&
               <li className="nav-item has-treeview ">
-                <a className="nav-link">
+                <a className="nav-link nav-link-main">
                   <i className="nav-icon fa fa-list-alt" />
                   <p>
                     Request Form
@@ -137,7 +138,7 @@ const Sidebar = (props) => {
             {/* SUPERVISOR Links */}
             {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
               <li className="nav-item has-treeview ">
-                <a className="nav-link" >
+                <a className="nav-link nav-link-main" >
                   <i className="nav-icon fa fa-users" />
                   <p>
                     My Team
@@ -155,7 +156,7 @@ const Sidebar = (props) => {
                   }
                   {Authenticator.check(['supervisor'], ['manage_schedule']) &&
                     <li className="nav-item has-treeview ">
-                      <a className="nav-link" >
+                      <a className="nav-link " >
                         <i className="nav-icon fa fa-calendar-o" />
                         <p>
                           Manage Schedule
@@ -254,7 +255,7 @@ const Sidebar = (props) => {
             {/* Report Links Links */}
             {Authenticator.check(['supervisor', 'client'], ['supervisor_access', 'client_access']) &&
               <li className="nav-item has-treeview ">
-                <a className="nav-link" >
+                <a className="nav-link nav-link-main" >
                   <i className="nav-icon fa fa-line-chart" />
                   <p>
                     Reports
@@ -269,7 +270,7 @@ const Sidebar = (props) => {
                               </Link>
                             </li>  */}
 
-                  <li className="nav-item has-treeview ">
+                  <li className="nav-item">
                     <a className="nav-link" onClick={() => {
                       history.push(global.links.team_attendance_summary)
                       props.setSelectedAttendanceSummary("attendance")
@@ -277,10 +278,10 @@ const Sidebar = (props) => {
                       <i className="nav-icon fa fa-bar-chart" aria-hidden="true"></i>
                       <p>
                         Attendance Summary
-                        <i className="right fa fa-chevron-left" />
+                        {/* <i className="right fa fa-chevron-left" /> */}
                       </p>
                     </a>
-                    <ul className="nav nav-treeview">
+                    {/* <ul className="nav nav-treeview">
                       <li className="nav-item">
                         <Link className={selected_summary == "scheduled_employees" ? "nav-link activeAttendanceSummaryReport" : "nav-link"} to={global.links.team_attendance_summary}
                           onClick={() => {
@@ -336,7 +337,7 @@ const Sidebar = (props) => {
                           <p>Overtime Work</p>
                         </Link>
                       </li>
-                    </ul>
+                    </ul> */}
                   </li>
 
                   {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
@@ -358,8 +359,8 @@ const Sidebar = (props) => {
 
             {/* ADMIN Links */}
             {Authenticator.check('admin', 'full_access') &&
-              <li className="nav-item has-treeview ">
-                <a className="nav-link">
+              <li className="admin-sidebar nav-item has-treeview ">
+                <a className="nav-link nav-link-main">
                   <i className="nav-icon fa fa-cog" />
                   <p>
                     Admin Functions
@@ -481,12 +482,12 @@ const Sidebar = (props) => {
               </li>
             }
 
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <a onClick={() => props.logOut()} className="nav-link">
                 <i className="fa fa-sign-out nav-icon" />
                 <p>Log Out</p>
               </a>
-            </li>
+            </li> */}
           </ul>
         </nav>
       </div>
@@ -507,7 +508,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    logOut: () => dispatch(logOut()),
+    // logOut: () => dispatch(logOut()),
     setSelectedAttendanceSummary: (data) => dispatch(setSelectedAttendanceSummary(data)),
 
   };

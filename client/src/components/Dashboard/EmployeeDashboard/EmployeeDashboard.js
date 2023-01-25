@@ -223,7 +223,7 @@ const EmployeeDashboard = ( props ) => {
                     </Content>
                   </Row>
 
-                { !Authenticator.checkRole('client')  ? 
+                {/* { !Authenticator.checkRole('client')  ? 
                             <Row>
                             <Content title="Upcoming holidays" col="12">
                                 <Holiday/>
@@ -231,7 +231,7 @@ const EmployeeDashboard = ( props ) => {
                                 </Row>
                             :
                             (null)
-                      }
+                      } */}
                   <Row className="company-announcement">
                       <Content title="Company Announcements" col="12">
                         <Row>

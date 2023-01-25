@@ -3,6 +3,7 @@ body:not(.sidebar-mini-md) .content-wrapper, body:not(.sidebar-mini-md) .main-fo
 }
 .navbar {
   background-color: #343a40 !important;
+  /* background-color: #ffffff !important; */
 }
 
 a, .navbar-brand, .navbar-nav .nav-link {
@@ -14,7 +15,9 @@ color: white !important;
 }
 
 .navbar{
-border-bottom: 5px solid #82af13 !important;
+  border-bottom: 1px solid
+/* border-bottom: 5px solid #343a40 !important; */
+/* border-bottom: 5px solid #82af13 !important;  */
 }
 
 .header{
@@ -66,4 +69,5 @@ button[type=submit].btn-secondary{
   cursor: pointer;
   display: block;
 }
+
 .has-treeview.menu-open{background: rgba(255,255,255,.1) !important}

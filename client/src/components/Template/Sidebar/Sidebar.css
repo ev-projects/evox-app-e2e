@@ -1,15 +1,77 @@
 /*
  * Sidebar css File
 */
+.brand-link-color {
+  background-color: rgb(52, 58, 64);
+}
 
-.main-sidebar{position: fixed !important}
+.sidebar {
+  box-shadow: none !important;;
+}
+
+/* .brand-text  {
+font-family: "Roboto",Helvetica,Arial,Lucida,sans-serif;
+} */
+.brand-text b.green {
+  color: #8FD402;
+}
+.main-sidebar{
+  background-color: #ffffff;
+  position: fixed !important}
 .sidebar{height: 90vh; overflow-y: auto}
 .sidebar .mt-2{margin-left:1rem;}
 .activeAttendanceSummaryReport {
     background-color: rgb(255,255,255,.1);
-    color: white
+    color: rgb(123, 23, 23)
+}
+.main-sidebar p, .main-sidebar i{
+  /* background-color: lightgrey; */
+  color: #000000
 }
 
+.admin-sidebar.main-sidebar p, .admin-sidebar.main-sidebar i{
+  /* background-color: lightgrey; */
+  color: #575A89
+}
+
+
+
+.main-sidebar .nav-item:hover{
+  background-color: #005493;
+  border-radius:  3px 3px 3px 3px;
+}
+
+/* .main-sidebar .nav-item:hover.has-treeview i, .main-sidebar .nav-item:hover.has-treeview p{
+  color: #8FD402;
+  border-radius:  3px 3px 3px 3px;
+} */
+
+.main-sidebar .nav-item:hover:not(.has-treeview.menu-open) i, .main-sidebar .nav-item:hover:not(.has-treeview.menu-open) p{
+  color: #ffffff;
+  border-radius:  3px 3px 3px 3px;
+}
+
+
+.main-sidebar .nav-treeview{
+
+    /* margin-left: 15px; */
+}
+
+
+/* .main-sidebar .admin-sidebar .nav-item:hover{
+  background-color: #575A89;
+  border-radius: 3px 3px 3px 3px;
+} */
+
+.brand-text {
+  /* background-color: lightgrey; */
+  color: white;
+}
+
+.d-block-new {
+  /* background-color: lightgrey; */
+  color: white;
+}
 /* width */
 ::-webkit-scrollbar {
   width:8px;
@@ -18,7 +80,7 @@
 /* Track */
 ::-webkit-scrollbar-track {
   box-shadow: inset 0 0 8px #ccc; 
-  border-radius: 8px;
+  border-radius: 4px;
 }
  
 /* Handle */
@@ -30,4 +92,22 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #fff; 
+}
+
+.has-treeview.menu-open {
+  background: #0096a735 !important;
+  /* border-radius: 3px 3px 3px 3px; */
+}
+.has-treeview.menu-open.admin-sidebar {
+  background: #6469d37c !important;
+  /* border-radius: 3px 3px 3px 3px; */
+}
+.has-treeview.menu-open .nav-link-main {
+  background:  #005493!important;
+ 
+  border-radius: 3px 3px 3px 3px;
+}
+
+.has-treeview.menu-open .nav-link-main  p, .has-treeview.menu-open .nav-link-main  i  {
+ color: #ffffff !important;
 }
