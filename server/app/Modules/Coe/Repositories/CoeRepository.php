@@ -70,7 +70,6 @@ class COERepository implements COERepositoryInterface{
                 'full_name' => $employee['fullName2'],
                 'address' => $address,
                 'hire_date' => $employee['hireDate'],
-                //'separation_date' => $employee,
                 'position' => $employee['jobTitle'],
                 'basic_pay' => $employee['payRate'],
                 'de_minimis' => $de_minimis,
