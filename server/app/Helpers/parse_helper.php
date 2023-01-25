@@ -77,6 +77,23 @@ if (! function_exists('slug_to_text')) {
     }
 }
 
+if (! function_exists('str_to_float')) {   
+    /**
+     * This function parses the given string to float format, will return 0 on failed parse
+     *
+     * @param  string $string
+     * @param  string
+     */
+    function str_to_float( $string ) 
+    {
+        try {
+            return floatval($string);
+        }catch(Exception $e){
+            throw 0;
+        }
+    }
+}
+
 
 
 if (! function_exists('parse_request_to_hash_code')) {   
