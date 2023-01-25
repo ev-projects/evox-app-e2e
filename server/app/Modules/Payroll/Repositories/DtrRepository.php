@@ -699,6 +699,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
                 if( $rest_day_work->start_time >= $rest_day_work->end_time ) {
                     $dtr->end_datetime = add_days_to_timestamp( $dtr->end_datetime, 1 );
+                    $dtr->time_out = add_days_to_timestamp( $dtr->time_out, 1 );
                 }
 
                 # Updates the DTR with the Rest Day Work Details.
