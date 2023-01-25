@@ -37,7 +37,8 @@ return [
         'mobilePhone',
         'terminationDate',
         'employmentHistoryStatus',
-        'supervisorEId'
+        'supervisorEId',
+        'country'
     ],
     
     'BHR_USER_TABLE' => [
