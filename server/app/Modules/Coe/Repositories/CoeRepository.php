@@ -64,6 +64,12 @@ class COERepository implements COERepositoryInterface{
                 $de_minimis += str_to_float($employee['4529.4']);
                 $de_minimis += str_to_float($employee['4525.4']);
             }
+            $salaryPattern = '!\d+\.*\d*!';
+            preg_match_all($salaryPattern, $employee['payRate'], $payRates);
+            $payRate = $employee['payRate'];
+            if ((count($payRates) > 0) && (count($payRates[0]) > 0)) {
+                $payRate = preg_replace($salaryPattern, number_format(floatval($payRates[0][0]), 2), $payRate);
+            }
             $coe = COE::create([
                 'user_id' => $user_id,
                 'purpose_index' => $purpose_index,
@@ -71,7 +77,7 @@ class COERepository implements COERepositoryInterface{
                 'address' => $address,
                 'hire_date' => $employee['hireDate'],
                 'position' => $employee['jobTitle'],
-                'basic_pay' => $employee['payRate'],
+                'basic_pay' => $payRate,
                 'de_minimis' => $de_minimis,
                 'de_minimis_currency_code' => $employee['4206.7'],
                 'other_allowance' => str_to_float($employee['4200.2']),
