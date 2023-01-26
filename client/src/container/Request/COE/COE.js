@@ -90,7 +90,7 @@ class COE extends Component {
                   <Row>
                     <Col size="8">   
                       <div className="form-group">
-                        <label>Type:</label>
+                        <label>Purpose:</label>
                         <select name="purpose_index" value={ values.purpose_index } className="form-control" onChange={handleChange}>
                             <option></option>
                             { /** Iterates the Overtime Type */
