@@ -110,13 +110,13 @@
           @if($coe->de_minimis > 0)
           <tr>
             <td style="width: 200px;">De Minimis Benefit</td>
-            <td>{{$coe->de_minimis}} {{$coe->de_minimis_currency_code}}</td>
+            <td>{{number_format($coe->de_minimis, 2)}} {{$coe->de_minimis_currency_code ? $coe->de_minimis_currency_code : 'PHP'}}</td>
           </tr>
           @endif
           @if($coe->other_allowance > 0)
           <tr>
             <td style="width: 200px;">Other Allowances</td>
-            <td>{{$coe->other_allowance}} {{$coe->other_allowance_currency_code}}</td>
+            <td>{{number_format($coe->other_allowance, 2)}} {{$coe->de_minimis_currency_code ? $coe->de_minimis_currency_code : 'PHP'}}</td>
           </tr>
           @endif
         @endif
