@@ -18,6 +18,7 @@ const Sidebar = (props) => {
   if (user.first_name != null && user.last_name != null) {
     name = user.first_name + " " + user.last_name;
   }
+  const country = props.settings?.country ? props.settings?.country : "";
 
   var profile_picture_url = '/images/default-user-image.png';
   if (Validator.isValid(settings.profile_picture)) {
@@ -93,13 +94,14 @@ const Sidebar = (props) => {
                       <p>Change of Schedule</p>
                     </Link>
                   </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to={global.links.base + 'request/CertificateOfEmployment/'}>
-                      <i className="nav-icon fa fa-certificate nav-icon" />
-                      <p>Certificate Of Employment</p>
-                    </Link>
-                  </li>
-
+                  {country.toLowerCase() == "philippines" &&
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.base + 'request/CertificateOfEmployment/'}>
+                        <i className="nav-icon fa fa-certificate nav-icon" />
+                        <p>Certificate Of Employment</p>
+                      </Link>
+                    </li>
+                  }
                 </ul>
               </li>
             }
