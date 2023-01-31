@@ -52,7 +52,7 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
 
         Route::get('export', 'ReportController@export_team_dtr_summary');
 
-        Route::get('new_team', 'ReportController@team_dtr_summaryreportnew');
+        Route::get('new_team', 'ReportController@team_dtr_summaryreportnewv2');
 
         Route::get('new_export', 'ReportController@newdtrsummaryreportcsvexportv2');
     });
