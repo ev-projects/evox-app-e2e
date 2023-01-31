@@ -89,7 +89,7 @@ export const exportNewDtrSummary = ( data = null) => {
                 })
                 //generate next page and append to the previous result
                 if (result.data.content.has_next_page) {
-                    var btnExport = document.getElementById('btn-export-' + (data?.export ? data.export : (data?.department_id ? 'department' : 'all_new')));
+                    var btnExport = document.getElementById('btn-export-' + (data?.export ? data.export : (data?.department_id ? 'department_new' : 'all_new')));
                     btnExport.click();
                 }
             } else {
