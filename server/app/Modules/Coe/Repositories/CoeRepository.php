@@ -58,7 +58,6 @@ class COERepository implements COERepositoryInterface{
             */
             $de_minimis = str_to_float($employee['4206.4']);
             if ($de_minimis <= 0) {
-                $de_minimis = 0;
                 $de_minimis += str_to_float($employee['4500.4']);
                 $de_minimis += str_to_float($employee['4527.4']);
                 $de_minimis += str_to_float($employee['4526.4']);
