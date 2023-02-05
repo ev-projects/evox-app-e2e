@@ -3,8 +3,8 @@
 .image-smaller {
     height: auto; 
     width: auto; 
-    max-width: 29px; 
-    max-height: 29px;
+    max-width: 34px; 
+    max-height: 34px;
 
   }
 
@@ -17,5 +17,26 @@
     font-size: 13px
 
 }
+
+
+
+.user-img:hover{
+    /* box-shadow: 3px 1px 0px 0px rgba(168, 223, 187, 0.287);  */
+    background-color:  rgba(255, 255, 255, 0.074);
+    border-radius: 5px !important;
+    
+}
+/* .user-img{
+} */
+
+/* .main-dropdown-menu:hover .dropdown-menu{
+ display: block;
+} */
+
+.main-dropdown-menu  .dropdown-menu{
+    top: 43.5px;
+}
+
+
 
 

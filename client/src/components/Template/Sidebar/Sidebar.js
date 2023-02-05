@@ -27,11 +27,11 @@ const Sidebar = (props) => {
 
   return <div >
     <aside className="main-sidebar sidebar-dark-primary elevation-4">
-      <a href="/" className="brand-link brand-link-color">
+      <Link className="brand-link brand-link-color" to={global.links.dashboard}>
         <img src="/images/icon.jpg" className="brand-image img-circle elevation-3" alt="User Image" />
         {/* <span className="brand-text font-weight-light"><b>EVOX</b></span> */}
         <span className="brand-text font-weight-light"><b className="green">EV</b><b>OX</b></span>
-      </a>
+      </Link>
       <div className="sidebar">
         {/* <div className="user-panel mt-3 pb-3 mb-3 d-flex">
           <div className="image">

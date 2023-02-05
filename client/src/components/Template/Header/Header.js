@@ -5,6 +5,7 @@ import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import moment from 'moment';
 
 import DropDownMenu from "../DropDownMenu/DropDownMenu";
+import NavQuickPunch from "../NavQuickPunch/NavQuickPunch";
 
 
 const Header = (props) => {
@@ -20,8 +21,11 @@ const Header = (props) => {
             </li>
           </ul>
 
-
+        
           <ul className="navbar-nav ml-auto">
+            
+              <NavQuickPunch/> 
+            
             <li className="nav-item">
               <DropDownMenu/>
             

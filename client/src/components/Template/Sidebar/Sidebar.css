@@ -2,18 +2,20 @@
  * Sidebar css File
 */
 .brand-link-color {
-  background-color: rgb(52, 58, 64);
+  background-color: #07335e;
 }
 
 .sidebar {
   box-shadow: none !important;;
 }
 
-/* .brand-text  {
-font-family: "Roboto",Helvetica,Arial,Lucida,sans-serif;
-} */
+.brand-text  {
+/* font-family: "Roboto",Helvetica,Arial,Lucida,sans-serif; */
+font-size: 20px !important;
+padding-left: 10px !important;
+}
 .brand-text b.green {
-  color: #8FD402;
+  color: #82af13;
 }
 .main-sidebar{
   background-color: #ffffff;
@@ -42,7 +44,7 @@ font-family: "Roboto",Helvetica,Arial,Lucida,sans-serif;
 }
 
 /* .main-sidebar .nav-item:hover.has-treeview i, .main-sidebar .nav-item:hover.has-treeview p{
-  color: #8FD402;
+  color: #82af13;
   border-radius:  3px 3px 3px 3px;
 } */
 
@@ -111,3 +113,4 @@ font-family: "Roboto",Helvetica,Arial,Lucida,sans-serif;
 .has-treeview.menu-open .nav-link-main  p, .has-treeview.menu-open .nav-link-main  i  {
  color: #ffffff !important;
 }
+

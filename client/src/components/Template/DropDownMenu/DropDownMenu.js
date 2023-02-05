@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import Validator from "../../../services/Validator";
 import { Link } from "react-router-dom";
 import { logOut } from '../../../store/actions/userActions'
-
+import $ from 'jquery';
 class DropDownMenu extends Component {
   constructor(props) {
     super(props);
@@ -38,13 +38,16 @@ class DropDownMenu extends Component {
         "data:image/jpg;base64," + this.props.settings.profile_picture;
     }
     const user = this.props.user;
+
+    // console.log(user);
+
     return (
-              <div class="btn-group main-dropdown-menu">
-                      <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" >
+              <div class="btn-group main-dropdown-menu dropdown">
+                      <button type="button" class="btn  user-img" data-toggle="dropdown" data-hover="dropdown"  data-close-others="false">
                         <img  className="image-smaller img-circle"  src={profile_picture_url} />
                       </button>
                       <div  className="dropdown-menu dropdown-menu-right"  >
-                            <Link className="dropdown-item" to={global.links.profile + 3153}>
+                            <Link className="dropdown-item" to={global.links.profile + user.id}>
                                 <p><i className="nav-icon fa fa-user" /> My Profile</p>
                             </Link>
                             
