@@ -24,6 +24,9 @@ Route::group(['prefix' => 'auth'], function () {
     # Login
     Route::post('login', 'AuthController@login')->middleware('auth.apikey');
 
+    # Login Mobile
+    Route::post('login-mobile', 'AuthController@loginMobile')->middleware('auth.apikey');
+
     # Logout (Checks as well if there's a valid token before logging out.)
     Route::post('logout', 'AuthController@logout')->middleware('jwtauth', 'auth.apikey');
 
