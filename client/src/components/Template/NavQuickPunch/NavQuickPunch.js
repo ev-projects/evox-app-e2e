@@ -129,7 +129,7 @@ class NavQuickPunch extends Component {
 
           <NavPuncher/>  
          
-            <Dropdown.Menu>
+            <Dropdown.Menu className="dtr-dropdown-tog">
                  
                 <div className="card" >
                   <Tabs

@@ -28,10 +28,10 @@ class NavPuncher extends Component {
   }
 
   onSubmitHandler = async (values) => {
-    // this.onUIHandler();
     console.log('onSubmitHand');
     var formData = new FormData();
-	
+    $(".nav-clock-toggle").click();
+
 		for (var key in values) {
 	
 			if( values[key] != null ) {
@@ -44,7 +44,7 @@ class NavPuncher extends Component {
 		}
 		this.props.biometrixLog(  formData , this.props.user.id );
 	}
-  componentWillMount= async () => {
+  componentWillMount() {
     // const { user, constant, dashboard } = this.props;
     this.timer = setTimeout(() => {
       this.setState({
@@ -59,13 +59,19 @@ class NavPuncher extends Component {
   
   // }
 
+
+
+    // $(document).ready(function(){
+    //   $(".nav-clock-button").click(function(){
+    //     // console.log($(".dtr-dropdown-tog.dropdown-menu.show").length);
+    //     if($(".nav-clock-dropdown.dropdown-menu.show").length=== 0){
+    //       $(".nav-clock-toggle").click();
+    //     }
+        
+    //   });
+    // });
   }
-  onUIHandler = async () =>{
-    $(document).on('click', 'nav-clock-dropdown .dropdown .dropdown-menu', function (e) { 
-      e.stopPropagation();
-    });
-      
-  }
+
   componentWillUnmount() {
     clearTimeout(this.timer);
   }
@@ -93,7 +99,7 @@ class NavPuncher extends Component {
 
  
     const user = this.props.user;
-    console.log(this.props.dashboard?.isNavDtrLoaded);
+    // console.log(this.props.dashboard?.isNavDtrLoaded);
     return (
       <div className="nav-puncher">
 
@@ -157,7 +163,7 @@ class NavPuncher extends Component {
 
   </div>
 
-   <Dropdown.Toggle className="nav-clock" >
+   <Dropdown.Toggle className="nav-clock nav-clock-toggle" >
         <div className = "nav-clock-dropdown nav-clock div-col">
         <div className=" time-info " >
               <div>
