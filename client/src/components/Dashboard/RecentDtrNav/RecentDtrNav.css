@@ -32,3 +32,22 @@
     background-color: #2da7e4 !important;
     color: #fff !important;
     }
+
+.btn.recent-dtr-form{
+    /* background-color: #04353b !important; */
+    /* padding: 222px !important; */
+    margin-left: 50px !important;
+   
+    
+}
+
+@media screen and (max-width: 740px) {
+    .btn.recent-dtr-form{
+        /* background-color: #04353b !important; */
+        /* padding: 222px !important; */
+        margin-left: 0px !important;
+       
+        
+    }
+    
+}

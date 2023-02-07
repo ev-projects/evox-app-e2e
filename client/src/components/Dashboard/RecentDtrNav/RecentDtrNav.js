@@ -171,8 +171,8 @@ canClockOut(clock_in) {
                                   initialValues={initialValue}>
                                   {
                                     ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-                                      <form onSubmit={handleSubmit}>
-                                        <Button onClick={(e)=> { setFieldValue('quickpunch','out'); setFieldValue('dtr_id', dtr.id);   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+                                      <form onSubmit={handleSubmit} >
+                                        <Button  className="recent-dtr-form"onClick={(e)=> { setFieldValue('quickpunch','out'); setFieldValue('dtr_id', dtr.id);   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
                                       </form>
                                     )
                                   }

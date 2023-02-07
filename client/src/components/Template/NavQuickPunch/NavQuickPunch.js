@@ -124,11 +124,11 @@ class NavQuickPunch extends Component {
 
 
       <li className="nav-item nav-clock-dropdown">
-        <Dropdown  className= " nav-clock-dropdown show">
-        <Dropdown.Toggle aria-expanded="true" >
+        <Dropdown  className= " nav-clock-dropdown ">
+  
 
           <NavPuncher/>  
-          </Dropdown.Toggle >
+         
             <Dropdown.Menu>
                  
                 <div className="card" >

@@ -5,9 +5,10 @@ import { useHistory } from "react-router-dom";
 import Validator from "../../../services/Validator";
 import { Link } from "react-router-dom";
 import { logOut } from '../../../store/actions/userActions'
-import { Container,Row,Col,Table,Image, Spinner,Button, Badge, Tab, Tabs  } from 'react-bootstrap';
+import { Container,Row,Col,Table,Image, Spinner,Button, Badge, Tab, Tabs , Dropdown  } from 'react-bootstrap';
 import moment from 'moment';
 import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
+import $ from 'jquery';
 
 import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions'
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
@@ -27,6 +28,7 @@ class NavPuncher extends Component {
   }
 
   onSubmitHandler = async (values) => {
+    // this.onUIHandler();
     console.log('onSubmitHand');
     var formData = new FormData();
 	
@@ -58,7 +60,12 @@ class NavPuncher extends Component {
   // }
 
   }
-
+  onUIHandler = async () =>{
+    $(document).on('click', 'nav-clock-dropdown .dropdown .dropdown-menu', function (e) { 
+      e.stopPropagation();
+    });
+      
+  }
   componentWillUnmount() {
     clearTimeout(this.timer);
   }
@@ -86,16 +93,18 @@ class NavPuncher extends Component {
 
  
     const user = this.props.user;
-    
+    console.log(this.props.dashboard?.isNavDtrLoaded);
     return (
-      <>
+      <div className="nav-puncher">
 
 
      
-  <div className="div-col">
+  <div className="div-col ">
   <Formik 
 		enableReinitialize
-		onSubmit={this.onSubmitHandler} 
+		onSubmit={
+      this.onSubmitHandler
+    } 
 		validationSchema={validationSchema} 
 		initialValues={initialValue}>
 	  {
@@ -121,21 +130,35 @@ class NavPuncher extends Component {
 			
 					</>
 				)
-			) : (
-				<>
-					
-          <Button  type="submit"  className="nav-clock-button dropdown neutral"><i className=" fa fa-clock-o" /> Clock Loading</Button>
-        
-				</>
-			)}
+			) : 
+      this.props.dashboard?.isNavDtrLoaded == true  ? (
+        <>
+        		
+
+          <Button className="nav-clock-button dropdown"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
+
+      
+        </>)
+        : (
+        <>
+        	
+
+            <Button  type="submit"  className="nav-clock-button dropdown neutral"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+
+        </>)
+
+            
+			}
     </form>
 	)}
   
 	</Formik>
+ 
+
   </div>
 
-  
-        <div className = "nav-clock-dropdown div-col">
+   <Dropdown.Toggle className="nav-clock" >
+        <div className = "nav-clock-dropdown nav-clock div-col">
         <div className=" time-info " >
               <div>
                     <div className="nav-date">	{ moment(this.state.time).format("dddd, MMMM Do")} </div>
@@ -147,8 +170,8 @@ class NavPuncher extends Component {
         </div>
 
         </div>
-    
-      </>
+     </Dropdown.Toggle  >
+      </div>
    
 
     

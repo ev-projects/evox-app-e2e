@@ -30,11 +30,11 @@ class Dashboard extends Component {
                             :
                             (null)
                         }
-                        { Authenticator.check(['supervisor', 'team_leader', 'client'], ['supervisor_access', 'team_leader_access', 'client_access']) ? 
+                        {/* { Authenticator.check(['supervisor', 'team_leader', 'client'], ['supervisor_access', 'team_leader_access', 'client_access']) ? 
                           <HandlerDashboard {...this.props} />
                           :
                           null
-                        }
+                        } */}
                       </ContainerBody>
                   </ContainerWrapper>
                 </Wrapper>;
