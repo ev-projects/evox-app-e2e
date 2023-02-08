@@ -72,6 +72,10 @@
     // Performance Measure
     kpi_upload                      :  "/app/performance/KpiUpload",
     generate_date                   :  "/app/admin/GenerateDate/",
+
+    // HR Links
+    manage_hr_announcements         : "/app/hr/ManageHrAnnouncements",
+    post_hr_announcements           : "/app/hr/PostHrAnnouncements",
 };
 
 global.invalid_token_response = [
