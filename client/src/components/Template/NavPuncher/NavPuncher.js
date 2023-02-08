@@ -61,15 +61,11 @@ class NavPuncher extends Component {
 
 
 
-    // $(document).ready(function(){
-    //   $(".nav-clock-button").click(function(){
-    //     // console.log($(".dtr-dropdown-tog.dropdown-menu.show").length);
-    //     if($(".nav-clock-dropdown.dropdown-menu.show").length=== 0){
-    //       $(".nav-clock-toggle").click();
-    //     }
-        
-    //   });
-    // });
+    $(document).ready(function(){
+      $(".nav-clock-button.rest-days-trig").click(function(){
+          $(".nav-clock-toggle").click();
+      });
+    });
   }
 
   componentWillUnmount() {
@@ -120,8 +116,7 @@ class NavPuncher extends Component {
 				this.props.dashboard?.recent_dtr[1]?.is_rest_day == 1 ? (
 					this.props.dashboard?.recent_dtr[0]?.is_rest_day == 1 ? (
 						<>
-							<br />
-              <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary" disabled> <i className="fa fa-hourglass" /> Checking DTR</Button>
+              <Button   className="nav-clock-button rest-days-trig dropdown  btn-secondary" > <i className="fa fa-calendar-times-o" /> Rest Days</Button>
 						</>
 					) : (
 					<>
