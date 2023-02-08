@@ -30,7 +30,7 @@ class NavPuncher extends Component {
   onSubmitHandler = async (values) => {
     console.log('onSubmitHand');
     var formData = new FormData();
-    $(".nav-clock-toggle").click();
+    // $(".nav-clock-toggle").click();
 
 		for (var key in values) {
 	
@@ -105,7 +105,7 @@ class NavPuncher extends Component {
 
 
      
-  <div className="div-col ">
+  <div className="div-col test">
   <Formik 
 		enableReinitialize
 		onSubmit={
@@ -121,7 +121,7 @@ class NavPuncher extends Component {
 					this.props.dashboard?.recent_dtr[0]?.is_rest_day == 1 ? (
 						<>
 							<br />
-              <Button  type="submit"  className="nav-clock-button dropdown neutral"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+              <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary" disabled> <i className="fa fa-hourglass" /> Checking DTR</Button>
 						</>
 					) : (
 					<>
@@ -141,7 +141,7 @@ class NavPuncher extends Component {
         <>
         		
 
-          <Button className="nav-clock-button dropdown"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
+          <Button className="nav-clock-button dropdown"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
 
       
         </>)
@@ -149,7 +149,7 @@ class NavPuncher extends Component {
         <>
         	
 
-            <Button  type="submit"  className="nav-clock-button dropdown neutral"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+            <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary" disabled> <i className="fa fa-hourglass" /> Checking DTR</Button>
 
         </>)
 

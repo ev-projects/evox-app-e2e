@@ -82,7 +82,7 @@ const EmployeeDashboard = ( props ) => {
                       
                        <Row>
                   <div className="col-lg-12">
-                  <a href="https://careers.eastvantage.com/tech4tech" target="_blank"><img width="100%" src="/images/icn/Tech4Tech_EVOX.png" /></a>
+                  {/* <a href="https://careers.eastvantage.com/tech4tech" target="_blank"><img width="100%" src="/images/icn/Tech4Tech_EVOX.png" /></a> */}
                   <div className="card">
                     <div className="card-header">
                         <h3 align="center" className="card-title">JOB OPENINGS</h3>
@@ -217,11 +217,7 @@ const EmployeeDashboard = ( props ) => {
                 </div>
 
                 <div className="col-lg-4 col-md-6 col-sm-12">
-                  <Row>
-                    <Content title="EVOX Updates" col="12">
-                      <ChangeLogs/>
-                    </Content>
-                  </Row>
+                 
 
                 {/* { !Authenticator.checkRole('client')  ? 
                             <Row>
@@ -267,6 +263,14 @@ const EmployeeDashboard = ( props ) => {
                  
                  
                 </div>
+
+                <div className="col-lg-4 col-md-6 col-12"> 
+                <Row>
+                    <Content title="EVOX Updates" col="12">
+                      <ChangeLogs/>
+                    </Content>
+                  </Row>
+                </div> 
                 
                                         
               </Row>

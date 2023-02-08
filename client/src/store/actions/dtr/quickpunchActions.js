@@ -3,6 +3,7 @@ import API from "../../../services/API";
 import { trackPromise } from "react-promise-tracker";
 import Formatter from "../../../services/Formatter";
 import moment from 'moment';
+import $ from 'jquery';
 
 // Action for Biometrixlog
 export const biometrixLog = ( post_data, id ) => {
@@ -21,6 +22,7 @@ export const biometrixLog = ( post_data, id ) => {
                 url: "/dtr/"+id+"/"+from+"/"+to,
             })
             .then(result => {
+                $(".nav-clock-toggle").click();
                 dispatch({
                     'type'      : 'FETCH_RECENT_DTR', 
                     'data'      : result.data,
