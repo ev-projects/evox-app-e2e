@@ -126,28 +126,29 @@ class NavQuickPunch extends Component {
       <li className="nav-item nav-clock-dropdown">
         <Dropdown  className= " nav-clock-dropdown ">
   
-
+        <Dropdown.Menu className="dtr-dropdown-tog">
+                 
+                 <div className="card" >
+                   <Tabs
+                       defaultActiveKey="recent"
+                       transition={false}
+                       className="mb-3"
+                     >
+                     <Tab className="tabbish" eventKey="recent" title="RECENT DTR">
+                       <RecentDtrNav/> 
+                     </Tab>
+                     <Tab eventKey="notifications" title="DTR NOTIFICATIONS">
+                       <DtrNotifications/>
+                     </Tab>
+               
+                   </Tabs>       
+  
+                 </div>     
+             </Dropdown.Menu>
+             
           <NavPuncher/>  
          
-            <Dropdown.Menu>
-                 
-                <div className="card" >
-                  <Tabs
-                      defaultActiveKey="recent"
-                      transition={false}
-                      className="mb-3"
-                    >
-                    <Tab className="tabbish" eventKey="recent" title="RECENT DTR">
-                      <RecentDtrNav/> 
-                    </Tab>
-                    <Tab eventKey="notifications" title="DTR NOTIFICATIONS">
-                      <DtrNotifications/>
-                    </Tab>
-              
-                  </Tabs>       
- 
-                </div>     
-            </Dropdown.Menu>
+          
 
             </Dropdown>
       </li>
