@@ -21,6 +21,7 @@ class Announcements extends Component {
   }
     
   componentWillMount(){ 
+    this.props.fetchHrAnnouncements();
   }
 
   // handleShow = (data) => {    
