@@ -64,7 +64,21 @@ class DPAList extends Component {
         this.props.exportDpaList( formData );
     }else if(values.export == "all"){
         var formData = {export: "all"};
-        
+        for (var key in values) {
+          if( values[key] != null && values[key] != ""  ) {
+              switch( key ) {
+                case "export":
+                    break;
+                case "department_id":
+                  break; 
+                  case "name":
+                    break;
+                default:
+                  formData[key] = values[key];
+                break;
+              }
+          } 
+      }  
     
         this.props.exportDpaList( formData );
     }
