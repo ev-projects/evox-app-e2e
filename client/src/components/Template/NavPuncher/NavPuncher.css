@@ -1,0 +1,15 @@
+.nav-puncher{
+    /* background-color: #6A6A6A; */
+    padding-left: 10px;
+    padding-right: 10px;
+    /* padding-top: 3px; */
+}
+.nav-clock:hover{
+    background-color: #6a6a6a87;
+    border-radius: 3px;
+    transition: 0.3s;
+}
+
+.dropdown-toggle::after {
+    display: none !important; 
+  }
