@@ -68,18 +68,10 @@ class Announcements extends Component {
       { hrAnnouncements?.length > 0  ? 
           <ContainerWrapper>
               <ContainerBody>
-                <div className="payrollCutoff-content">
+                <div className="hrAnnouncement-content">
                   <Row>  
-                    <Content col="8" title="HR Announcement List" subtitle={<Link className="btn btn-primary" 
-                                              title="Alter Log"
-                                              to={{
-                                                pathname: global.links.base +'hr/PostHrAnnouncements/',
-                                                // previousPath: this.props.location.pathname, 
-                                                // date: dtr.date,
-                                                // current_time_in: dtr.time_in,
-                                                // current_time_out: dtr.time_out
-                                              }}
-                                        >+ Add</Link>} >
+                    <Content col="8" title="HR Announcement List" 
+                      subtitle={<Link className="btn btn-primary addBtnHr" title="Alter Log" to={{ pathname: global.links.base +'hr/PostHrAnnouncements/' }} >+ADD</Link>} >
                         <Col size="8"> 
                         
                         <Table className="responsive hover dtr-table">

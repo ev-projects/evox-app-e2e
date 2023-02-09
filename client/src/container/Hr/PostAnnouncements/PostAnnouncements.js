@@ -63,7 +63,7 @@ class PostAnnouncements extends Component {
       if (window.confirm("Are you sure you want to submit this change log?")) {
         switch( values.method ) {
           case "store":
-              this.props.addChangeLogs( formData );
+              this.props.addHrAnnouncements( formData );
               break;
           default:
               break;
@@ -221,7 +221,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
       // addRestDayWork        : ( post_data ) => dispatch( addRestDayWork( post_data ) ),
-      addChangeLogs : ( post_data ) => dispatch( addChangeLogs( post_data ) ),
+      addHrAnnouncements : ( post_data ) => dispatch( addHrAnnouncements( post_data ) ),
       setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
     }
 }
