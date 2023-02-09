@@ -66,6 +66,8 @@ import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/Tea
 import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
 import DepartmentList from "../container/Admin/DepartmentList";
+import HrAnnouncements from "../container/Hr/Announcements";
+import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -249,6 +251,14 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.department_list}>
           <DepartmentList  role={['admin']} permission={['access_department_list']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.manage_hr_announcements}>
+          <HrAnnouncements  role={['hr']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.post_hr_announcements}>
+          <PostHrAnnouncements  role={['hr']} />
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
