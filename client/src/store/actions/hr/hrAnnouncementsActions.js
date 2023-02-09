@@ -102,5 +102,28 @@ export const fetchHrAnnouncements = () => {
     }
 }
 
+// Add Announcements
+export const addHrAnnouncements = ( data ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/hr/announcements" ,
+            data: data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result, 3000 ));
+
+            dispatch({
+                'type'      : 'SET_REDIRECT',
+                'link'      : global.links.dashboard
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 

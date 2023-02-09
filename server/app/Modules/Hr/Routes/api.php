@@ -16,7 +16,10 @@ use Illuminate\Http\Request;
 # API Call for HR
 Route::group(['prefix' => 'hr', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
     
-    # Gets the DTR of the User indicated.
+    # Gets the list announcements.
     Route::get('/announcements/all', 'HrController@announcements');//->middleware('auth.apikey');
+
+    # Create an announcement.
+    Route::post('/announcements', 'HrController@store');//->middleware('auth.apikey');
 
 });

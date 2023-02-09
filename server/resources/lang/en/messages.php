@@ -285,6 +285,13 @@ return [
      */
     'create_change_log_attempt' => 'Create Change Log Attempt',
     'create_change_log_success' => 'A new change log is now created!',
-    'fetch_change_log_success' => 'List of all change logs'
+    'fetch_change_log_success' => 'List of all change logs',
+
+    /**
+     *  HR Announcement
+     */
+    'create_hr_announcement_attempt' => 'Create HR announcement Attempt.',
+    'create_hr_announcement_success' => 'A new HR announcement is now created!',
+    'fetch_hr_announcement_success' => 'List of all HR announcements.',
 
 ];
