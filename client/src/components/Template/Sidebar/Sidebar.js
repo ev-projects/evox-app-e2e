@@ -362,7 +362,30 @@ const Sidebar = (props) => {
               </li>
             }
 
+            {/* ADMIN Links */}
+            {Authenticator.check('hr', 'hr_access') &&
+              <li className="nav-item has-treeview ">
+                <a className="nav-link">
+                  <i className="nav-icon fa fa-cog" />
+                  <p>
+                    HR Functions
+                    <i className="right fa fa-chevron-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
 
+                  {Authenticator.check('hr', 'manage_hr_announcements') &&
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.manage_hr_announcements}>
+                        <i className="nav-icon fa fa-folder-open nav-icon" />
+                        <p style={{ 'fontSize': 13 }}>Announcements</p>
+                      </Link>
+                    </li>
+                  }
+                </ul>
+              </li>
+
+            }
 
             {/* ADMIN Links */}
             {Authenticator.check('admin', 'full_access') &&
