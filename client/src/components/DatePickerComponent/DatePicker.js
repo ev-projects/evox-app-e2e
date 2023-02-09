@@ -47,7 +47,7 @@ const InputTime = (props) => {
                     dateFormat="HH:mm"
                     timeFormat="HH:mm" 
                     minTime={event.setHours(1,0,0)}
-                    maxTime={event.setHours( 10)}
+                    maxTime={event.setHours( 16)}
                     selected={ eval('field.value.' + props.name)?eval('field.value.' + props.name):event.setHours(1,0,0) }              
                     onChange={date => form.setFieldValue(props.name, date)}
                 /> 
