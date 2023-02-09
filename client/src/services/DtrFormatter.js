@@ -19,17 +19,6 @@ class DtrFormatter {
 
         return '';
     }
-    displayDateBasic(dateStr){
-        var date = '';
-        var day = '';
-
-        if(dateStr!=null){
-            date = moment(dateStr);
-            return (<div>{date.format('MMM')} {date.format('DD')}, {date.format('ddd')}</div>);
-        }
-
-        return '';
-    }
 
   /** Convert Date Str to Month and Day Format
     * param | String |  ( date that will be formatted for display)

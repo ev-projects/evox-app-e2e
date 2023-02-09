@@ -55,15 +55,15 @@ const EmployeeDashboard = ( props ) => {
     return (<div className="dashboard">
               <Row>
 
-              {/* <div className="col-lg-4 col-md-6 col-12"> */}
+              <div className="col-lg-4 col-md-6 col-12">
                 
-                    {/* <Row>
+                    <Row>
                       <Col size="12">
                           <QuickPunch />
                       </Col>
-                    </Row> */}
+                    </Row>
 
-                    {/* <Row className="dtr-teaser">
+                    <Row className="dtr-teaser">
                         <Content title="Daily Time Record" col="12">
                           <RecentDtr/>
                         </Content>     
@@ -73,10 +73,10 @@ const EmployeeDashboard = ( props ) => {
                         <Content  col="12" title={<span>DTR Notifications <small>({my_dtr_notifications?.filter(data => moment().diff(moment(data.date)) > 0).length})</small></span>} subtitle={<small> Payroll Cut-off: <br /> {moment( current_payroll_cutoff?.start_date ).format("MMM D")  +" - "+ moment( current_payroll_cutoff?.end_date ).format("MMM D")} </small>}>
                           <DtrNotifications/>
                         </Content>       
-                    </Row>  */}
+                    </Row> 
                     
 
-                {/* </div> */}
+                </div>
 
                 <div className="col-lg-4 col-md-6 col-12">
                       
@@ -205,7 +205,7 @@ const EmployeeDashboard = ( props ) => {
                     </Content>
                   </Row>
 
-                {/* { !Authenticator.checkRole('client')  ? 
+                { !Authenticator.checkRole('client')  ? 
                             <Row>
                             <Content title="Upcoming holidays" col="12">
                                 <Holiday/>
@@ -213,7 +213,7 @@ const EmployeeDashboard = ( props ) => {
                                 </Row>
                             :
                             (null)
-                      } */}
+                      }
                   <Row className="company-announcement">
                       <Content title="Company Announcements" col="12">
                         <Row>

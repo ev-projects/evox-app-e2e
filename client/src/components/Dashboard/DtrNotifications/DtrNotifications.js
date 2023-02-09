@@ -14,9 +14,6 @@ import Formatter from "../../../services/Formatter";
 class DtrNotifications extends Component {
 	constructor(props){
     	super(props);
-      this.state = {
-        NavHasLoaded: false
-             };
 	}
 	
 	onSubmitHandler = (values) => {
@@ -24,25 +21,17 @@ class DtrNotifications extends Component {
 	}
 
   componentWillMount(){ 
-    // if (this.props.user !=null && this.props.user.id !=null){
-    //   this.props.getMyDtrNotifications( this.props?.user?.id );
-     
-    // }
+    this.props.getMyDtrNotifications( this.props.user.id );
 	}
     
 	render = () => {  
 
-    // if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
-    //   this.props.getMyDtrNotifications( this.props?.user?.id );
-    //   this.state.NavHasLoaded = true
-     
-    // }
 		const { my_dtr_notifications } = this.props.dashboard;
     return(
       <div>
       { my_dtr_notifications.length > 0  ?
             <div className="content-table">
-              <table >
+              <Table striped bordered hover>
                   <tbody>
               
                   { my_dtr_notifications.slice().reverse().map(function (data, i) {
@@ -62,7 +51,7 @@ class DtrNotifications extends Component {
                     })
                   }
                   </tbody>
-              </table>
+              </Table>
               </div>
           
           :

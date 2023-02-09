@@ -7,7 +7,6 @@ const initState = {
     birthday_and_anniv : [],
     team_attendance : [],
     recent_dtr : [],
-    nav_recent_dtr : [],
     holidays:[],
     changelogs:[]
 }
@@ -39,8 +38,6 @@ const dashboardReducers = (state = initState, action) => {
             result = {
                 ...state,
                 recent_dtr : action.data.content,
-                nav_recent_dtr : action.data.content,
-                isNavDtrLoaded : true,
             }
             break;      
         case "FETCH_HOLIDAYS":
