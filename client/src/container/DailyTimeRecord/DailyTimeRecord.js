@@ -352,10 +352,7 @@ class DailyTimeRecord extends Component {
 const DtrSummaryHolidays = ( props  ) => { 
   return (<React.Fragment>
     <div className="holidays col-lg-2 col-md-4 col-sm-6">
-    <h5>
-      {/* <span className="ion-ios-calendar-outline"></span> */}
-      <i class="fa fa-calendar" aria-hidden="true"></i>
-    {props.column_name}</h5>
+    <h5><span className="ion-ios-calendar-outline"></span>{props.column_name}</h5>
     <Row>
     
   <Col className="col-3">

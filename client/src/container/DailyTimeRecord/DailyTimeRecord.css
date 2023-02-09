@@ -123,7 +123,7 @@ float: left;
     text-align: center;
     background-position: center 10px;
     background-repeat: no-repeat;
-    padding-top: 18px;
+    padding-top: 50px;
     display: block;
     padding-left: 0;
     padding-right: 0;
@@ -135,13 +135,6 @@ float: left;
 .SummaryBlock .ul .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-absent.png);}
 .SummaryBlock .ot .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
 .SummaryBlock .otnd .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
-
-.SummaryBlock .late .toast-body{ padding-top: 27px;}
-.SummaryBlock .ut .toast-body{ padding-top: 27px;}
-.SummaryBlock .nsd .toast-body{ padding-top: 27px;}
-.SummaryBlock .ul .toast-body{ padding-top: 27px;}
-.SummaryBlock .ot .toast-body{ padding-top: 27px;}
-.SummaryBlock .otnd .toast-body{ padding-top: 27px;}
 
 
 
@@ -164,25 +157,14 @@ float: left;
 .SummaryBlock .holidays .col-3 .toast{border:0; box-shadow: none !important;}
 .SummaryBlock .holidays h5 {
     font-size: .875em !important;
-    color: #666!important;
+    color: #666;
     position: relative;
     text-transform: uppercase;
     top: -7px;
     margin-bottom: 3px;
-    padding-top: 7px;
 }
-
 .SummaryBlock .holidays h5 span{
     font-size: 2.5em;
-    position: relative;
-    top: 4px;
-    display: inline-block;
-    margin-right: 10px;
-    
-}
-
-.SummaryBlock .holidays h5 i{
-    font-size: 2.2em;
     position: relative;
     top: 4px;
     display: inline-block;
