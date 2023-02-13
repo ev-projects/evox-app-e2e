@@ -23,7 +23,7 @@ class Announcements extends Component {
     
   componentWillMount(){ 
     // get list of announcements
-    this.props.fetchHrAnnouncements(); 
+    this.props.fetchHrAnnouncements();
   }
 
   deleteItem = async( id ) => {

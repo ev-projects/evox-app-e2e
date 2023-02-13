@@ -314,6 +314,9 @@ return [
         6 => [
             'purpose' => 'Visa Application'
         ],
+        7 => [
+            'purpose' => 'Credit Card Application'
+        ]
     ],
 
 

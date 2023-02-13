@@ -1,0 +1,53 @@
+.no-previous-dtr{
+    text-align: center;
+}
+
+.dtr-warning{
+    font-size: small;
+    padding: 0px;
+}
+
+.alert-restday-notice {
+    color: #043a3f ;
+    background-color: #0096a769 ;
+    border-color: #04353b ;
+    font-size: small;
+    padding: 8px 15px;
+    margin: 0px 2px 10px;
+
+    border-radius: 3px;
+
+  }
+
+  
+
+.restday-notice-link {
+    padding: 5px !important;
+    background-color: #78909C !important;
+    color: #fff !important;
+    }
+
+.restday-notice-link:hover {
+    padding: 5px !important;
+    background-color: #2da7e4 !important;
+    color: #fff !important;
+    }
+
+.btn.recent-dtr-form{
+    /* background-color: #04353b !important; */
+    /* padding: 222px !important; */
+    margin-left: 50px !important;
+   
+    
+}
+
+@media screen and (max-width: 740px) {
+    .btn.recent-dtr-form{
+        /* background-color: #04353b !important; */
+        /* padding: 222px !important; */
+        margin-left: 0px !important;
+       
+        
+    }
+    
+}
