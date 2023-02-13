@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import "./Announcements.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
-import { fetchHrAnnouncements } from '../../../store/actions/hr/hrAnnouncementsActions';
+import { fetchHrAnnouncements, deleteHrAnnouncement } from '../../../store/actions/hr/hrAnnouncementsActions';
 import { connect } from 'react-redux';
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
 import Wrapper from "../../../components/Template/Wrapper";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
+import moment from 'moment';
+import { setRedirect } from '../../../store/actions/redirectActions';
 
 class Announcements extends Component {
 
@@ -17,85 +19,38 @@ class Announcements extends Component {
     };
 
     this.state = this.initialState;  
-    // this.handleShow = this.handleShow.bind(this);
   }
     
   componentWillMount(){ 
+    // get list of announcements
     this.props.fetchHrAnnouncements();
   }
 
-  // handleShow = (data) => {    
-  //   this.setState({
-  //     changelogInfo: data,
-  //     isShowModel: true
-  //   });
-  // }
-
-  // handleOnhide = () => {
-  //   this.setState({
-  //       isShowModel: false
-  //   });
-  // }
+  deleteItem = async( id ) => {
+    if (window.confirm("Are you sure you want to delete this announcement?")) {
+      await this.props.deleteHrAnnouncement( id );
+    }
+  }
 
   render() {
     const hrAnnouncements = this.props.hrAnnouncement;
 
-  //   return  <div className="content-table bdr0">
-  //     { hrAnnouncements?.length > 0  ? 
-  //       <Table>
-  //           <tbody>
-  //               {hrAnnouncements.map(data =>
-  //               <tr className="changelogs-tr" onClick={ () => { this.handleShow(data); }}>
-  //                   <td className="log-title"><span className="icn"></span> <span className="date">{data.log_date}</span></td>
-  //                   <td className="desc">{data.title ?? '(No title given)'}</td>
-  //               </tr>
-  //               )}
-  //           </tbody>
-  //       </Table>
-  //       :
-  //       <div>No announcements to be displayed</div>
-  //     } 
-  //     {/* {
-  //       this.state.isShowModel &&
-  //       <ChangeLogsInfo 
-  //         changelogInfo = { this.state.changelogInfo }
-  //         showModel = {this.state.isShowModel}
-  //         handleModalClose = {() => {this.handleOnhide()}}
-  //       />
-  //       } */}
-  //   </div>;
-  // }
     return <Wrapper  {...this.props} >
       { hrAnnouncements?.length > 0  ? 
           <ContainerWrapper>
               <ContainerBody>
-                <div className="payrollCutoff-content">
+                <div className="hrAnnouncement-content">
                   <Row>  
-                    <Content col="8" title="HR Announcement List" subtitle={<Link className="btn btn-primary" 
-                                              title="Alter Log"
-                                              to={{
-                                                pathname: global.links.base +'hr/PostHrAnnouncements/',
-                                                // previousPath: this.props.location.pathname, 
-                                                // date: dtr.date,
-                                                // current_time_in: dtr.time_in,
-                                                // current_time_out: dtr.time_out
-                                              }}
-                                        >+ Add</Link>} >
+                    <Content col="8" title="HR Announcement List" 
+                      subtitle={<Link className="btn btn-primary addBtnHr" title="Post Announcement" to={{ pathname: global.links.base +'hr/PostHrAnnouncements/' }} ><i class="fa fa-plus" /> ADD</Link>} >
                         <Col size="8"> 
                         
                         <Table className="responsive hover dtr-table">
                           <thead>
                             <tr>
                                 <th className="dtr-status">Title</th>
-                                {/* <th className="dtr-schedule">Description</th> */}
                                 <th className="dtr-log">Date Posted</th>
                                 <th className="dtr-log">Posted By</th>
-                                {/* <th className="dtr-item">Late</th>
-                                <th className="dtr-item">Undertime</th>
-                                <th className="dtr-item">NSD</th>
-                                <th className="dtr-item">OT</th>
-                                <th className="dtr-item">OTND</th>
-                                <th className="dtr-requests">Requests STATUS</th> */}
                                 <th className="dtr-actions"><i></i></th>
                             </tr>
                           </thead>
@@ -105,25 +60,16 @@ class Announcements extends Component {
                               return (
                               <tr className={"center"}>
                                 <td className="dtr-status">{hrAnn.title}</td>
-                                <td className="dtr-log"><div>{hrAnn.log_date}</div></td>
-                                <td className="dtr-log"><div>{hrAnn.created_by}</div></td>
-                                <td className="dtr-actions"></td>
+                                <td className="dtr-log"><div>{moment(hrAnn.log_date).format('MMMM D, YYYY')}</div></td>
+                                <td className="dtr-log"><div>{hrAnn.user.first_name} {hrAnn.user.last_name}</div></td>
+                                <td className="dtr-log">
+                                  <Button type="button" className="btn btn-primary" onClick={() => { this.props.setRedirect( '/app/hr/PostHrAnnouncements/' + hrAnn.id ) }} >Edit</Button> &nbsp;
+                                  <Button type="button" className="btn btn-danger" onClick={() => { this.deleteItem( hrAnn.id ) }} >Delete</Button>
+                                </td>
                               </tr>)
                             })}
                           </tbody>
                         </Table>
-                        {/* <DataTable
-                          data={ this.props?.listInstance != null ? this.props.listInstance: null }
-                          columns={columns(this.handleButtonClick)}
-                          onSelectedRowsChange={this.handleChange}
-                          progressPending={ this.props?.listInstance == null ? true: false }
-                          defaultSortField="start_date"
-                          defaultSortAsc="true"
-                          noHeader="false"
-                          fixedHeader="true"
-                          loading="true"
-                          pagination="true"
-                        /> */}
                         </Col> 
                     </Content>
                   </Row> 
@@ -150,6 +96,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchHrAnnouncements  : ( ) => dispatch( fetchHrAnnouncements( ) ),
+    deleteHrAnnouncement  : ( id ) => dispatch( deleteHrAnnouncement( id ) ),
+    setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Announcements);

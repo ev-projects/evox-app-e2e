@@ -1,7 +1,7 @@
 /**
  *  A dedicated Reducer for User State
  */
-//import $ from 'jquery';
+
 const initState = {
     my_dtr_notifications : [],
     birthday_and_anniv : [],

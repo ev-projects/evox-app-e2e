@@ -65,14 +65,14 @@ componentWillUnmount(){
 }
 
 canClockOut(clock_in) {
-  // console.log(new Date(clock_in));
-  // console.log(this.state.compare_to_clock_in);
+  console.log(new Date(clock_in));
+  console.log(this.state.compare_to_clock_in);
   if (!clock_in && !this.state.compare_to_clock_in)
   return 0;
   var diff =(this.state.compare_to_clock_in.getTime() - new Date(clock_in)) / 1000;
   diff /= 60;
   diff /= 60;
-  // console.log(Math.abs(Math.round(diff)));
+  console.log(Math.abs(Math.round(diff)));
   return Math.abs(Math.round(diff));
 }
 

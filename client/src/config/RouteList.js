@@ -257,7 +257,7 @@ const RoutesList = (props) => {
           <HrAnnouncements  role={['hr']} />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.post_hr_announcements}>
+        <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
           <PostHrAnnouncements  role={['hr']} />
         </ProtectedRoute>
         

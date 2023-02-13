@@ -15,8 +15,7 @@ import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
 
-import { addChangeLogs } from '../../../store/actions/admin/changeLogsActions';
-import { fetchHrAnnouncements, addHrAnnouncements } from '../../../store/actions/hr/hrAnnouncementsActions';
+import { fetchHrAnnouncement, addHrAnnouncements, updateHrAnnouncements, clearHrAnnouncementInstance } from '../../../store/actions/hr/hrAnnouncementsActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 import { Editor } from '@tinymce/tinymce-react';
@@ -36,6 +35,17 @@ class PostAnnouncements extends Component {
     this.state = this.initialState; 
 
     this.handleEditorChange = this.handleEditorChange.bind(this);
+  }
+
+  componentWillMount() {
+    // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+    this.props.clearHrAnnouncementInstance();
+
+    // If the ID is defined, load the Announcement Instance base on the ID Parameter in Route.
+    if( this.props.params.id != undefined ) {
+
+      this.props.fetchHrAnnouncement( this.props.params.id );
+    }
   }
 
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
@@ -59,11 +69,14 @@ class PostAnnouncements extends Component {
     }
 
     // Checks on what action to use depending on the values.action
-    if (values.method == "store") {
-      if (window.confirm("Are you sure you want to submit this change log?")) {
+    if (values.method == "store" || values.method == "update") {
+      if (window.confirm("Are you sure you want to submit this announcement?")) {
         switch( values.method ) {
           case "store":
-              this.props.addChangeLogs( formData );
+              this.props.addHrAnnouncements( formData );
+              break;
+          case "update":
+              this.props.updateHrAnnouncements( values.id, formData );
               break;
           default:
               break;
@@ -79,23 +92,24 @@ class PostAnnouncements extends Component {
 
   render = () => {
     // Sets the Method of the current state.
-    const method = 'store';
+    const method = this.props.params.id != undefined ? "update" : "store";
 
     // Sets Initial Value of the current Formik form.
     const initialValue = {
         action:             null,
         method:             method,
-        log_date:           this.props.instance.log_date != undefined ? new Date( this.props.instance.log_date ) : null,
-        title:              this.props.instance.title != undefined ? this.props.instance.title : null,
-        description:        this.props.instance.description != undefined ? this.props.instance.description : null,
-        category:           this.props.instance.category != undefined ? this.props.instance.category : null,
+        log_date:           this.props.hrAnnouncement.log_date != undefined ? new Date( this.props.hrAnnouncement.log_date ) : null,
+        title:              this.props.hrAnnouncement.title != undefined ? this.props.hrAnnouncement.title : null,
+        description:        this.props.hrAnnouncement.description != undefined ? this.props.hrAnnouncement.description : null,
+        category:           this.props.hrAnnouncement.category != undefined ? this.props.hrAnnouncement.category : null,
+        id:                 this.props.hrAnnouncement.id != undefined ? this.props.hrAnnouncement.id : null,
     }
 
     // Sets the default title for the Request. Checks aswell if it's for approval.
     let title = 'HR Announcement Form';
 
     /** Show the Form if the Method is Store an has a Date Initial Value OR Approval/Update and the isLoaded is TRUE (Will be true once the Instance is loaded.) */
-    if( (method == 'store') || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
+    if( (method == 'store') || (method == 'update') ){
 
       return <Wrapper {...this.props} >
         <Formik 
@@ -115,7 +129,7 @@ class PostAnnouncements extends Component {
             <input type="hidden" name="status"  value={values.status} />
             <ContainerWrapper>
               <ContainerBody>
-                <Content col="12" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
+                <Content col="12" title={title} subtitle={<RequestSubtitle method={method} user={this.props.user} />}>
                   <Row>
                     <Col size="3">
                       <div className="form-group">
@@ -174,9 +188,6 @@ class PostAnnouncements extends Component {
                             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                           }}
                         />
-                        {/* <Form.Control.Feedback type="invalid">
-                          &nbsp;{errors.description && touched.description && errors.description}
-                        </Form.Control.Feedback> */}
                       </div>
                     </Col>
                   </Row>
@@ -185,7 +196,8 @@ class PostAnnouncements extends Component {
                     <Button type="submit" className="btn btn-primary" onClick={(e)=>{ setFieldValue('action',null); handleSubmit(e); }}>
                       <i className="fa fa-location-arrow" /> Submit
                     </Button>&nbsp;
-                    <BackButton style={{'float': 'right'}} {...this.props} />
+                    <Button type="button" className="btn btn-primary" style={{'float': 'right'}} onClick={() => { this.props.setRedirect( '/app/hr/ManageHrAnnouncements/' ) }} >Back</Button> &nbsp;
+                    {/* <BackButton style={{'float': 'right'}} {...this.props} /> */}
                   </span>
                   
                 </Content>
@@ -212,17 +224,17 @@ const validationSchema = Yup.object().shape({
 
 const mapStateToProps = (state) => {
   return {
-    constant          : state.constant,
-    instance          : state.restDayWork.instance,
-    isInstanceLoaded  : state.restDayWork.isInstanceLoaded,
-		user			        : state.user
+    hrAnnouncement  : state.hrAnnouncement.instance,
+		user            : state.user
   }
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      // addRestDayWork        : ( post_data ) => dispatch( addRestDayWork( post_data ) ),
-      addChangeLogs : ( post_data ) => dispatch( addChangeLogs( post_data ) ),
-      setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
+      addHrAnnouncements          : ( post_data ) => dispatch( addHrAnnouncements( post_data ) ),
+      fetchHrAnnouncement         : ( id ) => dispatch( fetchHrAnnouncement( id ) ),
+      setRedirect                 : ( link ) => dispatch( setRedirect( link ) ),
+      updateHrAnnouncements       : ( id, post_data ) => dispatch( updateHrAnnouncements( id, post_data ) ),
+      clearHrAnnouncementInstance : () => dispatch( clearHrAnnouncementInstance() ),
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(PostAnnouncements);
