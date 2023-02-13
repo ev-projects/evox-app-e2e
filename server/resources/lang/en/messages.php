@@ -290,8 +290,12 @@ return [
     /**
      *  HR Announcement
      */
-    'create_hr_announcement_attempt' => 'Create HR announcement Attempt.',
-    'create_hr_announcement_success' => 'A new HR announcement is now created!',
-    'fetch_hr_announcement_success' => 'List of all HR announcements.',
-
+    'create_hr_announcement_attempt' => 'Create HR Announcement Attempt.',
+    'create_hr_announcement_success' => 'A new HR Announcement is now created!',
+    'fetch_hr_announcements_success' => 'List of all HR Announcements.',
+    'delete_hr_announcement_attempt' => 'Delete HR Announcement Cutoff Attempt',
+    'delete_hr_announcement_success' => 'The HR Announcement is now deleted!',
+    'fetch_hr_announcement_success' => 'Get Announcement.',
+    'update_hr_announcement_attempt' => 'Update HR Announcement Attempt.',
+    'update_hr_announcement_success' => 'Update HR Announcement success.',
 ];
