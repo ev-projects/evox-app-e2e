@@ -127,7 +127,13 @@ class NavPuncher extends Component {
 					<>
           {!(this.props.dashboard?.recent_dtr[1]?.time_in)? (
             <Button className="nav-clock-button dropdown"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
-          ) : (<Button className="nav-clock-button dropdown" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>)}
+          ) : (
+            (this.props.dashboard?.recent_dtr[1]?.time_in && this.props.dashboard?.recent_dtr[1]?.time_out) ?
+            (<><Button  type="submit"  className="nav-clock-button dropdown  btn-secondary" disabled> <i className="fa fa-sun-o" /> Day Completed</Button></>) : 
+            
+            (<><Button className="nav-clock-button dropdown" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button></>)
+            // <Button className="nav-clock-button dropdown" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+          )}
 			
 					</>
 				)
@@ -162,10 +168,10 @@ class NavPuncher extends Component {
         <div className = "nav-clock-dropdown nav-clock div-col">
         <div className=" time-info " >
               <div>
-                    <div className="nav-date">	{ moment(this.state.time).format("dddd, MMMM Do")} </div>
+                    <div className="nav-date">	{ moment(this.state.time).format("dddd, Do MMMM")} </div>
               </div>
               <div>
-                    <div className="nav-time">		{moment(this.state.time).format("HH")} : {moment(this.state.time).format("mm")} : {moment(this.state.time).format("ss")} </div>
+                    <div className="nav-time">		{moment(this.state.time).format("hh")} : {moment(this.state.time).format("mm")} : {moment(this.state.time).format("ss")}  {moment(this.state.time).format("A")} </div>
               </div>
               
         </div>

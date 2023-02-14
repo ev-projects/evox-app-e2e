@@ -216,7 +216,8 @@ const MyTeamListTable = (props) => {
   // If there's a loaded myTeam props already, then proceed on rendering for the Page.
   return ( props.myTeamList.list != null && props.myTeamList.list.data.length > 0   ? 
           <div>
-            Record Displayed: { props.myTeamList.list != null && props.myTeamList.list.data.length > 0  ? props.myTeamList.list.pagination.total : 0 }
+            {/* Record Displayed:  */}
+            { props.myTeamList.list != null && props.myTeamList.list.data.length > 0  ? props.myTeamList.list.pagination.total : 0 }
             <Table striped bordered hover>
               <thead>
                 <tr>

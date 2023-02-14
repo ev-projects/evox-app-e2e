@@ -22,7 +22,7 @@ class MyRequests extends Component {
 
     this.initialState = {
         filters: {
-          status:           this.props.filters?.status ?? null,
+          status:           this.props.filters?.status ?? "pending",
           valid_from:       this.props.filters?.valid_from ? new Date( this.props.filters?.valid_from ) : (( this.props.settings?.current_payroll_cutoff?.start_date ) ? new Date( this.props.settings.current_payroll_cutoff.start_date) : null),
           valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : (( this.props.settings?.current_payroll_cutoff?.end_date ) ? new Date( this.props.settings.current_payroll_cutoff.end_date ) : null),
           department_id:    this.props.filters?.department_id ?? null,
@@ -151,12 +151,12 @@ class MyRequests extends Component {
                   </Tab>
                 </Tabs> 
                 </div>
-            <div className="request-content"> 
+            <div className="request-content my-request-page"> 
             <ContainerBody>        
                 <Content col="12" className="myrequests">
                 
-                <ButtonGroup toggle className="mb-2">
-                    <ToggleButton
+                <ButtonGroup toggle className="mb-2 myrequests">
+                    {/* <ToggleButton
                       type="checkbox"
                       variant="secondary"
                       className="request_list_btn"
@@ -165,9 +165,9 @@ class MyRequests extends Component {
                     >
                       <Badge variant="light">{all_status}</Badge>
                        &nbsp;All Status
-                    </ToggleButton>
-                  </ButtonGroup>
-                  <ButtonGroup toggle className="mb-2">
+                    </ToggleButton> */}
+                  {/* </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2"> */}
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -175,11 +175,10 @@ class MyRequests extends Component {
                       checked={values.status=="pending"}
                       onClick={() =>  { setFieldValue("status", "pending"); handleSubmit();}}
                     >
-                      <Badge className="pending" variant="light">{pending}</Badge>
-                       &nbsp;Pending
+ <i class="fa fa-circle request_i request_list_i-pending" aria-hidden="true"></i>Pending &nbsp;<Badge className="counter-request" variant="light">{pending}</Badge>
                     </ToggleButton>
-                  </ButtonGroup>
-                  <ButtonGroup toggle className="mb-2">
+                  {/* </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2"> */}
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -187,11 +186,10 @@ class MyRequests extends Component {
                       checked={values.status=="approved"}
                       onClick={() =>{ setFieldValue("status", "approved"); handleSubmit();}}
                     >
-                      <Badge className="approved" variant="light">{approved}</Badge>
-                      &nbsp;Approved 
+ <i class="fa fa-circle request_i request_list_i-approved" aria-hidden="true"></i>Approved &nbsp;<Badge className="counter-request" variant="light">{approved}</Badge>
                     </ToggleButton>
-                  </ButtonGroup>
-                  <ButtonGroup toggle className="mb-2">
+                  {/* </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2"> */}
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -199,11 +197,11 @@ class MyRequests extends Component {
                       checked={values.status=="canceled"}
                       onClick={() =>  { setFieldValue("status", "canceled"); handleSubmit();}}
                     >
-                      <Badge className="canceled" variant="light">{canceled}</Badge>
-                      &nbsp;Canceled 
+                      <i class="fa fa-circle request_i request_list_i-cancelled" aria-hidden="true"></i>Cancelled &nbsp;<Badge className="counter-request" variant="light">{canceled}</Badge>
+ 
                     </ToggleButton>
-                  </ButtonGroup>
-                  <ButtonGroup toggle className="mb-2">
+                  {/* </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2"> */}
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -211,8 +209,8 @@ class MyRequests extends Component {
                       checked={values.status=="declined"}
                       onClick={() => { setFieldValue("status", "declined"); handleSubmit();}}
                     >
-                      <Badge className="denied" variant="light">{declined}</Badge>
-                      &nbsp;Declined 
+                                            <i class="fa fa-circle request_i request_list_i-declined" aria-hidden="true"></i>Declined &nbsp;<Badge className="counter-request" variant="light">{declined}</Badge>
+
                     </ToggleButton>
                   </ButtonGroup>
                   
@@ -233,7 +231,8 @@ class MyRequests extends Component {
                     
                     </Row>
                     { request_list.data.length > 0  ? (<div>
-                      Record Displayed: { record_number }
+                      {/* Record Displayed:  */}
+                      { record_number }
                 <Table striped bordered hover>
                   <thead>
                     <tr>

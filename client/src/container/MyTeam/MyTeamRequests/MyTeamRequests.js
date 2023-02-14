@@ -191,8 +191,8 @@ class MyTeamRequests extends Component {
             <ContainerBody>  
                 <Content col="12">
                     <Row className="status-filter">
-                  <ButtonGroup toggle className="mb-2">
-                    <ToggleButton
+                  <ButtonGroup toggle className=" flex-wrap">
+                    {/* <ToggleButton
                       type="checkbox"
                       variant="secondary"
                       className="request_list_btn"
@@ -201,9 +201,9 @@ class MyTeamRequests extends Component {
                     >
                       <Badge variant="light">{all_status}</Badge>
                        &nbsp;All Status
-                    </ToggleButton>
-                  </ButtonGroup>
-                  <ButtonGroup toggle className="mb-2">
+                    </ToggleButton> */}
+                  {/* </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2"> */}
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -211,11 +211,11 @@ class MyTeamRequests extends Component {
                       checked={values.status=="pending"}
                       onClick={() =>  { setFieldValue("status", "pending"); handleSubmit();}}
                     >
-                      <Badge className="pending" variant="light">{pending}</Badge>
-                       &nbsp;Pending
+                      {/* <Badge className="pending" variant="light">{pending}</Badge> */}
+                      <i class="fa fa-circle request_i request_list_i-pending" aria-hidden="true"></i>Pending &nbsp;<Badge className="counter-request" variant="light">{pending}</Badge>
                     </ToggleButton>
-                  </ButtonGroup>
-                  <ButtonGroup toggle className="mb-2">
+                  {/* </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2"> */}
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -223,11 +223,11 @@ class MyTeamRequests extends Component {
                       checked={values.status=="approved"}
                       onClick={() =>{ setFieldValue("status", "approved"); handleSubmit();}}
                     >
-                      <Badge className="approved" variant="light">{approved}</Badge>
-                      &nbsp;Approved 
+                      {/* <Badge className="approved" variant="light">{approved}</Badge> */}
+                      <i class="fa fa-circle request_i request_list_i-approved" aria-hidden="true"></i>Approved &nbsp;<Badge className="counter-request" variant="light">{approved}</Badge>
                     </ToggleButton>
-                  </ButtonGroup>
-                  <ButtonGroup toggle className="mb-2">
+                  {/* </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2"> */}
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -235,11 +235,11 @@ class MyTeamRequests extends Component {
                       checked={values.status=="canceled"}
                       onClick={() =>  { setFieldValue("status", "canceled"); handleSubmit();}}
                     >
-                      <Badge className="canceled" variant="light">{canceled}</Badge>
-                      &nbsp;Canceled 
+                      {/* <Badge className="canceled" variant="light">{canceled}</Badge> */}
+                      <i class="fa fa-circle request_i request_list_i-cancelled" aria-hidden="true"></i>Cancelled &nbsp;<Badge className="counter-request" variant="light">{canceled}</Badge>
                     </ToggleButton>
-                  </ButtonGroup>
-                  <ButtonGroup toggle className="mb-2">
+                  {/* </ButtonGroup>
+                  <ButtonGroup toggle className="mb-2"> */}
                     <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -247,8 +247,8 @@ class MyTeamRequests extends Component {
                       checked={values.status=="declined"}
                       onClick={() => { setFieldValue("status", "declined"); handleSubmit();}}
                     >
-                      <Badge className="denied" variant="light">{declined}</Badge>
-                      &nbsp;Declined 
+                      {/* <Badge className="denied" variant="light">{declined}</Badge> */}
+                      <i class="fa fa-circle request_i request_list_i-declined" aria-hidden="true"></i>Declined &nbsp;<Badge className="counter-request" variant="light">{declined}</Badge>
                     </ToggleButton>
                   </ButtonGroup>
                   </Row>
@@ -306,8 +306,8 @@ class MyTeamRequests extends Component {
                             style={{ display: 'block' }}
                           >
                             <option label="Select Action" />
-                            <option value="approve" label="Approved" />
-                            <option value="deny" label="Deny" />
+                            <option value="approve" label="Approved" className="action-approved"/>
+                            <option value="deny" label="Deny" className="action-deny"/>
                           </select>
                           </div>
                           <div className="btn-div">
@@ -325,8 +325,9 @@ class MyTeamRequests extends Component {
                     <Row>
                     </Row>
                     { request_list.data.length > 0  ? (<div>
-                Record Displayed: { record_number }
-                <Table striped bordered hover>
+                {/* Record Displayed:  */}
+                { record_number }
+                <Table striped bordered hover responsive>
                   <thead>
                     <tr>
                       <th><Field type="checkbox" name="isAll"  onClick={() =>  { selectAllChecklist(setFieldValue,values,request_list.data)}} /></th>
