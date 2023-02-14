@@ -7,6 +7,7 @@ use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Modules\User\Models\User;
+use App\Modules\User\Models\LoginLog;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Modules\User\Resources\UserProfileResource;
@@ -41,18 +42,28 @@ class AuthController extends Controller
 
             // Get the Credentials inputted by the User.
             $credentials = request(['username', 'password']);
-
+            $credIsEmail = false;
             // Validate if the User Inputted is an E-mail. If yes, Check on the E-mail field. If not, default is the User.
             if( filter_var(request('username'), FILTER_VALIDATE_EMAIL) ) {
+                $credIsEmail = true;
                 $credentials = array(
                     'email' => request('username'),
                     'password' => request('password')
                 );
             }
+            if ($credIsEmail) {
+                if (!User::where('email', $credentials['email'])->exists()) {
+                    return error_response( trans('messages.user_email_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+            } else {
+                if (!User::where('username', $credentials['username'])->exists()) {
+                    return error_response( trans('messages.user_name_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+            }
 
             // Attempt to check the Credentials. If credentials not found, return User Not Found.
             if (!$token = auth()->attempt($credentials)) {
-                return error_response( trans('messages.user_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+                return error_response( trans('messages.user_password_incorrect'), [], JsonResponse::HTTP_NOT_FOUND);
             }
 
             // Attempt to check if the User is active. If not active, return User not active.
@@ -62,6 +73,72 @@ class AuthController extends Controller
                 }
                
             }
+
+            log_activity( trans('messages.login') );
+
+            // Set the User that was fetched into Session
+            $result = [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60
+            ];
+
+            $result = $this->get_default_payload( $result );
+
+            log_to_file('info', 'Success', [], 'user');
+            return success_response( trans('messages.login_success'), $result );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    /**
+     * Get a JWT via given credentials.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function loginMobile(Request $request){
+        try {
+
+            // Get the Credentials inputted by the User.
+            $credentials = request(['username', 'password']);
+            $credIsEmail = false;
+            // Validate if the User Inputted is an E-mail. If yes, Check on the E-mail field. If not, default is the User.
+            if( filter_var(request('username'), FILTER_VALIDATE_EMAIL) ) {
+                $credIsEmail = true;
+                $credentials = array(
+                    'email' => request('username'),
+                    'password' => request('password')
+                );
+            }
+            if ($credIsEmail) {
+                if (!User::where('email', $credentials['email'])->exists()) {
+                    return error_response( trans('messages.user_email_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+            } else {
+                if (!User::where('username', $credentials['username'])->exists()) {
+                    return error_response( trans('messages.user_name_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+            }
+
+            // Attempt to check the Credentials. If credentials not found, return User Not Found.
+            if (!$token = auth()->attempt($credentials)) {
+                return error_response( trans('messages.user_password_incorrect'), [], JsonResponse::HTTP_NOT_FOUND);
+            }
+
+            // Attempt to check if the User is active. If not active, return User not active.
+            if ( ! auth()->user()->is_active ) {
+                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                    return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+
+            }
+
+            // Log the date, time and user_id upon login (mobile version)
+            $loginLog = new LoginLog;
+            $loginLog->user_id      = auth()->user()->id;
+            $loginLog->date_time    = Carbon::now();
+            $loginLog->save();
 
             log_activity( trans('messages.login') );
 
@@ -169,12 +246,12 @@ class AuthController extends Controller
 
         $result['constant'] = get_constant();
 
-        $bhr_details = $this->bhr->get_user( auth()->user()->bhr_num);
+        $bhr_details = $this->bhr->get_user( auth()->user()->bhr_num ? auth()->user()->bhr_num : '');
 
         $result['settings'] = [
             'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll_cutoff->get_payroll_cutoff()),
             'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num ),
-            'country' =>  $bhr_details->country
+            'country' =>  $bhr_details ? $bhr_details->country : ''
         ];
         
 

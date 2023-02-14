@@ -1,0 +1,9 @@
+.hrAnnouncement-content .card-body .col-sm-12{padding: 10px}
+
+.table tbody td {
+    padding: 10px !important;
+}
+
+.addBtnHr {
+    margin-bottom: 2px;
+}

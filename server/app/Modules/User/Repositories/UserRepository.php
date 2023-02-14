@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
+use App\Modules\User\Models\UtcTimelog;
 
 class UserRepository implements UserRepositoryInterface{
 
@@ -122,7 +123,7 @@ class UserRepository implements UserRepositoryInterface{
      * @param object $bhr_user_number
      * @return User $user
      */
-    public function insert_bhr_user_to_evox(object $bhr_user){
+    public function insert_bhr_user_to_evox(object $bhr_user, object $utc){
 
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
 
@@ -163,6 +164,11 @@ class UserRepository implements UserRepositoryInterface{
                     $user->is_active = true;
                     $user->job_title = $bhr_user->jobTitle;
                     $user->mobile_number = $bhr_user->mobilePhone;
+
+                    $utc_check = $utc->where('country_name', '=', is_valid( $bhr_user->country )? $bhr_user->country: "Philippine")->first();
+                        if ($utc_check !== null) {
+                        $user->country_id  = $utc_check->country_id;
+                        }
 
                     if($bhr_user->dateOfBirth != "0000-00-00" && $bhr_user->dateOfBirth != null){
                         $user->birthdate =$bhr_user->dateOfBirth;
@@ -243,7 +249,7 @@ class UserRepository implements UserRepositoryInterface{
      * @param object $bhr_user_number
      * @return User $user
      */
-    public function update_bhr_user_to_evox(User $user, object $bhr_user){
+    public function update_bhr_user_to_evox(User $user, object $bhr_user, object  $utc){
 
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
 
@@ -269,6 +275,15 @@ class UserRepository implements UserRepositoryInterface{
                 $user->is_active = ( $bhr_user->terminationDate == "0000-00-00" && $bhr_user->employmentHistoryStatus != get_constant('BHR_USER_EMPLOYMENT_STATUS.terminated') ) ? true : false;
                 $user->job_title = $bhr_user->jobTitle;
                 $user->mobile_number = $bhr_user->mobilePhone;
+
+                // check country of BHR user exist in UTC_TimeLogs
+                $utc_check = $utc->where('country_name', '=', is_valid( $bhr_user->country )? $bhr_user->country: "Philippine")->first();
+                if ($utc_check !== null) {
+                 $user->country_id  = $utc_check->country_id;
+                }
+                else{
+                    //Stays at 2 for PH as default
+                }
 
 
                 if($bhr_user->dateOfBirth!="0000-00-00"&&$bhr_user->dateOfBirth!=null){
@@ -312,6 +327,63 @@ class UserRepository implements UserRepositoryInterface{
             log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_sync");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "user_sync");
+
+            throw $e;
+        }
+    }
+
+       /**
+     *  Responsible for Updating the BHR Users to EVOX
+     * @param object $bhr_user_number
+     * @return User $user
+     */
+    public function update_bhr_user_country_to_evox(User $user, object $bhr_user, object  $utc){
+
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
+        error_log("sync_bhr_user_country");
+        DB::beginTransaction();
+        try {
+
+            // If BHr User has E-mail and valid Employment history status, insert the user
+            if( is_valid( $bhr_user->bestEmail ) /*&& is_valid( $bhr_user->employmentHistoryStatus ) */ ) {
+
+                $bhr_country = $bhr_user->country;
+                
+                
+
+                $utc_check = $utc->where('country_name', '=', is_valid( $bhr_user->country )? $bhr_user->country: "Philippine")->first();
+                if ($utc_check !== null) {
+                    $user->country_id  = $utc_check->country_id;
+                }
+                else{
+                    //Stays at 2 for PH as default
+                }
+
+
+
+                // Update the User 
+                $user->update();
+
+                log_to_file( 'info', 'User Updated', [$user], 'user_country_sync');
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_country_sync");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "user_country_sync");
+
+            } else {
+
+                log_to_file( 'info', 'User not valid to Sync', [$bhr_user], 'user_country_sync');
+                log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user, "user_country_sync");
+                log_to_file( 'info', get_constant('LOG_GAP'), [], "user_country_sync");
+            }
+
+            DB::commit();
+            return $user;
+
+        } catch (Exception $e) {
+
+            DB::rollback();
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_country_sync");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "user_country_sync");
 
             throw $e;
         }
@@ -444,6 +516,28 @@ class UserRepository implements UserRepositoryInterface{
         try {
 
             // Write Code
+            DB::commit();
+            log_to_file('info', 'Success', [ /**  Variable */]);
+            return null;  /**  Variable */;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
+
+      /**
+     *  Responsible for Soft-Deleting the User by the User ID
+     * @param $id
+     * @return bool
+     */
+    public function destroy_department_users($id){
+        DB::beginTransaction();
+        try {
+
+            $user_list = User::where("department_id", $id);
+            $user_list->delete();
             DB::commit();
             log_to_file('info', 'Success', [ /**  Variable */]);
             return null;  /**  Variable */;
@@ -1004,11 +1098,13 @@ class UserRepository implements UserRepositoryInterface{
         try {
 
             if( request()->get('page') == 'all' ){
-                $user_collection = Role::findByName( $role )->users()->orderBy('first_name', 'asc')
+                $user_collection = Role::findByName( $role )->users()->where('is_active', 1)
+                                                                     ->orderBy('first_name', 'asc')
                                                                      ->orderBy('last_name', 'asc')
                                                                      ->get();
             } else {
-                $user_collection = Role::findByName( $role )->users()->orderBy('first_name', 'asc')
+                $user_collection = Role::findByName( $role )->users()->where('is_active', 1)
+                                                                     ->orderBy('first_name', 'asc')
                                                                      ->orderBy('last_name', 'asc')
                                                                      ->paginate(15);
             }
@@ -1031,12 +1127,14 @@ class UserRepository implements UserRepositoryInterface{
         try {
 
             if( request()->get('page') == 'all' ){
-                $user_collection = Department::find( $department_id )->users()->orderBy('first_name', 'asc')
+                $user_collection = Department::find( $department_id )->users()->where('is_active', 1)
+                                                                              ->orderBy('first_name', 'asc')
                                                                               ->orderBy('last_name', 'asc')
                                                                               ->get();
 
             } else {
-                $user_collection = Department::find( $department_id )->users()->orderBy('first_name', 'asc')
+                $user_collection = Department::find( $department_id )->users()->where('is_active', 1)
+                                                                              ->orderBy('first_name', 'asc')
                                                                               ->orderBy('last_name', 'asc')
                                                                               ->paginate(15);
             }

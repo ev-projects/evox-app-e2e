@@ -21,8 +21,8 @@
     dtr                             :  "/app/dtr/",
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
-    ev_learning                      :  "/app/EVLearning",
-    ops_schedule                      :  "/app/OpsSchedule",
+    ev_learning                     :  "/app/EVLearning",
+    ops_schedule                    :  "/app/OpsSchedule",
 
     // Request Links
     overtime                        :  "/app/request/Overtime/",
@@ -30,6 +30,7 @@
     change_schedule                 :  "/app/request/ChangeSchedule/",
     rest_day_work                   :  "/app/request/RestDayWork/",
     work_from_home                  :  "/app/request/WorkFromHome/",
+    coe                             :  "/app/request/CertificateOfEmployment/",
 
     // Team Links
     manage_teams                    :  "/app/team/Manage",
@@ -66,9 +67,15 @@
     register_user                   :  "/app/admin/RegisterUser/",
     manage_change_logs              :  "/app/admin/ManageChangeLogs/",
 
+    department_list                 :  "/app/admin/DepartmentList/",
+
     // Performance Measure
     kpi_upload                      :  "/app/performance/KpiUpload",
     generate_date                   :  "/app/admin/GenerateDate/",
+
+    // HR Links
+    manage_hr_announcements         : "/app/hr/ManageHrAnnouncements/",
+    post_hr_announcements           : "/app/hr/PostHrAnnouncements/",
 };
 
 global.invalid_token_response = [

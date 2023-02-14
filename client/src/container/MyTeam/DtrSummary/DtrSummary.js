@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
-import { fetchDtrSummary,exportDtrSummary } from '../../../store/actions/dtr/dtrSummaryActions';
+import { fetchDtrSummary,exportDtrSummary, exportNewDtrSummary } from '../../../store/actions/dtr/dtrSummaryActions';
 import { Form  } from 'react-bootstrap';
 import Authenticator from "../../../services/Authenticator.js";
 
@@ -96,7 +96,58 @@ class DtrSummary extends Component {
       }
       
       this.props.exportDtrSummary( formData );
+    }else if(values.export == "all_new"){
+
+      var formData = {};
+      formData['page'] = (this.props.dtrSummary?.pagination?.current_page ? this.props.dtrSummary?.pagination?.current_page : 1);
+      if (this.props.dtrSummary?.pagination?.has_next_page == true)
+      formData['page'] = formData['page'] + 1;
+      
+      for (var key in values) {
+        if( values[key] != null && values[key] != ""  ) {
+          switch( key ) {
+            case "valid_from":
+            case "valid_to":
+            formData[key] = moment( values[key] ).format("YYYY-MM-DD")
+          break;
+            //case "export":
+            case "department_id":
+            case "name":
+          break;
+          default:
+            formData[key] = values[key];
+          break;
+          }
+        } 
+      }
+      this.props.exportNewDtrSummary( formData );
+    }else if(values.export == "department_new"){
+
+      var formData = {};
+      formData['page'] = (this.props.dtrSummary?.pagination?.current_page ? this.props.dtrSummary?.pagination?.current_page : 1);
+      if (this.props.dtrSummary?.pagination?.has_next_page == true)
+      formData['page'] = formData['page'] + 1;
+      
+      for (var key in values) {
+        if( values[key] != null && values[key] != ""  ) {
+          switch( key ) {
+            case "valid_from":
+            case "valid_to":
+            formData[key] = moment( values[key] ).format("YYYY-MM-DD")
+          break;
+            //case "export":
+            // case "department_id":
+            case "name":
+          break;
+          default:
+            formData[key] = values[key];
+          break;
+          }
+        } 
+      }
+      this.props.exportNewDtrSummary( formData );
     }
+    
     else{
 
 
@@ -194,6 +245,8 @@ class DtrSummary extends Component {
                             <Dropdown.Menu>
                               <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
                               <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
+                              <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department_new")}>Export(NEW)</Dropdown.Item>
+                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all_new")}>Export All(NEW)</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
                         }
@@ -302,6 +355,7 @@ class DtrSummary extends Component {
     return {
     fetchDtrSummary : ( params ) => dispatch( fetchDtrSummary(  params ) ),
     exportDtrSummary : ( params ) => dispatch( exportDtrSummary( params ) ),
+    exportNewDtrSummary : ( params ) => dispatch( exportNewDtrSummary( params ) ),
     }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(DtrSummary);

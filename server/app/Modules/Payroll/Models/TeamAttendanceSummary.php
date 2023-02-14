@@ -547,7 +547,7 @@ class TeamAttendanceSummary
                                 $this->result['total_overtime']['total_hours'] += (int) $payroll_item->value;
                             }
                         };
-
+                       
                         $employee_list_summary[$user->id][] = [
                             "date" => $dtr->date,
                             "name" => $user->getFullName(2),
@@ -665,7 +665,7 @@ class TeamAttendanceSummary
                             $is_unplanned = false;
                             $in_dtr = false;
                             $leave = $dtr->leaves()->first();
-    
+                            $stored_leave_status = '';
                             // If DTR has valid leave, tick the has_leave flag
                             if (is_valid($leave) && $leave->isApproved() && $leave->amount > 0) {
     
@@ -676,7 +676,7 @@ class TeamAttendanceSummary
                                     $status = $dtr->leavesToAcronym(true);
                                     $in_dtr = true;
                                 }
-    
+                                $stored_leave_status = $status;
                                 $has_leave = true;
                             }
     
@@ -742,7 +742,10 @@ class TeamAttendanceSummary
                             $user = $dtr->user()->first();
     
                    
-    
+                            // Re Overide status if has LEave
+                            if($has_leave){
+                                $status =  $stored_leave_status;
+                            }
                             $employee_list_summary[$user->id][] = [
                                 "date" => $dtr->date,
                                 "name" => $user->getFullName(2),

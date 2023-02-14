@@ -18,6 +18,7 @@ const Sidebar = (props) => {
   if (user.first_name != null && user.last_name != null) {
     name = user.first_name + " " + user.last_name;
   }
+  const country = props.settings?.country ? props.settings?.country : "";
 
   var profile_picture_url = '/images/default-user-image.png';
   if (Validator.isValid(settings.profile_picture)) {
@@ -94,7 +95,14 @@ const Sidebar = (props) => {
                       <p>Change of Schedule</p>
                     </Link>
                   </li>
-
+                  {country.toLowerCase() == "philippines" &&
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.base + 'request/CertificateOfEmployment/'}>
+                        <i className="nav-icon fa fa-certificate nav-icon" />
+                        <p>Certificate Of Employment</p>
+                      </Link>
+                    </li>
+                  }
                 </ul>
               </li>
             }
@@ -355,7 +363,30 @@ const Sidebar = (props) => {
               </li>
             }
 
+            {/* ADMIN Links */}
+            {Authenticator.check('hr', 'hr_access') &&
+              <li className="nav-item has-treeview ">
+                <a className="nav-link">
+                  <i className="nav-icon fa fa-cog" />
+                  <p>
+                    HR Functions
+                    <i className="right fa fa-chevron-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
 
+                  {Authenticator.check('hr', 'manage_hr_announcements') &&
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.manage_hr_announcements}>
+                        <i className="nav-icon fa fa-folder-open nav-icon" />
+                        <p style={{ 'fontSize': 13 }}>Announcements</p>
+                      </Link>
+                    </li>
+                  }
+                </ul>
+              </li>
+
+            }
 
             {/* ADMIN Links */}
             {Authenticator.check('admin', 'full_access') &&
@@ -478,8 +509,18 @@ const Sidebar = (props) => {
                       </Link>
                     </li>
                   }
+                {Authenticator.check('admin', 'access_department_list') &&
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.department_list}>
+                        <i className="nav-icon fa fa-bars nav-icon" />
+                        <p>Department List</p>
+                      </Link>
+                    </li>
+                }
                 </ul>
               </li>
+
+          
             }
 
             {/* <li className="nav-item">

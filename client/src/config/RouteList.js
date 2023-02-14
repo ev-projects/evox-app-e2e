@@ -29,6 +29,7 @@ import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
 import RestDayWork from "../container/Request/RestDayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
+import COE from "../container/Request/COE/COE";
 
 import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
 import MyTeamSchedule from "../container/MyTeam/MyTeamSchedule";
@@ -64,6 +65,9 @@ import Profile from "../container/Profile";
 import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
 import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
+import DepartmentList from "../container/Admin/DepartmentList";
+import HrAnnouncements from "../container/Hr/Announcements";
+import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -132,8 +136,9 @@ const RoutesList = (props) => {
           <WorkFromHome onApproval={false} role={['employee']} permission={['employee_access']}/>
         </ProtectedRoute>
 
-
-        
+        <ProtectedRoute exact path={global.links.coe+":id?"}>
+          <COE onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
 
         { /* Team Links */ }
         <ProtectedRoute exact path={global.links.manage_teams}>
@@ -242,6 +247,18 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.manage_change_logs}>
           <ChangeLogs  role={['admin']}  />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.department_list}>
+          <DepartmentList  role={['admin']} permission={['access_department_list']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.manage_hr_announcements}>
+          <HrAnnouncements  role={['hr']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
+          <PostHrAnnouncements  role={['hr']} />
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

@@ -15,6 +15,7 @@ import settingsReducers from "./settings/settingsReducers";
 import alterLogReducers from "./requests/alterLogReducers";
 import changeScheduleReducers from "./requests/changeScheduleReducers";
 import overtimeReducers from "./requests/overtimeReducers";
+import coeReducers from './requests/coeReducers';
 import restDayWorkReducers from "./requests/restDayWorkReducers"
 
 import requestApprovalReducers from "./approvals/requestApprovalReducers";
@@ -45,6 +46,8 @@ import myTeamSchedule from "./schedule/teamSchedule";
 import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
 import reportReducers from './report/reportReducers';
 
+import departmentListReducers from "./admin/departmentListReducers";
+import hrAnnouncementReducers from "./hr/hrAnnouncementReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 
@@ -65,6 +68,7 @@ const rootReducer = combineReducers({
     alterLog : alterLogReducers,
     changeSchedule: changeScheduleReducers,
     overtime : overtimeReducers,
+    coe: coeReducers,
     restDayWork : restDayWorkReducers,
     requestApproval : requestApprovalReducers,
 
@@ -90,7 +94,9 @@ const rootReducer = combineReducers({
 
     dashboard  : dashboardReducers,
 
-    report  : reportReducers
+    report  : reportReducers,
+    departmentList:   departmentListReducers,
+    hrAnnouncement:   hrAnnouncementReducers,
 });
 
 export default rootReducer;

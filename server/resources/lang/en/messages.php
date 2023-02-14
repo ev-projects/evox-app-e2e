@@ -22,6 +22,9 @@ return [
     /**
      *  User Authentication
      */
+    'user_email_not_found' => 'Sorry, looks like you entered the wrong email address. Kindly ask the HR which email address is registered on your profile.',
+    'user_name_not_found' => 'Sorry, looks like you entered the wrong username. You may try using your registred email address to login.',
+    'user_password_incorrect' => 'Sorry, looks like you entered the wrong password. If your password doesn\'t work, you may use the "Forgot Password?" feature to get a new temporary password on your registered email address.',
     'user_not_found' => 'Sorry, Unrecognized Username or Password.',
     'user_not_active' => 'Sorry, your account is suspended. Please email helpdesk@eastvantage.com to activate your account.',
     
@@ -97,6 +100,7 @@ return [
      */
     'all_department_success' => 'Successfully fetched all Department!',
     'find_department_success' => 'Successfully found a Department!',
+    'soft_delete_department_success' => 'Successfully Soft Deleted a Department and Employees under Department!',
     'department_assign_handlers_attempt' => 'Attempt for Assigning of Department Handlers',
     'department_assign_handlers_success' => 'Successfully Assigned Department Handlers!',
 
@@ -281,6 +285,17 @@ return [
      */
     'create_change_log_attempt' => 'Create Change Log Attempt',
     'create_change_log_success' => 'A new change log is now created!',
-    'fetch_change_log_success' => 'List of all change logs'
+    'fetch_change_log_success' => 'List of all change logs',
 
+    /**
+     *  HR Announcement
+     */
+    'create_hr_announcement_attempt' => 'Create HR Announcement Attempt.',
+    'create_hr_announcement_success' => 'A new HR Announcement is now created!',
+    'fetch_hr_announcements_success' => 'List of all HR Announcements.',
+    'delete_hr_announcement_attempt' => 'Delete HR Announcement Cutoff Attempt',
+    'delete_hr_announcement_success' => 'The HR Announcement is now deleted!',
+    'fetch_hr_announcement_success' => 'Get Announcement.',
+    'update_hr_announcement_attempt' => 'Update HR Announcement Attempt.',
+    'update_hr_announcement_success' => 'Update HR Announcement success.',
 ];

@@ -24,6 +24,8 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
     # Gets the Department of the ID indicated on the Parameter
     Route::get('/{id}', 'DepartmentController@find');
 
+    Route::delete('/{id}', 'DepartmentController@destroy');
+
     # Gets the Department of the ID indicated on the Parameter
     Route::get('/{id}/department_handlers', 'DepartmentController@department_handlers');
 

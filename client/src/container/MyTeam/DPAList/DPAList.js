@@ -26,7 +26,7 @@ class DPAList extends Component {
 
       this.initialState = {
           filters: {
-            is_active:      this.props.dpaList?.filters?.is_active,
+            is_active:      this.props.dpaList?.filters?.is_active ? this.props.dpaList?.filters?.is_active :1 ,
             submitted_dpa:  this.props.dpaList?.filters?.submitted_dpa,
             department_id:  this.props.dpaList?.filters?.department_id,
             page:           this.props.dpaList?.filters?.page
@@ -64,7 +64,21 @@ class DPAList extends Component {
         this.props.exportDpaList( formData );
     }else if(values.export == "all"){
         var formData = {export: "all"};
-        
+        for (var key in values) {
+          if( values[key] != null && values[key] != ""  ) {
+              switch( key ) {
+                case "export":
+                    break;
+                case "department_id":
+                  break; 
+                  case "name":
+                    break;
+                default:
+                  formData[key] = values[key];
+                break;
+              }
+          } 
+      }  
     
         this.props.exportDpaList( formData );
     }
