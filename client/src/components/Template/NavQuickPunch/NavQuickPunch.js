@@ -11,8 +11,9 @@ import moment from 'moment';
 import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
 import NavPuncher from "../NavPuncher/NavPuncher";
 // import NavPuncher from "../../../components/template/NavPuncher";
-import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions'
-import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
+import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions';
+import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions';
+import { getIncompleteDtr } from '../../../store/actions/dtr/dtrActions';
 
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 import RecentDtrNav from "../../../components/Dashboard/RecentDtrNav";
@@ -29,7 +30,8 @@ class NavQuickPunch extends Component {
     this.state = {
         time: new Date(),
         compare_to_clock_in: new Date(),
-        NavHasLoaded : false
+        NavHasLoaded : false,
+        incompletedtr : {},
       };
   }
   
@@ -85,10 +87,14 @@ class NavQuickPunch extends Component {
     if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
       this.props.getRecentDtr(this.props.user.id, from , to );
       this.props.getMyDtrNotifications( this.props?.user?.id );
+      this.props.getIncompleteDtr();
 
       this.state.NavHasLoaded = true
      
     }
+
+    var logsLabel = (this.props.incompletedtr.length > 0) ? "Incomplete Timelogs: " + this.props.incompletedtr.length : "";
+
     return (
       <>
 
@@ -143,6 +149,7 @@ class NavQuickPunch extends Component {
                     <Tab eventKey="notifications" title="DTR NOTIFICATIONS">
                       <DtrNotifications/>
                     </Tab>
+                    <Tab id="incLogs" title={logsLabel} disabled></Tab>
               
                   </Tabs>       
  
@@ -167,14 +174,15 @@ const mapStateToProps = (state) => {
     user: state.user,
     settings: state.settings,
     dashboard : state.dashboard,
+    incompletedtr : state.dtr.incompleteDtr,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    getRecentDtr : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) ),
-    biometrixLog    : ( post_data , id ) => dispatch( biometrixLog( post_data , id ) ),
-    getMyDtrNotifications  : () => dispatch( getMyDtrNotifications() ),
-
+    getRecentDtr          : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) ),
+    biometrixLog          : ( post_data , id ) => dispatch( biometrixLog( post_data , id ) ),
+    getMyDtrNotifications : () => dispatch( getMyDtrNotifications() ),
+    getIncompleteDtr      : () => dispatch( getIncompleteDtr() ),
   };
 };
 

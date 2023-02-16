@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Modules\Payroll\Models\Biometrics;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
+use App\Modules\Payroll\Models\PayrollCutoff;
 
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
@@ -22,6 +23,7 @@ use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
+use Carbon\Carbon;
 
 class DtrController extends Controller
 {    
@@ -186,5 +188,25 @@ class DtrController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
         
+    }
+
+    public function get_incomplete_logs() {
+        // get the date today
+        $today = Carbon::now()->format('Y-m-d');
+        $yesterday = Carbon::yesterday()->format('Y-m-d');
+
+        // get the cutoff that scopes the date today
+        $payroll_cutoff = PayrollCutoff::where('start_date', '<=', $today)->where('end_date', '>=', $today)->first();
+
+        // get incomplete dtr for the current cutoff
+        $inc_dtr = Dtr::whereBetween('date', [$payroll_cutoff->start_date, $yesterday])
+                        ->where('user_id', Auth::user()->id)
+                        ->where('is_rest_day', 0)
+                        ->where(function($query) {
+                            $query->whereNull('time_in')->orWhereNull('time_out');
+                        })
+                        ->get();
+
+        return $inc_dtr;
     }
 }

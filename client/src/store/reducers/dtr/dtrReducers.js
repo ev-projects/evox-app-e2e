@@ -11,7 +11,8 @@ const initState = {
     employeeInfo : null,
     list: [],
     filter: [],
-    selectedPayrollCutoff: {}
+    selectedPayrollCutoff: {},
+    incompleteDtr: {}
 }
 
 const dtrReducer = (state = initState, action) => {
@@ -60,6 +61,13 @@ const dtrReducer = (state = initState, action) => {
             return {
                 ...state,
                 selectedPayrollCutoff : action.payrollCutoff
+            };
+            break;
+        
+        case "FETCH_INCOMPLETE_DTR":
+            return {
+                ...state,
+                incompleteDtr : action.data.data
             };
             break;
         
