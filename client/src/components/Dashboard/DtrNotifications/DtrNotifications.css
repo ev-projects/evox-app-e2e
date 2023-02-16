@@ -1,7 +1,8 @@
 
 
 .dtr-notifications .card-body {
-    border-top: 5px solid #82af13 !important;
+    /* border-top: 5px solid #82af13 !important; */
+    border-top: 5px solid #0097A7  !important;
     background: #fff;
 }
 .absent, .no-schedule, .rdw_incomplete{
