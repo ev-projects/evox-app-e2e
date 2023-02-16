@@ -80,3 +80,24 @@ export const setSelectedPayrollCutoff = ( payrollCutoff ) => {
         })
     }
 }
+
+
+// Get Dtrs with incomplete timelogs for the current cutoff
+export const getIncompleteDtr = ( ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr/incomplete_logs/",
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_INCOMPLETE_DTR', 
+                'data'  : result
+            })
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
