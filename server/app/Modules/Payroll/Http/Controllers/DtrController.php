@@ -4,6 +4,7 @@ namespace App\Modules\Payroll\Http\Controllers;
 
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Exports\DtrSummaryExport;
 use App\Modules\User\Models\User;
@@ -23,7 +24,6 @@ use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
-use Carbon\Carbon;
 
 class DtrController extends Controller
 {    
