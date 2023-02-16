@@ -18,14 +18,12 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
 
-use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
-use Carbon\Carbon;
 
 class DtrController extends Controller
 {    
