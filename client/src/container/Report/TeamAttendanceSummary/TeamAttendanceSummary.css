@@ -26,3 +26,15 @@
 .summary-report > .dtr-list > div > .red {
     color: #f12631;
 } */
+
+.multi-select .dropdown-container .dropdown-heading .dropdown-heading-value{
+    max-width: 320px;
+    display:inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.employee-name-input{
+    height: 40 !important;
+    width: 320px;
+}

@@ -163,6 +163,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Team::class, 'team_users', 'user_id', 'team_id');
     }
 
+    public function country_zone()
+    {
+        return $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->get();
+    }
+
 
 
     # Fetch the User's Schedule (Source type is Default)

@@ -4,6 +4,7 @@ namespace App\Modules\Payroll\Http\Controllers;
 
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Exports\DtrSummaryExport;
 use App\Modules\User\Models\User;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
 
+use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
 use App\Modules\User\Repositories\UserRepositoryInterface;
@@ -96,6 +98,17 @@ class DtrController extends Controller
             $biometrics->CheckTime       = date("Y-m-d H:i:s");
             $biometrix_collection->push( $biometrics );
 
+                            // $date = Carbon::createFromFormat('Y-m-d H:i:s', $biometrics->CheckTime,  Auth::user()->timezone );
+                            //     // $date->setTimezone('UTC');
+                            //     // $date;
+                            //     $date = $date->setTimezone("UTC");
+                            // dd(
+                            //     Auth::user()->country_zone(),
+                            //     Auth::user()->timezone,
+                            //     $date,
+                            //     $date->format('Y-m-d H:i:s'),
+                                
+                            // );
             $dtr_id = null;
             if ($request->dtr_id) {
                 $dtr_id = $request->dtr_id;

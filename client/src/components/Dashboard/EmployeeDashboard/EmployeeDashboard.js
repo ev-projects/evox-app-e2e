@@ -89,13 +89,14 @@ const EmployeeDashboard = ( props ) => {
                     </div>
 
                     <div className="jobs-tab">
-                      <Tabs defaultActiveKey="ERP" id="uncontrolled-tab-example">
-                          <Tab eventKey="ERP" title="ERP" type="submit">
+                      <Tabs defaultActiveKey="PHT" id="uncontrolled-tab-example">
+                          <Tab eventKey="PHT" title="PHT" type="submit">
+                          {/* <Tab eventKey="ERP" title="ERP" type="submit"> */}
                             <div className="card-body evbuddy">
                               <br />
 
                               <h4 align="center"><strong>Refer a friend and earn as much as 30K PHP!</strong></h4>
-                              <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
+                              {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
                               <br />
                               <ul>
                                 <li><a href="https://careers.eastvantage.com/jobs/senior-service-desk-analyst-bcg-taguig" target="_blank">Senior Service Desk Analyst</a></li>
@@ -152,7 +153,8 @@ const EmployeeDashboard = ( props ) => {
                             </div>
                           </Tab>
 
-                          <Tab eventKey="ERP India" title="ERP India" type="submit">
+                          <Tab eventKey="IND" title="IND" type="submit">
+                          {/* <Tab eventKey="ERP India" title="ERP India" type="submit"> */}
                             <div className="card-body evbuddy">
                               <br />
                               <h4 align="center"><strong>Refer a friend and earn as much as 25K INR!</strong></h4>
