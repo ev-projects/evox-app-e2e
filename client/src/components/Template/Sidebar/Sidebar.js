@@ -522,7 +522,12 @@ const Sidebar = (props) => {
 
           
             }
-
+             <li className="nav-item">
+                      <Link className="nav-link" to={global.links.department_announcement_list}>
+                        <i className="nav-icon fa fa-bars nav-icon" />
+                        <p>My Announcement List</p>
+                      </Link>
+              </li>
             {/* <li className="nav-item">
               <a onClick={() => props.logOut()} className="nav-link">
                 <i className="fa fa-sign-out nav-icon" />

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Form,Button,InputGroup,FormControl  } from 'react-bootstrap';
 import moment from 'moment';
 
-import "./ChangeLogs.css";
+import "./DepartmentAnnouncements.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 
@@ -15,7 +15,7 @@ import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
 
-import { addChangeLogs } from '../../../store/actions/admin/changeLogsActions';
+import { createDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 import { Editor } from '@tinymce/tinymce-react';
@@ -25,7 +25,7 @@ import RequestSubtitle from "../../../components/RequestComponent/RequestButtons
 import Authenticator from "../../../services/Authenticator";
 import BackButton from "../../../components/Template/BackButton";
 
-class ChangeLogs extends Component {
+class DepartmentAnnouncements extends Component {
   constructor(props){
     super(props)
 
@@ -40,7 +40,7 @@ class ChangeLogs extends Component {
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = (values) => {
     values['description'] = this.state.description;
-    console.log(values);
+
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
 
@@ -59,10 +59,10 @@ class ChangeLogs extends Component {
 
     // Checks on what action to use depending on the values.action
     if (values.method == "store") {
-      if (window.confirm("Are you sure you want to submit this change log?")) {
+      if (window.confirm("Are you sure you want to create this announcement?")) {
         switch( values.method ) {
           case "store":
-              this.props.addChangeLogs( formData );
+              this.props.createDepartmentAnnouncement( formData );
               break;
           default:
               break;
@@ -76,51 +76,9 @@ class ChangeLogs extends Component {
     this.setState({ description : e });
   }
 
-
-  render = () => { 
+  render = () => {
     // Sets the Method of the current state.
     const method = 'store';
-
-    const   handleImageChange = (blobInfo, progress) => new Promise((resolve, reject) => {
-      console.log('file',blobInfo, blobInfo.blob(), blobInfo.filename());
-      const xhr = new XMLHttpRequest();
-      xhr.withCredentials = false;
-      xhr.open('POST', 'postAcceptor.php');
-      console.log(xhr)
-      xhr.upload.onprogress = (e) => {
-        progress(e.loaded / e.total * 100);
-      };
-    
-      xhr.onload = () => {
-        if (xhr.status === 403) {
-          reject({ message: 'HTTP Erroroo: ' + xhr.status, remove: true });
-          return;
-        }
-    
-        if (xhr.status < 200 || xhr.status >= 300) {
-          reject('HTTP Error: ' + xhr.status);
-          return;
-        }
-    
-        const json = JSON.parse(xhr.responseText);
-    
-        if (!json || typeof json.location != 'string') {
-          reject('Invalid JSON: ' + xhr.responseText);
-          return;
-        }
-    
-        resolve(json.location);
-      };
-    
-      xhr.onerror = () => {
-        reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
-      };
-    
-      const formData = new FormData();
-      formData.append('file', blobInfo.blob(), blobInfo.filename());
-    
-      xhr.send(formData);
-    });
 
     // Sets Initial Value of the current Formik form.
     const initialValue = {
@@ -183,12 +141,12 @@ class ChangeLogs extends Component {
                         </Form.Control.Feedback>
                       </div>
                     </Col>
-                    <Col size="3">
+                    {/* <Col size="3">
                       <div className="form-group">
                         <label>Date:</label>
                         <InputDate name="log_date" value={values.log_date}/>
                       </div>
-                    </Col>
+                    </Col> */}
                   </Row>
                   <Row>
                     <Col size="12">
@@ -209,15 +167,10 @@ class ChangeLogs extends Component {
                               'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
                               'powerpaste','fullscreen','formatpainter','insertdatetime','media','table','help','wordcount'
                            ],
-                            toolbar: 'undo redo  | link image | casechange blocks | bold italic backcolor emoticons | ' +
+                            toolbar: 'undo redo | casechange blocks | bold italic backcolor emoticons | ' +
                             'alignleft aligncenter alignright alignjustify | ' +
                             'bullist numlist checklist outdent indent | removeformat | help',
-                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                            branding: false,
-                            // promotion: false,
-                            images_upload_handler: handleImageChange,
-                            // images_upload_url: 'postAcceptor.php',
-                            // automatic_uploads: false
+                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                           }}
                         />
                         {/* <Form.Control.Feedback type="invalid">
@@ -251,9 +204,9 @@ class ChangeLogs extends Component {
 
 const validationSchema = Yup.object().shape({
     title         : Yup.string().required("This field is required").nullable(),
-    category      : Yup.string().required("This field is required").nullable(),
+    // category      : Yup.string().required("This field is required").nullable(),
     // description   : Yup.string().required("This field is required").nullable(),
-    log_date      : Yup.date().required("This field is required").nullable(),
+    // log_date      : Yup.date().required("This field is required").nullable(),
 });
 
 const mapStateToProps = (state) => {
@@ -267,11 +220,11 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
       // addRestDayWork        : ( post_data ) => dispatch( addRestDayWork( post_data ) ),
-      addChangeLogs : ( post_data ) => dispatch( addChangeLogs( post_data ) ),
+      createDepartmentAnnouncement : ( post_data ) => dispatch( createDepartmentAnnouncement( post_data ) ),
       setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(ChangeLogs);
+export default connect(mapStateToProps, mapDispatchToProps)(DepartmentAnnouncements);
 
 
 

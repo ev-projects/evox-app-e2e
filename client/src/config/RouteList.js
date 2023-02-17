@@ -66,6 +66,8 @@ import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/Tea
 import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
 import DepartmentList from "../container/Admin/DepartmentList";
+import DepartmentAnnouncementsList from "../container/DepartmentAnnouncements/DepartmentAnnouncementsList";
+import DepartmentAnnouncements from "../container/DepartmentAnnouncements/DepartmentAnnouncements";
 import HrAnnouncements from "../container/Hr/Announcements";
 import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
@@ -248,9 +250,20 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.manage_change_logs}>
           <ChangeLogs  role={['admin']}  />
         </ProtectedRoute>
-
+          
         <ProtectedRoute exact path={global.links.department_list}>
           <DepartmentList  role={['admin']} permission={['access_department_list']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.department_announcement_list}>
+          <DepartmentAnnouncementsList  
+          // role={['']} permission={['access_department_list']} 
+          />
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.department_announcement_create}>
+          <DepartmentAnnouncements  
+          // role={['']} permission={['access_department_list']} 
+          />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.manage_hr_announcements}>

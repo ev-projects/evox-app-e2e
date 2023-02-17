@@ -287,6 +287,15 @@ return [
     'create_change_log_success' => 'A new change log is now created!',
     'fetch_change_log_success' => 'List of all change logs',
 
+
+
+    /**
+     * Department Announcements
+     */
+
+     'create_department_announcement_attempt' => 'Create Department Announcement Attempt',
+     'create_department_announcement_success' => 'A new Department Announcement is now created!',
+    //  'fetchdepartment_announcement_success' => 'List of all change logs',
     /**
      *  HR Announcement
      */
