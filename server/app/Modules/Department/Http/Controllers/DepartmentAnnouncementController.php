@@ -207,7 +207,7 @@ class DepartmentAnnouncementController extends Controller
         
         DB::beginTransaction();
         try {
-            log_activity( trans('messages.create_department_announcement_attempt') );
+            log_activity( trans('messages.update_department_announcement_attempt') );
 
             $dep_announcement = Announcment::find($id);
 
@@ -242,7 +242,7 @@ class DepartmentAnnouncementController extends Controller
 
             DB::commit();
             return success_response(
-                trans('messages.create_department_announcement_success'), 
+                trans('messages.update_department_announcement_success'), 
                 $dep_announcement
             );
 
