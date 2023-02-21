@@ -39,7 +39,7 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
     Route::post('/assign_handlers/{id}', 'DepartmentController@assign_handlers');
 
     # API Call for Announcements from Department
-    Route::group(['prefix' => 'announcments', 'middleware' => []], function () {
+    Route::group(['prefix' => 'announcements', 'middleware' => []], function () {
 
         # Gets all the Department Announcements Lists
         Route::get('/all', 'DepartmentAnnouncementController@index');

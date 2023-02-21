@@ -67,7 +67,9 @@ import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
 import DepartmentList from "../container/Admin/DepartmentList";
 import DepartmentAnnouncementsList from "../container/DepartmentAnnouncements/DepartmentAnnouncementsList";
-import DepartmentAnnouncements from "../container/DepartmentAnnouncements/DepartmentAnnouncements";
+import DepartmentAnnouncementsForm from "../container/DepartmentAnnouncements/DepartmentAnnouncementsForm";
+import AnnouncementsPage from "../container/DepartmentAnnouncements/AnnouncementsPage";
+
 import HrAnnouncements from "../container/Hr/Announcements";
 import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
@@ -260,8 +262,14 @@ const RoutesList = (props) => {
           // role={['']} permission={['access_department_list']} 
           />
         </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.department_announcement_create}>
-          <DepartmentAnnouncements  
+        <ProtectedRoute exact path={global.links.department_announcement_form+":id?"}>
+          <DepartmentAnnouncementsForm
+          // role={['']} permission={['access_department_list']} 
+          />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.announcement_page+":id"}>
+          <AnnouncementsPage
           // role={['']} permission={['access_department_list']} 
           />
         </ProtectedRoute>

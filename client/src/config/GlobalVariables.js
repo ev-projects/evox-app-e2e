@@ -47,7 +47,8 @@
     daily_team_schedule             :  "/app/team/DailyTeamSchedule", 
 
     department_announcement_list    :  "/app/team/DepartmentAnnouncementList/",
-    department_announcement_create  :  "/app/team/DepartmentAnouncement/",
+    department_announcement_form  :  "/app/team/DepartmentAnouncement/",
+    announcement_page  :  "/app/team/\Anouncement/Page/",
 
     // Schedule Links
     template_add                    :  "/app/schedule/",

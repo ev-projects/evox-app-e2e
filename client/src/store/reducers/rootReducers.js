@@ -22,6 +22,8 @@ import requestApprovalReducers from "./approvals/requestApprovalReducers";
 
 import redirectReducers from "./settings/redirectReducers";
 
+import departmentAnnouncementReducers from "./announcements/departmentAnnouncementReducers";
+
 import payrollCutoffReducers from "./admin/payrollCutoffReducers"
 
 import assignRoleReducers from "./admin/assignRoleReducers" 
@@ -83,6 +85,8 @@ const rootReducer = combineReducers({
     myDepartmentsTeamsList          : myDepartmentsTeamsListReducers,
     myTeamSchedule      : myTeamSchedule,
     myTeamRequestList   : myTeamRequestListReducers,
+
+    departmentAnnouncement : departmentAnnouncementReducers,
     
 
     dtrSummary: dtrSummaryReducers,

@@ -9,10 +9,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Modules\Department\Models\DepartmentAnnouncment;
+use App\Modules\Department\Models\Announcment;
 use App\Modules\Department\Resources\AnnouncementResource;
 use App\Modules\User\Repositories\UserRepositoryInterface;
+// use App\Modules\Department\Resources\DepartmentListResource;
 use App\Modules\Department\Repositories\DepartmentRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class DepartmentAnnouncementController extends Controller
 {
@@ -33,7 +35,20 @@ class DepartmentAnnouncementController extends Controller
      */
     public function index()
     {
-        //
+        
+        try {
+         $announcements_list = Announcment::orderBy('created_at', 'desc')->get();
+
+
+        return success_response(
+            trans('messages.fetch_change_log_success'), 
+           AnnouncementResource::collection($announcements_list)
+        );
+
+        
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
     }
 
     /**
@@ -60,11 +75,12 @@ class DepartmentAnnouncementController extends Controller
             
             log_activity( trans('messages.create_department_announcement_attempt') );
 
-            $dep_announcement = new DepartmentAnnouncment;
+            $dep_announcement = new Announcment;
 
             $dep_announcement->title          = $request->title;
             $dep_announcement->category       = $request->category;
-            $dep_announcement->content    = $request->content;
+            $dep_announcement->content    =     $request->content;
+            $dep_announcement->headline    =    $request->headline;
             // $dep_announcement->log_date       = $request->log_date;
             $dep_announcement->link    = $request->link;
             $dep_announcement->status    = $request->status;
@@ -73,7 +89,23 @@ class DepartmentAnnouncementController extends Controller
             $dep_announcement->created_by     = auth()->user()->id;
             $dep_announcement->updated_by     = auth()->user()->id;
 
+
+            
+
             $dep_announcement->save();
+            error_log($request->thumbnail != null ? "TTT" : "FFF");
+            if($request->thumbnail != null ){
+                $path = $request->file('thumbnail')->store(
+                    'public/announcements/'.$dep_announcement->id, 
+                );
+                error_log($path);
+                // $dep_announcement->update(['thumbnail' => $path]);
+                $dep_announcement->thumbnail = $path;
+                $dep_announcement->update();
+            }
+            
+            
+            $dep_announcement->announcements_departments()->sync([56]);
 
             DB::commit();
             return success_response(
@@ -86,6 +118,31 @@ class DepartmentAnnouncementController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+
+
+    // public function store(AnnouncementRequest $request)
+    // {
+    //     try {
+    //         log_activity( trans('messages.create_announcement_attempt') );
+
+    //         $newannouncement = $this->announcement->store( $request->all());
+    //         if($request->thumbnail != null ){
+    //             $path = $request->file('thumbnail')->store(
+    //                 'announcements/'.$newannouncement->id, 
+    //             );
+    //             $newannouncement->update(['thumbnail' => $path]);
+    //             return success_response(
+    //                 trans('messages.create_announcement_success'), 
+    //                 new AnnouncementResource($newannouncement),
+    //                 JsonResponse::HTTP_CREATED
+    //             );
+    //     }
+
+    //     } catch(Exception $e){
+    //         return error_response( trans('messages.error_default'), $e );
+    //     }
+    // }
     /**
      * Display the specified resource.
      *
@@ -96,11 +153,11 @@ class DepartmentAnnouncementController extends Controller
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
 
-        $dep_announcement = DepartmentAnnouncment::find($id);
-
+        $dep_announcement = Announcment::find($id);
+        // dump( $dep_announcement,$id);
         return success_response(
             trans('messages.create_department_announcement_success'), 
-            $dep_announcement
+            new AnnouncementResource(  $dep_announcement ) 
         );
     }
 
@@ -128,7 +185,7 @@ class DepartmentAnnouncementController extends Controller
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
 
-            $dep_announcement = DepartmentAnnouncment::find($id);
+            $dep_announcement = Announcment::find($id);
 
             $dep_announcement->title          = $request->title;
             $dep_announcement->category       = $request->category;
@@ -167,7 +224,7 @@ class DepartmentAnnouncementController extends Controller
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
 
-            $dep_announcement = DepartmentAnnouncment::find($id);
+            $dep_announcement = Announcment::find($id);
             $dep_announcement->status    = $request->status;
             $dep_announcement->update();
 
@@ -193,13 +250,13 @@ class DepartmentAnnouncementController extends Controller
     {
         DB::beginTransaction();
         try {
-            log_activity( trans('messages.create_department_announcement_attempt') );
+            log_activity( trans('messages.delete_department_announcement_attempt') );
 
-            DepartmentAnnouncment::destroy($id);
+            Announcment::destroy($id);
 
             DB::commit();
             return success_response(
-                trans('messages.create_department_announcement_success'), 
+                trans('messages.delete_department_announcement_success'), 
               
             );
 
@@ -219,7 +276,7 @@ class DepartmentAnnouncementController extends Controller
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
             
-            $announcements_collection = DepartmentAnnouncment::where("dep_id", Auth::user()->dep_id);
+            $announcements_collection = Announcment::where("dep_id", Auth::user()->dep_id);
             return success_response(
                 trans('messages.all_department_success'), 
                 AnnouncementResource::collection( $announcements_collection ) 
@@ -240,7 +297,7 @@ class DepartmentAnnouncementController extends Controller
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
             
-            $announcements_collection = DepartmentAnnouncment::where("dep_id", Auth::user()->dep_id);
+            $announcements_collection = Announcment::where("dep_id", Auth::user()->dep_id);
             return success_response(
                 trans('messages.all_department_success'), 
                 AnnouncementResource::collection( $announcements_collection ) 

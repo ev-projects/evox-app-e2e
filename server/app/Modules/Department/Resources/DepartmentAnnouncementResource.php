@@ -2,11 +2,13 @@
 
 namespace App\Modules\Department\Resources;
 
-use Illuminate\Support\Facades\Storage;
-use App\Modules\User\Resources\UserListResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AnnouncementResource extends JsonResource
+use Illuminate\Support\Facades\Storage;
+
+
+
+class DepartmentAnnouncementResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +18,8 @@ class AnnouncementResource extends JsonResource
      */
     public function toArray($request)
     {
-        $result = null;
-
+        $result  = null;
+        dd($this->resource);
         if( ! is_null( $this->resource ) ) {
             $result = array(
                 'id' => $this->id,

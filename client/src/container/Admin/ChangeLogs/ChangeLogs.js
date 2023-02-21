@@ -40,7 +40,7 @@ class ChangeLogs extends Component {
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = (values) => {
     values['description'] = this.state.description;
-    console.log(values);
+
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
 
@@ -76,51 +76,9 @@ class ChangeLogs extends Component {
     this.setState({ description : e });
   }
 
-
-  render = () => { 
+  render = () => {
     // Sets the Method of the current state.
     const method = 'store';
-
-    const   handleImageChange = (blobInfo, progress) => new Promise((resolve, reject) => {
-      console.log('file',blobInfo, blobInfo.blob(), blobInfo.filename());
-      const xhr = new XMLHttpRequest();
-      xhr.withCredentials = false;
-      xhr.open('POST', 'postAcceptor.php');
-      console.log(xhr)
-      xhr.upload.onprogress = (e) => {
-        progress(e.loaded / e.total * 100);
-      };
-    
-      xhr.onload = () => {
-        if (xhr.status === 403) {
-          reject({ message: 'HTTP Erroroo: ' + xhr.status, remove: true });
-          return;
-        }
-    
-        if (xhr.status < 200 || xhr.status >= 300) {
-          reject('HTTP Error: ' + xhr.status);
-          return;
-        }
-    
-        const json = JSON.parse(xhr.responseText);
-    
-        if (!json || typeof json.location != 'string') {
-          reject('Invalid JSON: ' + xhr.responseText);
-          return;
-        }
-    
-        resolve(json.location);
-      };
-    
-      xhr.onerror = () => {
-        reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
-      };
-    
-      const formData = new FormData();
-      formData.append('file', blobInfo.blob(), blobInfo.filename());
-    
-      xhr.send(formData);
-    });
 
     // Sets Initial Value of the current Formik form.
     const initialValue = {
@@ -209,15 +167,10 @@ class ChangeLogs extends Component {
                               'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
                               'powerpaste','fullscreen','formatpainter','insertdatetime','media','table','help','wordcount'
                            ],
-                            toolbar: 'undo redo  | link image | casechange blocks | bold italic backcolor emoticons | ' +
+                            toolbar: 'undo redo | casechange blocks | bold italic backcolor emoticons | ' +
                             'alignleft aligncenter alignright alignjustify | ' +
                             'bullist numlist checklist outdent indent | removeformat | help',
-                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                            branding: false,
-                            // promotion: false,
-                            images_upload_handler: handleImageChange,
-                            // images_upload_url: 'postAcceptor.php',
-                            // automatic_uploads: false
+                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                           }}
                         />
                         {/* <Form.Control.Feedback type="invalid">

@@ -295,6 +295,8 @@ return [
 
      'create_department_announcement_attempt' => 'Create Department Announcement Attempt',
      'create_department_announcement_success' => 'A new Department Announcement is now created!',
+     'delete_department_announcement_attempt' => 'Deleting Department Announcement Attempt',
+     'delete_department_announcement_success' => 'Deleted an Department Announcement',
     //  'fetchdepartment_announcement_success' => 'List of all change logs',
     /**
      *  HR Announcement

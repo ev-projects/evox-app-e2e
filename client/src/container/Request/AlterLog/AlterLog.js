@@ -96,7 +96,7 @@ class AlterLog extends Component {
 
   
   componentWillMount(){
-      
+      console.log( this.props.params);
       // Clear the Instance of Alter Log before rendering new Instance (If applicable)
       this.props.clearAlterLogInstance();
 

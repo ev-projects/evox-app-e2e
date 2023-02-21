@@ -4,3 +4,29 @@
     background-color: #82af13 !important;
     border-color: #82af13 !important;
 }
+
+
+.announcement-list-img.card-img-top{ 
+    background-color: #ababab;
+    /* width: 50%;
+    height: auto !important; */
+    width: 100%; height: 250px; object-fit: cover;
+    margin: auto;
+    display: block;
+    
+}
+
+.announcement-list-content .card-title.h5{ 
+    /* background-color: #ababab; */
+    font-size: 18px !important;
+    
+}
+
+.announcement-list-content .card-text{ 
+    font-size: 15px !important;
+    
+}
+
+.btn.btn-primary.create-announcement{
+    margin-bottom:20px;
+}

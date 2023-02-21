@@ -1,13 +1,14 @@
 import React, { Component,useState  } from "react";
 import { Redirect, Link } from "react-router-dom";
-import { Modal,Button,Container,Col,Table } from 'react-bootstrap';
+import { Modal,Button,Container,Row,Col,Table, Card } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./DepartmentAnnouncementsList.css";
 
-import { fetchDepartmentList, deleteDepartment } from '../../../store/actions/admin/departmentListActions'
+import { fetchDepartmentAnnouncmentList, deleteDepartmentAnnouncment } from '../../../store/actions/announcement/departmentAnnouncementActions'
+
 
 import Formatter from '../../../services/Formatter'
 
@@ -23,11 +24,11 @@ class DepartmentAnnouncementsList extends Component {
     // this.onDeleteHandler(props.id, index);
   }
 
-  onDeleteHandler = (department, index) => {
+  onDeleteHandler = (announcement, index) => {
     if (window.confirm("Are you sure you want to Remove this Department ?")) {
 
-      this.props.deleteDepartment(department.id);
-      this.props.departmentList.Deplist.splice(index, 1);
+      this.props.deleteDepartmentAnnouncment(announcement.id);
+      this.props.departmentAnnouncement.depAnnouncementlist.splice(index, 1);
       this.toggleModal();
     }
   }
@@ -37,54 +38,56 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   componentWillMount(){
-    this.props.fetchDepartmentList();
+    this.props.fetchDepartmentAnnouncmentList();
   }
   
   render = () => {
-    console.log(this.props.departmentList);
-    if(this.props.departmentList.isDepartmentListLoaded){
+    console.log(this.props.departmentAnnouncement);
+    if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
       return <Wrapper  {...this.props} >
         <ContainerWrapper>   
-          <Content col="12" title="Department List">
-          <p>Department list and control</p>
-          <p>Options:</p>
-          <ul>
-            <li>NUUUUUUUUUUUUUUUU</li>
-            <li>
-            <Link className="btn btn-primary"  to={global.links.department_announcement_create}>
+          <Content col="12" title="My Announcement List">
+          <Link className="btn btn-primary create-announcement"  to={global.links.department_announcement_form}>
                        
-                        create Announcement
-            </Link>  
-            </li>
-          </ul> 
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Department ID</th>
-                <th>Department Name</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.props.departmentList.Deplist.map((department, index) => {
-                return <tr>
-                          <td>{index + 1}</td> 
-                          <td>{department.id + 1}</td> 
-                          <td>{department.department_name}</td> 
+                       Create Announcement
+           </Link>  
+        
+         <Row>
+              {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
+                return <Col  md={6} className="announcement-list-content">
+                          {/* <td>{index + 1}</td>  */}
+                          {/* <td>{announcement.id + 1}</td> 
+                          <td>{announcement.department_name}</td> 
                           <td>
-                            {/* <Link className="btn btn-primary" to={{
-                                pathname: global.links.template_list + department.id
-                              }}> <i class="fa fa-edit"></i> Edit 
-                            </Link>  */}
-                                <Button variant="danger" style={{'padding': '10px 15px'}} onClick={ () => this.onDeleteHandler(department, index)} > 
+
+                                <Button variant="danger" style={{'padding': '10px 15px'}} onClick={ () => this.onDeleteHandler(announcement, index)} > 
                                   <i class="fa fa-trash"></i> Soft Delete 
                                 </Button> 
-                          </td>
-                      </tr>;
+                          </td> */}
+
+                          <Card className="announcement-list-card"  >
+                            <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/>
+                            <Card.Body>
+                              <Card.Title> {announcement.title}</Card.Title>
+                              <Card.Text>
+                              Headline: {announcement.headline}
+                              </Card.Text>
+                              <Link to={{
+                                pathname: global.links.department_announcement_form + announcement.id
+                              }}
+                                  title="Edit Announcement"
+                              >
+                                <Button variant="primary">Edit</Button>
+                                
+                              </Link>
+                              <Button variant="danger" style={{'padding': '10px 15px'}} onClick={ () => this.onDeleteHandler(announcement, index)} > 
+                                  <i class="fa fa-trash"></i> Delete 
+                                </Button> 
+                            </Card.Body>
+                          </Card>
+                      </Col>;
               })}
-              </tbody>
-          </Table>
+        </Row>
           </Content>
         </ContainerWrapper>
       </Wrapper>;
@@ -97,13 +100,13 @@ class DepartmentAnnouncementsList extends Component {
 const mapStateToProps = (state) => {
 
       return {
-        departmentList             : state.departmentList,
+        departmentAnnouncement             : state.departmentAnnouncement,
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDepartmentList : () => dispatch( fetchDepartmentList() ),
-      deleteDepartment : (id) => dispatch( deleteDepartment(id) ),
+      fetchDepartmentAnnouncmentList : () => dispatch( fetchDepartmentAnnouncmentList() ),
+      deleteDepartmentAnnouncment : (id) => dispatch( deleteDepartmentAnnouncment(id) ),
     }
   }
 
