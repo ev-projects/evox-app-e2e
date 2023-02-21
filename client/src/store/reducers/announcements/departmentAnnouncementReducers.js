@@ -12,7 +12,8 @@ const departmentAnnouncementReducers = (state = initState, action) => {
     let message = "";
     let result = {...state};
     switch(action.type) {
-      
+
+
         case "FETCH_DEPARTMENT_ANNOUNCMENT_INDEX_LOAD_SUCCESS":
 
             return {

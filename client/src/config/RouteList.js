@@ -259,18 +259,18 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.department_announcement_list}>
           <DepartmentAnnouncementsList  
-          // role={['']} permission={['access_department_list']} 
-          />
+            role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
+         />
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.department_announcement_form+":id?"}>
           <DepartmentAnnouncementsForm
-          // role={['']} permission={['access_department_list']} 
-          />
+            role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
+         />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.announcement_page+":id"}>
           <AnnouncementsPage
-          // role={['']} permission={['access_department_list']} 
+          //any user under her deparment can access her department announcement page
           />
         </ProtectedRoute>
 

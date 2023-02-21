@@ -23,7 +23,7 @@ class AnnouncementResource extends JsonResource
                 'id' => $this->id,
                 'title' => $this->title,
                 'headline' => $this->headline,
-                'thumbnail' => env('APP_URL').Storage::url($this->thumbnail),
+                'thumbnail' => $this->thumbnail != null ? env('APP_URL').Storage::url($this->thumbnail): null,
                 'content' => $this->content,
                 'category' => $this->category,
                 'log_date' => $this->log_date,
@@ -34,7 +34,7 @@ class AnnouncementResource extends JsonResource
                 'dep_id' => $this->dep_id,
               
               
-                'created_at' => $this->created_at->format('Y-m-d H:i:s')
+                'created_at' => $this->created_at->format('Y-m-d')
             );
         }
 

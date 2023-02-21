@@ -30,3 +30,7 @@
 .btn.btn-primary.create-announcement{
     margin-bottom:20px;
 }
+
+.manage-announcement-option .btn{
+ margin-right: 3px!important;
+}

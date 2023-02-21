@@ -53,6 +53,8 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
         # Gets/Updates the Department Announcements of the ID indicated on the Parameter
         Route::get('/{id}', 'DepartmentAnnouncementController@show');
 
+        Route::get('/strict/{id}', 'DepartmentAnnouncementController@show_strict');
+
         Route::get('/my_handle_announcements', 'DepartmentAnnouncementController@dashboard_index');
 
         Route::group(['prefix' => 'my_handle_announcements', 'middleware' => []], function () {
@@ -60,7 +62,7 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
             # Gets/Updates the Department Announcements of the ID indicated on the Parameter
             Route::get('/{id}', 'DepartmentAnnouncementController@show');
 
-            Route::put('/{id}/update', 'DepartmentAnnouncementController@update');
+            Route::post('/{id}/update', 'DepartmentAnnouncementController@update');
 
             Route::put('/{id}/update-status', 'DepartmentAnnouncementController@update_status');
 

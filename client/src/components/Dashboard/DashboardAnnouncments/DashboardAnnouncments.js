@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect, Link } from "react-router-dom";
 import "./DashboardAnnouncments.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../GridComponent/AdminLte.js';
-import { fetchDepartmentAnnouncmentList, deleteDepartment } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchDashboardAnnouncmentList } from '../../../store/actions/announcement/departmentAnnouncementActions'
 import Figure from 'react-bootstrap/Figure';
 import { connect } from 'react-redux';
 import { Container,Row,Col,Table,Image, Spinner,Button,Card  } from 'react-bootstrap';
@@ -10,16 +10,17 @@ import PageLoading from "../../../container/PageLoading/PageLoading";
 class DashboardAnnouncments extends Component {
 
   componentWillMount(){ 
-    this.props.fetchDepartmentAnnouncmentList( );
+    this.props.fetchDashboardAnnouncmentList( );
 	}
 
   render() {
     if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
-      return < >
+      if(this.props.departmentAnnouncement.depAnnouncementlist.length !== 0){
+        return < >
         
           
         
-         <Row>
+          <Row>
               {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
                 return <Col  md={6} className="announcement-list-content card-content">
                       
@@ -30,7 +31,7 @@ class DashboardAnnouncments extends Component {
                               >
                               
                                 
-                             
+                              
                           <Card className="announcement-list-card"  >
                             <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/>
                             <Card.Body>
@@ -47,8 +48,18 @@ class DashboardAnnouncments extends Component {
               })}
         </Row>
           
-       
-      </>;
+      
+     </>
+      }else{
+       return <>
+        <Row>
+          <Col  md={12} align="center" className="">
+              <h5>Your Department has yet to publish any Announcements</h5>
+          </Col>
+        </Row>
+       </>;
+      }
+      ;
     }
 
     return <PageLoading/>
@@ -67,7 +78,7 @@ return {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchDepartmentAnnouncmentList : () => dispatch( fetchDepartmentAnnouncmentList() ),
+    fetchDashboardAnnouncmentList : () => dispatch( fetchDashboardAnnouncmentList() ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardAnnouncments);

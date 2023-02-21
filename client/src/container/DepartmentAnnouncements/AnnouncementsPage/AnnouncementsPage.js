@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 
 
-import { fetchDepartmentAnnouncmentList, fetchDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions';
+import { fetchDashboardAnnouncmentList, fetchDepartmentAnnouncementStrict } from '../../../store/actions/announcement/departmentAnnouncementActions';
 // import DashboardAnnouncmentsSide from "../../../components/Dashboard/DashboardAnnouncmentsSide";
 import { setRedirect } from '../../../store/actions/redirectActions';
 
@@ -43,9 +43,9 @@ class AnnouncementsPage extends Component {
       // console.log(this.props.params.id);
     if( this.props.params.id != undefined ) {
 
-      this.props.fetchDepartmentAnnouncement( this.props.params.id )
+      this.props.fetchDepartmentAnnouncementStrict( this.props.params.id )
     }
-    this.props.fetchDepartmentAnnouncmentList( );
+    this.props.fetchDashboardAnnouncmentList( );
 }
 
 
@@ -65,21 +65,44 @@ class AnnouncementsPage extends Component {
           <ContainerWrapper className="Announcement Wrapper">   
           <Row>
                 <Col size="9">
-                <Content col="12" title={title} >
-                  {/* { this.props.instance?.id}
+                    <Content col="12" title={title} >
+                      {/* { this.props.instance?.id}
 
-                  Here */}
-                 <div  className="announcement-content-page">
-                 
-                      <div >
-                        <div className="page-content-title">{this.props.instance.title}</div>
-                          <div className="page-content-info">Posted: {this.props.instance.created_at}</div>
-                          <img src={this.props.instance.thumbnail} className="page-img" alt={null}></img>
-                      <div className="page-content" dangerouslySetInnerHTML={{ __html:   this.props.instance.content}} />
-                    </div>
-                 </div>
-                </Content>
+                      Here */}
+                    {this.props.instance.title !== null && this.props.instance.title !== undefined?
+                    
+                      <>
+
+                      <div  className="announcement-content-page">
+                                          
+                                          <div >
+                                            <div className="page-content-title">{this.props.instance.title}</div>
+                                              <div className="page-content-info">Posted: {this.props.instance.created_at}</div>
+                                              <img src={this.props.instance.thumbnail} className="page-img" alt={null}></img>
+                                          <div className="page-content" dangerouslySetInnerHTML={{ __html:   this.props.instance.content}} />
+                                        </div>
+                                    </div>
+                      </>
+
+                      :
+
+                      <h5>The Page you are accessing does seem to be part of your departmnets list of annoucements</h5>
+                  
+                  }
+                    </Content>
                 </Col>
+
+
+
+
+
+
+
+
+
+
+
+
                 <Col size="3">
                 <div className="card-header">
                         <h3 align="Left" className="card-title">Other Announcements</h3>
@@ -139,8 +162,8 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDepartmentAnnouncmentList : () => dispatch( fetchDepartmentAnnouncmentList() ),
-      fetchDepartmentAnnouncement        : ( id ) => dispatch( fetchDepartmentAnnouncement( id ) ),
+      fetchDashboardAnnouncmentList : () => dispatch( fetchDashboardAnnouncmentList() ),
+      fetchDepartmentAnnouncementStrict        : ( id ) => dispatch( fetchDepartmentAnnouncementStrict( id ) ),
       setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
     }
 }

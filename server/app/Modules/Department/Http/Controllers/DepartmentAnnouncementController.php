@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Modules\Department\Models\Announcment;
+use App\Modules\Department\Models\Department;
 use App\Modules\Department\Resources\AnnouncementResource;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 // use App\Modules\Department\Resources\DepartmentListResource;
@@ -77,35 +78,35 @@ class DepartmentAnnouncementController extends Controller
 
             $dep_announcement = new Announcment;
 
-            $dep_announcement->title          = $request->title;
-            $dep_announcement->category       = $request->category;
-            $dep_announcement->content    =     $request->content;
-            $dep_announcement->headline    =    $request->headline;
-            // $dep_announcement->log_date       = $request->log_date;
-            $dep_announcement->link    = $request->link;
-            $dep_announcement->status    = $request->status;
-            $dep_announcement->exposure_level    = $request->exposure_level;
-            $dep_announcement->dep_id    = $request->dep_id;
-            $dep_announcement->created_by     = auth()->user()->id;
-            $dep_announcement->updated_by     = auth()->user()->id;
+            $dep_announcement->title            = $request->title;
+            $dep_announcement->category         = $request->category;
+            $dep_announcement->content          = $request->content;
+            $dep_announcement->headline         = $request->headline;
+            // $dep_announcement->log_date      = $request->log_date;
+            $dep_announcement->release_date     = $request->release_date;
+            $dep_announcement->link             = $request->link;
+            $dep_announcement->status           = $request->status;
+            $dep_announcement->exposure_level   = $request->exposure_level;
+            $dep_announcement->dep_id           = auth()->user()->department_id;
+            $dep_announcement->created_by       = auth()->user()->id;
+            $dep_announcement->updated_by       = auth()->user()->id;
 
 
             
 
             $dep_announcement->save();
-            error_log($request->thumbnail != null ? "TTT" : "FFF");
             if($request->thumbnail != null ){
                 $path = $request->file('thumbnail')->store(
                     'public/announcements/'.$dep_announcement->id, 
                 );
-                error_log($path);
+
                 // $dep_announcement->update(['thumbnail' => $path]);
                 $dep_announcement->thumbnail = $path;
                 $dep_announcement->update();
             }
             
             
-            $dep_announcement->announcements_departments()->sync([56]);
+            $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
 
             DB::commit();
             return success_response(
@@ -143,6 +144,7 @@ class DepartmentAnnouncementController extends Controller
     //         return error_response( trans('messages.error_default'), $e );
     //     }
     // }
+
     /**
      * Display the specified resource.
      *
@@ -155,6 +157,27 @@ class DepartmentAnnouncementController extends Controller
 
         $dep_announcement = Announcment::find($id);
         // dump( $dep_announcement,$id);
+        return success_response(
+            trans('messages.create_department_announcement_success'), 
+            new AnnouncementResource(  $dep_announcement ) 
+        );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show_strict($id)
+    {
+        log_activity( trans('messages.create_department_announcement_attempt') );
+
+        // $dep_announcement = Announcment::find($id);
+        $department =  Department::find(Auth::user()->department_id);
+        // $announcements_list = Announcment::orderBy('created_at', 'desc')->take(8)->get();
+        $dep_announcement = $department->departments_announcements()->find($id);
+
         return success_response(
             trans('messages.create_department_announcement_success'), 
             new AnnouncementResource(  $dep_announcement ) 
@@ -180,23 +203,42 @@ class DepartmentAnnouncementController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
+    {   
+        
         DB::beginTransaction();
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
 
             $dep_announcement = Announcment::find($id);
 
-            $dep_announcement->title          = $request->title;
-            $dep_announcement->category       = $request->category;
-            $dep_announcement->content    = $request->content;
-            $dep_announcement->link    = $request->link;
-            $dep_announcement->status    = $request->status;
-            $dep_announcement->exposure_level    = $request->exposure_level;
-            $dep_announcement->dep_id    = $request->dep_id;
-            $dep_announcement->updated_by     = auth()->user()->id;
+            
+            $dep_announcement->title            = $request->title;
+            $dep_announcement->category         = $request->category;
+            $dep_announcement->content          = $request->content;
+            $dep_announcement->headline         = $request->headline;
+            // $dep_announcement->log_date      = $request->log_date;
+            $dep_announcement->release_date     = $request->release_date;
+            $dep_announcement->link             = $request->link;
+            $dep_announcement->status           = $request->status;
+            $dep_announcement->exposure_level   = $request->exposure_level;
+            // $dep_announcement->dep_id           = auth()->user()->department_id;
+            // $dep_announcement->created_by       = auth()->user()->id;
+            $dep_announcement->updated_by       = auth()->user()->id;
 
             $dep_announcement->update();
+
+            if($request->thumbnail != null ){
+                $path = $request->file('thumbnail')->store(
+                    'public/announcements/'.$dep_announcement->id, 
+                );
+
+                // $dep_announcement->update(['thumbnail' => $path]);
+                $dep_announcement->thumbnail = $path;
+                $dep_announcement->update();
+            }
+            
+            
+            $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
 
             DB::commit();
             return success_response(
@@ -273,18 +315,21 @@ class DepartmentAnnouncementController extends Controller
      */
     public function dashboard_index()
     {
+        
         try {
-            log_activity( trans('messages.create_department_announcement_attempt') );
-            
-            $announcements_collection = Announcment::where("dep_id", Auth::user()->dep_id);
-            return success_response(
-                trans('messages.all_department_success'), 
-                AnnouncementResource::collection( $announcements_collection ) 
-            );
+        $department =  Department::find(Auth::user()->department_id);
+        // $announcements_list = Announcment::orderBy('created_at', 'desc')->take(8)->get();
+        $announcements_list = $department->departments_announcements()->latest()->get();
+
+        return success_response(
+            trans('messages.fetch_change_log_success'), 
+           AnnouncementResource::collection($announcements_list)
+        );
+
+        
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
-
     }
 
     /**

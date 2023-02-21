@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
-import { createDepartmentAnnouncement, fetchDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions';
+import { createDepartmentAnnouncement, fetchDepartmentAnnouncement, updateDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 import { Editor } from '@tinymce/tinymce-react';
@@ -31,7 +31,9 @@ class DepartmentAnnouncementsForm extends Component {
     this.initialState = {
         content : null,
         thumbnail: null,
-        imgPrevInputFile: '/thumbnail/defthumb.jpg'
+        imgPrevInputFile: '/thumbnail/defthumb.jpg',
+        inputFileWasUpdated: false
+        
     }
     this.state = this.initialState; 
 
@@ -57,25 +59,45 @@ class DepartmentAnnouncementsForm extends Component {
         }
       }
     }
-    console.log(formData);
+    
     // Checks on what action to use depending on the values.action
-    if (values.method == "store") {
-      if (window.confirm("Are you sure you want to submit this change log?")) {
-        if (this.state.thumbnail != null) {
-          formData.set('thumbnail', this.state.thumbnail);
-          
-      }
+    if (values.method) {
+    
         switch( values.method ) {
           case "store":
-              this.props.createDepartmentAnnouncement( formData );
+            console.log(formData);
+            if (window.confirm("Are you sure you want to submit this Announcement?")) {
+              
+              if (this.state.thumbnail != null) {
+                formData.set('thumbnail', this.state.thumbnail);
+              
+            }
+            this.props.createDepartmentAnnouncement( formData );
+            this.setState({ thumbnail: null });
+            this.setState({ imgPrevInputFile: '/thumbnail/defthumb.jpg' });
+          }
+            
+              break;
+            case "update":
+              
+              if (window.confirm("Are you sure you want to update this Announcement?")) {
+                
+                if (this.state.thumbnail != null) {
+                  if(this.state.inputFileWasUpdated){
+                    formData.set('thumbnail', this.state.thumbnail);
+                  }
+              }
+              this.props.updateDepartmentAnnouncement( values.id, formData );
               this.setState({ thumbnail: null });
               this.setState({ imgPrevInputFile: '/thumbnail/defthumb.jpg' });
+            }
+             
               break;
           default:
               break;
 
         }
-      }
+      
     }
   }
 
@@ -95,13 +117,13 @@ class DepartmentAnnouncementsForm extends Component {
     // Sets the Method of the current state.
     const method = (this.props.params.id != undefined) ? 'update' : 'store'
     var today = new Date();
-    console.log(today, moment().format('MMMM d, yyyy'));
-    console.log(this.props.instance);
+    // console.log(today, moment().format('MMMM d, yyyy'));
+    // console.log(this.props.instance);
     // Sets Initial Value of the current Formik form.
     const initialValue = {
         action:             null,
         method:             method,
-        id:           this.props.instance?.id != undefined ? new Date( this.props.instance.id ) : null,
+        id:           this.props.instance?.id != undefined ? this.props.instance.id  : null,
         // log_date:           this.props.instance?.log_date != undefined ? new Date( this.props.instance.log_date ) : null,
         release_date:           this.props.instance?.release_date != undefined ? new Date( this.props.instance.release_date ) : null,
         title:              this.props.instance?.title != undefined ? this.props.instance.title : null,
@@ -109,7 +131,6 @@ class DepartmentAnnouncementsForm extends Component {
         content:        this.props.instance?.content != undefined ? this.props.instance.content : null,
         category:           this.props.instance?.category != undefined ? this.props.instance.category : null,
     }
-
     let title = 'Announcement Form';
 
     if( (method == 'store') || ([ 'update'].includes( method ) && this.props.isInstanceLoaded) ){
@@ -186,7 +207,7 @@ class DepartmentAnnouncementsForm extends Component {
 
                   </Row>
                   <Row>
-                    <Col size="2 dep-announcement-col">
+                    {/* <Col size="2 dep-announcement-col">
                             <div className="feature-checkbox">
 
                             
@@ -205,7 +226,7 @@ class DepartmentAnnouncementsForm extends Component {
                             />
                             </div>
                             
-                    </Col>
+                    </Col> */}
                     {/* <Col size="3 dep-announcement-col">
                       <div className="form-group">
                         <label className ="dep-announcement-label">Seen By:</label>
@@ -222,12 +243,12 @@ class DepartmentAnnouncementsForm extends Component {
                     </Col> */}
 
                 
-                    <Col size="3 dep-announcement-col">
+                    {/* <Col size="3 dep-announcement-col">
                       <div className="form-group">
                         <label className ="dep-announcement-label">Release Date:</label>
                         <InputDate name="release_date" value={values.release_date}/>
                       </div>
-                    </Col>
+                    </Col> */}
                   </Row>
                   <Row>
                   <Col size="2 dep-announcement-col">
@@ -237,6 +258,9 @@ class DepartmentAnnouncementsForm extends Component {
                                                         if (event.currentTarget.files.length !== 0) {
                                                             this.setState({ thumbnail: event.currentTarget.files[0] })
                                                             this.setState({ imgPrevInputFile: URL.createObjectURL(event.currentTarget.files[0]) })
+                                                            if(method == 'update'){
+                                                              this.setState({ inputFileWasUpdated: true })
+                                                            }
                                                         }
                                                     }} />
                                                     <Form.Control.Feedback type="invalid">&nbsp;{errors.thumbnail && touched.thumbnail && errors.thumbnail}</Form.Control.Feedback>
@@ -288,14 +312,16 @@ class DepartmentAnnouncementsForm extends Component {
                               'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
                               'powerpaste','fullscreen','formatpainter','insertdatetime','media','table','help','wordcount'
                            ],
-                           paste_preprocess: function (plugin, args) {
-                            // console.log("Attempted to paste: ", args.content);
-                            // replace copied text with empty string
-                            args.content = '';
-                        },
+                        //    paste_preprocess: function (plugin, args) {
+                        //     // console.log("Attempted to paste: ", args.content);
+                        //     // replace copied text with empty string
+                        //     args.content = '';
+                        // },
                             toolbar: 'undo redo | casechange blocks | bold italic backcolor emoticons | ' +
                             'alignleft aligncenter alignright alignjustify | ' +
                             'bullist numlist checklist outdent indent | removeformat | help',
+                            // smart_paste: false,
+                            // paste_data_images: false,
                             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                           }}
                         />
@@ -347,6 +373,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
       fetchDepartmentAnnouncement        : ( id ) => dispatch( fetchDepartmentAnnouncement( id ) ),
       createDepartmentAnnouncement : ( post_data ) => dispatch( createDepartmentAnnouncement( post_data ) ),
+      updateDepartmentAnnouncement : ( id,post_data ) => dispatch( updateDepartmentAnnouncement( id,post_data ) ),
       setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
     }
 }

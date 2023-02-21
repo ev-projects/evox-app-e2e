@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./DepartmentAnnouncementsList.css";
 
-import { fetchDepartmentAnnouncmentList, deleteDepartmentAnnouncment } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchDashboardAnnouncmentList, deleteDepartmentAnnouncment } from '../../../store/actions/announcement/departmentAnnouncementActions'
 
 
 import Formatter from '../../../services/Formatter'
@@ -38,7 +38,7 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   componentWillMount(){
-    this.props.fetchDepartmentAnnouncmentList();
+    this.props.fetchDashboardAnnouncmentList();
   }
   
   render = () => {
@@ -46,7 +46,10 @@ class DepartmentAnnouncementsList extends Component {
     if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
       return <Wrapper  {...this.props} >
         <ContainerWrapper>   
-          <Content col="12" title="My Announcement List">
+          <Content col="12" title="Manage my Departments Announcements">
+            <p>In the Announcement Management page, you can publish <u>Announcements</u> and this can only be seen by users of the same dapartments as you. 
+            Users with the same permission as you can also edit your post if you have your hands are full. </p>
+            <p>Note: the Editor will not save images, but for now, you can upload one image as a thmbnail and primary image of your announcement, you can also leave it empty </p>
           <Link className="btn btn-primary create-announcement"  to={global.links.department_announcement_form}>
                        
                        Create Announcement
@@ -72,17 +75,34 @@ class DepartmentAnnouncementsList extends Component {
                               <Card.Text>
                               Headline: {announcement.headline}
                               </Card.Text>
-                              <Link to={{
-                                pathname: global.links.department_announcement_form + announcement.id
-                              }}
-                                  title="Edit Announcement"
-                              >
-                                <Button variant="primary">Edit</Button>
+                              <div className="manage-announcement-option">
+                                  <Link to={{
+                                    pathname: global.links.department_announcement_form + announcement.id
+                                  }}
+                                      title="Edit Announcement"
+                                  >
+                                    <Button variant="primary">Edit</Button>
+                                    
+                                  </Link>
+
+
+
+                                  <Link to={{
+                                      pathname: global.links.announcement_page + announcement.id
+                                  }}
+                                      title="Visit Announcement"
+                                  >
+                                    <Button variant="primary">Visit Page</Button>
+                                    
+                                  </Link>
+
+
+                                  <Button variant="danger" style={{'padding': '10px 15px'}} onClick={ () => this.onDeleteHandler(announcement, index)} > 
+                                      <i class="fa fa-trash"></i> Delete 
+                                    </Button> 
+                              </div>
+
                                 
-                              </Link>
-                              <Button variant="danger" style={{'padding': '10px 15px'}} onClick={ () => this.onDeleteHandler(announcement, index)} > 
-                                  <i class="fa fa-trash"></i> Delete 
-                                </Button> 
                             </Card.Body>
                           </Card>
                       </Col>;
@@ -105,7 +125,7 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDepartmentAnnouncmentList : () => dispatch( fetchDepartmentAnnouncmentList() ),
+      fetchDashboardAnnouncmentList : () => dispatch( fetchDashboardAnnouncmentList() ),
       deleteDepartmentAnnouncment : (id) => dispatch( deleteDepartmentAnnouncment(id) ),
     }
   }
