@@ -1,0 +1,20 @@
+.announcement-figure-cap{
+    position: absolute;
+    bottom: 4.5rem;
+    font-size:16px !important;
+    font-weight: 600;
+    margin: 0 1rem;
+}
+
+
+.announcement-figure-img{
+    width: 100% !important; height: 300px !important; object-fit: cover !important;
+}
+
+.announcement-figure.figure{
+ border-radius: 10px !important;
+}
+
+.announcement-list-card.card{
+    border-radius: 10px !important;
+}

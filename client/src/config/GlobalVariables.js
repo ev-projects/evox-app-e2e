@@ -45,6 +45,11 @@
     monthly_team_schedule           :  "/app/team/MonthlyTeamSchedule", 
     custom_team_schedule            :  "/app/team/CustomTeamSchedule", 
     daily_team_schedule             :  "/app/team/DailyTeamSchedule", 
+
+    department_announcement_list    :  "/app/team/DepartmentAnnouncementList/",
+    department_announcement_form  :  "/app/team/DepartmentAnouncement/",
+    announcement_page  :  "/app/team/\Anouncement/Page/",
+
     // Schedule Links
     template_add                    :  "/app/schedule/",
     template_list                   :  "/app/schedule/template/",
@@ -68,6 +73,8 @@
     manage_change_logs              :  "/app/admin/ManageChangeLogs/",
 
     department_list                 :  "/app/admin/DepartmentList/",
+
+
 
     // Performance Measure
     kpi_upload                      :  "/app/performance/KpiUpload",

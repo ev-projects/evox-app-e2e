@@ -1,0 +1,27 @@
+.page-img{
+    width: 100%;
+}
+
+.announcement-content-page{
+    margin: 1% 1% 0;
+}
+
+.page-img{
+    /* box-shadow:  0 3px 9px 0 rgba(0, 0, 0, 0.067); */
+}
+.page-content{
+    margin-top: 27px;
+    min-height: 250px;
+}
+
+.page-content-title{
+    /* margin-top: 15px; */
+    font-size: 42px !important;
+    font-weight: bolder !important;
+}
+
+.page-content-info{
+    font-size: 14px !important;
+    color: rgba(37, 47, 87, 0.579);
+    margin-bottom: 15px;
+}

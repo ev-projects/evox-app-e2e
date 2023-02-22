@@ -11,11 +11,13 @@ import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import QuickPunch from "../../../components/Dashboard/QuickPunch";
 import Holiday from "../../../components/Dashboard/Holiday";
+import DashboardAnnouncments from "../../../components/Dashboard/DashboardAnnouncments";
 import Authenticator from "../../../services/Authenticator";
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 import RecentDtr from "../../../components/Dashboard/RecentDtr";
 import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 import moment from 'moment';
+import { fetchDepartmentAnnouncmentList, deleteDepartment } from '../../../store/actions/announcement/departmentAnnouncementActions'
 
 const EmployeeDashboard = ( props ) => {
 
@@ -55,13 +57,9 @@ const EmployeeDashboard = ( props ) => {
     return (<div className="dashboard">
               <Row>
 
-              {/* <div className="col-lg-4 col-md-6 col-12"> */}
+              {/* <Col> */}
                 
-                    {/* <Row>
-                      <Col size="12">
-                          <QuickPunch />
-                      </Col>
-                    </Row> */}
+                 
 
                     {/* <Row className="dtr-teaser">
                         <Content title="Daily Time Record" col="12">
@@ -77,12 +75,36 @@ const EmployeeDashboard = ( props ) => {
                     
 
                 {/* </div> */}
-
-                <div className="col-lg-4 col-md-6 col-12">
+                <Col size="8">
+                
+                {/* { !Authenticator.checkRole('client')  ? 
+                            <Row>
+                            <Content title="Upcoming holidays" col="12">
+                                <Holiday/>
+                                </Content>   
+                                </Row>
+                            :
+                            (null)
+                      } */}
+                  {/* <Row className="company-announcement" col="12"> */}
+                  <div className="card">
+                    <div className="card-header">
+                        <h3 align="center" className="card-title">ANNOUNCEMENTS</h3>
+                    </div>
+                      <div className="announcement-Container">
+                            <DashboardAnnouncments/>
+                      </div> 
+                    </div> 
+                  {/* </Row> */}
+                   
+                 
+                 
+                </Col>
+                <Col  lg="3" >
                       
                        <Row>
                   <div className="col-lg-12">
-                  <a href="https://careers.eastvantage.com/tech4tech" target="_blank"><img width="100%" src="/images/icn/Tech4Tech_EVOX.png" /></a>
+                  {/* <a href="https://careers.eastvantage.com/tech4tech" target="_blank"><img width="100%" src="/images/icn/Tech4Tech_EVOX.png" /></a> */}
                   <div className="card">
                     <div className="card-header">
                         <h3 align="center" className="card-title">JOB OPENINGS</h3>
@@ -196,61 +218,14 @@ const EmployeeDashboard = ( props ) => {
                     
                   </div>
                   </div>
+                  <br/>
                     </Row>
-
-                </div>
-
-                <div className="col-lg-4 col-md-6 col-sm-12">
-                  <Row>
                     <Content title="EVOX Updates" col="12">
                       <ChangeLogs/>
                     </Content>
-                  </Row>
+                </Col>
 
-                {/* { !Authenticator.checkRole('client')  ? 
-                            <Row>
-                            <Content title="Upcoming holidays" col="12">
-                                <Holiday/>
-                                </Content>   
-                                </Row>
-                            :
-                            (null)
-                      } */}
-                  <Row className="company-announcement">
-                      <Content title="Company Announcements" col="12">
-                        <Row>
-                          <p>
-                            <a href="https://www.glassdoor.com/mz-survey/employer/collectReview_input.htm?i=1084085&j=true&y=&c=PAGE_INFOSITE_TOP" target="_blank">
-                              <img width="100%" src="/images/icn/Glassdoorbanner-1.png" />
-                            </a>
-                          </p>
-                          {/* { <ReactPlayer 
-                              width={width}
-                              height={height}
-                              url={url}
-                              pip={pip}
-                              playing={playing}
-                              controls={controls}
-                              light={light}
-                              loop={loop}
-                              playbackRate={playbackRate}
-                              volume={volume}
-                              muted={muted}
-                              config={config}
-                          /> }
-                            
-                            <p>All returning employees are advised to complete a Covid Safety Declaration and acknowledgement of understanding EV&nbsp;Training. <br /> Click the link below to fill out the form </p>
-                            <a class="btn-primary" href="https://docs.google.com/forms/d/1BEACQ8tcxKOwDW2uttmAAqytAuDGgWd1ML-oBk4JTyQ/viewform?gxids=7628&amp;edit_requested=true">Covid Safety Declaration form</a>
-	    		    <p><img width="100%" src="/images/icn/EVOX-Safety-Protocols.png" /></p> */}
-                          </Row>
-                            
-                      </Content> 
 
-                  </Row>
-                   
-                 
-                 
-                </div>
                 
                                         
               </Row>
@@ -264,11 +239,13 @@ const mapStateToProps = (state) => {
       user : state.user,
       settings : state.settings,
       dashboard : state.dashboard,
+      departmentAnnouncement             : state.departmentAnnouncement,
   }
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchUser : () => dispatch( fetchUser() )
+    fetchUser : () => dispatch( fetchUser() ),
+    fetchDepartmentAnnouncmentList : () => dispatch( fetchDepartmentAnnouncmentList() ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(EmployeeDashboard);

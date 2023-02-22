@@ -223,7 +223,14 @@ const Sidebar = (props) => {
                       <p>DTR Logs</p>
                     </Link>
                   </li>
-
+                  {Authenticator.check('supervisor', 'manage_department_announcements') &&
+                  <li className="nav-item">
+                      <Link className="nav-link" to={global.links.department_announcement_list}>
+                        <i className="nav-icon fa fa-comments-o  nav-icon" />
+                        <p>My Announcement List</p>
+                      </Link>
+                  </li>
+                }
                 </ul>
               </li>
               :
@@ -517,12 +524,13 @@ const Sidebar = (props) => {
                       </Link>
                     </li>
                 }
+                
                 </ul>
               </li>
 
           
             }
-
+            
             {/* <li className="nav-item">
               <a onClick={() => props.logOut()} className="nav-link">
                 <i className="fa fa-sign-out nav-icon" />

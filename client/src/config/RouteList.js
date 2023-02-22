@@ -66,6 +66,10 @@ import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/Tea
 import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
 import DepartmentList from "../container/Admin/DepartmentList";
+import DepartmentAnnouncementsList from "../container/DepartmentAnnouncements/DepartmentAnnouncementsList";
+import DepartmentAnnouncementsForm from "../container/DepartmentAnnouncements/DepartmentAnnouncementsForm";
+import AnnouncementsPage from "../container/DepartmentAnnouncements/AnnouncementsPage";
+
 import HrAnnouncements from "../container/Hr/Announcements";
 import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
@@ -248,9 +252,26 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.manage_change_logs}>
           <ChangeLogs  role={['admin']}  />
         </ProtectedRoute>
-
+          
         <ProtectedRoute exact path={global.links.department_list}>
           <DepartmentList  role={['admin']} permission={['access_department_list']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.department_announcement_list}>
+          <DepartmentAnnouncementsList  
+            role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
+         />
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.department_announcement_form+":id?"}>
+          <DepartmentAnnouncementsForm
+            role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
+         />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.announcement_page+":id"}>
+          <AnnouncementsPage
+          //any user under her deparment can access her department announcement page
+          />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.manage_hr_announcements}>
