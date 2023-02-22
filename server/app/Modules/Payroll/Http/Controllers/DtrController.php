@@ -14,6 +14,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Modules\Payroll\Models\Biometrics;
+use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Payroll\Models\Leave;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
@@ -208,16 +210,43 @@ class DtrController extends Controller
 
         // get the cutoff that scopes the date today
         $payroll_cutoff = PayrollCutoff::where('start_date', '<=', $today)->where('end_date', '>=', $today)->first();
+        if (!$payroll_cutoff) {
+            return [];
+        } else {
+            // get incomplete dtr for the current cutoff
+            $inc_dtr = Dtr::whereBetween('date', [$payroll_cutoff->start_date, $yesterday])
+                            ->where('user_id', Auth::user()->id)
+                            ->where('is_rest_day', 0)
+                            ->where(function($query) {
+                                $query->whereNull('time_in')->orWhereNull('time_out');
+                            })
+                            ->get()
+                            ->toArray();
 
-        // get incomplete dtr for the current cutoff
-        $inc_dtr = Dtr::whereBetween('date', [$payroll_cutoff->start_date, $yesterday])
-                        ->where('user_id', Auth::user()->id)
-                        ->where('is_rest_day', 0)
-                        ->where(function($query) {
-                            $query->whereNull('time_in')->orWhereNull('time_out');
-                        })
-                        ->get();
+            if ($inc_dtr) {
+                $keys_to_del = [];
+                foreach ($inc_dtr as $key => $dtr) {
+                    // check if the dtr is on holiday
+                    $holiday = Holiday::whereRaw("DATE_FORMAT(date, '%m-%d') = DATE_FORMAT('" . $dtr['date'] . "', '%m-%d')")->get();
+                    if (count($holiday) !== 0) {
+                        $keys_to_del[$key] = $dtr['id'];
+                        continue;
+                    }
 
-        return $inc_dtr;
+                    // check if the dtr is on leave
+                    $leave = Leave::where('dtr_id', $dtr['id'])->where('amount', '1.0')->get();
+                    if (count($leave) !== 0) {
+                        $keys_to_del[$key] = $dtr['id'];
+                        continue;
+                    }
+                }
+
+                if ($keys_to_del) {
+                    $inc_dtr = array_diff_key($inc_dtr, $keys_to_del);
+                }
+            }
+
+            return $inc_dtr;
+        }
     }
 }
