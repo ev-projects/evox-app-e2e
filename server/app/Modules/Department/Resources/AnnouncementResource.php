@@ -23,7 +23,7 @@ class AnnouncementResource extends JsonResource
                 'id' => $this->id,
                 'title' => $this->title,
                 'headline' => $this->headline,
-                'thumbnail' => $this->thumbnail != null ? env('APP_URL').Storage::url($this->thumbnail): null,
+                'thumbnail' => $this->thumbnail != null ? env('ASSET_URL').Storage::url($this->thumbnail): null,
                 'content' => $this->content,
                 'category' => $this->category,
                 'log_date' => $this->log_date,
