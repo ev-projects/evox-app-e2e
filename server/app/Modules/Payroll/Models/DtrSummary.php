@@ -51,8 +51,10 @@ class DtrSummary
                 # Get the DTR Type of the Current DTR Instance
                 $dtr_type = $dtr->getDtrType(True);
                 
-                # Checks if the DTR has Valid Timelogs and proper Schedule.
-                if( $dtr->validLog() && $dtr->hasSchedule() ) {
+                if( $dtr->onLeave()->get()->count() > 0 )  {
+                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->onLeave()->first()->amount;
+                }elseif( $dtr->validLog() && $dtr->hasSchedule() ) {
+                    # Checks if the DTR has Valid Timelogs and proper Schedule.
 
                     # Gets all the Payroll Items of the current DTR Instance.
                     $payroll_items_collection = $dtr->payroll_items()->get();
@@ -120,8 +122,6 @@ class DtrSummary
                    
                 }elseif( $dtr->isAbsent() ){
                     $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] +=  1;
-                }elseif( $dtr->onLeave()->get()->count() > 0 )  {
-                    $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.on_leave')  ] +=  $dtr->onLeave()->first()->amount;
                 }
 
                 
