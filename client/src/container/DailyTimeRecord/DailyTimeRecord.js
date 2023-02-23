@@ -299,8 +299,12 @@ class DailyTimeRecord extends Component {
 
                           // If the DTR is on leave, don't show undertime
                           let dtr_undertime = dtr?.payroll_items?.undertime;
-                          if ( dtr.leaves.length > 0 && dtr.leaves[0].amount > 0 ) {
-                            dtr_undertime = null;
+                          if ( dtr.leaves.length > 0 ) {
+                            dtr.leaves.forEach(element => {
+                              if (element.amount > 0) {
+                                dtr_undertime = null;
+                              }
+                            });
                           }
 
                           return <tr className={"center "+dtr_type+"-bg-color"}>
