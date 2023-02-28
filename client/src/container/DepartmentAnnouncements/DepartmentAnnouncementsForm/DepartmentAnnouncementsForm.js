@@ -321,9 +321,9 @@ class DepartmentAnnouncementsForm extends Component {
                         //     // replace copied text with empty string
                         //     args.content = '';
                         // },
-                            toolbar: 'undo redo | casechange blocks | bold italic backcolor emoticons | ' +
-                            'alignleft aligncenter alignright alignjustify | ' +
-                            'bullist numlist checklist outdent indent | removeformat | help',
+                            toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons | ' +
+                            'alignleft aligncenter alignright alignjustify | link | ' +
+                            'bullist numlist checklist outdent indent | removeformat | help ',
                             // smart_paste: false,
                             // paste_data_images: false,
                             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
@@ -359,7 +359,7 @@ class DepartmentAnnouncementsForm extends Component {
 /** Form Validation */
 
 const validationSchema = Yup.object().shape({
-    title         : Yup.string().required("This field is required").max(60, 'Max Title Length reached'),
+    title         : Yup.string().required("This field is required").max(100, 'Max Title Length reached'),
     headline      : Yup.string().required("This field is required").max(100, 'Max Headline Length reached'),
     // category      : Yup.string().required("This field is required").nullable(),
     // content   : Yup.string().required("This field is required").nullable(),
