@@ -39,7 +39,7 @@ class AnnouncementsPage extends Component {
   }
 
  
-  componentWillMount(){
+  componentWillMount= () =>{
       // console.log(this.props.params.id);
     if( this.props.params.id != undefined ) {
 
@@ -107,10 +107,10 @@ class AnnouncementsPage extends Component {
                 <div className="card-header">
                         <h3 align="Left" className="card-title">Other Announcements</h3>
                     </div>
-                    {this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded? 
+                    {/* {this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded?  */}
                     
                     <Row>
-                    {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
+                    {this.props.departmentAnnouncement.depAnnouncementlist?.map((announcement, index) => {
                       return <Col  size={11} className="announcement-list-content card-content">
                             
                    
@@ -121,9 +121,8 @@ class AnnouncementsPage extends Component {
                           <a href={ global.links.announcement_page + announcement.id}>
 
                             <Card className="announcement-list-card"   >
-                                  <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img-2"/>
                                   <Card.Body className="small-card-body">
-                                    <Card.Text className="smaller-card-text"> {announcement.title}</Card.Text>
+                                    <Card.Text className="black-card-text"> {announcement.title}</Card.Text>
                                   </Card.Body>
                                 </Card>
                                 </a>
@@ -135,7 +134,7 @@ class AnnouncementsPage extends Component {
                     })}
               </Row>
                     
-                    :<PageLoading/>}
+                     {/* :<PageLoading/> */}
                 </Col>
                
                 </Row>

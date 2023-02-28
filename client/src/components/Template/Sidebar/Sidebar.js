@@ -296,63 +296,7 @@ const Sidebar = (props) => {
                         {/* <i className="right fa fa-chevron-left" /> */}
                       </p>
                     </a>
-                    {/* <ul className="nav nav-treeview">
-                      <li className="nav-item">
-                        <Link className={selected_summary == "scheduled_employees" ? "nav-link activeAttendanceSummaryReport" : "nav-link"} to={global.links.team_attendance_summary}
-                          onClick={() => {
-                            props.setSelectedAttendanceSummary("scheduled_employees")
-                          }}>
-                          <i className="nav-icon fa fa-bars nav-icon" />
-                          <p>Scheduled</p>
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className={selected_summary == "attendance" ? "nav-link activeAttendanceSummaryReport" : "nav-link"} to={global.links.team_attendance_summary}
-                          onClick={() => {
-                            props.setSelectedAttendanceSummary("attendance")
-                          }}>
-                          <i className="nav-icon fa fa-calendar nav-icon" />
-                          <p>Attendance</p>
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className={selected_summary == "planned_leaves" ? "nav-link activeAttendanceSummaryReport" : "nav-link"} to={global.links.team_attendance_summary}
-                          onClick={() => {
-                            props.setSelectedAttendanceSummary("planned_leaves")
-                          }}>
-                          <i className="nav-icon fa fa-pencil-square nav-icon" />
-                          <p>Planned Leaves</p>
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className={selected_summary == "unplanned_leaves" ? "nav-link activeAttendanceSummaryReport" : "nav-link"} to={global.links.team_attendance_summary}
-                          onClick={() => {
-                            props.setSelectedAttendanceSummary("unplanned_leaves")
-                          }}>
-                          <i className="nav-icon fa fa-window-close-o nav-icon" />
-                          <p>Unplanned</p>
-                        </Link>
-                      </li>
-
-                      <li className="nav-item">
-                        <Link className={selected_summary == "total_rest_day_work" ? "nav-link activeAttendanceSummaryReport" : "nav-link"} to={global.links.team_attendance_summary}
-                          onClick={() => {
-                            props.setSelectedAttendanceSummary("total_rest_day_work")
-                          }}>
-                          <i className="nav-icon fa fa-plus nav-icon " />
-                          <p>Rest day Work</p>
-                        </Link>
-                      </li>
-                      <li className="nav-item">
-                        <Link className={selected_summary == "total_overtime" ? "nav-link activeAttendanceSummaryReport" : "nav-link"} to={global.links.team_attendance_summary}
-                          onClick={() => {
-                            props.setSelectedAttendanceSummary("total_overtime")
-                          }}>
-                          <i className="nav-icon fa fa-clock-o nav-icon " />
-                          <p>Overtime Work</p>
-                        </Link>
-                      </li>
-                    </ul> */}
+                
                   </li>
 
                   {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
@@ -521,6 +465,15 @@ const Sidebar = (props) => {
                       <Link className="nav-link" to={global.links.department_list}>
                         <i className="nav-icon fa fa-bars nav-icon" />
                         <p>Department List</p>
+                      </Link>
+                    </li>
+                }
+
+                {Authenticator.check('admin', 'access_department_list') &&
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.admin_announcement_list}>
+                      <i className="nav-icon fa fa-comments-o  nav-icon" />
+                        <p>All Announcement List</p>
                       </Link>
                     </li>
                 }

@@ -47,8 +47,8 @@
     daily_team_schedule             :  "/app/team/DailyTeamSchedule", 
 
     department_announcement_list    :  "/app/team/DepartmentAnnouncementList/",
-    department_announcement_form  :  "/app/team/DepartmentAnouncement/",
-    announcement_page  :  "/app/team/\Anouncement/Page/",
+    department_announcement_form    :  "/app/team/DepartmentAnouncement/",
+    announcement_page               :  "/app/team/Anouncement/Page/",
 
     // Schedule Links
     template_add                    :  "/app/schedule/",
@@ -73,7 +73,7 @@
     manage_change_logs              :  "/app/admin/ManageChangeLogs/",
 
     department_list                 :  "/app/admin/DepartmentList/",
-
+    admin_announcement_list         :  "/app/admin/AnnouncementList/",
 
 
     // Performance Measure

@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
-import "./DepartmentAnnouncementsList.css";
+import "./AdminAnnouncementsList.css";
 
-import { fetchDashboardAnnouncmentList, deleteDepartmentAnnouncment } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchDepartmentAnnouncmentList, deleteDepartmentAnnouncment } from '../../../store/actions/announcement/departmentAnnouncementActions'
 
 
 import Formatter from '../../../services/Formatter'
@@ -16,7 +16,7 @@ import { ContainerHeader,Content,ContainerWrapper } from '../../../components/Gr
 import PageLoading from "../../PageLoading";
 import Wrapper from "../../../components/Template/Wrapper";
 
-class DepartmentAnnouncementsList extends Component {    
+class AdminAnnouncementsList extends Component {    
   state = { modal_bool:false, modal_name: '', modal_id : '',index : null }
 
   onSubmitHandler = (props,index) => {
@@ -38,7 +38,7 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   componentWillMount(){
-    this.props.fetchDashboardAnnouncmentList();
+    this.props.fetchDepartmentAnnouncmentList();
   }
   
   render = () => {
@@ -46,25 +46,21 @@ class DepartmentAnnouncementsList extends Component {
     if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
       return <Wrapper  {...this.props} >
         <ContainerWrapper>   
-          <Content col="12" title="Manage my Departments Announcements">
-            <p>In the Announcement Management page, you can publish <u>Announcements</u> and this can only be seen by users of the same dapartments as you. 
-            Users with the same permission as you can also edit your post if you have your hands are full. </p>
-            <p>Note: the Editor will not save images, but for now, you can upload one image as a thmbnail and primary image of your announcement, you can also leave it empty </p>
-          <Link className="btn btn-primary create-announcement"  to={global.links.department_announcement_form}>
-                       
-                       Create Announcement
-           </Link>  
+          <Content col="12" title="Manage All EVOX Announcements">
+          
+          <p>All Announcments from Each Department</p>
         
          <Row>
               {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
-                return <Col  md={6} className="announcement-list-content">
-
+                return <Col  md={4} className="announcement-list-content">
+          
                           <Card className="announcement-list-card"  >
                           {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
                              <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
                             }
                             <Card.Body>
                               <Card.Title> {announcement.title}</Card.Title>
+                              <Card.Text>
                                     {announcement.headline ? 
                                         
                                         <Card.Text className="black-card-text">{announcement.headline}
@@ -72,6 +68,7 @@ class DepartmentAnnouncementsList extends Component {
                                         </Card.Text>
                                         
                                         : <Card.Text>Check it out</Card.Text>}
+                              </Card.Text>
                               <div className="manage-announcement-option">
                                   <Link to={{
                                     pathname: global.links.department_announcement_form + announcement.id
@@ -122,9 +119,9 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDashboardAnnouncmentList : () => dispatch( fetchDashboardAnnouncmentList() ),
+      fetchDepartmentAnnouncmentList : () => dispatch( fetchDepartmentAnnouncmentList() ),
       deleteDepartmentAnnouncment : (id) => dispatch( deleteDepartmentAnnouncment(id) ),
     }
   }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DepartmentAnnouncementsList);
+export default connect(mapStateToProps, mapDispatchToProps)(AdminAnnouncementsList);
