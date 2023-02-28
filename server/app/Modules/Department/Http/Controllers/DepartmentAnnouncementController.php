@@ -172,11 +172,15 @@ class DepartmentAnnouncementController extends Controller
     public function show_strict($id)
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
-
-        // $dep_announcement = Announcment::find($id);
-        $department =  Department::find(Auth::user()->department_id);
-        // $announcements_list = Announcment::orderBy('created_at', 'desc')->take(8)->get();
-        $dep_announcement = $department->departments_announcements()->find($id);
+        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') )  ) { 
+            $dep_announcement = Announcment::find($id);
+        }
+        else {
+            $department =  Department::find(Auth::user()->department_id);
+            // $announcements_list = Announcment::orderBy('created_at', 'desc')->take(8)->get();
+            $dep_announcement = $department->departments_announcements()->find($id);
+        }
+      
 
         return success_response(
             trans('messages.create_department_announcement_success'), 
@@ -208,7 +212,9 @@ class DepartmentAnnouncementController extends Controller
         DB::beginTransaction();
         try {
             log_activity( trans('messages.update_department_announcement_attempt') );
-
+            $department =  Department::find(Auth::user()->department_id);
+            $check_announcement = $department->departments_announcements()->find($id);
+            if($check_announcement || Auth::user()->hasRole( get_constant('USER_ROLES.admin'))){
             $dep_announcement = Announcment::find($id);
 
             
@@ -245,6 +251,13 @@ class DepartmentAnnouncementController extends Controller
                 trans('messages.update_department_announcement_success'), 
                 $dep_announcement
             );
+            }
+            else{
+                return error_response( trans('messages.error_default'), "You Dont Have the right update this Announcement" );
+            }
+            
+
+           
 
         } catch(Exception $e){
             DB::rollback();

@@ -33,12 +33,22 @@ class DashboardAnnouncments extends Component {
                                 
                               
                           <Card className="announcement-list-card"  >
-                            <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/>
+                            {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
+                             <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
+                            }
+                           
                             <Card.Body>
+                              {/* ImgOverlay */}
                               <Card.Title> {announcement.title}</Card.Title>
-                              <Card.Text>
-                              Headline: {announcement.headline}
-                              </Card.Text>
+                             
+                                  {announcement.headline ? 
+                                  
+                                  <Card.Text className="black-card-text">{announcement.headline}
+                                  
+                                  </Card.Text>
+                                  
+                                  : <Card.Text>Check it out</Card.Text>}
+                             
                             </Card.Body>
                           </Card>
                       </Link>

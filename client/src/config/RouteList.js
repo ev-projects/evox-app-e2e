@@ -45,6 +45,7 @@ import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervis
 import SyncBhrLeaves from "../container/Admin/SyncBhrLeaves"; 
 import SyncUserUpdates from "../container/Admin/SyncUserUpdates"; 
 import AssignRolesPermissions from "../container/Admin/AssignRolesPermissions";
+import AdminAnnouncementsList from "../container/Admin/AdminAnnouncementsList";
 import JobInformation from "../container/Profile/JobInformation";
 import PersonalInformation from "../container/Profile/PersonalInformation";
 import Validator from "../services/Validator";
@@ -206,7 +207,24 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
 
-        
+        {/* Announcement links */}
+        <ProtectedRoute exact path={global.links.department_announcement_list}>
+        <DepartmentAnnouncementsList  
+          role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
+        />
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.announcement_page+":id"}>
+          <AnnouncementsPage
+          //any user under her deparment can access her department announcement page
+          />
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.announcement_page+":id"}>
+          <AnnouncementsPage
+          //any user under her deparment can access her department announcement page
+          />
+        </ProtectedRoute>
+
+
 
         {/* Admin Links */}
         <ProtectedRoute exact path={global.links.payroll_cutoff}>
@@ -249,6 +267,10 @@ const RoutesList = (props) => {
           <GenerateDate  role={['admin']}  />
         </ProtectedRoute>
 
+        <ProtectedRoute exact path={global.links.admin_announcement_list}>
+          <AdminAnnouncementsList  role={['admin']}  />
+        </ProtectedRoute>
+
         <ProtectedRoute exact path={global.links.manage_change_logs}>
           <ChangeLogs  role={['admin']}  />
         </ProtectedRoute>
@@ -257,22 +279,15 @@ const RoutesList = (props) => {
           <DepartmentList  role={['admin']} permission={['access_department_list']} />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.department_announcement_list}>
-          <DepartmentAnnouncementsList  
-            role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
-         />
-        </ProtectedRoute>
+
         <ProtectedRoute exact path={global.links.department_announcement_form+":id?"}>
           <DepartmentAnnouncementsForm
             role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
          />
+
+         
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.announcement_page+":id"}>
-          <AnnouncementsPage
-          //any user under her deparment can access her department announcement page
-          />
-        </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.manage_hr_announcements}>
           <HrAnnouncements  role={['hr']} />

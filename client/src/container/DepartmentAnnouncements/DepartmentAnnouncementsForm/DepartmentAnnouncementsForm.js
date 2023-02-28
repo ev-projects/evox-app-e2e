@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
-import { createDepartmentAnnouncement, fetchDepartmentAnnouncement, updateDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions';
+import { createDepartmentAnnouncement, fetchDepartmentAnnouncementStrict, updateDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 import { Editor } from '@tinymce/tinymce-react';
@@ -105,7 +105,7 @@ class DepartmentAnnouncementsForm extends Component {
       // console.log(this.props.params.id);
     if( this.props.params.id != undefined ) {
 
-      this.props.fetchDepartmentAnnouncement( this.props.params.id )
+      this.props.fetchDepartmentAnnouncementStrict( this.props.params.id )
     }
 }
 
@@ -130,6 +130,9 @@ class DepartmentAnnouncementsForm extends Component {
         headline:              this.props.instance?.headline != undefined ? this.props.instance.headline : null,
         content:        this.props.instance?.content != undefined ? this.props.instance.content : null,
         category:           this.props.instance?.category != undefined ? this.props.instance.category : null,
+    }
+    if(method == "store"){
+      // set the initials to null
     }
     let title = 'Announcement Form';
 
@@ -274,7 +277,8 @@ class DepartmentAnnouncementsForm extends Component {
                                   {(this.props?.instance?.thumbnail != null
                                       && this.state.imgPrevInputFile == '/thumbnail/defthumb.jpg')
                                       ? <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
-                                      : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
+                                      // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
+                                      : <p>No Image Selected</p>}
                               </div>
                     </Col>
                   </Row>
@@ -355,7 +359,8 @@ class DepartmentAnnouncementsForm extends Component {
 /** Form Validation */
 
 const validationSchema = Yup.object().shape({
-    title         : Yup.string().required("This field is required").nullable(),
+    title         : Yup.string().required("This field is required").max(60, 'Max Title Length reached'),
+    headline      : Yup.string().required("This field is required").max(100, 'Max Headline Length reached'),
     // category      : Yup.string().required("This field is required").nullable(),
     // content   : Yup.string().required("This field is required").nullable(),
     // log_date      : Yup.date().required("This field is required").nullable(),
@@ -371,7 +376,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDepartmentAnnouncement        : ( id ) => dispatch( fetchDepartmentAnnouncement( id ) ),
+      fetchDepartmentAnnouncementStrict        : ( id ) => dispatch( fetchDepartmentAnnouncementStrict( id ) ),
       createDepartmentAnnouncement : ( post_data ) => dispatch( createDepartmentAnnouncement( post_data ) ),
       updateDepartmentAnnouncement : ( id,post_data ) => dispatch( updateDepartmentAnnouncement( id,post_data ) ),
       setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
