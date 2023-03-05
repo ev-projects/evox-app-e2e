@@ -248,10 +248,10 @@ class DtrSummaryNew extends Component {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
-                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>
-                              <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department_new")}>Export(NEW)</Dropdown.Item>
-                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all_new")}>Export All(NEW)</Dropdown.Item>
+                              {/* <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department")}>Export</Dropdown.Item>
+                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>  OLD */}
+                              <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department_new")}>Export</Dropdown.Item>
+                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all_new")}>Export All</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
                         }
@@ -351,7 +351,7 @@ class DtrSummaryNew extends Component {
   </tbody>
 </table>
 {/* <Paginate pagination={request_list} /> */}
-</div></Row>) : (<div className="pd20">Sorry 2, no record found</div>)}    
+</div></Row>) : (<div className="pd20">Sorry , no record found</div>)}    
 				  </div>
 			  </ContainerWrapper>
 	
