@@ -37,6 +37,7 @@ import MyTeamSchedule from "../container/MyTeam/MyTeamSchedule";
 import MyRequests from "../container/MyRequests/MyRequests";
 
 import DtrSummary from "../container/MyTeam/DtrSummary";
+import DtrSummaryNew from "../container/MyTeam/DtrSummaryNew";
 
 // Admin
 import PayrollCutoff from "../container/Admin/PayrollCutoff";
@@ -161,6 +162,11 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.dtr_summary}>
           <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_summary_new}>
+          {/* <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
+          <DtrSummaryNew role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_logs}>

@@ -76,6 +76,18 @@ const dtrSummary = (state = initState, action) => {
                 dtrItems: processItems(action.dtrSummary.current_page, result.dtrItems, action.dtrSummary.summary)
             };
             break;
+            case "FETCH_NEW_DTR_SUMMARY_SUCCESS":
+                return {
+                    instance : action.dtrSummary,
+                    isListLoaded : true,
+                    pagination: {
+                        current_page: action.dtrSummary.current_page < action.dtrSummary.last_page ? action.dtrSummary.current_page : 1,
+                        last_page: action.dtrSummary.current_page < action.dtrSummary.last_page ? action.dtrSummary.last_page : 1,
+                        has_next_page: action.dtrSummary.current_page < action.dtrSummary.last_page ? action.dtrSummary.has_next_page : false,
+                    },
+                    dtrItems:  action.dtrSummary.dtrItems
+                };
+                break;
         default:
             result = state;
     }
