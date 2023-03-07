@@ -1433,8 +1433,7 @@ class ReportController extends Controller
             }else{
                 $result1= $result->orderBy('departments.department_name')->orderby('users.date_hired', 'DESC')->orderBy('users.last_name', 'asc')->orderBy('users.first_name', 'asc');
             }
-            dd($result1);
-            dump(NewDtrSummaryResource::collection($result1));
+
             // $jsonAllDecoded = json_decode($result1, true);
 
             // //here simple add our CSV file a (pakainfo.csv)name.
