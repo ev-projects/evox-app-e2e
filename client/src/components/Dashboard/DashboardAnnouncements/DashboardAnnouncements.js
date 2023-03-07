@@ -130,9 +130,30 @@ class DashboardAnnouncements extends Component {
      </>
       }else{
        return <>
+         <Tabs
+            defaultActiveKey="all"
+            id="fill-tab-example"
+            className="mb-3 col-9 announcement-tabs"
+            fill
+            onSelect= { this.handleSelect
+            }
+          >
+              <Tab eventKey="all" title="All">
+                
+              </Tab>
+              <Tab eventKey="department" title="Department">
+                
+              </Tab>
+              <Tab eventKey="hr" title="HR">
+                
+              </Tab>
+              {/* <Tab eventKey="contact" title="Contact" disabled>
+                
+              </Tab> */}
+          </Tabs>
         <Row>
           <Col  md={12} align="center" className="">
-              <h5>Your Department has yet to publish any Announcements</h5>
+              <h5>No Announcements.</h5>
           </Col>
         </Row>
        </>;
