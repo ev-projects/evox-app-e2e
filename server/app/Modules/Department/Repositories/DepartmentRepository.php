@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Log;
 use App\Modules\Department\Models\Department;
-use App\Modules\Department\Models\Announcment;
+use App\Modules\Department\Models\Announcement;
 
 class DepartmentRepository implements DepartmentRepositoryInterface{
     
@@ -114,7 +114,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
         try {
 
             
-            $announcements_collection = Announcment::where("department_id", $user->department_id);
+            $announcements_collection = Announcement::where("department_id", $user->department_id);
 
 
             log_to_file('info', 'Success', [$announcements_collection]);

@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
-import "./DepartmentAnnouncementsList.css";
+import "./HrAnnouncementsList.css";
 
-import { fetchMyHandleAnnouncementList, deleteDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchHrHandleAnnouncementList, deleteHrAnnouncement } from '../../../store/actions/announcement/hrAnnouncementActions'
 
 
 import Formatter from '../../../services/Formatter'
@@ -16,7 +16,7 @@ import { ContainerHeader,Content,ContainerWrapper } from '../../../components/Gr
 import PageLoading from "../../PageLoading";
 import Wrapper from "../../../components/Template/Wrapper";
 
-class DepartmentAnnouncementsList extends Component {    
+class HrAnnouncementsList extends Component {    
   state = { modal_bool:false, modal_name: '', modal_id : '',index : null }
 
   onSubmitHandler = (props,index) => {
@@ -25,9 +25,9 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   onDeleteHandler = (announcement, index) => {
-    if (window.confirm("Are you sure you want to Remove this Anoouncement ?")) {
+    if (window.confirm("Are you sure you want to Remove this Announcement ?")) {
 
-      this.props.deleteDepartmentAnnouncement(announcement.id);
+      this.props.deleteHrAnnouncement(announcement.id);
       this.props.departmentAnnouncement.depAnnouncementlist.splice(index, 1);
       this.toggleModal();
     }
@@ -38,7 +38,7 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   componentWillMount(){
-    this.props.fetchMyHandleAnnouncementList();
+    this.props.fetchHrHandleAnnouncementList();
   }
   
   render = () => {
@@ -46,13 +46,13 @@ class DepartmentAnnouncementsList extends Component {
     if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
       return <Wrapper  {...this.props} >
         <ContainerWrapper>   
-          <Content col="12" title="Manage my Departments Announcements">
-            <p>In the Announcement Management page, you can publish <u>Announcements</u> and this can only be seen by users of the same dapartments as you. 
-            Users with the same permission as you can also edit your post if you have your hands are full. </p>
+          <Content col="12" title="Manage my HR Announcements">
+            <p>In the Hr Announcement Management page, you can Manage and publish Hr Announcements that would only be seen by all users of EVOX. 
+            Users with the same role as HR can also manage your post</p>
             <p>Note: the Editor will not save images, but for now, you can upload one image as a thmbnail and primary image of your announcement, you can also leave it empty </p>
-          <Link className="btn btn-primary create-announcement"  to={global.links.department_announcement_form}>
+          <Link className="btn btn-primary create-announcement"  to={global.links.post_hr_announcements}>
                        
-                       Create Announcement
+                       Create HR Announcement
            </Link>  
         
          <Row>
@@ -122,9 +122,9 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchMyHandleAnnouncementList : () => dispatch( fetchMyHandleAnnouncementList() ),
-      deleteDepartmentAnnouncement : (id) => dispatch( deleteDepartmentAnnouncement(id) ),
+      fetchHrHandleAnnouncementList : () => dispatch( fetchHrHandleAnnouncementList() ),
+      deleteHrAnnouncement : (id) => dispatch( deleteHrAnnouncement(id) ),
     }
   }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DepartmentAnnouncementsList);
+export default connect(mapStateToProps, mapDispatchToProps)(HrAnnouncementsList);

@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./AdminAnnouncementsList.css";
 
-import { fetchDepartmentAnnouncmentList, deleteDepartmentAnnouncment } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchDepartmentAnnouncementList, deleteDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions'
 
 
 import Formatter from '../../../services/Formatter'
@@ -27,7 +27,7 @@ class AdminAnnouncementsList extends Component {
   onDeleteHandler = (announcement, index) => {
     if (window.confirm("Are you sure you want to Remove this Department ?")) {
 
-      this.props.deleteDepartmentAnnouncment(announcement.id);
+      this.props.deleteDepartmentAnnouncement(announcement.id);
       this.props.departmentAnnouncement.depAnnouncementlist.splice(index, 1);
       this.toggleModal();
     }
@@ -38,7 +38,7 @@ class AdminAnnouncementsList extends Component {
   }
 
   componentWillMount(){
-    this.props.fetchDepartmentAnnouncmentList();
+    this.props.fetchDepartmentAnnouncementList();
   }
   
   render = () => {
@@ -48,7 +48,7 @@ class AdminAnnouncementsList extends Component {
         <ContainerWrapper>   
           <Content col="12" title="Manage All EVOX Announcements">
           
-          <p>All Announcments from Each Department</p>
+          <p>All Announcements from Each Department</p>
         
          <Row>
               {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
@@ -119,8 +119,8 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDepartmentAnnouncmentList : () => dispatch( fetchDepartmentAnnouncmentList() ),
-      deleteDepartmentAnnouncment : (id) => dispatch( deleteDepartmentAnnouncment(id) ),
+      fetchDepartmentAnnouncementList : () => dispatch( fetchDepartmentAnnouncementList() ),
+      deleteDepartmentAnnouncement : (id) => dispatch( deleteDepartmentAnnouncement(id) ),
     }
   }
 
