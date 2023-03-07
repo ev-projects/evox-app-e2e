@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import { Form,Button,InputGroup,FormControl, Card  } from 'react-bootstrap';
+import { Form,Button,InputGroup,FormControl, Card,Badge  } from 'react-bootstrap';
 import moment from 'moment';
 
 import "./AnnouncementsPage.css";
@@ -14,8 +14,8 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 
 
-import { fetchDashboardAnnouncmentList, fetchDepartmentAnnouncementStrict } from '../../../store/actions/announcement/departmentAnnouncementActions';
-// import DashboardAnnouncmentsSide from "../../../components/Dashboard/DashboardAnnouncmentsSide";
+import { fetchDashboardAnnouncementList, fetchDepartmentAnnouncementStrict ,clearDepartmentAnnouncementListInstance} from '../../../store/actions/announcement/departmentAnnouncementActions';
+// import DashboardAnnouncementsSide from "../../../components/Dashboard/DashboardAnnouncementsSide";
 import { setRedirect } from '../../../store/actions/redirectActions';
 
 
@@ -40,12 +40,13 @@ class AnnouncementsPage extends Component {
 
  
   componentWillMount= () =>{
+    this.props.clearDepartmentAnnouncementListInstance();
       // console.log(this.props.params.id);
     if( this.props.params.id != undefined ) {
 
       this.props.fetchDepartmentAnnouncementStrict( this.props.params.id )
     }
-    this.props.fetchDashboardAnnouncmentList( );
+    this.props.fetchDashboardAnnouncementList( );
 }
 
 
@@ -77,7 +78,7 @@ class AnnouncementsPage extends Component {
                                           
                                           <div >
                                             <div className="page-content-title">{this.props.instance.title}</div>
-                                              <div className="page-content-info">Posted: {this.props.instance.created_at}</div>
+                                              <div className="page-content-info">Posted: {this.props.instance.release_date}<br/><Badge className="tag-badge">{this.props.instance.category}</Badge></div>
                                               <img src={this.props.instance.thumbnail} className="page-img" alt={null}></img>
                                           <div className="page-content" dangerouslySetInnerHTML={{ __html:   this.props.instance.content}} />
                                         </div>
@@ -105,9 +106,9 @@ class AnnouncementsPage extends Component {
 
                 <Col size="3">
                 <div className="card-header">
-                        <h3 align="Left" className="card-title">Other Announcements</h3>
+                        <h3 align="Left" className="card-title">Latest Announcements</h3>
                     </div>
-                    {/* {this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded?  */}
+                    {this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded? 
                     
                     <Row>
                     {this.props.departmentAnnouncement.depAnnouncementlist?.map((announcement, index) => {
@@ -120,9 +121,10 @@ class AnnouncementsPage extends Component {
                           
                           <a href={ global.links.announcement_page + announcement.id}>
 
-                            <Card className="announcement-list-card"   >
-                                  <Card.Body className="small-card-body">
-                                    <Card.Text className="black-card-text"> {announcement.title}</Card.Text>
+                            <Card className="announcement-list-card">
+                                  <Card.Body className="small-card-body ">
+                                    <Card.Text className="black-card-text-bigger"> {announcement.title}</Card.Text>
+                                    <Card.Text> {announcement.release_date} <br/> <Badge className="tag-badge">{announcement.category}</Badge></Card.Text>
                                   </Card.Body>
                                 </Card>
                                 </a>
@@ -134,7 +136,11 @@ class AnnouncementsPage extends Component {
                     })}
               </Row>
                     
-                     {/* :<PageLoading/> */}
+                     :<>
+                                          {this.props.fetchDashboardAnnouncementList()}
+                                          <PageLoading/>
+                     </>
+                    }
                 </Col>
                
                 </Row>
@@ -161,7 +167,8 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDashboardAnnouncmentList : () => dispatch( fetchDashboardAnnouncmentList() ),
+      fetchDashboardAnnouncementList : () => dispatch( fetchDashboardAnnouncementList() ),
+      clearDepartmentAnnouncementListInstance : () => dispatch( clearDepartmentAnnouncementListInstance() ),
       fetchDepartmentAnnouncementStrict        : ( id ) => dispatch( fetchDepartmentAnnouncementStrict( id ) ),
       setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
     }

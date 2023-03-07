@@ -28,10 +28,11 @@ class AnnouncementResource extends JsonResource
                 'category' => $this->category,
                 'log_date' => $this->log_date,
                 'release_date' => $this->release_date,
+                'expiry_date' => $this->expiry_date,
                 'link' => $this->link,
                 'status' => $this->status,
                 'exposure_level' => $this->exposure_level,
-                'dep_id' => $this->dep_id,
+                'dep' => $this->department(),
               
               
                 'created_at' => $this->created_at->format('Y-m-d')

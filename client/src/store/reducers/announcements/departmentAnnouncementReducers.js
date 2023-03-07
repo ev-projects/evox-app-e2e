@@ -14,7 +14,7 @@ const departmentAnnouncementReducers = (state = initState, action) => {
     switch(action.type) {
 
 
-        case "FETCH_DEPARTMENT_ANNOUNCMENT_INDEX_LOAD_SUCCESS":
+        case "FETCH_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS":
 
             return {
                 ...state,
@@ -22,13 +22,24 @@ const departmentAnnouncementReducers = (state = initState, action) => {
                 isDepartmentAnnouncementListLoaded : true
             };
         break;
-        case "FETCH_DEPARTMENT_ANNOUNCMENT_SUCCESS":
+        case "FETCH_DEPARTMENT_ANNOUNCEMENT_SUCCESS":
             return {
                 instance : action.announcement,
                 isInstanceLoaded : true
             };
         break;
-      
+        case "CLEAR_DEPARTMENT_ANNOUNCEMENT_INSTANCE":
+            return {
+                instance: {},
+                isInstanceLoaded : false,
+            };
+        break;
+        case "CLEAR_DEPARTMENT_ANNOUNCEMENT_LIST_INSTANCE":
+            return {
+                depAnnouncementlist : {},
+                isDepartmentAnnouncementListLoaded : false
+            };
+        break;
         default:
             result = state;
     }

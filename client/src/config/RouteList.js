@@ -74,6 +74,9 @@ import AnnouncementsPage from "../container/DepartmentAnnouncements/Announcement
 import HrAnnouncements from "../container/Hr/Announcements";
 import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
+import HrAnnouncementsForm from "../container/Hr/HrAnnouncementsForm";
+import HrAnnouncementsList from "../container/Hr/HrAnnouncementsList";
+
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
   // Register all the Routes that will be used in the Application (excluding the Login)
@@ -290,11 +293,11 @@ const RoutesList = (props) => {
 
 
         <ProtectedRoute exact path={global.links.manage_hr_announcements}>
-          <HrAnnouncements  role={['hr']} />
+          <HrAnnouncementsList  role={['hr']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
-          <PostHrAnnouncements  role={['hr']} />
+          <HrAnnouncementsForm  role={['hr']} />
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

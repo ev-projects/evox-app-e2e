@@ -343,7 +343,7 @@ const Sidebar = (props) => {
             {Authenticator.check('admin', 'full_access') &&
               <li className="admin-sidebar nav-item has-treeview ">
                 <a className="nav-link nav-link-main">
-                  <i className="nav-icon fa fa-cog" />
+                  <i className="nav-icon fa fa-cogs" />
                   <p>
                     Admin Functions
                     <i className="right fa fa-chevron-left" />

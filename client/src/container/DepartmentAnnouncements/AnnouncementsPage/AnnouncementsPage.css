@@ -31,3 +31,8 @@
     color:black !important;
     
 }
+.black-card-text-bigger{
+    color:black !important;
+    font-size: 18px !important;
+    text-transform: uppercase !important;
+}

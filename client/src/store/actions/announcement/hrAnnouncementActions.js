@@ -9,7 +9,7 @@ import { setRedirect, clearRedirect } from '../redirectActions';
 
 
 
-export const createDepartmentAnnouncement = ( data ) => {
+export const createHrAnnouncement = ( data ) => {
     return (dispatch, getState) => {
         API.call({
             method: "post",
@@ -24,7 +24,7 @@ export const createDepartmentAnnouncement = ( data ) => {
 
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.links.department_announcement_list
+                'link'      : global.links.manage_hr_announcements
             })
 
         })
@@ -35,12 +35,12 @@ export const createDepartmentAnnouncement = ( data ) => {
 }
 
 
-export const updateDepartmentAnnouncement = ( id, data ) => {
+export const updateHrAnnouncement = ( id, data ) => {
     console.log(data);
     return (dispatch, getState) => {
         API.call({
             method: "post",
-            url: "/department/announcements/my_handle_announcements/" + id +"/update",
+            url: "/department/announcements/hr/" + id +"/update",
             data: data,
             headers: { 
                 "Content-Type": "multipart/form-data",
@@ -61,7 +61,7 @@ export const updateDepartmentAnnouncement = ( id, data ) => {
 }
 
 
-export const fetchDepartmentAnnouncement = ( id ) => {
+export const fetchHrAnnouncement = ( id ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -80,7 +80,7 @@ export const fetchDepartmentAnnouncement = ( id ) => {
     }
 }
 
-export const fetchDepartmentAnnouncementStrict = ( id ) => {
+export const fetchHrAnnouncementStrict = ( id ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -100,8 +100,8 @@ export const fetchDepartmentAnnouncementStrict = ( id ) => {
 }
 
 
-    // used only by admin
-export const fetchDepartmentAnnouncementList = () => {
+
+export const fetchHrAnnouncementList = () => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -121,13 +121,11 @@ export const fetchDepartmentAnnouncementList = () => {
     }
 }
 
-export const fetchDashboardAnnouncementList = (params = null) => {
-    
+export const fetchDashboardAnnouncementList = () => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/department/announcements/dashboard_departments",
-            params: params,
+            url: "/department/announcements/dashboard_departments"
         })
         .then(result => {
             
@@ -143,11 +141,11 @@ export const fetchDashboardAnnouncementList = (params = null) => {
     }
 }
 
-export const fetchMyHandleAnnouncementList = () => {
+export const fetchHrHandleAnnouncementList = () => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/department/announcements/my_handle_announcements/all"
+            url: "/department/announcements/hr/all"
         })
         .then(result => {
             
@@ -164,11 +162,11 @@ export const fetchMyHandleAnnouncementList = () => {
 }
 
 
-export const deleteDepartmentAnnouncement = (id) => {
+export const deleteHrAnnouncement = (id) => {
     return (dispatch, getState) => {
         API.call({
             method: "delete",
-            url: "/department/announcements/my_handle_announcements/"+id+"/"
+            url: "/department/announcements/hr/"+id+"/"
         })
         .then(result => {
             dispatch( Formatter.alert_success( result ));
@@ -179,18 +177,10 @@ export const deleteDepartmentAnnouncement = (id) => {
     }
 }
 
-export const clearDepartmentAnnouncementInstance = () => {
+export const clearHrAnnouncementInstance = () => {
     return (dispatch, getState) => {
         dispatch({
             'type'      : 'CLEAR_DEPARTMENT_ANNOUNCEMENT_INSTANCE'
-        })
-    }
-}
-
-export const clearDepartmentAnnouncementListInstance = () => {
-    return (dispatch, getState) => {
-        dispatch({
-            'type'      : 'CLEAR_DEPARTMENT_ANNOUNCEMENT_LIST_INSTANCE'
         })
     }
 }

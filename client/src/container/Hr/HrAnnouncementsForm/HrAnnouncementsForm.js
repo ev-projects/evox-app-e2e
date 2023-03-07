@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Form,Button,InputGroup,FormControl  } from 'react-bootstrap';
 import moment from 'moment';
 
-import "./DepartmentAnnouncementsForm.css";
+import "./HrAnnouncementsForm.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 
@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
-import { createDepartmentAnnouncement, fetchDepartmentAnnouncementStrict, updateDepartmentAnnouncement, clearDepartmentAnnouncementInstance } from '../../../store/actions/announcement/departmentAnnouncementActions';
+import { createHrAnnouncement, fetchHrAnnouncementStrict, updateHrAnnouncement, clearHrAnnouncementInstance } from '../../../store/actions/announcement/hrAnnouncementActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 import { Editor } from '@tinymce/tinymce-react';
@@ -24,7 +24,7 @@ import RequestSubtitle from "../../../components/RequestComponent/RequestButtons
 import Authenticator from "../../../services/Authenticator";
 import BackButton from "../../../components/Template/BackButton";
 
-class DepartmentAnnouncementsForm extends Component {
+class HrAnnouncementsForm extends Component {
   constructor(props){
     super(props)
     console.log(window.location.pathname);
@@ -66,7 +66,7 @@ class DepartmentAnnouncementsForm extends Component {
         }
       }
     }
-    formData.set('category', "Department");
+    formData.set('category', "HR");
     // Checks on what action to use depending on the values.action
     if (values.method) {
     
@@ -79,7 +79,7 @@ class DepartmentAnnouncementsForm extends Component {
                 formData.set('thumbnail', this.state.thumbnail);
               
             }
-            this.props.createDepartmentAnnouncement( formData );
+            this.props.createHrAnnouncement( formData );
             this.setState({ thumbnail: null });
             this.setState({ imgPrevInputFile: '/thumbnail/defthumb.jpg' });
           }
@@ -94,7 +94,7 @@ class DepartmentAnnouncementsForm extends Component {
                     formData.set('thumbnail', this.state.thumbnail);
                   }
               }
-              this.props.updateDepartmentAnnouncement( values.id, formData );
+              this.props.updateHrAnnouncement( values.id, formData );
               this.setState({ thumbnail: null });
               this.setState({ imgPrevInputFile: '/thumbnail/defthumb.jpg' });
             }
@@ -109,11 +109,10 @@ class DepartmentAnnouncementsForm extends Component {
   }
 
   componentWillMount(){
-      // console.log(this.props.params.id);
-    this.props.clearDepartmentAnnouncementInstance();
+    this.props.clearHrAnnouncementInstance();
     if( this.props.params.id != undefined ) { 
 
-      this.props.fetchDepartmentAnnouncementStrict( this.props.params.id )
+      this.props.fetchHrAnnouncementStrict( this.props.params.id )
     }
 }
 
@@ -122,14 +121,11 @@ class DepartmentAnnouncementsForm extends Component {
   }
 
   render = () => {
-    // Sets the Method of the current state.
+
     const method = (this.props.params.id != undefined) ? 'update' : 'store'
 
     var today = new Date();
-    // console.log(today, moment().format('MMMM d, yyyy'));
-    // console.log(this.props.instance);
-    // Sets Initial Value of the current Formik form.
-    // console.log(this.props.instance?.release_date, new Date( this.props.instance?.release_date ));
+
     const initialValue = {
         action:             null,
         method:             method,
@@ -191,88 +187,11 @@ class DepartmentAnnouncementsForm extends Component {
                         </InputGroup>
                       </div>
                     </Col>
-                    {/* <Col size="3 dep-announcement-col">
-                      <div className="form-group">
-                        <label className ="dep-announcement-label">Category:</label>
-                        <select name="category" value={ values.category } className="form-control" onChange={handleChange}>
-                            <option></option>
-                            <option value="Announcements">Announcements</option>
-                            <option value="Updates">Updates</option>
-                            <option value="Release Notes">Release Notes</option>
-                        </select>
-                        <Form.Control.Feedback type="invalid">
-                            &nbsp;{errors.category && touched.category && errors.category}
-                        </Form.Control.Feedback>
-                      </div>
-                    </Col> */}
-                    
-                    {/* <Col size ="3">
-                    
-
-                    </Col> */}
-                    {/* <Col size="3 dep-announcement-col">
-                      <div className="form-group">
-                        <label className ="dep-announcement-label">Date:</label>
-                        <InputDate name="log_date" value={values.log_date}/>
-                      </div>
-                    </Col> */}
+                
 
                   </Row>
                   <Row>
-                    {/* <Col size="2 dep-announcement-col">
-                            <div className="feature-checkbox">
-
-                            
-                            <label className ="dep-announcement-label"> Featured Anncouncement</label>
-                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
-                                // onChange={handleChange}
-                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
-                                checked={values.featured === 1 ? true : false}
-                            />
-                            <br/>
-                            <label className ="dep-announcement-label"> Publish</label>
-                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
-                                // onChange={handleChange}
-                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
-                                checked={values.featured === 1 ? true : false}
-                            />
-                            </div>
-                            
-                    </Col> */}
-                    {/* <Col size="2 dep-announcement-col">
-                            <div className="feature-checkbox">
-
-                            
-                            <label className ="dep-announcement-label"> Featured Anncouncement</label>
-                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
-                                // onChange={handleChange}
-                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
-                                checked={values.featured === 1 ? true : false}
-                            />
-                            <br/>
-                            <label className ="dep-announcement-label"> Publish</label>
-                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
-                                // onChange={handleChange}
-                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
-                                checked={values.featured === 1 ? true : false}
-                            />
-                            </div>
-                            
-                    </Col> */}
-                    {/* <Col size="3 dep-announcement-col">
-                      <div className="form-group">
-                        <label className ="dep-announcement-label">Seen By:</label>
-                        <select name="exposure_level" value={ values.exposure_level } className="form-control" onChange={handleChange}>
-
-                            <option value="All Users">All Users</option>
-                            <option value="My Account Only">My Account Only</option>
-                            <option value="My Account Span">My Account Span</option>
-                        </select>
-                        <Form.Control.Feedback type="invalid">
-                            &nbsp;{errors.exposure_level && touched.exposure_level && errors.exposure_level}
-                        </Form.Control.Feedback>
-                      </div>
-                    </Col> */}
+{/*                   
                      <Col size="3 dep-announcement-col">
                       <div className="form-group">
                         <label className ="dep-announcement-label">Seen By:</label>
@@ -286,7 +205,7 @@ class DepartmentAnnouncementsForm extends Component {
                             &nbsp;{errors.exposure_level && touched.exposure_level && errors.exposure_level}
                         </Form.Control.Feedback>
                       </div>
-                    </Col>
+                    </Col> */}
 
                 
                     <Col size="3 dep-announcement-col">
@@ -326,34 +245,22 @@ class DepartmentAnnouncementsForm extends Component {
                                   {(this.props?.instance?.thumbnail != null
                                       && this.state.imgPrevInputFile == '/thumbnail/defthumb.jpg')
                                       ? <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
-                                     // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
+
                                      : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
                                       
                               </div>
                     </Col>
                   </Row>
                 
-                  {/* <Row>
-                    <Col size="7 dep-announcement-col">
-                    <div className="form-group">
-                        <label className ="dep-announcement-label">Redirect to External link:</label>
-                        <InputGroup>
-                            <FormControl variant="primary" name="link" className="link" onChange={handleChange} value={values.link} />
-                            <Form.Control.Feedback type="invalid">
-                              &nbsp;{errors.link && touched.link && errors.link}
-                            </Form.Control.Feedback>
-                        </InputGroup>
-                      </div>
-                    </Col>
-                  </Row> */}
+              
                 
                   <Row>
                     <Col size="12">
                       <div className="form-group">
                         <label className = "dep-announcement-label  dep-announcement-col">Content:</label>
-                        {/* <textarea className="form-control" rows="10" name="content" onChange={handleChange} value={values.content??''} placeholder="Change log summary..."></textarea> */}
+                      
                         <Editor
-                          // onInit={(evt, editor) => editorRef.current = editor}
+  
                           apiKey="nwf6jspi93459hl7io117u8tqtutub6tk18jw7kamd4hujd7"
                           textareaName="content"
                           initialValue={values.content ?? ''}
@@ -366,22 +273,15 @@ class DepartmentAnnouncementsForm extends Component {
                               'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
                               'powerpaste','fullscreen','formatpainter','insertdatetime','media','table','help','wordcount'
                            ],
-                        //    paste_preprocess: function (plugin, args) {
-                        //     // console.log("Attempted to paste: ", args.content);
-                        //     // replace copied text with empty string
-                        //     args.content = '';
-                        // },
+ 
                             toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons | ' +
                             'alignleft aligncenter alignright alignjustify | link | ' +
                             'bullist numlist checklist outdent indent | removeformat | help ',
-                            // smart_paste: false,
-                            // paste_data_images: false,
+
                             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                           }}
                         />
-                        {/* <Form.Control.Feedback type="invalid">
-                          &nbsp;{errors.content && touched.content && errors.content}
-                        </Form.Control.Feedback> */}
+
                       </div>
                     </Col>
                   </Row>
@@ -414,7 +314,7 @@ const validationSchema = Yup.object().shape({
     // category      : Yup.string().required("This field is required").nullable(),
     // content   : Yup.string().required("This field is required").nullable(),
     // log_date      : Yup.date().required("This field is required").nullable(),
-          expiry_date      : Yup.date().required("This field is required"),
+      expiry_date      : Yup.date().required("This field is required"),
       release_date      : Yup.date().required("This field is required"),
 });
 
@@ -428,14 +328,14 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDepartmentAnnouncementStrict        : ( id ) => dispatch( fetchDepartmentAnnouncementStrict( id ) ),
-      clearDepartmentAnnouncementInstance        : ( id ) => dispatch( clearDepartmentAnnouncementInstance( id ) ),
-      createDepartmentAnnouncement : ( post_data ) => dispatch( createDepartmentAnnouncement( post_data ) ),
-      updateDepartmentAnnouncement : ( id,post_data ) => dispatch( updateDepartmentAnnouncement( id,post_data ) ),
+      fetchHrAnnouncementStrict        : ( id ) => dispatch( fetchHrAnnouncementStrict( id ) ),
+      clearHrAnnouncementInstance        : ( id ) => dispatch( clearHrAnnouncementInstance( id ) ),
+      createHrAnnouncement : ( post_data ) => dispatch( createHrAnnouncement( post_data ) ),
+      updateHrAnnouncement : ( id,post_data ) => dispatch( updateHrAnnouncement( id,post_data ) ),
       setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(DepartmentAnnouncementsForm);
+export default connect(mapStateToProps, mapDispatchToProps)(HrAnnouncementsForm);
 
 
 

@@ -11,13 +11,12 @@ import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import QuickPunch from "../../../components/Dashboard/QuickPunch";
 import Holiday from "../../../components/Dashboard/Holiday";
-import DashboardAnnouncments from "../../../components/Dashboard/DashboardAnnouncments";
+import DashboardAnnouncements from "../../../components/Dashboard/DashboardAnnouncements";
 import Authenticator from "../../../services/Authenticator";
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 import RecentDtr from "../../../components/Dashboard/RecentDtr";
 import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 import moment from 'moment';
-import { fetchDepartmentAnnouncmentList, deleteDepartment } from '../../../store/actions/announcement/departmentAnnouncementActions'
 
 const EmployeeDashboard = ( props ) => {
 
@@ -92,7 +91,7 @@ const EmployeeDashboard = ( props ) => {
                         <h3 align="center" className="card-title">ANNOUNCEMENTS</h3>
                     </div>
                       <div className="announcement-Container">
-                            <DashboardAnnouncments/>
+                            <DashboardAnnouncements/>
                       </div> 
                     </div> 
                   {/* </Row> */}
@@ -245,7 +244,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchUser : () => dispatch( fetchUser() ),
-    fetchDepartmentAnnouncmentList : () => dispatch( fetchDepartmentAnnouncmentList() ),
+    
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(EmployeeDashboard);
