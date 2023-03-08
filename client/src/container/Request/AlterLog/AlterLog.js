@@ -24,6 +24,8 @@ import { fetchAlterLog,
          clearAlterLogInstance } from '../../../store/actions/requests/alterLogActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
+import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
+
 
 import Wrapper from "../../../components/Template/Wrapper";
 import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";
@@ -68,11 +70,13 @@ class AlterLog extends Component {
 
                 case "store":
                     this.props.addAlterLog( formData );
+                    this.props.getMyDtrNotifications( this.props?.user?.id );
                     break;
           
                 case "update":
                     formData.append('_method', 'PUT')
                     this.props.updateAlterLog( values.id, formData );
+                    this.props.getMyDtrNotifications( this.props?.user?.id );
                     break;
 
                 default:
@@ -88,10 +92,13 @@ class AlterLog extends Component {
         case "cancel":
             if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
                 formData.append('_method', 'PUT')
-                this.props.updateAlterLogStatus( values.id, formData, values.action );
+                this.props.updateAlterLogStatus( values.id, formData, values.action ,this.props?.user?.id);
+                this.props.getMyDtrNotifications( this.props?.user?.id );
+                
             }
             break;
     }
+    
   }
 
   
@@ -265,10 +272,12 @@ const mapDispatchToProps = (dispatch) => {
       fetchAlterLog         : ( id ) => dispatch( fetchAlterLog( id ) ),
       addAlterLog           : ( post_data ) => dispatch( addAlterLog( post_data ) ),
       updateAlterLog        : ( id, post_data ) => dispatch( updateAlterLog( id, post_data ) ),
-      updateAlterLogStatus  : ( id, post_data, status ) => dispatch( updateAlterLogStatus( id, post_data, status ) ),
+      updateAlterLogStatus  : ( id, post_data, status, user_id ) => dispatch( updateAlterLogStatus( id, post_data, status, user_id ) ),
       setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
       resetAlterLogInstance : () => dispatch( resetAlterLogInstance() ),
-      clearAlterLogInstance : () => dispatch( clearAlterLogInstance() )
+      clearAlterLogInstance : () => dispatch( clearAlterLogInstance() ),
+      getMyDtrNotifications  : () => dispatch( getMyDtrNotifications() ),
+
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(AlterLog);
