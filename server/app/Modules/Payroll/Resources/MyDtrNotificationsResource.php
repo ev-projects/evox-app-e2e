@@ -4,6 +4,7 @@ namespace App\Modules\Payroll\Resources;
 
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Request\Resources\AlterLogResource;
 
 class MyDtrNotificationsResource extends JsonResource
 {
@@ -114,14 +115,27 @@ class MyDtrNotificationsResource extends JsonResource
                 $status = "No Schedule";
                 $details = "";
             }
-
+          
             // If the $status & $details are valid ( not "" ), add it on the final list. 
             if( is_valid( $status ) && is_valid( $details ) ){
+                $requests = [];
+                foreach( $dtr->alter_log()->get() as $alter_log){
+                    $requests[] = new AlterLogResource( $alter_log );
+                }
                 array_push( $array, 
                 [
                     'date' => Carbon::parse( $dtr->date )->format("Y-m-d"),
                     'status' => $status,
-                    'details' => $details
+                    'details' => $details,
+                    'time_in' => timestamp_to_datetime( $dtr->time_in ),
+                    'time_out' => timestamp_to_datetime( $dtr->time_out ),
+                    'start_datetime' => timestamp_to_datetime( $dtr->start_datetime ),
+                    'end_datetime' => timestamp_to_datetime( $dtr->end_datetime ),
+                    'end_datetime' => timestamp_to_datetime( $dtr->end_datetime ),
+                    'start_flexy_datetime' => timestamp_to_datetime( $dtr->start_flexy_datetime ),
+                    'end_flexy_datetime' => timestamp_to_datetime( $dtr->end_flexy_datetime ),
+                    'break_time' => seconds_to_time( $dtr->break_time ),
+                    'requests' => $requests
                 ]);
             }
         }
