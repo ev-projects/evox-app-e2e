@@ -273,7 +273,7 @@ class DepartmentAnnouncementsForm extends Component {
                         </Form.Control.Feedback>
                       </div>
                     </Col> */}
-                     <Col size="3 dep-announcement-col">
+                     {/* <Col size="3 dep-announcement-col">
                       <div className="form-group">
                         <label className ="dep-announcement-label">Seen By:</label>
                         <select name="exposure_level" value={ values.exposure_level } className="form-control" onChange={handleChange}>
@@ -286,7 +286,7 @@ class DepartmentAnnouncementsForm extends Component {
                             &nbsp;{errors.exposure_level && touched.exposure_level && errors.exposure_level}
                         </Form.Control.Feedback>
                       </div>
-                    </Col>
+                    </Col> */}
 
                 
                     <Col size="3 dep-announcement-col">
