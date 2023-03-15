@@ -389,7 +389,7 @@ class DepartmentAnnouncementController extends Controller
         try {
         $department =  Department::find(Auth::user()->department_id);
         // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
-        $announcements_list = $department->departments_announcements()->latest()
+        $announcements_list = $department->departments_announcements()->where("category", "Department")->latest()
        
         
         ->get();

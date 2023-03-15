@@ -56,7 +56,7 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
         Route::get('/strict/{id}', 'DepartmentAnnouncementController@show_strict');
 
         Route::group(['prefix' => 'my_handle_announcements', 'middleware' => []], function () {
-
+            # from my team department "my handled announcements"
             Route::get('/all', 'DepartmentAnnouncementController@handle_announcements_index');
 
             # Gets/Updates the Department Announcements of the ID indicated on the Parameter
