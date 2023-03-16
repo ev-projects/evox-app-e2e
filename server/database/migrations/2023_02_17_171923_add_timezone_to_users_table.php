@@ -14,7 +14,7 @@ class AddTimezoneToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('timezone')->default("Asia/Manila")->after('department_id');
+            $table->string('timezone')->default("+08:00")->after('department_id');
         });
     }
 
