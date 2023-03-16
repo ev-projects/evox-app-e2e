@@ -321,7 +321,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
     private function daydate($i)
     {
-        return Carbon::now("Asia/Manila")->subDays($i)->format("D") . " " . Carbon::now("Asia/Manila")->subDays($i)->format("m-d-Y");
+        return Carbon::now()->subDays($i)->format("D") . " " . Carbon::now()->subDays($i)->format("m-d-Y");
     }
 
 
