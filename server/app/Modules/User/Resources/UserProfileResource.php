@@ -58,6 +58,7 @@ class UserProfileResource extends JsonResource
             'dpa_ticked_at' => $this->dpa_ticked_at,
             'full_name' => $this->getFullName(),
             'user_has_schedule' => $this->getHasSchedule(),
+            "timezone" => $this->timezone,
                 );
 
         if( $this->show_full_info ) {
