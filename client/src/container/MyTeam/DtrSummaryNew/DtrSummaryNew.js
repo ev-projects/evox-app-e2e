@@ -270,7 +270,7 @@ class DtrSummaryNew extends Component {
       <tr>
         <th scope="col" class="th-id"># ID</th>
         <th scope="col" class="th-name">Employee Name</th>
-        {/* <th scope="col" class="th-dept">Department</th> */}
+        <th scope="col" class="th-dept">Department</th>
         <th scope="col">UL</th>
         <th scope="col">VL+SL</th>
         <th scope="col">Late</th>
@@ -312,6 +312,7 @@ class DtrSummaryNew extends Component {
   return <tr >
         <td>{list.Employee_Number}</td>
         <td>{list.Employee_Name}</td>
+        <td>{list.Department}</td>
         <td>{list.UL}</td>
         <td>{list.Leaves}</td>
         <td>{list.Late}</td>
