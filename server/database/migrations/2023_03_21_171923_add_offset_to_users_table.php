@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddTimezoneToUsersTable extends Migration
+class AddOffsetToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddTimezoneToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('timezone')->default("Asia/Manila")->after('department_id');
+            $table->string('offset')->default("+08:00")->after('timezone');
         });
     }
 
