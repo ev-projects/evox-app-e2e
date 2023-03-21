@@ -387,7 +387,7 @@ if (! function_exists('date_to_text')) {
 
 if (! function_exists('string_offset_to_seconds')) {    
     /**
-     * This function parses date to a text format ( Month day, Year)
+     * This function parses offsets to a seconds format INT
      *
      * @param  date $date
      * @return Carbon Formatted string

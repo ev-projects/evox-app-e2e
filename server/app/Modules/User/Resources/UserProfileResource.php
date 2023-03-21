@@ -36,7 +36,6 @@ class UserProfileResource extends JsonResource
             $birthdate = '';
         }
 
-
         $main_info = array(
             'id' => $this->id,
             'emp_num' => $this->emp_num,
@@ -59,6 +58,8 @@ class UserProfileResource extends JsonResource
             'full_name' => $this->getFullName(),
             'user_has_schedule' => $this->getHasSchedule(),
             "timezone" => $this->timezone,
+            "user_server_time" =>  timestamp_to_datetime(Carbon::now()->timestamp),
+            "user_server_timestamp" => (Carbon::now()->timestamp + string_offset_to_seconds($this->offset))*1000,
                 );
 
         if( $this->show_full_info ) {

@@ -23,7 +23,8 @@ class NavPuncher extends Component {
     this.state = {
         time: new Date(),
         compare_to_clock_in: new Date(),
-        NavHasLoaded : false
+        NavHasLoaded : false,
+        offsetHasLoaded : false
       };
   }
 
@@ -44,14 +45,32 @@ class NavPuncher extends Component {
 		}
 		this.props.biometrixLog(  formData , this.props.user.id );
 	}
+   addSeconds(date, seconds) {
+    date.setSeconds(date.getSeconds() + seconds);
+    return date;
+  }
   componentWillMount= async () => {
+    const date = new Date();
     // const { user, constant, dashboard } = this.props;
     this.timer = setTimeout(() => {
       this.setState({
-        time: new Date()
+        time: this.props.user?.user_server_timestamp != null ||  this.props.user?.user_server_timestamp != undefined? 
+        this.state.offsetHasLoaded?   this.addSeconds(this.state.time, 1) :(new Date(this.props.user?.user_server_timestamp+ (date.getTimezoneOffset() * 60*1000)))
+        
+        : new Date(),
+        // time: this.props.user?.user_server_timestamp != null ||  this.props.user?.user_server_timestamp != undefined? new Date(this.props.user?.user_server_timestamp- (date.getTimezoneOffset() * 3600*1000)): new Date(),
+
       });
+
+      this.setState({
+        offsetHasLoaded:  this.props.user?.user_server_timestamp != null ||  this.props.user?.user_server_timestamp != undefined? true :false,
+
+      });
+
       this.componentWillMount();
   }, Math.floor(Date.now() / 1000) * 1000 + 1000 - Date.now());
+
+  
 
 
   var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
@@ -93,7 +112,6 @@ class NavPuncher extends Component {
 
  
     const user = this.props.user;
-    console.log(this.props.dashboard?.isNavDtrLoaded);
     return (
       <div className="nav-puncher">
 
