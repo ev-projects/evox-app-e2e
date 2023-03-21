@@ -132,6 +132,23 @@ if (! function_exists('datetime_to_timestamp')) {
 
 
 
+// if (! function_exists('timestamp_to_datetime')) {   
+//     /**
+//      * This function returns a converted Timestamp to Datetime
+//      *
+//      * @param  timestamp timestamp
+//      * @return datetime
+//      */
+//     function timestamp_to_datetime( $timestamp ) 
+//     {
+//         try {
+//             return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp) : null;
+//         }catch(Exception $e){
+//             throw $e;
+//         }
+//     }
+// }
+
 if (! function_exists('timestamp_to_datetime')) {   
     /**
      * This function returns a converted Timestamp to Datetime
@@ -141,13 +158,23 @@ if (! function_exists('timestamp_to_datetime')) {
      */
     function timestamp_to_datetime( $timestamp ) 
     {
+    
         try {
+        //    if(Auth::user() && Auth::user()->timezone != null){
+            // return ( is_valid( $timestamp ) ) ?  Carbon::createFromTimestamp( $timestamp )->setTimezone(Auth::user()->timezone)->format('Y-m-d H:i:s') : null;
+            
+        //    }
+           
+        if(Auth::user() && Auth::user()->offset != null){
+            return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds(Auth::user()->offset)) : null;
+        }
             return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp) : null;
         }catch(Exception $e){
             throw $e;
         }
     }
 }
+
 
 if (! function_exists('timestamp_to_date')) {   
     /**
@@ -352,6 +379,38 @@ if (! function_exists('date_to_text')) {
     {
         try {
             return Carbon::parse($date)->format($format);
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+if (! function_exists('string_offset_to_seconds')) {    
+    /**
+     * This function parses offsets to a seconds format INT
+     *
+     * @param  date $date
+     * @return Carbon Formatted string
+     */
+    function string_offset_to_seconds($offset) 
+    {
+        try {
+            if(is_string($offset)){
+                //clean spaces
+                $offset_sign = str_replace(' ', '', $offset); 
+
+                //+00:00 to just 00:00
+                $time = trim( $offset, $offset_sign[0]); 
+
+
+                $seconds = strtotime("1970-01-01". $time.":00". " UTC");
+
+                return $offset_sign[0] == "+"?$seconds: $seconds*-1;
+            } 
+            else 
+            {
+                return 0;
+            }
         }catch(Exception $e){
             throw $e;
         }
