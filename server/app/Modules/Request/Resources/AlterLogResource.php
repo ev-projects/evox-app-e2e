@@ -2,8 +2,9 @@
 
 namespace App\Modules\Request\Resources;
 
-use App\Modules\User\Resources\UserProfileResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\User\Resources\UserProfileResource;
 
 class AlterLogResource extends JsonResource
 {
@@ -18,15 +19,16 @@ class AlterLogResource extends JsonResource
         $result = null;
 
         if( ! is_null( $this->resource ) ) {
+            $offset_seconds =  string_offset_to_seconds(Auth::user()->country_zone_offset());
             $result = array(
                 'request_type' => get_constant('REQUEST_TYPES.alter_log'),
                 'id' => $this->id,
                 'user_id' => $this->user_id,
                 'date' => $this->date,
-                'current_time_in' => ( $this->current_time_in!=null)?date("Y-m-d H:i:s", $this->current_time_in):null,
-                'current_time_out' =>( $this->current_time_out!=null)? date("Y-m-d H:i:s",$this->current_time_out):null,
-                'new_time_in' => date("Y-m-d H:i:s", $this->new_time_in),
-                'new_time_out' => date("Y-m-d H:i:s",$this->new_time_out),
+                'current_time_in' => ( $this->current_time_in!=null)?date("Y-m-d H:i:s", $this->current_time_in+ $offset_seconds ):null,
+                'current_time_out' =>( $this->current_time_out!=null)? date("Y-m-d H:i:s",$this->current_time_out + $offset_seconds):null,
+                'new_time_in' => date("Y-m-d H:i:s", $this->new_time_in + $offset_seconds),
+                'new_time_out' => date("Y-m-d H:i:s",$this->new_time_out+ $offset_seconds ),
                 'status' => $this->status,
                 'employee_note' => $this->employee_note,
                 'approver_note' => $this->approver_note,

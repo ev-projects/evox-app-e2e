@@ -24,10 +24,10 @@ class ScheduleDetail extends Model{
      */
     public function getFormattedDetail(){
         return [
-            'start_time'        => seconds_to_time( $this->start_time ),
-            'end_time'          => seconds_to_time( $this->end_time ),
-            'start_flexy_time'  => seconds_to_time( $this->start_flexy_time ),
-            'end_flexy_time'    => seconds_to_time( $this->end_flexy_time ),
+            'start_time'        => seconds_to_time( $this->start_time ,false,true),
+            'end_time'          => seconds_to_time( $this->end_time ,false,true),
+            'start_flexy_time'  => seconds_to_time( $this->start_flexy_time ,false,true),
+            'end_flexy_time'    => seconds_to_time( $this->end_flexy_time ,false,true),
             'break_time'        => seconds_to_time( $this->break_time ),
         ];
     }

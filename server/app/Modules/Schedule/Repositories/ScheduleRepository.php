@@ -227,20 +227,20 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             foreach( $this->filter_schedule_details($schedule, $schedule_details) as $day => $details ){
                 $schedule_details_array[ $day ] = new ScheduleDetail();
                 $schedule_details_array[ $day ]->day               = $day;
-                $schedule_details_array[ $day ]->start_time        = ( is_numeric($details['start_time']) ? $details['start_time'] : time_to_seconds($details['start_time']) );
-                $schedule_details_array[ $day ]->end_time          = ( is_numeric($details['end_time']) ? $details['end_time'] : time_to_seconds($details['end_time']) );
+                $schedule_details_array[ $day ]->start_time        = ( is_numeric($details['start_time']) ? $details['start_time'] : time_to_seconds($details['start_time'], true, "subtract") );
+                $schedule_details_array[ $day ]->end_time          = ( is_numeric($details['end_time']) ? $details['end_time'] : time_to_seconds($details['end_time'], true, "subtract") );
                 $schedule_details_array[ $day ]->break_time        = ( is_numeric($details['break_time']) ? $details['break_time'] : time_to_seconds($details['break_time']) );
 
                 # For Flexible Schedule
                 if($schedule['schedule_type']=="flexible"){
-                    $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time']) );
-                    $schedule_details_array[ $day ]->end_flexy_time    = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time']) );
+                    $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time'], true, "subtract") );
+                    $schedule_details_array[ $day ]->end_flexy_time    = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time'], true, "subtract") );
 
                 # Check if the start flexy and end flexy is existing since it's optional
                 }elseif($schedule['schedule_type']=="customize"){
                     if( isset( $details['start_flexy_time'] ) && isset( $details['end_flexy_time'] ) ){
-                        $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time']) );
-                        $schedule_details_array[ $day ]->end_flexy_time  = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time']) );
+                        $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time'], true, "subtract") );
+                        $schedule_details_array[ $day ]->end_flexy_time  = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time'], true, "subtract") );
                     }
                 }
             }
