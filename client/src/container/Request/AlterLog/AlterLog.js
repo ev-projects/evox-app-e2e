@@ -37,9 +37,9 @@ class AlterLog extends Component {
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = (values) => {
 
+
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
-
     for (var key in values) {
       
         if( values[key] != null ) {
@@ -51,7 +51,11 @@ class AlterLog extends Component {
                 case "current_time_out":
                 case "new_time_in":
                 case "new_time_out":
-                    formData.append(key, moment( values[key] ).format("YYYY-MM-DD HH:mm:ss") );
+              
+                // formData.append(key, moment( values[key] ).format("YYYY-MM-DD HH:mm:ss") );
+                  // console.log( moment( values[key]).subtract(this.props.user?.user_offset_seconds, 'seconds').format("YYYY-MM-DD HH:mm:ss"));
+
+                  formData.append(key, moment( values[key]).subtract(this.props.user?.user_offset_seconds, 'seconds').format("YYYY-MM-DD HH:mm:ss") );
                     break;
                 default:
                     formData.set(key, values[key]);
@@ -59,6 +63,8 @@ class AlterLog extends Component {
             }
         }
     }
+
+    
 
     // Checks on what action to use depending on the values.action
     switch( values.action  ) { 

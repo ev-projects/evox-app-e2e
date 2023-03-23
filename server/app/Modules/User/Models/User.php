@@ -167,6 +167,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->get();
     }
+    public function country_zone_offset()
+    {
+        return $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first()->time_difference;
+    }
 
 
 

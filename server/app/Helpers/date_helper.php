@@ -55,9 +55,19 @@ if (! function_exists('time_to_seconds')) {
      * @param  time time
      * @return timestamp seconds;
      */
-    function time_to_seconds($time) 
+    function time_to_seconds($time, $with_offset = false, $offset_operation = "add" ) 
     {
         try {
+                if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset){
+                    if($offset_operation == "add"){
+                        return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') + string_offset_to_seconds(Auth::user()->country_zone_offset()): null;
+                    }else if($offset_operation == "subtract"){
+                        return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') - string_offset_to_seconds(Auth::user()->country_zone_offset()): null;
+                    }
+                    else{
+                        return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') : null;
+                    }
+                }
             return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') : null;
         }catch(Exception $e){
             throw $e;
@@ -74,18 +84,26 @@ if (! function_exists('seconds_to_time')) {
      * @param  boolean is_complete_date_format
      * @return time time
      */
-    function seconds_to_time( $seconds = 0, $is_complete_date_format=false ) 
+    function seconds_to_time( $seconds = 0, $is_complete_date_format=false, $with_offset = false ) 
     {
         try {
             # If the Seconds are less than equal the Timestamp of a Day (86,400), format by default proceedure.
             if( $seconds <= get_constant('TIMESTAMP.day') ) {
+                
                 $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
+                if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset){
+                    return date($date_format, strtotime('today') + $seconds + string_offset_to_seconds(Auth::user()->country_zone_offset()));
+                }
                 return date($date_format, strtotime('today') + $seconds);
                 
             # If the Seconds are greater than the Timestamp of the Day (86,400), Format the Time in another way.
             } else {
+                
                 $separator = ':';
                 $end_seconds =( $is_complete_date_format ) ? $separator . ($seconds%60) : '';
+                if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset){
+                    return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds + string_offset_to_seconds(Auth::user()->country_zone_offset())/60)%60) . $end_seconds;
+                }
                 return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds/60)%60) . $end_seconds;
             }
         }catch(Exception $e){
@@ -93,6 +111,7 @@ if (! function_exists('seconds_to_time')) {
         }
     }
 }
+
 
 
 if (! function_exists('seconds_to_hour')) {   
@@ -165,8 +184,8 @@ if (! function_exists('timestamp_to_datetime')) {
             
         //    }
            
-        if(Auth::user() && Auth::user()->offset != null){
-            return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds(Auth::user()->offset)) : null;
+        if(Auth::user() && Auth::user()->country_zone_offset() != null){
+            return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds(Auth::user()->country_zone_offset())) : null;
         }
             return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp) : null;
         }catch(Exception $e){

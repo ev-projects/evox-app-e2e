@@ -144,17 +144,17 @@ class ChangeSchedule extends Component {
 				if (window.confirm("Are you sure you want to submit/update this request?")) {
 					switch( values.method ) {
 	
-					  case "store":
-						  this.props.addChangeSchedule( formData );
-						  break;
-				
-					  case "update":
-						  formData['_method'] = 'PUT';
-						  this.props.updateChangeSchedule( values.id, formData );
-						  break;
-	
-					  default:
-						  break;
+						case "store":
+							this.props.addChangeSchedule( formData );
+							break;
+					
+						case "update":
+							formData['_method'] = 'PUT';
+							this.props.updateChangeSchedule( values.id, formData );
+							break;
+		
+						default:
+							break;
 	
 					}
 				}
@@ -192,14 +192,14 @@ class ChangeSchedule extends Component {
 		isShowModelBeforeFlex: false
 	});
       // Clear the Instance of Change Schedule before rendering new Instance (If applicable)
-      this.props.clearChangeScheduleInstance();
+    this.props.clearChangeScheduleInstance();
 
       // If the ID is defined, load the Change Schedule Instance base on the ID Parameter in Route.
-      if( this.props.params.id != undefined ) {
+		if( this.props.params.id != undefined ) {
 
         this.props.fetchChangeSchedule( this.props.params.id )
-      }
-  }
+		}
+	}
 
   	render = () => {  
 
@@ -223,7 +223,7 @@ class ChangeSchedule extends Component {
 					end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.schedule_details.' +key+'.end_flexy_time')), 
 					break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.schedule_details.' +key+'.break_time')) }; 
 				index++;
-			  }
+			}
 		}
 
 		// Sets Initial Value of the current Formik form.
@@ -283,7 +283,7 @@ class ChangeSchedule extends Component {
 						<input type="hidden" name="source_type" value={values.source_type} />
 						<input type="hidden" name="schedule_type" value={values.schedule_type} />
 						<input type="hidden" name="id"  value={values.id} />
-            			{ onApproval ? <input type="hidden" name="status"  value={values.status} /> : null}
+            { onApproval ? <input type="hidden" name="status"  value={values.status} /> : null}
 						<ContainerWrapper>
 							
 							<ContainerBody>

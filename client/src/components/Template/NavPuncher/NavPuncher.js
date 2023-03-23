@@ -54,16 +54,16 @@ class NavPuncher extends Component {
     // const { user, constant, dashboard } = this.props;
     this.timer = setTimeout(() => {
       this.setState({
-        time: this.props.user?.user_server_timestamp != null ||  this.props.user?.user_server_timestamp != undefined? 
-        this.state.offsetHasLoaded?   this.addSeconds(this.state.time, 1) :(new Date(this.props.user?.user_server_timestamp+ (date.getTimezoneOffset() * 60*1000)))
+        time: this.props.user?.user_server_timestamp_mils != null ||  this.props.user?.user_server_timestamp_mils != undefined? 
+        this.state.offsetHasLoaded?   this.addSeconds(this.state.time, 1) :(new Date(this.props.user?.user_server_timestamp_mils+ (date.getTimezoneOffset() * 60*1000)))
         
         : new Date(),
-        // time: this.props.user?.user_server_timestamp != null ||  this.props.user?.user_server_timestamp != undefined? new Date(this.props.user?.user_server_timestamp- (date.getTimezoneOffset() * 3600*1000)): new Date(),
+        // time: this.props.user?.user_server_timestamp_mils != null ||  this.props.user?.user_server_timestamp_mils != undefined? new Date(this.props.user?.user_server_timestamp_mils- (date.getTimezoneOffset() * 3600*1000)): new Date(),
 
       });
 
       this.setState({
-        offsetHasLoaded:  this.props.user?.user_server_timestamp != null ||  this.props.user?.user_server_timestamp != undefined? true :false,
+        offsetHasLoaded:  this.props.user?.user_server_timestamp_mils != null ||  this.props.user?.user_server_timestamp_mils != undefined? true :false,
 
       });
 

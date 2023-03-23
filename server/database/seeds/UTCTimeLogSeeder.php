@@ -26,5 +26,12 @@ class UTCTimeLogSeeder extends Seeder
             'country_name' => 'Philippines',
             'created_at' => date("Y-m-d H:i:s")
         ]);
+        DB::table('utc_timelog')->insert([
+            'country_time_zone' => 'EET',
+            'time_difference' => '+2:00',
+            'country_id' => 3,
+            'country_name' => 'Bulgaria',
+            'created_at' => date("Y-m-d H:i:s")
+        ]);
     }
 }
