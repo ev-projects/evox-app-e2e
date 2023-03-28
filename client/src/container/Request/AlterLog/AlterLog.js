@@ -126,6 +126,8 @@ class AlterLog extends Component {
     // Sets the Method of the current state.
     const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )
 
+    const   owner_offset = this.props.instance.offset_difference != undefined ? this.props.instance.offset_difference : null;
+
     // Sets Initial Value of the current Formik form.
     const initialValue = {
         action:             null,
@@ -139,6 +141,11 @@ class AlterLog extends Component {
         new_time_out:       this.props.instance.new_time_out != undefined ? new Date( this.props.instance.new_time_out ) : ( this.props.location.current_time_out != undefined ? new Date(  this.props.location.current_time_out ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
         employee_note:      this.props.instance.employee_note != undefined ? this.props.instance.employee_note : null,
         approver_note:      this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null,
+        pov_current_time_in:    this.props.instance.pov_current_time_in != undefined ? new Date( this.props.instance.pov_current_time_in ) : ( this.props.location.pov_current_time_in != undefined ? new Date(  this.props.location.pov_current_time_in ) : null ), 
+        pov_current_time_out:   this.props.instance.pov_current_time_out != undefined ? new Date( this.props.instance.pov_current_time_out ) : ( this.props.location.pov_current_time_out != undefined ? new Date(  this.props.location.pov_current_time_out ) : null ), 
+        pov_new_time_in:        this.props.instance.pov_new_time_in != undefined ? new Date( this.props.instance.pov_new_time_in ) : ( this.props.location.pov_current_time_in != undefined ? new Date(  this.props.location.pov_current_time_in ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
+        pov_new_time_out:       this.props.instance.pov_new_time_out != undefined ? new Date( this.props.instance.pov_new_time_out ) : ( this.props.location.pov_current_time_out != undefined ? new Date(  this.props.location.pov_current_time_out ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
+        pov_timezone:                 this.props.instance.pov_timezone != undefined ? "-" + this.props.instance.pov_timezone : null,
     }
 
     // Sets the default title for hte Request. Checks aswell if it's for approval.
@@ -171,6 +178,20 @@ class AlterLog extends Component {
             <ContainerWrapper>
               <ContainerBody>
                 <Content col="6" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
+                {  /** Shows Approver Note if on Approval   */
+                    onApproval ? 
+                  <Row>
+                 
+                   <Col size="6">
+                   <div className="form-group">
+                            <h5><b>Supervisor Prespective Timezone</b> </h5>
+                            <label>-{this.props.user?.pov_timezone}</label>
+                        </div>
+                   </Col>
+                  </Row>
+                  :
+                    null 
+                  }
                 <Row>  
                     <Col size="6"> 
                       <div className="form-group">
@@ -189,16 +210,60 @@ class AlterLog extends Component {
                     <Col size="6"> 
                       <div className="form-group">
                         <label>New Time-In:</label>
-                        <InputDateTime name="new_time_in" value={values.new_time_in} minDate={values.date} maxDate={values.date} popperPlacement="right-start" />
+                        <InputDateTime name="new_time_in" value={values.new_time_in} minDate={values.date} maxDate={values.date}
+                         popperPlacement="right-start" contrast_too = "new_time_in" offset_data={owner_offset}/>
                       </div>  
                     </Col> 
                     <Col size="6">
                       <div className="form-group">
                         <label>New Time-Out:</label>
-                        <InputDateTime name="new_time_out" value={values.new_time_out} minDate={values.date} maxDate={ DateFormatter.add_day_to_datetime( values.date, 1 ) } popperPlacement="right-start" />
+                        <InputDateTime name="new_time_out" value={values.new_time_out} minDate={values.date} maxDate={ DateFormatter.add_day_to_datetime( values.date, 1 ) } 
+                        popperPlacement="right-start" contrast_too = "new_time_out" offset_data={owner_offset}/>
                       </div> 
                     </Col> 
                   </Row> 
+
+                  {  /** Shows Approver Note if on Approval   */
+                    onApproval ? 
+                   
+                    <div className="alterPOV">
+                    <div className="form-group">
+                            <h5><b>Employee Prespective Timezone</b> </h5>
+                            <label>{values.pov_timezone}</label>
+                        </div>
+                        <Row>  
+                        <Col size="6"> 
+                          <div className="form-group">
+                            <label>Current Time-In:</label>
+                            <InputDateTime name="pov_current_time_in" value={values.pov_current_time_in} readOnly />
+                          </div>
+                        </Col> 
+                        <Col size="6">   
+                          <div className="form-group">
+                            <label>Current Time-Out:</label>
+                            <InputDateTime name="pov_current_time_out" value={values.pov_current_time_out} readOnly />
+                          </div>
+                        </Col> 
+                      </Row> 
+                      <Row>  
+                        <Col size="6"> 
+                          <div className="form-group">
+                            <label>New Time-In:</label>
+                            <InputDateTime name="pov_new_time_in" value={values.pov_new_time_in}  popperPlacement="right-start" readOnly />
+                          </div>  
+                        </Col> 
+                        <Col size="6">
+                          <div className="form-group">
+                            <label>New Time-Out:</label>
+                            <InputDateTime name="pov_new_time_out" value={values.pov_new_time_out}  popperPlacement="right-start" readOnly />
+                          </div> 
+                        </Col> 
+                      </Row> 
+                    </div> 
+                    
+                    :
+                    null 
+                  }
 
                   {  /** Shows Employee Note if Not on Approval   */
                   ! onApproval ? 

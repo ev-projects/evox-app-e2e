@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import { Form,Button,InputGroup,FormControl  } from 'react-bootstrap';
+import { Form,Button,InputGroup,FormControl,Collapse   } from 'react-bootstrap';
 import Select from "react-select";
 import moment from 'moment';
 
 import "./ChangeSchedule.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, ScheduledetailsWithTimezone,onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 
 /** Form Manipulation */
@@ -188,6 +188,7 @@ class ChangeSchedule extends Component {
   
   componentWillMount(){
 	this.setState({
+		open_contrast:		true,
 		isShowModelNsd: false,
 		isShowModelBeforeFlex: false
 	});
@@ -210,6 +211,7 @@ class ChangeSchedule extends Component {
 		// Sets the Method of the current state.
 		const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )
 
+		const   owner_offset = this.props.instance.offset_difference != undefined ? this.props.instance.offset_difference : null;
 
 		// Sets the Initial Value for customized schedule details
 		var cst_schedule_details = [];
@@ -226,6 +228,20 @@ class ChangeSchedule extends Component {
 			}
 		}
 
+		var pov_schedule_details = [];
+		var index = 0;
+		if( this.props.instance?.schedule?.pov_schedule_details != undefined ) {
+			for (var key in this.props.instance.schedule.pov_schedule_details) {
+				pov_schedule_details[index] = {
+					start_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_time')), 
+					end_time : 			new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_time')), 
+					start_flexy_time: 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_flexy_time')), 
+					end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_flexy_time')), 
+					break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) }; 
+				index++;
+			}
+		}
+		const pov_timezone_info =  this.props.instance.user?.pov_timezone != undefined ? this.props.instance.user?.pov_timezone : null;
 		// Sets Initial Value of the current Formik form.
 		const initialValue = {
 			action:             null,
@@ -237,6 +253,8 @@ class ChangeSchedule extends Component {
 			approver_note:      this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null,
 			name:      			this.props.instance?.schedule?.name != undefined ? this.props.instance.schedule.name : "[CHANGE SCHEDULE REQUEST] - " + this.props.user.full_name,
 			cst_schedule_details: cst_schedule_details,
+			
+			pov_schedule_details: pov_schedule_details,
 			sorted_week_days: ['mon','tue','wed','thu','fri','sat','sun'],
 			schedule_policies : {
 				allow_late : 			( Validator.isNumeric(this.props.instance?.schedule?.schedule_policies?.allow_late) ? parseInt(this.props.instance.schedule.schedule_policies.allow_late) : 0 ), 
@@ -344,9 +362,40 @@ class ChangeSchedule extends Component {
 											</div>
 										</Col>
 									</Row>
+									
+									{  /** Shows Approver Note if on Approval   */
+										onApproval ? 
+	
+										<Row>
+										<Col size="6">
+											<Button
+												onClick={() => this.setState({
+													open_contrast: !this.state.open_contrast
+												})}
+												// aria-controls="example-collapse-text"
+												// aria-expanded={open}
+											>
+												Hide Employee's Outlook
+											</Button>
+											</Col>
+											<Col size="3">
+												<p>{this.props.user.pov_timezone}   -</p>
+											</Col>
+											<Col size="3">
+												<p>{pov_timezone_info}</p>
+											</Col>
+										</Row>
+									
+										:null 
+									}
 									{values.sorted_week_days.map((day, index) => {
 										if(values.work_days.includes(day)==true){
-											return <Scheduledetails day={day} index={values.work_days.indexOf(day)} />
+											return <ScheduledetailsWithTimezone day={day} index={values.work_days.indexOf(day)} 
+													offset_data={owner_offset}
+													on_approval = {onApproval}
+													open_contrast = {this.state.open_contrast}
+													// pov_timezone_info = {pov_timezone_info}
+											/>
 										}
 									})}
 

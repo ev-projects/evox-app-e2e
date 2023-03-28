@@ -49,3 +49,10 @@
   font-size: 28px;
   font-weight: bold;
 }
+
+.changeSchedulePOV{
+  background-color: #3acfdf2a ;
+  padding: 10px;
+  padding-left: 20px;
+  border-radius: 6px;
+}
