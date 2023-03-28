@@ -2,11 +2,12 @@
 
 namespace App\Modules\Request\Resources;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Modules\Schedule\Resources\ScheduleResource;
 
-use App\Modules\Schedule\Repositories\ScheduleRepository;
 use App\Modules\User\Resources\UserProfileResource;
+use App\Modules\Schedule\Resources\ScheduleResource;
+use App\Modules\Schedule\Repositories\ScheduleRepository;
 
 class ChangeScheduleResource extends JsonResource
 {
@@ -21,7 +22,7 @@ class ChangeScheduleResource extends JsonResource
     public function toArray($request)
     {
         $result = null;
-
+        $owner = $this->user()->first();
         if( ! is_null( $this->resource ) ) {
 
             $result = array(
@@ -36,6 +37,9 @@ class ChangeScheduleResource extends JsonResource
                 'approver_note' => $this->approver_note,
                 'user' => new UserProfileResource( $this->user()->first(), false), 
                 'is_under_supervisee'   => is_under_supervisee( $this->user_id, false ),
+                
+                'offset_difference_info' =>   (string_offset_to_seconds($owner->country_zone_offset())/3600)."-". (string_offset_to_seconds(Auth::user()->country_zone_offset())/3600),
+                'offset_difference' =>   string_offset_to_seconds($owner->country_zone_offset())- string_offset_to_seconds(Auth::user()->country_zone_offset()),
             );
         }
 

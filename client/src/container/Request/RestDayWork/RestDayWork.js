@@ -124,6 +124,8 @@ class RestDayWork extends Component {
     // Sets the Method of the current state.
     const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )
 
+    const   owner_offset = this.props.instance.offset_difference != undefined ? this.props.instance.offset_difference : null;
+
     // Sets Initial Value of the current Formik form.
     const initialValue = {
         action:             null,
@@ -136,6 +138,13 @@ class RestDayWork extends Component {
         break_time:         this.props.instance.break_time != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.break_time+":00" ) : null,
         employee_note:      this.props.instance.employee_note != undefined ? this.props.instance.employee_note : null,
         approver_note:      this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null,
+
+
+        pov_start_time:         this.props.instance.pov_start_time != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.pov_start_time+":00" ) : null,
+        pov_end_time:           this.props.instance.pov_end_time != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.pov_end_time+":00" ): null,
+        pov_timezone:                 this.props.instance.pov_timezone != undefined ? "-" + this.props.instance.pov_timezone : null,
+
+        
     }
 
 
@@ -167,6 +176,20 @@ class RestDayWork extends Component {
             <ContainerWrapper>
               <ContainerBody>
                 <Content col="6" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
+                    {  /** Shows Approver Note if on Approval   */
+                    onApproval ? 
+                  <Row>
+                 
+                   <Col size="6">
+                   <div className="form-group">
+                            <h5><b>Supervisor Prespective Timezone</b> </h5>
+                            <label>-{this.props.user?.pov_timezone}</label>
+                        </div>
+                   </Col>
+                  </Row>
+                  :
+                    null 
+                  }
                   <Row>  
                     <Col size="4"> 
                       <div className="form-group">
@@ -179,13 +202,13 @@ class RestDayWork extends Component {
                     <Col size="4">   
                       <div className="form-group">
                         <label>On Duty: </label>
-                        <InputTime name="start_time" value={values.start_time} />
+                        <InputTime name="start_time" value={values.start_time} contrast_too = "start_time" offset_data={owner_offset}/>
                       </div>
                     </Col> 
                     <Col size="4"> 
                       <div className="form-group">
                         <label>Off Duty: </label>
-                        <InputTime name="end_time" value={values.end_time}/>
+                        <InputTime name="end_time" value={values.end_time} contrast_too = "end_time" offset_data={owner_offset}/>
                       </div>  
                     </Col> 
                     <Col size="4">
@@ -195,6 +218,42 @@ class RestDayWork extends Component {
                       </div> 
                     </Col> 
                   </Row> 
+
+                  {  /** Shows Approver Note if on Approval   */
+                    onApproval ? 
+                  <div className="restDayPOV">
+                        <span>
+    
+                        <div className="form-group">
+                            <h5><b>Employee Prespective Timezone</b> </h5>
+                            <label>{values.pov_timezone}</label>
+                        </div>
+                        
+                            <Row>
+                              <Col size="4">   
+                                <div className="form-group">
+                                  <label>On Duty: </label>
+                                  <InputTime name="pov_start_time" isDisabled={true} value={values.pov_start_time} />
+                                </div>  
+                              </Col> 
+                              <Col size="4"> 
+                                <div className="form-group">
+                                  <label>Off Duty: </label>
+                                  <InputTime name="pov_end_time" isDisabled={true} value={values.pov_end_time}/>
+                                </div>  
+                              </Col> 
+                              <Col size="4">
+                                <div className="form-group">
+                                  <label>Break: </label>
+                                  <InputTime name="break_time" isDisabled={true} value={values.break_time}/>
+                                </div> 
+                              </Col> 
+                            </Row> 
+                        </span>
+                  </div>
+                    :
+                    null 
+                  }
 
                   {  /** Shows Employee Note if Not on Approval   */
                   ! onApproval ? 
@@ -272,6 +331,9 @@ const mapDispatchToProps = (dispatch) => {
       clearRestDayWorkInstance : () => dispatch( clearRestDayWorkInstance() )
     }
 }
+
+
+
 export default connect(mapStateToProps, mapDispatchToProps)(RestDayWork);
 
 

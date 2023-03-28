@@ -84,16 +84,17 @@ if (! function_exists('seconds_to_time')) {
      * @param  boolean is_complete_date_format
      * @return time time
      */
-    function seconds_to_time( $seconds = 0, $is_complete_date_format=false, $with_offset = false ) 
+    function seconds_to_time( $seconds = 0, $is_complete_date_format=false, $with_offset = false) 
     {
         try {
             # If the Seconds are less than equal the Timestamp of a Day (86,400), format by default proceedure.
             if( $seconds <= get_constant('TIMESTAMP.day') ) {
                 
                 $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
-                if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset){
+                if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset ){
                     return date($date_format, strtotime('today') + $seconds + string_offset_to_seconds(Auth::user()->country_zone_offset()));
                 }
+                //DEFAULT OUTPUT
                 return date($date_format, strtotime('today') + $seconds);
                 
             # If the Seconds are greater than the Timestamp of the Day (86,400), Format the Time in another way.
@@ -104,6 +105,8 @@ if (! function_exists('seconds_to_time')) {
                 if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset){
                     return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds + string_offset_to_seconds(Auth::user()->country_zone_offset())/60)%60) . $end_seconds;
                 }
+
+                //DEFAULT OUTPUT
                 return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds/60)%60) . $end_seconds;
             }
         }catch(Exception $e){
@@ -111,6 +114,51 @@ if (! function_exists('seconds_to_time')) {
         }
     }
 }
+
+
+
+if (! function_exists('seconds_to_time_POV')) {   
+    /**
+     * This function returns a converted Seconds to Time
+     *
+     * @param  timestamp seconds
+     * @param  boolean is_complete_date_format
+     * @return time time
+     */
+    function seconds_to_time_POV( $seconds = 0, $is_complete_date_format=false, $with_offset = false, $user) 
+    {
+      
+        try {
+            # If the Seconds are less than equal the Timestamp of a Day (86,400), format by default proceedure.
+            if( $seconds <= get_constant('TIMESTAMP.day') ) {
+                
+                $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
+                if($user && $user->country_zone_offset() != null && $with_offset ){
+                    return date($date_format, strtotime('today') + $seconds + string_offset_to_seconds($user->country_zone_offset()));
+                }
+                //DEFAULT OUTPUT
+                return date($date_format, strtotime('today') + $seconds);
+                
+            # If the Seconds are greater than the Timestamp of the Day (86,400), Format the Time in another way.
+            } else {
+                
+                $separator = ':';
+                $end_seconds =( $is_complete_date_format ) ? $separator . ($seconds%60) : '';
+                if($user && $user->country_zone_offset() != null && $with_offset){
+                    return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds + string_offset_to_seconds($user->country_zone_offset())/60)%60) . $end_seconds;
+                }
+
+                //DEFAULT OUTPUT
+                return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds/60)%60) . $end_seconds;
+            }
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+
+
 
 
 

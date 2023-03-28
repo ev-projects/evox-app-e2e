@@ -58,8 +58,30 @@ const InputTime = (props) => {
     </Field>
           );
   }
-
-
+  if(props.contrast_too!=null){
+    return(<Field>
+      {({ field, form }) => (
+              <span>
+                <DatePicker 
+                    className="form-control"                      
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm" 
+                    selected={ eval('field.value.' + props.name)}              
+                    onChange={date => {form.setFieldValue(props.name, date);
+                       onSelectTimeHandlerRestDay(date,form.setFieldValue,props.contrast_too,props.offset_data)}}
+                    disabled={props.isDisabled}
+                /> 
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={props.name} className="input-feedback" />
+                </Form.Control.Feedback> 
+              </span>)}
+    </Field>
+        );
+  }
       return(<Field>
         {({ field, form }) => (
                 <span>
@@ -72,7 +94,8 @@ const InputTime = (props) => {
                       dateFormat="HH:mm"
                       timeFormat="HH:mm" 
                       selected={ eval('field.value.' + props.name)}              
-                      onChange={date => form.setFieldValue(props.name, date)}
+                      onChange={date => {form.setFieldValue(props.name, date);}}
+                      disabled={props.isDisabled}
                   /> 
                   <Form.Control.Feedback type="invalid">
                     <ErrorMessage component="div" name={props.name} className="input-feedback" />
@@ -100,7 +123,7 @@ const InputDate = (props) => {
                       timeFormat="MMMM d, yyyy"
                       selected={ eval('field.value.' + props.name)}       
                       readOnly={ props.readOnly != undefined ? props.readOnly : false }
-                      onChange={date => form.setFieldValue(props.name, date)}
+                      onChange={date => {form.setFieldValue(props.name, date)}}
                   /> 
                   <Form.Control.Feedback type="invalid">
                     <ErrorMessage component="div" name={props.name} className="input-feedback" />
@@ -126,6 +149,32 @@ const CustomTimeInput = ({ value, onChange }) => {
 
 /** This is component for Date */
 const InputDateTime = (props) => {
+  if(props.contrast_too!=null){
+    return(<Field>
+      {({ field, form }) => (
+              <div>
+              <DatePicker 
+                  className="form-control" 
+                  showTimeInput
+                  customTimeInput={<CustomTimeInput />}
+                  popperPlacement={ props.popperPlacement != undefined ? props.popperPlacement : false }
+                  showTimeSelectOnly={ props.showTimeSelectOnly != undefined ? props.showTimeSelectOnly : false }
+                  showDateSelectOnly={ props.showDateSelectOnly != undefined ? props.showDateSelectOnly : false }
+                  minDate={ props.minDate != undefined ? props.minDate : false }
+                  maxDate={ props.maxDate != undefined ? props.maxDate : false }
+                  dateFormat="MMMM d, yyyy HH:mm"
+                  selected={ eval('field.value.' + props.name)}       
+                  readOnly={ props.readOnly != undefined ? props.readOnly : false }
+                  onChange={date => {form.setFieldValue(props.name, date); ;
+                    onSelectTimeHandlerAlterlog(date,form.setFieldValue,props.contrast_too,props.offset_data)}}
+              /> 
+              <Form.Control.Feedback type="invalid">
+                <ErrorMessage component="div" name={props.name} className="input-feedback" />
+              </Form.Control.Feedback> 
+            </div>)}
+    </Field>
+        );
+  }
   return(<Field>
       {({ field, form }) => (
               <div>
@@ -169,6 +218,38 @@ const InputDateTime = (props) => {
     setFieldValue('break', breakTime)
     }else{
         setFieldValue('on_duty', null) 
+    }
+
+  };
+
+  const onSelectTimeHandlerRestDay = (data, setFieldValue,type,offset_data) => {
+    if(data!==null){
+        var onDuty = data;
+        var employeeDuty = new Date(); 
+  
+
+        employeeDuty.setMinutes(onDuty.getMinutes()); 
+        employeeDuty.setHours( onDuty.getHours() + (offset_data/3600) ); 
+    
+    setFieldValue("pov_"+ type, employeeDuty)
+    }else{
+        setFieldValue(type, null) 
+    }
+
+  };
+
+  const onSelectTimeHandlerAlterlog = (data, setFieldValue,type,offset_data) => {
+    if(data!==null){
+        var onDuty = data;
+        var offDuty = new Date(data); 
+
+ 
+        offDuty.setMinutes(onDuty.getMinutes()); 
+        offDuty.setHours( onDuty.getHours() + (offset_data/3600) ); 
+    
+    setFieldValue("pov_"+ type, offDuty)
+    }else{
+        setFieldValue(type, null) 
     }
 
   };

@@ -14,8 +14,10 @@ class ScheduleResource extends JsonResource
      */
     public function toArray($request)
     {   
-        $result = null;
 
+       
+        $result = null;
+       
         if( ! is_null( $this->resource ) ) {
 
             # Create Resource for Schedule Details
@@ -30,6 +32,13 @@ class ScheduleResource extends JsonResource
                 $schedule_policies[ $schedule_policy->policy ] = $schedule_policy->value;
             }
 
+
+             # Create Resource for Schedule Details for Employee POV
+             $pov_schedule_details = [];
+             foreach( $this->schedule_details()->get() as $schedule_detail){
+                 $pov_schedule_details[ $schedule_detail->day ] = $schedule_detail->getFormattedDetailPOV($this->owner()->first());
+             }
+
             $result =  array_merge( 
                 array(
                     'id' => $this->id,
@@ -43,6 +52,8 @@ class ScheduleResource extends JsonResource
                 ), 
                 array('schedule_details' => $schedule_details),
                 array('schedule_policies' => $schedule_policies),
+
+                array('pov_schedule_details' => $pov_schedule_details),
             );
         }
         return $result;
