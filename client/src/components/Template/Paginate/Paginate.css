@@ -1,6 +1,6 @@
 .pagination {
-    /* display: inline-block; */
-    display: flex;
+    display: inline-block;
+    /* display: flex; */
 }
   
 .pagination .page {
