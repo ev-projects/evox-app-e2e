@@ -43,7 +43,7 @@ const RoomMaster = (props) => {
     await dispatch(deleteRoomdetails(props.params.id));
     setTimeout(function() {
       history.push(global.links.room_list);
-  }, 2000);
+  }, 1000);
    
    
    
@@ -56,7 +56,7 @@ const RoomMaster = (props) => {
     await dispatch(CreateMasterroom(name,location,seat,description,setvalidroomname,setvalidlocation,setvalidseat));
     setTimeout(function() {
       history.push(global.links.room_list);
-  }, 2000);
+  }, 1000);
     
   };
 
@@ -65,7 +65,7 @@ const RoomMaster = (props) => {
   await dispatch(updatedRoomdetails(props.params.id, name, location, seat, description, setvalidroomname, setvalidlocation, setvalidseat));
   setTimeout(function() {
     history.push(global.links.room_list);
-}, 2000);
+}, 1000);
   };
 
   return (

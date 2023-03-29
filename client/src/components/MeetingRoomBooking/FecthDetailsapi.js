@@ -4,8 +4,8 @@ import Formatter from "../../services/Formatter";
 
 export const dropdownLocationdetails = (setDatalocation)=>{
 
-    return (dispatch, getState) => {
-      API.call({
+    return async (dispatch, getState) => {
+      await API.call({
         method: "get",
         url: `/getlocationcal`,
       })
@@ -26,8 +26,8 @@ export const dropdownLocationdetails = (setDatalocation)=>{
 
   export const dropdownMeetingRoomdetails= (setRoomlist) =>{
 
-    return (dispatch, getState) => {
-        API.call({
+    return async (dispatch, getState) => {
+      await API.call({
           method: "get",
           url: `/Getroomcal`,
         })
@@ -47,8 +47,8 @@ export const dropdownLocationdetails = (setDatalocation)=>{
 
   export const changeLocation = (id,setRoomlist) => {
 
-    return (dispatch, getState) => {
-      API.call({
+    return async (dispatch, getState) => {
+      await API.call({
         method: "get",
         url: `/Getroomlistlocation_wise/${id}`,
       })

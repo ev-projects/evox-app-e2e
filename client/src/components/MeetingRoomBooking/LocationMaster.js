@@ -30,7 +30,7 @@ const LocationMaster = (props) => {
        await dispatch(deleteLocationmaster(props.params.id));
        setTimeout(function() {
         history.push(global.links.location_list);
-    }, 2000);
+    }, 1000);
      
       }
   
@@ -40,7 +40,7 @@ const LocationMaster = (props) => {
       await dispatch(createLocationmaster(locationname,setvalidlocationname));
       setTimeout(function() {
         history.push(global.links.location_list);
-    }, 2000);
+    }, 1000);
       
     };
   
@@ -49,7 +49,7 @@ const LocationMaster = (props) => {
       await dispatch(updateLocationmaster(props.params.id,locationname,setvalidlocationname));
       setTimeout(function() {
         history.push(global.links.location_list);
-    }, 2000);
+    }, 1000);
     };
 
     

@@ -43,7 +43,7 @@ const Meetingroomapproval = (props) => {
     await dispatch(updateApprovalstatus(props.params.id,evetstatus,approvalnote,userid,startdate,enddate,setValidateapproval))
     setTimeout(function() {
       history.push(global.links.booked_list);
-  }, 2000);
+  }, 1000);
    
   };
 

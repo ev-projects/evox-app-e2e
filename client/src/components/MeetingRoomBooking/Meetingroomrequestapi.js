@@ -5,14 +5,14 @@ import Formatter from "../../services/Formatter";
 export const updateApprovalstatus = (id,evetstatus,approvalnote,userid,startdate,enddate,setValidateapproval) =>{
 
     
-    return (dispatch, getState) => {
+    return async(dispatch, getState) => {
         if (evetstatus == 1) {
             evetstatus = "approved";
           } else if (evetstatus == 2) {
             evetstatus = "declined";
           }
         if (approvalnote !== "") {
-          API.call({
+          await API.call({
             method: "put",
             url: `/Roomapproval/${id}`,
             data: {
@@ -44,8 +44,8 @@ export const updateApprovalstatus = (id,evetstatus,approvalnote,userid,startdate
 export const fecthBookedroomdetails =  (id,setRoomname,setStartdate,setEnddate,setNote,setUsername,setUserid,setStatus) =>{
 
 
-    return (dispatch, getState) => {
-        API.call({
+    return async (dispatch, getState) => {
+      await API.call({
           method: "get",
           url: `/GetBookeddetailsByid/${id}`,
         })

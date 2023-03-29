@@ -7,8 +7,8 @@ export const viewBookingdetails = (
   setCurrentpagecount,
   setStatuscount
 ) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await  API.call({
       method: "get",
       url: `/GetBookeddetails?&page=1`,
     })
@@ -41,8 +41,8 @@ export const statusChange = (
     endpoint = `/GetBookeddetails?page=1`;
   }
 
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: endpoint,
     })
@@ -83,8 +83,8 @@ export const filterClick = (
     }
   }
 
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: endpoint,
     })
@@ -119,8 +119,8 @@ export const requestPagenationclick = (status,page,fromdate,todate,setBookedlist
         }
       }
 
-      return (dispatch, getState) => {
-        API.call({
+      return async (dispatch, getState) => {
+        await API.call({
           method: "get",
           url: endpoint,
         })
