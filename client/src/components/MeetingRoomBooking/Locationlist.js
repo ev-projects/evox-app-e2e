@@ -12,7 +12,7 @@ import {
 import PreLoader from "./PreLoader";
 import Pagination from "react-bootstrap-4-pagination";
 import { pagenationLocationlist, viewLocationlist } from "./Createlocationapi";
-
+import "./MeetingRoom.css";
 const Locationlist = () => {
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);

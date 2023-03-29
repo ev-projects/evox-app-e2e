@@ -11,6 +11,7 @@ import {
   ButtonGroup,
 } from "react-bootstrap";
 import Pagination from "react-bootstrap-4-pagination";
+import "./MeetingRoom.css";
 import { Link } from "react-router-dom";
 import Authenticator from "../../services/Authenticator";
 import axios from "axios";
