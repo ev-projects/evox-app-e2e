@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class DtrSummaryReport extends Model
 {
-    protected $table = "drt_summary_report"
+    protected $table = "drt_summary_report";
 }

@@ -41,7 +41,10 @@ const Meetingroomapproval = (props) => {
   const handleupdatestatus = async (evetstatus) => {
     
     await dispatch(updateApprovalstatus(props.params.id,evetstatus,approvalnote,userid,startdate,enddate,setValidateapproval))
-    history.push(global.links.booked_list);
+    setTimeout(function() {
+      history.push(global.links.booked_list);
+  }, 2000);
+   
   };
 
   return (

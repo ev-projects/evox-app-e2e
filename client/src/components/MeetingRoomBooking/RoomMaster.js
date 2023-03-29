@@ -41,7 +41,11 @@ const RoomMaster = (props) => {
   const handledelete = async (e) => {
    
     await dispatch(deleteRoomdetails(props.params.id));
-    history.push(global.links.room_list);
+    setTimeout(function() {
+      history.push(global.links.room_list);
+  }, 2000);
+   
+   
    
   };
 
@@ -50,15 +54,18 @@ const RoomMaster = (props) => {
   const handlesave = async (e) => {
 
     await dispatch(CreateMasterroom(name,location,seat,description,setvalidroomname,setvalidlocation,setvalidseat));
-    history.push(global.links.room_list);
+    setTimeout(function() {
+      history.push(global.links.room_list);
+  }, 2000);
     
   };
 
   const handleupdate = async(e) => {
   
-   
-    await dispatch(updatedRoomdetails(props.params.id, name, location, seat, description, setvalidroomname, setvalidlocation, setvalidseat));
-  history.push(global.links.room_list);
+  await dispatch(updatedRoomdetails(props.params.id, name, location, seat, description, setvalidroomname, setvalidlocation, setvalidseat));
+  setTimeout(function() {
+    history.push(global.links.room_list);
+}, 2000);
   };
 
   return (
