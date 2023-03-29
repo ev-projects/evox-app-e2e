@@ -5,7 +5,7 @@ import { Calendar } from "@fullcalendar/core";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Row, Form, Button, Col, Collapse, Container } from "react-bootstrap";
-import ModalAlert from "./Modal";
+// import ModalAlert from "./Modal";
 import "./MeetingRoom.css";
 import { format } from "date-fns";
 import dayjs from "dayjs";
@@ -24,7 +24,7 @@ import {
   dropdownLocationdetails,
   dropdownMeetingRoomdetails,
 } from "./FecthDetailsapi";
-import AlertCalander from "./AlertCalander";
+// import AlertCalander from "./AlertCalander";
 const Test = (props) => {
   const dispatch = useDispatch();
   const [showalert, setShowalert] = useState(false);
@@ -818,7 +818,7 @@ const Test = (props) => {
           </Modal.Footer>
         </Modal>
 
-        {showalert &&  <AlertCalander/>}
+        {/* {showalert &&  <AlertCalander/>} */}
 
      
         {/* {pageload && <PageLoading />} */}

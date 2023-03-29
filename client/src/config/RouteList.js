@@ -77,7 +77,7 @@ import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 import HrAnnouncementsForm from "../container/Hr/HrAnnouncementsForm";
 import HrAnnouncementsList from "../container/Hr/HrAnnouncementsList";
 import Test from "../components/MeetingRoomBooking/Test";
-import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
+// import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
 import RoomMaster from "../components/MeetingRoomBooking/RoomMaster";
 import Roomlist from "../components/MeetingRoomBooking/Roomlist";
 import Meetingroombooking from "../components/MeetingRoomBooking/Meetingroombooking";
