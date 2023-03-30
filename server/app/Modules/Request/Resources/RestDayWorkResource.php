@@ -20,6 +20,10 @@ class RestDayWorkResource extends JsonResource
         $result = null;
         $owner = User::find( $this->user_id);
 
+        $owner_offset = $owner->country_timezone_to_offset();
+
+        $viewer_offset = Auth::user()->country_timezone_to_offset();
+
         if( ! is_null( $this->resource ) ) {
 
             $result = array(
@@ -42,8 +46,8 @@ class RestDayWorkResource extends JsonResource
                 'pov_end_time' => seconds_to_time_POV($this->end_time, false, true,  $owner),
                 'pov_timezone'=>  $owner->country_zone()->country_name . " " . $owner->country_zone()->country_time_zone."(".$owner->country_zone()->time_difference .")",
 
-                'offset_difference_info' =>   (string_offset_to_seconds($owner->country_zone_offset())/3600)."-". (string_offset_to_seconds(Auth::user()->country_zone_offset())/3600),
-                'offset_difference' =>   string_offset_to_seconds($owner->country_zone_offset())- string_offset_to_seconds(Auth::user()->country_zone_offset()),
+                'offset_difference_info' =>   (string_offset_to_seconds($owner_offset)/3600)."-". (string_offset_to_seconds($viewer_offset)/3600),
+                'offset_difference' =>   string_offset_to_seconds($owner_offset)- string_offset_to_seconds($viewer_offset),
             );
         }
 

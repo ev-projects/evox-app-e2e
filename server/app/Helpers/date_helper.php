@@ -58,11 +58,11 @@ if (! function_exists('time_to_seconds')) {
     function time_to_seconds($time, $with_offset = false, $offset_operation = "add" ) 
     {
         try {
-                if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset){
+                if(Auth::user() && Auth::user()->country_timezone_to_offset() != null && $with_offset){
                     if($offset_operation == "add"){
-                        return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') + string_offset_to_seconds(Auth::user()->country_zone_offset()): null;
+                        return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') + string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): null;
                     }else if($offset_operation == "subtract"){
-                        return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') - string_offset_to_seconds(Auth::user()->country_zone_offset()): null;
+                        return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): null;
                     }
                     else{
                         return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') : null;
@@ -91,8 +91,8 @@ if (! function_exists('seconds_to_time')) {
             if( $seconds <= get_constant('TIMESTAMP.day') ) {
                 
                 $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
-                if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset ){
-                    return date($date_format, strtotime('today') + $seconds + string_offset_to_seconds(Auth::user()->country_zone_offset()));
+                if(Auth::user() && Auth::user()->country_timezone_to_offset() != null && $with_offset ){
+                    return date($date_format, strtotime('today') + $seconds + string_offset_to_seconds(Auth::user()->country_timezone_to_offset()));
                 }
                 //DEFAULT OUTPUT
                 return date($date_format, strtotime('today') + $seconds);
@@ -102,8 +102,8 @@ if (! function_exists('seconds_to_time')) {
                 
                 $separator = ':';
                 $end_seconds =( $is_complete_date_format ) ? $separator . ($seconds%60) : '';
-                if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset){
-                    return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds + string_offset_to_seconds(Auth::user()->country_zone_offset())/60)%60) . $end_seconds;
+                if(Auth::user() && Auth::user()->country_timezone_to_offset() != null && $with_offset){
+                    return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds + string_offset_to_seconds(Auth::user()->country_timezone_to_offset())/60)%60) . $end_seconds;
                 }
 
                 //DEFAULT OUTPUT
@@ -133,8 +133,8 @@ if (! function_exists('seconds_to_time_POV')) {
             if( $seconds <= get_constant('TIMESTAMP.day') ) {
                 
                 $date_format = ( $is_complete_date_format ) ? "H:i:s" : "H:i";
-                if($user && $user->country_zone_offset() != null && $with_offset ){
-                    return date($date_format, strtotime('today') + $seconds + string_offset_to_seconds($user->country_zone_offset()));
+                if($user && $user->country_timezone_to_offset() != null && $with_offset ){
+                    return date($date_format, strtotime('today') + $seconds + string_offset_to_seconds($user->country_timezone_to_offset()));
                 }
                 //DEFAULT OUTPUT
                 return date($date_format, strtotime('today') + $seconds);
@@ -144,8 +144,8 @@ if (! function_exists('seconds_to_time_POV')) {
                 
                 $separator = ':';
                 $end_seconds =( $is_complete_date_format ) ? $separator . ($seconds%60) : '';
-                if($user && $user->country_zone_offset() != null && $with_offset){
-                    return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds + string_offset_to_seconds($user->country_zone_offset())/60)%60) . $end_seconds;
+                if($user && $user->country_timezone_to_offset() != null && $with_offset){
+                    return sprintf("%02d%s%02d", floor($seconds/3600), $separator, ($seconds + string_offset_to_seconds($user->country_timezone_to_offset())/60)%60) . $end_seconds;
                 }
 
                 //DEFAULT OUTPUT
@@ -232,8 +232,9 @@ if (! function_exists('timestamp_to_datetime')) {
             
         //    }
            
-        if(Auth::user() && Auth::user()->country_zone_offset() != null){
-            return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds(Auth::user()->country_zone_offset())) : null;
+        if(Auth::user() && Auth::user()->country_timezone_to_offset() != null){
+            
+            return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) : null;
         }
             return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp) : null;
         }catch(Exception $e){
