@@ -16,17 +16,25 @@ class BookingController extends Controller
 {
     public function GetBookingRoomDetails($roomid)
     {
-    return $booking = DB::table('bookings')
-    ->select('bookings.room_id','bookings.start_date','bookings.end_date','bookings.total_hours','rooms.name')
+
+    try {
+    $booking = DB::table('bookings')
+    ->select('bookings.room_id','bookings.start_date','bookings.end_date','bookings.total_hours','rooms.name','users.first_name','users.last_name')
     ->join('rooms', 'rooms.id', '=', 'bookings.room_id')
+    ->join('users', 'users.id', '=', 'bookings.user_id')
     ->where('bookings.room_id', $roomid)
     ->where('bookings.status','=','approved')
     ->orderBy('bookings.id', 'ASC')->get();
+    return $booking;
+    
+} catch (Exception $e) {
+    return error_response(trans('messages.error_default'), $e);
+}
     }
 
     public function storeBookingRoomDetails(Request $request)
     {
-
+        try {
         $startdate = $request -> Startdatetime;
         $enddate = $request -> EnddateTime;
         $room_id = $request -> Roomid;
@@ -102,11 +110,14 @@ class BookingController extends Controller
             
        ]);
        }
-       
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
     }
 
     public function GetBookeddetails(Request $request){
-        
+     
+        try {
         $numbers = array(
             "All" => 0,
             "pending" => 0, 
@@ -154,7 +165,9 @@ class BookingController extends Controller
                     
                 ];
             
-
+            } catch (Exception $e) {
+                return error_response(trans('messages.error_default'), $e);
+            }
             
             
             
@@ -166,7 +179,8 @@ class BookingController extends Controller
 
     public function GetBookeddetailsByid($id=null){
         
-       
+       try {
+        
         if($id != null){
         
         return $booking = DB::table('bookings')
@@ -176,11 +190,15 @@ class BookingController extends Controller
         ->where('bookings.id','=',$id)->get();
 
         }
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
     }
 
     
     public function Roomapproval(Request $request, $id){
   
+        try{
         $validator = Validator::make($request->all(), [
               'ApprovalNote' => 'required',
           ]);
@@ -224,5 +242,8 @@ class BookingController extends Controller
         //   }
        
         }
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
     }
 }

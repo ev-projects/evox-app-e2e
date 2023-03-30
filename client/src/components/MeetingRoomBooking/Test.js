@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef  } from "react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Calendar } from "@fullcalendar/core";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Row, Form, Button, Col, Collapse, Container } from "react-bootstrap";
+import { Row, Form, Button, Col, Collapse, Container, Overlay, Popover } from "react-bootstrap";
 // import ModalAlert from "./Modal";
 import "./MeetingRoom.css";
 import { format } from "date-fns";
@@ -24,9 +24,13 @@ import {
   dropdownLocationdetails,
   dropdownMeetingRoomdetails,
 } from "./FecthDetailsapi";
-// import AlertCalander from "./AlertCalander";
+import { connect, dispatch } from "react-redux";
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+
 const Test = (props) => {
   const dispatch = useDispatch();
+  const { user } = props;
   const [showalert, setShowalert] = useState(false);
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
@@ -51,8 +55,11 @@ const Test = (props) => {
   const [hours, setHours] = useState(0);
   const [datalocation, setDatalocation] = useState([]);
   const [pageload, setPageload] = useState(false);
+  const [validatenote, setValidatenote] = useState(false);
+  
 
   useEffect(() => {
+
     dispatch(dropdownLocationdetails(setDatalocation));
 
     dispatch(dropdownMeetingRoomdetails(setRoomlist));
@@ -65,11 +72,23 @@ const Test = (props) => {
       selectable: true,
       selectMirror: true,
       unselectAuto: false,
-
+      // default: false,
+      contentHeight: "auto",
       editable: false,
       eventStartEditable: false,
       eventResizableFromStart: false,
       eventDurationEditable: false,
+
+      eventMouseEnter: function(arg){
+        let startDT = arg.event.start.toString();
+        let endDT = arg.event.end.toString();
+
+        let starttime = startDT.substring(16, 21);
+        let endtime = endDT.substring(16, 21);
+        tippy(arg.el, {
+          content: "StartTime: " + starttime +"  EndTime: " + endtime + " " + arg.event.title
+      });
+      },
 
       select: function (selectionInfo) {
         if (roomid !== "") {
@@ -152,7 +171,7 @@ const Test = (props) => {
     if (day == "Sun") {
       dateq = format(idate, "yyyy-MM-dd");
     }
-
+if(note !== "") {
     API.call({
       method: "post",
       url: "/storebooking",
@@ -172,7 +191,7 @@ const Test = (props) => {
           // setPageload(false);
           if (hours <= 3) {
             event.push({
-              title: roomname,
+              title: roomname +" Created by "+ user.first_name,
               start: startdate + " " + starttime,
               end: enddate + " " + endtime,
             });
@@ -204,11 +223,23 @@ const Test = (props) => {
             selectable: true,
             selectMirror: true,
             unselectAuto: false,
+            contentHeight: "auto",
             initialDate: dateq,
             editable: false,
             eventStartEditable: false,
             eventResizableFromStart: false,
             eventDurationEditable: false,
+
+            eventMouseEnter: function(arg){
+              let startDT = arg.event.start.toString();
+              let endDT = arg.event.end.toString();
+  
+              let starttime = startDT.substring(16, 21);
+              let endtime = endDT.substring(16, 21);
+              tippy(arg.el, {
+                content: "StartTime: " + starttime +"  EndTime: " + endtime + " " + arg.event.title
+            });
+            },
 
             select: function (selectionInfo) {
               let startDT = selectionInfo.start.toString();
@@ -266,8 +297,13 @@ const Test = (props) => {
         });
       })
       .catch((e) => {
+        setLoader(false);
         dispatch(Formatter.alert_error(e));
       });
+    }else{
+      setValidatenote(true);
+      setLoader(false);
+    }
   };
 
   const onlocationchange = (e) => {
@@ -292,7 +328,7 @@ const Test = (props) => {
           console.log(response.data[i].name);
 
           event.push({
-            title: response.data[i].name,
+            title: response.data[i].name + " Created By " + response.data[i].first_name,
             start: response.data[i].start_date,
             end: response.data[i].end_date,
             // color: "blue"
@@ -307,10 +343,33 @@ const Test = (props) => {
           selectable: true,
           selectMirror: true,
           unselectAuto: false,
+          contentHeight: "auto",
           editable: false,
           eventStartEditable: false,
           eventResizableFromStart: false,
           eventDurationEditable: false,
+
+          eventMouseEnter: function(arg){
+            let startDT = arg.event.start.toString();
+            let endDT = arg.event.end.toString();
+
+            let starttime = startDT.substring(16, 21);
+            let endtime = endDT.substring(16, 21);
+            tippy(arg.el, {
+              content: "StartTime: " + starttime +"  EndTime: " + endtime + " " + arg.event.title
+          });
+          },
+
+          
+          // eventClick: function(info) {
+
+          //   tooltip.set({
+          //     'content.text': info.title
+          // })
+          // .reposition(event).show(event);
+        
+          // },
+
 
           select: function (selectionInfo) {
             let startDT = selectionInfo.start.toString();
@@ -412,11 +471,23 @@ const Test = (props) => {
       selectable: true,
       selectMirror: true,
       unselectAuto: false,
+      contentHeight: "auto",
       initialDate: dateq,
       editable: false,
       eventStartEditable: false,
       eventResizableFromStart: false,
       eventDurationEditable: false,
+
+      eventMouseEnter: function(arg){
+        let startDT = arg.event.start.toString();
+        let endDT = arg.event.end.toString();
+
+        let starttime = startDT.substring(16, 21);
+        let endtime = endDT.substring(16, 21);
+        tippy(arg.el, {
+          content: "StartTime: " + starttime +"  EndTime: " + endtime + " " + arg.event.title
+      });
+      },
 
       select: function (selectionInfo) {
         let startDT = selectionInfo.start.toString();
@@ -699,8 +770,18 @@ const Test = (props) => {
                     className="form-control"
                     onChange={(e) => {
                       setNote(e.target.value);
+                      if (e.target.value == "") {
+                        setValidatenote(true);
+                      } else {
+                        setValidatenote(false);
+                      }
                     }}
+                    
                   ></input>
+                {validatenote && (
+                      <label style={{ color: "red" }}>
+                        Please Enter Note
+                      </label>)}
                 </Col>
               </Row>
               <Row>
@@ -824,6 +905,8 @@ const Test = (props) => {
           </Modal.Footer>
         </Modal>
 
+       
+
         {/* {showalert &&  <AlertCalander/>} */}
 
      
@@ -835,4 +918,13 @@ const Test = (props) => {
   );
 };
 
-export default Test;
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    myTeamList: state.myTeamList,
+  };
+};
+
+export default connect(mapStateToProps)(Test);
+
+// export default Test;
