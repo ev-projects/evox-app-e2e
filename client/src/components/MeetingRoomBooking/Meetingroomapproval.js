@@ -13,7 +13,10 @@ import { useParams, useHistory } from "react-router-dom";
 import { connect, dispatch } from "react-redux";
 import PreLoader from "./PreLoader.js";
 import { useDispatch } from "react-redux";
-import { fecthBookedroomdetails, updateApprovalstatus } from "./Meetingroomrequestapi.js";
+import {
+  fecthBookedroomdetails,
+  updateApprovalstatus,
+} from "./Meetingroomrequestapi.js";
 const Meetingroomapproval = (props) => {
   const [loader, setLoader] = useState(false);
   let history = useHistory();
@@ -31,20 +34,40 @@ const Meetingroomapproval = (props) => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-   
-    if ( props.params.id !== "0") {
-     dispatch(fecthBookedroomdetails(props.params.id,setRoomname,setStartdate,setEnddate,setNote,setUsername,setUserid,setStatus))
+    if (props.params.id !== "0") {
+      dispatch(
+        fecthBookedroomdetails(
+          props.params.id,
+          setRoomname,
+          setStartdate,
+          setEnddate,
+          setNote,
+          setUsername,
+          setUserid,
+          setStatus
+        )
+      );
     }
   }, []);
 
   const { user } = props;
   const handleupdatestatus = async (evetstatus) => {
-    
-    await dispatch(updateApprovalstatus(props.params.id,evetstatus,approvalnote,userid,startdate,enddate,setValidateapproval))
-    setTimeout(function() {
-      history.push(global.links.booked_list);
-  }, 1000);
-   
+    await dispatch(
+      updateApprovalstatus(
+        props.params.id,
+        evetstatus,
+        approvalnote,
+        userid,
+        startdate,
+        enddate,
+        setValidateapproval
+      )
+    );
+    if (approvalnote !== "") {
+      setTimeout(function () {
+        history.push(global.links.booked_list);
+      }, 1000);
+    }
   };
 
   return (
@@ -109,9 +132,15 @@ const Meetingroomapproval = (props) => {
                   </div>
                 </Col>
               </Row>
-              <div className="row" style={{marginLeft:"20px !important", marginRight:"10px !important"}}>
+              <div
+                className="row"
+                style={{
+                  marginLeft: "20px !important",
+                  marginRight: "10px !important",
+                }}
+              >
                 <div className="col-4">
-                {status == "pending" && (
+                  {status == "pending" && (
                     <Button
                       type="button"
                       className="btn btn-primary"
@@ -122,17 +151,16 @@ const Meetingroomapproval = (props) => {
                   )}
                 </div>
                 <div className="col-3">
-                <button
+                  <button
                     type="button"
                     className="btn btn-danger"
                     onClick={() => handleupdatestatus(2)}
-                    style={{ backgroundColor: "#dc3545 !important"}}
+                    style={{ backgroundColor: "#dc3545 !important" }}
                   >
                     <i className="fa fa-thumbs-down" /> Deny
                   </button>
                 </div>
               </div>
-               
             </form>
           </Content>
         </ContainerBody>
