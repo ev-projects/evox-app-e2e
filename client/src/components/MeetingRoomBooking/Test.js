@@ -193,6 +193,8 @@ const Test = (props) => {
           setAudiochk(false);
           setDesktopchk(false);
           setLaptopchk(false);
+          setITchk(false);
+                          // setOpen(false);
 
           const calendarEl = document.getElementById("calendar");
           const calendar = new Calendar(calendarEl, {
@@ -232,8 +234,8 @@ const Test = (props) => {
               const timeEnd = moment(e + " " + endtime);
               const diff = timeEnd.diff(startDate);
               const diffDuration = moment.duration(diff);
-
-              setHours(diffDuration.hours());
+              const hours = diffDuration.asMinutes() / 60;
+              setHours(hours);
               setStartdate(d);
               setEnddate(e);
               setStarttime(starttime);
@@ -335,8 +337,10 @@ const Test = (props) => {
             const timeEnd = moment(e + " " + endtime);
             const diff = timeEnd.diff(startDate);
             const diffDuration = moment.duration(diff);
+            const hours = diffDuration.asMinutes() / 60;
+            // alert(hours);
 
-            setHours(diffDuration.hours());
+            setHours(hours);
 
             setStartdate(d);
             setEnddate(e);
@@ -438,8 +442,8 @@ const Test = (props) => {
         const timeEnd = moment(e + " " + endtime);
         const diff = timeEnd.diff(startDate);
         const diffDuration = moment.duration(diff);
-
-        setHours(diffDuration.hours());
+        const hours = diffDuration.asMinutes() / 60;
+        setHours(hours);
         setStartdate(d);
         setEnddate(e);
         setStarttime(starttime);
@@ -709,6 +713,8 @@ const Test = (props) => {
                         if (itchk == false) {
                           setITchk(true);
                           setOpen(true);
+                          console.log("Test"+open);
+                          // alert("Test");
                         } else {
                           setITchk(false);
                           setOpen(false);

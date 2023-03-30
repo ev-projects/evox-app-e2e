@@ -14,7 +14,13 @@ import LoaderContainer from "../Template/LoaderContainer/LoaderContainer.js";
 import PreLoader from "./PreLoader.js";
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
-import { CreateMasterroom, deleteRoomdetails, drpdownLocationlist, fecthRoomdetails, updatedRoomdetails } from "./Createroomapi.js";
+import {
+  CreateMasterroom,
+  deleteRoomdetails,
+  drpdownLocationlist,
+  fecthRoomdetails,
+  updatedRoomdetails,
+} from "./Createroomapi.js";
 import { useDispatch } from "react-redux";
 const RoomMaster = (props) => {
   // const { id } = useParams();
@@ -33,39 +39,63 @@ const RoomMaster = (props) => {
   // const navigation = useNavigation();
   useEffect(() => {
     if (props.params.id !== "0") {
-        dispatch(fecthRoomdetails(props.params.id,setRoomname,setLocation,setdescription,setSeats));
+      dispatch(
+        fecthRoomdetails(
+          props.params.id,
+          setRoomname,
+          setLocation,
+          setdescription,
+          setSeats
+        )
+      );
     }
     dispatch(drpdownLocationlist(setDatalocation));
   }, []);
 
   const handledelete = async (e) => {
-   
     await dispatch(deleteRoomdetails(props.params.id));
-    setTimeout(function() {
+    setTimeout(function () {
       history.push(global.links.room_list);
-  }, 1000);
-   
-   
-   
+    }, 1000);
   };
-
-
 
   const handlesave = async (e) => {
-
-    await dispatch(CreateMasterroom(name,location,seat,description,setvalidroomname,setvalidlocation,setvalidseat));
-    setTimeout(function() {
-      history.push(global.links.room_list);
-  }, 1000);
-    
+    await dispatch(
+      CreateMasterroom(
+        name,
+        location,
+        seat,
+        description,
+        setvalidroomname,
+        setvalidlocation,
+        setvalidseat
+      )
+    );
+    if (name !== "" && location !== "" && seat !== "") {
+      setTimeout(function () {
+        history.push(global.links.room_list);
+      }, 1000);
+    }
   };
 
-  const handleupdate = async(e) => {
-  
-  await dispatch(updatedRoomdetails(props.params.id, name, location, seat, description, setvalidroomname, setvalidlocation, setvalidseat));
-  setTimeout(function() {
-    history.push(global.links.room_list);
-}, 1000);
+  const handleupdate = async (e) => {
+    await dispatch(
+      updatedRoomdetails(
+        props.params.id,
+        name,
+        location,
+        seat,
+        description,
+        setvalidroomname,
+        setvalidlocation,
+        setvalidseat
+      )
+    );
+    if (name !== "" && location !== "" && seat !== "") {
+      setTimeout(function () {
+        history.push(global.links.room_list);
+      }, 1000);
+    }
   };
 
   return (
