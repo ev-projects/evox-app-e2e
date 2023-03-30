@@ -243,6 +243,25 @@ if (! function_exists('timestamp_to_datetime')) {
     }
 }
 
+if (! function_exists('timestamp_to_datetime_old')) {   
+    /**
+     * This function returns a converted Timestamp to Datetime
+     *
+     * @param  timestamp timestamp
+     * @return datetime
+     */
+    function timestamp_to_datetime_old( $timestamp ) 
+    {
+    
+        try {
+
+            return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp) : null;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
 
 if (! function_exists('timestamp_to_date')) {   
     /**
