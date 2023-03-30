@@ -12,6 +12,7 @@ import PreLoader from "./PreLoader";
 import { useDispatch } from "react-redux";
 import { pagenationRoomlist, viewRoomlist } from "./Createroomapi";
 import Pagination from "react-bootstrap-4-pagination";
+import "./MeetingRoom.css";
 const Roomlist = () => {
   const dispatch = useDispatch();
   const [totalpagecount, setTotalpagecount] = useState(1);

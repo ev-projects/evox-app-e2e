@@ -28,21 +28,28 @@ const LocationMaster = (props) => {
   
       const handledelete = async (e) => {
        await dispatch(deleteLocationmaster(props.params.id));
-       history.push(global.links.location_list);
+       setTimeout(function() {
+        history.push(global.links.location_list);
+    }, 1000);
+     
       }
   
   
     const handlesave = async (e) => {
      
       await dispatch(createLocationmaster(locationname,setvalidlocationname));
-      history.push(global.links.location_list);
+      setTimeout(function() {
+        history.push(global.links.location_list);
+    }, 1000);
       
     };
   
     
     const handleupdate = async (e) => {
       await dispatch(updateLocationmaster(props.params.id,locationname,setvalidlocationname));
-     history.push(global.links.location_list);
+      setTimeout(function() {
+        history.push(global.links.location_list);
+    }, 1000);
     };
 
     

@@ -16,10 +16,10 @@ export const CreateMasterroom = (
   setvalidlocation,
   setvalidseat
 ) => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const history = createBrowserHistory();
     if (name !== "" && location !== "" && seat !== "") {
-      API.call({
+      await API.call({
         method: "post",
         url: "/storeroom",
         data: {
@@ -64,8 +64,8 @@ export const fecthRoomdetails = (
   setdescription,
   setSeats
 ) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/Getroomlist/${id}`,
     })
@@ -93,9 +93,9 @@ export const updatedRoomdetails = (
   setvalidlocation,
   setvalidseat
 ) => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     if (name !== "" && location !== "" && seat !== "") {
-      API.call({
+      await API.call({
         method: "put",
         url: `/UpdateRoomdetails/${id}`,
         data: {
@@ -132,9 +132,9 @@ export const updatedRoomdetails = (
 // Delete Room Details by Room ID
 
 export const deleteRoomdetails = (id) => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     // let history = useHistory();
-    API.call({
+    await API.call({
       method: "get",
       url: `/DeleteRoomdetails/${id}`,
     })
@@ -148,8 +148,8 @@ export const deleteRoomdetails = (id) => {
 };
 
 export const viewRoomlist = (setRoomlist,setTotalpagecount,setCurrentpagecount) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/Getroom?page=1`,
     })
@@ -165,8 +165,8 @@ export const viewRoomlist = (setRoomlist,setTotalpagecount,setCurrentpagecount) 
 };
 
 export const pagenationRoomlist = (setRoomlist,page,setTotalpagecount,setCurrentpagecount) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/Getroom?page=${page}`,
     })
@@ -183,8 +183,8 @@ export const pagenationRoomlist = (setRoomlist,page,setTotalpagecount,setCurrent
 
 
 export const drpdownLocationlist = (setDatalocation)=>{
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/getlocationcal`,
     })

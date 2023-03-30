@@ -1,3 +1,7 @@
 .modal-content {
     width: 50% !important;
 }
+.pagination {
+    display: flex !important;
+ 
+}

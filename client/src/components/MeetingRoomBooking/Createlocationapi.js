@@ -2,9 +2,10 @@ import API from "../../services/API";
 import Formatter from "../../services/Formatter";
 
 export const createLocationmaster = (locationname, setvalidlocationname) => {
-  return (dispatch, getState) => {
+  
+   return async (dispatch, getState) => {
     if (locationname !== "") {
-      API.call({
+     await API.call({
         method: "post",
         url: "/storelocation",
         data: {
@@ -34,9 +35,9 @@ export const updateLocationmaster = (
   locationname,
   setvalidlocationname
 ) => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     if (locationname !== "") {
-      API.call({
+      await API.call({
         method: "put",
         url: `/UpdateLocationDetails/${id}`,
         data: {
@@ -62,8 +63,8 @@ export const updateLocationmaster = (
 };
 
 export const deleteLocationmaster = (id) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/DeleteLocationDetails/${id}`,
     })
@@ -81,8 +82,8 @@ export const deleteLocationmaster = (id) => {
 };
 
 export const fecthLocationdetails = (id, setLocationname) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/getlocation/${id}`,
     })
@@ -101,8 +102,8 @@ export const fecthLocationdetails = (id, setLocationname) => {
 };
 
 export const viewLocationlist = (setLocationlist,setTotalpagecount,setCurrentpagecount) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/getlocation?page=1`,
     })
@@ -127,8 +128,8 @@ export const pagenationLocationlist = (
   setTotalpagecount,
   setCurrentpagecount
 ) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/getlocation?page=${page}`,
     })
@@ -149,8 +150,8 @@ export const pagenationLocationlist = (
 };
 
 export const drpdownLocation = (setLocationlist,setTotalpagecount,setCurrentpagecount) => {
-  return (dispatch, getState) => {
-    API.call({
+  return async (dispatch, getState) => {
+    await API.call({
       method: "get",
       url: `/getlocation?page=1`,
     })
