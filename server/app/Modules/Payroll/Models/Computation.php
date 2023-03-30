@@ -33,6 +33,9 @@ class Computation
 
     private $payroll_items = array();
 
+
+    private $owner_offset_seconds;
+
     function __construct(){
     }
 
@@ -50,11 +53,26 @@ class Computation
         /**
          *  Sets all the Variables needed before computation.
          */
+        $owner = $dtr->user()->first();
+        $owner_offset_seconds = string_offset_to_seconds($owner->country_timezone_to_offset());
+
+   
+      
+        $dtr->time_in               = $dtr->time_in + $owner_offset_seconds;
+        $dtr->time_out              = $dtr->time_out + $owner_offset_seconds;
+        $dtr->start_datetime        = $dtr->start_datetime + $owner_offset_seconds;
+        $dtr->end_datetime          = $dtr->end_datetime + $owner_offset_seconds;
+        $dtr->start_flexi_datetime  = $dtr->start_flexi_datetime + $owner_offset_seconds;
+        $dtr->end_flexi_datetime    = $dtr->end_flexi_datetime + $owner_offset_seconds;
+       
+        
 
             $this->clear_properties();
 
             $this->dtr = $dtr;
             
+            $this->owner_offset_seconds =  $owner_offset_seconds;
+
             $this->policies = $dtr->policies()->get();
 
             $this->leaves = $dtr->leaves()->get();
@@ -305,18 +323,20 @@ class Computation
     private function compute_late(){
         try{    
             $late = 0;    
-
+            // error_log($late);
             # Get the Expected TimeIn
             $expected_time_in = $this->dtr->getExpectedTimeIn();
-            
+            // error_log($late);
             # If the Time-In exceeds the Expected Time-In, Compute for the Difference of Time-In - Expected Time-In.
             if( $this->dtr->time_in > $expected_time_in ){
-                $late = $this->dtr->time_in - $expected_time_in;
+                $late = $this->dtr->time_in - ($expected_time_in + $this->owner_offset_seconds);
+                error_log(timestamp_to_datetime_old($this->dtr->time_in) ."-". timestamp_to_datetime_old($expected_time_in));
             }
-
+            
+          
             # Subtracts the Time-off from the total computed Late.
             $late = $late - $this->timeoff_time;
-
+         
             # Double checks the Validity of the Computed Late. If not valid, set it to Default value (0)
             # 1. If Late LESS THAN 0 (Negative values)
             # 2. If Late is GREATHER THAN 8 hours.
@@ -324,7 +344,7 @@ class Computation
             if($late < 0 || $late > get_constant('TIMESTAMP.eight_hours') || $this->timeoff_amount == 0.5 ){
                 $late = 0;
             }
-
+          
             return ( $late > 0 ) ? new DtrPayrollItems([
                                             'item'  => get_constant('PAYROLL_ITEMS.late'),
                                             'value' => $late
@@ -386,7 +406,7 @@ class Computation
                 # If the Time-In is AFTER or EQUAL the Start-Flexy-Datetime
                 } elseif ( $this->dtr->isTimedInAfterSchedule() ){
 
-                    # Sets the Expected Time-Out to the End-Flexy-Datetime
+                    # Sets the Expected Time-Out to the End-Flexy-Datetimetimeoff_time
                     $expected_time_out = $this->dtr->end_flexy_datetime;
 
                     # If the Time-Out is BEFORE the Expected Time-Out, compute for Undertime.
@@ -1050,6 +1070,8 @@ class Computation
      * @return timestamp $total_night_diff;
      */
     private function get_total_night_diff( $parameters, $checker = false ){
+
+
 
         $total_night_diff = 0;
 

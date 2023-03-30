@@ -121,7 +121,7 @@ const WorkDay = (props) => {
                     // const indexValue = field.value.work_days.find(value => value == props.day);
                     const nextValue = field.value.work_days.filter(value => value !== props.day);
                     form.setFieldValue('work_days', nextValue);
-                    // arrayHelpers.remove(eval('field.value.wd.'+props.day+'.index'));
+                    arrayHelpers.remove(eval('field.value.wd.'+props.day+'.index'));
                   }else{
                     // ADD
                     const index = field.value.work_days.length;
