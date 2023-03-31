@@ -15,7 +15,7 @@ class LocationController extends Controller
 {
     public function GetlocationDetails($id=null)
     {
-
+        try {
         if($id == null){
              $location = DB::table('locations')->orderBy('id', 'ASC')->paginate(10);
             return [
@@ -32,23 +32,28 @@ class LocationController extends Controller
         }else{
             return $location = DB::table('locations')->where('id','=',$id)->orderBy('id', 'ASC')->get();
         }
-    	
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
     	
     }
 
     public function GetlocationDetailscal()
     {
 
-       
+       try {
             
             return $location = DB::table('locations')->orderBy('id', 'ASC')->get();
  
-    	
+    	} catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        }
     	
     }
 
     public function UpdateLocationDetails (Request $request, $id){
-  
+        
+        try{
         $validator = Validator::make($request->all(), [
               'Locationname' => 'required',
           ]);
@@ -71,14 +76,16 @@ class LocationController extends Controller
                          return ["Result"=>"Data Not Saved"];
                      }
           }
-       
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        }
         }
 
 
     public function storeLocationDetails(Request $request)
     {
 
-        
+        try{
         $store = new location;
         $validator = Validator::make($request->all(), [
             'Locationname' => 'required',
@@ -102,9 +109,13 @@ class LocationController extends Controller
                         return ["Result"=>"Data Not Saved"];
                     }
                 }
+            } catch (Exception $e) {
+                return error_response(trans('messages.error_default'), $e);
+            }
     }
 
     public function DeleteLocationDetails($id){
+        try{
         $res=location::find($id)->delete();
         if ($res){
             $data=[
@@ -118,5 +129,8 @@ class LocationController extends Controller
             ];
        }
     return response()->json($data);
+} catch (Exception $e) {
+    return error_response(trans('messages.error_default'), $e);
+}
 }
 }

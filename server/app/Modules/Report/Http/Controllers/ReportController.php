@@ -199,7 +199,7 @@ class ReportController extends Controller
      */
     public function team_dtr_summary(Request $request)
     {
-        try {
+        try { 
 
            
             $user_collection_paginated = [];

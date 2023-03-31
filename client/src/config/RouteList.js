@@ -84,6 +84,7 @@ import Meetingroombooking from "../components/MeetingRoomBooking/Meetingroombook
 import LocationMaster from "../components/MeetingRoomBooking/LocationMaster";
 import Locationlist from "../components/MeetingRoomBooking/Locationlist";
 import Meetingroomapproval from "../components/MeetingRoomBooking/Meetingroomapproval";
+import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -131,7 +132,8 @@ const RoutesList = (props) => {
           <RoomMaster/>
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.meeting_calander + ":id"}>
-          <Test/>
+          {/* <Test/> */}
+          <Meetingcalander/>
          </ProtectedRoute>
         <ProtectedRoute exact path={global.links.location_list}>
           <Locationlist/>

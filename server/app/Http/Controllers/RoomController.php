@@ -15,7 +15,7 @@ class RoomController extends Controller
 {
     public function GetroomDetails()
     {
-
+        try{
     	$rooms = DB::table('rooms')->orderBy('id', 'ASC')->paginate(10);
 
         return [
@@ -29,31 +29,44 @@ class RoomController extends Controller
             ],
             
         ];
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
     	
     }
 
     public function GetroomDetailscal()
     {
-
+        try{
     	return $rooms = DB::table('rooms')->orderBy('id', 'ASC')->get();
 
-    	
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
     }
 
     public function Getroomlist($id)
     {
+        try{
     	return $rooms = DB::table('rooms')->where('id','=',$id)->get();
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
     }
 
     public function Getroomlistlocation_wise($location_id)
     {
+        try{
     	return $rooms = DB::table('rooms')->where('location','=',$location_id)->orderBy('id', 'ASC')->get();
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
     }
 
     public function storeRoomDetails(Request $request)
     {
 
-        
+        try{
         $store = new Room;
         $validator = Validator::make($request->all(), [
             'RoomName' => 'required',
@@ -84,10 +97,14 @@ class RoomController extends Controller
                         return ["Result"=>"Data Not Saved"];
                     }
                 }
+            } catch (Exception $e) {
+                return error_response(trans('messages.error_default'), $e);
+            }
     }
 
   public function UpdateRoomdetails (Request $request, $id){
   
+    try{
     $validator = Validator::make($request->all(), [
         'RoomName' => 'required',
         'Location' => 'required',
@@ -114,10 +131,15 @@ class RoomController extends Controller
                      return ["Result"=>"Data Not Saved"];
                  }
       }
+    } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+    }
    
     }
 
     public function DeleteRoomdetails($id){
+
+        try{
         $res=Room::find($id)->delete();
         if ($res){
             $data=[
@@ -132,5 +154,8 @@ class RoomController extends Controller
        
     }
     return response()->json($data);
+} catch (Exception $e) {
+    return error_response(trans('messages.error_default'), $e);
+}
 }
 }
