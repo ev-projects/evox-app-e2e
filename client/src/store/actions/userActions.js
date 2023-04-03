@@ -121,9 +121,9 @@ export const logOut = () => {
             localStorage.removeItem("access_token");
             dispatch({'type': 'CLEAR_RECENT_DTR_INSTANCE'})
             dispatch({'type': 'LOGOUT_SUCCESS'})
-
+            window.location.reload();
             // Dispatch Alert of Login Success
-            //dispatch( Formatter.alert_success( result, 3000 )  );
+            dispatch( Formatter.alert_success( result, 3000 )  );
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

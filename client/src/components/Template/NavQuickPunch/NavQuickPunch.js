@@ -61,7 +61,18 @@ class NavQuickPunch extends Component {
     // $(document).on('click', 'nav-clock-dropdown .dropdown .dropdown-menu', function (e) { // SAVE FOR LATER
     //   e.stopPropagation();
     // });
-    this.props.clearRecentDtrInstance();
+    // this.props.clearRecentDtrInstance();
+
+    // var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
+    // var to = moment().format("YYYY-MM-DD");
+  
+    // if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
+    //   this.props.getRecentDtr(this.props.user.id, from , to );
+    //   this.props.getMyDtrNotifications( this.props?.user?.id );
+
+    //   this.state.NavHasLoaded = true
+     
+    // }
   }
 
   componentWillUnmount() {
