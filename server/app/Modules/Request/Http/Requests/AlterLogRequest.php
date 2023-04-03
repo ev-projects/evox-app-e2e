@@ -39,6 +39,12 @@ class AlterLogRequest extends FormRequest
                                                      })->ignore( $this->route('id') ?? 'null' )
                                                        ->whereNull('deleted_at')
                                                     ],
+
+
+
+
+
+                                                    
             'user_id'                            => 'required|exists:users,id',
             'current_time_in'                    => 'date_format:Y-m-d H:i:s',
             'current_time_out'                   => 'date_format:Y-m-d H:i:s',
