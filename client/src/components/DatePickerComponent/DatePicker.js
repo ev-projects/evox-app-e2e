@@ -226,10 +226,12 @@ const InputDateTime = (props) => {
     if(data!==null){
         var onDuty = data;
         var employeeDuty = new Date(); 
-  
 
-        employeeDuty.setMinutes(onDuty.getMinutes()); 
-        employeeDuty.setHours( onDuty.getHours() + (offset_data/3600) ); 
+        // console.log(onDuty);
+        // console.log(onDuty.getTime() +(offset_data* 1000) );
+        employeeDuty = new Date(onDuty.getTime() +(offset_data* 1000))
+        // employeeDuty.setMinutes(onDuty.getMinutes()); 
+        // employeeDuty.setHours( onDuty.getHours() + (offset_data/3600) ); 
     
     setFieldValue("pov_"+ type, employeeDuty)
     }else{
