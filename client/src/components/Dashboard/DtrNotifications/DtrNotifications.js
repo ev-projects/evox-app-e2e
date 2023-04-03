@@ -1,6 +1,7 @@
 import React, { Component, useState, useEffect  } from "react";
 import DatePicker from "react-datepicker";
 import { Container,Row,Col,Table,Image, Spinner,Button  } from 'react-bootstrap';
+import { Link } from "react-router-dom"; 
 
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js'
 import "./DtrNotifications.css";
@@ -50,13 +51,37 @@ class DtrNotifications extends Component {
                       // If the DTR date is beyond the current date, don't show the notification by returning null.
                       if( moment().diff(moment(data.date)) < 0 ) {
                         return null;
-                      }
+                      } 
+                      let alter_log_id = null;
+                      let alter_log_status = null;
+                      
+                      {data.requests.map((request, index) => {
+                          if( request.request_type == "alter_log" ) {
+                              alter_log_id = request.id;
+                              alter_log_status = request.status;
+                          }
+                      })};
 
                       return  (
                           <tr>
                             <td>{moment(data.date).format("MMM D")}</td>
                             <td className={ Formatter.title_to_slug(data.status) }>{data.status}</td>
                             <td>{data.details}</td>
+                            <td>
+                            <Link className="btn btn-primary" 
+                                              title="Alter Log"
+                                              to={{
+                                                pathname: global.links.base +'request/AlterLog/' + (( alter_log_id != null ) ? alter_log_id : ""),
+                                                // previousPath: this.props.location.pathname, 
+                                                date: data.date,
+                                                current_time_in: data.time_in,
+                                                current_time_out: data.time_out
+                                              }}
+                                        >
+                                        <i className="fa fa-edit" 
+                                           style={{color : "#ffffff" }}></i>
+                                        </Link>
+                            </td>
                           </tr>
                       );
                     })

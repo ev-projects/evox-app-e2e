@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
-import { createDepartmentAnnouncement, fetchDepartmentAnnouncementStrict, updateDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions';
+import { createDepartmentAnnouncement, fetchDepartmentAnnouncementStrict, updateDepartmentAnnouncement, clearDepartmentAnnouncementInstance } from '../../../store/actions/announcement/departmentAnnouncementActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 import { Editor } from '@tinymce/tinymce-react';
@@ -27,7 +27,8 @@ import BackButton from "../../../components/Template/BackButton";
 class DepartmentAnnouncementsForm extends Component {
   constructor(props){
     super(props)
-
+    console.log(window.location.pathname);
+    console.log(window.location.pathname);
     this.initialState = {
         content : null,
         thumbnail: null,
@@ -53,13 +54,19 @@ class DepartmentAnnouncementsForm extends Component {
           case "log_date":
             formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
             break;
+            case "release_date":
+              formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
+              break;
+              case "expiry_date":
+                formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
+                break;
           default:
             formData.set(key, values[key]);
             break;
         }
       }
     }
-    
+    formData.set('category', "Department");
     // Checks on what action to use depending on the values.action
     if (values.method) {
     
@@ -103,7 +110,8 @@ class DepartmentAnnouncementsForm extends Component {
 
   componentWillMount(){
       // console.log(this.props.params.id);
-    if( this.props.params.id != undefined ) {
+    this.props.clearDepartmentAnnouncementInstance();
+    if( this.props.params.id != undefined ) { 
 
       this.props.fetchDepartmentAnnouncementStrict( this.props.params.id )
     }
@@ -116,24 +124,25 @@ class DepartmentAnnouncementsForm extends Component {
   render = () => {
     // Sets the Method of the current state.
     const method = (this.props.params.id != undefined) ? 'update' : 'store'
+
     var today = new Date();
     // console.log(today, moment().format('MMMM d, yyyy'));
     // console.log(this.props.instance);
     // Sets Initial Value of the current Formik form.
+    // console.log(this.props.instance?.release_date, new Date( this.props.instance?.release_date ));
     const initialValue = {
         action:             null,
         method:             method,
-        id:           this.props.instance?.id != undefined ? this.props.instance.id  : null,
-        // log_date:           this.props.instance?.log_date != undefined ? new Date( this.props.instance.log_date ) : null,
-        release_date:           this.props.instance?.release_date != undefined ? new Date( this.props.instance.release_date ) : null,
-        title:              this.props.instance?.title != undefined ? this.props.instance.title : null,
-        headline:              this.props.instance?.headline != undefined ? this.props.instance.headline : null,
-        content:        this.props.instance?.content != undefined ? this.props.instance.content : null,
-        category:           this.props.instance?.category != undefined ? this.props.instance.category : null,
+        id:                 this.props.instance?.id != undefined  && method == "update" ? this.props.instance.id  : null,
+        // log_date:        this.props.instance?.log_date != undefined  && method == "update" ? new Date( this.props.instance.log_date ) : null,
+        release_date:       this.props.instance?.release_date != undefined  && method == "update" ? new Date( this.props.instance?.release_date ) : null,
+        expiry_date:        this.props.instance?.expiry_date != undefined  && method == "update" ? new Date( this.props.instance?.expiry_date ) : null,
+        title:              this.props.instance?.title != undefined  && method == "update" ? this.props.instance.title : null,
+        headline:           this.props.instance?.headline != undefined  && method == "update" ? this.props.instance.headline : null,
+        content:            this.props.instance?.content != undefined  && method == "update" ? this.props.instance.content : null,
+        category:           this.props.instance?.category != undefined  && method == "update" ? this.props.instance.category : null,
     }
-    if(method == "store"){
-      // set the initials to null
-    }
+   
     let title = 'Announcement Form';
 
     if( (method == 'store') || ([ 'update'].includes( method ) && this.props.isInstanceLoaded) ){
@@ -230,11 +239,45 @@ class DepartmentAnnouncementsForm extends Component {
                             </div>
                             
                     </Col> */}
+                    {/* <Col size="2 dep-announcement-col">
+                            <div className="feature-checkbox">
+
+                            
+                            <label className ="dep-announcement-label"> Featured Anncouncement</label>
+                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
+                                // onChange={handleChange}
+                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
+                                checked={values.featured === 1 ? true : false}
+                            />
+                            <br/>
+                            <label className ="dep-announcement-label"> Publish</label>
+                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
+                                // onChange={handleChange}
+                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
+                                checked={values.featured === 1 ? true : false}
+                            />
+                            </div>
+                            
+                    </Col> */}
                     {/* <Col size="3 dep-announcement-col">
                       <div className="form-group">
                         <label className ="dep-announcement-label">Seen By:</label>
                         <select name="exposure_level" value={ values.exposure_level } className="form-control" onChange={handleChange}>
-                            <option></option>
+
+                            <option value="All Users">All Users</option>
+                            <option value="My Account Only">My Account Only</option>
+                            <option value="My Account Span">My Account Span</option>
+                        </select>
+                        <Form.Control.Feedback type="invalid">
+                            &nbsp;{errors.exposure_level && touched.exposure_level && errors.exposure_level}
+                        </Form.Control.Feedback>
+                      </div>
+                    </Col> */}
+                     {/* <Col size="3 dep-announcement-col">
+                      <div className="form-group">
+                        <label className ="dep-announcement-label">Seen By:</label>
+                        <select name="exposure_level" value={ values.exposure_level } className="form-control" onChange={handleChange}>
+
                             <option value="All Users">All Users</option>
                             <option value="My Account Only">My Account Only</option>
                             <option value="My Account Span">My Account Span</option>
@@ -246,12 +289,18 @@ class DepartmentAnnouncementsForm extends Component {
                     </Col> */}
 
                 
-                    {/* <Col size="3 dep-announcement-col">
+                    <Col size="3 dep-announcement-col">
                       <div className="form-group">
                         <label className ="dep-announcement-label">Release Date:</label>
                         <InputDate name="release_date" value={values.release_date}/>
                       </div>
-                    </Col> */}
+                    </Col>
+                    <Col size="3 dep-announcement-col">
+                      <div className="form-group">
+                        <label className ="dep-announcement-label">Expiry Date:</label>
+                        <InputDate name="expiry_date" value={values.expiry_date}/>
+                      </div>
+                    </Col>
                   </Row>
                   <Row>
                   <Col size="2 dep-announcement-col">
@@ -277,8 +326,9 @@ class DepartmentAnnouncementsForm extends Component {
                                   {(this.props?.instance?.thumbnail != null
                                       && this.state.imgPrevInputFile == '/thumbnail/defthumb.jpg')
                                       ? <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
-                                      // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
-                                      : <p>No Image Selected</p>}
+                                     // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
+                                     : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
+                                      
                               </div>
                     </Col>
                   </Row>
@@ -360,10 +410,12 @@ class DepartmentAnnouncementsForm extends Component {
 
 const validationSchema = Yup.object().shape({
     title         : Yup.string().required("This field is required").max(100, 'Max Title Length reached'),
-    headline      : Yup.string().required("This field is required").max(100, 'Max Headline Length reached'),
+    headline      : Yup.string().max(100, 'Max Headline Length reached'),
     // category      : Yup.string().required("This field is required").nullable(),
     // content   : Yup.string().required("This field is required").nullable(),
     // log_date      : Yup.date().required("This field is required").nullable(),
+          expiry_date      : Yup.date().required("This field is required"),
+      release_date      : Yup.date().required("This field is required"),
 });
 
 const mapStateToProps = (state) => {
@@ -377,6 +429,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
       fetchDepartmentAnnouncementStrict        : ( id ) => dispatch( fetchDepartmentAnnouncementStrict( id ) ),
+      clearDepartmentAnnouncementInstance        : ( id ) => dispatch( clearDepartmentAnnouncementInstance( id ) ),
       createDepartmentAnnouncement : ( post_data ) => dispatch( createDepartmentAnnouncement( post_data ) ),
       updateDepartmentAnnouncement : ( id,post_data ) => dispatch( updateDepartmentAnnouncement( id,post_data ) ),
       setRedirect   : ( link ) => dispatch( setRedirect( link ) ),

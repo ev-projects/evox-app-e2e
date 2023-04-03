@@ -291,10 +291,20 @@ class DailyTimeRecord extends Component {
                           } else if ( dtr.is_rest_day == 1 ){
                               dtr_type = "rest_day";
                           }
-                        
+
                           // If the DTR date is beyond the current date, don't show the DTR row by returning null.
                           if( moment().diff(moment(dtr.date)) < 0 ) {
                             return null;
+                          }
+
+                          // If the DTR is on leave, don't show undertime
+                          let dtr_undertime = dtr?.payroll_items?.undertime;
+                          if ( dtr.leaves.length > 0 ) {
+                            dtr.leaves.forEach(element => {
+                              if (element.amount > 0) {
+                                dtr_undertime = null;
+                              }
+                            });
                           }
 
                           return <tr className={"center "+dtr_type+"-bg-color"}>
@@ -304,7 +314,7 @@ class DailyTimeRecord extends Component {
                                   <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
                                   <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
                                   <td className="dtr-item">{dtr?.payroll_items?.late}</td>
-                                  <td className="dtr-item">{dtr?.payroll_items?.undertime}</td>
+                                  <td className="dtr-item">{dtr_undertime}</td>
                                   <td className="dtr-item">{dtr?.payroll_items?.night_diff}</td>
                                   <td className="dtr-item">{dtr?.payroll_items?.overtime}</td>
                                   <td className="dtr-item">{dtr?.payroll_items?.overtime_night_diff}</td>

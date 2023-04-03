@@ -4,18 +4,19 @@
 namespace App\Modules\Department\Http\Controllers;
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Modules\Department\Models\Announcment;
+use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
+use App\Modules\Department\Models\Announcement;
+// use App\Modules\Department\Resources\DepartmentListResource;
 use App\Modules\Department\Resources\AnnouncementResource;
 use App\Modules\User\Repositories\UserRepositoryInterface;
-// use App\Modules\Department\Resources\DepartmentListResource;
 use App\Modules\Department\Repositories\DepartmentRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 
 class DepartmentAnnouncementController extends Controller
 {
@@ -38,7 +39,7 @@ class DepartmentAnnouncementController extends Controller
     {
         
         try {
-         $announcements_list = Announcment::orderBy('created_at', 'desc')->get();
+         $announcements_list = Announcement::orderBy('created_at', 'desc')->get();
 
 
         return success_response(
@@ -69,14 +70,14 @@ class DepartmentAnnouncementController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {   
         DB::beginTransaction();
         try {
 
             
             log_activity( trans('messages.create_department_announcement_attempt') );
 
-            $dep_announcement = new Announcment;
+            $dep_announcement = new Announcement;
 
             $dep_announcement->title            = $request->title;
             $dep_announcement->category         = $request->category;
@@ -84,6 +85,7 @@ class DepartmentAnnouncementController extends Controller
             $dep_announcement->headline         = $request->headline;
             // $dep_announcement->log_date      = $request->log_date;
             $dep_announcement->release_date     = $request->release_date;
+            $dep_announcement->expiry_date     = $request->expiry_date;
             $dep_announcement->link             = $request->link;
             $dep_announcement->status           = $request->status;
             $dep_announcement->exposure_level   = $request->exposure_level;
@@ -105,8 +107,14 @@ class DepartmentAnnouncementController extends Controller
                 $dep_announcement->update();
             }
             
-            
-            $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
+            if( $dep_announcement->category  == "HR"){
+              $department_ids = Department::pluck('id')->toArray();
+                
+                $dep_announcement->announcements_departments()->sync( $department_ids);
+            }else{
+                  $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
+            }
+          
 
             DB::commit();
             return success_response(
@@ -155,7 +163,7 @@ class DepartmentAnnouncementController extends Controller
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
 
-        $dep_announcement = Announcment::find($id);
+        $dep_announcement = Announcement::find($id);
         // dump( $dep_announcement,$id);
         return success_response(
             trans('messages.create_department_announcement_success'), 
@@ -173,12 +181,12 @@ class DepartmentAnnouncementController extends Controller
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
         if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') )  ) { 
-            $dep_announcement = Announcment::find($id);
+            $dep_announcement = Announcement::find($id);
         }
         else {
             $department =  Department::find(Auth::user()->department_id);
-            // $announcements_list = Announcment::orderBy('created_at', 'desc')->take(8)->get();
-            $dep_announcement = $department->departments_announcements()->find($id);
+            // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
+            $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
         }
       
 
@@ -215,7 +223,7 @@ class DepartmentAnnouncementController extends Controller
             $department =  Department::find(Auth::user()->department_id);
             $check_announcement = $department->departments_announcements()->find($id);
             if($check_announcement || Auth::user()->hasRole( get_constant('USER_ROLES.admin'))){
-            $dep_announcement = Announcment::find($id);
+            $dep_announcement = Announcement::find($id);
 
             
             $dep_announcement->title            = $request->title;
@@ -224,6 +232,7 @@ class DepartmentAnnouncementController extends Controller
             $dep_announcement->headline         = $request->headline;
             // $dep_announcement->log_date      = $request->log_date;
             $dep_announcement->release_date     = $request->release_date;
+            $dep_announcement->expiry_date     = $request->expiry_date;
             $dep_announcement->link             = $request->link;
             $dep_announcement->status           = $request->status;
             $dep_announcement->exposure_level   = $request->exposure_level;
@@ -244,7 +253,12 @@ class DepartmentAnnouncementController extends Controller
             }
             
             
-            $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
+            if( $dep_announcement->category  == "HR"){
+              $department_ids = Department::pluck('id')->toArray();
+                $dep_announcement->announcements_departments()->sync( $department_ids);
+            }else{
+                  $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
+            }
 
             DB::commit();
             return success_response(
@@ -279,7 +293,7 @@ class DepartmentAnnouncementController extends Controller
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
 
-            $dep_announcement = Announcment::find($id);
+            $dep_announcement = Announcement::find($id);
             $dep_announcement->status    = $request->status;
             $dep_announcement->update();
 
@@ -307,7 +321,7 @@ class DepartmentAnnouncementController extends Controller
         try {
             log_activity( trans('messages.delete_department_announcement_attempt') );
 
-            Announcment::destroy($id);
+            Announcement::destroy($id);
 
             DB::commit();
             return success_response(
@@ -326,14 +340,32 @@ class DepartmentAnnouncementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function dashboard_index()
+    public function dashboard_index(Request $request)
     {
+        // error_log("hererrrrr" . implode(" ", $request->all()));
         
+        $date_time = Carbon::now()->toDateString();
         try {
         $department =  Department::find(Auth::user()->department_id);
-        // $announcements_list = Announcment::orderBy('created_at', 'desc')->take(8)->get();
-        $announcements_list = $department->departments_announcements()->latest()->get();
+        // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
+        
+        $announcements_list = 
+        $department->departments_announcements()->latest()->
+        where(function ($query) use ($date_time) {
+            $query->where('release_date', '<=', $date_time);
+            $query->where('expiry_date', '>', $date_time);
+        });
 
+        if($request->category == "hr"){
+            $announcements_list->where("category", "HR");
+        }
+        if($request->category == "department"){
+            $announcements_list->where("category", "Department");
+        }
+
+        
+        $announcements_list = $announcements_list->get();
+        // dd( AnnouncementResource::collection($announcements_list));
         return success_response(
             trans('messages.fetch_change_log_success'), 
            AnnouncementResource::collection($announcements_list)
@@ -345,17 +377,87 @@ class DepartmentAnnouncementController extends Controller
         }
     }
 
+
     /**
      * Display a listing of the resource only to the users(Logged in but not admin) dashbaord.
      *
      * @return \Illuminate\Http\Response
      */
-    public function all_department_handled_announcments()
+    public function handle_announcements_index()
+    {
+
+        try {
+        $department =  Department::find(Auth::user()->department_id);
+        // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
+        $announcements_list = $department->departments_announcements()->where("category", "Department")->latest()
+       
+        
+        ->get();
+        // dd( AnnouncementResource::collection($announcements_list));
+        return success_response(
+            trans('messages.fetch_change_log_success'), 
+           AnnouncementResource::collection($announcements_list)
+        );
+
+        
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+
+    
+
+    /**
+     * Display a listing of the resource only to the Supervisor(Logged in but not admin) dashbaord.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function all_department_handled_Announcements()
     {
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
             
-            $announcements_collection = Announcment::where("dep_id", Auth::user()->dep_id);
+            $announcements_collection = Announcement::where("dep_id", Auth::user()->dep_id);
+            return success_response(
+                trans('messages.all_department_success'), 
+                AnnouncementResource::collection( $announcements_collection ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+
+    }
+
+
+
+    public function show_hr_strict($id)
+    {
+        log_activity( trans('messages.create_department_announcement_attempt') );
+
+
+        if(Auth::user()->hasRole( get_constant('USER_ROLES.hr') )  ) { 
+            $dep_announcement = Announcement::where('category', "HR")->find($id);
+        }
+      
+      
+
+        return success_response(
+            trans('messages.create_department_announcement_success'), 
+            new AnnouncementResource(  $dep_announcement ) 
+        );
+    }
+
+        /**
+     * Display a listing of the resource only to the HR(Logged in but not admin) dashbaord.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function all_hr_handled_Announcements()
+    {
+        try {
+            log_activity( trans('messages.create_department_announcement_attempt') );
+            
+            $announcements_collection = Announcement::where("category", "HR")->get();
             return success_response(
                 trans('messages.all_department_success'), 
                 AnnouncementResource::collection( $announcements_collection ) 

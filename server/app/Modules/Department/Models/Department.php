@@ -7,7 +7,7 @@ use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Schedule\Models\Schedule;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Modules\Department\Models\Announcment;
+use App\Modules\Department\Models\Announcement;
 
 class Department extends Model
 {
@@ -69,7 +69,7 @@ class Department extends Model
 
     public function departments_announcements()
     {
-        return $this->belongsToMany(Announcment::class, 'departments_announcements', 'department_id', 'announcement_id');
+        return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
     }
     
     

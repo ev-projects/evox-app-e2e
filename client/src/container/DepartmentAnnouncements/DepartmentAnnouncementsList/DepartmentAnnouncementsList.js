@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./DepartmentAnnouncementsList.css";
 
-import { fetchDashboardAnnouncmentList, deleteDepartmentAnnouncment } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchMyHandleAnnouncementList, deleteDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions'
 
 
 import Formatter from '../../../services/Formatter'
@@ -25,9 +25,9 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   onDeleteHandler = (announcement, index) => {
-    if (window.confirm("Are you sure you want to Remove this Department ?")) {
+    if (window.confirm("Are you sure you want to Remove this Anoouncement ?")) {
 
-      this.props.deleteDepartmentAnnouncment(announcement.id);
+      this.props.deleteDepartmentAnnouncement(announcement.id);
       this.props.departmentAnnouncement.depAnnouncementlist.splice(index, 1);
       this.toggleModal();
     }
@@ -38,7 +38,7 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   componentWillMount(){
-    this.props.fetchDashboardAnnouncmentList();
+    this.props.fetchMyHandleAnnouncementList();
   }
   
   render = () => {
@@ -122,8 +122,8 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
-      fetchDashboardAnnouncmentList : () => dispatch( fetchDashboardAnnouncmentList() ),
-      deleteDepartmentAnnouncment : (id) => dispatch( deleteDepartmentAnnouncment(id) ),
+      fetchMyHandleAnnouncementList : () => dispatch( fetchMyHandleAnnouncementList() ),
+      deleteDepartmentAnnouncement : (id) => dispatch( deleteDepartmentAnnouncement(id) ),
     }
   }
 

@@ -6,6 +6,7 @@ import Formatter from "../../../services/Formatter";
 
 import { setRedirect, clearRedirect } from '../../actions/redirectActions';
 import { fetchRequestList, fetchStatusNumbers } from "../filters/requestListActions";
+import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
 
 /**
  *  A dedicated repository of Actions for Alter Log
@@ -60,7 +61,7 @@ export const updateAlterLog = ( id, post_data ) => {
 
 
 // Update Alter Log Status Request
-export const updateAlterLogStatus = ( id, post_data, status ) => {
+export const updateAlterLogStatus = ( id, post_data, status, user_id ) => {
     return (dispatch, getState) => {
         API.call({
             method: "post",
@@ -98,6 +99,8 @@ export const updateAlterLogStatus = ( id, post_data, status ) => {
                 bulk_action:      null,
                 url:              'my_team_requests'
             }));
+
+            dispatch(getMyDtrNotifications(user_id) );
 
             dispatch({
                 'type'      : 'SET_REDIRECT',

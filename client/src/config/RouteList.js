@@ -74,6 +74,18 @@ import AnnouncementsPage from "../container/DepartmentAnnouncements/Announcement
 import HrAnnouncements from "../container/Hr/Announcements";
 import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
+import HrAnnouncementsForm from "../container/Hr/HrAnnouncementsForm";
+import HrAnnouncementsList from "../container/Hr/HrAnnouncementsList";
+import Test from "../components/MeetingRoomBooking/Test";
+// import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
+import RoomMaster from "../components/MeetingRoomBooking/RoomMaster";
+import Roomlist from "../components/MeetingRoomBooking/Roomlist";
+import Meetingroombooking from "../components/MeetingRoomBooking/Meetingroombooking";
+import LocationMaster from "../components/MeetingRoomBooking/LocationMaster";
+import Locationlist from "../components/MeetingRoomBooking/Locationlist";
+import Meetingroomapproval from "../components/MeetingRoomBooking/Meetingroomapproval";
+import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
+
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
   // Register all the Routes that will be used in the Application (excluding the Login)
@@ -111,6 +123,29 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.profile+":id"} >
           <Profile role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.room_list}>
+          <Roomlist />
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.room_master + ":id"}>
+          <RoomMaster/>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.meeting_calander + ":id"}>
+          {/* <Test/> */}
+          <Meetingcalander/>
+         </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.location_list}>
+          <Locationlist/>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.location_master + ":id"}>
+          <LocationMaster/>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.booked_list}>
+          <Meetingroombooking/>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.meetingroom_approval + ":id"}>
+          <Meetingroomapproval />
         </ProtectedRoute>
         
         <ProtectedRoute exact path={global.links.my_request}>
@@ -290,11 +325,11 @@ const RoutesList = (props) => {
 
 
         <ProtectedRoute exact path={global.links.manage_hr_announcements}>
-          <HrAnnouncements  role={['hr']} />
+          <HrAnnouncementsList  role={['hr']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
-          <PostHrAnnouncements  role={['hr']} />
+          <HrAnnouncementsForm  role={['hr']} />
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

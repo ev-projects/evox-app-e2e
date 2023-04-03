@@ -69,7 +69,7 @@ export const fetchDepartmentAnnouncement = ( id ) => {
         })
         .then(result => {
             dispatch({
-                'type'      : 'FETCH_DEPARTMENT_ANNOUNCMENT_SUCCESS', 
+                'type'      : 'FETCH_DEPARTMENT_ANNOUNCEMENT_SUCCESS', 
                 'announcement'  : result.data.content
             })
 
@@ -88,7 +88,7 @@ export const fetchDepartmentAnnouncementStrict = ( id ) => {
         })
         .then(result => {
             dispatch({
-                'type'      : 'FETCH_DEPARTMENT_ANNOUNCMENT_SUCCESS', 
+                'type'      : 'FETCH_DEPARTMENT_ANNOUNCEMENT_SUCCESS', 
                 'announcement'  : result.data.content
             })
 
@@ -100,8 +100,8 @@ export const fetchDepartmentAnnouncementStrict = ( id ) => {
 }
 
 
-
-export const fetchDepartmentAnnouncmentList = () => {
+    // used only by admin
+export const fetchDepartmentAnnouncementList = () => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -110,7 +110,7 @@ export const fetchDepartmentAnnouncmentList = () => {
         .then(result => {
             
             dispatch({
-                'type'      : 'FETCH_DEPARTMENT_ANNOUNCMENT_INDEX_LOAD_SUCCESS',
+                'type'      : 'FETCH_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS',
                 'list'      : result.data.content,
             })
 
@@ -121,16 +121,38 @@ export const fetchDepartmentAnnouncmentList = () => {
     }
 }
 
-export const fetchDashboardAnnouncmentList = () => {
+export const fetchDashboardAnnouncementList = (params = null) => {
+    
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/department/announcements/dashboard_departments"
+            url: "/department/announcements/dashboard_departments",
+            params: params,
         })
         .then(result => {
             
             dispatch({
-                'type'      : 'FETCH_DEPARTMENT_ANNOUNCMENT_INDEX_LOAD_SUCCESS',
+                'type'      : 'FETCH_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const fetchMyHandleAnnouncementList = () => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/department/announcements/my_handle_announcements/all"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS',
                 'list'      : result.data.content,
             })
 
@@ -142,7 +164,7 @@ export const fetchDashboardAnnouncmentList = () => {
 }
 
 
-export const deleteDepartmentAnnouncment = (id) => {
+export const deleteDepartmentAnnouncement = (id) => {
     return (dispatch, getState) => {
         API.call({
             method: "delete",
@@ -154,5 +176,21 @@ export const deleteDepartmentAnnouncment = (id) => {
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
         });
+    }
+}
+
+export const clearDepartmentAnnouncementInstance = () => {
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'CLEAR_DEPARTMENT_ANNOUNCEMENT_INSTANCE'
+        })
+    }
+}
+
+export const clearDepartmentAnnouncementListInstance = () => {
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'CLEAR_DEPARTMENT_ANNOUNCEMENT_LIST_INSTANCE'
+        })
     }
 }

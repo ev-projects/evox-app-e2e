@@ -11,76 +11,7 @@ import { setRedirect, clearRedirect } from '../redirectActions';
  */
 
 
-// // Add PayrollCutoff
-// export const addPayrollCutoff = ( post_data ) => {
-//     return (dispatch, getState) => {
-//         API.call({
-//             method: "post",
-//             url: "/payroll/cutoff/",
-//             data: post_data
-//         })
-//         .then(result => {
-//             dispatch( Formatter.alert_success( result, 3000 ));
-//         })
-//         .catch(e => {
-//             dispatch( Formatter.alert_error( e ) ) 
-//         });
-//     }
-// }
 
-
-// // Update PayrollCutoff
-// export const updatePayrollCutoff = ( id, post_data ) => {
-//     return (dispatch, getState) => {
-//         API.call({
-//             method: "post",
-//             url: "/payroll/cutoff/" + id,
-//             data: post_data
-//         })
-//         .then(result => {
-//             dispatch( Formatter.alert_success( result, 3000 ));
-//         })
-//         .catch(e => {
-//             dispatch( Formatter.alert_error( e ) ) 
-//         });
-//     }
-// }
-
-
-// // Delete PayrollCutoff
-// export const deletePayrollCutoff = ( id ) => {
-//     return (dispatch, getState) => {
-//         API.call({
-//             method: "delete",
-//             url: "/payroll/cutoff/" + id
-//         })
-//         .then(result => {
-//             dispatch( Formatter.alert_success( result, 3000 ));
-//         })
-//         .catch(e => {
-//             dispatch( Formatter.alert_error( e ) ) 
-//         });
-//     }
-// }
-
-// // Fetch PayrollCutoff instance
-// export const fetchPayrollCutoff = ( id ) => {
-//     return (dispatch, getState) => {
-//         API.call({
-//             method: "get",
-//             url: "/payroll/cutoff/" + id
-//         })
-//         .then(result => {
-//             dispatch({
-//                 'type'           : 'FETCH_PAYROLL_CUTOFF_SUCCESS', 
-//                 'payrollCutoff'  : result.data.content
-//             })
-            
-//         })
-//         .catch(e => {
-//             dispatch( Formatter.alert_error( e ) ) 
-//         });
-//     }
 // }
 
 // Fetch Announcements

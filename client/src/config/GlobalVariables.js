@@ -83,6 +83,14 @@
     // HR Links
     manage_hr_announcements         : "/app/hr/ManageHrAnnouncements/",
     post_hr_announcements           : "/app/hr/PostHrAnnouncements/",
+
+    meeting_calander                :  "/app/calander/",
+    room_master                     :  "/app/createroom/",
+    room_list                       :  "/app/Roomlist/",
+    booked_list                     :  "/app/Bookedlist/",
+    meetingroom_approval            :  "/app/roomapproval/",
+    location_master                 :  "/app/createlocation/",
+    location_list                   :  "/app/locationlist/",
 };
 
 global.invalid_token_response = [

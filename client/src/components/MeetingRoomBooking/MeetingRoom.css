@@ -1,0 +1,41 @@
+.modal-content {
+    width: 50% !important;
+}
+.pagination {
+    display: flex !important;
+}
+
+.fc .fc-timegrid-slot {
+    height: 3.2em !important;
+}
+
+.fc-v-event .fc-event-title {
+    font-size: 14px !important;
+}
+
+.fc-timegrid-event .fc-event-time {
+    font-size: 14px !important;
+}
+
+.fc .fc-timegrid-slot-label-cushion {
+    padding: 0 4px;
+
+    font-size: 12px;
+}
+
+.tippy-box[data-theme~='tomato'] {
+    background-color: white;
+    color: black;
+  }
+  .tippy-box[data-theme~='tomato'][data-placement^='right'] > .tippy-arrow::before {
+    border-right-color: white;
+  }
+  .infosvg {
+    width: 20px;
+  }
+  
+  .tooltippy {
+    position: relative;
+    top: 150px;
+    left: 300px;
+  }

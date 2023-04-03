@@ -47,7 +47,7 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
         # Gets all the Department Announcements Lists
         Route::get('/dashboard_departments', 'DepartmentAnnouncementController@dashboard_index');
 
-        #creates a new  Announcment for a Department
+        #creates a new  Announcement for a Department
         Route::post('/create', 'DepartmentAnnouncementController@store');
 
         # Gets/Updates the Department Announcements of the ID indicated on the Parameter
@@ -55,9 +55,9 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
 
         Route::get('/strict/{id}', 'DepartmentAnnouncementController@show_strict');
 
-        Route::get('/my_handle_announcements', 'DepartmentAnnouncementController@dashboard_index');
-
         Route::group(['prefix' => 'my_handle_announcements', 'middleware' => []], function () {
+            # from my team department "my handled announcements"
+            Route::get('/all', 'DepartmentAnnouncementController@handle_announcements_index');
 
             # Gets/Updates the Department Announcements of the ID indicated on the Parameter
             Route::get('/{id}', 'DepartmentAnnouncementController@show');
@@ -68,6 +68,21 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
 
             Route::delete('/{id}', 'DepartmentAnnouncementController@destroy');
     }); 
+
+    
+    Route::group(['prefix' => 'hr', 'middleware' => []], function () {
+
+        Route::get('/all', 'DepartmentAnnouncementController@all_hr_handled_Announcements');
+
+        # Gets/Updates the Department Announcements of the ID indicated on the Parameter
+        Route::get('/{id}', 'DepartmentAnnouncementController@show_hr_strict');
+
+        Route::post('/{id}/update', 'DepartmentAnnouncementController@update');
+
+        Route::put('/{id}/update-status', 'DepartmentAnnouncementController@update_status');
+
+        Route::delete('/{id}', 'DepartmentAnnouncementController@destroy');
+}); 
 
     });
 
