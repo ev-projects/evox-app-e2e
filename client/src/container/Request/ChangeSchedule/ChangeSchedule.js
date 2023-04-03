@@ -366,23 +366,26 @@ class ChangeSchedule extends Component {
 									{  /** Shows Approver Note if on Approval   */
 										onApproval ? 
 	
-										<Row>
-										<Col size="6">
-											<Button
+										<Row className="timezone-row">
+										<Col size="5">
+											<Button className="toggle-outlook"
 												onClick={() => this.setState({
 													open_contrast: !this.state.open_contrast
 												})}
 												// aria-controls="example-collapse-text"
 												// aria-expanded={open}
 											>
-												Hide Employee's Outlook
+												Toggle Outlook <i className="fa  fa-eye" />
 											</Button>
 											</Col>
 											<Col size="3">
-												<p>{this.props.user.pov_timezone}   -</p>
+												<h6>{this.props.user.pov_timezone}</h6>
+											</Col>
+											<Col size="1">
+											<i className="fa  fa-arrow-right" />
 											</Col>
 											<Col size="3">
-												<p>{pov_timezone_info}</p>
+												<h6 className="">{pov_timezone_info}</h6>
 											</Col>
 										</Row>
 									
@@ -394,7 +397,7 @@ class ChangeSchedule extends Component {
 													offset_data={owner_offset}
 													on_approval = {onApproval}
 													open_contrast = {this.state.open_contrast}
-													// pov_timezone_info = {pov_timezone_info}
+													pov_timezone_info = {pov_timezone_info}
 											/>
 										}
 									})}
