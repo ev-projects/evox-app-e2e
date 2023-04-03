@@ -11,7 +11,7 @@ import moment from 'moment';
 import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
 import NavPuncher from "../NavPuncher/NavPuncher";
 // import NavPuncher from "../../../components/template/NavPuncher";
-import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions'
+import { getRecentDtr ,clearRecentDtrInstance} from '../../../store/actions/dashboard/dashboardActions'
 import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
 
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
@@ -61,6 +61,7 @@ class NavQuickPunch extends Component {
     // $(document).on('click', 'nav-clock-dropdown .dropdown .dropdown-menu', function (e) { // SAVE FOR LATER
     //   e.stopPropagation();
     // });
+    this.props.clearRecentDtrInstance();
   }
 
   componentWillUnmount() {
@@ -174,6 +175,8 @@ const mapDispatchToProps = (dispatch) => {
     getRecentDtr : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) ),
     biometrixLog    : ( post_data , id ) => dispatch( biometrixLog( post_data , id ) ),
     getMyDtrNotifications  : () => dispatch( getMyDtrNotifications() ),
+    clearRecentDtrInstance : () => dispatch( clearRecentDtrInstance() )
+
 
   };
 };
