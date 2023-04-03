@@ -245,9 +245,9 @@ const InputDateTime = (props) => {
         var onDuty = data;
         var offDuty = new Date(data); 
 
- 
-        offDuty.setMinutes(onDuty.getMinutes()); 
-        offDuty.setHours( onDuty.getHours() + (offset_data/3600) ); 
+        offDuty = new Date(onDuty.getTime() +(offset_data* 1000))
+        // offDuty.setMinutes(onDuty.getMinutes()); 
+        // offDuty.setHours( onDuty.getHours() + (offset_data/3600) ); 
     
     setFieldValue("pov_"+ type, offDuty)
     }else{
