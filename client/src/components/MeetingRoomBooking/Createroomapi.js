@@ -14,7 +14,8 @@ export const CreateMasterroom = (
   description,
   setvalidroomname,
   setvalidlocation,
-  setvalidseat
+  setvalidseat,
+  seterror
 ) => {
   return async (dispatch, getState) => {
     const history = createBrowserHistory();
@@ -30,8 +31,12 @@ export const CreateMasterroom = (
         },
       })
         .then((result) => {
+          if(result.data.status == 201){
+            seterror(true);
+          }
           dispatch(Formatter.alert_success(result, 3000));
           setRedirect(global.links.room_list);
+          
           dispatch({
             type: "SET_REDIRECT",
             link: global.links.dashboard,

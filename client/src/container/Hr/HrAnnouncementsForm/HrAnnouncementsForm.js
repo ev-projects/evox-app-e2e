@@ -77,8 +77,8 @@ class HrAnnouncementsForm extends Component {
               
               if (this.state.thumbnail != null) {
                 formData.set('thumbnail', this.state.thumbnail);
+              }
               
-            }
             this.props.createHrAnnouncement( formData );
             this.setState({ thumbnail: null });
             this.setState({ imgPrevInputFile: '/thumbnail/defthumb.jpg' });
@@ -110,7 +110,7 @@ class HrAnnouncementsForm extends Component {
 
   componentWillMount(){
     this.props.clearHrAnnouncementInstance();
-    if( this.props.params.id != undefined ) { 
+    if( this.props.params.id != undefined ) {
 
       this.props.fetchHrAnnouncementStrict( this.props.params.id )
     }

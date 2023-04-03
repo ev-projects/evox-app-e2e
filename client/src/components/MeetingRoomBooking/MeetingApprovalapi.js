@@ -32,13 +32,27 @@ export const statusChange = (
   status,
   setBookedlist,
   setTotalpagecount,
-  setStatus
+  setStatus,
+  fromdate,
+  todate,
+  setStatuscount
 ) => {
   var endpoint = "";
   if (status !== "All") {
-    endpoint = `/GetBookeddetails?status=${status}&page=1`;
+    if (fromdate !== "" && todate !== "") {
+      endpoint = `/GetBookeddetails?status=${status}&page=1&from_date=${fromdate}&to_date=${todate}`;
+    } else {
+      endpoint = `/GetBookeddetails?status=${status}&page=1`;
+    }
+    // endpoint = `/GetBookeddetails?status=${status}&page=1`;
   } else {
-    endpoint = `/GetBookeddetails?page=1`;
+
+    if (fromdate !== "" && todate !== "") {
+      endpoint = `/GetBookeddetails?page=1&from_date=${fromdate}&to_date=${todate}`;
+    } else {
+      endpoint = `/GetBookeddetails?page=1`;
+    }
+ 
   }
 
   return async (dispatch, getState) => {
@@ -50,6 +64,7 @@ export const statusChange = (
         setBookedlist(result.data.data.data);
         setTotalpagecount(result.data.pagination.last_page);
         setStatus(status);
+        // setStatuscount(result.data.statuscount);
         dispatch({
           type: "SET_REDIRECT",
           link: global.links.dashboard,
@@ -66,7 +81,8 @@ export const filterClick = (
   fromdate,
   todate,
   setBookedlist,
-  setTotalpagecount
+  setTotalpagecount,
+  setStatuscount
 ) => {
   var endpoint = "";
   if (status !== "All") {
@@ -91,6 +107,9 @@ export const filterClick = (
       .then((result) => {
         setBookedlist(result.data.data.data);
         setTotalpagecount(result.data.pagination.last_page);
+        setStatuscount(result.data.statuscount);
+
+        console.log(result.data.statuscount);
         dispatch({
           type: "SET_REDIRECT",
           link: global.links.dashboard,
@@ -113,7 +132,7 @@ export const requestPagenationclick = (status,page,fromdate,todate,setBookedlist
         }
       } else {
         if (fromdate !== "" && todate !== "") {
-            endpoint = `/GetBookeddetails?page=${page}&from_date=${fromdate}&to_date${todate}`;
+            endpoint = `/GetBookeddetails?page=${page}&from_date=${fromdate}&to_date=${todate}`;
         } else {
             endpoint = `/GetBookeddetails?page=${page}`;
         }
