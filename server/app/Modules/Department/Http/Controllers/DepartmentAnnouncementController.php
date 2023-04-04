@@ -110,7 +110,7 @@ class DepartmentAnnouncementController extends Controller
             if( $dep_announcement->category  == "HR"){
               $department_ids = Department::pluck('id')->toArray();
                 
-                $dep_announcement->announcements_departments()->sync( $department_ids);
+                  $dep_announcement->announcements_departments()->sync($department_ids);
             }else{
                   $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
             }
@@ -390,8 +390,6 @@ class DepartmentAnnouncementController extends Controller
         $department =  Department::find(Auth::user()->department_id);
         // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
         $announcements_list = $department->departments_announcements()->where("category", "Department")->latest()
-       
-        
         ->get();
         // dd( AnnouncementResource::collection($announcements_list));
         return success_response(

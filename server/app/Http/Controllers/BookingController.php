@@ -45,7 +45,12 @@ class BookingController extends Controller
           {
             $count = $items->count;
           }
-
+         $createdby ='';
+         $username = DB::select( DB::raw("SELECT CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS created_by FROM `bookings` join `users` ON users.id=bookings.user_id WHERE ('". $startdate."' BETWEEN DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) and DATE_SUB(bookings.end_date, INTERVAL 1 SECOND) OR '".$enddate."' BETWEEN DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) and bookings.end_date OR DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) BETWEEN  '". $startdate."' AND '".$enddate."' OR DATE_SUB(bookings.end_date, INTERVAL 1 SECOND) BETWEEN '". $startdate."' AND '".$enddate."') AND (bookings.status = 'approved' OR bookings.status = 'pending') AND bookings.room_id='".$room_id."'"));
+         foreach($username as $items)
+          {
+            $createdby =  $items->created_by;
+          }
        if($count == 0){
         $store = new Booking;
         $storerequirement =new itrequirement;
@@ -59,8 +64,8 @@ class BookingController extends Controller
             $user_id = $request -> Userid;
             $totalhours =$request->Totalhours;
             $status = "pending";
-            $message = "Room BookSuccessfully, Kindly Wait For Approval";
-            if($totalhours <= 3){
+            $message = "Room BookSuccessfully by , Kindly Wait For Approval";
+            if($totalhours <= 2){
                 $status = "approved";
                 $message = "Room BookSuccessfully";
             }
@@ -106,7 +111,7 @@ class BookingController extends Controller
         return response()->json([
          
             'status' => '201',
-            'message' => 'Meeting Room Already Booked For this Date',
+            'message' => 'Meeting Room Already Booked For this Date by '.$createdby.'',
             
        ]);
        }
@@ -131,19 +136,27 @@ class BookingController extends Controller
                 ->join('rooms', 'rooms.id', '=', 'bookings.room_id')
                 ->join('users','users.id', '=', 'bookings.user_id')
                 ->leftjoin(DB::raw("users as approveduser"), 'approveduser.id', '=', 'bookings.approved_by')
-                ->where('bookings.total_hours','>',3);
+                ->where('bookings.total_hours','>',2);
                 if( is_valid($request->status) ){
                 $booking->where('bookings.status','=',$request->status);
                 }
                 if( is_valid($request->from_date) && is_valid($request->to_date) ){
-                    $booking->whereBetween('bookings.start_date', [$request->from_date, $request->to_date]);
+                    // $booking->whereBetween('bookings.start_date', [$request->from_date, $request->to_date]);
+                    $booking->whereDate('bookings.start_date', '>=', $request->from_date)
+                    ->whereDate('bookings.start_date', '<=', $request->to_date);
                 }
-                $result =$booking ->orderBy('bookings.id', 'DESC')->paginate(5);
+                $result =$booking ->orderBy('bookings.id', 'DESC')->paginate(10);
+                
                 $count = DB::table('bookings')
                 ->select('status', DB::raw('count(*) as total'))
-                ->where('bookings.total_hours','>',3);
-                if( is_valid($request->status) ){
-                $count->where('bookings.status','=',$request->status);
+                ->where('bookings.total_hours','>',2);
+                // if( is_valid($request->status) ){
+                // $count->where('bookings.status','=',$request->status);
+                // }
+                if( is_valid($request->from_date) && is_valid($request->to_date) ){
+                    // $booking->whereBetween('bookings.start_date', [$request->from_date, $request->to_date]);
+                    $count->whereDate('bookings.start_date', '>=', $request->from_date)
+                    ->whereDate('bookings.start_date', '<=', $request->to_date);
                 }
                 $statuscount = $count->groupBy('status')->get();
                 $allcount = 0;
@@ -184,7 +197,7 @@ class BookingController extends Controller
         if($id != null){
         
         return $booking = DB::table('bookings')
-        ->select('bookings.id','bookings.user_id','bookings.note','bookings.room_id','bookings.start_date','bookings.end_date','bookings.total_hours','bookings.status','rooms.name',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS created_by"))
+        ->select('bookings.id','bookings.user_id','bookings.note','bookings.approver_note','bookings.room_id','bookings.start_date','bookings.end_date','bookings.total_hours','bookings.status','rooms.name',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS created_by"))
         ->join('rooms', 'rooms.id', '=', 'bookings.room_id')
         ->join('users','users.id', '=', 'bookings.user_id')
         ->where('bookings.id','=',$id)->get();
@@ -222,7 +235,7 @@ class BookingController extends Controller
                 'status'=>$request->Status,
                 'approved_by'=>$request->Approvedby
              ]);
-             $message = $request->Status == 2 ? "Request Deny Successfully":"Request Approved Successfully";
+             $message = $request->Status == "declined" ? "Request Deny Successfully":"Request Approved Successfully";
              if($updatestatus){
                  return response()->json([
           

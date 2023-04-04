@@ -112,7 +112,6 @@ class DepartmentAnnouncementsForm extends Component {
       // console.log(this.props.params.id);
     this.props.clearDepartmentAnnouncementInstance();
     if( this.props.params.id != undefined ) { 
-
       this.props.fetchDepartmentAnnouncementStrict( this.props.params.id )
     }
 }

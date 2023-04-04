@@ -82,7 +82,7 @@ const Roomlist = () => {
                       <tr>
                         <td>{room.id}</td>
                         <td>{room.name}</td>
-                        <td>{room.location}</td>
+                        <td>{room.location_name}</td>
                         <td>{room.seats} </td>
                         <td>{room.description} </td>
 

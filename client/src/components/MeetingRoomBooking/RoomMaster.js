@@ -53,48 +53,79 @@ const RoomMaster = (props) => {
   }, []);
 
   const handledelete = async (e) => {
-    await dispatch(deleteRoomdetails(props.params.id));
-    setTimeout(function () {
-      history.push(global.links.room_list);
-    }, 1000);
-  };
-
-  const handlesave = async (e) => {
-    await dispatch(
-      CreateMasterroom(
-        name,
-        location,
-        seat,
-        description,
-        setvalidroomname,
-        setvalidlocation,
-        setvalidseat
-      )
-    );
-    if (name !== "" && location !== "" && seat !== "") {
+    if (window.confirm("Are you sure you want to Delete this?")) {
+      await dispatch(deleteRoomdetails(props.params.id));
       setTimeout(function () {
         history.push(global.links.room_list);
       }, 1000);
     }
   };
 
-  const handleupdate = async (e) => {
-    await dispatch(
-      updatedRoomdetails(
-        props.params.id,
-        name,
-        location,
-        seat,
-        description,
-        setvalidroomname,
-        setvalidlocation,
-        setvalidseat
-      )
-    );
+  const handlesave = async (e) => {
     if (name !== "" && location !== "" && seat !== "") {
-      setTimeout(function () {
-        history.push(global.links.room_list);
-      }, 1000);
+      await API.call({
+        method: "post",
+        url: "/storeroom",
+        data: {
+          RoomName: name,
+          Location: location,
+          Description: description,
+          Seats: seat,
+        },
+      })
+        .then((result) => {
+          if (result.data.status == 200) {
+            history.push(global.links.room_list);
+          }
+          dispatch(Formatter.alert_success(result, 3000));
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        });
+    } else {
+      if (name == "") {
+        setvalidroomname(true);
+      }
+      if (location == "") {
+        setvalidlocation(true);
+      }
+      if (seat == "") {
+        setvalidseat(true);
+      }
+    }
+  };
+
+  const handleupdate = async (e) => {
+    if (name !== "" && location !== "" && seat !== "") {
+      await API.call({
+        method: "put",
+        url: `/UpdateRoomdetails/${props.params.id}`,
+        data: {
+          RoomName: name,
+          Location: location,
+          Description: description,
+          Seats: seat,
+        },
+      })
+        .then((result) => {
+          dispatch(Formatter.alert_success(result, 3000));
+          if (result.data.status == 200) {
+            history.push(global.links.room_list);
+          }
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        });
+    } else {
+      if (name == "") {
+        setvalidroomname(true);
+      }
+      if (location == "") {
+        setvalidlocation(true);
+      }
+      if (seat == "") {
+        setvalidseat(true);
+      }
     }
   };
 
@@ -169,7 +200,7 @@ const RoomMaster = (props) => {
                   <div className="form-group">
                     <label>No of Seats:</label>
                     <input
-                      type="text"
+                      type="number"
                       placeholder="Seats"
                       className="form-control"
                       required
@@ -225,16 +256,18 @@ const RoomMaster = (props) => {
                     </Button>
                   )}
                 </div>
-                <div className="col-3">
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handledelete}
-                    style={{ backgroundColor: "red !important" }}
-                  >
-                    <i className="fa fa-trash" /> Delete
-                  </button>
-                </div>
+                {props.params.id !== "0" && (
+                  <div className="col-3">
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={handledelete}
+                      style={{ backgroundColor: "red !important" }}
+                    >
+                      <i className="fa fa-trash" /> Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </form>
           </Content>

@@ -115,12 +115,11 @@ class HrAnnouncementsList extends Component {
 }
 
 const mapStateToProps = (state) => {
-
-      return {
+  return {
         departmentAnnouncement             : state.departmentAnnouncement,
     }
   }
-  const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch) => {
     return {
       fetchHrHandleAnnouncementList : () => dispatch( fetchHrHandleAnnouncementList() ),
       deleteHrAnnouncement : (id) => dispatch( deleteHrAnnouncement(id) ),
