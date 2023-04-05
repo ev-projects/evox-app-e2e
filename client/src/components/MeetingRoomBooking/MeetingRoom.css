@@ -39,3 +39,7 @@
     top: 150px;
     left: 300px;
   }
+
+  .filterbtn {
+    max-width: 7.666667% !important;
+  }

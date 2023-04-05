@@ -60,6 +60,8 @@ class LocationController extends Controller
           if ($validator->fails()) {
             return response()->json(['errors'=>$validator->messages()]);
           }else{
+            $roomcount = DB::table('locations')->where('location_name','=',$request -> Locationname)->where('id','<>',$id)->count();
+        if($roomcount == 0){
             $updateLocation = location::where('id', $id)
             ->update([
                 'location_name' => $request->Locationname,
@@ -75,6 +77,13 @@ class LocationController extends Controller
                          
                          return ["Result"=>"Data Not Saved"];
                      }
+                    }else{
+                        return response()->json([
+                     
+                            'status' => '201',
+                            'message' => 'Location Name Already Exist',                     
+                       ]);
+                    }
           }
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
@@ -93,6 +102,8 @@ class LocationController extends Controller
           if ($validator->fails()) {
             return response()->json(['errors'=>$validator->messages()]);
           }else{
+            $roomcount = DB::table('locations')->where('location_name','=',$request -> Locationname)->count();
+            if($roomcount == 0){
             $Locationname = $request -> Locationname;
             $store ->location_name = $Locationname;
             $savedata1=$store->save();
@@ -108,6 +119,13 @@ class LocationController extends Controller
                         
                         return ["Result"=>"Data Not Saved"];
                     }
+                }else{
+                    return response()->json([
+                 
+                        'status' => '201',
+                        'message' => 'Location Name Already Exist',                     
+                   ]);
+                }
                 }
             } catch (Exception $e) {
                 return error_response(trans('messages.error_default'), $e);
@@ -120,12 +138,12 @@ class LocationController extends Controller
         if ($res){
             $data=[
                 'status'=>'1',
-                'message'=>'success'
+                'message'=>'Successfully Deleted'
             ];
         }else{
             $data=[
                 'status'=>'0',
-                'message'=>'fail'
+                'message'=>'Error'
             ];
        }
     return response()->json($data);

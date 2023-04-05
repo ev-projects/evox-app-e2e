@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Table,
   Col,
-  Tabs,
-  Tab,
+  Form,
   Badge,
   Button,
   Row,
@@ -72,24 +71,67 @@ const Meetingroombooking = () => {
     onClick: function (page) {
       console.log(page);
       setCurrentpagecount(page);
-      dispatch(requestPagenationclick(status,page,fromdate,todate,setBookedlist,setTotalpagecount))
+      dispatch(
+        requestPagenationclick(
+          status,
+          page,
+          fromdate,
+          todate,
+          setBookedlist,
+          setTotalpagecount
+        )
+      );
     },
   };
 
   const handlefilterclick = () => {
     dispatch(
-      filterClick(status, fromdate, todate, setBookedlist, setTotalpagecount)
+      filterClick(
+        status,
+        fromdate,
+        todate,
+        setBookedlist,
+        setTotalpagecount,
+        setStatuscount
+      )
     );
   };
 
+  const handleclearfilterclick = () => {
+    setFromdate("");
+    setTodate("");
+    dispatch(
+      viewBookingdetails(
+        setBookedlist,
+        setTotalpagecount,
+        setCurrentpagecount,
+        setStatuscount
+      )
+    );
+  };
+
+  const Capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   const handlestatuschange = (status) => {
-    dispatch(statusChange(status, setBookedlist, setTotalpagecount, setStatus));
+    dispatch(
+      statusChange(
+        status,
+        setBookedlist,
+        setTotalpagecount,
+        setStatus,
+        fromdate,
+        todate,
+        setStatuscount
+      )
+    );
   };
 
   const Status = (props) => {
     let pagination = [];
     switch (props.status) {
-      case "pending":
+      case "Pending":
         pagination.push(
           <Badge variant="secondary">
             <span></span>
@@ -97,7 +139,7 @@ const Meetingroombooking = () => {
           </Badge>
         );
         break;
-      case "canceled":
+      case "Canceled":
         pagination.push(
           <Badge variant="dark">
             <span></span>
@@ -105,7 +147,7 @@ const Meetingroombooking = () => {
           </Badge>
         );
         break;
-      case "approved":
+      case "Approved":
         pagination.push(
           <Badge variant="success">
             <span></span>
@@ -113,7 +155,7 @@ const Meetingroombooking = () => {
           </Badge>
         );
         break;
-      case "declined":
+      case "Declined":
         pagination.push(
           <Badge variant="danger">
             <span></span>
@@ -144,7 +186,14 @@ const Meetingroombooking = () => {
                   handlestatuschange("All");
                 }}
               >
-                <i class="fa fa-circle request_i request_list_i-cancelled" aria-hidden="true"></i>All Status &nbsp;<Badge className="counter-request" variant="light">{statuscount.All}</Badge>
+                <i
+                  class="fa fa-circle request_i request_list_i-cancelled"
+                  aria-hidden="true"
+                ></i>
+                All Status &nbsp;
+                <Badge className="counter-request" variant="light">
+                  {statuscount.All}
+                </Badge>
                 {/* <Badge variant="light">{statuscount.All}</Badge>
                 &nbsp;All Status */}
               </ToggleButton>
@@ -159,7 +208,14 @@ const Meetingroombooking = () => {
                   handlestatuschange("pending");
                 }}
               >
-                <i class="fa fa-circle request_i request_list_i-pending" aria-hidden="true"></i>pending &nbsp;<Badge className="counter-request" variant="light">{statuscount.pending}</Badge>
+                <i
+                  class="fa fa-circle request_i request_list_i-pending"
+                  aria-hidden="true"
+                ></i>
+                pending &nbsp;
+                <Badge className="counter-request" variant="light">
+                  {statuscount.pending}
+                </Badge>
                 {/* <Badge className="pending" variant="light">
                   {statuscount.pending}
                 </Badge>
@@ -176,7 +232,14 @@ const Meetingroombooking = () => {
                   handlestatuschange("approved");
                 }}
               >
-                <i class="fa fa-circle request_i request_list_i-approved" aria-hidden="true"></i>Approved &nbsp;<Badge className="counter-request" variant="light">{statuscount.approved}</Badge>
+                <i
+                  class="fa fa-circle request_i request_list_i-approved"
+                  aria-hidden="true"
+                ></i>
+                Approved &nbsp;
+                <Badge className="counter-request" variant="light">
+                  {statuscount.approved}
+                </Badge>
                 {/* <Badge className="approved" variant="light">
                   {statuscount.approved}
                 </Badge>
@@ -194,7 +257,14 @@ const Meetingroombooking = () => {
                   handlestatuschange("declined");
                 }}
               >
-                 <i class="fa fa-circle request_i request_list_i-declined" aria-hidden="true"></i>Declined &nbsp;<Badge className="counter-request" variant="light">{statuscount.declined}</Badge>
+                <i
+                  class="fa fa-circle request_i request_list_i-declined"
+                  aria-hidden="true"
+                ></i>
+                Declined &nbsp;
+                <Badge className="counter-request" variant="light">
+                  {statuscount.declined}
+                </Badge>
                 {/* <Badge className="denied" variant="light">
                   {statuscount.declined}
                 </Badge>
@@ -211,6 +281,7 @@ const Meetingroombooking = () => {
                 <input
                   type="date"
                   className="form-control"
+                  value={fromdate}
                   onChange={(e) => {
                     setFromdate(e.target.value);
                   }}
@@ -220,12 +291,13 @@ const Meetingroombooking = () => {
                 <input
                   type="date"
                   className="form-control"
+                  value={todate}
                   onChange={(e) => {
                     setTodate(e.target.value);
                   }}
                 />
               </Col>
-              <Col className="filter-button" xl={3}>
+              <Col className="filter-button filterbtn">
                 <Button
                   variant="primary"
                   type="button"
@@ -234,12 +306,22 @@ const Meetingroombooking = () => {
                   <i className="fa fa-filter" /> Filter
                 </Button>
               </Col>
+              <Col className="filter-button">
+                <Button
+                  variant="primary"
+                  type="button"
+                  onClick={handleclearfilterclick}
+                >
+                  <i className="fa fa-filter" /> Reset
+                </Button>
+              </Col>
             </Row>
             {/* <MyTeamListFilter pagenation={pagenation} bookedlist={bookedlist}/> */}
             <div>
               <Table striped bordered hover className="mb-3">
                 <thead>
                   <tr>
+                    <th>Sno</th>
                     <th>RoomName</th>
                     <th>StartDate</th>
                     <th>EndDate</th>
@@ -253,13 +335,22 @@ const Meetingroombooking = () => {
                 <tbody>
                   {bookedlist.map((room, pos) => (
                     <tr>
+                      {/* <td>   <Form.Check
+                      type="checkbox"
+                      value={room.id}
+                      onChange={(e) => {
+                      //  alert(e.target.value);
+
+                      }}
+                    /></td> */}
+                      <td>{pos + 1}</td>
                       <td>{room.name}</td>
                       <td>{room.start_date}</td>
                       <td>{room.end_date}</td>
                       <td>{room.total_hours} </td>
                       <td>{room.created_by} </td>
                       <td>
-                        <Status status={room.status} />
+                        <Status status={Capitalize(room.status)} />
                       </td>
                       <td>{room.approved_by} </td>
 
