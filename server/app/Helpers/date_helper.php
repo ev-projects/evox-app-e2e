@@ -496,7 +496,7 @@ if (! function_exists('string_offset_to_seconds')) {
             } 
             else 
             {
-                dd("11111111111111"."hereree");
+                // dd("11111111111111"."hereree");
                 return 0;
             }
         }catch(Exception $e){
