@@ -91,6 +91,7 @@
     meetingroom_approval            :  "/app/roomapproval/",
     location_master                 :  "/app/createlocation/",
     location_list                   :  "/app/locationlist/",
+    job_referal                     :  "/app/referjob/"
 };
 
 global.invalid_token_response = [

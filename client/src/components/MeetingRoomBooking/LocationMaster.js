@@ -51,6 +51,7 @@ const LocationMaster = (props) => {
         },
       })
         .then((result) => {
+          console.log(result)
           dispatch(Formatter.alert_success(result, 3000));
           if (result.data.status == 200) {
             history.push(global.links.location_list);

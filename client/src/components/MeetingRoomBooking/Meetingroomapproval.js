@@ -60,7 +60,7 @@ const Meetingroomapproval = (props) => {
         props.params.id,
         evetstatus,
         approvalnote,
-        userid,
+        user.id,
         startdate,
         enddate,
         setValidateapproval
@@ -156,7 +156,7 @@ const Meetingroomapproval = (props) => {
                   )}
                 </div>
                 <div className="col-3">
-                {status == "pending" || status == "approved" && (
+                {(status === "pending" || status === "approved") && (
                   <button
                     type="button"
                     className="btn btn-danger"

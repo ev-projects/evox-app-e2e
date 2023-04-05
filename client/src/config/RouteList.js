@@ -85,6 +85,7 @@ import LocationMaster from "../components/MeetingRoomBooking/LocationMaster";
 import Locationlist from "../components/MeetingRoomBooking/Locationlist";
 import Meetingroomapproval from "../components/MeetingRoomBooking/Meetingroomapproval";
 import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
+import Referjobs from "../components/JobReferal/Referjobs";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -146,6 +147,10 @@ const RoutesList = (props) => {
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.meetingroom_approval + ":id"}>
           <Meetingroomapproval />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.job_referal}>
+          <Referjobs />
         </ProtectedRoute>
         
         <ProtectedRoute exact path={global.links.my_request}>
