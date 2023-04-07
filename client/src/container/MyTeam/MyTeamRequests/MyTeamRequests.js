@@ -110,13 +110,15 @@ class MyTeamRequests extends Component {
 
     // }
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
-    if( ! this.props.isListLoaded ) {
-      this.props.fetchRequestList( filters );
-    }
 
-    if( ! this.props.isNumbersLoaded ) {
+    // alert(this.props.isListLoaded);
+    // if( ! this.props.isListLoaded ) {
+      this.props.fetchRequestList( filters );
+    // }
+
+    // if( ! this.props.isNumbersLoaded ) {
       this.props.fetchStatusNumbers( filters );
-    }
+    // }
   }
 
   componentDidUpdate(){

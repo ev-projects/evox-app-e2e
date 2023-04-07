@@ -166,7 +166,7 @@ class ChangeSchedule extends Component {
 			case "cancel":
 				if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
 					formData['_method'] = 'PUT';
-					this.props.updateChangeScheduleStatus( values.id, formData, values.action );
+					this.props.updateChangeScheduleStatus( values.id, formData, values.action, this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date );
 				}
 				break;
 		}
@@ -529,7 +529,8 @@ const mapStateToProps = (state) => {
 		constant          : state.constant,
 		instance          : state.changeSchedule.instance,
 		isInstanceLoaded  : state.changeSchedule.isInstanceLoaded,
-		user			  : state.user
+		user			  : state.user,
+		settings        : state.settings
 	}
 }
 const mapDispatchToProps = (dispatch) => {
@@ -537,7 +538,7 @@ const mapDispatchToProps = (dispatch) => {
 	fetchChangeSchedule         : ( id ) => dispatch( fetchChangeSchedule( id ) ),
 	addChangeSchedule           : ( post_data ) => dispatch( addChangeSchedule( post_data ) ),
 	updateChangeSchedule        : ( id, post_data ) => dispatch( updateChangeSchedule( id, post_data ) ),
-	updateChangeScheduleStatus  : ( id, post_data, status ) => dispatch( updateChangeScheduleStatus( id, post_data, status ) ),
+	updateChangeScheduleStatus  : ( id, post_data, status, user_id, fromdate, todate ) => dispatch( updateChangeScheduleStatus( id, post_data, status, user_id, fromdate, todate ) ),
 	setRedirect           		: ( link ) => dispatch( setRedirect( link ) ),
 	resetChangeScheduleInstance : () => dispatch( resetChangeScheduleInstance() ),
 	clearChangeScheduleInstance : () => dispatch( clearChangeScheduleInstance() )

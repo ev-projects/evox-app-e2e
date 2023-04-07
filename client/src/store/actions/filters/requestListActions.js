@@ -14,7 +14,7 @@ export const fetchRequestList = ( params = null ) => {
 
         if( params.url == "my_team_requests" ){
             dispatch_commands = {
-                set_filters          : 'SET_MY_TEAM_REQUEST_LIST_FILTERS',
+                set_filters          : 'SET_MY_TEAM_REQUEST_LIST_FILTERS', 
                 fetch_list           : 'FETCH_MY_TEAM_REQUEST_LIST_SUCCESS'
             }
         } else {

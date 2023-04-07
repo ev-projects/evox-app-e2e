@@ -595,7 +595,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr->time_in =     $alter_log->new_time_in;
                 $dtr->time_out =    $alter_log->new_time_out;
                 $dtr->update();
-
+             
                 # Compute for the Items
                 $this->compute_payroll_items( $dtr );
 

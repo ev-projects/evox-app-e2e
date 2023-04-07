@@ -93,7 +93,7 @@ class RestDayWork extends Component {
         case "cancel":
             if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
                 formData.append('_method', 'PUT')
-                this.props.updateRestDayWorkStatus( values.id, formData, values.action );
+                this.props.updateRestDayWorkStatus( values.id, formData, values.action, this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date );
             }
             break;
     }
@@ -317,7 +317,8 @@ const mapStateToProps = (state) => {
     constant          : state.constant,
     instance          : state.restDayWork.instance,
     isInstanceLoaded  : state.restDayWork.isInstanceLoaded,
-		user			        : state.user
+		user			        : state.user,
+    settings        : state.settings
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -325,7 +326,7 @@ const mapDispatchToProps = (dispatch) => {
       fetchRestDayWork         : ( id ) => dispatch( fetchRestDayWork( id ) ),
       addRestDayWork           : ( post_data ) => dispatch( addRestDayWork( post_data ) ),
       updateRestDayWork        : ( id, post_data ) => dispatch( updateRestDayWork( id, post_data ) ),
-      updateRestDayWorkStatus  : ( id, post_data, status ) => dispatch( updateRestDayWorkStatus( id, post_data, status ) ),
+      updateRestDayWorkStatus  : ( id, post_data, status, user_id, fromdate, todate ) => dispatch( updateRestDayWorkStatus( id, post_data, status, user_id, fromdate, todate ) ),
       setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
       resetRestDayWorkInstance : () => dispatch( resetRestDayWorkInstance() ),
       clearRestDayWorkInstance : () => dispatch( clearRestDayWorkInstance() )

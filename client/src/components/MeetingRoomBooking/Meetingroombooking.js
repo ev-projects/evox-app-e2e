@@ -181,6 +181,7 @@ const Meetingroombooking = () => {
                 type="checkbox"
                 variant="secondary"
                 className="request_list_btn"
+                checked={status == "All"}
                 // checked={status=null}
                 onClick={() => {
                   handlestatuschange("All");
@@ -203,7 +204,7 @@ const Meetingroombooking = () => {
                 type="checkbox"
                 variant="secondary"
                 className="request_list_btn"
-                // checked={status=="pending"}
+                checked={status=="pending"}
                 onClick={() => {
                   handlestatuschange("pending");
                 }}
@@ -227,7 +228,7 @@ const Meetingroombooking = () => {
                 type="checkbox"
                 variant="secondary"
                 className="request_list_btn"
-                // checked={status=="approved"}
+                checked={status=="approved"}
                 onClick={() => {
                   handlestatuschange("approved");
                 }}
@@ -252,7 +253,7 @@ const Meetingroombooking = () => {
                 type="checkbox"
                 variant="secondary"
                 className="request_list_btn"
-                // checked={status=="declined"}
+                checked={status=="declined"}
                 onClick={() => {
                   handlestatuschange("declined");
                 }}
@@ -317,8 +318,8 @@ const Meetingroombooking = () => {
               </Col>
             </Row>
             {/* <MyTeamListFilter pagenation={pagenation} bookedlist={bookedlist}/> */}
-            <div>
-              <Table striped bordered hover className="mb-3">
+            <div className="mt-4 mb-3">
+              <Table striped bordered hover>
                 <thead>
                   <tr>
                     <th>Sno</th>
@@ -375,10 +376,11 @@ const Meetingroombooking = () => {
                   ))}
                 </tbody>
               </Table>
-              <Pagination {...paginationConfig} />
+             
 
               {/* <p>{props.pagenation}</p> */}
             </div>
+            <Pagination {...paginationConfig} />
           </Content>
         </ContainerBody>
       </ContainerWrapper>

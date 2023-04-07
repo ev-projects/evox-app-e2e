@@ -31,6 +31,7 @@ import Wrapper from "../../../components/Template/Wrapper";
 import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";
 import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 import Authenticator from "../../../services/Authenticator";
+import settingsReducers from "../../../store/reducers/settings/settingsReducers";
 
 class AlterLog extends Component {
 
@@ -98,7 +99,7 @@ class AlterLog extends Component {
         case "cancel":
             if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
                 formData.append('_method', 'PUT')
-                this.props.updateAlterLogStatus( values.id, formData, values.action ,this.props?.user?.id);
+                this.props.updateAlterLogStatus( values.id, formData, values.action ,this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date);
                 this.props.getMyDtrNotifications( this.props?.user?.id );
                 
             }
@@ -335,7 +336,8 @@ const mapStateToProps = (state) => {
     constant          : state.constant,
     instance          : state.alterLog.instance,
     isInstanceLoaded  : state.alterLog.isInstanceLoaded,
-		user			        : state.user
+		user			        : state.user,
+    settings        : state.settings
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -343,7 +345,7 @@ const mapDispatchToProps = (dispatch) => {
       fetchAlterLog         : ( id ) => dispatch( fetchAlterLog( id ) ),
       addAlterLog           : ( post_data ) => dispatch( addAlterLog( post_data ) ),
       updateAlterLog        : ( id, post_data ) => dispatch( updateAlterLog( id, post_data ) ),
-      updateAlterLogStatus  : ( id, post_data, status, user_id ) => dispatch( updateAlterLogStatus( id, post_data, status, user_id ) ),
+      updateAlterLogStatus  : ( id, post_data, status, user_id, fromdate, todate ) => dispatch( updateAlterLogStatus( id, post_data, status, user_id, fromdate, todate ) ),
       setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
       resetAlterLogInstance : () => dispatch( resetAlterLogInstance() ),
       clearAlterLogInstance : () => dispatch( clearAlterLogInstance() ),

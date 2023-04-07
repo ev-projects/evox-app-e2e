@@ -97,7 +97,7 @@ class Overtime extends Component {
         case "cancel":
             if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
               formData.append('_method', 'PUT')
-              this.props.updateOvertimeStatus( values.id, formData, values.action );
+              this.props.updateOvertimeStatus( values.id, formData, values.action, this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date );
             }
             break;
     }
@@ -285,7 +285,8 @@ const mapStateToProps = (state) => {
     constant          : state.constant,
     instance          : state.overtime.instance,
     isInstanceLoaded  : state.overtime.isInstanceLoaded,
-		user			        : state.user
+		user			        : state.user,
+    settings        : state.settings
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -293,7 +294,7 @@ const mapDispatchToProps = (dispatch) => {
       fetchOvertime   : ( id ) => dispatch( fetchOvertime( id ) ),
       addOvertime     : ( post_data ) => dispatch( addOvertime( post_data ) ),
       updateOvertime  : ( id, post_data ) => dispatch( updateOvertime( id, post_data ) ),
-      updateOvertimeStatus  : ( id, post_data, status ) => dispatch( updateOvertimeStatus( id, post_data, status ) ),
+      updateOvertimeStatus  : ( id, post_data, status, user_id, fromdate, todate ) => dispatch( updateOvertimeStatus( id, post_data, status, user_id, fromdate, todate ) ),
       setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
       resetOvertimeInstance : () => dispatch( resetOvertimeInstance() ),
       clearOvertimeInstance : () => dispatch( clearOvertimeInstance() )
