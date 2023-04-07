@@ -197,7 +197,7 @@ class ReportRepository implements ReportRepositoryInterface{
                     'employee_info' => array(   
                                                 'employee_id'=> $user->emp_num,
                                                 'name'=> $user->first_name .' '. $user->last_name,
-                                                'department'=> $user->department()->get()[0]->department_name  ,
+                                                'department'=> (isset($user->department_id)) ? $user->department()->get()[0]->department_name : "" ,
                                                 'status'=> $user->employment_status,
                                                 
                                             ), 

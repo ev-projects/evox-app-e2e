@@ -51,6 +51,7 @@ const Referjobs = (props) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isreferral, setReferral] = useState(false);
   const [jobid, setJobid] = useState(false);
+  const [validateemail, setValidateemailid] = useState(false);
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
@@ -102,6 +103,10 @@ const Referjobs = (props) => {
     }
   };
 
+  function isValidEmail(email) {
+    return /\S+@\S+\.\S+/.test(email);
+  }
+
   let textInput = null;
   let textInput1 = null;
   let textInput2 = null;
@@ -110,6 +115,8 @@ const Referjobs = (props) => {
   let textInput5 = null;
   let textInput6 = null;
   const handleSubmit = async (event) => {
+
+    
     console.log(submitiondata);
     setValidatefname(false);
     setValidatelname(false);
@@ -128,6 +135,10 @@ const Referjobs = (props) => {
     if (submitiondata.email == "") {
       setValidateemail(true);
     }
+    if (!isValidEmail(submitiondata.email)) {
+    
+      setValidateemail(true);
+    } 
     if (submitiondata.MobileNumber == "") {
       setValidatephone(true);
     }
@@ -163,7 +174,8 @@ const Referjobs = (props) => {
       submitiondata.MobileNumber !== "" &&
       submitiondata.myFile !== "" &&
       valterms !== false &&
-      submitiondata.Refer !== ""
+      submitiondata.Refer !== "" &&
+      isValidEmail(submitiondata.email)
     ) {
       console.log(valfname);
       event.preventDefault();
@@ -515,7 +527,7 @@ const Referjobs = (props) => {
                   <div className="col-3">
                     <Button
                       type="button"
-                      className="btn btn-primary"
+                      className="btn btn-primary applybtn"
                       onClick={handleSubmit}
                     >
                       <i className="fa fa-location-arrow" /> Apply

@@ -64,7 +64,7 @@ class BookingController extends Controller
             $user_id = $request -> Userid;
             $totalhours =$request->Totalhours;
             $status = "pending";
-            $message = "Room BookSuccessfully by , Kindly Wait For Approval";
+            $message = "Room BookSuccessfully, Kindly Wait For Approval";
             if($totalhours <= 2){
                 $status = "approved";
                 $message = "Room BookSuccessfully";

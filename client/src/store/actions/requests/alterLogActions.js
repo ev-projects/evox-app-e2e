@@ -6,7 +6,7 @@ import Formatter from "../../../services/Formatter";
 
 import { setRedirect, clearRedirect } from '../../actions/redirectActions';
 import { fetchRequestList, fetchStatusNumbers } from "../filters/requestListActions";
-import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
+import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions';
 
 /**
  *  A dedicated repository of Actions for Alter Log
@@ -61,7 +61,9 @@ export const updateAlterLog = ( id, post_data ) => {
 
 
 // Update Alter Log Status Request
-export const updateAlterLogStatus = ( id, post_data, status, user_id ) => {
+export const updateAlterLogStatus = ( id, post_data, status, user_id, fromdate, todate ) => {
+
+    
     return (dispatch, getState) => {
         API.call({
             method: "post",
@@ -72,8 +74,8 @@ export const updateAlterLogStatus = ( id, post_data, status, user_id ) => {
             dispatch( Formatter.alert_success( result, 3000 ));
             dispatch(fetchRequestList({
                 status:           "pending",
-                valid_from:       null,
-                valid_to:         null,
+                valid_from:       fromdate,
+                valid_to:         todate,
                 department_id:    null,
                 name:             null,
                 page:             1,
@@ -87,8 +89,8 @@ export const updateAlterLogStatus = ( id, post_data, status, user_id ) => {
 
             dispatch(fetchStatusNumbers({
                 status:           "pending",
-                valid_from:       null,
-                valid_to:         null,
+                valid_from:       fromdate,
+                valid_to:         todate,
                 department_id:    null,
                 name:             null,
                 page:             1,
@@ -111,7 +113,11 @@ export const updateAlterLogStatus = ( id, post_data, status, user_id ) => {
             dispatch( Formatter.alert_error( e ) ) 
         });
     }
+
+    
 }
+
+
 
 // Fetch Alter Log instance
 export const fetchAlterLog = ( id ) => {
