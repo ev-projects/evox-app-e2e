@@ -500,8 +500,10 @@ if (! function_exists('string_offset_to_seconds')) {
                 return 0;
             }
         }catch(Exception $e){
+
             // dd($e);
             throw $e;
+
         }
     }
 }

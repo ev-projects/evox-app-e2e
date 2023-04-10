@@ -31,7 +31,8 @@ class AnnouncementsPage extends Component {
     this.initialState = {
         content : null,
         thumbnail: null,
-        imgPrevInputFile: '/thumbnail/defthumb.jpg'
+        imgPrevInputFile: '/thumbnail/defthumb.jpg',
+        limit:  6
     }
     this.state = this.initialState; 
 
@@ -54,9 +55,9 @@ class AnnouncementsPage extends Component {
     // Sets the Method of the current state.
     const method = (this.props.params.id != undefined) ? 'update' : 'store'
     var today = new Date();
-    console.log(today, moment().format('MMMM d, yyyy'));
-    console.log(this.props.instance);
-
+    // console.log(today, moment().format('MMMM d, yyyy'));
+    // console.log(this.props.instance);
+    var limit = 6;
 
     let title = null;
 
@@ -111,7 +112,7 @@ class AnnouncementsPage extends Component {
                     {this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded? 
                     
                     <Row>
-                    {this.props.departmentAnnouncement.depAnnouncementlist?.map((announcement, index) => {
+                    {this.props.departmentAnnouncement.depAnnouncementlist?.slice(0, 4).map((announcement, index) => {
                       return <Col  size={11} className="announcement-list-content card-content">
                             
                    
@@ -121,7 +122,7 @@ class AnnouncementsPage extends Component {
                           
                           <a href={ global.links.announcement_page + announcement.id}>
 
-                            <Card className="announcement-list-card">
+                            <Card className="announcement-list-card card-pad-bottom">
                                   <Card.Body className="small-card-body ">
                                     <Card.Text className="black-card-text-bigger"> {announcement.title}</Card.Text>
                                     <Card.Text> {announcement.release_date} <br/> <Badge className="tag-badge">{announcement.category}</Badge></Card.Text>

@@ -99,10 +99,10 @@ const EmployeeDashboard = ( props ) => {
                  
                  
                 </Col>
-                <Col  lg="3" >
+                <Col  lg="3" className="null-padding-left" >
                       
-                       <Row>
-                  <div className="col-lg-12">
+                       
+                 
                   {/* <a href="https://careers.eastvantage.com/tech4tech" target="_blank"><img width="100%" src="/images/icn/Tech4Tech_EVOX.png" /></a> */}
                   <div className="card">
                     <div className="card-header">
@@ -116,7 +116,7 @@ const EmployeeDashboard = ( props ) => {
                             <div className="card-body evbuddy">
                               <br />
 
-                              <h4 align="center"><strong>Refer a friend and earn as much as 30K PHP!</strong></h4>
+                              <h4 align="center"className="refer-h4"><strong>Refer a friend and earn as much as 30K PHP!</strong></h4>
                               {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
                               <br />
                               <ul>
@@ -178,8 +178,8 @@ const EmployeeDashboard = ( props ) => {
                           {/* <Tab eventKey="ERP India" title="ERP India" type="submit"> */}
                             <div className="card-body evbuddy">
                               <br />
-                              <h4 align="center"><strong>Refer a friend and earn as much as 25K INR!</strong></h4>
-                              <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
+                              <h4 align="center" className="refer-h4"><strong>Refer a friend and earn as much as 25K INR!</strong></h4>
+                              {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
                               <br />
                               <ul>
                                 <li><a href="https://careers.eastvantage.com/jobs/network-and-security-engineer-blr" target="_blank">Network and Security Engineer</a></li>
@@ -216,10 +216,10 @@ const EmployeeDashboard = ( props ) => {
 
                     
                   </div>
-                  </div>
+                  
                   <br/>
-                    </Row>
-                    <Content title="EVOX Updates" col="12">
+                    
+                    <Content title="EVOX Updates" >
                       <ChangeLogs/>
                     </Content>
                 </Col>

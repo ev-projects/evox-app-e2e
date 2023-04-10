@@ -183,7 +183,7 @@ class DepartmentAnnouncementsForm extends Component {
                       <div className="form-group">
                         <label className ="dep-announcement-label">Headline:</label>
                         <InputGroup>
-                            <FormControl variant="primary" name="headline" className="headline" onChange={handleChange} value={values.headline} />
+                            <FormControl variant="primary" name="headline" className="headline" onChange={handleChange} value={values.headline}   placeholder="(Optional)"/>
                             <Form.Control.Feedback type="invalid">
                               &nbsp;{errors.headline && touched.headline && errors.headline}
                             </Form.Control.Feedback>
@@ -408,13 +408,15 @@ class DepartmentAnnouncementsForm extends Component {
 /** Form Validation */
 
 const validationSchema = Yup.object().shape({
-    title         : Yup.string().required("This field is required").max(100, 'Max Title Length reached'),
-    headline      : Yup.string().max(100, 'Max Headline Length reached'),
+    title         : Yup.string().required("This field is required").nullable().max(100, 'Max Title Length reached'),
+    headline      : Yup.string().max(100, 'Max Headline Length reached').nullable(),
     // category      : Yup.string().required("This field is required").nullable(),
     // content   : Yup.string().required("This field is required").nullable(),
     // log_date      : Yup.date().required("This field is required").nullable(),
-          expiry_date      : Yup.date().required("This field is required"),
-      release_date      : Yup.date().required("This field is required"),
+      //     expiry_date      : Yup.date().required("This field is required"),
+      // release_date      : Yup.date().required("This field is required"),
+      release_date: Yup.date().required("This field is required").nullable().max(Yup.ref('release_date'), 'Please select a Valid From date.'),
+      expiry_date: Yup.date().required("This field is required").nullable().min(Yup.ref('expiry_date'), 'Please select a Valid To date.'),
 });
 
 const mapStateToProps = (state) => {
