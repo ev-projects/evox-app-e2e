@@ -115,6 +115,7 @@ const Meetingroombooking = () => {
   };
 
   const handlestatuschange = (status) => {
+    setStatus(status)
     dispatch(
       statusChange(
         status,
