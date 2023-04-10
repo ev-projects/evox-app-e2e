@@ -16,6 +16,8 @@ import {
   fecthLocationdetails,
   updateLocationmaster,
 } from "./Createlocationapi.js";
+import API from "../../services/API";
+import Formatter from "../../services/Formatter";
 
 const LocationMaster = (props) => {
   let history = useHistory();
@@ -31,29 +33,62 @@ const LocationMaster = (props) => {
   }, []);
 
   const handledelete = async (e) => {
-    await dispatch(deleteLocationmaster(props.params.id));
-    setTimeout(function () {
-      history.push(global.links.location_list);
-    }, 1000);
-  };
-
-  const handlesave = async (e) => {
-    await dispatch(createLocationmaster(locationname, setvalidlocationname));
-    if (locationname !== "") {
+    if (window.confirm("Are you sure you want to Delete this?")) {
+      await dispatch(deleteLocationmaster(props.params.id));
       setTimeout(function () {
         history.push(global.links.location_list);
       }, 1000);
     }
   };
 
-  const handleupdate = async (e) => {
-    await dispatch(
-      updateLocationmaster(props.params.id, locationname, setvalidlocationname)
-    );
+  const handlesave = async (e) => {
     if (locationname !== "") {
-      setTimeout(function () {
-        history.push(global.links.location_list);
-      }, 1000);
+      await API.call({
+        method: "post",
+        url: "/storelocation",
+        data: {
+          Locationname: locationname,
+        },
+      })
+        .then((result) => {
+          console.log(result)
+          dispatch(Formatter.alert_success(result, 3000));
+          if (result.data.status == 200) {
+            history.push(global.links.location_list);
+          }
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        });
+    } else {
+      if (locationname == "") {
+        setvalidlocationname(true);
+      }
+    }
+  };
+
+  const handleupdate = async (e) => {
+    if (locationname !== "") {
+      await API.call({
+        method: "put",
+        url: `/UpdateLocationDetails/${props.params.id}`,
+        data: {
+          Locationname: locationname,
+        },
+      })
+        .then((result) => {
+          dispatch(Formatter.alert_success(result, 3000));
+          if (result.data.status == 200) {
+            history.push(global.links.location_list);
+          }
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        });
+    } else {
+      if (locationname == "") {
+        setvalidlocationname(true);
+      }
     }
   };
 
@@ -112,15 +147,17 @@ const LocationMaster = (props) => {
                     </Button>
                   )}
                 </div>
-                <div className="col-3">
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handledelete}
-                  >
-                    <i className="fa fa-trash" /> Delete
-                  </button>
-                </div>
+                {props.params.id !== "0" && (
+                  <div className="col-3">
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={handledelete}
+                    >
+                      <i className="fa fa-trash" /> Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </form>
           </Content>

@@ -16,7 +16,10 @@ class RoomController extends Controller
     public function GetroomDetails()
     {
         try{
-    	$rooms = DB::table('rooms')->orderBy('id', 'ASC')->paginate(10);
+    	$rooms = DB::table('rooms')
+        ->select('rooms.id','rooms.name','rooms.seats','rooms.description','locations.location_name')
+        ->join('locations', 'locations.id', '=', 'rooms.location')
+        ->orderBy('id', 'ASC')->paginate(10);
 
         return [
             'data' => $rooms,
@@ -75,27 +78,37 @@ class RoomController extends Controller
           if ($validator->fails()) {
             return response()->json(['errors'=>$validator->messages()]);
           }else{
-            $roomname = $request -> RoomName;
-            $location = $request -> Location;
-            $desctiption =$request->Description;
-            $seats =$request->Seats;
-            $store ->name = $roomname;
-            $store ->location = $location;
-            $store ->description = $desctiption;
-            $store ->seats = $seats;
-            $savedata1=$store->save();
-           
-
-            if($savedata1){
+            $roomcount = DB::table('rooms')->where('name','=',$request -> RoomName)->count();
+            if($roomcount == 0){
+                $roomname = $request -> RoomName;
+                $location = $request -> Location;
+                $desctiption =$request->Description;
+                $seats =$request->Seats;
+                $store ->name = $roomname;
+                $store ->location = $location;
+                $store ->description = $desctiption;
+                $store ->seats = $seats;
+                $savedata1=$store->save();
+               
+    
+                if($savedata1){
+                    return response()->json([
+             
+                         'status' => '200',
+                         'message' => 'Room Created Successfully',                     
+                    ]);
+                        }else{
+                            
+                            return ["Result"=>"Data Not Saved"];
+                        }
+            }else{
                 return response()->json([
-         
-                     'status' => '200',
-                     'message' => 'Room Created Successfully',                     
-                ]);
-                    }else{
-                        
-                        return ["Result"=>"Data Not Saved"];
-                    }
+             
+                    'status' => '201',
+                    'message' => 'Room Name Already Exist',                     
+               ]);
+            }
+           
                 }
             } catch (Exception $e) {
                 return error_response(trans('messages.error_default'), $e);
@@ -112,6 +125,8 @@ class RoomController extends Controller
       if ($validator->fails()) {
         return response()->json(['errors'=>$validator->messages()]);
       }else{
+        $roomcount = DB::table('rooms')->where('name','=',$request -> RoomName)->where('id','<>',$id)->count();
+        if($roomcount == 0){
         $updateRoom = Room::where('id', $id)
         ->update([
             'name' => $request->RoomName,
@@ -130,6 +145,13 @@ class RoomController extends Controller
                      
                      return ["Result"=>"Data Not Saved"];
                  }
+                   }else{
+                return response()->json([
+             
+                    'status' => '201',
+                    'message' => 'Room Name Already Exist',                     
+               ]);
+            }
       }
     } catch (Exception $e) {
         return error_response(trans('messages.error_default'), $e);
@@ -144,12 +166,12 @@ class RoomController extends Controller
         if ($res){
             $data=[
                 'status'=>'1',
-                'msg'=>'success'
+                'message'=>'Successfully Deleted'
             ];
         }else{
             $data=[
                 'status'=>'0',
-                'msg'=>'fail'
+                'message'=>'Error'
             ];
        
     }

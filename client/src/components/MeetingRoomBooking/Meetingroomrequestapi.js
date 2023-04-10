@@ -41,7 +41,7 @@ export const updateApprovalstatus = (id,evetstatus,approvalnote,userid,startdate
       };
 }
 
-export const fecthBookedroomdetails =  (id,setRoomname,setStartdate,setEnddate,setNote,setUsername,setUserid,setStatus) =>{
+export const fecthBookedroomdetails =  (id,setRoomname,setStartdate,setEnddate,setNote,setUsername,setUserid,setStatus,setApprovalnote) =>{
 
 
     return async (dispatch, getState) => {
@@ -57,6 +57,7 @@ export const fecthBookedroomdetails =  (id,setRoomname,setStartdate,setEnddate,s
         setUsername(result.data[0].created_by);
         setUserid(result.data[0].user_id);
         setStatus(result.data[0].status);
+        setApprovalnote(result.data[0].approver_note)
             dispatch({
               "type": "SET_REDIRECT",
               "link": global.links.dashboard,

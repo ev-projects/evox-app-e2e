@@ -146,6 +146,10 @@ const Sidebar = (props) => {
                   </p>
                 </a>
                 <ul className="nav nav-treeview">
+                {Authenticator.check(
+                    ["supervisor", "team_leader"],
+                    ["supervisor_access", "team_leader_access"]
+                  ) && (
                 <li className="nav-item">
                     <Link
                       className="nav-link"
@@ -155,12 +159,22 @@ const Sidebar = (props) => {
                       <p>Create Room</p>
                     </Link>
                   </li>
+                  )}
+                  {Authenticator.check(
+                    ["supervisor", "team_leader"],
+                    ["supervisor_access", "team_leader_access"]
+                  ) && (
                   <li className="nav-item">
                     <Link className="nav-link" to={global.links.room_list}>
                       <i className="nav-icon fa fa-th-list" />
                       <p>Room List</p>
                     </Link>
                   </li>
+                  )}
+                  {Authenticator.check(
+                    ["supervisor", "team_leader"],
+                    ["supervisor_access", "team_leader_access"]
+                  ) && (
                   <li className="nav-item">
                     <Link
                       className="nav-link"
@@ -170,12 +184,18 @@ const Sidebar = (props) => {
                       <p>Create Location</p>
                     </Link>
                   </li>
+                  )}
+                  {Authenticator.check(
+                    ["supervisor", "team_leader"],
+                    ["supervisor_access", "team_leader_access"]
+                  ) && (
                   <li className="nav-item">
                     <Link className="nav-link" to={global.links.location_list}>
                       <i className="nav-icon fa fa-th-list" />
                       <p>Location List</p>
                     </Link>
                   </li>
+                  )}
                   <li className="nav-item">
                     <Link
                       className="nav-link"
@@ -199,6 +219,16 @@ const Sidebar = (props) => {
                   )}
                 </ul>
               </li>
+
+              <li className="nav-item">
+                    <Link
+                      className="nav-link"
+                      to={global.links.job_referal}
+                    >
+                      <i className="nav-icon fa fa-user-plus" />
+                      <p>Job Referal</p>
+                    </Link>
+                  </li>
 
               {Authenticator.check("employee", "employee_access") && (
                 <li className="nav-item">

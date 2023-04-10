@@ -44,7 +44,8 @@ const Meetingroomapproval = (props) => {
           setNote,
           setUsername,
           setUserid,
-          setStatus
+          setStatus,
+          setApprovalnote
         )
       );
     }
@@ -52,12 +53,14 @@ const Meetingroomapproval = (props) => {
 
   const { user } = props;
   const handleupdatestatus = async (evetstatus) => {
+    var statustext = evetstatus == 1 ? "Approve" : "Decline";
+    if (window.confirm("Are you sure you want to "+ statustext +" this request?")) {
     await dispatch(
       updateApprovalstatus(
         props.params.id,
         evetstatus,
         approvalnote,
-        userid,
+        user.id,
         startdate,
         enddate,
         setValidateapproval
@@ -68,6 +71,7 @@ const Meetingroomapproval = (props) => {
         history.push(global.links.booked_list);
       }, 1000);
     }
+  }
   };
 
   return (
@@ -120,6 +124,7 @@ const Meetingroomapproval = (props) => {
                       rows="3"
                       name="approvalnote"
                       placeholder="Enter Approval Note..."
+                      value={approvalnote}
                       onChange={(e) => {
                         setApprovalnote(e.target.value);
                       }}
@@ -151,6 +156,7 @@ const Meetingroomapproval = (props) => {
                   )}
                 </div>
                 <div className="col-3">
+                {(status === "pending" || status === "approved") && (
                   <button
                     type="button"
                     className="btn btn-danger"
@@ -159,6 +165,7 @@ const Meetingroomapproval = (props) => {
                   >
                     <i className="fa fa-thumbs-down" /> Deny
                   </button>
+                )}
                 </div>
               </div>
             </form>
