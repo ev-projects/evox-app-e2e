@@ -14,7 +14,7 @@ class AddUpdatedByLeaves extends Migration
     public function up()
     {
         Schema::table('leaves', function (Blueprint $table) {
-            $table->integer('updated_by'); 
+            $table->integer('updated_by');  
         });
     }
 

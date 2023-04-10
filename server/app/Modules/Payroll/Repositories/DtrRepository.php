@@ -1081,7 +1081,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     continue;
                 }
             }
-
+ 
             # Creates the Customized Query for Batch inserting the To-be-generated Leaves.
             $leave_insert_query = "INSERT INTO leaves (
                                                 dtr_id,
