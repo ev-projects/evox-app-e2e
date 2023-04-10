@@ -97,7 +97,7 @@ h6,.h6{font-size: 1rem !important}
 td.actions .fa{font-size: 18px}
 .pagination .page button{font-size: 14px}
 .dashboard .filters{margin-top: 30px}
-.evbuddy{background:    #fff; font-size: 12px; padding: 20px 10px}
+.evbuddy{background:    #e4ecd5; font-size: 12px; padding: 20px 10px; border-radius: 6px;}
 a.btn-primary{padding: 10px 15px; color: #fff !important;}
 
 .card-header .back-button{position: fixed; top: 7%; right:2%;z-index: 1000}

@@ -5,7 +5,7 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../Gr
 import { fetchDashboardAnnouncementList } from '../../../store/actions/announcement/departmentAnnouncementActions'
 import Figure from 'react-bootstrap/Figure';
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
-
+import ShowMore from 'react-show-more-list';
 import { connect } from 'react-redux';
 import { Container,Row,Col,Table,Image, Spinner,Button,Card,Tabs,Tab,Badge  } from 'react-bootstrap';
 import PageLoading from "../../../container/PageLoading/PageLoading";
@@ -29,8 +29,11 @@ class DashboardAnnouncements extends Component {
     this.props.fetchDashboardAnnouncementList(formData );
   }
   render() {
+    var showOpen = false;
     if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
+    console.log(this.props.departmentAnnouncement.depAnnouncementlist.length > 6)
       if(this.props.departmentAnnouncement.depAnnouncementlist.length !== 0){
+        showOpen = this.props.departmentAnnouncement.depAnnouncementlist.length > 6 ? true : false
         return < >
         {/* <Formik 
       enableReinitialize
@@ -66,7 +69,7 @@ class DashboardAnnouncements extends Component {
           )}
         </Formik> */}
           <Row>
-              {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
+              {this.props.departmentAnnouncement.depAnnouncementlist.slice(0,4).map((announcement, index) => {
                 return <Col  md={6} className="announcement-list-content dashbaord-content card-content">
                       
                       <Link to={{
@@ -74,33 +77,11 @@ class DashboardAnnouncements extends Component {
                               }}
                                   title="View Announcement"
                               >
-                              
-                                
-                              
-                          {/* <Card className="announcement-list-card"  >
-                            {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
-                             <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
-                            }
-                           
-                            <Card.Body>
-                           
-                              <Card.Title> {announcement.title}</Card.Title>
-                             
-                                  {announcement.headline ? 
-                                  
-                                  <Card.Text className="black-card-text">{announcement.headline}
-                                  
-                                  </Card.Text>
-                                  
-                                  : <Card.Text>Check it out</Card.Text>}
-                             
-                            </Card.Body>
-                          </Card> */}
 
                           <div  className="announcement-list-item">
                           <Card className="announcement-list-card">
                           {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
-                             <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
+                            <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
                             }
                                 <Card.ImgOverlay className={"mask-"+announcement.category} >
                                   <Card.Title  className="text-white card-text-white">{announcement.title}</Card.Title>
@@ -124,6 +105,70 @@ class DashboardAnnouncements extends Component {
                     
                       </Col>;
               })}
+
+            <ShowMore
+                items={this.props.departmentAnnouncement.depAnnouncementlist.slice(4, this.props.departmentAnnouncement.depAnnouncementlist.length)}
+                by={2}
+              >
+                {({
+                  current,
+                  onMore,
+                }) => (
+                  <React.Fragment>
+                   
+                      {current.map((announcement, index)=> (
+                      <Col  md={6} className="announcement-list-content dashbaord-content card-content">
+                      
+                      <Link to={{
+                                pathname: global.links.announcement_page + announcement.id
+                              }}
+                                  title="View Announcement"
+                              >
+
+                          <div  className="announcement-list-item">
+                          <Card className="announcement-list-card">
+                          {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
+                            <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
+                            }
+                                <Card.ImgOverlay className={"mask-"+announcement.category} >
+                                  <Card.Title  className="text-white card-text-white">{announcement.title}</Card.Title>
+                                  <Card.Text  className="card-text-white card-text-overflow">
+                                  {announcement.headline}
+                                  </Card.Text>
+                                  
+                                </Card.ImgOverlay>
+                              
+                              </Card>
+                              <div className="card-text-black ">
+                                <div  className="card-bottom-content"> 
+                                <Badge className="tag-badge">{announcement.category}</Badge>
+                                <br/>
+                                <> Posted on: {announcement.release_date}</> 
+                                </div>
+                              </div>
+                          </div>
+                      </Link>
+
+                    
+                      </Col>
+                      ))}
+                    
+                    <Col  md={12} align="center">
+                     {this.props.departmentAnnouncement.depAnnouncementlist.length > 6?  <Button
+                        disabled={!onMore}
+                        onClick={() => { if (!!onMore) onMore(); }}
+
+                        className="show-more-dashboard"
+                      >
+                        Show More
+                      </Button> 
+                    :
+                    null  
+                    }
+                    </Col>
+                  </React.Fragment>
+                )}
+              </ShowMore>
         </Row>
           
       

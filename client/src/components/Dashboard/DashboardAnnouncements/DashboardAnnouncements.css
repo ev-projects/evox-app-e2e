@@ -17,7 +17,7 @@
 
 .announcement-list-card.card{
     border-radius: 10px !important;
-    margin-bottom: 6px;
+    margin-bottom: 18px;
     
 
 }
@@ -86,4 +86,14 @@
 
 .announcement-tabs .nav-item{
     color:rgba(0, 83, 147) !important;
+}
+
+.show-more-dashboard{
+    margin-top: 12px !important;
+    width: 60% !important;
+    background-color: rgba(0, 83, 147) !important;
+}
+
+button[disabled=disabled].show-more-dashboard, button:disabled.show-more-dashboard {
+    background-color:rgb(110, 159, 196) !important;
 }

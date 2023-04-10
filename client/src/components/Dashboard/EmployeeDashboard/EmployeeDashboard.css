@@ -21,3 +21,16 @@
 .announcement-Container{
     margin-top: 13px !important;
 }
+
+.evbuddy li {
+    font-size: 18px;
+}
+
+.evbuddy ul {
+    padding-left: 25px;
+}
+
+.refer-h4{
+    margin-left: 2% !important;
+    margin-right: 2% !important;
+}
