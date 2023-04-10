@@ -16,7 +16,7 @@ import {
 } from "react-bootstrap";
 // import ModalAlert from "./Modal";
 import "./MeetingRoom.css";
-import { format } from "date-fns";
+import { format, getDate } from "date-fns";
 import dayjs from "dayjs";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -147,7 +147,15 @@ const Meetingcalander = (props) => {
           setShow(true);
           console.log(show);
         } else {
-          alert("Please Choose Meeting Room...");
+          // alert("");
+
+          let response = {
+            data: { status: 400, message: "Please Choose Meeting Room..." },
+            status: 200,
+            statusText: "OK",
+          };
+          dispatch(Formatter.alert_success(response, 3000));
+
           setShowalert(true);
         }
       },
@@ -337,6 +345,9 @@ const Meetingcalander = (props) => {
                     }-${current.getDate()}`;
                     const cudate = Date.parse(date);
                     var dq = format(cudate, "yyyy-MM-dd");
+                    var nextdate = new Date(d);
+                    var date1 = nextdate.setDate(nextdate.getDate() + 1)
+                    var nextdate1 = format(date1, "yyyy-MM-dd");
                     if (d >= dq) {
                       if (d == e) {
                         const startDate = moment(d + " " + starttime);
@@ -351,13 +362,43 @@ const Meetingcalander = (props) => {
                         setEndtime(endtime);
                         setShow(true);
                         console.log(show);
+                      }else if (endtime === "00:00" && e === nextdate1) {
+                        const startDate = moment(d + " " + starttime);
+                      const timeEnd = moment(e + " " + endtime);
+                      const diff = timeEnd.diff(startDate);
+                      const diffDuration = moment.duration(diff);
+                      const hours = diffDuration.asMinutes() / 60;
+      
+                      setHours(hours);
+                      setStartdate(d);
+                      setEnddate(e);
+                      setStarttime(starttime);
+                      setEndtime(endtime);
+                      setShow(true);
+                      console.log(show);
                       } else {
-                        alert("Could Not Book For Multiple Dates");
-                        handleClose();
+                        let response = {
+                          data: {
+                            status: 400,
+                            message: "Could Not Book For Multiple Dates",
+                          },
+                          status: 200,
+                          statusText: "OK",
+                        };
+                        dispatch(Formatter.alert_success(response, 3000));
+                        referesh(d, day);
                       }
                     } else {
-                      alert("Could Not Book For Previous Dates");
-                      handleClose();
+                      let response = {
+                        data: {
+                          status: 400,
+                          message: "Could Not Book For Previous Dates",
+                        },
+                        status: 200,
+                        statusText: "OK",
+                      };
+                      dispatch(Formatter.alert_success(response, 3000));
+                      referesh(d, day);
                     }
                   },
                   selectOverlap: function (event) {
@@ -394,7 +435,16 @@ const Meetingcalander = (props) => {
       }
     } else {
       alert("Please Select Vaild Start And End Time");
-      setValidtimein(true);
+      // let response = {
+      //   data: {
+      //     status: 400,
+      //     message: "Please Select Vaild Start And End Time",
+      //   },
+      //   status: 200,
+      //   statusText: "OK",
+      // };
+      // dispatch(Formatter.alert_success(response, 3000));
+      // setValidtimein(true);
       setValidtimeout(true);
     }
   };
@@ -483,6 +533,7 @@ const Meetingcalander = (props) => {
             let enddate = endday + "-" + endmon + "-" + endyear;
             let day = startDT.substring(0, 3);
             setDay(day);
+
             var stdate = Date.parse(startdate);
             var eddate = Date.parse(enddate);
             var d = format(stdate, "yyyy-MM-dd");
@@ -493,6 +544,10 @@ const Meetingcalander = (props) => {
             }-${current.getDate()}`;
             const cudate = Date.parse(date);
             var dq = format(cudate, "yyyy-MM-dd");
+            var nextdate = new Date(d);
+            var date1 = nextdate.setDate(nextdate.getDate() + 1)
+            var nextdate1 = format(date1, "yyyy-MM-dd");
+            // alert("startDate:- " + d + " " + starttime + " End Date:-" +nextdate1 );
             if (d >= dq) {
               if (d == e) {
                 const startDate = moment(d + " " + starttime);
@@ -508,13 +563,45 @@ const Meetingcalander = (props) => {
                 setEndtime(endtime);
                 setShow(true);
                 console.log(show);
+              } else if (endtime === "00:00" && e === nextdate1) {
+                  const startDate = moment(d + " " + starttime);
+                const timeEnd = moment(e + " " + endtime);
+                const diff = timeEnd.diff(startDate);
+                const diffDuration = moment.duration(diff);
+                const hours = diffDuration.asMinutes() / 60;
+
+                setHours(hours);
+                setStartdate(d);
+                setEnddate(e);
+                setStarttime(starttime);
+                setEndtime(endtime);
+                setShow(true);
+                console.log(show);
               } else {
-                alert("Could Not Book For Multiple Dates");
-                handleClose();
+                let response = {
+                  data: {
+                    status: 400,
+                    message: "Could Not Book For Multiple Dates",
+                  },
+                  status: 200,
+                  statusText: "OK",
+                };
+
+                referesh(d, day);
+                dispatch(Formatter.alert_success(response, 3000));
               }
             } else {
-              alert("Could Not Book For Previous Dates");
-              handleClose();
+              let response = {
+                data: {
+                  status: 400,
+                  message: "Could Not Book For Previous Dates",
+                },
+                status: 200,
+                statusText: "OK",
+              };
+
+              referesh(d, day);
+              dispatch(Formatter.alert_success(response, 3000));
             }
           },
 
@@ -573,6 +660,7 @@ const Meetingcalander = (props) => {
     if (day == "Sun") {
       dateq = format(idate, "yyyy-MM-dd");
     }
+
     const calendarEl = document.getElementById("calendar");
     const calendar = new Calendar(calendarEl, {
       plugins: [timeGridPlugin, interactionPlugin],
@@ -634,6 +722,9 @@ const Meetingcalander = (props) => {
         }-${current.getDate()}`;
         const cudate = Date.parse(date);
         var dq = format(cudate, "yyyy-MM-dd");
+        var nextdate = new Date(d);
+        var date1 = nextdate.setDate(nextdate.getDate() + 1)
+        var nextdate1 = format(date1, "yyyy-MM-dd");
         if (d >= dq) {
           if (d == e) {
             const startDate = moment(d + " " + starttime);
@@ -648,13 +739,228 @@ const Meetingcalander = (props) => {
             setEndtime(endtime);
             setShow(true);
             console.log(show);
-          } else {
-            alert("Could Not Book For Multiple Dates");
-            handleClose();
+          } else if (endtime === "00:00" && e === nextdate1) {
+            const startDate = moment(d + " " + starttime);
+          const timeEnd = moment(e + " " + endtime);
+          const diff = timeEnd.diff(startDate);
+          const diffDuration = moment.duration(diff);
+          const hours = diffDuration.asMinutes() / 60;
+
+          setHours(hours);
+          setStartdate(d);
+          setEnddate(e);
+          setStarttime(starttime);
+          setEndtime(endtime);
+          setShow(true);
+          console.log(show);
+          }else {
+            let response = {
+              data: {
+                status: 400,
+                message: "Could Not Book For Multiple Dates",
+              },
+              status: 200,
+              statusText: "OK",
+            };
+            dispatch(Formatter.alert_success(response, 3000));
+            referesh(d, day);
           }
         } else {
-          alert("Could Not Book For Previous Dates");
-          handleClose();
+          let response = {
+            data: {
+              status: 400,
+              message: "Could Not Book For Previous Dates",
+            },
+            status: 200,
+            statusText: "OK",
+          };
+          dispatch(Formatter.alert_success(response, 3000));
+          referesh(d, day);
+        }
+      },
+
+    
+      selectOverlap: function (event) {
+        return event.rendering === "background";
+      },
+      events: event,
+      eventColor: "#0097a7",
+    });
+
+    calendar.render();
+    setShow(false);
+    setProjectorchk(false);
+    setMonitorchk(false);
+    setAudiochk(false);
+    setDesktopchk(false);
+    setLaptopchk(false);
+    setITchk(false);
+    setOpen(false);
+    setNote("");
+    setValidtimein(false);
+    setValidtimeout(false);
+    setMyArray([]);
+  };
+
+  const referesh = (sdate, day) => {
+    var stdate = startdate + " " + starttime;
+    var endate = enddate + " " + endtime;
+
+    var idate = Date.parse(sdate);
+    setValidatenote(false);
+    setValidateit(false);
+    var dateq;
+    if (day == "Mon") {
+      dateq = dayjs(idate).subtract(1, "day");
+      var d = Date.parse(dateq);
+      dateq = format(d, "yyyy-MM-dd");
+    }
+    if (day == "Tue") {
+      dateq = dayjs(idate).subtract(2, "day");
+      var d = Date.parse(dateq);
+      dateq = format(d, "yyyy-MM-dd");
+    }
+    if (day == "Wed") {
+      dateq = dayjs(idate).subtract(3, "day");
+      var d = Date.parse(dateq);
+      dateq = format(d, "yyyy-MM-dd");
+    }
+    if (day == "Thu") {
+      dateq = dayjs(idate).subtract(4, "day");
+      var d = Date.parse(dateq);
+      dateq = format(d, "yyyy-MM-dd");
+    }
+    if (day == "Fri") {
+      dateq = dayjs(idate).subtract(5, "day");
+      var d = Date.parse(dateq);
+      dateq = format(d, "yyyy-MM-dd");
+    }
+    if (day == "Sat") {
+      dateq = dayjs(idate).subtract(6, "day");
+      var d = Date.parse(dateq);
+      dateq = format(d, "yyyy-MM-dd");
+    }
+    if (day == "Sun") {
+      dateq = format(idate, "yyyy-MM-dd");
+    }
+
+    // alert(dateq)
+
+    const calendarEl = document.getElementById("calendar");
+    const calendar = new Calendar(calendarEl, {
+      plugins: [timeGridPlugin, interactionPlugin],
+      initialView: "timeGridWeek",
+      weekends: true,
+      selectable: true,
+      selectMirror: true,
+      unselectAuto: false,
+      contentHeight: "auto",
+      initialDate: dateq,
+      editable: false,
+      eventStartEditable: false,
+      eventResizableFromStart: false,
+      eventDurationEditable: false,
+
+      eventMouseEnter: function (arg) {
+        let startDT = arg.event.start.toString();
+        let endDT = arg.event.end.toString();
+
+        let starttime = startDT.substring(16, 21);
+        let endtime = endDT.substring(16, 21);
+        tippy(arg.el, {
+          content:
+            "StartTime: " +
+            starttime +
+            "  EndTime: " +
+            endtime +
+            " <br> " +
+            arg.event.title,
+          // animation:true,
+          allowHTML: true,
+          theme: "light",
+        });
+      },
+
+      select: function (selectionInfo) {
+        let startDT = selectionInfo.start.toString();
+        let endDT = selectionInfo.end.toString();
+
+        let starttime = startDT.substring(16, 21);
+        let endtime = endDT.substring(16, 21);
+        let startmon = startDT.substring(4, 7);
+        let startday = startDT.substring(8, 10);
+        let startyear = startDT.substring(11, 15);
+        let endmon = endDT.substring(4, 7);
+        let endday = endDT.substring(8, 10);
+        let endyear = endDT.substring(11, 15);
+        let startdate = startday + "-" + startmon + "-" + startyear;
+        let enddate = endday + "-" + endmon + "-" + endyear;
+        let day = startDT.substring(0, 3);
+        setDay(day);
+        var stdate = Date.parse(startdate);
+        var eddate = Date.parse(enddate);
+        var d = format(stdate, "yyyy-MM-dd");
+        var e = format(eddate, "yyyy-MM-dd");
+        const current = new Date();
+        const date = `${current.getFullYear()}-${
+          current.getMonth() + 1
+        }-${current.getDate()}`;
+        const cudate = Date.parse(date);
+        var dq = format(cudate, "yyyy-MM-dd");
+        var nextdate = new Date(d);
+        var date1 = nextdate.setDate(nextdate.getDate() + 1)
+        var nextdate1 = format(date1, "yyyy-MM-dd");
+        if (d >= dq) {
+          if (d == e) {
+            const startDate = moment(d + " " + starttime);
+            const timeEnd = moment(e + " " + endtime);
+            const diff = timeEnd.diff(startDate);
+            const diffDuration = moment.duration(diff);
+            const hours = diffDuration.asMinutes() / 60;
+            setHours(hours);
+            setStartdate(d);
+            setEnddate(e);
+            setStarttime(starttime);
+            setEndtime(endtime);
+            setShow(true);
+            console.log(show);
+          }else if (endtime === "00:00" && e === nextdate1) {
+            const startDate = moment(d + " " + starttime);
+          const timeEnd = moment(e + " " + endtime);
+          const diff = timeEnd.diff(startDate);
+          const diffDuration = moment.duration(diff);
+          const hours = diffDuration.asMinutes() / 60;
+
+          setHours(hours);
+          setStartdate(d);
+          setEnddate(e);
+          setStarttime(starttime);
+          setEndtime(endtime);
+          setShow(true);
+          console.log(show);
+          } else {
+            let response = {
+              data: {
+                status: 400,
+                message: "Could Not Book For Multiple Dates",
+              },
+              status: 200,
+              statusText: "OK",
+            };
+            referesh(d, day);
+            dispatch(Formatter.alert_success(response, 3000));
+          }
+        } else {
+          let response = {
+            data: {
+              status: 400,
+              message: "Could Not Book For Previous Dates",
+            },
+            status: 200,
+            statusText: "OK",
+          };
+          dispatch(Formatter.alert_success(response, 3000));
+          referesh(d, day);
         }
       },
 
@@ -871,21 +1177,35 @@ const Meetingcalander = (props) => {
                       className="form-control"
                       value={endtime}
                       onChange={(e) => {
+                        if(e.target.value === "00:00"){
+                          var nextdate = new Date(startdate);
+                          var date1 = nextdate.setDate(nextdate.getDate() + 1)
+                          var nextdate1 = format(date1, "yyyy-MM-dd");
+                          setEnddate(nextdate1)
+                        }else{
+                          setEnddate(startdate)
+                        }
+
+                        // alert(startdate + " " + starttime + enddate + " " + e.target.value)
+                        let timeEnd;
                         const startDate = moment(startdate + " " + starttime);
-                        const timeEnd = moment(enddate + " " + e.target.value);
+                        if(e.target.value === "00:00"){
+                          timeEnd = moment(nextdate1 + " " + e.target.value);
+                        }else{
+                          timeEnd = moment(startdate + " " + e.target.value);
+                        }
+                        // const timeEnd = moment(enddate + " " + e.target.value);
                         const diff = timeEnd.diff(startDate);
                         const diffDuration = moment.duration(diff);
                         const hours = diffDuration.asMinutes() / 60;
 
-                        // if(hours>0){
+                        // alert(hours);
                         setHours(hours);
                         setEndtime(e.target.value);
                         setValidtimeout(false);
                         setValidtimein(false);
                         setTimeouthours(hours);
-                        // }else{
-                        //   setValidtimeout(true);
-                        // }
+                        
                       }}
                     >
                       <option value="00:00">12:00 AM</option>
@@ -943,11 +1263,11 @@ const Meetingcalander = (props) => {
               <Row>
                 <Col>
                   {validtimeout == true ||
-                    validtimein == true && (
+                    (validtimein == true && (
                       <label style={{ color: "red" }}>
                         Please Select Valid Start And End Time
                       </label>
-                    )}
+                    ))}
                 </Col>
               </Row>
 
