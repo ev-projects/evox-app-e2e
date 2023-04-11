@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 # API Call for Cron Jobs (To be removed after deployment)
 Route::group(['prefix' => 'cron', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-    
+     
 
     # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
     Route::get('/initial_sync_of_users',     'CronController@initial_sync_of_users');
