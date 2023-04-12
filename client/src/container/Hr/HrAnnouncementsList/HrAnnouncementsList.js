@@ -47,9 +47,11 @@ class HrAnnouncementsList extends Component {
       return <Wrapper  {...this.props} >
         <ContainerWrapper>   
           <Content col="12" title="Manage my HR Announcements">
+          <div className="announcement-all-desc"> 
             <p>In the Hr Announcement Management page, you can Manage and publish Hr Announcements that would only be seen by all users of EVOX. 
-            Users with the same role as HR can also manage your post</p>
-            <p>Note: the Editor will not save images, but for now, you can upload one image as a thmbnail and primary image of your announcement, you can also leave it empty </p>
+            Users with the same role as HR can also manage your post.</p>
+            <p>Note: the Editor will not save images, but for now, you can upload one image as a thmbnail and primary image of your announcement, you can also leave it empty.</p>
+          </div>
           <Link className="btn btn-primary create-announcement"  to={global.links.post_hr_announcements}>
                        
                        Create HR Announcement
