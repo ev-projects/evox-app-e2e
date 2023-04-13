@@ -59,12 +59,15 @@ class UserProfileResource extends JsonResource
             'dpa_ticked_at' => $this->dpa_ticked_at,
             'full_name' => $this->getFullName(),
             'user_has_schedule' => $this->getHasSchedule(),
+
             "timezone" => $this->timezone,
             "user_offset_seconds" => string_offset_to_seconds($offset),
             "user_server_time" =>  timestamp_to_datetime(Carbon::now()->timestamp),
             "user_server_timestamp" => (Carbon::now()->timestamp + string_offset_to_seconds($offset)),
             "user_server_timestamp_mils" => (Carbon::now()->timestamp + string_offset_to_seconds($offset))*1000,
-            'pov_timezone'=>  $this->country_zone()->country_name . " " . $this->country_zone()->country_time_zone."(".$this->country_zone()->time_difference .")"
+            'pov_timezone'=>  $this->country_zone()->country_name . " " . $this->country_zone()->country_time_zone."(".$offset .")",
+            "current_offset" => $offset,
+            "default_offset" => $this->country_zone()->time_difference,
             );
         if( $this->show_full_info ) {
 

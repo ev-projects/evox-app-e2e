@@ -46,6 +46,7 @@ class ChangeScheduleResource extends JsonResource
                 
                 'offset_difference_info' =>   (string_offset_to_seconds( $owner_offset)/3600)."-". (string_offset_to_seconds( $viewer_offset)/3600),
                 'offset_difference' =>   string_offset_to_seconds( $owner_offset)- string_offset_to_seconds( $viewer_offset),
+                
             );
         }
 

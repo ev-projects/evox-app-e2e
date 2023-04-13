@@ -280,6 +280,23 @@ if (! function_exists('timestamp_to_date')) {
     }
 }
 
+if (! function_exists('timestamp_to_date_default')) {   
+    /**
+     * This function returns a converted Timestamp to Date
+     *
+     * @param  timestamp timestamp
+     * @return datetime
+     */
+    function timestamp_to_date_default( $timestamp ) 
+    {
+        try {
+            return ( is_valid( $timestamp ) ) ? date('Y-m-d', $timestamp) : null;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
 
 if (! function_exists('timestamp_to_time')) {   
     /**
@@ -476,8 +493,8 @@ if (! function_exists('string_offset_to_seconds')) {
     /**
      * This function parses offsets to a seconds format INT
      *
-     * @param  date $date
-     * @return Carbon Formatted string
+     * @param  string $offset
+     * @return int
      */
     function string_offset_to_seconds($offset) 
     {
