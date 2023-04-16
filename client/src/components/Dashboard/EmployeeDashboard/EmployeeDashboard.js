@@ -11,7 +11,9 @@ import ReactPlayer from 'react-player/lazy';
 import * as yup from "yup";
 import QuickPunch from "../../../components/Dashboard/QuickPunch";
 import Holiday from "../../../components/Dashboard/Holiday";
-import DashboardAnnouncements from "../../../components/Dashboard/DashboardAnnouncements";
+// import DashboardAnnouncements from "../../../components/Dashboard/DashboardAnnouncements";
+import DashboardTabs from "../../../components/Dashboard/DashboardTabs";
+
 import Authenticator from "../../../services/Authenticator";
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 import RecentDtr from "../../../components/Dashboard/RecentDtr";
@@ -91,7 +93,7 @@ const EmployeeDashboard = ( props ) => {
                         <h3 align="center" className="card-title">ANNOUNCEMENTS</h3>
                     </div>
                       <div className="announcement-Container">
-                            <DashboardAnnouncements/>
+                            <DashboardTabs/>
                       </div> 
                     </div> 
                   {/* </Row> */}
