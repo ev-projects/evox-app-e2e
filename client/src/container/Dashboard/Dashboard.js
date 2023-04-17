@@ -22,7 +22,7 @@ class Dashboard extends Component {
       const { user } = this.props;
 
         return  <Wrapper {...this.props} >
-                    <ContainerWrapper>
+                    <ContainerWrapper className="full-wrapper">
                       <ContainerBody>
                         
                         {Authenticator.check(['employee'], ['employee_access']) ? 

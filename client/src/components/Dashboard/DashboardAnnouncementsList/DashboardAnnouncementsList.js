@@ -3,6 +3,8 @@ import { Redirect, Link } from "react-router-dom";
 import "./DashboardAnnouncementsList.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../GridComponent/AdminLte.js';
 import { fetchDashboardAnnouncementList } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchDepartmentListWithAnnouncements  } from '../../../store/actions/lookup/lookupListActions';
+
 import Figure from 'react-bootstrap/Figure';
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import ShowMore from 'react-show-more-list';
@@ -17,27 +19,118 @@ class DashboardAnnouncementsList extends Component {
     this.handleSelect = this.handleSelect.bind(this);
 
     this.state = {
-      key: "all-announcements"
+      key: "all-announcements",
+      filters: {
+        department_id:  this.props.myTeamList?.filters?.department_id,
+      },
+
     };
   }
-  componentWillMount(){ 
-    this.props.fetchDashboardAnnouncementList( );
+  componentWillMount  = async() =>{ 
+    await this.props.fetchDashboardAnnouncementList( );
+    await this.props.fetchDepartmentListWithAnnouncements();
 	}
+
+  handleSelectDepartmentAnnouncement = async (event) => {
+    var formData = {};
+    formData["dep_id"] = event.target.value;
+    // console.log(formData)
+    // var formData = {};
+    // formData["category"] = values;
+    this.props.fetchDashboardAnnouncementList(formData );
+
+  }
   handleSelect = (values) => {
     var formData = {};
     formData["category"] = values;
     this.props.fetchDashboardAnnouncementList(formData );
   }
-  render() {
+  render= () => {  
+
+
+
+        return(
+
+
+             <>
+          <Formik 
+          enableReinitialize
+          onSubmit={this.onSubmitHandler} 
+          // validationSchema={validationSchema} 
+          initialValues={this.state.filters}>
+          {
+          ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+          <form onSubmit={handleSubmit}>
+         
+
+
+
+
+          <Row className="">  
+            <Col size=""> 
+            {
+              this.props.department != undefined?   <div className="form-group dashboard-dep-select" >
+              <label>Departments Announcement:</label>
+              <select
+                  name="department_id"
+                  className="form-control"
+                  value={values.department_id}
+                  onChange={(e) => {
+                    this.handleSelectDepartmentAnnouncement(e);
+                  }}
+                  style={{ display: 'block' }}
+              >
+                  <option value="all" label="All" />
+
+                  {/* Manually generate the Option element w/ extra attributes (Pass the Department Handlers as stringified JSON) */}
+                  { !this.state.reloadingDepartmentList ? 
+                      this.props.department.map((value, index) => {
+
+                          return <option 
+                                  value={value.id} 
+                                  >
+                                    {value.department_name}
+                                  </option>;
+                      })
+                    :
+                    null
+                  }
+              </select>
+</div>
+
+: <PageLoading/>
+            }
+          
+              </Col> 
+          </Row>
+          <AnnouncementListTable  {...this.props} />
+
+            
+          </form>
+          )}
+        
+          </Formik>
+
+             </>
+                   
+           
+  
+        )
+      }
+  }
+
+
+const AnnouncementListTable = (props) => {
+  {
     var showOpen = false;
-    if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
-    console.log(this.props.departmentAnnouncement.depAnnouncementlist.length > 6)
-      if(this.props.departmentAnnouncement.depAnnouncementlist.length !== 0){
-        showOpen = this.props.departmentAnnouncement.depAnnouncementlist.length > 6 ? true : false
+    if(props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
+    console.log(props.departmentAnnouncement.depAnnouncementlist.length > 6)
+      if(props.departmentAnnouncement.depAnnouncementlist.length !== 0){
+        showOpen = props.departmentAnnouncement.depAnnouncementlist.length > 6 ? true : false
         return < >
 
           <Row>
-              {this.props.departmentAnnouncement.depAnnouncementlist.slice(0,4).map((announcement, index) => {
+              {props.departmentAnnouncement.depAnnouncementlist.slice(0,4).map((announcement, index) => {
                 return <Col  md={6} className="announcement-list-content dashbaord-content card-content">
                       
                       <Link to={{
@@ -75,7 +168,7 @@ class DashboardAnnouncementsList extends Component {
               })}
 
             <ShowMore
-                items={this.props.departmentAnnouncement.depAnnouncementlist.slice(4, this.props.departmentAnnouncement.depAnnouncementlist.length)}
+                items={props.departmentAnnouncement.depAnnouncementlist.slice(4, props.departmentAnnouncement.depAnnouncementlist.length)}
                 by={2}
               >
                 {({
@@ -122,7 +215,7 @@ class DashboardAnnouncementsList extends Component {
                       ))}
                     
                     <Col  md={12} align="center">
-                     {this.props.departmentAnnouncement.depAnnouncementlist.length > 6?  <Button
+                     {props.departmentAnnouncement.depAnnouncementlist.length > 6?  <Button
                         disabled={!onMore}
                         onClick={() => { if (!!onMore) onMore(); }}
 
@@ -159,18 +252,19 @@ class DashboardAnnouncementsList extends Component {
   }
 }
 
-
   
 const mapStateToProps = (state) => {
 return {
   user : state.user,
   // holiday : state.dashboard
   departmentAnnouncement             : state.departmentAnnouncement,
+  department             : state.lookup.department,
 
 }
 }
 const mapDispatchToProps = (dispatch) => {
   return {
+    fetchDepartmentListWithAnnouncements               : () => dispatch( fetchDepartmentListWithAnnouncements() ),
     fetchDashboardAnnouncementList : () => dispatch( fetchDashboardAnnouncementList() ),
     fetchDashboardAnnouncementList : (data) => dispatch( fetchDashboardAnnouncementList(data) ),
   }

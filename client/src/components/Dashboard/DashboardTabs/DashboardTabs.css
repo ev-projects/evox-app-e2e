@@ -86,6 +86,7 @@
 
 .announcement-tabs .nav-item{
     color:rgba(0, 83, 147) !important;
+    border-radius: 0px !important;
 }
 
 .show-more-dashboard{

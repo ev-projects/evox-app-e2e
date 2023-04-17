@@ -15,4 +15,6 @@ interface DepartmentRepositoryInterface
     public function destroy_department($id);
     
     public function dashboard_annoucments(User $user);
+
+    public function all_with_announcements();
 }

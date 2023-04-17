@@ -137,7 +137,7 @@ class AnnouncementController extends Controller
         try {
             log_activity( trans('messages.update_department_announcement_attempt') );
             $department =  Department::find(Auth::user()->department_id);
-            $check_announcement = $department->departments_announcement_by_json()->find($id);
+            $check_announcement = $department->departments_announcements()->find($id);
             if($check_announcement || Auth::user()->hasRole( get_constant('USER_ROLES.admin'))){
                 $dep_announcement = $this->announcement->update($request, $id);
             return success_response(

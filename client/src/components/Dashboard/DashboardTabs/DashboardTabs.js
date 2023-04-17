@@ -5,12 +5,14 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../Gr
 import { fetchDashboardAnnouncementList } from '../../../store/actions/announcement/departmentAnnouncementActions'
 import Figure from 'react-bootstrap/Figure';
 import DashboardAnnouncementsList from "../../../components/Dashboard/DashboardAnnouncementsList";
+import JobOpenings from "../../../components/Dashboard/JobOpenings";
 
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import ShowMore from 'react-show-more-list';
 import { connect } from 'react-redux';
 import { Container,Row,Col,Table,Image, Spinner,Button,Card,Tabs,Tab,Badge  } from 'react-bootstrap';
 import PageLoading from "../../../container/PageLoading/PageLoading";
+import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 class DashboardTabs extends Component {
 
   constructor(props, context) {
@@ -45,10 +47,10 @@ class DashboardTabs extends Component {
                 <DashboardAnnouncementsList></DashboardAnnouncementsList>
               </Tab>
               <Tab eventKey="job-openings" title="Job Opening">
-                
+                <JobOpenings></JobOpenings>
               </Tab>
               <Tab eventKey="evox-updates" title="Evox Updates">
-                
+                <ChangeLogs></ChangeLogs>
               </Tab>
               {/* <Tab eventKey="contact" title="Contact" disabled>
                 

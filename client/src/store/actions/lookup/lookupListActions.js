@@ -120,6 +120,26 @@ export const fetchDepartmentList = () => {
     }
 }
 
+export const fetchDepartmentListWithAnnouncements = () => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/department/all_with_announcements"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_DEPARTMENT_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 // Fetch the Department Handlers List via Department ID
 export const fetchDepartmentHandlersList = ( id ) => {

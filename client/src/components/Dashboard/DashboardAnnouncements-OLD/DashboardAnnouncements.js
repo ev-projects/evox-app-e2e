@@ -17,7 +17,8 @@ class DashboardAnnouncements extends Component {
     this.handleSelect = this.handleSelect.bind(this);
 
     this.state = {
-      key: "all"
+      key: "all",
+     
     };
   }
   componentWillMount(){ 

@@ -84,9 +84,9 @@
     font-size: 11px !important;
 }
 
-.announcement-tabs .nav-item{
+/* .announcement-tabs .nav-item{
     color:rgba(0, 83, 147) !important;
-}
+} */
 
 .show-more-dashboard{
     margin-top: 12px !important;
@@ -96,4 +96,10 @@
 
 button[disabled=disabled].show-more-dashboard, button:disabled.show-more-dashboard {
     background-color:rgb(110, 159, 196) !important;
+}
+
+
+.dashboard-dep-select{
+    /* min-width: 100% ; */
+    max-width: 300px ;
 }

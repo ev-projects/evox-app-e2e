@@ -68,6 +68,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $dep_announcement->expiry_date     = $request->expiry_date;
             $dep_announcement->link             = $request->link;
             $dep_announcement->status           = $request->status;
+            $dep_announcement->country_id       = Auth::user()->country_id;
             $dep_announcement->exposure_level   = $request->exposure_level;
             $dep_announcement->dep_id           = auth()->user()->department_id;
             $dep_announcement->created_by       = auth()->user()->id;
@@ -87,22 +88,22 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 $dep_announcement->update();
             }
 
-            if ($dep_announcement->category  == "HR") {
-                $department_ids = Department::pluck('id')->toArray();
+            // if ($dep_announcement->category  == "HR") {
+            //     $department_ids = Department::pluck('id')->toArray();
 
-                $dep_announcement->announcements_departments()->sync($department_ids);
+            //     $dep_announcement->announcements_departments()->sync($department_ids);
 
-                $announcement_department = new AnnouncementDepartment;
-                $announcement_department->announcement_id   =  $dep_announcement->id;
-                $announcement_department->department_ids    =  $department_ids;
-            } else {
-                $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
+            //     $announcement_department = new AnnouncementDepartment;
+            //     $announcement_department->announcement_id   =  $dep_announcement->id;
+            //     $announcement_department->department_ids    =  $department_ids;
+            // } else {
+            //     $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
 
-                $announcement_department = new AnnouncementDepartment;
-                $announcement_department->announcement_id   =  $dep_announcement->id;
-                $announcement_department->department_ids    =  [auth()->user()->department_id];
-            }
-            $announcement_department->save();
+            //     $announcement_department = new AnnouncementDepartment;
+            //     $announcement_department->announcement_id   =  $dep_announcement->id;
+            //     $announcement_department->department_ids    =  [auth()->user()->department_id];
+            // }
+            // $announcement_department->save();
 
             DB::commit();
             // return success_response(
@@ -144,7 +145,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
             $department =  Department::find(Auth::user()->department_id);
             // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
-            $dep_announcement = $department->departments_announcement_by_json()->where("category", "Department")->find($id);
+            $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
         return  $dep_announcement;
     }
 
@@ -192,27 +193,27 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     $dep_announcement->update();
                 }
 
-                $announcement_department_to_delete =  AnnouncementDepartment::where("announcement_id", $dep_announcement->id);
-                 // if record exist delete
-                 error_log($announcement_department_to_delete->count() > 0);
-                if( $announcement_department_to_delete->count() > 0){
-                    // $deleted = DB::delete('DELETE FROM announcements_departments WHERE announcements_departments.announcement_id = ?',[$dep_announcement->id]);
-                    AnnouncementDepartment::where('announcement_id', $dep_announcement->id)->delete();
-                } 
+                // $announcement_department_to_delete =  AnnouncementDepartment::where("announcement_id", $dep_announcement->id);
+                //  // if record exist delete
+                //  error_log($announcement_department_to_delete->count() > 0);
+                // if( $announcement_department_to_delete->count() > 0){
+                //     // $deleted = DB::delete('DELETE FROM announcements_departments WHERE announcements_departments.announcement_id = ?',[$dep_announcement->id]);
+                //     AnnouncementDepartment::where('announcement_id', $dep_announcement->id)->delete();
+                // } 
             
 
                 DB::commit();
 
-                $announcement_department = new AnnouncementDepartment;
-                if ($dep_announcement->category  == "HR") {
-                    $department_ids = Department::pluck('id')->toArray();
-                        $announcement_department->department_ids    =  $department_ids;
-                        $announcement_department->save();
-                } else {
+                // $announcement_department = new AnnouncementDepartment;
+                // if ($dep_announcement->category  == "HR") {
+                //     $department_ids = Department::pluck('id')->toArray();
+                //         $announcement_department->department_ids    =  $department_ids;
+                //         $announcement_department->save();
+                // } else {
 
-                        $announcement_department->department_ids    =  [auth()->user()->department_id];
-                        $announcement_department->save();
-                }
+                //         $announcement_department->department_ids    =  [auth()->user()->department_id];
+                //         $announcement_department->save();
+                // }
 
                 return  $dep_announcement;
 
@@ -289,19 +290,29 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             // ->pluck('announcement_id')
             // ->toArray();
             // ->get();
-            $announcements_list = $department->departments_announcement_by_json()->latest()->where(function ($query) use ($date_time) {
-                $query->where('release_date', '<=', $date_time);
-                $query->where('expiry_date', '>', $date_time);
-            });
-
-
-
-            if ($request->category == "hr") {
-                $announcements_list->where("category", "HR");
+            if($request->dep_id == "all" || $request->dep_id == null){
+                $announcements_list = Announcement::latest()->where(function ($query) use ($date_time) {
+                    $query->where('release_date', '<=', $date_time);
+                    $query->where('expiry_date', '>', $date_time);
+                });
             }
-            if ($request->category == "department") {
-                $announcements_list->where("category", "Department");
+
+            if( $request->dep_id != null  && is_numeric($request->dep_id)){
+                $department =  Department::find($request->dep_id);
+                $announcements_list = $department->departments_announcements()->latest()->where(function ($query) use ($date_time) {
+                    $query->where('release_date', '<=', $date_time);
+                    $query->where('expiry_date', '>', $date_time);
+                });
             }
+
+
+
+            // if ($request->category == "hr") {
+            //     $announcements_list->where("category", "HR");
+            // }
+            // if ($request->category == "department") {
+            //     $announcements_list->where("category", "Department");
+            // }
 
             $announcements_list = $announcements_list->get();
 
@@ -320,7 +331,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         try {
             $department =  Department::find(Auth::user()->department_id);
 
-            $announcements_list = $department->departments_announcement_by_json()->where("category", "Department")->latest()
+            $announcements_list = $department->departments_announcements()->where("category", "Department")->latest()
 
 
                 ->get();
