@@ -485,8 +485,8 @@ const Sidebar = (props) => {
                 </li>
               )}
 
-              {/* ADMIN Links */}
-              {Authenticator.check("hr", "hr_access") && (
+              {/* HR Links */}
+              {/* {Authenticator.check("hr", "hr_access") && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-cog" />
@@ -509,7 +509,7 @@ const Sidebar = (props) => {
                     )}
                   </ul>
                 </li>
-              )}
+              )} */}
 
               {/* ADMIN Links */}
               {Authenticator.check("admin", "full_access") && (
