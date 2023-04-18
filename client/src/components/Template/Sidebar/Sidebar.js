@@ -264,131 +264,152 @@ const Sidebar = (props) => {
                 </Link>
               </li>
 
-            {/* SUPERVISOR Links */}
-            {Authenticator.check(['supervisor', 'team_leader'], ['supervisor_access', 'team_leader_access']) ?
-              <li className="nav-item has-treeview ">
-                <a className="nav-link nav-link-main" >
-                  <i className="nav-icon fa fa-users" />
-                  <p>
-                    My Team
-                    <i className="right fa fa-chevron-left" />
-                  </p>
-                </a>
-                <ul className="nav nav-treeview">
-                  {Authenticator.check('supervisor', 'manage_teams') &&
-                    <li className="nav-item">
-                      <Link className="nav-link" to={global.links.manage_teams} >
-                        <i className="nav-icon fa fa-users" aria-hidden="true"></i>
-                        <p>Manage Teams</p>
-                      </Link>
-                    </li>
-                  }
-                  {Authenticator.check(['supervisor'], ['manage_schedule']) &&
-                    <li className="nav-item has-treeview ">
-                      <a className="nav-link " >
-                        <i className="nav-icon fa fa-calendar-o" />
-                        <p>
-                          Manage Schedule
-                          <i className="right fa fa-chevron-left" />
-                        </p>
-                      </a>
-                      <ul className="nav nav-treeview">
-                        <li className="nav-item">
-                          <Link className="nav-link" to={global.links.template_list}>
-                            <i className="nav-icon fa fa-list nav-icon" />
-                            <p>Template List</p>
-                          </Link>
-                        </li>
-                        <li className="nav-item">
-                          <Link className="nav-link" to={global.links.schedule_assign_department}>
-                            <i className="nav-icon fa fa-calendar-check-o nav-icon" />
-                            <p style={{ 'fontSize': 13 }}>Assign Department Schedule</p>
-                          </Link>
-                        </li>
-                        <li className="nav-item">
-                          <Link className="nav-link" to={global.links.template_add}>
-                            <i className="nav-icon fa fa-plus nav-icon" />
-                            <p>Add Template</p>
-                          </Link>
-                        </li>
-                      </ul>
-                    </li>
-                  }
-                  <li className="nav-item">
-                    <Link className="nav-link" to={global.links.employee_list} >
-                      <i className="nav-icon fa fa-address-book" aria-hidden="true"></i>
-                      <p>Employee List</p>
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to={global.links.dpa_list} >
-                      <i className="nav-icon fa fa-list-alt" aria-hidden="true"></i>
-                      <p> DPA List</p>
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to={global.links.my_team_requests} >
-                      <i className="nav-icon fa fa-users" aria-hidden="true"></i>
-                      <p> My Team Request {my_team_pending_request == 0 || my_team_pending_request == null ? "" : '(' + my_team_pending_request + ')'}  </p>
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to={global.links.dtr_summary} >
-                      <i className="nav-icon fa fa-file-text nav-icon" />
-                      <p>DTR Summary</p>
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to={global.links.dtr_logs} >
-                      <i className="nav-icon fa fa-bars nav-icon" />
-                      <p>DTR Logs</p>
-                    </Link>
-                  </li>
-                  {/* {Authenticator.check('supervisor', 'manage_department_announcements') &&
-                  <li className="nav-item">
-                      <Link className="nav-link" to={global.links.department_announcement_list}>
-                        <i className="nav-icon fa fa-comments-o  nav-icon" />
-                        <p>My Announcement List</p>
-                      </Link>
-                  </li>
-                } */}
-                </ul>
-              </li>
-              :
-              null
-            }
-           {Authenticator.check('supervisor', 'manage_department_announcements') &&
-             
-                  <React.Fragment>
-                  <li className="nav-item has-treeview ">
-                    <a className="nav-link" >
-                      <i className="nav-icon fa fa-newspaper-o" />
-                      <p>
-                        Announcements
-                        <i className="right fa fa-chevron-left" />
-                      </p>
-                    </a>
-                    <ul className="nav nav-treeview">
-                    <li className="nav-item">
-                      <Link className="nav-link" to={global.links.department_announcement_list}>
-                        <i className="nav-icon fa fa-newspaper-o  nav-icon" />
-                        <p>My Announcement List</p>
-                      </Link>
-                    </li>
+              {/* SUPERVISOR Links */}
+              {Authenticator.check(
+                ["supervisor", "team_leader"],
+                ["supervisor_access", "team_leader_access"]
+              ) ? (
+                <li className="nav-item has-treeview ">
+                  <a className="nav-link nav-link-main">
+                    <i className="nav-icon fa fa-users" />
+                    <p>
+                      My Team
+                      <i className="right fa fa-chevron-left" />
+                    </p>
+                  </a>
+                  <ul className="nav nav-treeview">
+                    {Authenticator.check("supervisor", "manage_teams") && (
                       <li className="nav-item">
-                        <Link className="nav-link" to={global.links.department_announcement_form} >
-                          <i className="nav-icon fa fa-plus" aria-hidden="true"></i>
-                          <p>Create Announcement</p>
+                        <Link
+                          className="nav-link"
+                          to={global.links.manage_teams}
+                        >
+                          <i
+                            className="nav-icon fa fa-users"
+                            aria-hidden="true"
+                          ></i>
+                          <p>Manage Teams</p>
                         </Link>
                       </li>
-                    </ul>
-                  </li>
-                </React.Fragment>
-            }
-            {/* CLIENT Links */}
-            {Authenticator.check('client', 'client_access') &&
-              <React.Fragment>
-               
+                    )}
+                    {Authenticator.check(
+                      ["supervisor"],
+                      ["manage_schedule"]
+                    ) && (
+                      <li className="nav-item has-treeview ">
+                        <a className="nav-link ">
+                          <i className="nav-icon fa fa-calendar-o" />
+                          <p>
+                            Manage Schedule
+                            <i className="right fa fa-chevron-left" />
+                          </p>
+                        </a>
+                        <ul className="nav nav-treeview">
+                          <li className="nav-item">
+                            <Link
+                              className="nav-link"
+                              to={global.links.template_list}
+                            >
+                              <i className="nav-icon fa fa-list nav-icon" />
+                              <p>Template List</p>
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link
+                              className="nav-link"
+                              to={global.links.schedule_assign_department}
+                            >
+                              <i className="nav-icon fa fa-calendar-check-o nav-icon" />
+                              <p style={{ fontSize: 13 }}>
+                                Assign Department Schedule
+                              </p>
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link
+                              className="nav-link"
+                              to={global.links.template_add}
+                            >
+                              <i className="nav-icon fa fa-plus nav-icon" />
+                              <p>Add Template</p>
+                            </Link>
+                          </li>
+                        </ul>
+                      </li>
+                    )}
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        to={global.links.employee_list}
+                      >
+                        <i
+                          className="nav-icon fa fa-address-book"
+                          aria-hidden="true"
+                        ></i>
+                        <p>Employee List</p>
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.dpa_list}>
+                        <i
+                          className="nav-icon fa fa-list-alt"
+                          aria-hidden="true"
+                        ></i>
+                        <p> DPA List</p>
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        to={global.links.my_team_requests}
+                      >
+                        <i
+                          className="nav-icon fa fa-users"
+                          aria-hidden="true"
+                        ></i>
+                        <p>
+                          {" "}
+                          My Team Request{" "}
+                          {my_team_pending_request == 0 ||
+                          my_team_pending_request == null
+                            ? ""
+                            : "(" + my_team_pending_request + ")"}{" "}
+                        </p>
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.dtr_summary}>
+                        <i className="nav-icon fa fa-file-text nav-icon" />
+                        <p>DTR Summary</p>
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.dtr_logs}>
+                        <i className="nav-icon fa fa-bars nav-icon" />
+                        <p>DTR Logs</p>
+                      </Link>
+                    </li>
+                    {/* {Authenticator.check(
+                      "supervisor",
+                      "manage_department_announcements"
+                    ) && (
+                      <li className="nav-item">
+                        <Link
+                          className="nav-link"
+                          to={global.links.department_announcement_list}
+                        >
+                          <i className="nav-icon fa fa-comments-o  nav-icon" />
+                          <p>My Announcement List</p>
+                        </Link>
+                      </li>
+                    )} */}
+                  </ul>
+                </li>
+              ) : null}
+
+              {/* CLIENT Links */}
+              {Authenticator.check("client", "client_access") && (
+                <React.Fragment>
                   <li className="nav-item has-treeview ">
                     <a className="nav-link">
                       <i className="nav-icon fa fa-users" />
