@@ -34,3 +34,12 @@
 .manage-announcement-option .btn{
  margin-right: 3px!important;
 }
+
+.announcement-all-desc{
+    padding:15px 20px 5px 20px;
+    background-color: rgb(199, 222, 239) !important;
+
+    border-radius: 12px !important;
+    margin-bottom: 10px;
+    font-size: 13px !important;
+}

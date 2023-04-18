@@ -1,5 +1,5 @@
 body:not(.sidebar-mini-md) .content-wrapper, body:not(.sidebar-mini-md) .main-footer, body:not(.sidebar-mini-md) .main-header {
-  padding-left: 1.5%;
+  /* padding-left: 1.5%; */
   padding-bottom: 1px;
 }
 .navbar {

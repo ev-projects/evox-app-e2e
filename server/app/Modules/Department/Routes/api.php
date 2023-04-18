@@ -21,6 +21,9 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
     # Gets all the Department Lists
     Route::get('/all', 'DepartmentController@all');
 
+    # Gets all the Department Lists
+    Route::get('/all_with_announcements', 'DepartmentController@all_with_announcements');
+
     # Gets the Department of the ID indicated on the Parameter
     Route::get('/{id}', 'DepartmentController@find');
 
@@ -42,37 +45,37 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
     Route::group(['prefix' => 'announcements', 'middleware' => []], function () {
 
         # Gets all the Department Announcements Lists
-        Route::get('/all', 'DepartmentAnnouncementController@index');
+        Route::get('/all', 'AnnouncementController@index');
         
         # Gets all the Department Announcements Lists
-        Route::get('/dashboard_departments', 'DepartmentAnnouncementController@dashboard_index');
+        Route::get('/dashboard_departments', 'AnnouncementController@dashboard_index');
 
         #creates a new  Announcement for a Department
-        Route::post('/create', 'DepartmentAnnouncementController@store');
+        Route::post('/create', 'AnnouncementController@store');
 
         # Gets/Updates the Department Announcements of the ID indicated on the Parameter
-        Route::get('/{id}', 'DepartmentAnnouncementController@show');
+        Route::get('/{id}', 'AnnouncementController@show');
 
-        Route::get('/strict/{id}', 'DepartmentAnnouncementController@show_strict');
+        Route::get('/strict/{id}', 'AnnouncementController@show_strict');
 
         Route::group(['prefix' => 'my_handle_announcements', 'middleware' => []], function () {
             # from my team department "my handled announcements"
-            Route::get('/all', 'DepartmentAnnouncementController@handle_announcements_index');
+            Route::get('/all', 'AnnouncementController@handle_announcements_index');
 
             # Gets/Updates the Department Announcements of the ID indicated on the Parameter
-            Route::get('/{id}', 'DepartmentAnnouncementController@show');
+            Route::get('/{id}', 'AnnouncementController@show');
 
-            Route::post('/{id}/update', 'DepartmentAnnouncementController@update');
+            Route::post('/{id}/update', 'AnnouncementController@update');
 
             Route::put('/{id}/update-status', 'DepartmentAnnouncementController@update_status');
 
-            Route::delete('/{id}', 'DepartmentAnnouncementController@destroy');
+            Route::delete('/{id}', 'AnnouncementController@destroy');
     }); 
 
     
     Route::group(['prefix' => 'hr', 'middleware' => []], function () {
 
-        Route::get('/all', 'DepartmentAnnouncementController@all_hr_handled_Announcements');
+        Route::get('/all', 'AnnouncementController@all_hr_handled_Announcements');
 
         # Gets/Updates the Department Announcements of the ID indicated on the Parameter
         Route::get('/{id}', 'DepartmentAnnouncementController@show_hr_strict');

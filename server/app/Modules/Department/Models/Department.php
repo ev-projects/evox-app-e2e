@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Modules\Schedule\Models\Schedule;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Department\Models\Announcement;
+// use App\Modules\Department\Models\AnnouncementDepartment;
 
 class Department extends Model
 {
@@ -69,8 +70,23 @@ class Department extends Model
 
     public function departments_announcements()
     {
-        return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
+        // return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
+
+        return $this->hasMany(Announcement::class, 'dep_id', 'id');
     }
+
+    // public function departments_announcement_by_json()
+    // {
+    //     $announcement_ids = AnnouncementDepartment::whereJsonContains('department_ids',[ $this->id])
+    //     ->pluck('announcement_id')
+    //     ->toArray();
+
+    //     $announcements_list = Announcement::whereIn('id',  $announcement_ids);
+
+    //     return  $announcements_list;
+    // }
+    
+   
     
     
     /**
