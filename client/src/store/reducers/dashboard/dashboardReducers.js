@@ -42,7 +42,16 @@ const dashboardReducers = (state = initState, action) => {
                 nav_recent_dtr : action.data.content,
                 isNavDtrLoaded : true,
             }
-            break;      
+            break;     
+            
+        case "CLEAR_RECENT_DTR_INSTANCE":
+            result = {
+                ...state,
+                recent_dtr : {},
+                nav_recent_dtr : {},
+                isNavDtrLoaded : false,
+            }
+                break;
         case "FETCH_HOLIDAYS":
             result = {
                 ...state,

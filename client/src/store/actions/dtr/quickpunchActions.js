@@ -3,6 +3,7 @@ import API from "../../../services/API";
 import { trackPromise } from "react-promise-tracker";
 import Formatter from "../../../services/Formatter";
 import moment from 'moment';
+import $ from 'jquery';
 
 // Action for Biometrixlog
 export const biometrixLog = ( post_data, id ) => {
@@ -15,7 +16,7 @@ export const biometrixLog = ( post_data, id ) => {
         .then(result => {
             var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
             var to = moment().format("YYYY-MM-DD");
-
+            $(".nav-clock.dropdown-toggle.btn.btn-primary").click();
             API.call({
                 method: "get",
                 url: "/dtr/"+id+"/"+from+"/"+to,
@@ -27,6 +28,7 @@ export const biometrixLog = ( post_data, id ) => {
                 })
             })
             .catch(e => {
+                // console.log(e);
                 dispatch( Formatter.alert_error( e ) ) 
             });
             dispatch( Formatter.alert_success( result ));

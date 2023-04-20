@@ -121,7 +121,7 @@ const WorkDay = (props) => {
                     // const indexValue = field.value.work_days.find(value => value == props.day);
                     const nextValue = field.value.work_days.filter(value => value !== props.day);
                     form.setFieldValue('work_days', nextValue);
-                    // arrayHelpers.remove(eval('field.value.wd.'+props.day+'.index'));
+                    arrayHelpers.remove(eval('field.value.wd.'+props.day+'.index'));
                   }else{
                     // ADD
                     const index = field.value.work_days.length;
@@ -501,7 +501,8 @@ const ScheduledetailsWithTimezone = (props) => {
                 timeFormat="HH:mm"
                 placeholder="On Duty"
                 selected={field.value.cst_schedule_details[props.index].end_flexy_time}              
-                onChange={date => form.setFieldValue('cst_schedule_details['+props.index+'].end_flexy_time', date)}
+                onChange={date =>{ form.setFieldValue('cst_schedule_details['+props.index+'].end_flexy_time', date);
+                onSelectTimeHandlerSchedule(date,props.index,form.setFieldValue,"pov_","end_flexy_time",props.offset_data)}}
               />
               <Form.Control.Feedback type="invalid">
                 <ErrorMessage component="div" name={`cst_schedule_details.${props.index}.end_flexy_time`}className="input-feedback" />
@@ -534,7 +535,7 @@ const ScheduledetailsWithTimezone = (props) => {
           <div className="changeSchedulePOV">
           <Form.Row>
               <Form.Group as={Col} sm={4}>
-                  <h6>On Duty</h6>
+                  <h6>On Duty - {props.pov_timezone_info}</h6> 
                   <DatePicker 
                     className="form-control"
                     showTimeSelect
@@ -670,38 +671,34 @@ const ScheduledetailsWithTimezone = (props) => {
   const onSelectTimeHandlerStdOnTimezone = (data, index,setFieldValue,sched_type,offset_data, $is_flex =  false) => {
     
     if(data!==null){
+      // only changes for flex
       if($is_flex){
         var onDuty = data;
-      var offDuty = new Date(); 
+      // var offDuty = new Date(); 
       var breakTime = new Date(); 
 
-      var employeeDuty = new Date(); 
-      employeeDuty.setMinutes(onDuty.getMinutes()); 
-      employeeDuty.setHours( onDuty.getHours() + (offset_data/3600) );
-
+      
+      var employeeDuty = new Date(onDuty.getTime() +(offset_data* 1000))
       breakTime.setMinutes(0); 
       breakTime.setHours(1)
 
-      offDuty.setMinutes(onDuty.getMinutes()); 
-      offDuty.setHours( onDuty.getHours() + 9 + (offset_data/3600) ); 
+    
+      var offDuty = new Date(onDuty.getTime() +(offset_data* 1000) + (9*3600*1000))
       setFieldValue(sched_type + 'schedule_details['+index+'].start_flexy_time', employeeDuty); 
       setFieldValue(sched_type + 'schedule_details['+index+'].end_flexy_time',offDuty); 
 
       } 
       else{
         var onDuty = data;
-      var offDuty = new Date(); 
+      // var offDuty = new Date(); 
       var breakTime = new Date(); 
 
-      var employeeDuty = new Date(); 
-      employeeDuty.setMinutes(onDuty.getMinutes()); 
-      employeeDuty.setHours( onDuty.getHours() + (offset_data/3600) );
+      var employeeDuty = new Date(onDuty.getTime() +(offset_data* 1000))
 
       breakTime.setMinutes(0); 
       breakTime.setHours(1)
 
-      offDuty.setMinutes(onDuty.getMinutes()); 
-      offDuty.setHours( onDuty.getHours() + 9 + (offset_data/3600) ); 
+      var offDuty = new Date(onDuty.getTime() +(offset_data* 1000)+ (9*3600*1000))
 
       setFieldValue(sched_type + 'schedule_details['+index+'].start_time', employeeDuty); 
       setFieldValue(sched_type + 'schedule_details['+index+'].end_time',offDuty); 
@@ -739,8 +736,9 @@ const ScheduledetailsWithTimezone = (props) => {
         var employeeDuty = new Date(); 
   
 
-        employeeDuty.setMinutes(onDuty.getMinutes()); 
-        employeeDuty.setHours( onDuty.getHours() + (offset_data/3600) ); 
+        // employeeDuty.setMinutes(onDuty.getMinutes()); 
+        // employeeDuty.setHours( onDuty.getHours() + (offset_data/3600) ); 
+        employeeDuty = new Date(onDuty.getTime() +(offset_data* 1000))
         setFieldValue(sched_type + 'schedule_details['+index+'].'+contrast_too,employeeDuty); 
     // setFieldValue("pov_"+ type, employeeDuty)
     }else{

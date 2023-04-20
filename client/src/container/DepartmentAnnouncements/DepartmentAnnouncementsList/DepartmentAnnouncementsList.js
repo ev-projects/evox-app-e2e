@@ -47,9 +47,11 @@ class DepartmentAnnouncementsList extends Component {
       return <Wrapper  {...this.props} >
         <ContainerWrapper>   
           <Content col="12" title="Manage my Departments Announcements">
-            <p>In the Announcement Management page, you can publish <u>Announcements</u> and this can only be seen by users of the same dapartments as you. 
-            Users with the same permission as you can also edit your post if you have your hands are full. </p>
-            <p>Note: the Editor will not save images, but for now, you can upload one image as a thmbnail and primary image of your announcement, you can also leave it empty </p>
+            <div className="announcement-all-desc"> 
+              <p>In the Announcement Management page, you can publish <u>Announcements</u> and this can only be seen by users of the same dapartments as you. 
+              Users with the same permission as you can also edit your post if you have your hands are full. </p>
+              <p>Note: the Editor will not save images, but for now, you can upload one image as a thmbnail and primary image of your announcement, you can also leave it empty. </p>
+            </div>
           <Link className="btn btn-primary create-announcement"  to={global.links.department_announcement_form}>
                        
                        Create Announcement

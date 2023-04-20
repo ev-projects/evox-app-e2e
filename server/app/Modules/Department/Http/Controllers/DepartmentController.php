@@ -43,6 +43,23 @@ class DepartmentController extends Controller
     }
 
     /**
+     * Shows all  Department that has announcements
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function all_with_announcements(){
+        try {
+            $department_collection = $this->department->all_with_announcements();
+
+            return success_response(
+                trans('messages.all_department_success'), 
+                DepartmentListResource::collection( $department_collection ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
      * Shows an existing Department
      * @return \Illuminate\Http\JsonResponse
      */

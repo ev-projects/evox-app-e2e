@@ -389,7 +389,7 @@ const Sidebar = (props) => {
                         <p>DTR Logs</p>
                       </Link>
                     </li>
-                    {Authenticator.check(
+                    {/* {Authenticator.check(
                       "supervisor",
                       "manage_department_announcements"
                     ) && (
@@ -402,11 +402,38 @@ const Sidebar = (props) => {
                           <p>My Announcement List</p>
                         </Link>
                       </li>
-                    )}
+                    )} */}
                   </ul>
                 </li>
               ) : null}
-
+              {Authenticator.check('supervisor', 'manage_department_announcements') &&
+                          
+                          <React.Fragment>
+                          <li className="nav-item has-treeview ">
+                            <a className="nav-link" >
+                              <i className="nav-icon fa fa-newspaper-o" />
+                              <p>
+                                Announcements
+                                <i className="right fa fa-chevron-left" />
+                              </p>
+                            </a>
+                            <ul className="nav nav-treeview">
+                            <li className="nav-item">
+                              <Link className="nav-link" to={global.links.department_announcement_list}>
+                                <i className="nav-icon fa fa-newspaper-o  nav-icon" />
+                                <p>My Announcement List</p>
+                              </Link>
+                            </li>
+                              <li className="nav-item">
+                                <Link className="nav-link" to={global.links.department_announcement_form} >
+                                  <i className="nav-icon fa fa-plus" aria-hidden="true"></i>
+                                  <p>Create Announcement</p>
+                                </Link>
+                              </li>
+                            </ul>
+                          </li>
+                        </React.Fragment>
+                    }
               {/* CLIENT Links */}
               {Authenticator.check("client", "client_access") && (
                 <React.Fragment>
@@ -506,8 +533,8 @@ const Sidebar = (props) => {
                 </li>
               )}
 
-              {/* ADMIN Links */}
-              {Authenticator.check("hr", "hr_access") && (
+              {/* HR Links */}
+              {/* {Authenticator.check("hr", "hr_access") && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-cog" />
@@ -517,7 +544,7 @@ const Sidebar = (props) => {
                     </p>
                   </a>
                   <ul className="nav nav-treeview">
-                    {Authenticator.check("hr", "manage_hr_announcements") && (
+        php artisan migrate  --path=/database/migrations/2023_02_15_112850_create_announcements_table.php            {Authenticator.check("hr", "manage_hr_announcements") && (
                       <li className="nav-item">
                         <Link
                           className="nav-link"
@@ -530,7 +557,7 @@ const Sidebar = (props) => {
                     )}
                   </ul>
                 </li>
-              )}
+              )} */}
 
               {/* ADMIN Links */}
               {Authenticator.check("admin", "full_access") && (

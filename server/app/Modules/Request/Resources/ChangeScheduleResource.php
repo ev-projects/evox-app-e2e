@@ -25,6 +25,12 @@ class ChangeScheduleResource extends JsonResource
         $owner = $this->user()->first();
         if( ! is_null( $this->resource ) ) {
 
+
+            $owner_offset = $owner->country_timezone_to_offset();
+
+            $viewer_offset = Auth::user()->country_timezone_to_offset();
+
+
             $result = array(
                 'request_type' => get_constant('REQUEST_TYPES.change_schedule'),
                 'id' => $this->id,
@@ -38,8 +44,9 @@ class ChangeScheduleResource extends JsonResource
                 'user' => new UserProfileResource( $this->user()->first(), false), 
                 'is_under_supervisee'   => is_under_supervisee( $this->user_id, false ),
                 
-                'offset_difference_info' =>   (string_offset_to_seconds($owner->country_zone_offset())/3600)."-". (string_offset_to_seconds(Auth::user()->country_zone_offset())/3600),
-                'offset_difference' =>   string_offset_to_seconds($owner->country_zone_offset())- string_offset_to_seconds(Auth::user()->country_zone_offset()),
+                'offset_difference_info' =>   (string_offset_to_seconds( $owner_offset)/3600)."-". (string_offset_to_seconds( $viewer_offset)/3600),
+                'offset_difference' =>   string_offset_to_seconds( $owner_offset)- string_offset_to_seconds( $viewer_offset),
+                
             );
         }
 

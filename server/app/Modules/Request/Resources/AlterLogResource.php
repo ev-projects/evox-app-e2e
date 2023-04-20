@@ -21,8 +21,14 @@ class AlterLogResource extends JsonResource
         
         $owner = User::find( $this->user_id);
         if( ! is_null( $this->resource ) ) {
-            $offset_seconds =  string_offset_to_seconds(Auth::user()->country_zone_offset());
-            $owner_offset_seconds =  string_offset_to_seconds( $owner->country_zone_offset());
+
+
+            $owner_offset = $owner->country_timezone_to_offset();
+
+            $viewer_offset = Auth::user()->country_timezone_to_offset();
+
+            $offset_seconds =  string_offset_to_seconds($viewer_offset);
+            $owner_offset_seconds =  string_offset_to_seconds( $owner_offset);
             $result = array(
                 'request_type' => get_constant('REQUEST_TYPES.alter_log'),
                 'id' => $this->id,
@@ -44,8 +50,8 @@ class AlterLogResource extends JsonResource
                 'pov_new_time_out' => date("Y-m-d H:i:s",$this->new_time_out+ $owner_offset_seconds ),
                 'pov_timezone'=>  $owner->country_zone()->country_name . " " . $owner->country_zone()->country_time_zone."(".$owner->country_zone()->time_difference .")",
 
-                'offset_difference_info' =>   (string_offset_to_seconds($owner->country_zone_offset())/3600)."-". (string_offset_to_seconds(Auth::user()->country_zone_offset())/3600),
-                'offset_difference' =>   string_offset_to_seconds($owner->country_zone_offset())- string_offset_to_seconds(Auth::user()->country_zone_offset()),
+                'offset_difference_info' =>   (string_offset_to_seconds($owner_offset)/3600)."-". (string_offset_to_seconds($viewer_offset)/3600),
+                'offset_difference' =>   string_offset_to_seconds($owner_offset)- string_offset_to_seconds($viewer_offset),
             );
         }
 

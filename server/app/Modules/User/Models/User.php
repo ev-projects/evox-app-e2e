@@ -173,6 +173,18 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first()->time_difference;
     }
 
+    public function country_timezone_to_offset()
+    {
+        
+
+        $timezone_name = $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first()->timezone;
+
+        $offset_string = Carbon::now($timezone_name);
+       
+
+        return $offset_string->format('P');
+    }
+
 
 
     # Fetch the User's Schedule (Source type is Default)

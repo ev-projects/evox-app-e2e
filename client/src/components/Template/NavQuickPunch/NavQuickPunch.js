@@ -11,9 +11,11 @@ import moment from 'moment';
 import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
 import NavPuncher from "../NavPuncher/NavPuncher";
 // import NavPuncher from "../../../components/template/NavPuncher";
-import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions';
-import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions';
+
+import { getRecentDtr ,clearRecentDtrInstance} from '../../../store/actions/dashboard/dashboardActions'
+import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
 import { getIncompleteDtr } from '../../../store/actions/dtr/dtrActions';
+
 
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 import RecentDtrNav from "../../../components/Dashboard/RecentDtrNav";
@@ -63,6 +65,18 @@ class NavQuickPunch extends Component {
     // $(document).on('click', 'nav-clock-dropdown .dropdown .dropdown-menu', function (e) { // SAVE FOR LATER
     //   e.stopPropagation();
     // });
+    // this.props.clearRecentDtrInstance();
+
+    // var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
+    // var to = moment().format("YYYY-MM-DD");
+  
+    // if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
+    //   this.props.getRecentDtr(this.props.user.id, from , to );
+    //   this.props.getMyDtrNotifications( this.props?.user?.id );
+
+    //   this.state.NavHasLoaded = true
+     
+    // }
   }
 
   componentWillUnmount() {
@@ -179,10 +193,14 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    getRecentDtr          : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) ),
-    biometrixLog          : ( post_data , id ) => dispatch( biometrixLog( post_data , id ) ),
-    getMyDtrNotifications : () => dispatch( getMyDtrNotifications() ),
+
+    getRecentDtr : (user_id,from,to) => dispatch( getRecentDtr(user_id,from,to) ),
+    biometrixLog    : ( post_data , id ) => dispatch( biometrixLog( post_data , id ) ),
+    getMyDtrNotifications  : () => dispatch( getMyDtrNotifications() ),
+    clearRecentDtrInstance : () => dispatch( clearRecentDtrInstance() ),
     getIncompleteDtr      : () => dispatch( getIncompleteDtr() ),
+
+
   };
 };
 

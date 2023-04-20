@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddExpiryAnnouncementsTable extends Migration
+class AddTimezoneToUtcTimelogTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddExpiryAnnouncementsTable extends Migration
      */
     public function up()
     {
-        Schema::table('announcements', function (Blueprint $table) {
-            $table->date('expiry_date')->nullable()->after('release_date');
+        Schema::table('utc_timelog', function (Blueprint $table) {
+            $table->string('timezone')->default("Asia/Manila")->after('country_time_zone');
         });
     }
 
@@ -25,8 +25,8 @@ class AddExpiryAnnouncementsTable extends Migration
      */
     public function down()
     {
-        Schema::table('announcements', function (Blueprint $table) {
-            //
-        });
+        // Schema::table('users', function (Blueprint $table) {
+        //     //
+        // });
     }
 }

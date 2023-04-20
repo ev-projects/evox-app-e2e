@@ -125,7 +125,7 @@ class RestDayWork extends Component {
     const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )
 
     const   owner_offset = this.props.instance.offset_difference != undefined ? this.props.instance.offset_difference : null;
-
+    console.log(owner_offset)
     // Sets Initial Value of the current Formik form.
     const initialValue = {
         action:             null,

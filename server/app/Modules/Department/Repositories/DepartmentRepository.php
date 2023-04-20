@@ -38,6 +38,24 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
         }
     }
 
+       /**
+     *  Responsible for fetching all the Departments
+     * 
+     * @return Collection $department_collection
+     */
+    public function all_with_announcements()
+    {
+        try {
+            $department_collection = Department::has("departments_announcements")->orderBy('department_name', 'asc')->get();
+            log_to_file('info', 'Success', [$department_collection]);
+            return $department_collection;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
     
     /**
      *  Responsible for fetching the Department with the ID given.
