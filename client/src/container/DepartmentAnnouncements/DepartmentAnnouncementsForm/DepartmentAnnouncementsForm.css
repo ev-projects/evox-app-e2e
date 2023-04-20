@@ -23,6 +23,54 @@
   }
 
   .dep-announcement-label{
-    font-size: 15px !important;
-    font-weight: 600 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
   }
+
+  .dep-announcement-label-white{
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: white !important;
+  }
+.dep-announcement-tabs-form .nav-item{
+    color:rgba(0, 83, 147) !important;
+    border-radius: 0px !important;
+   margin-top: 12px;
+  
+}
+
+.dep-announcement-tabs-form .nav-item.active{
+  
+    background-color: #78909C !important;
+    border:thin;
+    border-color: #78909C !important;
+    color: #b7e361 !important;
+    font-weight: bold !important;
+    border-radius: 5px 5px 0 0 !important;
+        /* border-top-style: solid !important;
+    border-top: rgb(106, 0, 255) !important; */
+}
+
+.fill-dep-ann-tab{
+    background-color: #78909C !important;
+    border-radius: 0 10px 10px 10px;
+     margin-bottom: 2% !important;
+
+    
+}
+.content-input{
+    padding: 1%;
+    padding-bottom: 1%;
+}
+
+.content-input-note{
+    /* margin: 1%; */
+    padding: 1%;
+    border-radius: 10px;
+    background-color:#d8e3e9;
+}
+
+.img-to-upload{
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}

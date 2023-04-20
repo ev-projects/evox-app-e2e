@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import { Form,Button,InputGroup,FormControl  } from 'react-bootstrap';
+import { Form,Button,InputGroup,FormControl, Tabs,Tab,  } from 'react-bootstrap';
 import moment from 'moment';
 
 import "./DepartmentAnnouncementsForm.css";
@@ -32,8 +32,11 @@ class DepartmentAnnouncementsForm extends Component {
     this.initialState = {
         content : null,
         thumbnail: null,
-        imgPrevInputFile: '/thumbnail/defthumb.jpg',
-        inputFileWasUpdated: false
+        imgPrevInputFile: null,
+        inputFileWasUpdated: false,
+        inputFileWasDeleted: false,
+
+        on_link : false
         
     }
     this.state = this.initialState; 
@@ -108,6 +111,21 @@ class DepartmentAnnouncementsForm extends Component {
     }
   }
 
+   handleOnLInk=(values) => {
+    // var formData = {};
+    // formData["category"] = values;
+    // this.props.fetchDashboardAnnouncementList(formData );
+
+    if(values =="by-content" ){
+      this.setState({ on_link: false });
+    }
+
+    if(values =="by-link"){
+      this.setState({ on_link: true });
+    }
+
+    console.log(values,this.state.on_link);
+  }
   componentWillMount(){
       // console.log(this.props.params.id);
     this.props.clearDepartmentAnnouncementInstance();
@@ -302,10 +320,10 @@ class DepartmentAnnouncementsForm extends Component {
                     </Col>
                   </Row>
                   <Row>
-                  <Col size="2 dep-announcement-col">
+                  <Col size="3 dep-announcement-col">
                                                 <label className ="dep-announcement-label">Thumbnail </label>
                                                 <InputGroup >
-                                                    <Form.Control name="thumbnail" type="file" onChange={(event) => {
+                                                    {/* <Form.Control name="thumbnail" type="file" onChange={(event) => {
                                                         if (event.currentTarget.files.length !== 0) {
                                                             this.setState({ thumbnail: event.currentTarget.files[0] })
                                                             this.setState({ imgPrevInputFile: URL.createObjectURL(event.currentTarget.files[0]) })
@@ -313,20 +331,58 @@ class DepartmentAnnouncementsForm extends Component {
                                                               this.setState({ inputFileWasUpdated: true })
                                                             }
                                                         }
+                                                    }} 
+                                                    
+                                                    /> */}
+
+                                                    <input type="file" id="img-to-upload"  accept="image/*"  style={{'display': 'none'}} onChange={(event) => {
+                                                        if (event.currentTarget.files.length !== 0) {
+                                                            this.setState({ thumbnail: event.currentTarget.files[0] })
+                                                            this.setState({ imgPrevInputFile: URL.createObjectURL(event.currentTarget.files[0]) })
+                                                            if(method == 'update'){
+                                                              this.setState({ inputFileWasUpdated: true })
+                                                              this.setState({ inputFileWasDeleted: false })
+                                                            }
+                                                        }
                                                     }} />
+
+
+                                                 <div className = "img-to-upload">
+
+                                                 <Row >
+                                                    <Col size="7">
+                                                        <label for="img-to-upload"><div className="btn btn-primary"style={{'height': '45px'}} >
+                                                          <i class="fa fa-upload" aria-hidden="true"/> <br/>Upload Image</div></label>
+                                                    </Col>
+                                                    <Col size="2">
+                                                    <div className="btn btn-secondary" style={{'height': '45px'}} onClick={(event) => {
+                                                        
+                                                        this.setState({ thumbnail: null })
+                                                        this.setState({ imgPrevInputFile: null })
+                                                        this.setState({ inputFileWasDeleted: true })
+                                                       
+                                                    
+                                              }
+                                              }><i class="fa fa-remove" aria-hidden="true"/><br/>Remove</div>                                                    </Col>
+                                                  
+                                                  </Row>
+                                                 </div>
+
                                                     <Form.Control.Feedback type="invalid">&nbsp;{errors.thumbnail && touched.thumbnail && errors.thumbnail}</Form.Control.Feedback>
                                                 </InputGroup>
                                                 
                                                
 
                     </Col>
-                    <Col size="9 dep-announcement-col"> 
+                    <Col size="8 dep-announcement-col"> 
                               <div className="thumbnail-image">
-                                  {(this.props?.instance?.thumbnail != null
-                                      && this.state.imgPrevInputFile == '/thumbnail/defthumb.jpg')
-                                      ? <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
+                                  {(this.props?.instance?.thumbnail != null)
+                                      ? 
+                                      <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
                                      // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
-                                     : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
+                                      : 
+                                      <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />
+                                      }
                                       
                               </div>
                     </Col>
@@ -345,45 +401,79 @@ class DepartmentAnnouncementsForm extends Component {
                       </div>
                     </Col>
                   </Row> */}
-                
-                  <Row>
-                    <Col size="12">
-                      <div className="form-group">
-                        <label className = "dep-announcement-label  dep-announcement-col">Content:</label>
-                        {/* <textarea className="form-control" rows="10" name="content" onChange={handleChange} value={values.content??''} placeholder="Change log summary..."></textarea> */}
-                        <Editor
-                          // onInit={(evt, editor) => editorRef.current = editor}
-                          apiKey="nwf6jspi93459hl7io117u8tqtutub6tk18jw7kamd4hujd7"
-                          textareaName="content"
-                          initialValue={values.content ?? ''}
-                          onEditorChange={(e) => { this.handleEditorChange(e); }}
-                          init={{
-                            height: 500,
-                            menubar: false,
-                            plugins: [
-                              'a11ychecker','advlist','advcode','advtable','autolink','checklist','export', 'emoticons',
-                              'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
-                              'powerpaste','fullscreen','formatpainter','insertdatetime','media','table','help','wordcount'
-                           ],
-                        //    paste_preprocess: function (plugin, args) {
-                        //     // console.log("Attempted to paste: ", args.content);
-                        //     // replace copied text with empty string
-                        //     args.content = '';
-                        // },
-                            toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons | ' +
-                            'alignleft aligncenter alignright alignjustify | link | ' +
-                            'bullist numlist checklist outdent indent | removeformat | help ',
-                            // smart_paste: false,
-                            // paste_data_images: false,
-                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                          }}
-                        />
-                        {/* <Form.Control.Feedback type="invalid">
-                          &nbsp;{errors.content && touched.content && errors.content}
-                        </Form.Control.Feedback> */}
+
+          <Tabs
+            defaultActiveKey="by-content"
+            id="pub-tab-example "
+            className="col-8 dep-announcement-tabs-form"
+            fill
+            transition={false}
+            onSelect= { this.handleOnLInk
+            }
+          >
+              <Tab eventKey="by-content" className="fill-dep-ann-tab" title="Viewed as Content">
+                  <div className="form-group content-input">
+                          <label className = "dep-announcement-label-white">Content:</label>
+                          {/* <textarea className="form-control" rows="10" name="content" onChange={handleChange} value={values.content??''} placeholder="Change log summary..."></textarea> */}
+                          <Editor
+                            // onInit={(evt, editor) => editorRef.current = editor}
+                            apiKey="nwf6jspi93459hl7io117u8tqtutub6tk18jw7kamd4hujd7"
+                            textareaName="content"
+                            initialValue={values.content ?? ''}
+                            onEditorChange={(e) => { this.handleEditorChange(e); }}
+                            init={{
+                              height: 500,
+                              menubar: false,
+                              plugins: [
+                                'a11ychecker','advlist','advcode','advtable','autolink','checklist','export', 'emoticons',
+                                'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
+                                'powerpaste','fullscreen','formatpainter','insertdatetime','media','table','help','wordcount'
+                            ],
+                          //    paste_preprocess: function (plugin, args) {
+                          //     // console.log("Attempted to paste: ", args.content);
+                          //     // replace copied text with empty string
+                          //     args.content = '';
+                          // },
+                              toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons | ' +
+                              'alignleft aligncenter alignright alignjustify | link | ' +
+                              'bullist numlist checklist outdent indent | removeformat | help ',
+                              // smart_paste: false,
+                              // paste_data_images: false,
+                              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                            }}
+                          />
+                          {/* <Form.Control.Feedback type="invalid">
+                            &nbsp;{errors.content && touched.content && errors.content}
+                          </Form.Control.Feedback> */}
+
+                        <br/>
+                      <div className="form-group content-input-note">Note: This will publish as an announcement page.</div>
+                        </div>
+                    
+ 
+              </Tab>
+              <Tab eventKey="by-link"  className="fill-dep-ann-tab" title="Redirect as Link">
+
+                    <div className="form-group content-input">
+                        <label className ="dep-announcement-label-white">Redirect to External link:</label>
+                        <InputGroup>
+                            <FormControl variant="primary" name="link" className="link" onChange={handleChange} value={values.link} />
+                            <Form.Control.Feedback type="invalid">
+                              &nbsp;{errors.link && touched.link && errors.link}
+                            </Form.Control.Feedback>
+                        </InputGroup>
+                        <br/>
+                      <div className="form-group content-input-note">Note: This will publish as an link, user who click on the announcement will be redirected to the external link.</div>
                       </div>
-                    </Col>
-                  </Row>
+                  
+                  
+              </Tab>
+              {/* <Tab eventKey="contact" title="Contact" disabled>
+                
+              </Tab> */}
+          </Tabs>
+                
+                
 
                   <span>
                     <Button type="submit" className="btn btn-primary" onClick={(e)=>{ setFieldValue('action',null); handleSubmit(e); }}>

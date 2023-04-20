@@ -131,7 +131,7 @@ const AnnouncementListTable = (props) => {
 
           <Row>
               {props.departmentAnnouncement.depAnnouncementlist.slice(0,4).map((announcement, index) => {
-                return <Col  md={6} className="announcement-list-content dashbaord-content card-content">
+                return <Col  md={4} className="announcement-list-content dashbaord-content card-content">
                       
                       <Link to={{
                                 pathname: global.links.announcement_page + announcement.id
@@ -155,7 +155,8 @@ const AnnouncementListTable = (props) => {
                               </Card>
                               <div className="card-text-black ">
                                 <div  className="card-bottom-content"> 
-                                <Badge className="tag-badge">{announcement.category}</Badge>
+                                <Badge className="tag-badge">{announcement.dep.department_name}</Badge>
+                                {console.log(announcement.dep)}
                                 <br/>
                                 <> Posted on: {announcement.release_date}</> 
                                 </div>
