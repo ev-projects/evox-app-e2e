@@ -57,15 +57,27 @@ if (! function_exists('time_to_seconds')) {
      */
     function time_to_seconds($time, $with_offset = false, $offset_operation = "add" ) 
     {
+
+       
         try {
                 if(Auth::user() && Auth::user()->country_zone_offset() != null && $with_offset){
+                   
                     if($offset_operation == "add"){
                         return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') + string_offset_to_seconds(Auth::user()->country_zone_offset()): null;
+                       
                     }else if($offset_operation == "subtract"){
+                        // if($time == "22:00"){
+                        //     dump(strtotime($time) );
+                        //     dump(strtotime('today'));
+                        //     dd(strtotime($time) - strtotime('today') - string_offset_to_seconds(Auth::user()->country_zone_offset()));
+                         
+                        // }
                         return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') - string_offset_to_seconds(Auth::user()->country_zone_offset()): null;
+                       
                     }
                     else{
                         return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') : null;
+                       
                     }
                 }
             return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') : null;

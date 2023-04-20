@@ -51,6 +51,8 @@ class ScheduleDetail extends Model{
      */
     public function getParsedDetailToDate( $date ) 
     {
+
+        
         
         # Sets the default value for the Parsed Detail to Date which merges the Start & Start Flexy & End & End Flexy with the Corresponding Time.
         $result = [

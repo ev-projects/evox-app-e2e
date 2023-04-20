@@ -63,8 +63,9 @@ class BirthdayAnniversary extends Component {
                   </tbody>
               </Table>
               </div>
+        
               :
-              <div>No celebrations found</div>
+              <div className="celebration_notfound">No celebrations found</div>
               } 
               </div>
      

@@ -3,3 +3,11 @@
     overflow: hidden;
     overflow-y: scroll;
 } 
+.celebration_notfound{
+    text-align: center !important;
+    padding: 172px 94px !important;
+    text-decoration: none !important;
+    font-size: 17px !important;
+    font-weight: bold !important;
+    color: #07335e !important;
+}
