@@ -65,7 +65,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $dep_announcement->headline         = $request->headline;
             // $dep_announcement->log_date      = $request->log_date;
             $dep_announcement->release_date     = $request->release_date;
-            $dep_announcement->expiry_date     = $request->expiry_date;
+            $dep_announcement->expiry_date      = $request->expiry_date;
+            $dep_announcement->on_link          = $request->on_link;
             $dep_announcement->link             = $request->link;
             $dep_announcement->status           = $request->status;
             $dep_announcement->country_id       = Auth::user()->country_id;
@@ -130,7 +131,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
         log_activity(trans('messages.create_department_announcement_attempt'));
 
-        $dep_announcement = Announcement::find($id);
+        $dep_announcement = Announcement::where('on_link', 0)->find($id);
         
         return  $dep_announcement;
     }
@@ -145,7 +146,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
             $department =  Department::find(Auth::user()->department_id);
             // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
-            $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
+            $dep_announcement = $department->departments_announcements()->where("category", "Department")->where('on_link', 0)->find($id);
         return  $dep_announcement;
     }
 
@@ -174,6 +175,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 // $dep_announcement->log_date      = $request->log_date;
                 $dep_announcement->release_date     = $request->release_date;
                 $dep_announcement->expiry_date      = $request->expiry_date;
+                $dep_announcement->on_link          = $request->on_link == "true" ? 1 : 0;
+
                 $dep_announcement->link             = $request->link;
                 $dep_announcement->status           = $request->status;
                 $dep_announcement->exposure_level   = $request->exposure_level;
@@ -190,6 +193,10 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
                     // $dep_announcement->update(['thumbnail' => $path]);
                     $dep_announcement->thumbnail = $path;
+                    $dep_announcement->update();
+                }
+                if($request->thumbnail == null && $request->inputFileWasDeleted == true ){
+                    $dep_announcement->thumbnail = null;
                     $dep_announcement->update();
                 }
 

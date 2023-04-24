@@ -10,6 +10,7 @@ import { InputDate,InputTime } from '../../../components/DatePickerComponent/Dat
 /** Form Manipulation */
 import { Formik, ErrorMessage,getIn  } from 'formik';
 import * as Yup from 'yup';
+import MultiSelect from "react-multi-select-component";
 
 import PageLoading from "../../PageLoading";
 
@@ -23,16 +24,17 @@ import Wrapper from "../../../components/Template/Wrapper";
 import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 import Authenticator from "../../../services/Authenticator";
 import BackButton from "../../../components/Template/BackButton";
+import Formatter from "../../../services/Formatter";
 
 class DepartmentAnnouncementsForm extends Component {
   constructor(props){
     super(props)
-    console.log(window.location.pathname);
-    console.log(window.location.pathname);
+    // console.log(window.location.pathname);
+    // console.log(window.location.pathname);
     this.initialState = {
         content : null,
         thumbnail: null,
-        imgPrevInputFile: null,
+        imgPrevInputFile: '/thumbnail/defthumb.jpg',
         inputFileWasUpdated: false,
         inputFileWasDeleted: false,
 
@@ -70,9 +72,11 @@ class DepartmentAnnouncementsForm extends Component {
       }
     }
     formData.set('category', "Department");
+    formData.set('inputFileWasDeleted', false);
+    formData.set('on_link', this.state.on_link);
     // Checks on what action to use depending on the values.action
     if (values.method) {
-    
+      
         switch( values.method ) {
           case "store":
             console.log(formData);
@@ -96,10 +100,20 @@ class DepartmentAnnouncementsForm extends Component {
                   if(this.state.inputFileWasUpdated){
                     formData.set('thumbnail', this.state.thumbnail);
                   }
-              }
+                }
+
+                if (this.state.thumbnail == null) {
+                  if(this.state.inputFileWasDeleted){
+                    formData.set('inputFileWasDeleted', true);
+                  }
+                }
+
+              console.log(values.method ,this.state.thumbnail, formData );
               this.props.updateDepartmentAnnouncement( values.id, formData );
               this.setState({ thumbnail: null });
               this.setState({ imgPrevInputFile: '/thumbnail/defthumb.jpg' });
+
+
             }
              
               break;
@@ -109,6 +123,18 @@ class DepartmentAnnouncementsForm extends Component {
         }
       
     }
+  }
+
+  setSelectedDepartments = ( values ) => {
+
+    this.setState({
+      selectedDepartments: values,
+      selectedTeams:    []
+    });
+    const params = {
+      "departments" : Formatter.array_to_getvalue(values)
+    }
+
   }
 
    handleOnLInk=(values) => {
@@ -143,10 +169,7 @@ class DepartmentAnnouncementsForm extends Component {
     const method = (this.props.params.id != undefined) ? 'update' : 'store'
 
     var today = new Date();
-    // console.log(today, moment().format('MMMM d, yyyy'));
-    // console.log(this.props.instance);
-    // Sets Initial Value of the current Formik form.
-    // console.log(this.props.instance?.release_date, new Date( this.props.instance?.release_date ));
+
     const initialValue = {
         action:             null,
         method:             method,
@@ -156,13 +179,19 @@ class DepartmentAnnouncementsForm extends Component {
         expiry_date:        this.props.instance?.expiry_date != undefined  && method == "update" ? new Date( this.props.instance?.expiry_date ) : null,
         title:              this.props.instance?.title != undefined  && method == "update" ? this.props.instance.title : null,
         headline:           this.props.instance?.headline != undefined  && method == "update" ? this.props.instance.headline : null,
+        
+        link:               this.props.instance?.link != undefined  && method == "update" ? this.props.instance.link : null,
         content:            this.props.instance?.content != undefined  && method == "update" ? this.props.instance.content : null,
         category:           this.props.instance?.category != undefined  && method == "update" ? this.props.instance.category : null,
     }
-   
+
+    let tab_set =          this.props.instance?.on_link != undefined  && method == "update" ? this.props.instance.on_link : null;
+    tab_set = tab_set != null ?  tab_set == 1 ? "by-link": "by-content":  "by-content";
+    console.log(tab_set);
     let title = 'Announcement Form';
 
     if( (method == 'store') || ([ 'update'].includes( method ) && this.props.isInstanceLoaded) ){
+      const department_list = this.props.user.departments_handled.length > 0 ?(Formatter.array_to_multiselect_array( this.props.user.departments_handled, 'department_name', 'id')): [];;
 
       return <Wrapper {...this.props} >
         <Formik 
@@ -188,7 +217,7 @@ class DepartmentAnnouncementsForm extends Component {
                   <Row>
                     <Col size="3 dep-announcement-col">
                       <div className="form-group">
-                        <label className ="dep-announcement-label">Title:</label>
+                        <label className ="dep-announcement-label dep-announcement-required">Title:</label>
                         <InputGroup>
                             <FormControl variant="primary" name="title" className="title" onChange={handleChange} value={values.title} />
                             <Form.Control.Feedback type="invalid">
@@ -197,7 +226,7 @@ class DepartmentAnnouncementsForm extends Component {
                         </InputGroup>
                       </div>
                     </Col>
-                    <Col size="5 dep-announcement-col">
+                    <Col size="7 dep-announcement-col">
                       <div className="form-group">
                         <label className ="dep-announcement-label">Headline:</label>
                         <InputGroup>
@@ -208,114 +237,34 @@ class DepartmentAnnouncementsForm extends Component {
                         </InputGroup>
                       </div>
                     </Col>
-                    {/* <Col size="3 dep-announcement-col">
-                      <div className="form-group">
-                        <label className ="dep-announcement-label">Category:</label>
-                        <select name="category" value={ values.category } className="form-control" onChange={handleChange}>
-                            <option></option>
-                            <option value="Announcements">Announcements</option>
-                            <option value="Updates">Updates</option>
-                            <option value="Release Notes">Release Notes</option>
-                        </select>
-                        <Form.Control.Feedback type="invalid">
-                            &nbsp;{errors.category && touched.category && errors.category}
-                        </Form.Control.Feedback>
-                      </div>
-                    </Col> */}
-                    
-                    {/* <Col size ="3">
-                    
-
-                    </Col> */}
-                    {/* <Col size="3 dep-announcement-col">
-                      <div className="form-group">
-                        <label className ="dep-announcement-label">Date:</label>
-                        <InputDate name="log_date" value={values.log_date}/>
-                      </div>
-                    </Col> */}
 
                   </Row>
                   <Row>
-                    {/* <Col size="2 dep-announcement-col">
-                            <div className="feature-checkbox">
-
-                            
-                            <label className ="dep-announcement-label"> Featured Anncouncement</label>
-                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
-                                // onChange={handleChange}
-                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
-                                checked={values.featured === 1 ? true : false}
-                            />
-                            <br/>
-                            <label className ="dep-announcement-label"> Publish</label>
-                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
-                                // onChange={handleChange}
-                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
-                                checked={values.featured === 1 ? true : false}
-                            />
-                            </div>
-                            
-                    </Col> */}
-                    {/* <Col size="2 dep-announcement-col">
-                            <div className="feature-checkbox">
-
-                            
-                            <label className ="dep-announcement-label"> Featured Anncouncement</label>
-                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
-                                // onChange={handleChange}
-                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
-                                checked={values.featured === 1 ? true : false}
-                            />
-                            <br/>
-                            <label className ="dep-announcement-label"> Publish</label>
-                            <input id="featuredOption" type="checkbox" className="" variant="primary" name="featured" value={values.featured}
-                                // onChange={handleChange}
-                                onChange={() => setFieldValue('featured', values.featured == 1 ? 0 : 1)}
-                                checked={values.featured === 1 ? true : false}
-                            />
-                            </div>
-                            
-                    </Col> */}
-                    {/* <Col size="3 dep-announcement-col">
-                      <div className="form-group">
-                        <label className ="dep-announcement-label">Seen By:</label>
-                        <select name="exposure_level" value={ values.exposure_level } className="form-control" onChange={handleChange}>
-
-                            <option value="All Users">All Users</option>
-                            <option value="My Account Only">My Account Only</option>
-                            <option value="My Account Span">My Account Span</option>
-                        </select>
-                        <Form.Control.Feedback type="invalid">
-                            &nbsp;{errors.exposure_level && touched.exposure_level && errors.exposure_level}
-                        </Form.Control.Feedback>
-                      </div>
-                    </Col> */}
-                     {/* <Col size="3 dep-announcement-col">
-                      <div className="form-group">
-                        <label className ="dep-announcement-label">Seen By:</label>
-                        <select name="exposure_level" value={ values.exposure_level } className="form-control" onChange={handleChange}>
-
-                            <option value="All Users">All Users</option>
-                            <option value="My Account Only">My Account Only</option>
-                            <option value="My Account Span">My Account Span</option>
-                        </select>
-                        <Form.Control.Feedback type="invalid">
-                            &nbsp;{errors.exposure_level && touched.exposure_level && errors.exposure_level}
-                        </Form.Control.Feedback>
-                      </div>
-                    </Col> */}
 
                 
                     <Col size="3 dep-announcement-col">
                       <div className="form-group">
-                        <label className ="dep-announcement-label">Release Date:</label>
+                        <label className ="dep-announcement-label dep-announcement-required">Release Date:</label>
                         <InputDate name="release_date" value={values.release_date}/>
                       </div>
                     </Col>
                     <Col size="3 dep-announcement-col">
                       <div className="form-group">
-                        <label className ="dep-announcement-label">Expiry Date:</label>
+                        <label className ="dep-announcement-label dep-announcement-required">Expiry Date:</label>
                         <InputDate name="expiry_date" value={values.expiry_date}/>
+                      </div>
+                    </Col>
+
+                    <Col size="4 dep-announcement-col">
+                      <div className="form-group">
+                        <label className ="dep-announcement-label">Selected Departments:</label>
+                          <MultiSelect
+                              name="team_id[]"
+                              options={department_list}
+                              value={this.state.selectedDepartments}
+                              onChange={this.setSelectedDepartments}
+                              labelledBy={"Select Teams"}
+                            />
                       </div>
                     </Col>
                   </Row>
@@ -323,17 +272,7 @@ class DepartmentAnnouncementsForm extends Component {
                   <Col size="3 dep-announcement-col">
                                                 <label className ="dep-announcement-label">Thumbnail </label>
                                                 <InputGroup >
-                                                    {/* <Form.Control name="thumbnail" type="file" onChange={(event) => {
-                                                        if (event.currentTarget.files.length !== 0) {
-                                                            this.setState({ thumbnail: event.currentTarget.files[0] })
-                                                            this.setState({ imgPrevInputFile: URL.createObjectURL(event.currentTarget.files[0]) })
-                                                            if(method == 'update'){
-                                                              this.setState({ inputFileWasUpdated: true })
-                                                            }
-                                                        }
-                                                    }} 
-                                                    
-                                                    /> */}
+                                                  
 
                                                     <input type="file" id="img-to-upload"  accept="image/*"  style={{'display': 'none'}} onChange={(event) => {
                                                         if (event.currentTarget.files.length !== 0) {
@@ -347,9 +286,9 @@ class DepartmentAnnouncementsForm extends Component {
                                                     }} />
 
 
-                                                 <div className = "img-to-upload">
+                                                <div className = "img-to-upload">
 
-                                                 <Row >
+                                                <Row >
                                                     <Col size="7">
                                                         <label for="img-to-upload"><div className="btn btn-primary"style={{'height': '45px'}} >
                                                           <i class="fa fa-upload" aria-hidden="true"/> <br/>Upload Image</div></label>
@@ -360,13 +299,13 @@ class DepartmentAnnouncementsForm extends Component {
                                                         this.setState({ thumbnail: null })
                                                         this.setState({ imgPrevInputFile: null })
                                                         this.setState({ inputFileWasDeleted: true })
-                                                       
+
                                                     
                                               }
                                               }><i class="fa fa-remove" aria-hidden="true"/><br/>Remove</div>                                                    </Col>
                                                   
                                                   </Row>
-                                                 </div>
+                                                </div>
 
                                                     <Form.Control.Feedback type="invalid">&nbsp;{errors.thumbnail && touched.thumbnail && errors.thumbnail}</Form.Control.Feedback>
                                                 </InputGroup>
@@ -374,36 +313,35 @@ class DepartmentAnnouncementsForm extends Component {
                                                
 
                     </Col>
-                    <Col size="8 dep-announcement-col"> 
+                    <Col size="7 dep-announcement-col"> 
                               <div className="thumbnail-image">
-                                  {(this.props?.instance?.thumbnail != null)
+                                  {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg')
                                       ? 
                                       <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
                                      // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
                                       : 
-                                      <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />
+                                    <>
+                              
+                                    {this.state.thumbnail == null ? 
+                                    <div><label for="img-to-upload" className="upload-imagealter">UPLOAD AN IMAGE <i class="fa fa-image" aria-hidden="true"/> </label>
+                                      
+                                    </div> 
+                                    : 
+                                    <>
+                                    <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />
+                                    </>}
+                                    </>
+                                      
                                       }
                                       
                               </div>
                     </Col>
                   </Row>
                 
-                  {/* <Row>
-                    <Col size="7 dep-announcement-col">
-                    <div className="form-group">
-                        <label className ="dep-announcement-label">Redirect to External link:</label>
-                        <InputGroup>
-                            <FormControl variant="primary" name="link" className="link" onChange={handleChange} value={values.link} />
-                            <Form.Control.Feedback type="invalid">
-                              &nbsp;{errors.link && touched.link && errors.link}
-                            </Form.Control.Feedback>
-                        </InputGroup>
-                      </div>
-                    </Col>
-                  </Row> */}
+            
 
           <Tabs
-            defaultActiveKey="by-content"
+            defaultActiveKey={tab_set}
             id="pub-tab-example "
             className="col-8 dep-announcement-tabs-form"
             fill
@@ -411,7 +349,7 @@ class DepartmentAnnouncementsForm extends Component {
             onSelect= { this.handleOnLInk
             }
           >
-              <Tab eventKey="by-content" className="fill-dep-ann-tab" title="Viewed as Content">
+              <Tab eventKey="by-content" className="fill-dep-ann-tab" title="Viewed as Content Page">
                   <div className="form-group content-input">
                           <label className = "dep-announcement-label-white">Content:</label>
                           {/* <textarea className="form-control" rows="10" name="content" onChange={handleChange} value={values.content??''} placeholder="Change log summary..."></textarea> */}
@@ -439,7 +377,8 @@ class DepartmentAnnouncementsForm extends Component {
                               'bullist numlist checklist outdent indent | removeformat | help ',
                               // smart_paste: false,
                               // paste_data_images: false,
-                              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                              branding: false
                             }}
                           />
                           {/* <Form.Control.Feedback type="invalid">
@@ -447,7 +386,7 @@ class DepartmentAnnouncementsForm extends Component {
                           </Form.Control.Feedback> */}
 
                         <br/>
-                      <div className="form-group content-input-note">Note: This will publish as an announcement page.</div>
+                      <div className="form-group content-input-note">Note: This be will publish as an announcement page and viewed only in the EVOX site. Editor for announcement pages does not accept inserted images.</div>
                         </div>
                     
  
@@ -463,7 +402,7 @@ class DepartmentAnnouncementsForm extends Component {
                             </Form.Control.Feedback>
                         </InputGroup>
                         <br/>
-                      <div className="form-group content-input-note">Note: This will publish as an link, user who click on the announcement will be redirected to the external link.</div>
+                      <div className="form-group content-input-note">Note: This will be publish as an link, users who click on the announcement will be redirected to the external link.</div>
                       </div>
                   
                   

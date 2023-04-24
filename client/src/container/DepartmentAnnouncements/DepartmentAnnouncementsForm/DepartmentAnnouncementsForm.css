@@ -34,17 +34,19 @@
   }
 .dep-announcement-tabs-form .nav-item{
     color:rgba(0, 83, 147) !important;
-    border-radius: 0px !important;
+    border-radius: 5px 5px 0 0 !important;
+    background-color: #d4e7f0 !important;
    margin-top: 12px;
+   font-size: 13px;
   
 }
 
 .dep-announcement-tabs-form .nav-item.active{
   
     background-color: #78909C !important;
-    border:thin;
+    border-style:thin;
     border-color: #78909C !important;
-    color: #b7e361 !important;
+    color: #c7e094 !important;
     font-weight: bold !important;
     border-radius: 5px 5px 0 0 !important;
         /* border-top-style: solid !important;
@@ -74,3 +76,27 @@
     padding-left: 15px !important;
     padding-right: 15px !important;
 }
+
+
+.upload-imagealter{
+/* background-color: rgb(122, 122, 122); */
+/* max-width: 100% !important; */
+display: block;
+margin-left: auto;
+margin-right: auto;
+width: 100%;
+min-height:110px;
+padding-top:40px;
+border: 15px;
+border-style: dashed;
+border-width: 3px;
+ border-color: rgba(122, 122, 122, 0.507);
+ font-size: 15PX;
+ text-align: center;
+}
+
+
+.dep-announcement-required:after {
+    content:" *";
+    color: red;
+  }
