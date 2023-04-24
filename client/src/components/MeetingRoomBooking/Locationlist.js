@@ -26,6 +26,9 @@ const Locationlist = () => {
        
         },[]);
 
+
+        
+
         let paginationConfig = {
           totalPages: totalpagecount,
           currentPage: currentpagecount,

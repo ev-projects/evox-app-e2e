@@ -36,6 +36,9 @@ Route::get('GetBookeddetailsByid/{userid?}', 'BookingController@GetBookeddetails
 Route::put('Roomapproval/{userid?}', 'BookingController@Roomapproval')->middleware('jwtauth', 'auth.apikey');
 Route::get('GetBookeddetails', 'BookingController@GetBookeddetails')->middleware('jwtauth', 'auth.apikey');
 Route::get('Getroomlistlocation_wise/{roomid}', 'RoomController@Getroomlistlocation_wise')->middleware('jwtauth', 'auth.apikey');
+Route::get('Gettodayleaves', 'BookingController@get_today_leave_list')->middleware('jwtauth', 'auth.apikey');;
+Route::get('Gettommorowleaves', 'BookingController@get_tommorow_leave_list')->middleware('jwtauth', 'auth.apikey');;
+
 
 
 

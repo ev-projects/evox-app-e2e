@@ -58,7 +58,7 @@ const EmployeeDashboard = ( props ) => {
 
     return (<div className="dashboard">
      {/* <Row className="summary"> */}
-     <SummaryDashbord/>
+     {/* <SummaryDashbord/> */}
      {/* </Row> */}
        
       

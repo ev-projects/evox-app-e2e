@@ -35,21 +35,21 @@ class BirthdayAnniversary extends Component {
       <div >
         { birthday_and_anniv.length > 0  ? 
             <div className="content-table bdr0">
-              <Table striped bordered hover>
+              <Table striped bordered hover className="">
                   
-                  <tbody>
+                  <tbody className="tablebody">
               
                   {birthday_and_anniv.map(function (data, i) {
                     var icon = ''
                     switch(data.type) {
                       case "birthdate":
-                        icon = <i class="fa fa-birthday-cake"></i>
+                        icon = <i class="fa fa-birthday-cake" style={{color:"#575a89"}}></i>
                         break;
                       case "anniversary":
-                        icon = <i class="fa fa-calendar-check-o"></i>
+                        icon = <i class="fa fa-calendar-check-o" style={{color:"#0097a7"}}></i>
                         break;
                       case "regularization":
-                        icon = <i class="fa fa-calendar-check-o"></i>
+                        icon = <i class="fa fa-calendar-check-o" style={{color:"#005493"}}></i>
                         break;
                     }
                           return  (<tr>

@@ -11,3 +11,8 @@
     font-weight: bold !important;
     color: #07335e !important;
 }
+
+.celebration .content-table.bdr0 table tbody td {
+    background: transparent !important;
+    font-size: 13px !important;
+}

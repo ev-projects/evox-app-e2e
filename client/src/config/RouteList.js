@@ -86,6 +86,8 @@ import Locationlist from "../components/MeetingRoomBooking/Locationlist";
 import Meetingroomapproval from "../components/MeetingRoomBooking/Meetingroomapproval";
 import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
 import Referjobs from "../components/JobReferal/Referjobs";
+import MyTeamAllRequest from "../container/MyTeam/MyTeamRequests/MyTeamAllRequest";
+import MyOverallRequest from "../container/MyOverallRequest/MyOverallRequest";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -205,6 +207,15 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.my_team_schedule}>
           <MyTeamSchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
         </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.my_team_all_requests}>
+          <MyTeamAllRequest role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.my_overall_request}>
+          <MyOverallRequest role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+        </ProtectedRoute>
+        
 
         <ProtectedRoute exact path={global.links.dtr_summary}>
           <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />

@@ -98,3 +98,7 @@
 button[disabled=disabled].show-more-dashboard, button:disabled.show-more-dashboard {
     background-color:rgb(110, 159, 196) !important;
 }
+
+.announcement-tabs a{
+    font-weight: bold !important;
+}

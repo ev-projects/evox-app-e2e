@@ -1,4 +1,4 @@
-.card {
+.card-list .card {
     border-radius: 12px !important;
     color: white;
     padding: 10px;
@@ -30,19 +30,19 @@
     padding: 0 10px;
 }
 .card.blue {
-    background-color: #07335e !important;
+    background-color: #0097A7 !important;
     border-radius: 12px !important;
 }
 .card.green {
-    background-color: #07335e !important;
+    background-color: #575A89 !important;
     border-radius: 12px !important;
 }
 .card.orange {
-    background-color: #07335e !important;
+    background-color: #78909C !important;
     border-radius: 12px !important;
 }
 .card.red {
-    background-color: #07335e !important;
+    background-color: #005493 !important;
     border-radius: 12px !important;
 }
 
@@ -67,18 +67,20 @@
 }
 
 .celebration .card-header{
-    color: white !important;
-    background-color: #82af13 !important;
+    color: #1f2d3d !important;
+    background-color: #ffff!important;
     height: 40px;
     padding: 10px 10px !important;
     border-bottom:none !important;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: bold;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   }
 
   .celebration .card {
     color: black;
     height: 100%;
+    border-radius: 3% !important;
   }
 
 
@@ -112,7 +114,7 @@
     border: none !important;
     font-size: 13px !important;
     font-weight: bold;
-    width: 100px;
+    width: 150px;
 }
 
 .leave_type{
@@ -128,4 +130,63 @@
     font-size: 17px !important;
     font-weight: bold !important;
     color: #07335e !important;
+}
+
+.tabstyle{
+    margin-left: 5% !important;
+
+}
+
+.tablebody tr{
+    box-shadow: 0 0px 2px 0 rgba(0,0,0,0.2);
+}
+
+
+.table_celebration{
+    border-collapse: separate;
+    border-spacing: 0 15px;
+}
+
+.celebration .nav-tabs .nav-link.active {
+    color: #ffffff !important;
+    background-color: #07335e !important;
+    border-color: #dee2e6 #dee2e6 #fff !important;
+}
+
+
+.celebration .nav-tabs .nav-link {
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    font-size: 12px;
+    width: 14%;
+    text-align: center;
+    background: #e3e3e3 !important;
+    color: black !important;
+}
+
+
+.value {
+    cursor: pointer !important;
+    color: white !important;
+}
+
+.request_count{
+    color: white !important;
+}
+
+.cardstyle{
+    
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px !important;
+}
+
+.div-content{
+    padding: 15px 24px !important;
+    font-size: 18px;
+    font-weight: bold;
+    color: #0097A7;
+}
+
+.dashboard .content-table table {
+    background:none !important;
 }
