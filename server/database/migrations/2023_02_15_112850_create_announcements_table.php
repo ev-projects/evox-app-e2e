@@ -34,6 +34,13 @@ class CreateAnnouncementsTable extends Migration
             $table->foreign('dep_id')->references('id')->on('departments')->onUpdate('cascade')->onDelete('set null');
 
 
+            $table->boolean('set_all')->default(1)->nullable();
+            $table->unsignedInteger('announcement_id')->nullable(); // root_id if set all
+
+            $table->unsignedInteger('present_dep_id')->nullable();
+            $table->foreign('present_dep_id')->references('id')->on('departments')->onUpdate('cascade')->onDelete('set null');
+
+
             $table->unsignedInteger('country_id')->default(2)->nullable();
             // $table->foreign('announcements.country_id')->references('utc_timelog.country_id')->on('utc_timelog')->onUpdate('cascade')->onDelete('set null');
 

@@ -8,7 +8,7 @@
 // import ShowMore from 'react-show-more-list';
 // import { connect } from 'react-redux';
 // import { Container,Row,Col,Table,Image, Spinner,Button,Card,Tabs,Tab,Badge  } from 'react-bootstrap';
- 
+// import PageLoading from "../../PageLoading/PageLoading";
 // class DashboardAnnouncements extends Component {
 
 //   constructor(props, context) {
@@ -17,8 +17,7 @@
 //     this.handleSelect = this.handleSelect.bind(this);
 
 //     this.state = {
-//       key: "all",
-     
+//       key: "all"
 //     };
 //   }
 //   componentWillMount(){ 

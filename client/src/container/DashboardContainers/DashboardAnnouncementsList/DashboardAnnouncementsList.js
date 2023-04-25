@@ -1,6 +1,6 @@
 // import React, { Component } from "react";
 // import { Redirect, Link } from "react-router-dom";
-// import "./DashboardAnnouncements.css";
+// import "./DashboardAnnouncementsList.css";
 // import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 // import { fetchDashboardAnnouncementList } from '../../../store/actions/announcement/departmentAnnouncementActions'
 // import Figure from 'react-bootstrap/Figure';
@@ -8,8 +8,8 @@
 // import ShowMore from 'react-show-more-list';
 // import { connect } from 'react-redux';
 // import { Container,Row,Col,Table,Image, Spinner,Button,Card,Tabs,Tab,Badge  } from 'react-bootstrap';
- 
-// class DashboardAnnouncements extends Component {
+// import PageLoading from "../../PageLoading/PageLoading";
+// class DashboardAnnouncementsList extends Component {
 
 //   constructor(props, context) {
 //     super(props, context);
@@ -17,8 +17,7 @@
 //     this.handleSelect = this.handleSelect.bind(this);
 
 //     this.state = {
-//       key: "all",
-     
+//       key: "all"
 //     };
 //   }
 //   componentWillMount(){ 
@@ -36,14 +35,22 @@
 //       if(this.props.departmentAnnouncement.depAnnouncementlist.length !== 0){
 //         showOpen = this.props.departmentAnnouncement.depAnnouncementlist.length > 6 ? true : false
 //         return < >
+//         {/* <Formik 
+//       enableReinitialize
+//       onSubmit={this.onSubmitHandler} 
 
-//           {/* <Tabs
+//       // initialValues={this.state.filters}
+//       >
+//       {
+//       ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+//       <form onSubmit={handleSubmit}> */}
+//           <Tabs
 //             defaultActiveKey="all"
 //             id="fill-tab-example"
 //             className="mb-3 col-9 announcement-tabs"
 //             fill
-//             // onSelect= { this.handleSelect
-//             // }
+//             onSelect= { this.handleSelect
+//             }
 //           >
 //               <Tab eventKey="all" title="All">
                 
@@ -54,8 +61,13 @@
 //               <Tab eventKey="hr" title="HR">
                 
 //               </Tab>
-//           </Tabs> */}
-
+//               {/* <Tab eventKey="contact" title="Contact" disabled>
+                
+//               </Tab> */}
+//           </Tabs>
+//           {/* </form>
+//           )}
+//         </Formik> */}
 //           <Row>
 //               {this.props.departmentAnnouncement.depAnnouncementlist.slice(0,4).map((announcement, index) => {
 //                 return <Col  md={6} className="announcement-list-content dashbaord-content card-content">
@@ -163,7 +175,27 @@
 //      </>
 //       }else{
 //        return <>
-
+//          <Tabs
+//             defaultActiveKey="all"
+//             id="fill-tab-example"
+//             className="mb-3 col-9 announcement-tabs"
+//             fill
+//             onSelect= { this.handleSelect
+//             }
+//           >
+//               <Tab eventKey="all" title="All">
+                
+//               </Tab>
+//               <Tab eventKey="department" title="Department">
+                
+//               </Tab>
+//               <Tab eventKey="hr" title="HR">
+                
+//               </Tab>
+//               {/* <Tab eventKey="contact" title="Contact" disabled>
+                
+//               </Tab> */}
+//           </Tabs>
 //         <Row>
 //           <Col  md={12} align="center" className="">
 //               <h5>No Announcements.</h5>
@@ -194,7 +226,7 @@
 //     fetchDashboardAnnouncementList : (data) => dispatch( fetchDashboardAnnouncementList(data) ),
 //   }
 // }
-// export default connect(mapStateToProps, mapDispatchToProps)(DashboardAnnouncements);
+// export default connect(mapStateToProps, mapDispatchToProps)(DashboardAnnouncementsList);
 
 
 

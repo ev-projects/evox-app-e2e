@@ -30,6 +30,7 @@ class AnnouncementResource extends JsonResource
                 'release_date' => $this->release_date,
                 'expiry_date' => $this->expiry_date,
                 'link' => $this->link,
+                'on_link' => $this->on_link,
                 'status' => $this->status,
                 'exposure_level' => $this->exposure_level,
                 'dep' => $this->department(),

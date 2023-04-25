@@ -52,14 +52,25 @@ class DepartmentAnnouncementsList extends Component {
               Users with the same permission as you can also edit your post if you have your hands are full. </p>
               <p>Note: the Editor will not save images, but for now, you can upload one image as a thmbnail and primary image of your announcement, you can also leave it empty. </p>
             </div>
-          <Link className="btn btn-primary create-announcement"  to={global.links.department_announcement_form}>
+          {/* <Link className="btn btn-primary create-announcement"  to={global.links.department_announcement_form}>
                        
                        Create Announcement
-           </Link>  
+           </Link>   */}
         
          <Row>
+
+         <Col  md={3} className="announcement-list-content">
+         <Link  to={global.links.department_announcement_form}>
+                    <div className="announcement-list-card create-announcement-card"  >
+                    <i class="fa fa-plus i-create-ann"></i>
+                      <h3>Create Announcement</h3>
+                      </div>
+                      </Link>  
+                    </Col>
+
+
               {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
-                return <Col  md={6} className="announcement-list-content">
+                return <Col  md={3} className="announcement-list-content">
 
                           <Card className="announcement-list-card"  >
                           {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
