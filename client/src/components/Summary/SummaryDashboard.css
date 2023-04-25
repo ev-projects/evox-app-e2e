@@ -1,0 +1,192 @@
+.card-list .card {
+    border-radius: 12px !important;
+    color: white;
+    padding: 10px;
+    position: relative;
+}
+.card .zmdi {
+    color: white;
+    font-size: 28px;
+    opacity: 0.3;
+    position: absolute;
+    right: 13px;
+    top: 13px;
+}
+.card .stat {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 8px;
+    margin-top: 25px;
+    padding: 10px 10px 0;
+    text-transform: uppercase;
+}
+.card .title {
+    display: inline-block;
+    font-size: 12px;
+    padding: 10px 10px 0;
+    text-transform: uppercase;
+}
+.card .value {
+    font-size: 28px;
+    padding: 0 10px;
+}
+.card.blue {
+    background-color: #0097A7 !important;
+    border-radius: 12px !important;
+}
+.card.green {
+    background-color: #575A89 !important;
+    border-radius: 12px !important;
+}
+.card.orange {
+    background-color: #78909C !important;
+    border-radius: 12px !important;
+}
+.card.red {
+    background-color: #005493 !important;
+    border-radius: 12px !important;
+}
+
+.card-list {
+    width: 100%;
+}
+.card-list:before, .card-list:after {
+    content: " ";
+    display: table;
+}
+.card-list:after {
+    clear: both;
+}
+
+.chart {
+    border-radius: 3px;
+    border: 1px solid #313d4f;
+    color: black;
+    padding: 10px;
+    position: relative;
+    text-align: center;
+}
+
+.celebration .card-header{
+    color: #1f2d3d !important;
+    background-color: #ffff!important;
+    height: 40px;
+    padding: 10px 10px !important;
+    border-bottom:none !important;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+
+  .celebration .card {
+    color: black;
+    height: 100%;
+    border-radius: 3% !important;
+  }
+
+
+.celebration .content-table.bdr0 {
+    height: 380px !important;
+    padding: 10px 25px !important;
+}
+
+.celebration .content-table.bdr0 table tbody td {
+    background: #fff !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    font-size: 15px !important;
+    text-align: left !important;
+}
+
+.celebration .content-table.bdr0 table tbody .img {
+    width: 20px !important;
+    text-align: right !important;
+}
+
+.image-smaller_Today_leaves {
+    height: 70px !important;
+    width: 70px !important;
+    max-width: 70px !important;
+    max-height: 70px !important;
+}
+
+.today_count{
+    border: none !important;
+    font-size: 13px !important;
+    font-weight: bold;
+    width: 150px;
+}
+
+.leave_type{
+    font-size: 14px !important;
+    font-weight: bold !important;
+    color: #07335e !important;
+}
+
+.celebration_notfound{
+    text-align: center !important;
+    padding: 172px 94px !important;
+    text-decoration: none !important;
+    font-size: 17px !important;
+    font-weight: bold !important;
+    color: #07335e !important;
+}
+
+.tabstyle{
+    margin-left: 5% !important;
+
+}
+
+.tablebody tr{
+    box-shadow: 0 0px 2px 0 rgba(0,0,0,0.2);
+}
+
+
+.table_celebration{
+    border-collapse: separate;
+    border-spacing: 0 15px;
+}
+
+.celebration .nav-tabs .nav-link.active {
+    color: #ffffff !important;
+    background-color: #07335e !important;
+    border-color: #dee2e6 #dee2e6 #fff !important;
+}
+
+
+.celebration .nav-tabs .nav-link {
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    font-size: 12px;
+    width: 14%;
+    text-align: center;
+    background: #e3e3e3 !important;
+    color: black !important;
+}
+
+
+.value {
+    cursor: pointer !important;
+    color: white !important;
+}
+
+.request_count{
+    color: white !important;
+}
+
+.cardstyle{
+    
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px !important;
+}
+
+.div-content{
+    padding: 15px 24px !important;
+    font-size: 18px;
+    font-weight: bold;
+    color: #0097A7;
+}
+
+.dashboard .content-table table {
+    background:none !important;
+}

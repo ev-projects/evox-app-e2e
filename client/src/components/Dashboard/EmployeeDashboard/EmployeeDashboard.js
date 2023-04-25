@@ -19,6 +19,7 @@ import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 import RecentDtr from "../../../components/Dashboard/RecentDtr";
 import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 import moment from 'moment';
+import { SummaryDashbord } from "../../Summary/SummaryDashbord";
 
 const EmployeeDashboard = ( props ) => {
 
@@ -56,6 +57,11 @@ const EmployeeDashboard = ( props ) => {
     const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
     return (<div className="dashboard">
+     {/* <Row className="summary"> */}
+     {/* <SummaryDashbord/> */}
+     {/* </Row> */}
+       
+      
               <Row>
 
               {/* <Col> */}

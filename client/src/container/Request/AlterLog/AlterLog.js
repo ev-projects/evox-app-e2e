@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Form,Button,InputGroup,FormControl  } from 'react-bootstrap';
 import Select from "react-select";
 import moment from 'moment';
-
+import { useParams, useLocation, useHistory } from "react-router-dom";
 import "./AlterLog.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
 import { InputDate,InputTime,InputDateTime } from '../../../components/DatePickerComponent/DatePicker.js';
@@ -35,9 +35,11 @@ import settingsReducers from "../../../store/reducers/settings/settingsReducers"
 
 class AlterLog extends Component {
 
-  // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
-  onSubmitHandler = (values) => {
 
+  
+  // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
+  onSubmitHandler = async(values) => {
+    
 
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
@@ -100,7 +102,9 @@ class AlterLog extends Component {
             if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
                 formData.append('_method', 'PUT')
                 this.props.updateAlterLogStatus( values.id, formData, values.action ,this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date);
-                this.props.getMyDtrNotifications( this.props?.user?.id );
+                await this.props.getMyDtrNotifications( this.props?.user?.id );
+                // let history = useHistory();
+                // history.push(global.links.my_team_all_requests);
                 
             }
             break;

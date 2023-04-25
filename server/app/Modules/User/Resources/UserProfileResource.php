@@ -35,7 +35,7 @@ class UserProfileResource extends JsonResource
         }else{
             $birthdate = '';
         }
-        $offset = $this->country_timezone_to_offset();
+        $offset = $this->country_timezone_to_offset(); 
 
        
         $main_info = array(

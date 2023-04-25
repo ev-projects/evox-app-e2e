@@ -21,6 +21,7 @@
     dtr                             :  "/app/dtr/",
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
+    my_overall_request              :  "/app/account/MyOverallRequests",
     ev_learning                     :  "/app/EVLearning",
     ops_schedule                    :  "/app/OpsSchedule",
 
@@ -37,6 +38,7 @@
     dpa_list                        :  "/app/team/DPAList",
     employee_list                   :  "/app/team/MyTeamList",
     my_team_requests                :  "/app/team/MyTeamRequests",
+    my_team_all_requests            :  "/app/team/MyTeamAllRequests",
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
     dtr_summary_new                 :  "/app/team/DtrSummaryTemp",

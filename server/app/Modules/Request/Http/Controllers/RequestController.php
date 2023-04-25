@@ -120,7 +120,18 @@ class RequestController extends Controller
         try {
             log_activity( trans('messages.request_number_display_attempt') );
             return success_response(
-                trans('messages.request_display_success'), $this->request->get_status_numbers( $request)
+                trans('messages.request_display_success'), $this->request->get_status_numbers( $request )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function requestlistNumbers_dashboard(Request $request){
+        try {
+            log_activity( trans('messages.request_number_display_attempt') );
+            return success_response(
+                trans('messages.request_display_success'), $this->request->get_status_numbers_dashboard( $request )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

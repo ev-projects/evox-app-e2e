@@ -35,7 +35,7 @@ class APICALL  {
           method: Validator.isValid(config.method) ? config.method : "get",
   
           // Renders the URL on the AXIOS Call
-          url: "http://10.10.12.10/rctcareer/api" + config.url,
+          url: "https://14.194.61.203/rctcareer/api" + config.url,
   
           // Renders the Headers on the AXIOS Call
         //   headers: Formatter.merge_json(default_headers, config.headers),
@@ -87,7 +87,7 @@ class APICALL  {
 
             // responseType: 'arraybuffer',
             // Renders the URL on the AXIOS Call
-            url: "http://10.10.12.10/rctcareer/api" + config.url, 
+            url: "https://14.194.61.203/rctcareer/api" + config.url, 
     
             // Renders the Headers on the AXIOS Call
             // headers: Formatter.merge_json(default_headers, config.headers),

@@ -102,11 +102,16 @@ export const updateAlterLogStatus = ( id, post_data, status, user_id, fromdate, 
                 url:              'my_team_requests'
             }));
 
-            dispatch(getMyDtrNotifications(user_id) );
+            dispatch(getMyDtrNotifications(user_id));
 
+            console.log(global.links.dashboard);
+            // dispatch({
+            //     type: "ALTER_LOG_PENDING",
+            //     alterrequest: null,
+            //   });
             dispatch({
                 'type'      : 'SET_REDIRECT',
-                'link'      : global.links.dashboard
+                'link'      : global.links.dashboard 
             })
         })
         .catch(e => {

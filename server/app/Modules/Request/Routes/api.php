@@ -23,7 +23,7 @@ Route::group(['prefix' => 'request/approval', 'middleware' => ['auth.apikey']], 
 
 });
 
-# API Call for Requests
+# API Call for Requests , 
 Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
 
@@ -32,6 +32,8 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
 
     # Request List Number
     Route::get('/request-numbers',     'RequestController@requestlistNumbers');
+    Route::get('/request-numbers_dashboard',     'RequestController@requestlistNumbers_dashboard');
+    
 
     # Request List Number
     Route::post('/bulk-request',     'RequestController@bulkRequest');

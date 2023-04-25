@@ -13,6 +13,8 @@ import { connect } from 'react-redux';
 import { Container,Row,Col,Table,Image, Spinner,Button,Card,Tabs,Tab,Badge  } from 'react-bootstrap';
 import PageLoading from "../../../container/PageLoading/PageLoading";
 import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
+import SummaryDashbord from "../../Summary/SummaryDashbord";
+import Authenticator from "../../../services/Authenticator";
 class DashboardTabs extends Component {
 
   constructor(props, context) {
@@ -52,6 +54,14 @@ class DashboardTabs extends Component {
               <Tab eventKey="evox-updates" title="Evox Updates">
                 <ChangeLogs></ChangeLogs>
               </Tab>
+              {Authenticator.check(
+                    ["supervisor", "team_leader"],
+                    ["supervisor_access", "team_leader_access"]
+                  ) && (
+              <Tab eventKey="evox-summary" title="Summary">
+                <SummaryDashbord></SummaryDashbord>
+              </Tab>
+                  )}
               {/* <Tab eventKey="contact" title="Contact" disabled>
                 
               </Tab> */}

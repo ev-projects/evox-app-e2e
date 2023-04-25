@@ -496,7 +496,8 @@ class ReportController extends Controller
 
             return success_response(
                 trans('messages.get_anniversary_birthday_success'),
-                new AnniversaryResources($this->report->get_team_birthday_anniversary())
+                // new AnniversaryResources($this->report->get_team_birthday_anniversary())
+                new AnniversaryResources($this->report->get_team_birthday_anniversary_last_twodays()) 
             );
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
@@ -1135,6 +1136,8 @@ class ReportController extends Controller
 
     public function new_dtr_summary_report_csv_export(Request $request)
     {
+
+      
         try {           
             $user_sup_id = Auth::user()->id; // basically user id
             if($request->sup_id){

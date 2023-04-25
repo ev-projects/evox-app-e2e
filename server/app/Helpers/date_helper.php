@@ -57,6 +57,8 @@ if (! function_exists('time_to_seconds')) {
      */
     function time_to_seconds($time, $with_offset = false, $offset_operation = "add" ) 
     {
+
+       
         try {
                 if(Auth::user() && Auth::user()->country_timezone_to_offset() != null && $with_offset){
                     if($offset_operation == "add"){
@@ -66,6 +68,7 @@ if (! function_exists('time_to_seconds')) {
                     }
                     else{
                         return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') : null;
+                       
                     }
                 }
             return ( is_valid( $time ) ) ? strtotime($time) - strtotime('today') : null;

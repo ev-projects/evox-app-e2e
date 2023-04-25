@@ -7,7 +7,9 @@ const initState = {
     isNumbersLoaded: false,
     instance: {},
     statusNumbers: null,
-    filters : {}
+    filters : {},
+    requesttype:null,
+    overrallstatusNumbers: null,
 }
 
 const myTeamRequestListReducers = (state = initState, action) => {
@@ -40,6 +42,20 @@ const myTeamRequestListReducers = (state = initState, action) => {
                 filters : action.filters
             }
             break;
+
+            case "EVENT_CLICK":
+            //  alert(action.requesttype);
+                return {
+                    ...state,
+                    requesttype : action.requesttype,
+                }
+                break;
+                case "OVERRALL_REQUEST":
+                return {
+                    ...state,
+                    overrallstatusNumbers : action.overrallstatusNumbers,
+                }
+                break;
 
         default:
             result = state;

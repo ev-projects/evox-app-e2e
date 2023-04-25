@@ -26,7 +26,7 @@ export const logIn = (credentials) => {
         .then(result => {
 
             // Set the Returned token on localStorage
-            localStorage.setItem("access_token", result.data.content.access_token);
+            localStorage.setItem("access_token", result.data.content.access_token); 
 
             // Dispatch Login Success
             dispatch({
@@ -232,3 +232,6 @@ export const forgotPasswordRequest = ( email ) => {
         });
     }
 }
+
+
+

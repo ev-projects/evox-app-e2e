@@ -13,6 +13,7 @@ const redirectReducers = (state = initState, action) => {
     switch(action.type) {
         
         case "SET_REDIRECT":
+
             return {
                 run : true,
                 link : ( action.link != undefined ) ? action.link : null
