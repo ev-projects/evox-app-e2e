@@ -75,6 +75,13 @@ class Department extends Model
         return $this->hasMany(Announcement::class, 'dep_id', 'id');
     }
 
+    public function departments_announcements_presented()
+    {
+        // return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
+
+        return $this->hasMany(Announcement::class, 'present_dep_id', 'id');
+    }
+
     // public function departments_announcement_by_json()
     // {
     //     $announcement_ids = AnnouncementDepartment::whereJsonContains('department_ids',[ $this->id])

@@ -51,9 +51,20 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
      */
     public function store( $request)
     {
+      
+
+        $dep_ids = null;
+        if( is_valid( $request->selectedDepartments ) &&  $request->forAllDepartment == 0  ){
+            $dep_ids = $request->selectedDepartments;
+            if(gettype($dep_ids) === "string"){
+                $dep_ids = preg_split("/\,/", $dep_ids );
+            }
+         
+        }   
+        // dd($dep_ids,$request->all());
         DB::beginTransaction();
         try {
-
+            
 
             log_activity(trans('messages.create_department_announcement_attempt'));
 
@@ -63,22 +74,20 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $dep_announcement->category         = $request->category;
             $dep_announcement->content          = $request->content;
             $dep_announcement->headline         = $request->headline;
-            // $dep_announcement->log_date      = $request->log_date;
             $dep_announcement->release_date     = $request->release_date;
             $dep_announcement->expiry_date      = $request->expiry_date;
             $dep_announcement->on_link          = $request->on_link;
             $dep_announcement->link             = $request->link;
             $dep_announcement->status           = $request->status;
             $dep_announcement->country_id       = Auth::user()->country_id;
-            $dep_announcement->exposure_level   = $request->exposure_level;
             $dep_announcement->dep_id           = auth()->user()->department_id;
+            $dep_announcement->present_dep_id   = auth()->user()->department_id;
             $dep_announcement->created_by       = auth()->user()->id;
             $dep_announcement->updated_by       = auth()->user()->id;
-
-
-
+            $dep_announcement->set_all          = $request->forAllDepartment == 1? 1:0;
 
             $dep_announcement->save();
+
             if ($request->thumbnail != null) {
                 $path = $request->file('thumbnail')->store(
                     'public/announcements/' . $dep_announcement->id,
@@ -89,28 +98,43 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 $dep_announcement->update();
             }
 
-            // if ($dep_announcement->category  == "HR") {
-            //     $department_ids = Department::pluck('id')->toArray();
+            $saved_dep_announcement = $dep_announcement;
+            
+            if(is_valid($dep_ids)){
+                $dep_id = array_diff($dep_ids,  [auth()->user()->department_id]);
+                foreach( $dep_ids as $dep_id){
+                    $dep_announcement = new Announcement;
 
-            //     $dep_announcement->announcements_departments()->sync($department_ids);
+                    $dep_announcement->announcement_id  = $saved_dep_announcement->id;
 
-            //     $announcement_department = new AnnouncementDepartment;
-            //     $announcement_department->announcement_id   =  $dep_announcement->id;
-            //     $announcement_department->department_ids    =  $department_ids;
-            // } else {
-            //     $dep_announcement->announcements_departments()->sync([auth()->user()->department_id]);
+                    $dep_announcement->title            = $saved_dep_announcement->title;
+                    $dep_announcement->category         = $saved_dep_announcement->category;
+                    $dep_announcement->content          = $saved_dep_announcement->content;
+                    $dep_announcement->headline         = $saved_dep_announcement->headline;
+                    // $dep_announcement->log_date          = $saved_dep_announcement->log_date;
+                    $dep_announcement->release_date     = $saved_dep_announcement->release_date;
+                    $dep_announcement->expiry_date      = $saved_dep_announcement->expiry_date;
+                    $dep_announcement->on_link          = $saved_dep_announcement->on_link;
+                    $dep_announcement->link             = $saved_dep_announcement->link;
+                    $dep_announcement->status           = $saved_dep_announcement->status;
+                    $dep_announcement->country_id       = Auth::user()->country_id;
+                    // $dep_announcement->exposure_level   = $saved_dep_announcement->exposure_level;
+                    // $dep_announcement->dep_id           = auth()->user()->department_id;
+                    if ($saved_dep_announcement->thumbnail != null){
+                        $dep_announcement->thumbnail = $path;
+                    }
+                    $dep_announcement->present_dep_id   = $dep_id;
+                    $dep_announcement->set_all          = 0;
+                    $dep_announcement->created_by       = auth()->user()->id;
+                    $dep_announcement->updated_by       = auth()->user()->id;
 
-            //     $announcement_department = new AnnouncementDepartment;
-            //     $announcement_department->announcement_id   =  $dep_announcement->id;
-            //     $announcement_department->department_ids    =  [auth()->user()->department_id];
-            // }
-            // $announcement_department->save();
+                    $dep_announcement->save();
+                }
+            }
+        
 
             DB::commit();
-            // return success_response(
-            //     trans('messages.create_department_announcement_success'),
-            //     $dep_announcement
-            // );
+    
             return $dep_announcement;
         } catch (Exception $e) {
             DB::rollback();
@@ -161,7 +185,14 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
      */
     public function update($request, $id)
     {
-
+        $dep_ids = null;
+        if( is_valid( $request->selectedDepartments ) &&  $request->forAllDepartment == 0  ){
+            $dep_ids = $request->selectedDepartments;
+            if(gettype($dep_ids) === "string"){
+                $dep_ids = preg_split("/\,/", $dep_ids );
+            }
+         
+        }   
         DB::beginTransaction();
         try {
          
@@ -172,17 +203,16 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 $dep_announcement->category         = $request->category;
                 $dep_announcement->content          = $request->content;
                 $dep_announcement->headline         = $request->headline;
-                // $dep_announcement->log_date      = $request->log_date;
                 $dep_announcement->release_date     = $request->release_date;
                 $dep_announcement->expiry_date      = $request->expiry_date;
                 $dep_announcement->on_link          = $request->on_link == "true" ? 1 : 0;
-
                 $dep_announcement->link             = $request->link;
                 $dep_announcement->status           = $request->status;
-                $dep_announcement->exposure_level   = $request->exposure_level;
                 // $dep_announcement->dep_id           = auth()->user()->department_id;
                 // $dep_announcement->created_by       = auth()->user()->id;
                 $dep_announcement->updated_by       = auth()->user()->id;
+
+                $dep_announcement->set_all          = $request->forAllDepartment == 1? 1:0;
 
                 $dep_announcement->update();
 
@@ -200,27 +230,51 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     $dep_announcement->update();
                 }
 
-                // $announcement_department_to_delete =  AnnouncementDepartment::where("announcement_id", $dep_announcement->id);
-                //  // if record exist delete
-                //  error_log($announcement_department_to_delete->count() > 0);
-                // if( $announcement_department_to_delete->count() > 0){
-                //     // $deleted = DB::delete('DELETE FROM announcements_departments WHERE announcements_departments.announcement_id = ?',[$dep_announcement->id]);
-                //     AnnouncementDepartment::where('announcement_id', $dep_announcement->id)->delete();
-                // } 
-            
+                 $saved_dep_announcement = $dep_announcement;
+                    
+                 
+                 
+                if(is_valid($dep_ids)){
+                    
+                    $collection_todelete = Announcement::where('announcement_id', $saved_dep_announcement->id)
+                                    ->where('set_all', 0)
+                                    ->forceDelete();
+                    //                 dd($collection_todelete);
+                    // Announcement::forceDelete($collection_todelete->toArray());
+                    
+                $dep_id = array_diff($dep_ids,  [auth()->user()->department_id]);
+                foreach( $dep_ids as $dep_id){
+                    $dep_announcement = new Announcement;
+
+                    $dep_announcement->announcement_id  = $saved_dep_announcement->id;
+
+                    $dep_announcement->title            = $saved_dep_announcement->title;
+                    $dep_announcement->category         = $saved_dep_announcement->category;
+                    $dep_announcement->content          = $saved_dep_announcement->content;
+                    $dep_announcement->headline         = $saved_dep_announcement->headline;
+                    // $dep_announcement->log_date          = $saved_dep_announcement->log_date;
+                    $dep_announcement->release_date     = $saved_dep_announcement->release_date;
+                    $dep_announcement->expiry_date      = $saved_dep_announcement->expiry_date;
+                    $dep_announcement->on_link          = $saved_dep_announcement->on_link;
+                    $dep_announcement->link             = $saved_dep_announcement->link;
+                    $dep_announcement->status           = $saved_dep_announcement->status;
+                    $dep_announcement->country_id       = Auth::user()->country_id;
+                    // $dep_announcement->exposure_level   = $saved_dep_announcement->exposure_level;
+                    // $dep_announcement->dep_id           = auth()->user()->department_id;
+                    if ($saved_dep_announcement->thumbnail != null){
+                        $dep_announcement->thumbnail = $path;
+                    }
+                    $dep_announcement->present_dep_id   = $dep_id;
+                    $dep_announcement->set_all          = 0;
+                    $dep_announcement->created_by       = auth()->user()->id;
+                    $dep_announcement->updated_by       = auth()->user()->id;
+
+                    $dep_announcement->save();
+                }
+                }
 
                 DB::commit();
 
-                // $announcement_department = new AnnouncementDepartment;
-                // if ($dep_announcement->category  == "HR") {
-                //     $department_ids = Department::pluck('id')->toArray();
-                //         $announcement_department->department_ids    =  $department_ids;
-                //         $announcement_department->save();
-                // } else {
-
-                //         $announcement_department->department_ids    =  [auth()->user()->department_id];
-                //         $announcement_department->save();
-                // }
 
                 return  $dep_announcement;
 
@@ -272,6 +326,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             log_activity(trans('messages.delete_department_announcement_attempt'));
 
             Announcement::destroy($id);
+            Announcement::where('announcement_id', $id)
+                                    ->where('set_all', 0)
+                                    ->forceDelete();
 
             DB::commit();
             // return success_response(
@@ -298,7 +355,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             // ->toArray();
             // ->get();
             if($request->dep_id == "all" || $request->dep_id == null){
-                $announcements_list = Announcement::latest()->where(function ($query) use ($date_time) {
+                $announcements_list = Announcement::latest()->where('dep_id',"!=", null)->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 });
@@ -306,7 +363,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
             if( $request->dep_id != null  && is_numeric($request->dep_id)){
                 $department =  Department::find($request->dep_id);
-                $announcements_list = $department->departments_announcements()->latest()->where(function ($query) use ($date_time) {
+                $announcements_list = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 });

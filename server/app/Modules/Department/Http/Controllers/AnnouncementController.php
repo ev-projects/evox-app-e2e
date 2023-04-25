@@ -65,7 +65,7 @@ class AnnouncementController extends Controller
     {   
        
         try {
-
+            
             
             log_activity( trans('messages.create_department_announcement_attempt') );
 

@@ -36,6 +36,7 @@ class AnnouncementRequest extends FormRequest
            
             
             'link' => 'required_if:on_link,true|url',
+            'selectedDepartments' => 'required_if:forAllDepartment,0',
 
 
             // 'inputFileWasDeleted'=> 'boolean',
@@ -52,7 +53,9 @@ class AnnouncementRequest extends FormRequest
         return [
           
 
-            'required_if' => 'A URL :attribute must be set when "Redirect as Link" is set'
+            'link.required_if' => 'A URL :attribute must be set when "Redirect as Link" is set.',
+          
+            'selectedDepartments.required_if' =>' :attribute must have atleast one department set.',
           ];
     }
 

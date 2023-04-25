@@ -32,13 +32,16 @@ class DepartmentAnnouncementsForm extends Component {
     // console.log(window.location.pathname);
     // console.log(window.location.pathname);
     this.initialState = {
+        sectedDepartments: null,
         content : null,
         thumbnail: null,
         imgPrevInputFile: '/thumbnail/defthumb.jpg',
         inputFileWasUpdated: false,
         inputFileWasDeleted: false,
 
-        on_link : false
+        on_link : false,
+
+        forAllDepartment : false
         
     }
     this.state = this.initialState; 
@@ -74,12 +77,17 @@ class DepartmentAnnouncementsForm extends Component {
     formData.set('category', "Department");
     formData.set('inputFileWasDeleted', false);
     formData.set('on_link', this.state.on_link);
+    formData.set('forAllDepartment', this.state.forAllDepartment == true ? 1: 0);
+        if(this.state.forAllDepartment == false){
+          formData.set('selectedDepartments', (Formatter.array_to_getvalue(this.state.selectedDepartments)).toString());
+        }
+
     // Checks on what action to use depending on the values.action
     if (values.method) {
       
         switch( values.method ) {
           case "store":
-            console.log(formData);
+            console.log(formData, this.state.selectedDepartments, (Formatter.array_to_getvalue(this.state.selectedDepartments)).toString());
             if (window.confirm("Are you sure you want to submit this Announcement?")) {
               
               if (this.state.thumbnail != null) {
@@ -129,7 +137,7 @@ class DepartmentAnnouncementsForm extends Component {
 
     this.setState({
       selectedDepartments: values,
-      selectedTeams:    []
+    
     });
     const params = {
       "departments" : Formatter.array_to_getvalue(values)
@@ -257,13 +265,27 @@ class DepartmentAnnouncementsForm extends Component {
 
                     <Col size="4 dep-announcement-col">
                       <div className="form-group">
-                        <label className ="dep-announcement-label">Selected Departments:</label>
+
+
+
+                      <label>
+                        <input 
+                          type="checkbox"
+                          checked={this.state.forAllDepartment}
+                          onChange={() =>  this.setState({ forAllDepartment: !this.state.forAllDepartment })}
+                        />
+                        For All Departments &nbsp;
+                      </label>
+                      <br/>
+                        <label className ="dep-announcement-label">By Selected Departments:{this.state.forAllDepartment ?  "(disabled)" : null}</label>
                           <MultiSelect
+                              disabled = {this.state.forAllDepartment}
                               name="team_id[]"
                               options={department_list}
                               value={this.state.selectedDepartments}
                               onChange={this.setSelectedDepartments}
-                              labelledBy={"Select Teams"}
+                              labelledBy={"Select Departments"}
+                              hasSelectAll = {false}
                             />
                       </div>
                     </Col>
