@@ -15,59 +15,17 @@
  border-radius: 10px !important;
 }
 
-.announcement-list-card.card{
-    border-radius: 10px !important;
-    margin-bottom: 18px;
-    
 
-}
 .announcement-list-item{
    background-color: rgb(229, 229, 229);
    border-radius:   10px !important;
    
 }
 
-.mask-HR{
-    background-color: rgba(23, 149, 73, 0.434) !important;
-    /* position: absolute !important;
-    bottom: 0 !important;
-    left: 0 !important; */
-}
-
-.mask-Department{
-    background-color: rgba(0, 83, 147, 0.498) !important;
-    /* position: absolute !important;
-    bottom: 0 !important;
-    left: 0 !important; */
-}
-
-.mask-HR.card-img-overlay,.mask-Department.card-img-overlay{
-    padding-top: 115px   !important;
-    /* vertical-align: bottom; */
-    /* padding-bottom: 0; */
-    
-}
-
-.mask-HR.card-img-overlay .card-title, .mask-Department.card-img-overlay .card-title{
-   /* margin-top: auto !important; */
-}
 .card-text-black{
     color:black
 }
 
-.card-text-overflow{
-    width: 100%;
-    height:2rem !important;
-  /* display: inline-block; */
- 
-}
-
-.card-text-white,.card-text-white.h5 ,.card-title.card-text-white.h5{
-    color:rgb(255, 255, 255) !important;
-    text-shadow: 1px 1px #000000;
-    font-weight: bold !important;
-    text-align: left !important;
-}
 .announcement-list-content.dashbaord-content.card-content{
     padding-top: 10px !important;
 }

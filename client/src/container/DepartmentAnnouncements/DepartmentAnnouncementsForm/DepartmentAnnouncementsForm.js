@@ -32,7 +32,7 @@ class DepartmentAnnouncementsForm extends Component {
     // console.log(window.location.pathname);
     // console.log(window.location.pathname);
     this.initialState = {
-        sectedDepartments: null,
+        selectedDepartments: null,
         content : null,
         thumbnail: null,
         imgPrevInputFile: '/thumbnail/defthumb.jpg',
@@ -41,7 +41,7 @@ class DepartmentAnnouncementsForm extends Component {
 
         on_link : false,
 
-        forAllDepartment : false
+        set_all : false
         
     }
     this.state = this.initialState; 
@@ -52,7 +52,7 @@ class DepartmentAnnouncementsForm extends Component {
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = (values) => {
     values['content'] = this.state.content;
-
+    console.log(this.state.selectedDepartments);
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
 
@@ -74,14 +74,18 @@ class DepartmentAnnouncementsForm extends Component {
         }
       }
     }
+
+  
     formData.set('category', "Department");
     formData.set('inputFileWasDeleted', false);
     formData.set('on_link', this.state.on_link);
-    formData.set('forAllDepartment', this.state.forAllDepartment == true ? 1: 0);
-        if(this.state.forAllDepartment == false){
-          formData.set('selectedDepartments', (Formatter.array_to_getvalue(this.state.selectedDepartments)).toString());
+    formData.set('content', this.state.content != null ? this.state.content : null);
+   
+    formData.set('set_all', values['set_all'] == true ? 1: 0);
+        if(values['set_all'] == false){
+          formData.set('selectedDepartments', this.state.selectedDepartments!= null?(Formatter.array_to_getvalue(this.state.selectedDepartments)).toString(): (Formatter.array_to_getvalue(values['selectedDepartments'])));
         }
-
+        console.log(formData)
     // Checks on what action to use depending on the values.action
     if (values.method) {
       
@@ -191,8 +195,11 @@ class DepartmentAnnouncementsForm extends Component {
         link:               this.props.instance?.link != undefined  && method == "update" ? this.props.instance.link : null,
         content:            this.props.instance?.content != undefined  && method == "update" ? this.props.instance.content : null,
         category:           this.props.instance?.category != undefined  && method == "update" ? this.props.instance.category : null,
+        selectedDepartments:           this.props.instance?.selectedDepartments != undefined  && method == "update" ? this.props.instance.selectedDepartments : null,
+        set_all:            this.props.instance?.set_all != undefined  && method == "update" ? this.props.instance.set_all == 1? true : false : null,
+        // selectedDepartments:this.props.instance?.selectedDepartments != undefined  && method == "update" ? this.props.instance.selectedDepartments : [],
     }
-
+  
     let tab_set =          this.props.instance?.on_link != undefined  && method == "update" ? this.props.instance.on_link : null;
     tab_set = tab_set != null ?  tab_set == 1 ? "by-link": "by-content":  "by-content";
     console.log(tab_set);
@@ -271,18 +278,18 @@ class DepartmentAnnouncementsForm extends Component {
                       <label>
                         <input 
                           type="checkbox"
-                          checked={this.state.forAllDepartment}
-                          onChange={() =>  this.setState({ forAllDepartment: !this.state.forAllDepartment })}
+                          checked={values.set_all}
+                          onChange={() =>  setFieldValue('set_all',values.set_all==1?0:1)}
                         />
                         For All Departments &nbsp;
                       </label>
                       <br/>
-                        <label className ="dep-announcement-label">By Selected Departments:{this.state.forAllDepartment ?  "(disabled)" : null}</label>
+                        <label className ="dep-announcement-label">By Selected Departments:{values.set_all ?  "(disabled)" : null}</label>
                           <MultiSelect
-                              disabled = {this.state.forAllDepartment}
+                              disabled = {values.set_all}
                               name="team_id[]"
                               options={department_list}
-                              value={this.state.selectedDepartments}
+                              value={this.state.selectedDepartments != null ? this.state.selectedDepartments : values.selectedDepartments}
                               onChange={this.setSelectedDepartments}
                               labelledBy={"Select Departments"}
                               hasSelectAll = {false}

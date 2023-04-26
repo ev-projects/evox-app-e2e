@@ -27,7 +27,7 @@
     color: #f12631;
 } */
 
-.multi-select .dropdown-container .dropdown-heading .dropdown-heading-value{
+.filters.filter-dtr .multi-select .dropdown-container .dropdown-heading .dropdown-heading-value{
     max-width: 320px;
     display:inline-block;
     white-space: nowrap;

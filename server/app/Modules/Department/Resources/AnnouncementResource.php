@@ -16,8 +16,9 @@ class AnnouncementResource extends JsonResource
      */
     public function toArray($request)
     {
-        $result = null;
 
+        $result = null;
+        // dd( $this->announcement_clones_departments());
         if( ! is_null( $this->resource ) ) {
             $result = array(
                 'id' => $this->id,
@@ -33,7 +34,9 @@ class AnnouncementResource extends JsonResource
                 'on_link' => $this->on_link,
                 'status' => $this->status,
                 'exposure_level' => $this->exposure_level,
-                'dep' => $this->department(),
+                'dep' => $this->dep_id != null? $this->department() : $this->present_department(),
+                'set_all' => $this->set_all,
+                'selectedDepartments'=> $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()):null,
               
               
                 'created_at' => $this->created_at->format('Y-m-d')

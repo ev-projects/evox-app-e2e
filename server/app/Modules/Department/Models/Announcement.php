@@ -19,7 +19,22 @@ class Announcement extends Model
 
     public function department()
     {
-        return $this->hasOne(Department::class, 'id', 'dep_id');
+      
+        return Department::find($this->dep_id);
+    }
+
+    public function present_department()
+    {
+        return Department::find($this->present_dep_id);
+    }
+
+    public function announcement_clones_departments()
+    {
+
+
+         $dep_collection = Announcement::where('announcement_id', $this->id)->pluck('present_dep_id')->toArray();
+
+         return Department::whereIn('id',$dep_collection)->get();
     }
 
 }

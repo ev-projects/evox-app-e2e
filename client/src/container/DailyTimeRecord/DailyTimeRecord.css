@@ -286,3 +286,7 @@ float: left;
   .dtr-schedule .col{width: 100%; padding: 0}
 }
 
+.cutoff-text{
+    color: #0097A7;
+    font-size: 14px;
+}
