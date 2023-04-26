@@ -293,7 +293,7 @@ export const SummaryDashbord = (props) => {
                   </div>
                   {dashboard.mychangeschedulerequest !== null ? (
                     <div class="row value">
-                      <a className="request_count" onClick={onHandelClickmy2}>
+                      <a className="request_count" onClick={onHandelClickmy3}>
                       {dashboard.mychangeschedulerequest}
                       </a>
                     </div>
@@ -307,7 +307,7 @@ export const SummaryDashbord = (props) => {
                   </div>
                   {dashboard.changeschedulerequest !== null ? (
                     <div class="row value">
-                      <a className="request_count" onClick={onHandelClick2}>
+                      <a className="request_count" onClick={onHandelClick3}>
                       {dashboard.changeschedulerequest}
                       </a>
                     </div>

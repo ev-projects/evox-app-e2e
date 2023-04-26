@@ -78,7 +78,10 @@ class RoomController extends Controller
           if ($validator->fails()) {
             return response()->json(['errors'=>$validator->messages()]);
           }else{
-            $roomcount = DB::table('rooms')->where('name','=',$request -> RoomName)->count();
+            $roomcount = DB::table('rooms')
+            ->where('name','=',$request -> RoomName)
+            ->where('location','=',$request -> Location)
+            ->count();
             if($roomcount == 0){
                 $roomname = $request -> RoomName;
                 $location = $request -> Location;
@@ -125,7 +128,10 @@ class RoomController extends Controller
       if ($validator->fails()) {
         return response()->json(['errors'=>$validator->messages()]);
       }else{
-        $roomcount = DB::table('rooms')->where('name','=',$request -> RoomName)->where('id','<>',$id)->count();
+        $roomcount = DB::table('rooms')
+        ->where('name','=',$request -> RoomName)
+        ->where('location','=',$request -> Location)
+        ->where('id','<>',$id)->count();
         if($roomcount == 0){
         $updateRoom = Room::where('id', $id)
         ->update([
