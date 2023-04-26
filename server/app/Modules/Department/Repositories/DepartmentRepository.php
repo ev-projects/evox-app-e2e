@@ -46,7 +46,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function all_with_announcements()
     {
         try {
-            $department_collection = Department::has("departments_announcements")->orderBy('department_name', 'asc')->get();
+            $department_collection = Department::has("departments_announcements")->orHas('departments_announcements_presented')->orderBy('department_name', 'asc')->get();
             log_to_file('info', 'Success', [$department_collection]);
             return $department_collection;
 

@@ -36,7 +36,7 @@ class AnnouncementRequest extends FormRequest
            
             
             'link' => 'required_if:on_link,true|url',
-            'selectedDepartments' => 'required_if:forAllDepartment,0',
+            'selectedDepartments' => 'required_if:set_all,0',
 
 
             // 'inputFileWasDeleted'=> 'boolean',

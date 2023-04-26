@@ -54,7 +54,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
       
 
         $dep_ids = null;
-        if( is_valid( $request->selectedDepartments ) &&  $request->forAllDepartment == 0  ){
+        if( is_valid( $request->selectedDepartments ) &&  $request->set_all == 0  ){
             $dep_ids = $request->selectedDepartments;
             if(gettype($dep_ids) === "string"){
                 $dep_ids = preg_split("/\,/", $dep_ids );
@@ -84,7 +84,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $dep_announcement->present_dep_id   = auth()->user()->department_id;
             $dep_announcement->created_by       = auth()->user()->id;
             $dep_announcement->updated_by       = auth()->user()->id;
-            $dep_announcement->set_all          = $request->forAllDepartment == 1? 1:0;
+            $dep_announcement->set_all          = $request->set_all == 1? 1:0;
 
             $dep_announcement->save();
 
@@ -185,8 +185,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
      */
     public function update($request, $id)
     {
+
         $dep_ids = null;
-        if( is_valid( $request->selectedDepartments ) &&  $request->forAllDepartment == 0  ){
+        if( is_valid( $request->selectedDepartments ) &&  $request->set_all == 0  ){
             $dep_ids = $request->selectedDepartments;
             if(gettype($dep_ids) === "string"){
                 $dep_ids = preg_split("/\,/", $dep_ids );
@@ -212,7 +213,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 // $dep_announcement->created_by       = auth()->user()->id;
                 $dep_announcement->updated_by       = auth()->user()->id;
 
-                $dep_announcement->set_all          = $request->forAllDepartment == 1? 1:0;
+                $dep_announcement->set_all          = $request->set_all == 1? 1:0;
 
                 $dep_announcement->update();
 
@@ -224,21 +225,23 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     // $dep_announcement->update(['thumbnail' => $path]);
                     $dep_announcement->thumbnail = $path;
                     $dep_announcement->update();
+                    error_log("upda");
                 }
-                if($request->thumbnail == null && $request->inputFileWasDeleted == true ){
+               
+                if($request->thumbnail == null && $request->inputFileWasDeleted == "true" ){
                     $dep_announcement->thumbnail = null;
                     $dep_announcement->update();
+                    error_log("del");
                 }
+                
+                $saved_dep_announcement = $dep_announcement;
 
-                 $saved_dep_announcement = $dep_announcement;
-                    
-                 
-                 
-                if(is_valid($dep_ids)){
-                    
-                    $collection_todelete = Announcement::where('announcement_id', $saved_dep_announcement->id)
+                Announcement::where('announcement_id', $saved_dep_announcement->id)
                                     ->where('set_all', 0)
                                     ->forceDelete();
+                if(is_valid($dep_ids)){
+                    
+                    
                     //                 dd($collection_todelete);
                     // Announcement::forceDelete($collection_todelete->toArray());
                     
@@ -262,7 +265,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     // $dep_announcement->exposure_level   = $saved_dep_announcement->exposure_level;
                     // $dep_announcement->dep_id           = auth()->user()->department_id;
                     if ($saved_dep_announcement->thumbnail != null){
-                        $dep_announcement->thumbnail = $path;
+                        $dep_announcement->thumbnail =  $saved_dep_announcement->thumbnail;
                     }
                     $dep_announcement->present_dep_id   = $dep_id;
                     $dep_announcement->set_all          = 0;
@@ -355,7 +358,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             // ->toArray();
             // ->get();
             if($request->dep_id == "all" || $request->dep_id == null){
-                $announcements_list = Announcement::latest()->where('dep_id',"!=", null)->where(function ($query) use ($date_time) {
+                // $announcements_list = Announcement::latest()->where('dep_id',"!=", null)->where(function ($query) use ($date_time) {
+                $announcements_list = Announcement::latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 });

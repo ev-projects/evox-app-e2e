@@ -34,7 +34,9 @@ class DailyTimeRecord extends Component {
           selectedPayrollCutoff: {},
           
           isCurrentPayrollCutoffLoaded : false,
-          isDtrSummaryLoaded : true
+          isDtrSummaryLoaded : true,
+          payrollCutoff_start: null,
+          payrollCutoff_end: null
         }
         
         this.state = this.initialState; 
@@ -105,6 +107,13 @@ class DailyTimeRecord extends Component {
       await this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
       
       await this.props.setSelectedPayrollCutoff( payrollCutoff );
+      await this.setState({
+        payrollCutoff_start:payrollCutoff.start_date,
+        payrollCutoff_end:payrollCutoff.end_date
+      })
+      
+     
+      
     }
 
     
@@ -250,6 +259,13 @@ class DailyTimeRecord extends Component {
                   : 
                   null
               } 
+              
+              {this.state.payrollCutoff_end != null ? <b>
+              <span className="cutoff-text">{this.state.payrollCutoff_start}</span> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <span className="cutoff-text">{this.state.payrollCutoff_end}</span>
+              </b>
+              : null
+
+              }
                   <Table className="responsive hover dtr-table">
                     <thead>
                         <tr>
