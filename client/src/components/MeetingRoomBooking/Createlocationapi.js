@@ -169,3 +169,53 @@ export const drpdownLocation = (setLocationlist,setTotalpagecount,setCurrentpage
       });
   };
 };
+
+
+export const viewRequestlist = (setRequestlist,setTotalpagecount,setCurrentpagecount,user_id) => {
+  return async (dispatch, getState) => {
+    await API.call({
+      method: "get",
+      url: `/Getitrequirement?page=1`,
+    })
+      .then((result) => {
+        setRequestlist(result.data.data.data);
+        setTotalpagecount(result.data.pagination.last_page);
+        setCurrentpagecount(result.data.pagination.current_page);
+        dispatch({
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
+        });
+      })
+      .catch((e) => {
+        dispatch(Formatter.alert_error(e));
+      });
+  };
+}
+
+
+export const pagenationRequestlist = (
+  setRequestlist,
+  page,
+  setTotalpagecount,
+  setCurrentpagecount
+) => {
+  return async (dispatch, getState) => {
+    await API.call({
+      method: "get",
+      url: `/Getitrequirement?page=${page}`,
+    })
+      .then((result) => {
+        // dispatch(Formatter.alert_success(result, 3000));
+        setRequestlist(result.data.data.data);
+        setTotalpagecount(result.data.pagination.last_page);
+        setCurrentpagecount(result.data.pagination.current_page);
+        dispatch({
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
+        });
+      })
+      .catch((e) => {
+        dispatch(Formatter.alert_error(e));
+      });
+  };
+};

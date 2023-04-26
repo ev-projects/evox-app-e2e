@@ -106,10 +106,10 @@ export const SummaryDashbord = (props) => {
   };
 
   return (
-    <>
-      <div class="card-list">
+    <div className="main-card mt-4">
+      <div class="card-list mt-4">
         <div class="row">
-          <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+          <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">
             <div class="card blue" style={{ borderRadius: "12px !important" }}>
               {/* <div class="title">My Request - Pending Request</div> */}
               <i className="zmdi fa fa-inbox" aria-hidden="true"></i>
@@ -411,7 +411,7 @@ export const SummaryDashbord = (props) => {
           </Card>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 const mapStateToProps = (state) => {

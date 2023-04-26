@@ -160,6 +160,17 @@ const Sidebar = (props) => {
                     </Link>
                   </li>
                   )}
+                  {/* IT Requirement Notification List  */}
+                  {/* {
+                    user.department_id === 28 &&
+                    <li className="nav-item">
+                    <Link className="nav-link" to={global.links.requirement_list}>
+                      <i className="nav-icon fa fa-th-list" />
+                      <p>IT Requirement List</p>
+                    </Link>
+                  </li>
+                  } */}
+                  
                   {Authenticator.check(
                     ["supervisor", "team_leader"],
                     ["supervisor_access", "team_leader_access"]
@@ -785,6 +796,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     // logOut: () => dispatch(logOut()),
+    
     setSelectedAttendanceSummary: (data) =>
       dispatch(setSelectedAttendanceSummary(data)),
   };
