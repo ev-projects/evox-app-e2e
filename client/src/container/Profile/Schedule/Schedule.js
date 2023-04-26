@@ -450,11 +450,19 @@ const MonthTeamSchedule = (props) => {
                                 "Rest Day" ? (
                                   "REST DAY"
                                 ) : (
+                                  // <div>
+                                  //   {time_in} - {time_out}
+                                  //   <br></br>
+                                  //   {flex_time_in} - {flex_time_out}
+                                  // </div>
                                   <div>
-                                    {time_in} - {time_out}
-                                    <br></br>
-                                    {flex_time_in} - {flex_time_out}
-                                  </div>
+                                  {time_in !== "Invalid date" && time_in} -
+                                  {time_out !== "Invalid date" && time_out}
+                                  <br></br>
+                                  {flex_time_in !== "Invalid date" &&
+                                    flex_time_in} -
+                                  {flex_time_out !== "Invalid date" && flex_time_out}
+                                </div>
                                 )}
                               </div>
                             </div>
@@ -494,11 +502,19 @@ const MonthTeamSchedule = (props) => {
                                   "Rest Day" ? (
                                     "REST DAY"
                                   ) : (
+                                    // <div>
+                                    //   {time_in} - {time_out}
+                                    //   <br></br>
+                                    //   {flex_time_in} - {flex_time_out}
+                                    // </div>
                                     <div>
-                                      {time_in} - {time_out}
-                                      <br></br>
-                                      {flex_time_in} - {flex_time_out}
-                                    </div>
+                                    {time_in !== "Invalid date" && time_in} -
+                                    {time_out !== "Invalid date" && time_out}
+                                    <br></br>
+                                    {flex_time_in !== "Invalid date" &&
+                                      flex_time_in} -
+                                    {flex_time_out !== "Invalid date" && flex_time_out}
+                                  </div>
                                   )}
                                 </div>
                               </div>
@@ -571,11 +587,19 @@ const MonthTeamSchedule = (props) => {
                                   ) ? (
                                     "REST DAY"
                                   ) : (
+                                    // <div>
+                                    //   {time_in} - {time_out}
+                                    //   <br></br>
+                                    //   {flex_time_in} - {flex_time_out}
+                                    // </div>
                                     <div>
-                                      {time_in} - {time_out}
-                                      <br></br>
-                                      {flex_time_in} - {flex_time_out}
-                                    </div>
+                                    {time_in !== "Invalid date" && time_in} -
+                                    {time_out !== "Invalid date" && time_out}
+                                    <br></br>
+                                    {flex_time_in !== "Invalid date" &&
+                                      flex_time_in} -
+                                    {flex_time_out !== "Invalid date" && flex_time_out}
+                                  </div>
                                   )}
                                 </div>
                               </div>
