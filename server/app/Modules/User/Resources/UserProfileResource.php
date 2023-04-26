@@ -43,6 +43,7 @@ class UserProfileResource extends JsonResource
             'emp_num' => $this->emp_num,
             'bhr_num' => $this->bhr_num,
             'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
+            'department_id' => $this->department_id,
             'email' => $this->email,
             'username' => $this->username,
             'first_name' => $this->first_name,

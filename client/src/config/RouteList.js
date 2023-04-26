@@ -89,6 +89,7 @@ import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
 import Referjobs from "../components/JobReferal/Referjobs";
 import MyTeamAllRequest from "../container/MyTeam/MyTeamRequests/MyTeamAllRequest";
 import MyOverallRequest from "../container/MyOverallRequest/MyOverallRequest";
+import ItRequirementList from "../components/MeetingRoomBooking/ItRequirementList";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -152,10 +153,12 @@ const RoutesList = (props) => {
           <Meetingroomapproval />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.job_referal}>
+        {/* <ProtectedRoute exact path={global.links.job_referal}>
           <Referjobs />
+        </ProtectedRoute> */}
+        <ProtectedRoute exact path={global.links.requirement_list}>
+        <ItRequirementList/>
         </ProtectedRoute>
-        
         <ProtectedRoute exact path={global.links.my_request}>
           <MyRequests role={['employee']} permission={['employee_access']}/>
         </ProtectedRoute>

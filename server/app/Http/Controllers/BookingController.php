@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Booking;
 use App\itrequirement;
+use Mail;
 use App\Modules\User\Resources\UserListResourceCollection;
-
 class BookingController extends Controller
 {
     public function GetBookingRoomDetails($roomid)
@@ -92,8 +92,35 @@ class BookingController extends Controller
                 }
                 itrequirement::insert($answers);
             }
-           
+            if($totalhours <= 2){
+                if(count($requirement) > 0){
+        $requirementlist= DB::table('itrequirements')
+        ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'rooms.name', DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
+        ->join('bookings','itrequirements.bookingid','=','bookings.id')
+        ->join('rooms','bookings.room_id','=','rooms.id')
+        ->join('locations','rooms.location','=','locations.id')
+        ->join('users','users.id','=','bookings.user_id')
+        ->where('bookings.id','=', $lastbookingid)
+        ->groupBy('itrequirements.bookingid')
+        ->get();
 
+        $array1 =  [
+                    'data' => $requirementlist,
+        ];
+        
+        try {
+      
+            Mail::send('mail', $array1  , function ($message)
+            {
+                $message->to('helpdesk@eastvantage.com', 'HelpDesk')
+                    ->subject('Request for IT Requirement for Meeting Room');
+                $message->from('evox@eastvantage.com', 'Evox');
+            });
+                } catch (Exception $e) {
+                    return error_response(trans('messages.error_default'), $e);
+                } 
+            }
+        }
             if($savedata1){
                 return response()->json([
          
@@ -220,7 +247,12 @@ class BookingController extends Controller
           }else{
             $startdate = $request -> Startdatetime;
             $enddate = $request -> EnddateTime;
-            $count = 0;
+            $itcount = 0;
+            $itcount = DB::table('itrequirements')
+            ->select(DB::raw("Count(*) as count"))
+            ->where('bookingid','=',$id)
+            ->get();
+            
     //       $eventcount = DB::select( DB::raw("SELECT count(*) as count FROM `bookings` WHERE ('". $startdate."' BETWEEN DATE_ADD(`start_date`, INTERVAL 1 SECOND) and DATE_SUB(`end_date`, INTERVAL 1 SECOND) OR '".$enddate."' BETWEEN DATE_ADD(`start_date`, INTERVAL 1 SECOND) and `end_date` OR DATE_ADD(`start_date`, INTERVAL 1 SECOND) BETWEEN  '". $startdate."' AND '".$enddate."' OR DATE_SUB(`end_date`, INTERVAL 1 SECOND) BETWEEN '". $startdate."' AND '".$enddate."') AND status = 'approved'"));
         
     //       foreach($eventcount as $items)
@@ -237,6 +269,37 @@ class BookingController extends Controller
              ]);
              $message = $request->Status == "declined" ? "Request Deny Successfully":"Request Approved Successfully";
              if($updatestatus){
+               if($request->Status != "declined" )  {
+                if($itcount[0]->count != 0){
+                    $requirementlist= DB::table('itrequirements')
+                    ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'rooms.name', DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
+                    ->join('bookings','itrequirements.bookingid','=','bookings.id')
+                    ->join('rooms','bookings.room_id','=','rooms.id')
+                    ->join('locations','rooms.location','=','locations.id')
+                    ->join('users','users.id','=','bookings.user_id')
+                    ->where('bookings.id','=', $id)
+                    ->groupBy('itrequirements.bookingid')
+                    ->get();
+            
+                    $array1 =  [
+                                'data' => $requirementlist,
+                    ];
+                    
+                    try {
+                  
+                        Mail::send('mail', $array1  , function ($message)
+                        {
+                            $message->to('helpdesk@eastvantage.com', 'HelpDesk')
+                                ->subject('Request for IT Requirement for Meeting Room');
+                            $message->from('evox@eastvantage.com', 'Evox');
+                        });
+                            } catch (Exception $e) {
+                                return error_response(trans('messages.error_default'), $e);
+                            } 
+                }
+                   
+                }
+               
                  return response()->json([
           
                       'status' => '200',
@@ -304,6 +367,99 @@ class BookingController extends Controller
      } catch (Exception $e) {
          return error_response(trans('messages.error_default'), $e);
      }
+
+
+
+
      }
+
+     public function get_itrequirement_roomlist(){
+        
+        try {
+
+        $country_id = auth()->user()->country_id;
+  
+        $requirementlist= DB::table('itrequirements')
+        ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"), 'bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'rooms.name', DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
+        ->join('bookings','itrequirements.bookingid','=','bookings.id')
+        ->join('rooms','bookings.room_id','=','rooms.id')
+        ->join('users','users.id','=','bookings.user_id')
+        ->where('users.country_id','=',$country_id)
+        ->where('bookings.start_date','>=',DB::raw("DATE_FORMAT(NOW(),'%Y-%m-%d')"))
+        ->groupBy('itrequirements.bookingid')
+        ->paginate(10);
+            return [
+                'data' => $requirementlist,
+                'pagination' => [
+                    'total' => $requirementlist->total(),
+                    'count' => $requirementlist->count(),
+                    'per_page' => $requirementlist->perPage(),
+                    'current_page' => $requirementlist->currentPage(),
+                    'last_page' => $requirementlist->lastPage(),
+                ],
+                
+            ];
+
+        // Before Fecthing  the IT Requirement
+
+        //  $requirementlist = DB::table('itrequirements')
+        //  ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"), 'bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'rooms.name')
+        //  ->join('bookings','itrequirements.bookingid','=','bookings.id')
+        //  ->join('rooms','bookings.room_id','=','rooms.id')
+        //  ->join('users','users.id','=','bookings.user_id')
+        //  ->where('users.country_id','=',$id)
+        //  ->paginate(10);
+        //     return [
+        //         'data' => $requirementlist,
+        //         'pagination' => [
+        //             'total' => $requirementlist->total(),
+        //             'count' => $requirementlist->count(),
+        //             'per_page' => $requirementlist->perPage(),
+        //             'current_page' => $requirementlist->currentPage(),
+        //             'last_page' => $requirementlist->lastPage(),
+        //         ],
+                
+        //     ];
+
+
+     } catch (Exception $e) {
+         return error_response(trans('messages.error_default'), $e);
+     }
+
+
+
      
+     }
+
+
+     function sendemail(){
+        
+        $requirementlist= DB::table('itrequirements')
+        ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'rooms.name', DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
+        ->join('bookings','itrequirements.bookingid','=','bookings.id')
+        ->join('rooms','bookings.room_id','=','rooms.id')
+        ->join('locations','rooms.location','=','locations.id')
+        ->join('users','users.id','=','bookings.user_id')
+        ->where('bookings.id','=', 113)
+        ->groupBy('itrequirements.bookingid')
+        ->get();
+
+        $array1 =  [
+                    'data' => $requirementlist,
+        ];
+        
+        try {
+      
+            Mail::send('mail', $array1  , function ($message)
+            {
+                $message->to('helpdesk@eastvantage.com', 'HelpDesk')
+                    ->subject('Test.');
+                $message->from('evox@eastvantage.com', 'Evox');
+            });
+            echo "Successfully sent the email";
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        } 
+
+    }
 }
