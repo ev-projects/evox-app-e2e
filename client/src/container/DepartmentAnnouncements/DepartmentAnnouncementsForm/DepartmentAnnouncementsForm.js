@@ -82,7 +82,8 @@ class DepartmentAnnouncementsForm extends Component {
     formData.set('content', this.state.content != null ? this.state.content : null);
    
     formData.set('set_all', values['set_all'] == true ? 1: 0);
-        if(values['set_all'] == false){
+    console.log(values["set_all"] ,values["set_all"] == false ,values["set_all"] == 0,values["set_all"] == "0");
+        if(values["set_all"] == false || values["set_all"] == 0 || values["set_all"] == "0"){
           formData.set('selectedDepartments', this.state.selectedDepartments!= null?(Formatter.array_to_getvalue(this.state.selectedDepartments)).toString(): (Formatter.array_to_getvalue(values['selectedDepartments'])));
         }
         console.log(formData)
