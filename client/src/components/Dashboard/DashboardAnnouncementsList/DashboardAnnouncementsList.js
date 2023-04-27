@@ -130,7 +130,7 @@ const AnnouncementListTable = (props) => {
         return < >
 
           <Row>
-              {props.departmentAnnouncement.depAnnouncementlist.slice(0,4).map((announcement, index) => {
+              {props.departmentAnnouncement.depAnnouncementlist.slice(0,3).map((announcement, index) => {
 
               // let default_link  = announcement.on_link == 1 ? announcement.link : default_link
                 return <Col  md={4} className="announcement-list-content dashbaord-content card-content">
@@ -159,8 +159,8 @@ const AnnouncementListTable = (props) => {
               })}
 
             <ShowMore
-                items={props.departmentAnnouncement.depAnnouncementlist.slice(4, props.departmentAnnouncement.depAnnouncementlist.length)}
-                by={2}
+                items={props.departmentAnnouncement.depAnnouncementlist.slice(3, props.departmentAnnouncement.depAnnouncementlist.length)}
+                by={3}
               >
                 {({
                   current,

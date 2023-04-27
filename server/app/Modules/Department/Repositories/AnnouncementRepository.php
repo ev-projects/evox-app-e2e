@@ -101,7 +101,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $saved_dep_announcement = $dep_announcement;
             
             if(is_valid($dep_ids)){
-                $dep_id = array_diff($dep_ids,  [auth()->user()->department_id]);
+                $dep_ids = array_diff($dep_ids,  [auth()->user()->department_id]);
                 foreach( $dep_ids as $dep_id){
                     $dep_announcement = new Announcement;
 
@@ -245,7 +245,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     //                 dd($collection_todelete);
                     // Announcement::forceDelete($collection_todelete->toArray());
                     
-                $dep_id = array_diff($dep_ids,  [auth()->user()->department_id]);
+                $dep_ids = array_diff($dep_ids,  [auth()->user()->department_id]);
                 foreach( $dep_ids as $dep_id){
                     $dep_announcement = new Announcement;
 
@@ -359,10 +359,20 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             // ->get();
             if($request->dep_id == "all" || $request->dep_id == null){
                 // $announcements_list = Announcement::latest()->where('dep_id',"!=", null)->where(function ($query) use ($date_time) {
-                $announcements_list = Announcement::latest()->where(function ($query) use ($date_time) {
+                // $announcements_list = Announcement::latest()->where(function ($query) use ($date_time) {
+                $list_all = Announcement::latest()->where('set_all',1)->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
-                });
+                })->get();
+
+                $list_dep = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                    $query->where('release_date', '<=', $date_time);
+                    $query->where('expiry_date', '>', $date_time);
+                })->get();
+
+                return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');;
+
+              
             }
 
             if( $request->dep_id != null  && is_numeric($request->dep_id)){
@@ -382,7 +392,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             //     $announcements_list->where("category", "Department");
             // }
 
-            $announcements_list = $announcements_list->get();
+            $announcements_list = $announcements_list->get()->sortByDesc('release_date');
 
             return $announcements_list;
             

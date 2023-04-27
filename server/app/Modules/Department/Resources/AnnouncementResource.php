@@ -39,7 +39,7 @@ class AnnouncementResource extends JsonResource
                 'selectedDepartments'=> $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()):null,
               
               
-                'created_at' => $this->created_at->format('Y-m-d')
+                'created_at' => $this->created_at->format('Y-m-d h:m:s')
             );
         }
 
