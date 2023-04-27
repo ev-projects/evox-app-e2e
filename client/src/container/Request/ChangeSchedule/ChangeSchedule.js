@@ -72,9 +72,15 @@ class ChangeSchedule extends Component {
 	
 	
 	let i = 0;
+	console.log(values);
+	
     for (var key in values) {
 
-		
+	let time_diff = 0;	
+	if(this.props.instance.user?.user_offset_seconds != null && this.props.instance.user?.user_offset_seconds != undefined){
+		time_diff = this.props.instance.user?.user_offset_seconds- this.props.user?.user_offset_seconds; 	
+	}
+
 // -------------create new dates depending on timezone -------------
 	  if(key =='cst_schedule_details'){
 		
@@ -86,22 +92,23 @@ class ChangeSchedule extends Component {
 				if(keyDate != 'break_time'){
 					
 					newValues[key][keyList][keyDate] = values[key][keyList][keyDate];
-
+		
 				}
 				
 			}
-			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).format('HH')) || 
-			parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HH'))){
+
+			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HH')) || 
+			parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HH'))){
 				nsdAlertCall = true;
 				// console.log("1a");
 				
 			}
-			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) < 7 ){
+			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) < 7 ){
 				nsdAlertCall = true;
 				// console.log("1b");
 			
 			}
-			if(parseInt(moment(newValues[key][keyList]['end_time']).format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HHmm')) > 2200 ){
+			if(parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 ){
 				nsdAlertCall = true;
 				// console.log("1c");
 				
@@ -109,11 +116,11 @@ class ChangeSchedule extends Component {
 			
 			
 
-			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HHmm'))  >  parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HHmm'))  ){
+			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HHmm'))  >  parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HHmm'))  ){
 				beforeFlexAlertCall = true;
 				// console.log(beforeFlexAlertCall);
 				// console.log("1");
-			}else if(parseInt(moment(newValues[key][keyList]['start_time']).format('HHmm'))  <  parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HHmm')) - 1200){
+			}else if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HHmm'))  <  parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HHmm')) - 1200){
 				beforeFlexAlertCall = true;
 				// console.log(beforeFlexAlertCall);
 				// console.log("2");
