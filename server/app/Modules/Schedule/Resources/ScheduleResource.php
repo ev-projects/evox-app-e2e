@@ -35,10 +35,13 @@ class ScheduleResource extends JsonResource
 
              # Create Resource for Schedule Details for Employee POV
              $pov_schedule_details = [];
-             foreach( $this->schedule_details()->get() as $schedule_detail){
-                 $pov_schedule_details[ $schedule_detail->day ] = $schedule_detail->getFormattedDetailPOV($this->owner()->first());
-             }
 
+            
+             foreach( $this->schedule_details()->get() as $schedule_detail){
+                if($this->owner() != null){
+                 $pov_schedule_details[ $schedule_detail->day ] = $schedule_detail->getFormattedDetailPOV($this->owner()->first());
+                }
+             }
             $result =  array_merge( 
                 array(
                     'id' => $this->id,
