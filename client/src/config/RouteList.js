@@ -221,11 +221,11 @@ const RoutesList = (props) => {
         </ProtectedRoute>
         
 
-        <ProtectedRoute exact path={global.links.dtr_summary}>
+        {/* <ProtectedRoute exact path={global.links.dtr_summary}>
           <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
-        </ProtectedRoute>
+        </ProtectedRoute> */}
 
-        <ProtectedRoute exact path={global.links.dtr_summary_new}>
+        <ProtectedRoute exact path={global.links.dtr_summary}>
           {/* <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
           <DtrSummaryNew role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
