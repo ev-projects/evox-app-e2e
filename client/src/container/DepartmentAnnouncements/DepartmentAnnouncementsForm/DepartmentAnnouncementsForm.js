@@ -80,7 +80,7 @@ class DepartmentAnnouncementsForm extends Component {
     formData.set('inputFileWasDeleted', false);
     formData.set('on_link', this.state.on_link);
     formData.set('content', this.state.content != null ? this.state.content : null);
-   
+    values['set_all'] = values['set_all'] != null && values['set_all'] != undefined ?values['set_all'] : false;
     formData.set('set_all', values['set_all'] == true ? 1: 0);
     console.log(values["set_all"] ,values["set_all"] == false ,values["set_all"] == 0,values["set_all"] == "0");
         if(values["set_all"] == false || values["set_all"] == 0 || values["set_all"] == "0"){
