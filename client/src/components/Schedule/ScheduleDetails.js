@@ -207,6 +207,118 @@ const StandardSchedDetailsForm = (props) => {
       </Field>);
 }
 
+const StandardSchedDetailsFormWithTimezone = (props) => {
+    return (<Field>
+        {({ field, form }) => (
+          <div>
+          <Form.Row>
+            <Col sm={4}>
+              <Form.Label>On Duty :</Form.Label>
+              <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    selected={field.value.std_schedule_details[0].start_time}              
+                    // onChange={(date) => onSelectTimeHandlerStd(date,0,form.setFieldValue,'std_')}
+                    onChange={(date) => {onSelectTimeHandlerStd(date,0,form.setFieldValue,'std_');
+                onSelectTimeHandlerStdOnTimezone(date,0,form.setFieldValue,'pov_',props.offset_data)}}
+                  />
+              <Form.Control.Feedback type="invalid">
+                <ErrorMessage component="div" name="std_schedule_details[0].start_time" className="input-feedback" />
+              </Form.Control.Feedback>
+            </Col>
+            <Col sm={4}>
+            <Form.Label>Off Duty :</Form.Label>
+                <DatePicker 
+                      className="form-control"                      
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm" 
+                      selected={field.value.std_schedule_details[0].end_time}                
+                      onChange={date => form.setFieldValue('std_schedule_details[0].end_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="std_schedule_details[0].end_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+            <Col sm={4}>
+            <Form.Label>Break :</Form.Label>
+                <DatePicker 
+                      className="form-control"                      
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Break"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm" 
+                      selected={field.value.std_schedule_details[0].break_time}                
+                      onChange={date => form.setFieldValue('std_schedule_details[0].break_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="std_schedule_details[0].break_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+            </Form.Row>
+                    {/* ON TIMEZONE POV //////////////////////////////////////////////////*/}
+        { true ? 
+        <Collapse in={props.open_contrast}>
+          <div className="changeSchedulePOV">
+          <Form.Row>
+              <Form.Group as={Col} sm={4}>
+                  <Form.Label>On Duty - {props.pov_timezone_info}</Form.Label> 
+                  <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    placeholder="On Duty"
+                    selected={field.value?.pov_schedule_details[0]?.start_time != undefined ?field.value.pov_schedule_details[0].start_time  : null}              
+                    readOnly
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    <ErrorMessage component="div" name={`pov_schedule_details.start_time`}className="input-feedback" />
+                  </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group as={Col} sm={4} >
+                  <Form.Label>Off Duty</Form.Label>
+                  <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    placeholder="On Duty"
+                    selected={field.value?.pov_schedule_details[0]?.end_time != undefined ?field.value.pov_schedule_details[0].end_time : null}              
+                    readOnly
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    <ErrorMessage component="div" name={`pov_schedule_details.end_time`}className="input-feedback"/>
+                  </Form.Control.Feedback>
+              </Form.Group>
+          </Form.Row>
+      
+          
+          </div>
+          </Collapse>
+          :null
+        }
+          </div>
+        )}
+      </Field>);
+  }
+
 const FlexibleSchedDetailsForm = (props) => {
    return (<Field>
         {({ field, form }) => (
@@ -312,6 +424,227 @@ const FlexibleSchedDetailsForm = (props) => {
           </div>
         )}
       </Field>);
+}
+
+  const FlexibleSchedDetailsFormWithTimezone = (props) => {
+    
+    return (<Field>
+      
+        {({ field, form }) => (
+        
+          <div>
+          <Form.Row>
+            <Col sm={4}>
+                <Form.Label>On Duty :</Form.Label>
+                <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="On Duty"
+                      selected={field.value.flx_schedule_details[0].start_time}              
+                      onChange={(date) => {onSelectTimeHandlerStd(date,0,form.setFieldValue,'flx_'); console.log()
+                      onSelectTimeHandlerStdOnTimezone(date,0,form.setFieldValue,'pov_',props.offset_data)}}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].start_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+
+            <Col sm={4}>
+                <Form.Label>Off Duty :</Form.Label>
+                <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="On Duty"
+                      selected={field.value.flx_schedule_details[0].end_time}                
+                      onChange={date => form.setFieldValue('flx_schedule_details[0].end_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].end_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+        </Form.Row>
+
+        <Form.Row>
+            <Col sm={4}>
+                <Form.Label>Flexi Start :</Form.Label>
+                    <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="On Duty"
+                      selected={field.value.flx_schedule_details[0].start_flexy_time}                
+                      //  onChange={(date) => onSelectTimeHandlerFlexi(date,0,form.setFieldValue,'flx_')}
+                      onChange={(date) => {onSelectTimeHandlerFlexi(date,0,form.setFieldValue,'flx_');
+                      onSelectTimeHandlerStdOnTimezone(date,0,form.setFieldValue,'pov_',props.offset_data)}}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].start_flexy_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+
+            <Col sm={4}>
+                <Form.Label>Flexi End :</Form.Label>
+                    <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="On Duty"
+                      selected={field.value.flx_schedule_details[0].end_flexy_time}                
+                      onChange={date => form.setFieldValue('flx_schedule_details[0].end_flexy_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].end_flexy_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+
+            <Col sm={4}>
+                <Form.Label>Break :</Form.Label>
+                    <DatePicker 
+                      className="form-control"
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm"
+                      placeholder="Break"
+                      selected={field.value.flx_schedule_details[0].break_time}                
+                      onChange={date => form.setFieldValue('flx_schedule_details[0].break_time', date)}
+                    />
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name="flx_schedule_details[0].break_time" className="input-feedback" />
+                </Form.Control.Feedback>
+            </Col>
+        </Form.Row>
+        {/* ON TIMEZONE POV //////////////////////////////////////////////////*/}
+        {true ? 
+        <Collapse in={props.open_contrast}>
+          <div className="changeSchedulePOV">
+          <Form.Row>
+              <Form.Group as={Col} sm={4}>
+                  <Form.Label>On Duty - {props.pov_timezone_info}</Form.Label> 
+                  <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    placeholder="On Duty"
+                    selected={field.value?.pov_schedule_details[0]?.start_time != undefined ?field.value.pov_schedule_details[0].start_time  : null}              
+                    readOnly
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    <ErrorMessage component="div" name={`pov_schedule_details.${0}.start_time`}className="input-feedback" />
+                  </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group as={Col} sm={4} >
+                  <Form.Label>Off Duty</Form.Label>
+                  <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    placeholder="On Duty"
+                    selected={field.value?.pov_schedule_details[0]?.end_time != undefined ?field.value.pov_schedule_details[0].end_time : null}              
+                    readOnly
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    <ErrorMessage component="div" name={`pov_schedule_details.${0}.end_time`}className="input-feedback"/>
+                  </Form.Control.Feedback>
+              </Form.Group>
+          </Form.Row>
+          <Form.Row>
+              <Form.Group as={Col} sm={4} >
+              <Form.Label>Flexi Start</Form.Label>
+                  <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    placeholder="On Duty"
+                    selected={field.value?.pov_schedule_details[0]?.start_flexy_time ? field.value.pov_schedule_details[0].start_flexy_time: null}              
+                    readOnly
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    <ErrorMessage component="div" name={`pov_schedule_details.${0}.start_flexy_time`}className="input-feedback" />
+                  </Form.Control.Feedback>
+              </Form.Group>
+    
+              <Form.Group as={Col} sm={4}>
+              <Form.Label>Flexi End </Form.Label>
+                  <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    placeholder="On Duty"
+                    selected={field.value?.pov_schedule_details[0]?.end_flexy_time ? field.value.pov_schedule_details[0].end_flexy_time: null}              
+            
+                    readOnly
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    <ErrorMessage component="div" name={`pov_schedule_details.${0}.end_flexy_time`}className="input-feedback" />
+                  </Form.Control.Feedback>
+              </Form.Group>
+{/*     
+              <Form.Group as={Col} sm={4}>
+              <h6>Break </h6>
+                  <DatePicker 
+                    className="form-control"
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={60}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm"
+                    placeholder="On Duty"
+                    selected={field.value?.pov_schedule_details[props.index]?.break_time != undefined ?field.value.pov_schedule_details[props.index].break_time : null}              
+
+                    // selected={field.value.pov_schedule_details[props.index].break_time}              
+                    readOnly
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    <ErrorMessage component="div" name={`pov_schedule_details.${props.index}.break_time`}className="input-feedback" />
+                  </Form.Control.Feedback>
+          </Form.Group> */}
+          </Form.Row>
+          
+          </div>
+          </Collapse>
+          :null
+        }
+         </div>
+       )}
+     </Field>);
 }
 
 const Scheduledetails = (props) => {
@@ -530,7 +863,7 @@ const ScheduledetailsWithTimezone = (props) => {
       </Form.Group>
       </Form.Row>
         {/* ON TIMEZONE POV //////////////////////////////////////////////////*/}
-        {props.on_approval ? 
+        {props.on_approval || props.show_pov? 
         <Collapse in={props.open_contrast}>
           <div className="changeSchedulePOV">
           <Form.Row>
@@ -754,7 +1087,9 @@ export {
   ScheduledetailsWithTimezone,
   onSelectTimeHandlerStd,
   onSelectTimeHandlerFlexi,
+  FlexibleSchedDetailsFormWithTimezone,
   StandardSchedDetailsForm,
+  StandardSchedDetailsFormWithTimezone,
   FlexibleSchedDetailsForm,
   ScheduleHolidayPolicy,
   SchedulePolicy,
