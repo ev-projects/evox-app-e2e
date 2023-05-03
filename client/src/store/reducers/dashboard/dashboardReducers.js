@@ -20,6 +20,7 @@ const initState = {
     myovertimerequest:null,
     myrestdayrequest:null,
     mychangeschedulerequest:null,
+    worktour:true,
 }
 
 const dashboardReducers = (state = initState, action) => {
@@ -104,6 +105,12 @@ const dashboardReducers = (state = initState, action) => {
                         tommorowleaves : action.tommorowleaves,
                     }
                     break;
+                    case "WORK_TOUR":
+                        result = {
+                            ...state,
+                            worktour : action.worktour,
+                        }
+                        break;
             
         default:
             result = state;

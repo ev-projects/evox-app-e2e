@@ -503,8 +503,7 @@ class User extends Authenticatable implements JWTSubject
                 $user_id_array = array_merge( $user_id_array, $teams->team_users()->pluck('id')->toArray());
             }
             return User::whereIn('users.id', $user_id_array);
-          
-
+  
         // If not, fetch the default users handled via the users_supervisors pivot table
         } else {
             return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');

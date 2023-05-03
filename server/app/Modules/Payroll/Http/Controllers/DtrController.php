@@ -83,6 +83,8 @@ class DtrController extends Controller
      */
     public function quickpunch(Request $request){    
         try { 
+
+           
             $biometrix_collection = Collection::make();
             $biometrics = new Biometrics();
     

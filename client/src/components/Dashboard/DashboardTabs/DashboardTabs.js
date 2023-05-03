@@ -38,30 +38,34 @@ class DashboardTabs extends Component {
 
       return <>
           <Tabs
-            defaultActiveKey="all-announcements"
+            defaultActiveKey= {Authenticator.check(
+              ["supervisor", "team_leader"],
+              ["supervisor_access", "team_leader_access"]
+            ) ? "evox-summary" : "all-announcements"}
             id="fill-tab-example"
             className="mb-3 col-9 announcement-tabs"
             fill
             // onSelect= { this.handleSelect
             // }
           >
-              <Tab eventKey="all-announcements" title="All Announcements">
-                <DashboardAnnouncementsList></DashboardAnnouncementsList>
-              </Tab>
-              <Tab eventKey="job-openings" title="Job Opening">
-                <JobOpenings></JobOpenings>
-              </Tab>
-              <Tab eventKey="evox-updates" title="Evox Updates">
-                <ChangeLogs></ChangeLogs>
-              </Tab>
-              {Authenticator.check(
+            {Authenticator.check(
                     ["supervisor", "team_leader"],
                     ["supervisor_access", "team_leader_access"]
                   ) && (
-              <Tab eventKey="evox-summary" title="Summary">
+              <Tab eventKey="evox-summary" title="Summary" tabClassName="newfeature4">
                 <SummaryDashbord></SummaryDashbord>
               </Tab>
                   )}
+              <Tab eventKey="all-announcements" title="All Announcements" tabClassName="newfeature1">
+                <DashboardAnnouncementsList></DashboardAnnouncementsList>
+              </Tab>
+              <Tab eventKey="job-openings" title="Job Opening" tabClassName="newfeature2">
+                <JobOpenings></JobOpenings>
+              </Tab>
+              <Tab eventKey="evox-updates" title="Evox Updates" tabClassName="newfeature3">
+                <ChangeLogs></ChangeLogs>
+              </Tab>
+              
               {/* <Tab eventKey="contact" title="Contact" disabled>
                 
               </Tab> */}

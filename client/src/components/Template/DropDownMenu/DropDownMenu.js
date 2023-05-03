@@ -42,7 +42,7 @@ class DropDownMenu extends Component {
     // console.log(user);
 
     return (
-              <div class="btn-group main-dropdown-menu dropdown">
+              <div class="btn-group main-dropdown-menu dropdown newfeature5">
                       <button type="button" class="btn  user-img" data-toggle="dropdown" data-hover="dropdown"  data-close-others="false">
                         <img  className="image-smaller img-circle"  src={profile_picture_url} />
                       </button>
