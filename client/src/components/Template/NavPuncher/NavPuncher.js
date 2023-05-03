@@ -146,7 +146,7 @@ class NavPuncher extends Component {
             <Button className="nav-clock-button dropdown newfeature"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
           ) : (
             (this.props.dashboard?.recent_dtr[1]?.time_in && this.props.dashboard?.recent_dtr[1]?.time_out) ?
-            (<><Button  type="submit"  className="nav-clock-button dropdown  btn-secondary" disabled> <i className="fa fa-sun-o" /> Day Completed</Button></>) : 
+            (<><Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-sun-o" /> Day Completed</Button></>) : 
             
             (<><Button className="nav-clock-button dropdown newfeature" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button></>)
             // <Button className="nav-clock-button dropdown" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
