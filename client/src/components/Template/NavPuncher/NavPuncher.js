@@ -133,22 +133,22 @@ class NavPuncher extends Component {
 					this.props.dashboard?.recent_dtr[0]?.is_rest_day == 1 ? (
 						<>
 							<br />
-              <Button  type="submit"  className="nav-clock-button dropdown neutral"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+              <Button  type="submit"  className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Clock Loading</Button>
 						</>
 					) : (
 					<>
-            <Button className="nav-clock-button dropdown" onClick={(e)=> { setFieldValue('quickpunch','out'); setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+            <Button className="nav-clock-button dropdown newfeature" onClick={(e)=> { setFieldValue('quickpunch','out'); setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
 					</>
 					)
 				) : (
 					<>
           {!(this.props.dashboard?.recent_dtr[1]?.time_in)? (
-            <Button className="nav-clock-button dropdown"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
+            <Button className="nav-clock-button dropdown newfeature"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
           ) : (
             (this.props.dashboard?.recent_dtr[1]?.time_in && this.props.dashboard?.recent_dtr[1]?.time_out) ?
             (<><Button  type="submit"  className="nav-clock-button dropdown  btn-secondary" disabled> <i className="fa fa-sun-o" /> Day Completed</Button></>) : 
             
-            (<><Button className="nav-clock-button dropdown" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button></>)
+            (<><Button className="nav-clock-button dropdown newfeature" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button></>)
             // <Button className="nav-clock-button dropdown" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
           )}
 			
@@ -158,8 +158,8 @@ class NavPuncher extends Component {
       this.props.dashboard?.isNavDtrLoaded == true  ? (
         <>
         		
-
-          <Button className="nav-clock-button dropdown"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
+        
+          <Button className="nav-clock-button dropdown newfeature"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
 
       
         </>)
@@ -167,7 +167,7 @@ class NavPuncher extends Component {
         <>
         	
 
-            <Button  type="submit"  className="nav-clock-button dropdown neutral"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+            <Button  type="submit"  className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Clock Loading</Button>
 
         </>)
 

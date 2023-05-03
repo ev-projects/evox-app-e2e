@@ -425,7 +425,7 @@ const Sidebar = (props) => {
               {Authenticator.check('supervisor', 'manage_department_announcements') &&
                           
                           <React.Fragment>
-                          <li className="nav-item has-treeview ">
+                          <li className="nav-item has-treeview newfeature_announcements">
                             <a className="nav-link" >
                               <i className="nav-icon fa fa-newspaper-o" />
                               <p>
