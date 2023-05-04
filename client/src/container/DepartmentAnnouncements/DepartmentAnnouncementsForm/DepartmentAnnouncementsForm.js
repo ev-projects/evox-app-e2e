@@ -16,6 +16,7 @@ import PageLoading from "../../PageLoading";
 
 import DateFormatter from "../../../services/DateFormatter";
 import { createDepartmentAnnouncement, fetchDepartmentAnnouncementStrict, updateDepartmentAnnouncement, clearDepartmentAnnouncementInstance } from '../../../store/actions/announcement/departmentAnnouncementActions';
+import {  fetchDepartmentList } from '../../../store/actions/lookup/lookupListActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 import { Editor } from '@tinymce/tinymce-react';
@@ -167,6 +168,7 @@ class DepartmentAnnouncementsForm extends Component {
   }
   componentWillMount(){
       // console.log(this.props.params.id);
+    this.props.fetchDepartmentList();
     this.props.clearDepartmentAnnouncementInstance();
     if( this.props.params.id != undefined ) { 
       this.props.fetchDepartmentAnnouncementStrict( this.props.params.id )
@@ -207,8 +209,17 @@ class DepartmentAnnouncementsForm extends Component {
     let title = 'Announcement Form';
 
     if( (method == 'store') || ([ 'update'].includes( method ) && this.props.isInstanceLoaded) ){
-      const department_list = this.props.user.departments_handled.length > 0 ?(Formatter.array_to_multiselect_array( this.props.user.departments_handled, 'department_name', 'id')): [];;
+      // const department_list = this.props.user.departments_handled.length > 0 ?(Formatter.array_to_multiselect_array( this.props.user.departments_handled, 'department_name', 'id')): [];;
+      
+      
+      let department_list = [];
 
+      
+      if(!this.state.reloadingDepartmentList  && this.props.department != undefined){
+        // console.log((Formatter.array_to_multiselect_array(this.props.department, 'department_name', 'id')));
+         department_list =this.props.department.length > 0 ?(Formatter.array_to_multiselect_array(this.props.department, 'department_name', 'id')): [];
+
+      }
       return <Wrapper {...this.props} >
         <Formik 
         enableReinitialize
@@ -480,6 +491,7 @@ const validationSchema = Yup.object().shape({
 
 const mapStateToProps = (state) => {
   return {
+    department        : state.lookup.department,
     constant          : state.constant,
     instance          : state.departmentAnnouncement.instance,
     isInstanceLoaded  : state.departmentAnnouncement.isInstanceLoaded,
@@ -488,6 +500,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
+      fetchDepartmentList               : () => dispatch( fetchDepartmentList() ),
       fetchDepartmentAnnouncementStrict        : ( id ) => dispatch( fetchDepartmentAnnouncementStrict( id ) ),
       clearDepartmentAnnouncementInstance        : ( id ) => dispatch( clearDepartmentAnnouncementInstance( id ) ),
       createDepartmentAnnouncement : ( post_data ) => dispatch( createDepartmentAnnouncement( post_data ) ),
