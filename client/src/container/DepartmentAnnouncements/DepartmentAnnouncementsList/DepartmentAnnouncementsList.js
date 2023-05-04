@@ -97,15 +97,33 @@ class DepartmentAnnouncementsList extends Component {
 
 
 
-                                  <Link to={{
+                                  {/* <Link to={{
                                       pathname: global.links.announcement_page + announcement.id
                                   }}
                                       title="Visit Announcement"
                                   >
                                     <Button variant="primary">Visit Page</Button>
                                     
-                                  </Link>
+                                  </Link> */}
 
+                                  {announcement.on_link == 1 ? 
+                    
+                                      <a  href={announcement.link}  target="_blank">
+                                        <Button variant="primary">Visit Link <i className="nav-icon fa fa-link" /></Button>
+                                      </a>
+
+                                      :  
+                                      
+                                      <Link to={{
+                                        pathname: global.links.announcement_page + announcement.id
+                                    }}
+                                        title="Visit Announcement"
+                                    >
+                                      <Button variant="primary">Visit Page  <i className="nav-icon fa fa-newspaper-o" /></Button>
+                                      
+                                    </Link>
+                                        
+                                      }
 
                                   <Button variant="danger" style={{'padding': '10px 15px'}} onClick={ () => this.onDeleteHandler(announcement, index)} > 
                                       <i class="fa fa-trash"></i> Delete 

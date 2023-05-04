@@ -487,6 +487,9 @@ const validationSchema = Yup.object().shape({
       // release_date      : Yup.date().required("This field is required"),
       release_date: Yup.date().required("This field is required").nullable().max(Yup.ref('release_date'), 'Please select a Valid From date.'),
       expiry_date: Yup.date().required("This field is required").nullable().min(Yup.ref('expiry_date'), 'Please select a Valid To date.'),
+      link         : Yup.string().nullable().matches(
+        /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
+        'Enter correct url!')
 });
 
 const mapStateToProps = (state) => {

@@ -230,7 +230,7 @@ const AnnouncementItem = (announcement) => {
                             <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
                             }
                                 <Card.ImgOverlay className={"mask-"+announcement.category} >
-                                  <Card.Title  className="text-white card-text-white">{announcement.title}</Card.Title>
+                                  <Card.Title  className="text-white card-text-white">{announcement.title} {announcement.on_link == 1 ? <i className="nav-icon fa fa-link" />:null}</Card.Title>
                                   <Card.Text  className="card-text-white card-text-overflow">
                                   {announcement.headline}
                                   </Card.Text>

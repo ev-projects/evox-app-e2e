@@ -155,7 +155,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
         log_activity(trans('messages.create_department_announcement_attempt'));
 
-        $dep_announcement = Announcement::where('on_link', 0)->find($id);
+        $dep_announcement = Announcement::find($id);
         
         return  $dep_announcement;
     }
@@ -170,7 +170,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
             $department =  Department::find(Auth::user()->department_id);
             // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
-            $dep_announcement = $department->departments_announcements()->where("category", "Department")->where('on_link', 0)->find($id);
+            $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
         return  $dep_announcement;
     }
 
