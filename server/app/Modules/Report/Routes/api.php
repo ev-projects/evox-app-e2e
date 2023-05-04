@@ -16,7 +16,8 @@ use Illuminate\Http\Request;
 
 # API Call for Reports
 Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-
+    # Get Holiday Dashboard
+    Route::get('get_dashboard_holiday', 'ReportController@get_dashboard_holidays');
     # Get holiday
     Route::get('holidays', 'ReportController@holidays');
 
