@@ -293,7 +293,7 @@ class DepartmentAnnouncementsForm extends Component {
                           checked={values.set_all}
                           onChange={() =>  setFieldValue('set_all',values.set_all==1?0:1)}
                         />
-                        For All Departments &nbsp;
+                       <span className="for-all"> For All Departments</span> &nbsp;
                       </label>
                       <br/>
                         <label className ="dep-announcement-label">By Selected Departments:{values.set_all ?  "(disabled)" : null}</label>

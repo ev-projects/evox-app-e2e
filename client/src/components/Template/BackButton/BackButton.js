@@ -8,7 +8,7 @@ import "./BackButton.css";
 // Component for the Back Button 
 const BackButton = (props) => { 
 
-    return <Button style={ props.style? props.style : null} type="button" className="back-button btn btn-primary" onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>;
+    return <Button style={ props.style? props.style : null} type="button" className="back-button btn btn-secondary" onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>;
 }
 
 const mapStateToProps = (state) => {
