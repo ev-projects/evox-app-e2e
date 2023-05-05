@@ -26,8 +26,11 @@ import * as yup from "yup";
 import EmployeeDashboard from "../../components/Dashboard/EmployeeDashboard";
 import Authenticator from "../../services/Authenticator";
 import HandlerDashboard from "../../components/Dashboard/HandlerDashboard";
-import Joyride, { ACTIONS, EVENTS, STATUS } from "react-joyride";
+import Joyride, { ACTIONS, EVENTS, STATUS, CLOSE } from "react-joyride";
 import SummaryDashbord from "../../components/Summary/SummaryDashbord";
+import dayjs from "dayjs";
+import { format, getDate } from "date-fns";
+import moment from "moment";
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -78,7 +81,6 @@ class Dashboard extends Component {
             target: ".newfeature3",
             content: "See the Most Recent Evox Update",
           },
-          
         ]
       : [
           {
@@ -121,19 +123,45 @@ class Dashboard extends Component {
 
   componentDidMount() {
     // alert(this.props.dashboard?.worktour);
-    this.setState({ run: this.props.dashboard?.worktour });
+    // const user = localStorage.getItem('user');
+    // const userid = user ? JSON.parse(user) : null;
+    // alert(userid);
+    //   if(userid !== this.props.user?.id || userid === null){
+    //     this.setState({ run: this.props.dashboard?.worktour });
+    //   }
+
+
+    var exdate = Date.parse("2023-05-31");
+    var expiredate = format(exdate, "yyyy-MM-dd");
+    const current = new Date();
+    const date = `${current.getFullYear()}-${
+      current.getMonth() + 1
+    }-${current.getDate()}`;
+    var cudate = Date.parse(date);
+    var currentdate = format(cudate, "yyyy-MM-dd");
+    // alert ("CurrentDate: "+ currentdate + "ExpDate: "+expiredate )
+    if (expiredate >= currentdate) this.setState({ run: this.props.dashboard?.worktour });
   }
 
   handleJoyrideCallback = (data) => {
     const { dispatch } = this.props;
     const { action, index, status, type } = data;
-    console.log(index);
     this.setState({ stepIndex: index });
     if (index === 8) {
       this.setState({ run: false });
     }
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       // Need to set our running state to false, so we can restart if we click start again.
+      this.setState({ run: false });
+      dispatch({
+        type: "WORK_TOUR",
+        worktour: false,
+      });
+      // if(status === "finished"){
+      //   localStorage.setItem('user', JSON.stringify(this.props.user?.id));
+      // }
+    }
+    if ([ACTIONS.CLOSE].includes(action)) {
       this.setState({ run: false });
       dispatch({
         type: "WORK_TOUR",
@@ -163,7 +191,10 @@ class Dashboard extends Component {
           steps={steps}
           continuous={true}
           hideBackButton={stepIndex === 1 ? true : false}
-          locale={{ skip: "Skip" }}
+          locale={{
+            skip: "Skip",
+            last: "Close",
+          }}
           showSkipButton={true}
           disableScrolling={true}
           styles={{

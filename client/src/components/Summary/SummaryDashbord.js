@@ -19,9 +19,12 @@ import {
   eventclick,
   get_today_leaves,
   get_tommrow_leaves,
+  get_dashboard_holiday,
 } from "../../store/actions/filters/requestListActions";
+import { format, getDate } from "date-fns";
 import PageLoading from "../../container/PageLoading/PageLoading.js";
 import PageLoadingCard from "../../container/PageLoadingCard.js/PageLoadingCard.js";
+import Holiday from "../Dashboard/Holiday/Holiday.js";
 export const SummaryDashbord = (props) => {
   let history = useHistory();
   const dispatch = useDispatch();
@@ -37,9 +40,27 @@ export const SummaryDashbord = (props) => {
   const [tommrowleaves, setTommrowleaves] = useState([]);
   const [taskcompletestatus, setTaskcompletestatus] = useState(false);
   const [taskcompletestatus1, setTaskcompletestatus1] = useState(false);
+  const [holiday, setHoliday] = useState([]);
   useEffect(() => {
+
+    // Get Current Date And Last Date Of the Current Year
+    const current = new Date();
+    const date = `${current.getFullYear()}-${
+      current.getMonth() + 1
+    }-${current.getDate()}`;
+    const date1 = `${current.getFullYear()}-${
+      12
+    }-${31}`;
+    var cudate = Date.parse(date);
+    var edate = Date.parse(date1);
+    var currentdate = format(cudate, "yyyy-MM-dd");
+    var enddate = format(edate, "yyyy-MM-dd");
+    // alert("StartDate: "+ currentdate + "EndDate: "+enddate);
+
+    // API CALL 
     dispatch(get_today_leaves(setTodayleaves));
     dispatch(get_tommrow_leaves(setTommrowleaves));
+    dispatch(get_dashboard_holiday(setHoliday,currentdate,enddate));
 
     dispatch(
       fetchStatusNumbers_dashboard(
@@ -64,7 +85,6 @@ export const SummaryDashbord = (props) => {
   }, []);
   const { dashboard } = props;
 
-  
   const onHandelClick = async (e) => {
     await dispatch(eventclick("alteration"));
     history.push(global.links.my_team_all_requests);
@@ -137,7 +157,7 @@ export const SummaryDashbord = (props) => {
                   {dashboard.myalterrequest !== null ? (
                     <div class="row value">
                       <a className="request_count" onClick={onHandelClickmy}>
-                      {dashboard.myalterrequest}
+                        {dashboard.myalterrequest}
                       </a>
                     </div>
                   ) : (
@@ -154,9 +174,9 @@ export const SummaryDashbord = (props) => {
                         {dashboard.alterrequest}
                       </a>
                     </div>
-                   ) : (
+                  ) : (
                     <PageLoadingCard />
-                  )} 
+                  )}
                 </div>
               </div>
 
@@ -190,7 +210,7 @@ export const SummaryDashbord = (props) => {
                   {dashboard.myovertimerequest !== null ? (
                     <div class="row value">
                       <a className="request_count" onClick={onHandelClickmy1}>
-                      {dashboard.myovertimerequest}
+                        {dashboard.myovertimerequest}
                       </a>
                     </div>
                   ) : (
@@ -204,7 +224,7 @@ export const SummaryDashbord = (props) => {
                   {dashboard.overtimerequest !== null ? (
                     <div class="row value">
                       <a className="request_count" onClick={onHandelClick1}>
-                      {dashboard.overtimerequest}
+                        {dashboard.overtimerequest}
                       </a>
                     </div>
                   ) : (
@@ -242,7 +262,7 @@ export const SummaryDashbord = (props) => {
                   {dashboard.myrestdayrequest !== null ? (
                     <div class="row value">
                       <a className="request_count" onClick={onHandelClickmy2}>
-                      {dashboard.myrestdayrequest}
+                        {dashboard.myrestdayrequest}
                       </a>
                     </div>
                   ) : (
@@ -256,10 +276,10 @@ export const SummaryDashbord = (props) => {
                   {dashboard.restdayrequest !== null ? (
                     <div class="row value">
                       <a className="request_count" onClick={onHandelClick2}>
-                      {dashboard.restdayrequest}
+                        {dashboard.restdayrequest}
                       </a>
                     </div>
-                 ) : (
+                  ) : (
                     <PageLoadingCard />
                   )}
                 </div>
@@ -294,7 +314,7 @@ export const SummaryDashbord = (props) => {
                   {dashboard.mychangeschedulerequest !== null ? (
                     <div class="row value">
                       <a className="request_count" onClick={onHandelClickmy3}>
-                      {dashboard.mychangeschedulerequest}
+                        {dashboard.mychangeschedulerequest}
                       </a>
                     </div>
                   ) : (
@@ -308,10 +328,10 @@ export const SummaryDashbord = (props) => {
                   {dashboard.changeschedulerequest !== null ? (
                     <div class="row value">
                       <a className="request_count" onClick={onHandelClick3}>
-                      {dashboard.changeschedulerequest}
+                        {dashboard.changeschedulerequest}
                       </a>
                     </div>
-                   ) : (
+                  ) : (
                     <PageLoadingCard />
                   )}
                 </div>
@@ -329,11 +349,13 @@ export const SummaryDashbord = (props) => {
               <i class="fa fa-birthday-cake" aria-hidden="true"></i>{" "}
               Celebrations
             </Card.Header> */}
-           <div className="div-content">
-            <span><i class="fa fa-birthday-cake" aria-hidden="true"></i> Celebrations</span>
-           </div>
-              <BirthdayAnniversary />
-           
+            <div className="div-content">
+              <span>
+                <i class="fa fa-birthday-cake" aria-hidden="true"></i>{" "}
+                Celebrations
+              </span>
+            </div>
+            <BirthdayAnniversary />
           </Card>
         </div>
         <div class="col-12 col-md-6 col-lg-6 col-xl-6 mb-4">
@@ -343,71 +365,109 @@ export const SummaryDashbord = (props) => {
             </Card.Header> */}
             {/* <Card.Body> */}
             <div className="div-content">
-            <span><i class="fa fa-calendar" aria-hidden="true"></i> Who's Out</span>
-           </div>
-              <Tabs
-                defaultActiveKey="home"
-                id="uncontrolled-tab-example"
-                className="mb-1 tabstyle pt-3"
-              >
-                <Tab eventKey="home" title="Today">
-                  <div className="content-table bdr0">
-                    <Table striped bordered hover>
-                      <tr>
-                        <td className="today_count">
-                          <span>Today ({dashboard.todayleaves.length})</span>
-                        </td>
-                      </tr>
+              <span>
+                <i class="fa fa-calendar" aria-hidden="true"></i> Who's Out
+              </span>
+            </div>
+            <Tabs
+              defaultActiveKey="home"
+              id="uncontrolled-tab-example"
+              className="mb-1 tabstyle pt-3"
+            >
+              <Tab eventKey="home" title="Today">
+                <div className="content-table bdr0">
+                  <Table striped bordered hover>
+                    <tr>
+                      <td className="today_count">
+                        <span>Today ({dashboard.todayleaves.length})</span>
+                      </td>
+                    </tr>
 
-                      <tbody>
-                        {dashboard.todayleaves ? (
-                          dashboard.todayleaves.map((data, pos) => (
-                            <tr>
-                              <td>
-                                {data.user_name} <br></br>
-                                <span className="leave_type">{data.type}</span>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <div className="celebration_notfound">
-                            No Leaves Found
-                          </div>
-                        )}
-                      </tbody>
-                    </Table>
-                  </div>
-                </Tab>
-                <Tab eventKey="profile" title="Tommorow">
-                  <div className="content-table bdr0">
-                    <Table striped bordered hover>
-                      <tr>
-                        <td className="today_count">
-                          <span>Tommorow ({dashboard.tommorowleaves.length})</span>
-                        </td>
-                      </tr>
+                    <tbody>
+                      {dashboard.todayleaves ? (
+                        dashboard.todayleaves.map((data, pos) => (
+                          <tr>
+                            <td>
+                              {data.user_name} <br></br>
+                              <span className="leave_type">{data.type}</span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <div className="celebration_notfound">
+                          No Leaves Found
+                        </div>
+                      )}
+                    </tbody>
+                  </Table>
+                </div>
+              </Tab>
+              <Tab eventKey="profile" title="Tommorow">
+                <div className="content-table bdr0">
+                  <Table striped bordered hover>
+                    <tr>
+                      <td className="today_count">
+                        <span>
+                          Tommorow ({dashboard.tommorowleaves.length})
+                        </span>
+                      </td>
+                    </tr>
 
-                      <tbody>
-                        {dashboard.tommorowleaves ? (
-                          dashboard.tommorowleaves.map((data, pos) => (
-                            <tr>
-                              <td>
-                                {data.user_name} <br></br>
-                                <span className="leave_type">{data.type}</span>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <div className="celebration_notfound">
-                            No Leaves Found
-                          </div>
-                        )}
-                      </tbody>
-                    </Table>
-                  </div>
-                </Tab>
-              </Tabs>
+                    <tbody>
+                      {dashboard.tommorowleaves ? (
+                        dashboard.tommorowleaves.map((data, pos) => (
+                          <tr>
+                            <td>
+                              {data.user_name} <br></br>
+                              <span className="leave_type">{data.type}</span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <div className="celebration_notfound">
+                          No Leaves Found
+                        </div>
+                      )}
+                    </tbody>
+                  </Table>
+                </div>
+              </Tab>
+            </Tabs>
             {/* </Card.Body> */}
+          </Card>
+        </div>
+        <div class="col-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+          <Card className="cardstyle">
+            {/* <Card.Header>
+              <i class="fa fa-calendar" aria-hidden="true"></i> Who's Out
+            </Card.Header> */}
+            {/* <Card.Body> */}
+            <div className="div-content">
+              <span>
+                <i class="fa fa-calendar" aria-hidden="true"></i> Holidays
+              </span>
+            </div>
+            <div className="content-table bdr0">
+                  <Table striped bordered hover>
+                    
+                    <tbody>
+                      {dashboard.dashboardholiday.length > 0 ? (
+                        dashboard.dashboardholiday.map((data, pos) => (
+                          <tr>
+                            <td>
+                              {data.name} <br></br>
+                              <span className="leave_type">{data.start}</span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <div className="holiday_notfound">
+                          No Holiday Found
+                        </div>
+                      )}
+                    </tbody>
+                  </Table>
+                </div>
           </Card>
         </div>
       </div>
@@ -417,7 +477,7 @@ export const SummaryDashbord = (props) => {
 const mapStateToProps = (state) => {
   return {
     overrallstatusNumbers: state.myTeamRequestList.overrallstatusNumbers,
-    dashboard : state.dashboard
+    dashboard: state.dashboard,
   };
 };
 

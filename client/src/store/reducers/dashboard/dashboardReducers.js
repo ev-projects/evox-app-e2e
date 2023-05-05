@@ -12,6 +12,7 @@ const initState = {
     changelogs:[],
     todayleaves:[],
     tommorowleaves:[],
+    dashboardholiday:[],
     alterrequest:null,
     overtimerequest:null,
     restdayrequest:null,
@@ -111,6 +112,12 @@ const dashboardReducers = (state = initState, action) => {
                             worktour : action.worktour,
                         }
                         break;
+                        case "DASHBOARD_HOLIDAY":
+                            result = {
+                                ...state,
+                                dashboardholiday : action.dashboardholiday,
+                            }
+                            break;
             
         default:
             result = state;

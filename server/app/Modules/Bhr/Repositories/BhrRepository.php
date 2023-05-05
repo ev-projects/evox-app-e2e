@@ -395,7 +395,7 @@ class BhrRepository implements BhrRepositoryInterface{
 
             // Define the End Point for the API.
             $end_point = 'time_off/whos_out/?start='.$start_date.'&end='.$end_date;
-
+       
             // Iterate the BHr Call Result
             foreach( bhr_api_call('GET', $end_point) as $row ) {
 
