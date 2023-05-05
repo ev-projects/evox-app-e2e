@@ -167,6 +167,35 @@ return (dispatch, getState) => {
 };
 };
 
+//  fetch the Holidays
+export const get_dashboard_holiday = (
+  setHoliday,start_date,end_date
+) => {
+return (dispatch, getState) => {
+
+
+  API.call({
+    method: "get",
+    url: "/report/get_dashboard_holiday",
+    params: {
+      start_date: start_date,
+      end_date: end_date,
+    },
+  })
+    .then((result) => {
+      setHoliday(result.data);
+      console.log(result.data)
+      dispatch({
+        type: "DASHBOARD_HOLIDAY",
+        dashboardholiday: result.data,
+      });
+    })
+    .catch((e) => {
+      dispatch(Formatter.alert_error(e));
+    });
+};
+};
+
 export const fetchStatusNumbers_dashboard = (
     setaltercount,setOvertimecount,setRestdayworkcount,setChangeschedulecount,setTaskcompletestatus
 ) => {
