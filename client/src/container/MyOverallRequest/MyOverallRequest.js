@@ -130,7 +130,7 @@ class MyRequests extends Component {
             <ContainerWrapper> 
             <h2>My Overall Requests</h2> 
             <div className="request-tab">
-             <Tabs defaultActiveKey="home" 
+             <Tabs
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
                       onSelect={(key) =>  {
