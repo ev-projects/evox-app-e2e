@@ -2,6 +2,7 @@
 
 namespace App\Modules\Department\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Department\Models\Department;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -36,5 +37,11 @@ class Announcement extends Model
 
          return Department::whereIn('id',$dep_collection)->get();
     }
+
+    public function is_expired(){
+        $now = Carbon::now();
+
+        return !(Carbon::parse($this->expiry_date) >=$now);
+    }   
 
 }

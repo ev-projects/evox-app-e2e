@@ -57,3 +57,21 @@
 .i-create-ann{
     font-size: 85px !important;
 }
+.ongoing{
+    color: #789b21;
+    background-color: rgb(162, 207, 241);
+    border-radius: 5px;
+    padding: 2px;
+    width: 50px;
+    margin-bottom: 5px;
+    
+}
+
+.expired{
+    color: red;
+    background-color: rgb(236, 219, 219);
+    border-radius: 5px;
+    padding: 2px;
+    width: 50px;
+    margin-bottom: 5px;
+}

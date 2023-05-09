@@ -2,6 +2,7 @@
 
 namespace App\Modules\Department\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class AnnouncementDepartment extends Model
@@ -15,6 +16,6 @@ class AnnouncementDepartment extends Model
         'department_exculded_ids'  => 'array'
     ];
 
-
+    
 
 }

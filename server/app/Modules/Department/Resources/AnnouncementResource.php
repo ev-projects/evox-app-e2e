@@ -37,9 +37,11 @@ class AnnouncementResource extends JsonResource
                 'dep' => $this->dep_id != null? $this->department() : $this->present_department(),
                 'set_all' => $this->set_all,
                 'selectedDepartments'=> $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()):null,
+                'is_expired'=> $this->is_expired(),
               
-              
-                'created_at' => $this->created_at->format('Y-m-d h:m:s')
+                'created_at' => $this->created_at->format('Y-m-d h:m:s'),
+
+        
             );
         }
 
