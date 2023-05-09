@@ -75,7 +75,7 @@ export const fetchStatusNumbers = (params) => {
   };
 };
 
-//  fetch the request status numbers
+//  fetch the Pending MyRequest Count
 export const myfetchStatusNumbers_dashboard = (
     setMyaltercount,setMyOvertimecount,setMyRestdayworkcount,setMyChangeschedulecount,setTaskcompletestatus1
 ) => {
@@ -115,7 +115,7 @@ export const myfetchStatusNumbers_dashboard = (
 };
 
 
-//  fetch the request status numbers
+//  fetch the Today Leaves List For Dashborad
 export const get_today_leaves = (
   setTodayleaves
 ) => {
@@ -141,7 +141,7 @@ return (dispatch, getState) => {
 };
 };
 
-//  fetch the request status numbers
+//  fetch the Tommorow Leave List
 export const get_tommrow_leaves = (
   setTommrowleaves
 ) => {
@@ -196,6 +196,7 @@ return (dispatch, getState) => {
 };
 };
 
+// Fecth Pending AllRequest Count For Dashboard
 export const fetchStatusNumbers_dashboard = (
     setaltercount,setOvertimecount,setRestdayworkcount,setChangeschedulecount,setTaskcompletestatus
 ) => {

@@ -31,6 +31,10 @@ import SummaryDashbord from "../../components/Summary/SummaryDashbord";
 import dayjs from "dayjs";
 import { format, getDate } from "date-fns";
 import moment from "moment";
+import {
+  getcurrentdate,
+  getenddate
+} from "../../services/Helper";
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -63,7 +67,12 @@ class Dashboard extends Component {
           {
             target: ".newfeature4",
             content:
-              "View the Summary for Pending Requests, Celebrations, and Today's and Tomorrow's Leaves for Users Under the Supervisor",
+              "View the Summary for Pending Requests, and Today's and Tomorrow's Leaves for Users Under the Supervisor",
+          },
+          {
+            target: ".newfeature6",
+            content:
+              "View the Engagement for Celebrations for Users Under the Supervisor",
           },
           {
             target: ".newfeature1",
@@ -130,7 +139,6 @@ class Dashboard extends Component {
     //     this.setState({ run: this.props.dashboard?.worktour });
     //   }
 
-
     var exdate = Date.parse("2023-05-31");
     var expiredate = format(exdate, "yyyy-MM-dd");
     const current = new Date();
@@ -147,7 +155,7 @@ class Dashboard extends Component {
     const { dispatch } = this.props;
     const { action, index, status, type } = data;
     this.setState({ stepIndex: index });
-    if (index === 8) {
+    if (index === 9) {
       this.setState({ run: false });
     }
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {

@@ -184,7 +184,7 @@ class MyTeamRequests extends Component {
       <Wrapper {...this.props} >
             <ContainerWrapper>
             <h3>My Team Request</h3> 
-            <div className="request-tab"><Tabs defaultActiveKey="home" 
+            <div className="request-tab"><Tabs
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
                       onSelect={(key) =>  {

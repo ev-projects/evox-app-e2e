@@ -1,6 +1,6 @@
 import * as Moment from 'moment';
 import { extendMoment } from 'moment-range';
-
+import { format, getDate } from "date-fns";
 
 var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
@@ -136,4 +136,20 @@ export const generateWeekListCustom = (start_date, end_date,scope_type) => {
     
 
     return {week_list:final_weeks , dates_list : dates_list , display_list : display_list};
+}
+
+export const getcurrentdate = function () {
+    const current = new Date();
+    const date = `${current.getFullYear()}-${
+      current.getMonth() + 1
+    }-${current.getDate()}`;
+    var cudate = Date.parse(date);
+    var currentdate = format(cudate, "yyyy-MM-dd");
+    return currentdate;
+}
+
+export const getenddate = function () {
+    var exdate = Date.parse("2023-05-31");
+    var expiredate = format(exdate, "yyyy-MM-dd");
+    return expiredate;
 }

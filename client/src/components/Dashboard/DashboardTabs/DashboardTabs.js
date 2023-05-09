@@ -40,6 +40,7 @@ import PageLoading from "../../../container/PageLoading/PageLoading";
 import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 import SummaryDashbord from "../../Summary/SummaryDashbord";
 import Authenticator from "../../../services/Authenticator";
+import Engagement from "../Engagement/Engagement";
 class DashboardTabs extends Component {
   constructor(props, context) {
     super(props, context);
@@ -84,6 +85,18 @@ class DashboardTabs extends Component {
               tabClassName="newfeature4"
             >
               <SummaryDashbord></SummaryDashbord>
+            </Tab>
+          )}
+          {Authenticator.check(
+            ["supervisor", "team_leader"],
+            ["supervisor_access", "team_leader_access"]
+          ) && (
+            <Tab
+              eventKey="engagement "
+              title="Engagements"
+              tabClassName="newfeature6"
+            >
+              <Engagement />
             </Tab>
           )}
           <Tab

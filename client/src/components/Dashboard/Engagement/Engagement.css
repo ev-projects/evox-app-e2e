@@ -1,0 +1,37 @@
+.celebration_emp .card {
+    color: black;
+    height: 100%;
+    border-radius: 3% !important;
+    margin-top: 25px;
+  }
+  .celebration_emp .card-header{
+    color: #1f2d3d !important;
+    background-color: #ffff!important;
+    height: 40px;
+    padding: 10px 10px !important;
+    border-bottom:none !important;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+
+
+.celebration_emp .content-table.bdr0 {
+    height: 380px !important;
+    padding: 10px 25px !important;
+}
+
+.celebration_emp .content-table.bdr0 table tbody td {
+    background: #fff !important;
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    font-size: 15px !important;
+    text-align: left !important;
+}
+
+.celebration_emp .content-table.bdr0 table tbody .img {
+    width: 20px !important;
+    text-align: right !important;
+}
+

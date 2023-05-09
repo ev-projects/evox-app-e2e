@@ -343,12 +343,8 @@ export const SummaryDashbord = (props) => {
       </div>
 
       <div className="row celebration">
-        <div class="col-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+        {/* <div class="col-12 col-md-6 col-lg-6 col-xl-6 mb-4">
           <Card className="cardstyle">
-            {/* <Card.Header>
-              <i class="fa fa-birthday-cake" aria-hidden="true"></i>{" "}
-              Celebrations
-            </Card.Header> */}
             <div className="div-content">
               <span>
                 <i class="fa fa-birthday-cake" aria-hidden="true"></i>{" "}
@@ -357,7 +353,7 @@ export const SummaryDashbord = (props) => {
             </div>
             <BirthdayAnniversary />
           </Card>
-        </div>
+        </div> */}
         <div class="col-12 col-md-6 col-lg-6 col-xl-6 mb-4">
           <Card className="cardstyle">
             {/* <Card.Header>
