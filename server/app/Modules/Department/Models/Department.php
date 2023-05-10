@@ -2,6 +2,7 @@
 
 namespace App\Modules\Department\Models;
 
+use Carbon\Carbon;
 use App\Modules\Team\Models\Team;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -36,7 +37,14 @@ class Department extends Model
         return  $this->department_name;
     }
     
+    public function country_timezone_to_offset() // this should not exist but we give it UTC
+    {
 
+        $offset_string = Carbon::now();
+       
+
+        return $offset_string->format('P');
+    }
 
     ########################################################################
     ############################ Relationships #############################
@@ -73,6 +81,13 @@ class Department extends Model
         // return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
 
         return $this->hasMany(Announcement::class, 'dep_id', 'id');
+    }
+
+    public function departments_announcements_presented()
+    {
+        // return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
+
+        return $this->hasMany(Announcement::class, 'present_dep_id', 'id');
     }
 
     // public function departments_announcement_by_json()

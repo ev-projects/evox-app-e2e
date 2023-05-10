@@ -32,6 +32,34 @@ export const fetchDtrSummary = ( data = null ) => {
     }
 }
 
+// Fetch Request new List
+export const fetchNewDtrSummary = ( data = null ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/report/dtr_summary/new_team",
+            params : data
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_NEW_DTR_SUMMARY_SUCCESS', 
+                'dtrSummary'  : result.data.content,
+            })
+            if (result.data.content.has_next_page) {
+                var btnGenerate = document.getElementById('btn-generate');
+                btnGenerate.click();
+            }
+        })
+        .catch(e => {
+            dispatch( {
+                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
+                'e'  : e,
+            } ) 
+        });
+    }
+}
+
+
 
 
 

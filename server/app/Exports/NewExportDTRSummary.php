@@ -34,13 +34,11 @@ class NewExportDTRSummary implements FromCollection,  WithHeadings
 
         return [
 
-            "EmployeeName",
+            "Employee Name",
 
-            "emp_num",
+            "Employee Number",
             
-            "email",
-            
-            "username",
+            "Department",
             
             "ul",
             

@@ -67,7 +67,7 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
 
             Route::post('/{id}/update', 'AnnouncementController@update');
 
-            Route::put('/{id}/update-status', 'DepartmentAnnouncementController@update_status');
+            Route::put('/{id}/update-status', 'AnnouncementController@update_status'); // uncheck fromcontrolelr
 
             Route::delete('/{id}', 'AnnouncementController@destroy');
     }); 
@@ -78,13 +78,13 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
         Route::get('/all', 'AnnouncementController@all_hr_handled_Announcements');
 
         # Gets/Updates the Department Announcements of the ID indicated on the Parameter
-        Route::get('/{id}', 'DepartmentAnnouncementController@show_hr_strict');
+        Route::get('/{id}', 'AnnouncementController@show_hr_strict'); // uncheck fromcontrolelr
 
-        Route::post('/{id}/update', 'DepartmentAnnouncementController@update');
+        Route::post('/{id}/update', 'AnnouncementController@update'); // uncheck fromcontrolelr
 
-        Route::put('/{id}/update-status', 'DepartmentAnnouncementController@update_status');
+        Route::put('/{id}/update-status', 'AnnouncementController@update_status'); // uncheck fromcontrolelr
 
-        Route::delete('/{id}', 'DepartmentAnnouncementController@destroy');
+        Route::delete('/{id}', 'AnnouncementController@destroy'); // uncheck fromcontrolelr
 }); 
 
     });

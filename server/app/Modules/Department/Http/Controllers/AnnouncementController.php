@@ -16,6 +16,9 @@ use App\Modules\Department\Models\Announcement;
 // use App\Modules\Department\Resources\DepartmentListResource;
 use App\Modules\Department\Resources\AnnouncementResource;
 
+use App\Modules\Department\Http\Requests\AnnouncementRequest;
+
+
 use App\Modules\Department\Repositories\AnnouncementRepositoryInterface;
 
 class AnnouncementController extends Controller
@@ -58,11 +61,11 @@ class AnnouncementController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AnnouncementRequest $request)
     {   
        
         try {
-
+            
             
             log_activity( trans('messages.create_department_announcement_attempt') );
 
@@ -130,7 +133,7 @@ class AnnouncementController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(AnnouncementRequest $request, $id)
     {   
         
       

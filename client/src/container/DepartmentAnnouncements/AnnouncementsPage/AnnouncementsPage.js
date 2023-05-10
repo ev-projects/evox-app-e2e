@@ -94,7 +94,7 @@ class AnnouncementsPage extends Component {
                     </Content>
                 </Col>
 
-
+                  
 
 
 
@@ -113,6 +113,8 @@ class AnnouncementsPage extends Component {
                     
                     <Row>
                     {this.props.departmentAnnouncement.depAnnouncementlist?.slice(0, 4).map((announcement, index) => {
+
+                      let default_link = announcement.on_link == 1 ? announcement.link : global.links.announcement_page + announcement.id;
                       return <Col  size={11} className="announcement-list-content card-content">
                             
                    
@@ -120,7 +122,7 @@ class AnnouncementsPage extends Component {
                                       
                                    
                           
-                          <a href={ global.links.announcement_page + announcement.id}>
+                          <a href={default_link} target={announcement.on_link == 1 ?  "_blank" :"_self"}>
 
                             <Card className="announcement-list-card card-pad-bottom">
                                   <Card.Body className="small-card-body ">

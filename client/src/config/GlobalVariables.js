@@ -41,6 +41,7 @@
     my_team_all_requests            :  "/app/team/MyTeamAllRequests",
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
+    dtr_summary_new                 :  "/app/team/DtrSummaryTemp",
     dtr_logs                        :  "/app/team/DtrLogs", 
     weekly_team_schedule            :  "/app/team/WeeklyTeamSchedule", 
     my_team_schedule                :  "/app/team/MyTeamSchedule", 

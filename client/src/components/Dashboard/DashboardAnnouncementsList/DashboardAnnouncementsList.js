@@ -130,46 +130,37 @@ const AnnouncementListTable = (props) => {
         return < >
 
           <Row>
-              {props.departmentAnnouncement.depAnnouncementlist.slice(0,4).map((announcement, index) => {
-                return <Col  md={6} className="announcement-list-content dashbaord-content card-content">
+              {props.departmentAnnouncement.depAnnouncementlist.slice(0,3).map((announcement, index) => {
+
+              // let default_link  = announcement.on_link == 1 ? announcement.link : default_link
+                return <Col  md={4} className="announcement-list-content dashbaord-content card-content">
                       
-                      <Link to={{
-                                pathname: global.links.announcement_page + announcement.id
+                  {announcement.on_link == 1 ? 
+                    
+                    <a  href={announcement.link}  target="_blank">
+                      <AnnouncementItem {...announcement}/>
+                    </a>
+
+                    :  
+                    
+                    <Link to={{
+                              pathname: global.links.announcement_page + announcement.id
                               }}
-                                  title="View Announcement"
+                                  title="View Announcement" 
                               >
 
-                          <div  className="announcement-list-item">
-                          <Card className="announcement-list-card">
-                          {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
-                            <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
-                            }
-                                <Card.ImgOverlay className={"mask-"+announcement.category} >
-                                  <Card.Title  className="text-white card-text-white">{announcement.title}</Card.Title>
-                                  <Card.Text  className="card-text-white card-text-overflow">
-                                  {announcement.headline}
-                                  </Card.Text>
-                                  
-                                </Card.ImgOverlay>
-                              
-                              </Card>
-                              <div className="card-text-black ">
-                                <div  className="card-bottom-content"> 
-                                <Badge className="tag-badge">{announcement.category}</Badge>
-                                <br/>
-                                <> Posted on: {announcement.release_date}</> 
-                                </div>
-                              </div>
-                          </div>
+                        <AnnouncementItem {...announcement}/>
                       </Link>
+                      
+                    }
 
                     
                       </Col>;
               })}
 
             <ShowMore
-                items={props.departmentAnnouncement.depAnnouncementlist.slice(4, props.departmentAnnouncement.depAnnouncementlist.length)}
-                by={2}
+                items={props.departmentAnnouncement.depAnnouncementlist.slice(3, props.departmentAnnouncement.depAnnouncementlist.length)}
+                by={3}
               >
                 {({
                   current,
@@ -178,36 +169,14 @@ const AnnouncementListTable = (props) => {
                   <React.Fragment>
                    
                       {current.map((announcement, index)=> (
-                      <Col  md={6} className="announcement-list-content dashbaord-content card-content">
+                      <Col  md={4} className="announcement-list-content dashbaord-content card-content">
                       
                       <Link to={{
                                 pathname: global.links.announcement_page + announcement.id
                               }}
                                   title="View Announcement"
                               >
-
-                          <div  className="announcement-list-item">
-                          <Card className="announcement-list-card">
-                          {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
-                            <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
-                            }
-                                <Card.ImgOverlay className={"mask-"+announcement.category} >
-                                  <Card.Title  className="text-white card-text-white">{announcement.title}</Card.Title>
-                                  <Card.Text  className="card-text-white card-text-overflow">
-                                  {announcement.headline}
-                                  </Card.Text>
-                                  
-                                </Card.ImgOverlay>
-                              
-                              </Card>
-                              <div className="card-text-black ">
-                                <div  className="card-bottom-content"> 
-                                <Badge className="tag-badge">{announcement.category}</Badge>
-                                <br/>
-                                <> Posted on: {announcement.release_date}</> 
-                                </div>
-                              </div>
-                          </div>
+                        <AnnouncementItem {...announcement}/>
                       </Link>
 
                     
@@ -250,6 +219,36 @@ const AnnouncementListTable = (props) => {
 
     return <PageLoading/>
   }
+}
+
+const AnnouncementItem = (announcement) => {
+
+  return < >
+  <div  className="announcement-list-item">
+                          <Card className="announcement-list-card">
+                          {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
+                            <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
+                            }
+                                <Card.ImgOverlay className={"mask-"+announcement.category} >
+                                  <Card.Title  className="text-white card-text-white">{announcement.title} {announcement.on_link == 1 ? <i className="nav-icon fa fa-link" />:null}</Card.Title>
+                                  <Card.Text  className="card-text-white card-text-overflow">
+                                  {announcement.headline}
+                                  </Card.Text>
+                                  
+                                </Card.ImgOverlay>
+                              
+                              </Card>
+                              <div className="card-text-black ">
+                                <div  className="card-bottom-content"> 
+                                <Badge className="tag-badge">{announcement.dep.department_name}</Badge>
+                                {console.log(announcement.dep)}
+                                <br/>
+                                <> Posted on: {announcement.release_date}</> 
+                                </div>
+                              </div>
+                          </div>
+
+                          </>
 }
 
   

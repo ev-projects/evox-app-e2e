@@ -56,9 +56,9 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
 
         Route::get('export', 'ReportController@export_team_dtr_summary');
 
-        Route::get('new_team', 'ReportController@team_dtr_summaryreportnewv2');
+        Route::get('new_team', 'ReportController@new_dtr_summary_report');
 
-        Route::get('new_export', 'ReportController@newdtrsummaryreportcsvexportv3');
+        Route::get('new_export', 'ReportController@new_dtr_summary_report_csv_export');
     });
 
     # API Call for DTR Summary
