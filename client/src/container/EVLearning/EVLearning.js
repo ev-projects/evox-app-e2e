@@ -7,7 +7,7 @@ class EVLearning extends Component {
   render() {
     return  <ContainerWrapper> 
 
-<div className="evlearning_content">
+
 
 	<div className="el-title">Guidelines</div>
 	<img src="/images/ev-learning.png" alt="User Image"/>
@@ -407,7 +407,6 @@ class EVLearning extends Component {
 		  </ul>
 		</div>
 	  </div>
-	</div>
 	</div>
 	</ContainerWrapper>;
   }
