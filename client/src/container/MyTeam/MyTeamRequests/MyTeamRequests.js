@@ -183,7 +183,7 @@ class MyTeamRequests extends Component {
       <form onSubmit={handleSubmit}>
       <Wrapper {...this.props} >
             <ContainerWrapper>
-            <h3>My Team Request</h3> 
+            <h3 className="header_text">My Team Request</h3> 
             <div className="request-tab"><Tabs
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}

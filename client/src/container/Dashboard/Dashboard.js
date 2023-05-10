@@ -147,7 +147,6 @@ class Dashboard extends Component {
     }-${current.getDate()}`;
     var cudate = Date.parse(date);
     var currentdate = format(cudate, "yyyy-MM-dd");
-    // alert ("CurrentDate: "+ currentdate + "ExpDate: "+expiredate )
     if (expiredate >= currentdate) this.setState({ run: this.props.dashboard?.worktour });
   }
 

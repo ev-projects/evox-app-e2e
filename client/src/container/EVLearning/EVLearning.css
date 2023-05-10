@@ -20,3 +20,6 @@
 .el-links ul li:nth-child(3n+1){clear: left}
 .el-link-title{padding: 0 20px; color:#333 !important; border-bottom: 1px solid #ccc; width: 95%; font-weight: bold}
 .el-link-title a{color:#333 !important;}
+.evlearning_content{
+    margin-left: 1.8rem !important;
+}

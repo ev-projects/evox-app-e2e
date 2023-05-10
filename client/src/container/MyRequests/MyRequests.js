@@ -128,7 +128,7 @@ class MyRequests extends Component {
       <form onSubmit={handleSubmit}>
       <Wrapper {...this.props} >
             <ContainerWrapper> 
-            <h2>My Requests</h2> 
+            <h2 className="header_text">My Requests</h2> 
             <div className="request-tab">
              <Tabs 
                       id="uncontrolled-tab-example"

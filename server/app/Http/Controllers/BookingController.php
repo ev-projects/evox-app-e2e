@@ -336,6 +336,7 @@ class BookingController extends Controller
          ->join('users','users.id', '=', 'dtrs.user_id')
          ->whereIn('users.id', $user_list->pluck('id')->toArray())
          ->where('leaves.status','=','approved')
+         ->where('leaves.amount','>','0')
          ->where('dtrs.date','=',DB::raw("DATE_FORMAT(NOW(),'%Y-%m-%d')"))->get();
 
          return [
@@ -359,6 +360,7 @@ class BookingController extends Controller
          ->join('users','users.id', '=', 'dtrs.user_id')
          ->whereIn('users.id', $user_list->pluck('id')->toArray())
          ->where('leaves.status','=','approved')
+         ->where('leaves.amount','>','0')
          ->where('dtrs.date','=',DB::raw("DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY),'%Y-%m-%d')"))->get();
          return [
             'data' => $booking,

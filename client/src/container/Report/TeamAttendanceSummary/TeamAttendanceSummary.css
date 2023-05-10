@@ -13,6 +13,10 @@
     display: block;
 }
 
+.header_text{
+    margin-left: 1.3rem !important;
+}
+
 .computed-summary-container{margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid #ccc}
 
 /* .summary-report > .dtr-list > div > span {

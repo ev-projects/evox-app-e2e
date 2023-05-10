@@ -7,9 +7,9 @@ class OpsSchedule extends Component {
   render() {
     return  <ContainerWrapper> 
 
-	<h2>EV Support Team Schedule</h2>
+	<h2 className="header_text">EV Support Team Schedule</h2>
 	
-	<div className="ops-schedule">
+	<div className="ops-schedule header_text">
 		<div className="row">
 		<div className="col-6 col-lg-6 col-md-6 col-sm-12">
 			

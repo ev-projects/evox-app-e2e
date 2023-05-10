@@ -181,7 +181,7 @@ class MyTeamSchedule extends Component {
   return(
     <Wrapper {...this.props} >
           <ContainerWrapper>
-          <h2>My Team Schedule</h2>
+          <h2 className="header_text">My Team Schedule</h2>
           <div className="report-schedule">
           <div className="navigator-bar">
           <ReportNavigator start_date={this.state.start_date} end_date={this.state.end_date} scope_type={this.state.scope_type}  handleChangeDate={this.handleChangeDate} default_view_type={"day"} hide_filter_button={true}/>
