@@ -56,8 +56,8 @@ class JobOpenings extends Component {
     return (
       <>
         <div className="jobs-tab">
-          <Tabs defaultActiveKey="PHT" id="uncontrolled-tab-example">
-            <Tab eventKey="PHT" title="PHL" type="submit">
+          <Tabs defaultActiveKey="PHL" id="uncontrolled-tab-example">
+            <Tab eventKey="PHL" title="PHL" type="submit">
               {/* <Tab eventKey="ERP" title="ERP" type="submit"> */}
               <div className="card-body evbuddy">
                 <br />

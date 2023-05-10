@@ -104,3 +104,12 @@
     content:" *";
     color: red;
   }
+
+  a[data-tool-tip]{
+    /* position: relative !important; */
+  }
+
+  a[data-tool-tip]::after{
+    content: attr(data-tool-tip);
+    /* position: relative !important; */
+  }
