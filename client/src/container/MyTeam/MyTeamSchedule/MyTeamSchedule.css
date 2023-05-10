@@ -19,6 +19,10 @@ div.schedule_info div:nth-child(2) {
     color: black !important;
 }
 
+.header_text{
+    margin-left: 1.3rem !important;
+}
+
 .emp_sched .holiday,
 .legends .holiday .box{
     background-color: #b1faff !important;

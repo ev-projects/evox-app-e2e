@@ -370,7 +370,7 @@ export const SummaryDashbord = (props) => {
               id="uncontrolled-tab-example"
               className="mb-1 tabstyle pt-3"
             >
-              <Tab eventKey="home" title="Today">
+              <Tab eventKey="home" title={"Today ("+dashboard.todayleaves.length +")"}>
                 <div className="content-table bdr0">
                   <Table striped bordered hover>
                     <tr>
@@ -398,7 +398,7 @@ export const SummaryDashbord = (props) => {
                   </Table>
                 </div>
               </Tab>
-              <Tab eventKey="profile" title="Tommorow">
+              <Tab eventKey="profile" title={"Tommorow (" +dashboard.tommorowleaves.length +")" }>
                 <div className="content-table bdr0">
                   <Table striped bordered hover>
                     <tr>
@@ -458,7 +458,7 @@ export const SummaryDashbord = (props) => {
                         ))
                       ) : (
                         <div className="holiday_notfound">
-                          No Holiday Found
+                          No Holidays Found
                         </div>
                       )}
                     </tbody>
