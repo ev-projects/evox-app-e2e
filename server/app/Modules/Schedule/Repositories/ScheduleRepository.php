@@ -30,9 +30,9 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         try {
 
             $schedule = new Schedule;
-
+       
             /**  Check if there's a data for Name. If it's not valid, generate a Schedule Name base from the Data. */
-                $schedule->name         = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : generate_schedule_name( $data );
+            $schedule->name         = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : generate_schedule_name( $data );
             /** */
 
             $schedule->bind_to          = ( isset( $data['bind_to'] ) && is_valid( $data['bind_to'] ) ) ? $data['bind_to'] : null;
@@ -72,8 +72,8 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     public function update(array $data, $id_or_schedule){
         DB::beginTransaction();
         try {
-
-
+       
+            
             $schedule =   ( $id_or_schedule instanceof Schedule ) ? $id_or_schedule : Schedule::findOrFail($id_or_schedule);
 
             $schedule->name             = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : $schedule->name;    # Reuse the Schedule Name if no new input was found.
@@ -90,13 +90,14 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule->update();
             
             # Deleting the Details and Policies before inserting the new one.
+           
+            // if($data["method"] != "approval"){
             $schedule->schedule_details()->delete();
             $schedule->schedule_policies()->delete();
-
             $this->save_schedule_details( $schedule, $data['schedule_details'] );
             $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
             $this->save_schedule_holiday_policies( $schedule, $data['schedule_policies'] );
-
+            // }
             DB::commit();
             log_to_file('info', 'Success', [$schedule]);
             return $schedule;
@@ -116,7 +117,11 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     public function destroy($id){
         DB::beginTransaction();
         try {
+
+           
             $schedule = Schedule::findOrFail($id);
+
+
 
             $schedule->updated_by = auth()->user()->id;
             $schedule->update();
@@ -222,28 +227,35 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         DB::beginTransaction();
         try{
             $schedule_details_array = [];
-            
+
+            // dump("test");
+            // dump($schedule);
+            // dump($schedule_details);
+           
             # Saving of the Filtered Schedule Details
             foreach( $this->filter_schedule_details($schedule, $schedule_details) as $day => $details ){
+       
                 $schedule_details_array[ $day ] = new ScheduleDetail();
                 $schedule_details_array[ $day ]->day               = $day;
-                $schedule_details_array[ $day ]->start_time        = ( is_numeric($details['start_time']) ? $details['start_time'] : time_to_seconds($details['start_time']) );
-                $schedule_details_array[ $day ]->end_time          = ( is_numeric($details['end_time']) ? $details['end_time'] : time_to_seconds($details['end_time']) );
+                $schedule_details_array[ $day ]->start_time        = ( is_numeric($details['start_time']) ? $details['start_time'] : time_to_seconds($details['start_time'], true, "subtract") );
+                $schedule_details_array[ $day ]->end_time          = ( is_numeric($details['end_time']) ? $details['end_time'] : time_to_seconds($details['end_time'], true, "subtract") );
                 $schedule_details_array[ $day ]->break_time        = ( is_numeric($details['break_time']) ? $details['break_time'] : time_to_seconds($details['break_time']) );
 
                 # For Flexible Schedule
                 if($schedule['schedule_type']=="flexible"){
-                    $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time']) );
-                    $schedule_details_array[ $day ]->end_flexy_time    = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time']) );
+                    $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time'], true, "subtract") );
+                    $schedule_details_array[ $day ]->end_flexy_time    = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time'], true, "subtract") );
 
                 # Check if the start flexy and end flexy is existing since it's optional
                 }elseif($schedule['schedule_type']=="customize"){
                     if( isset( $details['start_flexy_time'] ) && isset( $details['end_flexy_time'] ) ){
-                        $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time']) );
-                        $schedule_details_array[ $day ]->end_flexy_time  = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time']) );
+                        $schedule_details_array[ $day ]->start_flexy_time  = ( is_numeric($details['start_flexy_time']) ? $details['start_flexy_time'] : time_to_seconds($details['start_flexy_time'], true, "subtract") );
+                        $schedule_details_array[ $day ]->end_flexy_time  = ( is_numeric($details['end_flexy_time']) ? $details['end_flexy_time'] : time_to_seconds($details['end_flexy_time'], true, "subtract") );
                     }
                 }
             }
+
+           
 
             $schedule->schedule_details()->saveMany( $schedule_details_array );
             
@@ -695,7 +707,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
         DB::beginTransaction();
         try {
-
+         
             log_to_file('info', get_constant('LOG_START') . __FUNCTION__ , [], "assign");
             if( is_valid( $schedule ) && is_valid( $schedule_to_copy )) {
 

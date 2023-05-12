@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import { Form,Button,InputGroup,FormControl  } from 'react-bootstrap';
+import { Form,Button,InputGroup,FormControl,Collapse   } from 'react-bootstrap';
 import Select from "react-select";
 import moment from 'moment';
 
 import "./ChangeSchedule.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, ScheduledetailsWithTimezone,onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 
 /** Form Manipulation */
@@ -72,9 +72,15 @@ class ChangeSchedule extends Component {
 	
 	
 	let i = 0;
+	console.log(values);
+	
     for (var key in values) {
 
-		
+	let time_diff = 0;	
+	if(this.props.instance.user?.user_offset_seconds != null && this.props.instance.user?.user_offset_seconds != undefined){
+		time_diff = this.props.instance.user?.user_offset_seconds- this.props.user?.user_offset_seconds; 	
+	}
+
 // -------------create new dates depending on timezone -------------
 	  if(key =='cst_schedule_details'){
 		
@@ -86,22 +92,23 @@ class ChangeSchedule extends Component {
 				if(keyDate != 'break_time'){
 					
 					newValues[key][keyList][keyDate] = values[key][keyList][keyDate];
-
+		
 				}
 				
 			}
-			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).format('HH')) || 
-			parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HH'))){
+
+			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HH')) || 
+			parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HH'))){
 				nsdAlertCall = true;
 				// console.log("1a");
 				
 			}
-			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HH')) < 7 ){
+			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) < 7 ){
 				nsdAlertCall = true;
 				// console.log("1b");
 			
 			}
-			if(parseInt(moment(newValues[key][keyList]['end_time']).format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).format('HHmm')) > 2200 ){
+			if(parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 ){
 				nsdAlertCall = true;
 				// console.log("1c");
 				
@@ -109,11 +116,11 @@ class ChangeSchedule extends Component {
 			
 			
 
-			if(parseInt(moment(newValues[key][keyList]['start_time']).format('HHmm'))  >  parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HHmm'))  ){
+			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HHmm'))  >  parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HHmm'))  ){
 				beforeFlexAlertCall = true;
 				// console.log(beforeFlexAlertCall);
 				// console.log("1");
-			}else if(parseInt(moment(newValues[key][keyList]['start_time']).format('HHmm'))  <  parseInt(moment(newValues[key][keyList]['start_flexy_time']).format('HHmm')) - 1200){
+			}else if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HHmm'))  <  parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HHmm')) - 1200){
 				beforeFlexAlertCall = true;
 				// console.log(beforeFlexAlertCall);
 				// console.log("2");
@@ -144,17 +151,17 @@ class ChangeSchedule extends Component {
 				if (window.confirm("Are you sure you want to submit/update this request?")) {
 					switch( values.method ) {
 	
-					  case "store":
-						  this.props.addChangeSchedule( formData );
-						  break;
-				
-					  case "update":
-						  formData['_method'] = 'PUT';
-						  this.props.updateChangeSchedule( values.id, formData );
-						  break;
-	
-					  default:
-						  break;
+						case "store":
+							this.props.addChangeSchedule( formData );
+							break;
+					
+						case "update":
+							formData['_method'] = 'PUT';
+							this.props.updateChangeSchedule( values.id, formData );
+							break;
+		
+						default:
+							break;
 	
 					}
 				}
@@ -166,7 +173,7 @@ class ChangeSchedule extends Component {
 			case "cancel":
 				if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
 					formData['_method'] = 'PUT';
-					this.props.updateChangeScheduleStatus( values.id, formData, values.action );
+					this.props.updateChangeScheduleStatus( values.id, formData, values.action, this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date );
 				}
 				break;
 		}
@@ -188,18 +195,19 @@ class ChangeSchedule extends Component {
   
   componentWillMount(){
 	this.setState({
+		open_contrast:		true,
 		isShowModelNsd: false,
 		isShowModelBeforeFlex: false
 	});
       // Clear the Instance of Change Schedule before rendering new Instance (If applicable)
-      this.props.clearChangeScheduleInstance();
+    this.props.clearChangeScheduleInstance();
 
       // If the ID is defined, load the Change Schedule Instance base on the ID Parameter in Route.
-      if( this.props.params.id != undefined ) {
+		if( this.props.params.id != undefined ) {
 
         this.props.fetchChangeSchedule( this.props.params.id )
-      }
-  }
+		}
+	}
 
   	render = () => {  
 
@@ -210,6 +218,7 @@ class ChangeSchedule extends Component {
 		// Sets the Method of the current state.
 		const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )
 
+		const   owner_offset = this.props.instance.offset_difference != undefined ? this.props.instance.offset_difference : null;
 
 		// Sets the Initial Value for customized schedule details
 		var cst_schedule_details = [];
@@ -223,9 +232,23 @@ class ChangeSchedule extends Component {
 					end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.schedule_details.' +key+'.end_flexy_time')), 
 					break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.schedule_details.' +key+'.break_time')) }; 
 				index++;
-			  }
+			}
 		}
 
+		var pov_schedule_details = [];
+		var index = 0;
+		if( this.props.instance?.schedule?.pov_schedule_details != undefined ) {
+			for (var key in this.props.instance.schedule.pov_schedule_details) {
+				pov_schedule_details[index] = {
+					start_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_time')), 
+					end_time : 			new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_time')), 
+					start_flexy_time: 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_flexy_time')), 
+					end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_flexy_time')), 
+					break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) }; 
+				index++;
+			}
+		}
+		const pov_timezone_info =  this.props.instance.user?.pov_timezone != undefined ? this.props.instance.user?.pov_timezone : null;
 		// Sets Initial Value of the current Formik form.
 		const initialValue = {
 			action:             null,
@@ -237,6 +260,8 @@ class ChangeSchedule extends Component {
 			approver_note:      this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null,
 			name:      			this.props.instance?.schedule?.name != undefined ? this.props.instance.schedule.name : "[CHANGE SCHEDULE REQUEST] - " + this.props.user.full_name,
 			cst_schedule_details: cst_schedule_details,
+			
+			pov_schedule_details: pov_schedule_details,
 			sorted_week_days: ['mon','tue','wed','thu','fri','sat','sun'],
 			schedule_policies : {
 				allow_late : 			( Validator.isNumeric(this.props.instance?.schedule?.schedule_policies?.allow_late) ? parseInt(this.props.instance.schedule.schedule_policies.allow_late) : 0 ), 
@@ -283,7 +308,7 @@ class ChangeSchedule extends Component {
 						<input type="hidden" name="source_type" value={values.source_type} />
 						<input type="hidden" name="schedule_type" value={values.schedule_type} />
 						<input type="hidden" name="id"  value={values.id} />
-            			{ onApproval ? <input type="hidden" name="status"  value={values.status} /> : null}
+            { onApproval ? <input type="hidden" name="status"  value={values.status} /> : null}
 						<ContainerWrapper>
 							
 							<ContainerBody>
@@ -344,9 +369,43 @@ class ChangeSchedule extends Component {
 											</div>
 										</Col>
 									</Row>
+									
+									{  /** Shows Approver Note if on Approval   */
+										onApproval ? 
+	
+										<Row className="timezone-row">
+										<Col size="5">
+											<Button className="toggle-outlook"
+												onClick={() => this.setState({
+													open_contrast: !this.state.open_contrast
+												})}
+												// aria-controls="example-collapse-text"
+												// aria-expanded={open}
+											>
+												Toggle Outlook <i className="fa  fa-eye" />
+											</Button>
+											</Col>
+											<Col size="3">
+												<h6>{this.props.user.pov_timezone}</h6>
+											</Col>
+											<Col size="1">
+											<i className="fa  fa-arrow-right" />
+											</Col>
+											<Col size="3">
+												<h6 className="">{pov_timezone_info}</h6>
+											</Col>
+										</Row>
+									
+										:null 
+									}
 									{values.sorted_week_days.map((day, index) => {
 										if(values.work_days.includes(day)==true){
-											return <Scheduledetails day={day} index={values.work_days.indexOf(day)} />
+											return <ScheduledetailsWithTimezone day={day} index={values.work_days.indexOf(day)} 
+													offset_data={owner_offset}
+													on_approval = {onApproval}
+													open_contrast = {this.state.open_contrast}
+													pov_timezone_info = {pov_timezone_info}
+											/>
 										}
 									})}
 
@@ -480,7 +539,8 @@ const mapStateToProps = (state) => {
 		constant          : state.constant,
 		instance          : state.changeSchedule.instance,
 		isInstanceLoaded  : state.changeSchedule.isInstanceLoaded,
-		user			  : state.user
+		user			  : state.user,
+		settings        : state.settings
 	}
 }
 const mapDispatchToProps = (dispatch) => {
@@ -488,7 +548,7 @@ const mapDispatchToProps = (dispatch) => {
 	fetchChangeSchedule         : ( id ) => dispatch( fetchChangeSchedule( id ) ),
 	addChangeSchedule           : ( post_data ) => dispatch( addChangeSchedule( post_data ) ),
 	updateChangeSchedule        : ( id, post_data ) => dispatch( updateChangeSchedule( id, post_data ) ),
-	updateChangeScheduleStatus  : ( id, post_data, status ) => dispatch( updateChangeScheduleStatus( id, post_data, status ) ),
+	updateChangeScheduleStatus  : ( id, post_data, status, user_id, fromdate, todate ) => dispatch( updateChangeScheduleStatus( id, post_data, status, user_id, fromdate, todate ) ),
 	setRedirect           		: ( link ) => dispatch( setRedirect( link ) ),
 	resetChangeScheduleInstance : () => dispatch( resetChangeScheduleInstance() ),
 	clearChangeScheduleInstance : () => dispatch( clearChangeScheduleInstance() )

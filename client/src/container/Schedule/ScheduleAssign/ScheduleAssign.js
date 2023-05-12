@@ -1,13 +1,14 @@
 import React, { Component,useState  } from "react";
 import { Redirect,Link } from "react-router-dom";
-import { Form,Button,Container,Col,InputGroup,FormControl,Tabs,Tab  } from 'react-bootstrap';
+import { Form,Button,Container,Col,InputGroup,FormControl,Tabs,Tab,Row  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
+import "./ScheduleAssign.css";
 
-import { Scheduledetails, onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,SchedulePolicy,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
+import { Scheduledetails, ScheduledetailsWithTimezone,  onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,  FlexibleSchedDetailsFormWithTimezone,SchedulePolicy, StandardSchedDetailsFormWithTimezone,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
 import PageLoading from "../../PageLoading";
 import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
@@ -40,9 +41,13 @@ class AssignDefault extends Component {
       std_schedule_details : [],
       flx_schedule_details : [],
       cst_schedule_details : [],
+      pov_schedule_details : [],
       schedule_policies : {},
       creation_type : 'customize',
-      schedule_type : null
+      schedule_type : null,
+      open_contrast:		true,
+      owner_offset: 0,
+    
     }
 
     this.state = this.initialState;
@@ -82,30 +87,77 @@ class AssignDefault extends Component {
       allow_late :            ( Validator.isNumeric( schedule.schedule_policies?.allow_late ) ) ? parseInt(schedule.schedule_policies.allow_late) : 0 , 
       allow_undertime :       ( Validator.isNumeric( schedule.schedule_policies?.allow_undertime ) ) ? parseInt(schedule.schedule_policies.allow_undertime) : 0, 
       allow_night_diff:       ( Validator.isNumeric( schedule.schedule_policies?.allow_night_diff ) ) ? parseInt(schedule.schedule_policies.allow_night_diff) : 0,
-      allow_special_holiday:  ( Validator.isNumeric( schedule.schedule_policies?.allow_special_holiday ) ) ? parseInt(schedule.schedule_policies.allow_special_holiday) : 1, 
-      allow_legal_holiday:    ( Validator.isNumeric( schedule.schedule_policies?.allow_legal_holiday ) ) ? parseInt(schedule.schedule_policies.allow_legal_holiday) : 1 
+      allow_special_holiday:  ( Validator.isNumeric( schedule.schedule_policies?.allow_special_holiday ) ) ? parseInt(schedule.schedule_policies.allow_special_holiday) : 0, 
+      allow_legal_holiday:    ( Validator.isNumeric( schedule.schedule_policies?.allow_legal_holiday ) ) ? parseInt(schedule.schedule_policies.allow_legal_holiday) : 0 
     };
     
     state.schedule_type = schedule.schedule_type;
 
     if( state.schedule_type == 'standard' ){
-      state.std_schedule_details = [{
+      var std_SCHED = [{
         start_time  :   new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
         end_time    :   new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
         break_time  :   new Date("2020-01-01 " +schedule.schedule_details.all.break_time)
       }];
+      // if( schedule.pov_schedule_details!= null){
+
+      // }
+      state.std_schedule_details =  std_SCHED
+      var stored_std_SCHED = [{
+        start_time  :   new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
+        end_time    :   new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
+        break_time  :   new Date("2020-01-01 " +schedule.schedule_details.all.break_time)
+      }];
+      state.pov_schedule_details =schedule.pov_schedule_details!= null ? [{
+        start_time  :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.start_time), 
+        end_time    :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.end_time), 
+        // break_time  :   new Date("2020-01-01 " +schedule.pov_schedule_details.all.break_time)
+      }]
+      : [{
+        start_time  :   stored_std_SCHED[0].start_time.setSeconds(stored_std_SCHED[0].start_time.getSeconds() + this.state.owner_offset),
+        end_time    :   stored_std_SCHED[0].end_time.setSeconds(stored_std_SCHED[0].end_time.getSeconds() + this.state.owner_offset), 
+        // break_time  :   new Date("2020-01-01 " +schedule.pov_schedule_details.all.break_time)
+      }]
+      ;
     
     }else if( state.schedule_type == 'flexible' ){
-      state.flx_schedule_details = [{
+      var flex_SCHED = [{
         start_time        : new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
         end_time          : new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
         start_flexy_time  : new Date("2020-01-01 " + schedule.schedule_details.all.start_flexy_time), 
         end_flexy_time    : new Date("2020-01-01 " + schedule.schedule_details.all.end_flexy_time), 
         break_time        : new Date("2020-01-01 " + schedule.schedule_details.all.break_time)
       }];
+     state.flx_schedule_details = flex_SCHED;
+     var stored_flex_SCHED =  [{
+      start_time        : new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
+      end_time          : new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
+      start_flexy_time  : new Date("2020-01-01 " + schedule.schedule_details.all.start_flexy_time), 
+      end_flexy_time    : new Date("2020-01-01 " + schedule.schedule_details.all.end_flexy_time), 
+      break_time        : new Date("2020-01-01 " + schedule.schedule_details.all.break_time)
+    }];
+      state.pov_schedule_details =schedule.pov_schedule_details!= null ? [{
+        start_time  :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.start_time), 
+        end_time    :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.end_time), 
+        start_flexy_time  :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.start_flexy_time), 
+        end_flexy_time    :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.end_flexy_time), 
+        // break_time  :   new Date("2020-01-01 " +schedule.pov_schedule_details.all.break_time)
+      }]
+      : [
+        {
+          start_time        :  stored_flex_SCHED[0].start_time.setSeconds(stored_flex_SCHED[0].start_time.getSeconds() + this.state.owner_offset), 
+          end_time          :  stored_flex_SCHED[0].end_time.setSeconds(stored_flex_SCHED[0].end_time.getSeconds() + this.state.owner_offset),
+          start_flexy_time  :  stored_flex_SCHED[0].start_flexy_time.setSeconds(stored_flex_SCHED[0].start_flexy_time.getSeconds() + this.state.owner_offset),
+          end_flexy_time    :  stored_flex_SCHED[0].end_flexy_time.setSeconds(stored_flex_SCHED[0].end_flexy_time.getSeconds() + this.state.owner_offset),
+ 
+        }
+      ]
+      ;
     
     }else if( state.schedule_type == 'customize' ){
       state.cst_schedule_details = [];
+      state.pov_schedule_details = [];
+      var stored_cst_SCHED = [];
       var index = 0;
       for (var key in schedule.schedule_details ) {
         state.cst_schedule_details[index] = {
@@ -115,9 +167,62 @@ class AssignDefault extends Component {
           end_flexy_time    :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_flexy_time')), 
           break_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.break_time')) 
         }; 
+
+        stored_cst_SCHED[index] = {
+          start_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.start_time')), 
+          end_time          :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_time')), 
+          start_flexy_time  :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.start_flexy_time')), 
+          end_flexy_time    :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_flexy_time')), 
+          break_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.break_time')) 
+        }; 
+        if( this.props.instance?.schedule?.pov_schedule_details != undefined ) {
+          state.pov_schedule_details[index] = {
+            start_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_time')), 
+            end_time : 			new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_time')), 
+            start_flexy_time: 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_flexy_time')), 
+            end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_flexy_time')), 
+            // break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) 
+          }; 
+        }
+        else if(this.state.owner_offset != 0){
+          state.pov_schedule_details[index] = {
+            start_time        :   stored_cst_SCHED[index].start_time.setSeconds( stored_cst_SCHED[index].start_time.getSeconds() + this.state.owner_offset), 
+            end_time          :   stored_cst_SCHED[index].end_time.setSeconds( stored_cst_SCHED[index].end_time.getSeconds() + this.state.owner_offset),
+            start_flexy_time  :   stored_cst_SCHED[index].start_flexy_time.setSeconds( stored_cst_SCHED[index].start_flexy_time.getSeconds() + this.state.owner_offset),
+            end_flexy_time    :   stored_cst_SCHED[index].end_flexy_time.setSeconds( stored_cst_SCHED[index].end_flexy_time.getSeconds() + this.state.owner_offset),
+            // break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) 
+          }; 
+        }
         index++;
       }
+      // state.pov_schedule_details = [];
+      // index = 0;
+      // if( this.props.instance?.schedule?.pov_schedule_details != undefined ) {
+      //   for (var key in this.props.instance.schedule.pov_schedule_details) {
+      //     state.pov_schedule_details[index] = {
+      //       start_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_time')), 
+      //       end_time : 			new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_time')), 
+      //       start_flexy_time: 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_flexy_time')), 
+      //       end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_flexy_time')), 
+      //       // break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) 
+      //     }; 
+      //     index++;
+      //   }
+      // }
+      // else{
+      //   for  (var key in schedule.schedule_details ) {
+      //     state.pov_schedule_details[index] = {
+      //       start_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_time')), 
+      //       end_time : 			new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_time')), 
+      //       start_flexy_time: 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_flexy_time')), 
+      //       end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_flexy_time')), 
+      //       // break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) 
+      //     }; 
+      //     index++;
+      //   }
+      // }
     }
+
 
     state.isInitialDataLoaded = true;
 
@@ -137,11 +242,14 @@ class AssignDefault extends Component {
         nextProps.page_reloaded == true) {
           this.setSchedule( nextProps.default_schedule );
     }
-
+    const   viewer_offset = this.props.user?.user_offset_seconds != undefined ? this.props.user.user_offset_seconds : null;
+    const   viewed_offset = this.props.user_info?.user_offset_seconds != undefined ? this.props.user_info.user_offset_seconds : null;
+    const   owner_offset = viewed_offset != null ? viewed_offset - viewer_offset : null;
     // Detect if there's a change for the template list properties. Set the update template list state if changed.
     if (nextProps.template_list !== this.props.template_list) {
           this.setState({
-            templateList: nextProps.template_list
+            templateList: nextProps.template_list,
+            owner_offset:  owner_offset
           });
     }
 
@@ -155,12 +263,19 @@ class AssignDefault extends Component {
           creation_type : 'template'
         });
     }
+
+
+    
   }
 
   render = () => {
 
     const method = (this.props.user.id==this.props.params.user_id) ? 'store' : 'approval';
-
+    const   viewer_offset = this.props.user?.user_offset_seconds != undefined ? this.props.user.user_offset_seconds : null;
+    const   viewed_offset = this.props.user_info?.user_offset_seconds != undefined ? this.props.user_info.user_offset_seconds : null;
+    const   owner_offset = viewed_offset != null ? viewed_offset - viewer_offset : null;
+    // this.setState("owner_offset", owner_offset);
+    const pov_timezone_info =  this.props.user_info?.pov_timezone != undefined ? this.props.user_info?.pov_timezone : null;
     return ( this.state.isInitialDataLoaded ) ? 
           <Wrapper {...this.props} >
             <ContainerWrapper>
@@ -180,6 +295,7 @@ class AssignDefault extends Component {
                   std_schedule_details: this.state.std_schedule_details,
                   flx_schedule_details: this.state.flx_schedule_details,
                   cst_schedule_details: this.state.cst_schedule_details, 
+                  pov_schedule_details: this.state.pov_schedule_details, 
                   creation_type : this.state.creation_type,
                   source_type: 'default',
                   schedule_policies : this.state.schedule_policies,
@@ -352,6 +468,7 @@ class AssignDefault extends Component {
                         checked={values.schedule_type === "standard"}
                         onChange={() => {
                           setFieldValue('std_schedule_details', []);
+                          setFieldValue('pov_schedule_details', []);
                           arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
                           setFieldValue('schedule_type', 'standard')
                         }}
@@ -366,6 +483,7 @@ class AssignDefault extends Component {
                         checked={values.schedule_type === "flexible"}
                         onChange={() => { 
                           setFieldValue('flx_schedule_details', []);
+                          setFieldValue('pov_schedule_details', []);
 
                           arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
                           setFieldValue('schedule_type', 'flexible');
@@ -382,6 +500,7 @@ class AssignDefault extends Component {
                         checked={values.schedule_type === "customize"}
                         onChange={() => {
                           setFieldValue('cst_schedule_details', []);
+                          setFieldValue('pov_schedule_details', []);
                           for (var i = 0; i < values.work_days.length; i++) {
                             arrayHelpers.push({break_time : "",start_time : "",end_time : "",start_flexy_time : "",end_flexy_time : "" })
                           }
@@ -409,7 +528,24 @@ class AssignDefault extends Component {
                   </div>
                 </Form.Group>
               </Col>
-                      
+              <Row size = "6">
+              <Col sm={7}>
+											<Button className="toggle-outlook"
+												onClick={() => this.setState({
+													open_contrast: !this.state.open_contrast
+												})}
+												// aria-controls="example-collapse-text"
+												// aria-expanded={open}
+											>
+												Toggle Outlook <i className="fa  fa-eye" />
+											</Button>
+
+                    <div className="header_pov">
+                      <h6 >{this.props.user.pov_timezone} 	<i className="fa  fa-arrow-right" />   {pov_timezone_info}</h6>
+                    </div>
+											</Col>
+										
+              </Row>
               { values.schedule_type  === '' ? (
                 null
               ) : values.schedule_type  === 'standard' ? ( 
@@ -421,7 +557,12 @@ class AssignDefault extends Component {
                       </h4>
                   </div>
                   <div className="body">
-                    <StandardSchedDetailsForm/>
+                    <StandardSchedDetailsFormWithTimezone
+                    offset_data={owner_offset}
+                    // show_pov = {true}
+                    open_contrast = {this.state.open_contrast}
+                    pov_timezone_info = {pov_timezone_info}
+                />
                   </div>
                 </Form.Group>
               </Col>
@@ -434,7 +575,13 @@ class AssignDefault extends Component {
                       </h4>
                   </div>
                   <div className="body">
-                    <FlexibleSchedDetailsForm/>
+                    {/* <FlexibleSchedDetailsForm/> */}
+                    < FlexibleSchedDetailsFormWithTimezone
+                      offset_data={owner_offset}
+                      // show_pov = {true}
+                      open_contrast = {this.state.open_contrast}
+                      pov_timezone_info = {pov_timezone_info}
+                    />
                   </div>
                 </Form.Group>
               </Col>
@@ -449,7 +596,11 @@ class AssignDefault extends Component {
                     <div className="body">
                       {values.sorted_weekday.map((day, index) => {
                             if(values.work_days.includes(day)==true){
-                            return <Scheduledetails day={day} index={values.work_days.indexOf(day)} />
+                            return <ScheduledetailsWithTimezone day={day} index={values.work_days.indexOf(day)} 
+                            offset_data={owner_offset}
+                            show_pov = {true}
+                            open_contrast = {this.state.open_contrast}
+													pov_timezone_info = {pov_timezone_info}/>
                             }
                       })}
                     </div>
@@ -549,6 +700,7 @@ const mapStateToProps = (state) => {
         default_schedule : state.schedule.defaultSchedule,
         template_data : state.schedule.templateData,
         user_info : state.schedule.userInfo,
+
         
     }
   }

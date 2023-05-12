@@ -49,3 +49,23 @@
   font-size: 28px;
   font-weight: bold;
 }
+
+.changeSchedulePOV{
+  background-color: #3acfdf2a ;
+  padding: 10px;
+  padding-left: 20px;
+  border-radius: 6px;
+}
+
+.toggle-outlook{
+  background-color: #105396 !important;
+  border-color: #888 !important;
+  margin-left: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.timezone-row{
+  
+  /* margin-bottom: 2rem !important;
+  margin-top: 2rem !important; */
+}

@@ -4,6 +4,7 @@ namespace App\Modules\Payroll\Http\Controllers;
 
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Exports\DtrSummaryExport;
 use App\Modules\User\Models\User;
@@ -13,8 +14,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Modules\Payroll\Models\Biometrics;
+use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Payroll\Models\Leave;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
+use App\Modules\Payroll\Models\PayrollCutoff;
 
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
@@ -79,6 +83,8 @@ class DtrController extends Controller
      */
     public function quickpunch(Request $request){    
         try { 
+
+           
             $biometrix_collection = Collection::make();
             $biometrics = new Biometrics();
     
@@ -94,6 +100,17 @@ class DtrController extends Controller
             $biometrics->CheckTime       = date("Y-m-d H:i:s");
             $biometrix_collection->push( $biometrics );
 
+                            // $date = Carbon::createFromFormat('Y-m-d H:i:s', $biometrics->CheckTime,  Auth::user()->timezone );
+                            //     // $date->setTimezone('UTC');
+                            //     // $date;
+                            //     $date = $date->setTimezone("UTC");
+                            // dd(
+                            //     Auth::user()->country_zone(),
+                            //     Auth::user()->timezone,
+                            //     $date,
+                            //     $date->format('Y-m-d H:i:s'),
+                                
+                            // );
             $dtr_id = null;
             if ($request->dtr_id) {
                 $dtr_id = $request->dtr_id;
@@ -186,5 +203,52 @@ class DtrController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
         
+    }
+
+    public function get_incomplete_logs() {
+        // get the date today
+        $today = Carbon::now()->format('Y-m-d');
+        $yesterday = Carbon::yesterday()->format('Y-m-d');
+
+        // get the cutoff that scopes the date today
+        $payroll_cutoff = PayrollCutoff::where('start_date', '<=', $today)->where('end_date', '>=', $today)->first();
+        if (!$payroll_cutoff) {
+            return [];
+        } else {
+            // get incomplete dtr for the current cutoff
+            $inc_dtr = Dtr::whereBetween('date', [$payroll_cutoff->start_date, $yesterday])
+                            ->where('user_id', Auth::user()->id)
+                            ->where('is_rest_day', 0)
+                            ->where(function($query) {
+                                $query->whereNull('time_in')->orWhereNull('time_out');
+                            })
+                            ->get()
+                            ->toArray();
+
+            if ($inc_dtr) {
+                $keys_to_del = [];
+                foreach ($inc_dtr as $key => $dtr) {
+                    // check if the dtr is on holiday
+                    $holiday = Holiday::whereRaw("DATE_FORMAT(date, '%m-%d') = DATE_FORMAT('" . $dtr['date'] . "', '%m-%d')")->get();
+                    if (count($holiday) !== 0) {
+                        $keys_to_del[$key] = $dtr['id'];
+                        continue;
+                    }
+
+                    // check if the dtr is on leave
+                    $leave = Leave::where('dtr_id', $dtr['id'])->where('amount', '1.0')->get();
+                    if (count($leave) !== 0) {
+                        $keys_to_del[$key] = $dtr['id'];
+                        continue;
+                    }
+                }
+
+                if ($keys_to_del) {
+                    $inc_dtr = array_diff_key($inc_dtr, $keys_to_del);
+                }
+            }
+
+            return $inc_dtr;
+        }
     }
 }

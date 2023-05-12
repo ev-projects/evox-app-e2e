@@ -15,7 +15,8 @@
 #requestEmailApproval .card-body{
     box-shadow: 0 8px 15px 3px rgba(0,0,0,0.25) !important;
     border-bottom: 5px solid #82af13 !important;
-    border-top: 5px solid #82af13 !important;
+    /* border-top: 5px solid #82af13 !important; */
+	border-top: 5px solid #0097A7  !important;
 }
 
 #requestEmailApproval .btn-primary {

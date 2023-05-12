@@ -1,0 +1,214 @@
+
+
+.request-tab {
+    position: relative;
+    top: 12px;
+    left: 21px;
+    z-index: 1000;
+}
+.request-tab .nav-tabs{border: 0 !important;}
+.request-tab a{padding: 5px 8px 3px 8px !important; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 3px; font-size: .875em !important}
+.request-tab a.active {
+     background-color: #07335e  !important; color: #fff !important;
+}
+.request_list_btn{
+    width: 120px !important;
+    max-width: 120px !important;
+    height: 30px !important;
+    /* background-color:white !important; */
+    background-color: #0096a703  !important;
+
+    color: black !important;
+    font-size: 11px !important;
+    margin: 2px;
+    /* border-color: gray !important; */
+    border: 0px !important;
+    border-radius: 3px !important;
+}
+
+.filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: -5px; float: none;}
+.filters .date-range label,.bulk-action .form-group label {
+    float: left;
+    font-size: 10px;
+    padding: 9px 5px 8px;
+    text-transform: uppercase;
+    background: #ccc;
+}
+.filters .col{padding: 0px !important; margin:0 10px 0 0 !important;}
+.filters .date-range > div > div{width: 36%; float: left; margin-right: 5px}
+.filters .date-range {
+    width: 38% !important;
+    flex: 0 1 38%;
+    margin-left: 0% !important;
+}
+.filters.myrequest-filter .date-range {
+    width: 80% !important;
+    flex: 0 80%;
+}
+.filters .dept {
+    width: 27%;
+    flex: 10%;
+}
+.filters .search-name{width: 25%;flex: 10%;}
+.filters .filter-button{ width: 15%;flex: 5%; }
+.filters select, .filters input[type="textfield"]{font-size:1rem;}
+.bulk-action .form-group >div {float: left; margin-right: 10px}
+.denied{
+    background-color: rgba(255, 0, 0, 0.729) !important;
+    color: white !important;
+}
+
+.canceled{
+    background-color:gray !important;
+    color: white !important;
+}
+
+.approved, .nav-link .page-item.active .page-link{
+    background-color: #82af13  !important;
+    border-color: #82af13;
+    color: white !important;
+}
+
+.pending{
+    background-color: yellow !important;
+    color: #000000  !important;
+    margin-left:2px !important;
+}
+
+.counter-request{
+    background-color: #9ee8f0  !important;
+    color: #000000  !important;
+}
+ 
+
+.action-approved{
+    background-color: #8ed40252;
+}
+.action-deny{
+    background-color: #ef15152b;
+}
+
+.pagination .nav-link{
+    padding: 0px !important;
+    border-radius: 0px !important;
+}
+
+.request_i{
+    padding-right: 3px !important;
+    border: none !important;
+    font-size: 0.60rem;
+}
+
+.request_list_i-pending{
+    color: rgb(255, 208, 0)
+}
+.request_list_i-approved{
+    color: #82af13;
+}
+.request_list_i-cancelled{
+    color: rgb(164, 163, 163);
+}
+.request_list_i-declined{
+    color: #e83030d3;
+}
+
+.badge-light{
+    border: 1px solid gray !important;
+}
+
+.pagination_btn{
+    margin-left: -1px;
+    line-height: 1.25;
+    color: #000000 !important;
+    background-color: #fff !important;
+    border: 1px solid #dee2e6;
+    border-radius: 0px !important;
+}
+
+.status-filter.row .btn-group, .myrequests.btn-group{
+    background-color: #0096a714 !important ;
+    padding: 2px;
+    padding-bottom: 3px;
+    border-radius: 2px;
+}
+.request_list_btn.active {
+    outline: 0;
+    /* box-shadow: 0 0 0 0.2rem rgba(130, 175, 19, 0.2) !important; */
+    background-color: #07335e !important;
+    color : white !important;
+}
+
+.request_list_btn:hover{
+    background-color: #07335e !important;
+    color: white !important;
+    transition: 0.1s;
+}
+
+
+.pagination .active{
+    background-color: #575A89 !important;
+    color: white !important;
+}
+
+.fa-check-circle{
+    color: #82af13 !important;
+}
+
+.fa-times-circle{
+    color: red  !important;
+}
+
+.btn.display-block{
+    display: block !important   ;
+    width: 100px!important;
+    font-size:12px;
+    padding:8px 0;
+}
+
+.input-feedback{
+    color: red !important;
+}
+.form-control{font-size: inherit !important}
+.react-datepicker-wrapper {
+    display: block;
+}
+
+@media only screen and (max-width: 650px) {
+.bulk-action .form-group label, .filters .date-range label {
+    font-size: .5rem;
+}
+.btn.display-block {
+    font-size: .75rem;
+    width: 90px!important;
+}
+.filters.myrequest-filter {margin:0; width: 100%; float: none;}
+.filters.myrequest-filter .date-range {
+    width: 75% !important;
+    flex: 0 75%;
+}
+.form-control{font-size:.75rem !important}
+.filters .date-range{flex: 0 1 100%;}
+.filters .date-range > div > div{width: 31%; float: left; margin-right: 5px}
+.filters .dept{width: 27%}
+.filters .search-name{width: 25%}
+.filters .btn.display-block{width:52px !important; overflow: hidden; word-break: break-all; height: 38px}
+.request-tab {
+    top: 18px;
+    left: 4px;
+}
+.request-tab .nav-tabs a{
+    display: none
+}
+.request-tab a{padding: 5px 10px}
+.request-tab .nav-tabs a {
+    font-size: .75rem;
+    margin: 0 1px 0 1px;
+    padding: 3px 7px;
+}
+.filters.myrequest-filter .btn
+ {
+    height: 34px;
+    width: 38px;
+    overflow:hidden;
+}
+}

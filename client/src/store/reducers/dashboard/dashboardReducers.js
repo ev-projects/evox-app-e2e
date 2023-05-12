@@ -7,8 +7,21 @@ const initState = {
     birthday_and_anniv : [],
     team_attendance : [],
     recent_dtr : [],
+    nav_recent_dtr : [],
     holidays:[],
-    changelogs:[]
+    changelogs:[],
+    todayleaves:[],
+    tommorowleaves:[],
+    dashboardholiday:[],
+    alterrequest:null,
+    overtimerequest:null,
+    restdayrequest:null,
+    changeschedulerequest:null,
+    myalterrequest:null,
+    myovertimerequest:null,
+    myrestdayrequest:null,
+    mychangeschedulerequest:null,
+    worktour:true,
 }
 
 const dashboardReducers = (state = initState, action) => {
@@ -38,8 +51,19 @@ const dashboardReducers = (state = initState, action) => {
             result = {
                 ...state,
                 recent_dtr : action.data.content,
+                nav_recent_dtr : action.data.content,
+                isNavDtrLoaded : true,
             }
-            break;      
+            break;     
+            
+        case "CLEAR_RECENT_DTR_INSTANCE":
+            result = {
+                ...state,
+                recent_dtr : {},
+                nav_recent_dtr : {},
+                isNavDtrLoaded : false,
+            }
+                break;
         case "FETCH_HOLIDAYS":
             result = {
                 ...state,
@@ -52,6 +76,49 @@ const dashboardReducers = (state = initState, action) => {
                 changelogs : action.data,
             }
             break;
+            case "ALTER_LOG_PENDING":
+            result = {
+                ...state,
+                alterrequest : action.alterrequest,
+                overtimerequest : action.overtimerequest,
+                restdayrequest : action.restdayrequest,
+                changeschedulerequest : action.changeschedulerequest,
+            }
+            break;
+            case "MY_ALTER_LOG_PENDING":
+                result = {
+                    ...state,
+                    myalterrequest : action.myalterrequest,
+                    myovertimerequest : action.myovertimerequest,
+                    myrestdayrequest : action.myrestdayrequest,
+                    mychangeschedulerequest : action.mychangeschedulerequest,
+                }
+                break;
+                case "TODAY_LEAVES":
+                    result = {
+                        ...state,
+                        todayleaves : action.todayleaves,
+                    }
+                    break;
+                    case "TOMMOROW_LEAVES":
+                    result = {
+                        ...state,
+                        tommorowleaves : action.tommorowleaves,
+                    }
+                    break;
+                    case "WORK_TOUR":
+                        result = {
+                            ...state,
+                            worktour : action.worktour,
+                        }
+                        break;
+                        case "DASHBOARD_HOLIDAY":
+                            result = {
+                                ...state,
+                                dashboardholiday : action.dashboardholiday,
+                            }
+                            break;
+            
         default:
             result = state;
     }

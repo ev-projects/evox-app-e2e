@@ -200,7 +200,7 @@ class ReportController extends Controller
      */
     public function team_dtr_summary(Request $request)
     {
-        try {
+        try { 
 
            
             $user_collection_paginated = [];
@@ -454,6 +454,68 @@ class ReportController extends Controller
     }
 
 
+    
+    
+    public function get_dashboard_holidays(Request $request)
+    {
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $request->start_date, 'end_date' => $request->end_date], "bhrlog");
+        try {
+
+            $bhr_holidays_array = [];
+
+            // Define the End Point for the API.
+            $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
+       
+            // Iterate the BHr Call Result
+
+            // BHR API CALL For Fecthing Philippines Holiday
+            foreach( bhr_api_call('GET', $end_point) as $row ) {
+
+                // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+                if( $row->type == 'holiday' ) {
+                    $bhr_holidays_array[] = $row;
+                }
+            }
+
+            // BHR API CALL For Fecthing Indian Holiday
+            foreach( bhr_api_call_india('GET', $end_point) as $row ) {
+
+                // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+                if( $row->type == 'holiday' ) {
+
+                    // Check Holidays Already Exist ion Array
+                    if(in_array($row, $bhr_holidays_array)) {
+                    }  else {
+                    $bhr_holidays_array[] = $row;
+                    }
+                   
+                }
+            }
+            // Sort Holiday By Date And ID
+            usort($bhr_holidays_array, function($a, $b) {
+                return [$a->start,$a->id] <=> [$b->start,$b->id];
+           });
+            
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_holidays_array, "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            return $bhr_holidays_array;
+            return success_response(
+                trans('messages.get_holidays_success'),
+                $bhr_holidays_array
+            );
+        } catch (Exception $e) {
+            DB::rollback();
+            
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            throw $e;
+        }
+    }
+
+
 
     /**
      * Function for Getting Team Birthday, Anniversary and Regularization
@@ -496,7 +558,8 @@ class ReportController extends Controller
 
             return success_response(
                 trans('messages.get_anniversary_birthday_success'),
-                new AnniversaryResources($this->report->get_team_birthday_anniversary())
+                // new AnniversaryResources($this->report->get_team_birthday_anniversary())
+                new AnniversaryResources($this->report->get_team_birthday_anniversary_last_twodays()) 
             );
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
@@ -1135,6 +1198,8 @@ class ReportController extends Controller
 
     public function new_dtr_summary_report_csv_export(Request $request)
     {
+
+      
         try {           
             $user_sup_id = Auth::user()->id; // basically user id
             if($request->sup_id){

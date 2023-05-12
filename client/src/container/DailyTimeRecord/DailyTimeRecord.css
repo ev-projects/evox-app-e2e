@@ -76,7 +76,7 @@ table .center{
     font-size: .65rem !important;
 }
 .dtr-item{font-size:16px !important}
-.lh < .center{
+.lh > .center{
 	background-color: black !important;
 }
 .dtr-status>div>div{
@@ -123,18 +123,57 @@ float: left;
     text-align: center;
     background-position: center 10px;
     background-repeat: no-repeat;
-    padding-top: 50px;
+    /* padding-top: 18px; */
+    padding-top: 45px;
     display: block;
     padding-left: 0;
     padding-right: 0;
     border:0;
 }
-.SummaryBlock .late .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-late.png);}
-.SummaryBlock .ut .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ut.png);}
-.SummaryBlock .nsd .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-nd.png);}
-.SummaryBlock .ul .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-absent.png);}
-.SummaryBlock .ot .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
-.SummaryBlock .otnd .toast-header{background-image: url(https://eastvantage.com/evox/icn/icn-ot.png);}
+.SummaryBlock .late .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-late.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .ut .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-ut.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .nsd .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-nd.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .ul .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-absent.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .ot .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-ot.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .otnd .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-ot.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+
+
+/* 
+.SummaryBlock .ut .toast-body{ padding-top: 27px;}
+.SummaryBlock .nsd .toast-body{ padding-top: 27px;}
+.SummaryBlock .ul .toast-body{ padding-top: 27px;}
+.SummaryBlock .ot .toast-body{ padding-top: 27px;}
+.SummaryBlock .otnd .toast-body{ padding-top: 27px;} */
 
 
 
@@ -157,14 +196,25 @@ float: left;
 .SummaryBlock .holidays .col-3 .toast{border:0; box-shadow: none !important;}
 .SummaryBlock .holidays h5 {
     font-size: .875em !important;
-    color: #666;
+    color: #666!important;
     position: relative;
     text-transform: uppercase;
-    top: -7px;
+    top: -11px;
     margin-bottom: 3px;
+    padding-top: 7px;
 }
+
 .SummaryBlock .holidays h5 span{
     font-size: 2.5em;
+    position: relative;
+    top: 4px;
+    display: inline-block;
+    margin-right: 10px;
+    
+}
+
+.SummaryBlock .holidays h5 i{
+    font-size: 21px;
     position: relative;
     top: 4px;
     display: inline-block;
@@ -187,7 +237,7 @@ float: left;
 }
 .dtr-table>thead>tr>td, .dtr-table>thead>tr>th {
 
-    background: #82af13 !important;
+    background: #0097A7  !important;
     color: #fff !important;
     font-size: .75rem !important;
 }
@@ -236,3 +286,7 @@ float: left;
   .dtr-schedule .col{width: 100%; padding: 0}
 }
 
+.cutoff-text{
+    color: #0097A7;
+    font-size: 14px;
+}

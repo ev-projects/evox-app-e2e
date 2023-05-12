@@ -25,6 +25,14 @@ const overtimeReducers = (state = initState, action) => {
                 // overtimeInstance : action.overtime
             };
             break;
+
+             // Clear the Instance totally for the Alter Log 
+        case "CLEAR_OVERTIME_INSTANCE":
+            return {
+                instance : {},
+                isInstanceLoaded : false
+            };
+            break;
         default:
             result = state;
     }

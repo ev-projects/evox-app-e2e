@@ -19,6 +19,10 @@ div.schedule_info div:nth-child(2) {
     color: black !important;
 }
 
+.header_text{
+    margin-left: 1.3rem !important;
+}
+
 .emp_sched .holiday,
 .legends .holiday .box{
     background-color: #b1faff !important;
@@ -90,7 +94,7 @@ div.schedule_info div:nth-child(2) {
     top:2px;
 }
 .legends .status{font-size: 10px; color: #666}
-div.days{background: #82af13; margin:0;padding: 0 !important}
+div.days{background: #005493; margin:0;padding: 0 !important}
 div.days div{text-align: center; text-transform: uppercase; color:#fff;padding:2px; border:1px solid #fff}
 .schedule-col{height: 30px}
 .schedule-date{font-weight: bold; text-transform: uppercase; font-size: .875em; text-align:center;}

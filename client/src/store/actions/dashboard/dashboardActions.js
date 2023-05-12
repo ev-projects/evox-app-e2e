@@ -125,3 +125,12 @@ export const getChangeLogs = ( id ) => {
         });
     }
 }
+
+export const clearRecentDtrInstance = () => {
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'CLEAR_RECENT_DTR_INSTANCE'
+        })
+    }
+}
+

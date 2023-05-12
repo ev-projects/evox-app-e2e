@@ -285,6 +285,30 @@ return [
      */
     'create_change_log_attempt' => 'Create Change Log Attempt',
     'create_change_log_success' => 'A new change log is now created!',
-    'fetch_change_log_success' => 'List of all change logs'
+    'fetch_change_log_success' => 'List of all change logs',
 
+
+
+    /**
+     * Department Announcements
+     */
+
+     'create_department_announcement_attempt' => 'Create Department Announcement Attempt',
+     'create_department_announcement_success' => 'A new Department Announcement is now created!',
+     'update_department_announcement_attempt' => 'Update Department Announcement Attempt',
+     'update_department_announcement_success' => 'A  Department Announcement has been updated!',
+     'delete_department_announcement_attempt' => 'Deleting Department Announcement Attempt',
+     'delete_department_announcement_success' => 'Deleted an Department Announcement',
+    //  'fetchdepartment_announcement_success' => 'List of all change logs',
+    /**
+     *  HR Announcement
+     */
+    'create_hr_announcement_attempt' => 'Create HR Announcement Attempt.',
+    'create_hr_announcement_success' => 'A new HR Announcement is now created!',
+    'fetch_hr_announcements_success' => 'List of all HR Announcements.',
+    'delete_hr_announcement_attempt' => 'Delete HR Announcement Cutoff Attempt',
+    'delete_hr_announcement_success' => 'The HR Announcement is now deleted!',
+    'fetch_hr_announcement_success' => 'Get Announcement.',
+    'update_hr_announcement_attempt' => 'Update HR Announcement Attempt.',
+    'update_hr_announcement_success' => 'Update HR Announcement success.',
 ];

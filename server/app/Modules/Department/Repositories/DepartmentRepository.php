@@ -2,12 +2,14 @@
 
 namespace App\Modules\Department\Repositories;
 
-use App\Modules\Department\Models\Department;
-use Exception;
 use Auth;
-
+use Exception;
+use App\Modules\User\Models\User;
 use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Log;
+use App\Modules\Department\Models\Department;
+use App\Modules\Department\Models\Announcement;
 
 class DepartmentRepository implements DepartmentRepositoryInterface{
     
@@ -27,6 +29,24 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     {
         try {
             $department_collection = Department::orderBy('department_name', 'asc')->get();
+            log_to_file('info', 'Success', [$department_collection]);
+            return $department_collection;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+       /**
+     *  Responsible for fetching all the Departments
+     * 
+     * @return Collection $department_collection
+     */
+    public function all_with_announcements()
+    {
+        try {
+            $department_collection = Department::has("departments_announcements")->orHas('departments_announcements_presented')->orderBy('department_name', 'asc')->get();
             log_to_file('info', 'Success', [$department_collection]);
             return $department_collection;
 
@@ -99,6 +119,62 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
 
             log_to_file('info', 'Success', [$department->id . ' - ' . $department->department_name, $user_id_array], 'assign');
             return $department;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+    public function dashboard_annoucments(User $user)
+    {
+        try {
+
+            
+            $announcements_collection = Announcement::where("department_id", $user->department_id);
+
+
+            log_to_file('info', 'Success', [$announcements_collection]);
+            return $announcements_collection;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+   
+    public function create_department_announcement( $id, array $user_id_array )
+    {
+        try {
+           
+            return null;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+    
+
+    public function edit_department_announcement( $id, array $user_id_array )
+    {
+        try {
+           
+            return null;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+    public function destroy_department_announcement( $id, array $user_id_array )
+    {
+        try {
+           
+            return null;
 
         } catch (Exception $e) {
             log_error($e);

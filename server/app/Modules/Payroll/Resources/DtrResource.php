@@ -111,7 +111,7 @@ class DtrResource extends JsonResource
             // foreach( $this->work_from_home()->get() as $work_from_home){
             //     $requests[] = new WorkFromHomeResource( $work_from_home );
             // }
-
+            
             $result =  array_merge( 
                 array(
                     'id' => $this->id,

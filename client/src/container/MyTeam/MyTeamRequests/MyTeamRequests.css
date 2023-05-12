@@ -6,26 +6,30 @@
     left: 21px;
     z-index: 1000;
 }
+.header_text{
+    margin-left: 1.3rem !important;
+}
 .request-tab .nav-tabs{border: 0 !important;}
 .request-tab a{padding: 5px 8px 3px 8px !important; margin-bottom: 0 !important; border:0 !important; background: #ccc; color:#333 !important; margin-right: 3px; font-size: .875em !important}
 .request-tab a.active {
      background-color: #82af13  !important; color: #fff !important;
 }
-.request_list_btn{
+.my-team-request .status-filter .request_list_btn{
     background-color:white !important;
     color: black !important;
     font-size: .875em !important;
     margin: 10px;
     border: 1px solid #ccc !important;
-    border-radius: 25px !important;
+    border-radius: 2px !important;
 }
-.request_list_btn.active {
+.my-team-request .status-filter .request_list_btn.active {
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(130, 175, 19, 0.2) !important;
 }
 
-.request_list_btn .badge{border:1px solid #ccc;}
-.request_list_btn .badge-light{background: #eee;}
+
+.my-team-request .status-filter .request_list_btn .badge{border:1px solid #ccc;}
+.my-team-request .status-filter .request_list_btn .badge-light{background: #eee;}
 .filters.myrequest-filter {margin-top:20px; width: 50%; margin-left: -5px; float: none;}
 .filters .date-range label,.bulk-action .form-group label {
     float: left;

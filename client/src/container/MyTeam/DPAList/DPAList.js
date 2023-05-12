@@ -233,7 +233,8 @@ const DPAListTable = (props) => {
   // If there's a loaded myTeam props already, then proceed on rendering for the Page.
   return ( props.dpaList.list != null && props.dpaList.list.data.length > 0   ? 
           <div>
-            Record Displayed: { props.dpaList.list != null && props.dpaList.list.data.length > 0  ? props.dpaList.list.pagination.total : 0 }
+            {/* Record Displayed:  */}
+            { props.dpaList.list != null && props.dpaList.list.data.length > 0  ? props.dpaList.list.pagination.total : 0 }
             <Table striped bordered hover>
               <thead>
                 <tr>

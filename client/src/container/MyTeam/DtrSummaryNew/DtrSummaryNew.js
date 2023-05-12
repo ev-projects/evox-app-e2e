@@ -268,7 +268,7 @@ class DtrSummaryNew extends Component {
   <table class="table dtrSummary">
     <thead class="thead-light">
       <tr>
-        <th scope="col" class="th-id"># ID</th>
+        <th scope="col" class="th-id">Employee Number</th>
         <th scope="col" class="th-name">Employee Name</th>
         <th scope="col" class="th-dept">Department</th>
         <th scope="col">UL</th>

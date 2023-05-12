@@ -65,7 +65,8 @@ return [
     |
     */
 
-    'timezone' => 'Asia/Manila',
+    // 'timezone' => 'Asia/Manila',
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -172,6 +173,9 @@ return [
         App\Modules\Email\Providers\EmailServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Modules\Department\Providers\DepartmentServiceProvider::class,
+
+        App\Modules\Department\Providers\AnnouncementServiceProvider::class,
+
         App\Modules\Client\Providers\ClientServiceProvider::class,
         App\Modules\Team\Providers\TeamServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,

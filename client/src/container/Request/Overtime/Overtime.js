@@ -97,7 +97,7 @@ class Overtime extends Component {
         case "cancel":
             if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
               formData.append('_method', 'PUT')
-              this.props.updateOvertimeStatus( values.id, formData, values.action );
+              this.props.updateOvertimeStatus( values.id, formData, values.action, this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date );
             }
             break;
     }
@@ -122,7 +122,7 @@ class Overtime extends Component {
 
   
   render = () => {  
-    console.log(this.props.user);
+    // console.log(this.props.user);
     // Checks if the Instance is On Approval state.
     const onApproval = this.props.instance?.is_under_supervisee && Authenticator.check('supervisor', 'manage_employee_request') ? this.props.instance.is_under_supervisee : false;
 
@@ -141,7 +141,7 @@ class Overtime extends Component {
         id:               this.props.instance.id != undefined ? this.props.instance.id : null, 
         date:             this.props.instance.date != undefined ? new Date( this.props.instance.date ) : null,         
         user_id:          this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(), 
-        amount:           this.props.instance.amount != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.amount+":00" ) : null,  
+        amount:           this.props.instance.amount != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.amount+":00" ) :  new Date(new Date().setHours(1,0,0,0)) ,  
         type:             this.props.instance.type != undefined ? this.props.instance.type : null, 
         employee_note:    this.props.instance.employee_note != undefined ? this.props.instance.employee_note : null,
         approver_note:    this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null
@@ -183,7 +183,7 @@ class Overtime extends Component {
                     <Col size="4"> 
                       <div className="form-group">
                         <label>Date:</label>
-                        <InputDate name="date" value={values.date}/>
+                        <InputDate name="date" value={values.date} readOnly={onApproval}/>
                       </div>
                     </Col> 
                     <Col size="3">   
@@ -273,8 +273,8 @@ class Overtime extends Component {
 
 const validationSchema = Yup.object().shape({
     date:           Yup.string().required("This field is required").nullable(),
-    amount:         Yup.date().required("This field is required").nullable().min( DateFormatter.get_specific_datetime( null, '00:59:59' ) , 'Please select valid time.')
-                                                                            .max( DateFormatter.get_specific_datetime( null, '16:00:01' ) , 'Please select valid time.'),
+    amount:         Yup.date().required("This field is required").nullable().min( DateFormatter.get_specific_datetime( null, '00:29:59' ) , 'Please select valid time.')
+                                                                            .max( DateFormatter.get_specific_datetime( null, '8:00:01' ) , 'Please select valid time.'),
     type:           Yup.string().required("This field is required").nullable(),
     employee_note:  Yup.string().nullable(),
     approver_note:  Yup.string().nullable()
@@ -285,7 +285,8 @@ const mapStateToProps = (state) => {
     constant          : state.constant,
     instance          : state.overtime.instance,
     isInstanceLoaded  : state.overtime.isInstanceLoaded,
-		user			        : state.user
+		user			        : state.user,
+    settings        : state.settings
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -293,7 +294,7 @@ const mapDispatchToProps = (dispatch) => {
       fetchOvertime   : ( id ) => dispatch( fetchOvertime( id ) ),
       addOvertime     : ( post_data ) => dispatch( addOvertime( post_data ) ),
       updateOvertime  : ( id, post_data ) => dispatch( updateOvertime( id, post_data ) ),
-      updateOvertimeStatus  : ( id, post_data, status ) => dispatch( updateOvertimeStatus( id, post_data, status ) ),
+      updateOvertimeStatus  : ( id, post_data, status, user_id, fromdate, todate ) => dispatch( updateOvertimeStatus( id, post_data, status, user_id, fromdate, todate ) ),
       setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
       resetOvertimeInstance : () => dispatch( resetOvertimeInstance() ),
       clearOvertimeInstance : () => dispatch( clearOvertimeInstance() )

@@ -12,7 +12,7 @@ import { exportAttendanceSummary, getTeamAttendanceSummary } from '../../../stor
 import { fetchTeamUnderDepartment , fetchDepartmentsTeams} from '../../../store/actions/filters/myTeamActions';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
-import ReportNavigator from "../../../components/Template/ReportNavigator/ReportNavigator.js";
+import ReportNavigatorShort from "../../../components/Template/ReportNavigatorShort/ReportNavigatorShort.js";
 import Validator from "../../../services/Validator.js";
 import TeamAttendanceSummaryPanel from "../../../components/Report/TeamAttendanceSummaryPanel";
 import Formatter from "../../../services/Formatter";
@@ -21,8 +21,8 @@ class TeamAttendanceSummary extends Component {
         super(props);
 
         this.initialState = {
-          start_date:       moment().startOf('week'),
-          end_date:         moment().endOf('week'),
+          start_date:      moment().subtract(6,'d').startOf('day'),
+          end_date:         moment().endOf('day'),
           // department_id:    this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0].id : "",
           // team_id:          "",
           name:             "",
@@ -56,7 +56,7 @@ class TeamAttendanceSummary extends Component {
           }
         } 
       }
-      console.log( formData);
+      // console.log( formData);
       this.props.getTeamAttendanceSummary( this.state.start_date, this.state.end_date, formData )
     }
 
@@ -114,7 +114,7 @@ class TeamAttendanceSummary extends Component {
     this.props.fetchDepartmentsTeams(this.props.user.id, params);
   }
 
-    // Handles the change of date that'll be triggered by the ReportNavigator
+    // Handles the change of date that'll be triggered by the ReportNavigatorShort
     handleChangeDate = ( start_date, end_date, scope_type ) => {
       this.state.scope_type = scope_type;
       this.setState({
@@ -159,9 +159,9 @@ class TeamAttendanceSummary extends Component {
       return(
           <Wrapper {...this.props} >
             <ContainerWrapper> 
-              <h2>Team Attendance Summary</h2> 
+              <h2 className="header_text">Team Attendance Summary</h2> 
                 <div className="navigator-bar">
-                  <ReportNavigator start_date={this.state.start_date} end_date={this.state.end_date} handleChangeDate={this.handleChangeDate}  default_view_type={"week"} hide_filter_button={true}/>
+                  <ReportNavigatorShort start_date={this.state.start_date} end_date={this.state.end_date} handleChangeDate={this.handleChangeDate}  default_view_type={"day"} hide_filter_button={true}/>
                   {/* { Validator.isValid( start_date ) && Validator.isValid( end_date ) ? (start_date.format("LL") === end_date.format("LL") ? start_date.format("LL") : start_date.format("LL") + " - " + end_date.format("LL") )  : null } */}
                 </div>
                 <ContainerBody>        
@@ -217,7 +217,7 @@ class TeamAttendanceSummary extends Component {
                       </Col> 
                       <Col size="2"> 
                         <div className="form-group">
-                            <input type="textfield" className="form-control" variant="primary" placeholder="Enter Name" name="name" onChange={this.handleFilterChange} value={this.state.name} />
+                            <input type="textfield" className="form-control employee-name-input" variant="primary" placeholder="Employee Name" name="name" onChange={this.handleFilterChange} value={this.state.name} />
                         </div>
                       </Col> 
                       <Col size="2"> 

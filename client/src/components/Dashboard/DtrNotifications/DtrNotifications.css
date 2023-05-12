@@ -1,7 +1,8 @@
 
 
 .dtr-notifications .card-body {
-    border-top: 5px solid #82af13 !important;
+    /* border-top: 5px solid #82af13 !important; */
+    border-top: 5px solid #0097A7  !important;
     background: #fff;
 }
 .absent, .no-schedule, .rdw_incomplete{
@@ -47,6 +48,51 @@
 }
 
 .dtr-notifications .no-notifications{
+    text-align: center;
+    padding: 20px;
+}
+
+
+
+
+
+.dropdown-menu .content-table table{width: 100%}
+.dropdown-menu .content-table table tbody td, 
+.dropdown-menu .content-table table thead th {
+    text-align: left;
+    vertical-align: middle;
+    border-top: 0!important;
+    border-left: 0!important;
+    border-right: 0!important;
+    padding: 7px 5% 7px 0px;
+    font-size: .75rem;
+    background:#fff !important; 
+}
+
+.dropdown-menu .content-table table thead th{
+    color:#333 !important;
+}
+
+.dropdown-menu .content-table .holiday{
+    color: orange !important
+}
+
+.dropdown-menu .content-table{
+    overflow-y: auto;
+    min-height: 150px;
+    max-height: 360px;
+    margin: 0 auto;
+    font-size: small;
+}
+
+.dropdown-menu .content-table td{
+    background: #fff !important
+}
+.dropdown-menu .content-table tbody{
+    overflow-y: scroll;
+}
+
+.dropdown-menu .no-notifications{
     text-align: center;
     padding: 20px;
 }

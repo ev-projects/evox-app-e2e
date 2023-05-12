@@ -124,9 +124,20 @@ class User extends Authenticatable implements JWTSubject
      *  Gets user info for displaying page or block
      */
     public function getUserInfo()
-    {
+    {               $offset = $this->country_timezone_to_offset();
         return [    "full_name" => $this->getFullName() , 
-                    "department" => $this->department()->first()->department_name   ];
+                    "department" => $this->department()->first()->department_name,
+
+
+                    /// SEPARATE
+                    "timezone" => $this->timezone,
+                    "user_offset_seconds" => string_offset_to_seconds($offset),
+                    "user_server_time" =>  timestamp_to_datetime(Carbon::now()->timestamp),
+                    "user_server_timestamp" => (Carbon::now()->timestamp + string_offset_to_seconds($offset)),
+                    "user_server_timestamp_mils" => (Carbon::now()->timestamp + string_offset_to_seconds($offset))*1000,
+                    'pov_timezone'=>  $this->country_zone()->country_name . " " . $this->country_zone()->country_time_zone."(".$this->country_zone()->time_difference .")"
+                    
+                ];
     }
 
     ########################################################################
@@ -161,6 +172,28 @@ class User extends Authenticatable implements JWTSubject
     public function team()
     {
         return $this->belongsToMany(Team::class, 'team_users', 'user_id', 'team_id');
+    }
+
+    public function country_zone()
+    {
+        return $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first();
+    }
+
+    public function country_zone_offset()
+    {
+        return $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first()->time_difference;
+    }
+
+    public function country_timezone_to_offset()
+    {
+        
+
+        $timezone_name = $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first()->timezone;
+
+        $offset_string = Carbon::now($timezone_name);
+       
+
+        return $offset_string->format('P');
     }
 
 
@@ -481,8 +514,7 @@ class User extends Authenticatable implements JWTSubject
                 $user_id_array = array_merge( $user_id_array, $teams->team_users()->pluck('id')->toArray());
             }
             return User::whereIn('users.id', $user_id_array);
-          
-
+  
         // If not, fetch the default users handled via the users_supervisors pivot table
         } else {
             return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');

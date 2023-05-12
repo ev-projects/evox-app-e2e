@@ -21,6 +21,7 @@
     dtr                             :  "/app/dtr/",
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
+    my_overall_request              :  "/app/account/MyOverallRequests",
     ev_learning                     :  "/app/EVLearning",
     ops_schedule                    :  "/app/OpsSchedule",
 
@@ -37,6 +38,7 @@
     dpa_list                        :  "/app/team/DPAList",
     employee_list                   :  "/app/team/MyTeamList",
     my_team_requests                :  "/app/team/MyTeamRequests",
+    my_team_all_requests            :  "/app/team/MyTeamAllRequests",
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
     dtr_summary_new                 :  "/app/team/DtrSummaryTemp",
@@ -46,6 +48,11 @@
     monthly_team_schedule           :  "/app/team/MonthlyTeamSchedule", 
     custom_team_schedule            :  "/app/team/CustomTeamSchedule", 
     daily_team_schedule             :  "/app/team/DailyTeamSchedule", 
+
+    department_announcement_list    :  "/app/team/DepartmentAnnouncementList/",
+    department_announcement_form    :  "/app/team/DepartmentAnouncement/",
+    announcement_page               :  "/app/team/Anouncement/Page/",
+
     // Schedule Links
     template_add                    :  "/app/schedule/",
     template_list                   :  "/app/schedule/template/",
@@ -69,10 +76,26 @@
     manage_change_logs              :  "/app/admin/ManageChangeLogs/",
 
     department_list                 :  "/app/admin/DepartmentList/",
+    admin_announcement_list         :  "/app/admin/AnnouncementList/",
+
 
     // Performance Measure
     kpi_upload                      :  "/app/performance/KpiUpload",
     generate_date                   :  "/app/admin/GenerateDate/",
+
+    // HR Links
+    manage_hr_announcements         : "/app/hr/ManageHrAnnouncements/",
+    post_hr_announcements           : "/app/hr/PostHrAnnouncements/",
+
+    meeting_calander                :  "/app/calander/",
+    room_master                     :  "/app/createroom/",
+    room_list                       :  "/app/Roomlist/",
+    booked_list                     :  "/app/Bookedlist/",
+    meetingroom_approval            :  "/app/roomapproval/",
+    location_master                 :  "/app/createlocation/",
+    location_list                   :  "/app/locationlist/",
+    job_referal                     :  "/app/referjob/",
+    requirement_list                :  "/app/requirement/"
 };
 
 global.invalid_token_response = [

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Form,Button,InputGroup,FormControl  } from 'react-bootstrap';
 import Select from "react-select";
 import moment from 'moment';
-
+import { useParams, useLocation, useHistory } from "react-router-dom";
 import "./AlterLog.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
 import { InputDate,InputTime,InputDateTime } from '../../../components/DatePickerComponent/DatePicker.js';
@@ -24,20 +24,25 @@ import { fetchAlterLog,
          clearAlterLogInstance } from '../../../store/actions/requests/alterLogActions';
 
 import { setRedirect } from '../../../store/actions/redirectActions';
+import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
+
 
 import Wrapper from "../../../components/Template/Wrapper";
 import RequestButtons from "../../../components/RequestComponent/RequestButtons/RequestButtons";
 import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
 import Authenticator from "../../../services/Authenticator";
+import settingsReducers from "../../../store/reducers/settings/settingsReducers";
 
 class AlterLog extends Component {
 
+
+  
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
-  onSubmitHandler = (values) => {
+  onSubmitHandler = async(values) => {
+    
 
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
-
     for (var key in values) {
       
         if( values[key] != null ) {
@@ -49,7 +54,11 @@ class AlterLog extends Component {
                 case "current_time_out":
                 case "new_time_in":
                 case "new_time_out":
-                    formData.append(key, moment( values[key] ).format("YYYY-MM-DD HH:mm:ss") );
+              
+                // formData.append(key, moment( values[key] ).format("YYYY-MM-DD HH:mm:ss") );
+                  // console.log( moment( values[key]).subtract(this.props.user?.user_offset_seconds, 'seconds').format("YYYY-MM-DD HH:mm:ss"));
+
+                  formData.append(key, moment( values[key]).subtract(this.props.user?.user_offset_seconds, 'seconds').format("YYYY-MM-DD HH:mm:ss") );
                     break;
                 default:
                     formData.set(key, values[key]);
@@ -57,6 +66,8 @@ class AlterLog extends Component {
             }
         }
     }
+
+    
 
     // Checks on what action to use depending on the values.action
     switch( values.action  ) { 
@@ -68,11 +79,13 @@ class AlterLog extends Component {
 
                 case "store":
                     this.props.addAlterLog( formData );
+                    this.props.getMyDtrNotifications( this.props?.user?.id );
                     break;
           
                 case "update":
                     formData.append('_method', 'PUT')
                     this.props.updateAlterLog( values.id, formData );
+                    this.props.getMyDtrNotifications( this.props?.user?.id );
                     break;
 
                 default:
@@ -88,15 +101,20 @@ class AlterLog extends Component {
         case "cancel":
             if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
                 formData.append('_method', 'PUT')
-                this.props.updateAlterLogStatus( values.id, formData, values.action );
+                this.props.updateAlterLogStatus( values.id, formData, values.action ,this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date);
+                await this.props.getMyDtrNotifications( this.props?.user?.id );
+                // let history = useHistory();
+                // history.push(global.links.my_team_all_requests);
+                
             }
             break;
     }
+    
   }
 
   
   componentWillMount(){
-      
+      console.log( this.props.params);
       // Clear the Instance of Alter Log before rendering new Instance (If applicable)
       this.props.clearAlterLogInstance();
 
@@ -120,6 +138,8 @@ class AlterLog extends Component {
     // Sets the Method of the current state.
     const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )
 
+    const   owner_offset = this.props.instance.offset_difference != undefined ? this.props.instance.offset_difference : null;
+
     // Sets Initial Value of the current Formik form.
     const initialValue = {
         action:             null,
@@ -133,6 +153,11 @@ class AlterLog extends Component {
         new_time_out:       this.props.instance.new_time_out != undefined ? new Date( this.props.instance.new_time_out ) : ( this.props.location.current_time_out != undefined ? new Date(  this.props.location.current_time_out ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
         employee_note:      this.props.instance.employee_note != undefined ? this.props.instance.employee_note : null,
         approver_note:      this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null,
+        pov_current_time_in:    this.props.instance.pov_current_time_in != undefined ? new Date( this.props.instance.pov_current_time_in ) : ( this.props.location.pov_current_time_in != undefined ? new Date(  this.props.location.pov_current_time_in ) : null ), 
+        pov_current_time_out:   this.props.instance.pov_current_time_out != undefined ? new Date( this.props.instance.pov_current_time_out ) : ( this.props.location.pov_current_time_out != undefined ? new Date(  this.props.location.pov_current_time_out ) : null ), 
+        pov_new_time_in:        this.props.instance.pov_new_time_in != undefined ? new Date( this.props.instance.pov_new_time_in ) : ( this.props.location.pov_current_time_in != undefined ? new Date(  this.props.location.pov_current_time_in ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
+        pov_new_time_out:       this.props.instance.pov_new_time_out != undefined ? new Date( this.props.instance.pov_new_time_out ) : ( this.props.location.pov_current_time_out != undefined ? new Date(  this.props.location.pov_current_time_out ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
+        pov_timezone:                 this.props.instance.pov_timezone != undefined ? "-" + this.props.instance.pov_timezone : null,
     }
 
     // Sets the default title for hte Request. Checks aswell if it's for approval.
@@ -165,6 +190,20 @@ class AlterLog extends Component {
             <ContainerWrapper>
               <ContainerBody>
                 <Content col="6" title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
+                {  /** Shows Approver Note if on Approval   */
+                    onApproval ? 
+                  <Row>
+                 
+                   <Col size="6">
+                   <div className="form-group">
+                            <h5><b>Supervisor Prespective Timezone</b> </h5>
+                            <label>-{this.props.user?.pov_timezone}</label>
+                        </div>
+                   </Col>
+                  </Row>
+                  :
+                    null 
+                  }
                 <Row>  
                     <Col size="6"> 
                       <div className="form-group">
@@ -183,16 +222,60 @@ class AlterLog extends Component {
                     <Col size="6"> 
                       <div className="form-group">
                         <label>New Time-In:</label>
-                        <InputDateTime name="new_time_in" value={values.new_time_in} minDate={values.date} maxDate={values.date} popperPlacement="right-start" />
+                        <InputDateTime name="new_time_in" value={values.new_time_in} minDate={values.date} maxDate={values.date}
+                         popperPlacement="right-start" contrast_too = "new_time_in" offset_data={owner_offset}/>
                       </div>  
                     </Col> 
                     <Col size="6">
                       <div className="form-group">
                         <label>New Time-Out:</label>
-                        <InputDateTime name="new_time_out" value={values.new_time_out} minDate={values.date} maxDate={ DateFormatter.add_day_to_datetime( values.date, 1 ) } popperPlacement="right-start" />
+                        <InputDateTime name="new_time_out" value={values.new_time_out} minDate={values.date} maxDate={ DateFormatter.add_day_to_datetime( values.date, 1 ) } 
+                        popperPlacement="right-start" contrast_too = "new_time_out" offset_data={owner_offset}/>
                       </div> 
                     </Col> 
                   </Row> 
+
+                  {  /** Shows Approver Note if on Approval   */
+                    onApproval ? 
+                   
+                    <div className="alterPOV">
+                    <div className="form-group">
+                            <h5><b>Employee Prespective Timezone</b> </h5>
+                            <label>{values.pov_timezone}</label>
+                        </div>
+                        <Row>  
+                        <Col size="6"> 
+                          <div className="form-group">
+                            <label>Current Time-In:</label>
+                            <InputDateTime name="pov_current_time_in" value={values.pov_current_time_in} readOnly />
+                          </div>
+                        </Col> 
+                        <Col size="6">   
+                          <div className="form-group">
+                            <label>Current Time-Out:</label>
+                            <InputDateTime name="pov_current_time_out" value={values.pov_current_time_out} readOnly />
+                          </div>
+                        </Col> 
+                      </Row> 
+                      <Row>  
+                        <Col size="6"> 
+                          <div className="form-group">
+                            <label>New Time-In:</label>
+                            <InputDateTime name="pov_new_time_in" value={values.pov_new_time_in}  popperPlacement="right-start" readOnly />
+                          </div>  
+                        </Col> 
+                        <Col size="6">
+                          <div className="form-group">
+                            <label>New Time-Out:</label>
+                            <InputDateTime name="pov_new_time_out" value={values.pov_new_time_out}  popperPlacement="right-start" readOnly />
+                          </div> 
+                        </Col> 
+                      </Row> 
+                    </div> 
+                    
+                    :
+                    null 
+                  }
 
                   {  /** Shows Employee Note if Not on Approval   */
                   ! onApproval ? 
@@ -257,7 +340,8 @@ const mapStateToProps = (state) => {
     constant          : state.constant,
     instance          : state.alterLog.instance,
     isInstanceLoaded  : state.alterLog.isInstanceLoaded,
-		user			        : state.user
+		user			        : state.user,
+    settings        : state.settings
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -265,10 +349,12 @@ const mapDispatchToProps = (dispatch) => {
       fetchAlterLog         : ( id ) => dispatch( fetchAlterLog( id ) ),
       addAlterLog           : ( post_data ) => dispatch( addAlterLog( post_data ) ),
       updateAlterLog        : ( id, post_data ) => dispatch( updateAlterLog( id, post_data ) ),
-      updateAlterLogStatus  : ( id, post_data, status ) => dispatch( updateAlterLogStatus( id, post_data, status ) ),
+      updateAlterLogStatus  : ( id, post_data, status, user_id, fromdate, todate ) => dispatch( updateAlterLogStatus( id, post_data, status, user_id, fromdate, todate ) ),
       setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
       resetAlterLogInstance : () => dispatch( resetAlterLogInstance() ),
-      clearAlterLogInstance : () => dispatch( clearAlterLogInstance() )
+      clearAlterLogInstance : () => dispatch( clearAlterLogInstance() ),
+      getMyDtrNotifications  : () => dispatch( getMyDtrNotifications() ),
+
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(AlterLog);

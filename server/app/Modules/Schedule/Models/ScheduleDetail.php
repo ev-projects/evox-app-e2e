@@ -17,17 +17,27 @@ class ScheduleDetail extends Model{
 
     protected $dateFormat = 'U';
 
-
+    
     /**
      *  Responsible for Formatting the Detail with it's Corresponding structure.
      * @return array
      */
     public function getFormattedDetail(){
         return [
-            'start_time'        => seconds_to_time( $this->start_time ),
-            'end_time'          => seconds_to_time( $this->end_time ),
-            'start_flexy_time'  => seconds_to_time( $this->start_flexy_time ),
-            'end_flexy_time'    => seconds_to_time( $this->end_flexy_time ),
+            'start_time'        => seconds_to_time( $this->start_time ,false,true),
+            'end_time'          => seconds_to_time( $this->end_time ,false,true),
+            'start_flexy_time'  => seconds_to_time( $this->start_flexy_time ,false,true),
+            'end_flexy_time'    => seconds_to_time( $this->end_flexy_time ,false,true),
+            'break_time'        => seconds_to_time( $this->break_time ),
+        ];
+    }
+
+    public function getFormattedDetailPOV($owner){
+        return [
+            'start_time'        => seconds_to_time_POV( $this->start_time ,false,true, $owner),
+            'end_time'          => seconds_to_time_POV( $this->end_time ,false,true, $owner),
+            'start_flexy_time'  => seconds_to_time_POV( $this->start_flexy_time ,false,true, $owner),
+            'end_flexy_time'    => seconds_to_time_POV( $this->end_flexy_time ,false,true, $owner),
             'break_time'        => seconds_to_time( $this->break_time ),
         ];
     }
@@ -41,6 +51,8 @@ class ScheduleDetail extends Model{
      */
     public function getParsedDetailToDate( $date ) 
     {
+
+        
         
         # Sets the default value for the Parsed Detail to Date which merges the Start & Start Flexy & End & End Flexy with the Corresponding Time.
         $result = [
