@@ -115,7 +115,7 @@ class DashboardTabs extends Component {
           </Tab>
           <Tab
             eventKey="evox-updates"
-            title="Evox Updates"
+            title="EVOX Updates"
             tabClassName="newfeature3"
           >
             <ChangeLogs></ChangeLogs>

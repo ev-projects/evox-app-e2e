@@ -88,7 +88,7 @@ class Dashboard extends Component {
           },
           {
             target: ".newfeature3",
-            content: "See the Most Recent Evox Update",
+            content: "See the Most Recent EVOX Update",
           },
         ]
       : [
@@ -123,7 +123,7 @@ class Dashboard extends Component {
           },
           {
             target: ".newfeature3",
-            content: "See the Most Recent Evox Update",
+            content: "See the Most Recent EVOX Update",
           },
         ],
     stepIndex: 0,

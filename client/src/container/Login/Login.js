@@ -74,7 +74,7 @@ class Login extends Component {
                                           <InputGroup.Prepend>
                                               <InputGroup.Text id="basic-addon1">&nbsp;<i className="fa fa-key"></i></InputGroup.Text>
                                           </InputGroup.Prepend>
-                                          <FormControl type="password" isInvalid={touched.password && errors.password} placeholder="Password" type="password" name="password" onChange={handleChange} value={values.password} />
+                                          <FormControl isInvalid={touched.password && errors.password} placeholder="Password" type="password" name="password" onChange={handleChange} value={values.password} />
                                           <Form.Control.Feedback type="invalid">
                                               &nbsp;{errors.password && touched.password && errors.password}
                                           </Form.Control.Feedback>
