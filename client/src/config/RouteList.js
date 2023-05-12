@@ -230,6 +230,11 @@ const RoutesList = (props) => {
           <DtrSummaryNew role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
+        <ProtectedRoute exact path={global.links.dtr_summary_new}>
+          {/* <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
+          <DtrSummaryNew role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
+        </ProtectedRoute>
+
         <ProtectedRoute exact path={global.links.dtr_logs}>
           <DtrLogs role={['supervisor', 'team_leader', 'client']} permission={['view_dtr_logs', 'team_leader_access', 'client_access']} />
         </ProtectedRoute>
