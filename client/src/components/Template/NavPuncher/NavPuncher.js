@@ -45,7 +45,7 @@ class NavPuncher extends Component {
 				}
 			}
 		}
-    if(this.props.dashboard?.recent_dtr[1].id != undefined){
+    if(this.props.dashboard?.recent_dtr[1]?.id != undefined){
 
       formData.set("dtr_id", this.props.dashboard?.recent_dtr[1].id);
     }
