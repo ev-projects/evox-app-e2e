@@ -241,7 +241,7 @@ const AnnouncementItem = (announcement) => {
                               <div className="card-text-black ">
                                 <div  className="card-bottom-content"> 
                                 <Badge className="tag-badge">{announcement.dep.department_name}</Badge>
-                                {console.log(announcement.dep)}
+                                {/* {console.log(announcement.dep)} */}
                                 <br/>
                                 <> Posted on: {announcement.release_date}</> 
                                 </div>
