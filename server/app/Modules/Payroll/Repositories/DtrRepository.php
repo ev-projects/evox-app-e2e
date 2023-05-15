@@ -1466,8 +1466,8 @@ class DtrRepository implements DtrRepositoryInterface{
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
                 if (Auth::user()) {
-                    $days = 11;
-                    $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
+                    $days = 23;
+                    $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(7);
                     $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
                     $user_collection = new Collection();
                     $user_collection->push((object)User::findOrFail(Auth::user()->id));
