@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 
 if (! function_exists('generate_date_array')) {   
@@ -311,6 +312,28 @@ if (! function_exists('timestamp_to_time')) {
     function timestamp_to_time( $timestamp ) 
     {
         try {
+        if(Auth::user() && Auth::user()->country_timezone_to_offset() != null){
+            
+            return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp+ string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) : null;
+        }
+            return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp) : null;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+if (! function_exists('timestamp_to_time_old')) {   
+    /**
+     * This function returns a converted Timestamp to Time
+     *
+     * @param  timestamp timestamp
+     * @return datetime
+     */
+    function timestamp_to_time_old( $timestamp ) 
+    {
+        try {
+            
             return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp) : null;
         }catch(Exception $e){
             throw $e;
