@@ -227,14 +227,15 @@ if (! function_exists('timestamp_to_datetime')) {
      * @param  timestamp timestamp
      * @return datetime
      */
-    function timestamp_to_datetime( $timestamp ) 
+    function timestamp_to_datetime( $timestamp, $use_OWNER = false, $owner = null ) 
     {
     
         try {
-        //    if(Auth::user() && Auth::user()->timezone != null){
-            // return ( is_valid( $timestamp ) ) ?  Carbon::createFromTimestamp( $timestamp )->setTimezone(Auth::user()->timezone)->format('Y-m-d H:i:s') : null;
-            
-        //    }
+            if($use_OWNER = true && $owner != null ){
+                $user = $owner;
+                // dd($user);
+                return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds($user->country_timezone_to_offset())) : null;
+            }
            
         if(Auth::user() && Auth::user()->country_timezone_to_offset() != null){
             

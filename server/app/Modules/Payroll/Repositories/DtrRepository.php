@@ -1647,8 +1647,8 @@ class DtrRepository implements DtrRepositoryInterface{
             $date_of_schedule = Carbon::parse($date_of_schedule_to_compare);
            
             $difference_of_days = $date_of_schedule->diffInDays($date_of_dtr,false) ;
-
-            if( $difference_of_days != 0){
+            // dd($date_of_dtr ,$date_of_dtr->timestamp ,$date_of_schedule, $date_of_schedule->timestamp,$date_of_dtr->timestamp > $date_of_schedule->timestamp);
+            if( $date_of_dtr->timestamp < $date_of_schedule->timestamp){
                 // add_days_to_timestamp();
                 if($parsed_schedule_detail != null){
                    $parsed_schedule_detail['start_datetime']        =  add_days_to_timestamp($parsed_schedule_detail['start_datetime'],$difference_of_days);
@@ -1659,7 +1659,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 }
                
             }
-            
+
             // dd(  $parsed_schedule_detail,$date_of_dtr,$date_of_schedule, $date_of_dtr == $date_of_schedule, $difference_of_days);
 
             return $parsed_schedule_detail;

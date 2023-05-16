@@ -36,7 +36,8 @@ class DailyTimeRecord extends Component {
           isCurrentPayrollCutoffLoaded : false,
           isDtrSummaryLoaded : true,
           payrollCutoff_start: null,
-          payrollCutoff_end: null
+          payrollCutoff_end: null,
+          toggle_pov: false
         }
         
         this.state = this.initialState; 
@@ -77,6 +78,11 @@ class DailyTimeRecord extends Component {
         this.props.viewEmployeeDtr(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
 
         this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
+
+      this.setState({
+          payrollCutoff_start:payrollCutoff.start_date,
+          payrollCutoff_end:payrollCutoff.end_date
+        })
 
         this.props.setSelectedPayrollCutoff( payrollCutoff );
       }
@@ -260,12 +266,25 @@ class DailyTimeRecord extends Component {
                   null
               } 
               
-              {this.state.payrollCutoff_end != null ? <b>
-              <span className="cutoff-text">{this.state.payrollCutoff_start}</span> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <span className="cutoff-text">{this.state.payrollCutoff_end}</span>
-              </b>
-              : null
+              <div>
+                {this.state.payrollCutoff_end != null ? 
+                <div className="cutoff-text-border" >
+                  <b>
+                <span className="cutoff-text">{this.state.payrollCutoff_start}</span> <i class="fa fa-arrow-right" aria-hidden="true"></i>  <span className="cutoff-text">{this.state.payrollCutoff_end}</span>
+                </b>
+                </div>
+                : null
 
-              }
+                }
+
+
+                  {    this.props.params.id != this.props.user.id ? <div style={{'float': 'right'}}><Button className="toggle-outlook-dtr"
+              onClick={() => this.setState({
+                toggle_pov: !this.state.toggle_pov
+              })}
+              > Toggle Outlook {this.state.toggle_pov}</Button>
+              </div> : null }
+              </div>
                   <Table className="responsive hover dtr-table">
                     <thead>
                         <tr>
@@ -326,8 +345,9 @@ class DailyTimeRecord extends Component {
                           return <tr className={"center "+dtr_type+"-bg-color"}>
                                   <td className="dtr-date">{DtrFormatter.displayDate(dtr.date)}</td> 
                                   <td className="dtr-status">{status}</td>
-                                  <td className="dtr-schedule"><div>{DtrFormatter.displaySchedule(dtr)}</div></td>
-                                  <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_in)}</div></td>
+                                  <td className="dtr-schedule">{this.state.toggle_pov == false ?<div>{DtrFormatter.displaySchedule(dtr)}</div> :
+                                                                                                <div>{DtrFormatter.displaySchedule(dtr.owner_POV)}</div>}</td>
+                                  <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_in)} </div></td>
                                   <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
                                   <td className="dtr-item">{dtr?.payroll_items?.late}</td>
                                   <td className="dtr-item">{dtr_undertime}</td>

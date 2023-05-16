@@ -111,7 +111,7 @@ class DtrResource extends JsonResource
             // foreach( $this->work_from_home()->get() as $work_from_home){
             //     $requests[] = new WorkFromHomeResource( $work_from_home );
             // }
-            
+            $owner = $this->user()->first();
             $result =  array_merge( 
                 array(
                     'id' => $this->id,
@@ -137,6 +137,16 @@ class DtrResource extends JsonResource
                 array('holidays' => $holidays),
                 array('leaves' => $leaves),
                 array('requests' => $requests),
+                array('owner_POV' => [
+
+                    'time_in' => timestamp_to_datetime( $this->time_in , true ,  $owner),
+                    'time_out' => timestamp_to_datetime( $this->time_out , true ,  $owner),
+                    'start_datetime' => timestamp_to_datetime( $this->start_datetime , true ,  $owner),
+                    'end_datetime' => timestamp_to_datetime( $this->end_datetime , true ,  $owner),
+                    'end_datetime' => timestamp_to_datetime( $this->end_datetime , true ,  $owner),
+                    'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime , true ,  $owner),
+                    'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
+                ]),
             );
         }
         return $result;
