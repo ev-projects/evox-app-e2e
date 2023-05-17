@@ -163,8 +163,8 @@ class ReportController extends Controller
             if ($end_date > $current_date) {
                 $end_date = $current_date;
             }
-
-            $result = $this->report->get_dtr_summary($user_collection, $start_date, $end_date);
+            // $result = $this->report->get_dtr_summary($user_collection, $start_date, $end_date);
+            $result = $this->report->get_dtr_summary_block($user_collection, $start_date, $end_date);
 
             # ADD THE SUMMARY COLUMNS NAME
             $result["column_names"] = get_constant('DTR_SUMMARY_COLUMN');
@@ -177,6 +177,7 @@ class ReportController extends Controller
             return error_response(trans('messages.error_default'), $e);
         }
     }
+
 
 
     /**
