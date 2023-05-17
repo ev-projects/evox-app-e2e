@@ -2,20 +2,21 @@
 
 namespace App\Modules\Request\Repositories;
 
-use App\Modules\Payroll\Models\Dtr;
-use App\Modules\Request\Models\AlterLog;
-
-use App\Modules\Request\Resources\AlterLogResource;
-
-use App\Modules\User\Models\User;
 use Exception;
+use App\Modules\User\Models\User;
+
+use Illuminate\Support\Facades\DB;
+
+use App\Modules\Payroll\Models\Dtr;
+use Illuminate\Support\Facades\Log;
+
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Modules\Request\Models\AlterLog;
 use App\Modules\Payroll\Repositories\DtrRepository;
-
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use App\Modules\Request\Resources\AlterLogResource;
 
 class AlterLogRepository implements AlterLogRepositoryInterface{
     
@@ -37,13 +38,14 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
     {
         DB::beginTransaction();
         try {   
+            $auth_user_offset =  Auth::user() && Auth::user()->country_timezone_to_offset() ? string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): 0; 
             $alter_log = new AlterLog();
             $alter_log->user_id             = ( isset( $data['user_id'] ) && is_valid( $data['user_id'] ) ) ? $data['user_id'] : auth()->user()->id;
             $alter_log->date                = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
-            $alter_log->current_time_in     = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['current_time_in']) : null ;
-            $alter_log->current_time_out    = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) : null ;
-            $alter_log->new_time_in         = ( isset( $data['new_time_in'] ) && is_valid( $data['new_time_in'] ) ) ? strtotime($data['new_time_in']) : null ;
-            $alter_log->new_time_out        = ( isset( $data['new_time_out'] ) && is_valid( $data['new_time_out'] ) ) ? strtotime($data['new_time_out']) : null ;
+            $alter_log->current_time_in     = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['current_time_in']) - $auth_user_offset: null ;
+            $alter_log->current_time_out    = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) - $auth_user_offset: null ;
+            $alter_log->new_time_in         = ( isset( $data['new_time_in'] ) && is_valid( $data['new_time_in'] ) ) ? strtotime($data['new_time_in']) - $auth_user_offset: null ;
+            $alter_log->new_time_out        = ( isset( $data['new_time_out'] ) && is_valid( $data['new_time_out'] ) ) ? strtotime($data['new_time_out']) - $auth_user_offset: null ;
             $alter_log->employee_note       = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : null;
             $alter_log->updated_by          = auth()->user()->id;
             $alter_log->created_by          = auth()->user()->id;
@@ -75,12 +77,12 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
             
             // Authenticate the User first if valid for the Update
             if( get_authenticated_user( $alter_log->user_id ) ) {
-
+                $auth_user_offset =  Auth::user() && Auth::user()->country_timezone_to_offset() ? string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): 0; 
                 $alter_log->date                = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : $alter_log->date ;
-                $alter_log->current_time_in     = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['current_time_in']) : $alter_log->current_time_in ;
-                $alter_log->current_time_out    = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) : $alter_log->current_time_out ;
-                $alter_log->new_time_in         = ( isset( $data['new_time_in'] ) && is_valid( $data['new_time_in'] ) ) ? strtotime($data['new_time_in']) : $alter_log->new_time_in ;
-                $alter_log->new_time_out        = ( isset( $data['new_time_out'] ) && is_valid( $data['new_time_out'] ) ) ? strtotime($data['new_time_out']) : $alter_log->new_time_out ;
+                $alter_log->current_time_in     = ( isset( $data['current_time_in'] ) && is_valid( $data['current_time_in'] ) ) ? strtotime($data['current_time_in']) - $auth_user_offset: $alter_log->current_time_in ;
+                $alter_log->current_time_out    = ( isset( $data['current_time_out'] ) && is_valid( $data['current_time_out'] ) ) ? strtotime($data['current_time_out']) - $auth_user_offset: $alter_log->current_time_out ;
+                $alter_log->new_time_in         = ( isset( $data['new_time_in'] ) && is_valid( $data['new_time_in'] ) ) ? strtotime($data['new_time_in']) - $auth_user_offset: $alter_log->new_time_in ;
+                $alter_log->new_time_out        = ( isset( $data['new_time_out'] ) && is_valid( $data['new_time_out'] ) ) ? strtotime($data['new_time_out']) - $auth_user_offset: $alter_log->new_time_out ;
 
                 $alter_log->employee_note       = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $alter_log->employee_note ;
                 $alter_log->approver_note       = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $alter_log->approver_note ;

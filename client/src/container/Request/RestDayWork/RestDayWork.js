@@ -49,7 +49,7 @@ class RestDayWork extends Component {
                 case "end_time":
                   // formData.append(key, moment( values[key] ).format("HH:mm") );
                    
-                  formData.append(key, moment( values[key]).subtract(this.props.user?.user_offset_seconds, 'seconds').format("HH:mm") );
+                  formData.append(key, moment( values[key]).format("HH:mm") );
                   break;
                 case "break_time":
                     formData.append(key, moment( values[key] ).format("HH:mm") );

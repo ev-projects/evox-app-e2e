@@ -32,8 +32,8 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
 
             $rest_day_work->user_id         = ( isset( $data['user_id'] ) && is_valid( $data['user_id'] ) ) ? $data['user_id'] : auth()->user()->id;
             $rest_day_work->date            = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
-            $rest_day_work->start_time      = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] ) : 0;
-            $rest_day_work->end_time        = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] )   : 0;
+            $rest_day_work->start_time      = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] , true, "subtract") : 0;
+            $rest_day_work->end_time        = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] , true, "subtract")   : 0;
             $rest_day_work->break_time      = ( isset( $data['break_time'] ) && is_valid( $data['break_time'] ) ) ? time_to_seconds( $data['break_time'] )   : 0;
             $rest_day_work->updated_by      = auth()->user()->id;
             $rest_day_work->employee_note   = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : null;
@@ -70,8 +70,8 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
             if( get_authenticated_user( $rest_day_work->user_id ) ) {
             
                 $rest_day_work->date         = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
-                $rest_day_work->start_time   = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] ) : 0;
-                $rest_day_work->end_time     = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] )   : 0;
+                $rest_day_work->start_time   = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] , true, "subtract") : 0;
+                $rest_day_work->end_time     = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time']  , true, "subtract")   : 0;
                 $rest_day_work->break_time   = ( isset( $data['break_time'] ) && is_valid( $data['break_time'] ) ) ? time_to_seconds( $data['break_time'] )   : 0;
                 $rest_day_work->updated_by   = auth()->user()->id;
                 
