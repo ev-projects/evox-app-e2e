@@ -236,6 +236,7 @@ class ReportRepository implements ReportRepositoryInterface{
                                                 'name'=> $user->first_name .' '. $user->last_name,
                                                 'department'=> (isset($user->department_id)) ? $user->department()->get()[0]->department_name : "" ,
                                                 'status'=> $user->employment_status,
+                                                'timezone'=> $user->country_zone()->country_time_zone,
                                                 
                                             ), 
                     'summary' => $this->dtr_summary->get_summary( $user->dtr($start_date, $end_date)->get() )

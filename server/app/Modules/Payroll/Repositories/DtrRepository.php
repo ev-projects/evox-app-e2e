@@ -441,9 +441,14 @@ class DtrRepository implements DtrRepositoryInterface{
                         # Update the DTR properties
                         if($parsed_schedule_detail != null){
                             
+                            $dtr_user_offset =  string_offset_to_seconds($dtr->user()->first()->country_timezone_to_offset());
+
+                        
                             //optimize parsed_schedule_detail from dtr date if if it is not equels
-                            if($dtr->date !=  timestamp_to_date_default( $parsed_schedule_detail['start_datetime'])){
-                                $parsed_schedule_detail = $this->optimze_schedule_application($dtr->date, timestamp_to_date_default( $parsed_schedule_detail['start_datetime']),  $parsed_schedule_detail);
+                            $timestamp_start =  timestamp_to_date_default( $parsed_schedule_detail['start_datetime']+ $dtr_user_offset);
+
+                            if($dtr->date !=   $timestamp_start){
+                                $parsed_schedule_detail = $this->optimze_schedule_application($dtr->date,  $timestamp_start,  $parsed_schedule_detail);
                             } 
 
                             $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
@@ -1645,21 +1650,22 @@ class DtrRepository implements DtrRepositoryInterface{
         try{
             $date_of_dtr = Carbon::parse($date_of_dtr);
             $date_of_schedule = Carbon::parse($date_of_schedule_to_compare);
-           
+         
             $difference_of_days = $date_of_schedule->diffInDays($date_of_dtr,false) ;
-
-            if( $difference_of_days != 0){
+         
+            // dd($date_of_dtr ,$date_of_dtr->timestamp ,$date_of_schedule, $date_of_schedule->timestamp,$date_of_dtr->timestamp > $date_of_schedule->timestamp);
+            if(   $difference_of_days != 0){
                 // add_days_to_timestamp();
                 if($parsed_schedule_detail != null){
                    $parsed_schedule_detail['start_datetime']        =  add_days_to_timestamp($parsed_schedule_detail['start_datetime'],$difference_of_days);
                    $parsed_schedule_detail['end_datetime']          =  add_days_to_timestamp($parsed_schedule_detail['end_datetime'],$difference_of_days);
                    $parsed_schedule_detail['start_flexy_datetime']  =  $parsed_schedule_detail['start_flexy_datetime'] != null ? add_days_to_timestamp($parsed_schedule_detail['start_flexy_datetime'],$difference_of_days): null;
                    $parsed_schedule_detail['end_flexy_datetime']    =  $parsed_schedule_detail['end_flexy_datetime']   != null ? add_days_to_timestamp($parsed_schedule_detail['end_flexy_datetime'],$difference_of_days): null;
-                   $parsed_schedule_detail['break_time']            =  $parsed_schedule_detail['break_time'];
+                //    $parsed_schedule_detail['break_time']            =  $parsed_schedule_detail['break_time'];
                 }
                
             }
-            
+
             // dd(  $parsed_schedule_detail,$date_of_dtr,$date_of_schedule, $date_of_dtr == $date_of_schedule, $difference_of_days);
 
             return $parsed_schedule_detail;

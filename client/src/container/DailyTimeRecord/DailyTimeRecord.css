@@ -290,3 +290,19 @@ float: left;
     color: #0097A7;
     font-size: 14px;
 }
+
+.cutoff-text-border{
+   border: #000;
+   border-bottom: solid;
+   border-width: 2px;
+   /* border-radius: 4px; */
+   padding: 1px 2px 1px 2px;
+   float: left;
+   
+}
+
+.toggle-outlook-dtr{
+    background-color: #105396 !important;
+    border-color: #888 !important;
+    margin-left: 1rem !important;
+}
