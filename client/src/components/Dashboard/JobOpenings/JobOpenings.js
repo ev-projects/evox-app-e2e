@@ -135,16 +135,7 @@ class JobOpenings extends Component {
                   <li><a href="https://careers.eastvantage.com/jobs/compliance-manager-bangalore" target="_blank">Compliance Manager</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/full-stack-developer-c-net" target="_blank">.Net Developer</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/global-recruitment-head-0" target="_blank">Global Recruitment Head</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/it-project-manager-1" target="_blank">Project Manager</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/senior-it-technician" target="_blank">Senior IT Technician</a></li>
-
-                  <li><a href="https://careers.eastvantage.com/jobs/power-bi-analyst" target="_blank">Power BI Analyst</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/accountant" target="_blank">Accountant</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/it-project-manager-1" target="_blank">Project Manager</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/business-analyst-1" target="_blank">Business Analyst</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/business-partner-0" target="_blank">Business Partner</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/netsuite-adminstrator-developer" target="_blank">Netsuite Consultant</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/full-stack-developer-bengaluru" target="_blank">Full Stack Developer</a></li>
                 </ul>
               </div>
             </Tab>

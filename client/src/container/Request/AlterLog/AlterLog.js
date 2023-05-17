@@ -58,7 +58,7 @@ class AlterLog extends Component {
                 // formData.append(key, moment( values[key] ).format("YYYY-MM-DD HH:mm:ss") );
                   // console.log( moment( values[key]).subtract(this.props.user?.user_offset_seconds, 'seconds').format("YYYY-MM-DD HH:mm:ss"));
 
-                  formData.append(key, moment( values[key]).subtract(this.props.user?.user_offset_seconds, 'seconds').format("YYYY-MM-DD HH:mm:ss") );
+                  formData.append(key, moment( values[key]).format("YYYY-MM-DD HH:mm:ss") );
                     break;
                 default:
                     formData.set(key, values[key]);

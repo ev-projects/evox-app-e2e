@@ -2,14 +2,15 @@
 
 namespace App\Modules\Request\Repositories;
 
+use Exception;
+use Carbon\Carbon;
+use App\Modules\User\Models\User;
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Request\Resources\RestDayWorkResource;
-use App\Modules\User\Models\User;
-use Exception;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
     
@@ -32,8 +33,8 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
 
             $rest_day_work->user_id         = ( isset( $data['user_id'] ) && is_valid( $data['user_id'] ) ) ? $data['user_id'] : auth()->user()->id;
             $rest_day_work->date            = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
-            $rest_day_work->start_time      = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] ) : 0;
-            $rest_day_work->end_time        = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] )   : 0;
+            $rest_day_work->start_time      = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] , true, "subtract") : 0;
+            $rest_day_work->end_time        = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] , true, "subtract")   : 0;
             $rest_day_work->break_time      = ( isset( $data['break_time'] ) && is_valid( $data['break_time'] ) ) ? time_to_seconds( $data['break_time'] )   : 0;
             $rest_day_work->updated_by      = auth()->user()->id;
             $rest_day_work->employee_note   = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : null;
@@ -70,14 +71,28 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
             if( get_authenticated_user( $rest_day_work->user_id ) ) {
             
                 $rest_day_work->date         = ( isset( $data['date'] ) && is_valid( $data['date'] ) ) ? $data['date'] : null;
-                $rest_day_work->start_time   = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] ) : 0;
-                $rest_day_work->end_time     = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time'] )   : 0;
+                $rest_day_work->start_time   = ( isset( $data['start_time'] ) && is_valid( $data['start_time'] ) ) ? time_to_seconds( $data['start_time'] , true, "subtract") : 0;
+                $rest_day_work->end_time     = ( isset( $data['end_time'] )   && is_valid( $data['end_time'] ) )   ? time_to_seconds( $data['end_time']  , true, "subtract")   : 0;
                 $rest_day_work->break_time   = ( isset( $data['break_time'] ) && is_valid( $data['break_time'] ) ) ? time_to_seconds( $data['break_time'] )   : 0;
+
                 $rest_day_work->updated_by   = auth()->user()->id;
                 
                 $rest_day_work->employee_note  = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $rest_day_work->employee_note ;
                 $rest_day_work->approver_note  = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $rest_day_work->approver_note ;
+              
+
+                $dtr_user_offset =  string_offset_to_seconds($rest_day_work->user()->first()->country_timezone_to_offset());
+
+                    //  dump( $rest_day_work);   
+                //optimize date 
+                $timestamp_start =  timestamp_to_date_default(   Carbon::parse( $rest_day_work->date)->timestamp+$rest_day_work->start_time+ $dtr_user_offset);
+
+                // dump( Carbon::parse( $rest_day_work->date), Carbon::parse( $rest_day_work->date)->timestamp);
+                if($rest_day_work->date !=   $timestamp_start){
+                    $rest_day_work= $this->optimze_rest_day($rest_day_work->date, $timestamp_start,$rest_day_work);
+                }
                 $rest_day_work->updated_by   = auth()->user()->id;
+                // dd( $rest_day_work); 
                 $rest_day_work->update();
                 
                 DB::commit();
@@ -440,7 +455,40 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
     ##################################### Protected functions #####################################
     ###############################################################################################
 
+        /**
+     *  Responsible for optimizing and comparing date of Rest Day before applying to the current DTR Instance.
+     *
+     * 
+     */
+    private function optimze_rest_day($date_of_read, $date_of_rd_to_compare, $rest_day_check){
+        try{
+            $date_of_read = Carbon::parse($date_of_read);
+            $date_of_schedule = Carbon::parse($date_of_rd_to_compare);
+         
+            $difference_of_days = $date_of_schedule->diffInDays($date_of_read,false) ;
+         
+            // dd($date_of_read ,$date_of_read->timestamp ,$date_of_schedule, $date_of_schedule->timestamp,$date_of_read->timestamp > $date_of_schedule->timestamp);
+            if(   $difference_of_days != 0){
+                // add_days_to_timestamp();
+                if($rest_day_check != null){
+                   $rest_day_check['start_time']        =  add_days_to_timestamp($rest_day_check['start_time'],$difference_of_days);
+                   $rest_day_check['end_time']          =  add_days_to_timestamp($rest_day_check['end_time'],$difference_of_days);
+            
+                //    $rest_day_check['break_time']            =  $rest_day_check['break_time'];
+                }
+               
+            }
 
+            // dd(  $rest_day_check,$date_of_read,$date_of_schedule, $date_of_read == $date_of_schedule, $difference_of_days);
+
+            return $rest_day_check;
+
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
 
     ###############################################################################################
     ##################################### Validation functions #####################################
