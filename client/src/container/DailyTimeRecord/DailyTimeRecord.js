@@ -282,7 +282,7 @@ class DailyTimeRecord extends Component {
               onClick={() => this.setState({
                 toggle_pov: !this.state.toggle_pov
               })}
-              > Toggle Outlook {this.state.toggle_pov}</Button>
+              > <i class={"fa "+(this.state.toggle_pov ? "fa-eye":"fa-eye-slash")  } aria-hidden="true"></i> Toggle Outlook {this.state.toggle_pov}</Button>
               </div> : null }
               </div>
                   <Table className="responsive hover dtr-table">
@@ -290,7 +290,7 @@ class DailyTimeRecord extends Component {
                         <tr>
                             <th className="dtr-date">Date</th>
                             <th className="dtr-status">Status</th>
-                            <th className="dtr-schedule">Schedule</th>
+                            <th className="dtr-schedule">Schedule  {    this.props.params.id != this.props.user.id && this.state.toggle_pov == true? "("+ this.props.dtr.employeeInfo.timezone+")": null}</th>
                             <th className="dtr-log">Clock In</th>
                             <th className="dtr-log">Clock Out</th>
                             <th className="dtr-item">Late</th>
