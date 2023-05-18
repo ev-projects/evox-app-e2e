@@ -261,6 +261,104 @@ class ReportRepository implements ReportRepositoryInterface{
     }
     
 
+    public function get_dtr_summary_block( Collection $user_collection, string $start_date, string $end_date ){
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
+        
+        try{
+            $user_dtr_summary = [];
+            $index = 0;
+            foreach( $user_collection as $user ) {
+                $result = DB::table('drt_summary_report')
+                ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS Employee_Name"),'users.emp_num as Employee_Number', DB::raw("sum(drt_summary_report.unpaid_leave) as UL"), DB::raw("sum(drt_summary_report.on_leave) as Leaves"), DB::raw("sum(drt_summary_report.reg_late) as Late"), DB::raw("sum(drt_summary_report.reg_undertime) as Under_Time"), DB::raw("sum(drt_summary_report.reg_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.reg_rendered_hours_overlapp,0)) -sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as Render_Hr"), DB::raw("sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as Night_Diff"), DB::raw("sum(drt_summary_report.reg_overtime) as OverTime"), DB::raw("sum(drt_summary_report.reg_overtime_night_diff) as OT_ND"), DB::raw("sum(drt_summary_report.rd_rendered_hours + drt_summary_report.rd_rendered_hours_overlapp) as RD_Render_HR"), DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as RD_ND"), DB::raw("sum(drt_summary_report.rd_overtime) as RD_OT"), DB::raw("sum(drt_summary_report.rd_overtime_night_diff) as RD_OT_ND"), DB::raw("sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) -sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as LH_Render_HR"), DB::raw("sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as LH_ND"), DB::raw("sum(drt_summary_report.lh_overtime) as LH_OT"), DB::raw("sum(drt_summary_report.lh_overtime_night_diff) as LH_OT_ND"), DB::raw("sum(drt_summary_report.sh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.sh_rendered_hours_overlapp,0)) -sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as SH_Render_Hr"), DB::raw("sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as SH_ND"), DB::raw("sum(drt_summary_report.sh_overtime) as SH_OT"), DB::raw("sum(drt_summary_report.sh_overtime_night_diff) as SH_OT_ND"), DB::raw("sum(drt_summary_report.dsh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dsh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as DSH_Render_HR"), DB::raw("sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as DSH_ND"), DB::raw("sum(drt_summary_report.dsh_overtime) as DSH_OT"), DB::raw("sum(drt_summary_report.dsh_overtime_night_diff) as DSH_OT_ND"), DB::raw("sum(drt_summary_report.dlh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dlh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as DLH_Render_HR"), DB::raw("sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as DLH_ND"), DB::raw("sum(drt_summary_report.dlh_overtime) as DLH_OT"), DB::raw("sum(drt_summary_report.dlh_overtime_night_diff) as DLH_OT_ND"), DB::raw("sum(drt_summary_report.slh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.slh_rendered_hours_overlapp,0)) -sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as SLH_Render_HR"), DB::raw("sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as SLH_ND"), DB::raw("sum(drt_summary_report.slh_overtime) as SLH_OT"), DB::raw("sum(drt_summary_report.slh_overtime_night_diff) as SLH_OT_ND"))
+                    ->join('users','users.id','=','drt_summary_report.user_id')
+                    ->whereBetween('drt_summary_report.login_date', [$start_date, $end_date])
+                    ->where('users.id','=',$user->id)->get();
+                    $dtr_collection =  $user->dtr($start_date, $end_date)->get();
+                    foreach ( $dtr_collection as $dtr ) {
+                        $dtr_type = $dtr->getDtrType(True);
+                        // dump($dtr_type);
+                        $this->dtr_summary->column[ $dtr_type ] =  $dtr_type;
+                        // $this->dtr_summary->column[ 'dlh' ] =  'dlh';
+                    }
+                 
+                    $data= [
+                        get_constant('DTR_TYPE.regular') =>  [
+                            get_constant('PAYROLL_ITEMS.late')                   => $result[0]->Late == null ? '0:00' : $result[0]->Late ,
+                            get_constant('PAYROLL_ITEMS.undertime')              => $result[0]->Under_Time == null ? '0:00' : $result[0]->Under_Time,
+                            get_constant('PAYROLL_ITEMS.rendered_hours')         => $result[0]->Render_Hr == null ? '0:00' : $result[0]->Render_Hr,
+                            get_constant('PAYROLL_ITEMS.night_diff')             => $result[0]->Night_Diff == null ? '0:00' : $result[0]->Night_Diff,
+                            get_constant('PAYROLL_ITEMS.overtime')               => $result[0]->OverTime == null ? '0:00' : $result[0]->OverTime ,
+                            get_constant('PAYROLL_ITEMS.overtime_night_diff')    => $result[0]->OT_ND == null ? '0:00' : $result[0]->OT_ND,
+                            get_constant('PAYROLL_ITEMS.on_leave')               => $result[0]->Leaves == null ? '0:00' : $result[0]->Leaves,
+                            get_constant('PAYROLL_ITEMS.unpaid_leave')           => $result[0]->UL == null ? '0:00' : $result[0]->UL,
+                        ], 
+                        get_constant('DTR_TYPE.rest_day') =>  [
+                            get_constant('PAYROLL_ITEMS.rendered_hours')         => $result[0]->RD_Render_HR == null ? '0:00' : $result[0]->RD_Render_HR,
+                            get_constant('PAYROLL_ITEMS.night_diff')             => $result[0]->RD_ND == null ? '0:00' : $result[0]->RD_ND,
+                            get_constant('PAYROLL_ITEMS.overtime')               => $result[0]->RD_OT == null ? '0:00' : $result[0]->RD_OT,
+                            get_constant('PAYROLL_ITEMS.overtime_night_diff')    => $result[0]->RD_OT_ND == null ? '0:00' : $result[0]->RD_OT_ND,
+                        ],
+                        get_constant('DTR_TYPE.holiday.legal') =>  [
+                            get_constant('PAYROLL_ITEMS.rendered_hours')         => $result[0]->LH_Render_HR == null ? '0:00' : $result[0]->LH_Render_HR,
+                            get_constant('PAYROLL_ITEMS.night_diff')             => $result[0]->LH_ND == null ? '0:00' : $result[0]->LH_ND,
+                            get_constant('PAYROLL_ITEMS.overtime')               => $result[0]->LH_OT == null ? '0:00' : $result[0]->LH_OT,
+                            get_constant('PAYROLL_ITEMS.overtime_night_diff')    => $result[0]->LH_OT_ND == null ? '0:00' : $result[0]->LH_OT_ND,
+                        ],
+                        get_constant('DTR_TYPE.holiday.special') =>  [
+                            get_constant('PAYROLL_ITEMS.rendered_hours')         => $result[0]->SH_Render_Hr == null ? '0:00' : $result[0]->SH_Render_Hr,
+                            get_constant('PAYROLL_ITEMS.night_diff')             => $result[0]->SH_ND == null ? '0:00' : $result[0]->SH_ND,
+                            get_constant('PAYROLL_ITEMS.overtime')               => $result[0]->SH_OT == null ? '0:00' : $result[0]->SH_OT,
+                            get_constant('PAYROLL_ITEMS.overtime_night_diff')    => $result[0]->SH_OT_ND == null ? '0:00' : $result[0]->SH_OT_ND,
+                        ],
+                        get_constant('DTR_TYPE.holiday.double_legal') =>  [
+                            get_constant('PAYROLL_ITEMS.rendered_hours')         => $result[0]->DSH_Render_HR == null ? '0:00' : $result[0]->DSH_Render_HR,
+                            get_constant('PAYROLL_ITEMS.night_diff')             => $result[0]->DSH_ND == null ? '0:00' : $result[0]->DSH_ND,
+                            get_constant('PAYROLL_ITEMS.overtime')               => $result[0]->DSH_OT == null ? '0:00' : $result[0]->DSH_OT,
+                            get_constant('PAYROLL_ITEMS.overtime_night_diff')    => $result[0]->DSH_OT_ND == null ? '0:00' : $result[0]->DSH_OT_ND,
+                        ],
+                        get_constant('DTR_TYPE.holiday.double_special') =>  [
+                            get_constant('PAYROLL_ITEMS.rendered_hours')         => $result[0]->DLH_Render_HR == null ? '0:00' : $result[0]->DLH_Render_HR,
+                            get_constant('PAYROLL_ITEMS.night_diff')             => $result[0]->DLH_ND == null ? '0:00' : $result[0]->DLH_ND,
+                            get_constant('PAYROLL_ITEMS.overtime')               => $result[0]->DLH_OT == null ? '0:00' : $result[0]->DLH_OT,
+                            get_constant('PAYROLL_ITEMS.overtime_night_diff')    => $result[0]->DLH_OT_ND == null ? '0:00' : $result[0]->DLH_OT_ND,
+                        ],
+                        get_constant('DTR_TYPE.holiday.special_legal') =>  [
+                            get_constant('PAYROLL_ITEMS.rendered_hours')         => $result[0]->SLH_Render_HR == null ? '0:00' : $result[0]->SLH_Render_HR,
+                            get_constant('PAYROLL_ITEMS.night_diff')             => $result[0]->SLH_ND == null ? '0:00' : $result[0]->SLH_ND,
+                            get_constant('PAYROLL_ITEMS.overtime')               => $result[0]->SLH_OT == null ? '0:00' : $result[0]->SLH_OT,
+                            get_constant('PAYROLL_ITEMS.overtime_night_diff')    => $result[0]->SLH_OT_ND == null ? '0:00' : $result[0]->SLH_OT_ND,
+                        ]
+                    ];
+                    
+                $user_dtr_summary[$index] = array(
+                    'employee_info' => array(   
+                                                'employee_id'=> $user->emp_num,
+                                                'name'=> $user->first_name .' '. $user->last_name,
+                                                'department'=> (isset($user->department_id)) ? $user->department()->get()[0]->department_name : "" ,
+                                                'status'=> $user->employment_status,
+                                                
+                                            ), 
+                    'summary' =>  $data
+                );
+                $index++;
+            }
+            unset( $this->dtr_summary->column[  get_constant('DTR_TYPE.regular') ] );
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [$user_dtr_summary], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            $result = array(
+                                'summary' => $user_dtr_summary,
+                                'column' =>  $this->dtr_summary->column
+            );
+            
+            return $result;
+        } catch (Exception $e) {
+            log_error($e);
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_summary");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_summary");
+            throw $e;
+        }
+    }
+
 
     public function getDetailsOfSummary($data){
 

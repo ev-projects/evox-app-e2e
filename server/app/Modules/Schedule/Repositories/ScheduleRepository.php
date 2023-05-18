@@ -228,13 +228,11 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         try{
             $schedule_details_array = [];
 
-            // dump("test");
-            // dump($schedule);
-            // dump($schedule_details);
+
            
             # Saving of the Filtered Schedule Details
             foreach( $this->filter_schedule_details($schedule, $schedule_details) as $day => $details ){
-       
+                
                 $schedule_details_array[ $day ] = new ScheduleDetail();
                 $schedule_details_array[ $day ]->day               = $day;
                 $schedule_details_array[ $day ]->start_time        = ( is_numeric($details['start_time']) ? $details['start_time'] : time_to_seconds($details['start_time'], true, "subtract") );

@@ -7,7 +7,7 @@ use App\Modules\Request\Resources\ChangeScheduleResource;
 use App\Modules\Request\Resources\OvertimeResource;
 use App\Modules\Request\Resources\RestDayWorkResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use Illuminate\Support\Facades\DB;
 class DtrResource extends JsonResource
 {
     /**
@@ -24,20 +24,35 @@ class DtrResource extends JsonResource
 
             # Create Resource for Payroll Items
             $payroll_items = [];
-            foreach( $this->payroll_items()->get() as  $key => $payroll_item){
+            // foreach( $this->payroll_items()->get() as  $key => $payroll_item){
                 
-                if(isset($payroll_items[ $payroll_item->item ])){
-                    $payroll_items[ $payroll_item->item ] += $payroll_item->value;
-                }else{
-                    $payroll_items[ $payroll_item->item] = $payroll_item->value;
-                }
-            }
+            //     if(isset($payroll_items[ $payroll_item->item ])){
+            //         $payroll_items[ $payroll_item->item ] += $payroll_item->value;
+            //     }else{
+            //         $payroll_items[ $payroll_item->item] = $payroll_item->value;
+            //     }
+            // }
+
+            $result = DB::table('drt_summary_report')
+            ->select(DB::raw("reg_late as late,reg_undertime as undertime,
+            (reg_night_diff + rd_night_diff + sh_night_diff + lh_night_diff + dlh_night_diff + dsh_night_diff + slh_night_diff) + IF(nigdiff_stauts=1,reg_night_diff_overlapp
+            + rd_night_diff_overlapp + lh_night_diff_overlapp + sh_night_diff_overlapp + dlh_night_diff_overlapp + dsh_night_diff_overlapp + slh_night_diff_overlapp,0) as night_diff,
+            (reg_overtime + rd_overtime + sh_overtime + lh_overtime + dlh_overtime + dsh_overtime + slh_overtime)  as overtime,
+            (reg_overtime_night_diff + rd_overtime_night_diff + sh_overtime_night_diff + lh_overtime_night_diff + dlh_overtime_night_diff + dsh_overtime_night_diff + slh_overtime_night_diff)  as overtime_night_diff"))
+                ->where('login_date', '=' , $this->resource->date )
+                ->where('user_id','=',$this->resource->user_id)->get();
 
             # Convert the time to seconds to 00:00:00 format
-            foreach( $payroll_items as  $key => $value){
-                $payroll_items[$key] = seconds_to_time($value,true);
+            // foreach( $payroll_items as  $key => $value){
+            //     $payroll_items[$key] = seconds_to_time($value,true);
+            // }
+            foreach( $result as  $key => $value){
+                $payroll_items["late"] = $value->late > 0 ? seconds_to_time($value->late * 3600,true):"";
+                $payroll_items["undertime"] = $value->undertime > 0 ?seconds_to_time($value->undertime * 3600,true):"";
+                $payroll_items["overtime"] = $value->overtime > 0 ?seconds_to_time($value->overtime * 3600,true):"";
+                $payroll_items["overtime_night_diff"] = $value->overtime_night_diff > 0 ?seconds_to_time($value->overtime_night_diff * 3600,true):"";
+                $payroll_items["night_diff"] = $value->night_diff > 0 ?seconds_to_time($value->night_diff * 3600,true):"";
             }
-
             
             # Create Resource for Policies
             $policies = [];
