@@ -7,6 +7,7 @@ use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\Holiday;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\User\Models\User;
+use App\Modules\User\Models\UtcTimelog;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -343,13 +344,26 @@ class BhrRepository implements BhrRepositoryInterface{
 
                 $existing_holiday = $existing_holiday_query->get();
 
-                // If the Holiday is Not Existing, Proceed on saving the Holiday as new.                                           
+
+                $set_country_id = null;
+                
+
+                $acronym = null;
+                $acronym = $this->get_match("/\[([^\]]*)\]/", $row->name);
+
+                    // $acronym = $match[1];                 
+                $check_utc_exist = UtcTimelog::where("alpha_three",$acronym  )->first();
+                if($check_utc_exist){
+                    $set_country_id = $check_utc_exist-> country_id;
+                }
+                                                    
                 if( $existing_holiday->count() == 0 ) {
 
                     $holiday                  = new Holiday();
                     $holiday->name            = $row->name;
                     $holiday->type            = ( Str::contains($row->name, 'Regular Holiday') ? 'lh' : 'sh' );
                     $holiday->date            = $row->start;
+                    $holiday->country_id      = $set_country_id;
                     $holiday->is_predefined   = false;
                     $holiday->save();
 
@@ -365,12 +379,13 @@ class BhrRepository implements BhrRepositoryInterface{
             DB::commit();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
-
+            error_log("returning");
+          
             return $holidays_collection;
 
         } catch (Exception $e) {
             DB::rollback();
-            
+            error_log($e->getMessage());
             log_error($e);
             log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "bhrlog");
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
@@ -392,19 +407,34 @@ class BhrRepository implements BhrRepositoryInterface{
         try {
 
             $bhr_holidays_array = [];
-
+            
             // Define the End Point for the API.
             $end_point = 'time_off/whos_out/?start='.$start_date.'&end='.$end_date;
-       
-            // Iterate the BHr Call Result
-            foreach( bhr_api_call('GET', $end_point) as $row ) {
+
+            // Iterate the BHr Call Result PHL
+            foreach( bhr_api_call('GET', $end_point, $data = array(), $send_as_json = false,) as $row ) {
 
                 // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
                 if( $row->type == 'holiday' ) {
                     $bhr_holidays_array[] = $row;
                 }
             }
-             
+          
+            // Iterate the BHr Call Result IND
+            foreach( bhr_api_call('GET', $end_point, $data = array(), $send_as_json = false, $country = "India") as $row ) {
+
+                // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+                if( $row->type == 'holiday' ) {
+                    $bhr_holidays_array[] = $row;
+                }
+            }
+            $bhr_holidays_array = array_unique($bhr_holidays_array,SORT_REGULAR);
+             usort($bhr_holidays_array, function($a, $b)
+            {
+                return strtotime($a->start) - strtotime($b->start);
+            });
+            
+
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_holidays_array, "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
 
@@ -485,6 +515,15 @@ class BhrRepository implements BhrRepositoryInterface{
             DB::rollback();
             log_error($e);
             throw $e;
+        }
+    }
+
+    protected function get_match($regex,$content)
+    {
+        if (preg_match($regex,$content,$matches)) {
+            return $matches[1];
+        } else {
+            return null;
         }
     }
 

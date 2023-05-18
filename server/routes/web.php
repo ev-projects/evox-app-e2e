@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Bhr\Repositories\BhrRepository;
 use App\Modules\User\Models\User;
 use App\Modules\User\Repositories\UtcTimeLogRepository;
 
@@ -19,6 +20,12 @@ Route::get('/', function () {
 });
 
 
+
+Route::get('/test', function () {
+    $var = new BhrRepository();
+    $var->sync_holidays( "2023-01-01", "2023-12-29" );
+    
+});
 // Route::group(['middleware' => 'web'], function () {
 //     Route::get('/google-login', 'Auth\LoginController@redirectToProvider')->name('login');
 //     Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');

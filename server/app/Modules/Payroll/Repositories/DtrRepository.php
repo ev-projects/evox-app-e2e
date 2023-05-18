@@ -867,12 +867,23 @@ class DtrRepository implements DtrRepositoryInterface{
                                             ->get();
 
                     foreach( $dtr_collection as $dtr ) {
+                        $user =  $dtr->user()->first();
+                        error_log($user->username);
+                       if($user->country_id == $holiday->country_id || $holiday->country_id == null){
                         $dtr->holidays()->save( $holiday );
                         $result->push( $dtr );
                         log_to_file( 'info', 'Holiday Inserted on this DTR.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
+                       }
+                       else{
+                        log_to_file( 'info', 'Holiday was not Inserted on this DTR due to diffferent country_id.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
+                       }
+                        
+                       
                     }
 
                 } catch (Exception $e) {
+                    error_log($e->getMessage());
+                   
                     log_to_file( 'info', '[RECORD ERROR: ID - '. $holiday->id. ' ' . __FUNCTION__ , ['holiday' => $holiday ] , "holiday");
                     continue;
                 }
@@ -885,6 +896,7 @@ class DtrRepository implements DtrRepositoryInterface{
             return $result;
 
         } catch (Exception $e) {
+            error_log($e->getMessage());
             DB::rollback();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
