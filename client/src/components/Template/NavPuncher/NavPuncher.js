@@ -31,7 +31,6 @@ class NavPuncher extends Component {
   onSubmitHandler = async (values) => {
     // this.onUIHandler();
 
-
     var formData = new FormData();
     
 		for (var key in values) {
