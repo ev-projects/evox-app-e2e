@@ -107,10 +107,12 @@ class ReportRepository implements ReportRepositoryInterface{
             }
     
             $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', $user_list->pluck('id')->toArray() )
+            ->where('users.is_active','=','1')
             ->whereRaw("DATE_FORMAT(birthDate,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')");
     
             $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', $user_list->pluck('id')->toArray() )
-                    ->whereRaw("DATE_FORMAT(date_hired,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')");
+            ->where('users.is_active','=','1')
+            ->whereRaw("DATE_FORMAT(date_hired,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')");
     
             // $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
             // $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
@@ -122,7 +124,8 @@ class ReportRepository implements ReportRepositoryInterface{
             // dump($date_from);
             // dump($date_to);
             $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', $user_list->pluck('id')->toArray() )
-                        ->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' AND DATE_ADD(date_hired, INTERVAL 6 MONTH) <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%Y-%m-%d')");
+            ->where('users.is_active','=','1')
+            ->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' AND DATE_ADD(date_hired, INTERVAL 6 MONTH) <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%Y-%m-%d')");
                         // ->whereRaw("DATE_FORMAT(date_hire,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')");
     
             $birthdate->union($anniversary)->union($regularization)->orderByRaw('Month(date),Day(date)');
