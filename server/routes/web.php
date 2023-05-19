@@ -26,11 +26,11 @@ Route::get('/test', function () {
     $var->sync_holidays( "2023-01-01", "2023-12-29" );
     
 });
-// Route::group(['middleware' => 'web'], function () {
-//     Route::get('/google-login', 'Auth\LoginController@redirectToProvider')->name('login');
-//     Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');
-//     //Route::get('/get-token', 'Auth\LoginController@getToken');
-// });
+Route::group(['middleware' => 'web'], function () {
+    Route::get('/google-login', 'Auth\LoginController@redirectToProvider')->name('login');
+    Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');
+    //Route::get('/get-token', 'Auth\LoginController@getToken');
+});
 
 Route::get('/test_utc', function () {
    $utc_test = new UtcTimeLogRepository;

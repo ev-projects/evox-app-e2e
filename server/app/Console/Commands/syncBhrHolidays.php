@@ -55,7 +55,7 @@ class syncBhrHolidays extends Command
             // Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
  
             $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
-            $start_date = Carbon::now()->subMonth(5)->format("Y-m-d");
+            $start_date = $payroll_cutoff->start_date;
             $end_date =  Carbon::now()->addMonth(3)->format("Y-m-d");
 
 
