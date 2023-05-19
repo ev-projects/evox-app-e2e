@@ -62,8 +62,10 @@ class Computation
         $dtr->time_out              = $dtr->time_out + $owner_offset_seconds;
         $dtr->start_datetime        = $dtr->start_datetime + $owner_offset_seconds;
         $dtr->end_datetime          = $dtr->end_datetime + $owner_offset_seconds;
-        $dtr->start_flexi_datetime  = $dtr->start_flexi_datetime + $owner_offset_seconds;
-        $dtr->end_flexi_datetime    = $dtr->end_flexi_datetime + $owner_offset_seconds;
+        if( $dtr->start_flexy_datetime  != null){
+            $dtr->start_flexy_datetime  = $dtr->start_flexy_datetime + $owner_offset_seconds;
+            $dtr->end_flexy_datetime    = $dtr->end_flexy_datetime + $owner_offset_seconds;
+        }
        
         
 
