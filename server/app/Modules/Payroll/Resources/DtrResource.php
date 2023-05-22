@@ -145,7 +145,8 @@ class DtrResource extends JsonResource
                     'attendance_status' => [
                         'name' => $attendance_status,
                         'slug' => text_to_slug( $attendance_status )
-                    ]
+                    ],
+                    // 'timezone' =>  $owner->country_zone()->country_time_zone,
                 ), 
                 array('payroll_items' => $payroll_items),
                 array('policies' => $policies),
@@ -163,12 +164,12 @@ class DtrResource extends JsonResource
                     'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
                 ]),
 
-                array('raw_time' => [
+                 array('raw_time' => [
                     'start_datetime' =>  $this->start_datetime , true ,
                     'end_datetime' =>  $this->end_datetime , true ,
                     // 'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime , true ,  $owner),
                     // 'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
-                ]),
+                ])
             );
         }
         return $result;

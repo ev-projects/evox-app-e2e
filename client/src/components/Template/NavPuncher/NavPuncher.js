@@ -258,13 +258,14 @@ class NavPuncher extends Component {
         <div className = "nav-clock-dropdown nav-clock div-col">
         <div className=" time-info " >
               <div>
-                    <div className="nav-date">	{ moment(this.state.time).format("dddd, Do MMMM")} </div>
+                    <div className="nav-date">	{ moment(this.state.time).format("dddd, Do MMMM")}   <i  class="fa fa-sort-desc is-green" aria-hidden="true"></i>  </div> 
               </div>
               <div>
-                    <div className="nav-time">		{moment(this.state.time).format("hh")} : {moment(this.state.time).format("mm")} : {moment(this.state.time).format("ss")}  {moment(this.state.time).format("A")} </div>
+                    <div className="nav-time">{moment(this.state.time).format("hh")} : {moment(this.state.time).format("mm")} : {moment(this.state.time).format("ss")}  {moment(this.state.time).format("A")}  </div>
               </div>
-              
+             
         </div>
+      
 
         </div>
      </Dropdown.Toggle  >
