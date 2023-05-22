@@ -31,8 +31,7 @@ class NavPuncher extends Component {
   onSubmitHandler = async (values) => {
     // this.onUIHandler();
 
-    // console.log(values, 	this.props.dashboard?.recent_dtr[3].id);
-    // console.log('onSubmitHand');
+
     var formData = new FormData();
     
 		for (var key in values) {
@@ -45,7 +44,7 @@ class NavPuncher extends Component {
 				}
 			}
 		}
-    if(this.props.dashboard?.recent_dtr[1]?.id != undefined){
+    if(this.props.dashboard?.recent_dtr[1]?.id != undefined && values["dtr_id"] == null) {
 
       formData.set("dtr_id", this.props.dashboard?.recent_dtr[1].id);
     }
@@ -114,18 +113,29 @@ class NavPuncher extends Component {
     }
 
   const { recent_dtr } = this.props.dashboard;
-    
-  let showErr =  recent_dtr.length > 0  ? 
-                    recent_dtr[1]?.start_datetime === null &  recent_dtr[1]?.time_in !== null &  recent_dtr[1]?.is_rest_day  === 0? true : 
-                    recent_dtr[0].start_datetime === null &  recent_dtr[0].time_in !== null &  recent_dtr[0]?.is_rest_day  === 0 ? true : false : false;
+    // show previous day button
+    var show_previous_button =  false;
+    var range = 0
+  if( this.props.dashboard?.recent_dtr[0]?.end_datetime != null && this.props.dashboard?.recent_dtr[1]?.start_datetime != null){
+    range = (this.props.dashboard?.recent_dtr[1]?.raw_time.start_datetime    -   this.props.dashboard?.recent_dtr[0]?.raw_time.end_datetime)/2 ;
+    if( (Math.floor(Date.now() / 1000) - this.props.dashboard?.recent_dtr[0]?.raw_time.end_datetime < range) ){
+      if(this.props.dashboard?.recent_dtr[0]?.time_in == null ||  this.props.dashboard?.recent_dtr[0]?.time_out == null ){
+        show_previous_button = true;
+      }
+      
+    }
+  }
 
- 
+
+
+                    
     const user = this.props.user;
+    
     return (
       <div className="nav-puncher">
 
 
-     
+    
   <div className="div-col ">
   <Formik 
 		enableReinitialize
@@ -139,18 +149,41 @@ class NavPuncher extends Component {
         <form onSubmit={handleSubmit}> 
         {this.props.dashboard?.recent_dtr.length > 1 ? (
 				this.props.dashboard?.recent_dtr[1]?.is_rest_day == 1 ? (
-					this.props.dashboard?.recent_dtr[0]?.is_rest_day == 1 ? (
+					this.props.dashboard?.recent_dtr[0]?.is_rest_day == 1  || 	(this.props.dashboard?.recent_dtr[0]?.is_rest_day == 0 && this.props.dashboard?.recent_dtr[0]?.time_out != null) ? (
 						<>
 
               <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Rest Day</Button>
 						</>
 					) : (
+            
 					<>
-            <Button className="nav-clock-button dropdown newfeature" onClick={(e)=> { setFieldValue('quickpunch','out'); setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+          {
+            (this.props.dashboard?.recent_dtr[0]?.time_in == null) ? 
+            
+            (<>
+              <Button className="nav-clock-button dropdown newfeature" 
+            onClick={(e)=> { setFieldValue('quickpunch','in'); 
+            setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
+            type="submit" ><i className="fa fa-history" /> Clock In Previous Day
+            </Button>
+            </>)
+            :
+            
+            (<>
+              <Button className="nav-clock-button dropdown newfeature" 
+            onClick={(e)=> { setFieldValue('quickpunch','out'); 
+            setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
+            type="submit" >
+              <i className="fa fa-history" /> Clock Out Previous Day
+            </Button>
+            </>)
+          }
+           
 					</>
 					)
 				) : (
 					<>
+
           {!(this.props.dashboard?.recent_dtr[1]?.time_in)? (
            <>
             <Button className="nav-clock-button dropdown newfeature"  type="submit" disabled={this.props.dashboard?.recent_dtr[1]?.time_in? true : false} onClick={(e)=> { setFieldValue('quickpunch','in');   }} >
@@ -186,6 +219,33 @@ class NavPuncher extends Component {
 
             
 			}
+      { show_previous_button  && this.props.dashboard?.recent_dtr[0]?.is_rest_day == 0 && this.props.dashboard?.recent_dtr[1]?.is_rest_day == 0? <> 
+      
+        {
+            (this.props.dashboard?.recent_dtr[0]?.time_in == null) ? 
+            
+            (<>
+              <Button className="nav-clock-button dropdown newfeature" 
+            onClick={(e)=> { setFieldValue('quickpunch','in'); 
+            setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
+            type="submit" ><i className="fa fa-history" /> Clock In Previous Day
+            </Button>
+            </>)
+            :
+            
+            (<>
+              <Button className="nav-clock-button dropdown newfeature" 
+            onClick={(e)=> { setFieldValue('quickpunch','out'); 
+            setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
+            type="submit" >
+              <i className="fa fa-history" /> Clock Out Previous Day
+            </Button>
+            </>)
+          }
+      </>:null
+
+      }
+       
     </form>
 	)}
   

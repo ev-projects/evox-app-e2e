@@ -162,6 +162,13 @@ class DtrResource extends JsonResource
                     'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime , true ,  $owner),
                     'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
                 ]),
+
+                array('raw_time' => [
+                    'start_datetime' =>  $this->start_datetime , true ,
+                    'end_datetime' =>  $this->end_datetime , true ,
+                    // 'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime , true ,  $owner),
+                    // 'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
+                ]),
             );
         }
         return $result;
