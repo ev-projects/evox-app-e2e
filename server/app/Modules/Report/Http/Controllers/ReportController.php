@@ -470,7 +470,7 @@ class ReportController extends Controller
             // Iterate the BHr Call Result
             $user = $this->user->show(Auth::user()->id);
 
-            if ($user->country_id == 2) {
+            // if ($user->country_id == 2) {
                 // BHR API CALL For Fecthing Philippines Holiday
                 foreach( bhr_api_call('GET', $end_point) as $row ) {
 
@@ -479,7 +479,7 @@ class ReportController extends Controller
                         $bhr_holidays_array[] = $row;
                     }
                 }
-            } else if ($user->country_id == 1) {
+            // } else if ($user->country_id == 1) {
                 // BHR API CALL For Fecthing Indian Holiday
                 foreach( bhr_api_call_india('GET', $end_point) as $row ) {
 
@@ -492,7 +492,7 @@ class ReportController extends Controller
                         $bhr_holidays_array[] = $row;
                         }
                     }
-                }
+                // }
             }
             // Sort Holiday By Date And ID
             usort($bhr_holidays_array, function($a, $b) {
