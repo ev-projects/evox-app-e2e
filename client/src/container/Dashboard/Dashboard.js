@@ -139,15 +139,15 @@ class Dashboard extends Component {
     //     this.setState({ run: this.props.dashboard?.worktour });
     //   }
 
-    var exdate = Date.parse("2023-05-31");
-    var expiredate = format(exdate, "yyyy-MM-dd");
-    const current = new Date();
-    const date = `${current.getFullYear()}-${
-      current.getMonth() + 1
-    }-${current.getDate()}`;
-    var cudate = Date.parse(date);
-    var currentdate = format(cudate, "yyyy-MM-dd");
-    if (expiredate >= currentdate) this.setState({ run: this.props.dashboard?.worktour });
+    // var exdate = Date.parse("2023-05-31");
+    // var expiredate = format(exdate, "yyyy-MM-dd");
+    // const current = new Date();
+    // const date = `${current.getFullYear()}-${
+    //   current.getMonth() + 1
+    // }-${current.getDate()}`;
+    // var cudate = Date.parse(date);
+    // var currentdate = format(cudate, "yyyy-MM-dd");
+    // if (expiredate >= currentdate) this.setState({ run: this.props.dashboard?.worktour });
   }
 
   handleJoyrideCallback = (data) => {
