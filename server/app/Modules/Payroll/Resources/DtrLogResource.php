@@ -57,14 +57,25 @@ class DtrLogResource extends JsonResource
                 'time_out' => timestamp_to_time( $this->time_out ),
                 'start_datetime' => timestamp_to_time( $this->start_datetime ),
                 'end_datetime' => timestamp_to_time( $this->end_datetime ),
-                'end_datetime' => timestamp_to_time( $this->end_datetime ),
+                
                 'start_flexy_datetime' => timestamp_to_time( $this->start_flexy_datetime ),
                 'end_flexy_datetime' => timestamp_to_time( $this->end_flexy_datetime ),
                 'break_time' => is_valid( $this->break_time ) && $this->break_time > 0 ? seconds_to_time( $this->break_time ) : null,
                 'is_rest_day' => $this->is_rest_day,
                 'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
                 'full_name' => $user->getFullName(),
-                'payroll_items' => $payroll_items
+                'payroll_items' => $payroll_items,
+                'timezone' =>  $user->country_zone()->country_time_zone,
+                'user_POV' => [
+
+                    'time_in' => timestamp_to_time( $this->time_in , true ,  $user),
+                    'time_out' => timestamp_to_time( $this->time_out , true ,  $user),
+                    'start_datetime' => timestamp_to_time( $this->start_datetime , true ,  $user),
+                    'end_datetime' => timestamp_to_time( $this->end_datetime , true ,  $user),
+                 
+                    'start_flexy_datetime' => timestamp_to_time( $this->start_flexy_datetime , true ,  $user),
+                    'end_flexy_datetime' => timestamp_to_time( $this->end_flexy_datetime , true ,  $user),
+                ],
             );
         }
         return $result;

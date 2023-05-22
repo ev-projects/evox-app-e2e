@@ -26,6 +26,7 @@ class DtrLogs extends Component {
         name: null,
         is_active: 1,
         export: false,
+        toggle_pov: false,
       }
     }; 
   }
@@ -125,6 +126,10 @@ class DtrLogs extends Component {
                       <label> </label>
                         <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
                         {/* <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button> */}
+                        <Button className="toggle-outlook-dtr"
+                              onClick={() => this.setState({
+                                toggle_pov: !this.state.toggle_pov
+                              })}> <i class={"fa "+(this.state.toggle_pov ? "fa-eye":"fa-eye-slash")  } aria-hidden="true"></i> Toggle Outlook {this.state.toggle_pov}</Button>
                       </div>
                     </Col>
                     </Row>       
@@ -141,6 +146,7 @@ class DtrLogs extends Component {
                                   <th scope="col" class="th-name">Name</th>
                                   <th scope="col" class="th-dept">Department</th>
                                   <th scope="col">Date</th>
+                                  <th scope="col">POV <div> {this.state.toggle_pov == true ?"(User)": "(Default)"}</div> </th>
                                   <th scope="col">Time In</th>
                                   <th scope="col">Time Out</th>
                                   <th scope="col">On Duty</th>
@@ -167,12 +173,13 @@ class DtrLogs extends Component {
                                             <td>{list.full_name}</td>
                                             <td>{list.department}</td> 
                                             <td>{list.date}</td>
-                                            <td>{list.time_in}</td>
-                                            <td>{list.time_out}</td>
-                                            <td>{list.start_datetime}</td>
-                                            <td>{list.end_datetime}</td>
-                                            <td>{list.start_flexy_datetime}</td>
-                                            <td>{list.end_flexy_datetime}</td>
+                                            <td>{this.state.toggle_pov == true ?list.timezone: this.props.user.timezone}</td>
+                                            <td>{this.state.toggle_pov == false ? list.time_in : list.user_POV?.time_in}</td>
+                                            <td>{this.state.toggle_pov == false ? list.time_out :list.user_POV?.time_out }</td>
+                                            <td>{this.state.toggle_pov == false ? list.start_datetime :list.user_POV?.start_datetime }</td>
+                                            <td>{this.state.toggle_pov == false ? list.end_datetime : list.user_POV?.end_datetime }</td>
+                                            <td>{this.state.toggle_pov == false ? list.start_flexy_datetime : list.user_POV?.start_flexy_datetime }</td>
+                                            <td>{this.state.toggle_pov == false ? list.end_flexy_datetime :  list.user_POV?.end_flexy_datetime}</td>
                                             <td>{list.break_time}</td>
                                             <td>{list.payroll_items?.rendered_hours}</td>
                                             <td>{list.payroll_items?.sl}</td>
