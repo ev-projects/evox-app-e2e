@@ -141,8 +141,8 @@ class NavPuncher extends Component {
 				this.props.dashboard?.recent_dtr[1]?.is_rest_day == 1 ? (
 					this.props.dashboard?.recent_dtr[0]?.is_rest_day == 1 ? (
 						<>
-							<br />
-              <Button  type="submit"  className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+
+              <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Rest Day</Button>
 						</>
 					) : (
 					<>

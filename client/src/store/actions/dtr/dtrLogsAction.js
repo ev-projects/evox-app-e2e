@@ -7,7 +7,7 @@ import Formatter from "../../../services/Formatter";
 
 // Fetch Request List
 export const fetchDtrLogs = ( data = null ) => {
-    console.log(data);
+    // console.log(data);
     return (dispatch, getState) => {
         API.call({
             method: "get",

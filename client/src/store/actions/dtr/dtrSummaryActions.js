@@ -65,7 +65,7 @@ export const fetchNewDtrSummary = ( data = null ) => {
 
 
 export const exportDtrSummary = ( data = null ) => {
-    console.log('Params', data)
+    // console.log('Params', data)
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -73,7 +73,7 @@ export const exportDtrSummary = ( data = null ) => {
             params : data
         })
         .then(result => {
-            console.log(result.data.content)
+            // console.log(result.data.content)
             if (result.data.content) {
                 dispatch({
                     'type'      : 'FETCH_DTR_EXPORT_BACTH_SUCCESS', 
@@ -101,7 +101,7 @@ export const exportDtrSummary = ( data = null ) => {
 }
 
 export const exportNewDtrSummary = ( data = null) => {
-    console.log('Params', data)
+    // console.log('Params', data)
     return (dispatch, getState) => {
         API.call({
             method: "get",
