@@ -1203,12 +1203,12 @@ class DtrRepository implements DtrRepositoryInterface{
      */
     public function get_dtr_logs(Collection $user_collection, string $start_date, string $end_date ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'user_collection' => $user_collection, 'start_date'=> $start_date, 'end_date'=> $end_date], "dtr_summary");
-
+  
         try{
             // Get the DTR Collection via the User ID from the collection and the date between the start_date and end_date. Added sorting for the Emp number, First and Last name, then DTR's date.
             $dtr_collection = Dtr::whereIn('user_id', $user_collection->pluck('id')->toArray())
                                    ->join('users', 'users.id','=','dtrs.user_id');
-
+        
                 //  This is for My Team Schedule
                 if( request()->get('link') == 'team_schedule' ){
                     if( request()->get('page')== 'day' ){

@@ -43,7 +43,7 @@ class AnniversaryResources extends JsonResource
                     array_push($birthday_anniv, [
                         "date" => $date->format('F d'),
                         "name" => $array->last_name.', '.$array->first_name ,
-                        "display" =>  $year == 0 ? "New Joinee" : ordinal($year) .' Anniversary',
+                        "display" =>  $year == 0 ? "EV Rookies" : ordinal($year) .' Anniversary',
                         "type" =>  $array->type
                     ]);
                   break;
