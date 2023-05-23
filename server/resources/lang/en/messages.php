@@ -94,6 +94,12 @@ return [
 
     
 
+    /**
+     *  UTC
+     */
+    'sync_utc_adjust_attemp' => 'Attempted Synced Adjustments in UTC log table',
+    'sync_utc_adjust_success' => 'Successfully Synced Adjustments in UTC log table',
+
 
     /**
      *  Department
