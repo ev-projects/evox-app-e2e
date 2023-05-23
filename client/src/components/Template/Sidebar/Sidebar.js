@@ -589,7 +589,7 @@ const Sidebar = (props) => {
                     {Authenticator.check("admin", [
                       "sync_biometrics",
                       "sync_bhr_user_updates",
-                      "sync_bhr_leaves",
+                      "sync_bhr_leaves","full_access",
                     ]) && (
                       <li className="nav-item has-treeview ">
                         <a className="nav-link">
@@ -636,6 +636,15 @@ const Sidebar = (props) => {
                               </Link>
                             </li>
                           )}
+                          <li className="nav-item">
+                              <Link
+                                className="nav-link"
+                                to={global.links.sync_utc_adjustment}
+                              >
+                                <i className="nav-icon fa fa-adjust nav-icon" />
+                                <p style={{ fontSize: 13 }}>UTC Sync</p>
+                              </Link>
+                            </li>
                         </ul>
                       </li>
                     )}
