@@ -331,7 +331,7 @@ class BookingController extends Controller
          $user_list = auth()->user()->users_handled();
 
          $booking = DB::table('leaves')
-         ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
+         ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
          ->join('dtrs', 'dtrs.id', '=', 'leaves.dtr_id')
          ->join('users','users.id', '=', 'dtrs.user_id')
          ->whereIn('users.id', $user_list->pluck('id')->toArray())
@@ -356,7 +356,7 @@ class BookingController extends Controller
          $user_list = auth()->user()->users_handled();
 
          $booking = DB::table('leaves')
-         ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
+         ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
          ->join('dtrs', 'dtrs.id', '=', 'leaves.dtr_id')
          ->join('users','users.id', '=', 'dtrs.user_id')
          ->whereIn('users.id', $user_list->pluck('id')->toArray())

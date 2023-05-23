@@ -100,17 +100,28 @@ class ReportRepository implements ReportRepositoryInterface{
     public function get_team_birthday_anniversary_last_twodays(){
         try {
 
-            $user_list = auth()->user()->users_handled();
+            if(auth()->user()->department_id != "39"){
+                $user_list = auth()->user()->users_handled();
 
-            if( is_valid( request()->get('department_id') ) ) {
-                $user_list->where('department_id', '=', request()->get('department_id'));
+                if( is_valid( request()->get('department_id') ) ) {
+                    $user_list->where('department_id', '=', request()->get('department_id'));
+                }
             }
+          
+           
+            $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ");
+            // Get DOB by users supervisor, if Department ID Not Equal to 39 (OPS - Human Resources)
+            if(auth()->user()->department_id != "39"){
+                $birthdate->whereIn('users.id', $user_list->pluck('id')->toArray() );
+            }
+            $birthdate->whereRaw("DATE_FORMAT(birthDate,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")->whereRaw("is_active = 1");
     
-            $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', $user_list->pluck('id')->toArray() )
-            ->whereRaw("DATE_FORMAT(birthDate,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")->whereRaw("is_active = 1");
-    
-            $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', $user_list->pluck('id')->toArray() )
-                    ->whereRaw("DATE_FORMAT(date_hired,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")->whereRaw("is_active = 1");;
+            // Get Anniversary by users supervisor, if Department ID Not Equal to 39 (OPS - Human Resources)
+            $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type");
+            if(auth()->user()->department_id != "39"){
+            $anniversary->whereIn('users.id', $user_list->pluck('id')->toArray() );
+            }
+            $anniversary->whereRaw("DATE_FORMAT(date_hired,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")->whereRaw("is_active = 1");
     
             // $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
             // $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
@@ -119,11 +130,14 @@ class ReportRepository implements ReportRepositoryInterface{
             //             ->whereRaw("DATE_FORMAT(date_hired,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")
             $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
             $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
-            // dump($date_from);
-            // dump($date_to);
-            $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', $user_list->pluck('id')->toArray() )
-                        ->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' AND DATE_ADD(date_hired, INTERVAL 6 MONTH) <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%Y-%m-%d')")
-                        ->whereRaw("is_active = 1");;
+    
+            // Get Regularization by users supervisor, if Department ID Not Equal to 39 (OPS - Human Resources)
+            $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ");
+            if(auth()->user()->department_id != "39"){
+            $regularization->whereIn('users.id', $user_list->pluck('id')->toArray());
+            }
+            $regularization->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' AND DATE_ADD(date_hired, INTERVAL 6 MONTH) <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%Y-%m-%d')")
+            ->whereRaw("is_active = 1");
                         // ->whereRaw("DATE_FORMAT(date_hire,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')");
     
             $birthdate->union($anniversary)->union($regularization)->orderByRaw('Month(date),Day(date)');
