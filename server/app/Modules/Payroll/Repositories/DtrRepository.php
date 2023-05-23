@@ -1284,8 +1284,8 @@ class DtrRepository implements DtrRepositoryInterface{
                     DB::raw("sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as reg_night_dif"),
                     DB::raw("sum(drt_summary_report.reg_overtime) as reg_over_time"),
                     DB::raw("sum(drt_summary_report.reg_overtime_night_diff) as reg_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.rd_rendered_hours + drt_summary_report.rd_rendered_hours_overlapp) as rd_rendered_hr"),
-                    DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as rd_night_dif"),
+                    DB::raw("sum(drt_summary_report.rd_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.rd_rendered_hours_overlapp,0)) - sum(drt_summary_report.rd_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.rd_night_diff_overlapp,0)) as rd_rendered_hr"),
+                    // DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as rd_night_dif"),
                     DB::raw("sum(drt_summary_report.rd_overtime) as rd_over_time"),
                     DB::raw("sum(drt_summary_report.rd_overtime_night_diff) as rd_over_night_dif"),
                     DB::raw("sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) 
