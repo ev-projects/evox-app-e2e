@@ -55,7 +55,7 @@ class DtrLogResource extends JsonResource
                 $payroll_items["overtime"] = $value->overtime > 0 ? seconds_to_time($value->overtime * 3600,true):"";
                 $payroll_items["overtime_night_diff"] = $value->overtime_night_diff > 0 ? seconds_to_time($value->overtime_night_diff * 3600,true):"";
                 $payroll_items["night_diff"] = $value->night_diff > 0 ? seconds_to_time($value->night_diff * 3600,true):"";
-                $payroll_items[ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] = $value->ul > 0 ? $value->ul:"";
+                $payroll_items[ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] = $value->ul > 0 ? round($value->ul):"";
                 $payroll_items["rendered_hours"] = $value->rendered_hours > 0 ? seconds_to_time($value->rendered_hours * 3600,true):"";
             }
 
