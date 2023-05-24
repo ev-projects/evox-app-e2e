@@ -138,7 +138,7 @@ class DtrResource extends JsonResource
                 $checked_end_time =  $this->end_flexy_datetime;
             }
             if($this->is_rest_day == 0){
-                $is_within_time = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  7200) && $this->is_rest_day == 0 ;
+                $is_within_time = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $this->is_rest_day == 0 ;
 
             }
            
