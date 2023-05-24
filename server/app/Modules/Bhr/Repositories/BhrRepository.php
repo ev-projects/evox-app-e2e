@@ -361,7 +361,7 @@ class BhrRepository implements BhrRepositoryInterface{
 
                     $holiday                  = new Holiday();
                     $holiday->name            = $row->name;
-                    $holiday->type            = ( Str::contains($row->name, 'Regular Holiday') ? 'lh' : 'sh' );
+                    $holiday->type            = ( Str::contains($row->name, '(Regular)') ? 'lh' : 'sh' );
                     $holiday->date            = $row->start;
                     $holiday->country_id      = $set_country_id;
                     $holiday->is_predefined   = false;
