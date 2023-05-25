@@ -269,9 +269,9 @@ class HrAnnouncementsForm extends Component {
                             height: 500,
                             menubar: false,
                             plugins: [
-                              'a11ychecker','advlist','advcode','advtable','autolink','checklist','export', 'emoticons',
+                              'advlist','autolink', 'emoticons',
                               'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
-                              'powerpaste','fullscreen','formatpainter','insertdatetime','media','table','help','wordcount'
+                              'fullscreen','insertdatetime','media','table','help','wordcount'
                            ],
  
                             toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons | ' +
