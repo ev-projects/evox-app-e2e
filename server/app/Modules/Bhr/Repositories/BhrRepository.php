@@ -428,6 +428,14 @@ class BhrRepository implements BhrRepositoryInterface{
                     $bhr_holidays_array[] = $row;
                 }
             }
+
+            foreach( bhr_api_call('GET', $end_point, $data = array(), $send_as_json = false, $country = "Bulgaria") as $row ) {
+
+                // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+                if( $row->type == 'holiday' ) {
+                    $bhr_holidays_array[] = $row;
+                }
+            }
             $bhr_holidays_array = array_unique($bhr_holidays_array,SORT_REGULAR);
              usort($bhr_holidays_array, function($a, $b)
             {
