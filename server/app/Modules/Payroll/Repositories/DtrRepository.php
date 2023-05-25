@@ -768,6 +768,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr->end_flexy_datetime    =  null;
                 $dtr->break_time            =  null;
                 $dtr->time_in               =  null;
+                $dtr->time_out              =  null;
                 $dtr->is_rest_day           =  true;
                 $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.default');
 
