@@ -19,15 +19,9 @@ Route::get('/', function () {
 });
 
 
-// Route::group(['middleware' => 'web'], function () {
-//     Route::get('/google-login', 'Auth\LoginController@redirectToProvider')->name('login');
-//     Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');
-//     //Route::get('/get-token', 'Auth\LoginController@getToken');
-// });
-
-Route::get('/test_utc', function () {
-   $utc_test = new UtcTimeLogRepository;
-   $utc_test->update();
+Route::group(['middleware' => 'web'], function () {
+    Route::get('/google-login', 'Auth\LoginController@redirectToProvider')->name('login');
+    Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');
+    //Route::get('/get-token', 'Auth\LoginController@getToken');
 });
-
 
