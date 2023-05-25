@@ -38,7 +38,9 @@ export const fetchRequestList = (params = null) => {
         });
       })
       .catch((e) => {
-        dispatch(Formatter.alert_error(e));
+        if (e.status) {
+          dispatch(Formatter.alert_error(e));
+        }
       });
   };
 };
@@ -70,7 +72,9 @@ export const fetchStatusNumbers = (params) => {
       })
       })
       .catch((e) => {
-        dispatch(Formatter.alert_error(e));
+        if (e.status) {
+          dispatch(Formatter.alert_error(e));
+        }
       });
   };
 };
@@ -109,7 +113,9 @@ export const myfetchStatusNumbers_dashboard = (
         });
       })
       .catch((e) => {
-        dispatch(Formatter.alert_error(e));
+        if (e.status) {
+          dispatch(Formatter.alert_error(e));
+        }
       });
   };
 };
@@ -136,7 +142,9 @@ return (dispatch, getState) => {
       });
     })
     .catch((e) => {
-      dispatch(Formatter.alert_error(e));
+      if (e.status) {
+        dispatch(Formatter.alert_error(e));
+      }
     });
 };
 };
@@ -162,7 +170,9 @@ return (dispatch, getState) => {
       });
     })
     .catch((e) => {
-      dispatch(Formatter.alert_error(e));
+      if (e.status) {
+        dispatch(Formatter.alert_error(e));
+      }
     });
 };
 };
@@ -191,7 +201,9 @@ return (dispatch, getState) => {
       });
     })
     .catch((e) => {
-      dispatch(Formatter.alert_error(e));
+      if (e.status) {
+        dispatch(Formatter.alert_error(e));
+      }
     });
 };
 };
@@ -231,7 +243,9 @@ export const fetchStatusNumbers_dashboard = (
        console.log()
       })
       .catch((e) => {
-        dispatch(Formatter.alert_error(e));
+        if (e.status) {
+          dispatch(Formatter.alert_error(e));
+        }
       });
   };
 };
