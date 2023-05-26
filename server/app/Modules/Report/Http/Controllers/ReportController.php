@@ -494,6 +494,22 @@ class ReportController extends Controller
                     }
                 // }
             }
+
+              // BHR API CALL For Fecthing bulgaria Holiday
+            foreach( bhr_api_call_bulgaria('GET', $end_point) as $row ) {
+
+                // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+                if( $row->type == 'holiday' ) {
+
+                    // Check Holidays Already Exist ion Array
+                    if(in_array($row, $bhr_holidays_array)) {
+                    }  else {
+                    $bhr_holidays_array[] = $row;
+                    }
+
+                }
+            // }
+            }
             // Sort Holiday By Date And ID
             usort($bhr_holidays_array, function($a, $b) {
                 return [$a->start,$a->id] <=> [$b->start,$b->id];
