@@ -1469,6 +1469,23 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr->update();
                 $result = $dtr;
 
+
+                $dtr_prev = Dtr::where("user_id", Auth::user()->id)->where('date', Carbon::parse($biometrics->CheckTime)->subDay(1)->format("Y-m-d"))->first();;
+                if($dtr_prev == null &&  Auth::user()->date_hired){
+                    if(Auth::user()->date_hired <Carbon::parse($biometrics->CheckTime)->subDay(1)->format("Y-m-d") ){
+                                $days = 1;
+                                $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
+                                $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
+                                $user_collection = new Collection();
+                                $user_collection->push((object)User::findOrFail(Auth::user()->id));
+                                $this->generate_dtr( $user_collection, $dates );
+
+                                log_to_file( 'info', "previous DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
+                    }
+
+                }
+        
+                
                 DB::commit();
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {

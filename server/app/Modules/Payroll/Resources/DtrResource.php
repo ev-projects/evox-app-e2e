@@ -133,13 +133,14 @@ class DtrResource extends JsonResource
             
 
             $is_within_time = false;
+            $is_within_time_extended = false;
             $checked_end_time =  $this->end_datetime;
             if($this->end_flexy_datetime != null){
                 $checked_end_time =  $this->end_flexy_datetime;
             }
             if($this->is_rest_day == 0){
                 $is_within_time = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $this->is_rest_day == 0 ;
-
+                $is_within_time_extended = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  21600) && $this->is_rest_day == 0 ;
             }
            
             $owner = $this->user()->first();
@@ -163,6 +164,7 @@ class DtrResource extends JsonResource
                     ],
 
                     'with_in_time' => $is_within_time,
+                    'with_in_time_extended' => $is_within_time_extended,
                     // 'timezone' =>  $owner->country_zone()->country_time_zone,
                 ), 
                 array('payroll_items' => $payroll_items),
