@@ -37,12 +37,26 @@ class Formatter {
    * return | Object ( will be the parameter for the Dispatch from the caller. )
   */
   alert_error( error_result, time_out ) {
+    var error_type = Object.getPrototypeOf(error_result);
     time_out = time_out || 0;
-    return {
-      'type'      : 'SHOW_ALERT',
-      'error'     : error_result,
-      'timeOut'   : time_out
+    if (error_type.name !== 'TypeError') {
+      return {
+        'type'      : 'SHOW_ALERT',
+        'error'     : error_result,
+        'timeOut'   : time_out
+      }
     }
+    //Intercepted duplicate HTTP request returns a null data which caused reducers
+    //to fail then leads to black screen or undefined state variables.
+    //We also have lack of response validation before processing the data which breaks the logic too.
+
+    //This is an undefined dispatch type which will do nothing when called.
+    //This also prevents black alter box
+    return {
+      'type'      : 'INTERCEPTED_DUPLICATE_REQUEST',
+      'error'     : 'INTERCEPTED_DUPLICATE_REQUEST',
+      'timeOut'   : time_out
+    };
   }
 
     /** Convert Date Object to String  
