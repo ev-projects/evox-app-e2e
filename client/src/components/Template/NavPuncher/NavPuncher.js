@@ -135,7 +135,7 @@ class NavPuncher extends Component {
 
                     
     const user = this.props.user;
-    console.log(this.props.dashboard?.isNavDtrLoaded, this.props.dashboard?.recent_dtr[0]?.with_in_time == true)
+    // console.log(this.props.dashboard?.isNavDtrLoaded, this.props.dashboard?.recent_dtr[0]?.with_in_time == true)
     return (
       <div className="nav-puncher">
 
