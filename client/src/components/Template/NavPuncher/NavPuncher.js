@@ -166,12 +166,12 @@ class NavPuncher extends Component {
 					<>
           {
             (this.props.dashboard?.recent_dtr[0]?.time_in == null) ? 
-            
+            //CLOCK IN/OUT for YESTERDAY ONLY
             (<>
               <Button className="nav-clock-button dropdown newfeature" 
             onClick={(e)=> { setFieldValue('quickpunch','in'); 
             setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
-            type="submit" ><i className="fa fa-history" /> Clock In(Yesterday)
+            type="submit" ><i className="fa fa-history" /> Clock In
             </Button>
             </>)
             :
@@ -181,7 +181,7 @@ class NavPuncher extends Component {
             onClick={(e)=> { setFieldValue('quickpunch','out'); 
             setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
             type="submit" >
-              <i className="fa fa-history" /> Clock Out(Yesterday)
+              <i className="fa fa-history" /> Clock Out
             </Button>
             </>)
           }
