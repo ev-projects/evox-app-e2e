@@ -54,7 +54,7 @@ export const logIn = (credentials) => {
         .catch(e => {
             // Please take note that I used e.response here since I am not using the API.call function. That function already handles the 'e' to get it's response.
             // I'm doing it manually for the manual AXIOS calls only.
-            dispatch( Formatter.alert_error( e ) ) 
+            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
         });
     }
 }
@@ -193,7 +193,7 @@ export const getUserInfo = ( id ) => {
             dispatch({'type': 'RELOAD_END'});
         })
         .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
+            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
         });
     }
 }
@@ -228,7 +228,7 @@ export const forgotPasswordRequest = ( email ) => {
         .catch(e => {
             // Please take note that I used e.response here since I am not using the API.call function. That function already handles the 'e' to get it's response.
             // I'm doing it manually for the manual AXIOS calls only.
-            dispatch( Formatter.alert_error( e ) ) 
+            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
         });
     }
 }
