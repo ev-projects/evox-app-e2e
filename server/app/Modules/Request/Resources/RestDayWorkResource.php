@@ -22,7 +22,7 @@ class RestDayWorkResource extends JsonResource
 
         $owner_offset = $owner->country_timezone_to_offset();
 
-        $viewer_offset = Auth::user()->country_timezone_to_offset();
+        $viewer_offset = Auth::user() ?  Auth::user()->country_timezone_to_offset() :  $owner_offset ;
 
         if( ! is_null( $this->resource ) ) {
 

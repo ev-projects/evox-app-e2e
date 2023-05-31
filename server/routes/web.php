@@ -1,7 +1,9 @@
 <?php
 
-use App\Modules\Bhr\Repositories\BhrRepository;
+use Carbon\Carbon;
 use App\Modules\User\Models\User;
+use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Bhr\Repositories\BhrRepository;
 use App\Modules\User\Repositories\UtcTimeLogRepository;
 
 /*
@@ -22,8 +24,18 @@ Route::get('/', function () {
 
 
 Route::get('/test', function () {
-    $var = new BhrRepository();
-    $var->sync_holidays( "2023-01-01", "2023-12-29" );
+
+     $start_date =  Carbon::now()->subMonth(4)->format("Y-m-d");
+     $end_date =  Carbon::now()->addMonth(3)->format("Y-m-d");
+
+
+     $dtr_holidays_to_delete = Dtr::where("date",  Carbon::now()->format("Y-m-d"))->pluck('id')->toArray();
+     dump($dtr_holidays_to_delete);
+     
+    // $var = new BhrRepository();
+    // $var->sync_holidays( $start_date, $end_date );
+    
+    
     
 });
 Route::group(['middleware' => 'web'], function () {
@@ -32,9 +44,9 @@ Route::group(['middleware' => 'web'], function () {
     //Route::get('/get-token', 'Auth\LoginController@getToken');
 });
 
-Route::get('/test_utc', function () {
-   $utc_test = new UtcTimeLogRepository;
-   $utc_test->update();
-});
+// Route::get('/test_utc', function () {
+//    $utc_test = new UtcTimeLogRepository;
+//    $utc_test->update();
+// });
 
 

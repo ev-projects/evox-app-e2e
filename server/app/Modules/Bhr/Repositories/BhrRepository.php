@@ -379,7 +379,7 @@ class BhrRepository implements BhrRepositoryInterface{
             DB::commit();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
-            error_log("returning");
+            // error_log("returning");
           
             return $holidays_collection;
 

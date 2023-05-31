@@ -17,6 +17,7 @@ use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Payroll\Models\Biometrics;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\Computation;
+use App\Modules\Payroll\Models\DtrHoliday;
 use App\Modules\Payroll\Models\DtrSummaryReport;
 use App\Modules\Request\Models\RestDayWork;
 use Illuminate\Database\Eloquent\Collection;
@@ -847,26 +848,60 @@ class DtrRepository implements DtrRepositoryInterface{
                     // Parses the Proper Date of the Holiday ( To automate the condition for Pre-defined and non Pre-defined Holiday Dates. )
                     $date = $holiday->getProperDate( $start_date, $end_date );
 
-                    // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration.
-                    $dtr_collection = Dtr::select('dtrs.*')
-                                            ->whereRaw(
-                                                "dtrs.date = ?
-                                                    AND
-                                                    NOT EXISTS (
-                                                        SELECT *
-                                                        FROM dtr_holidays
-                                                        WHERE dtrs.id = dtr_holidays.dtr_id
-                                                            AND dtr_holidays.holiday_id = ?
-                                                    )
-                                                ",
-                                                array(
-                                                    $date,
-                                                    $holiday->id
-                                                )
-                                            )
-                                            ->get();
+                    // Fetch all the DTR that has a Holiday in the iteration.
+                    if($holiday->country_id != null){
+                        $holidays_ids_to_delete = Dtr::where("date",  $date)->whereHas('user', function ($query) use($holiday){
+                            return $query->whereNotNull('country_id')->where('country_id', $holiday->country_id);
+                        })
+                        ->pluck('id')
+                        ->toArray();
+                        DtrHoliday::whereIn('dtr_id', $holidays_ids_to_delete)->delete();
+                        
+                         // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration on specific users with country_id.
+                         $dtr_collection = Dtr::whereHas('user', function ($query) use($holiday){
+                            return $query->whereNotNull('country_id')->where('country_id', $holiday->country_id);
+                        })->whereRaw(
+                            "dtrs.date = ?
+                                AND
+                                NOT EXISTS (
+                                    SELECT *
+                                    FROM dtr_holidays
+                                    WHERE dtrs.id = dtr_holidays.dtr_id
+                                        AND dtr_holidays.holiday_id = ?
+                                )
+                            ",
+                            array(
+                                $date,
+                                $holiday->id
+                            )
+                        )
+                        ->get();
+
+                    }else{
+                        // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration.
+                        $dtr_collection = Dtr::whereRaw(
+                            "dtrs.date = ?
+                                AND
+                                NOT EXISTS (
+                                    SELECT *
+                                    FROM dtr_holidays
+                                    WHERE dtrs.id = dtr_holidays.dtr_id
+                                        AND dtr_holidays.holiday_id = ?
+                                )
+                            ",
+                            array(
+                                $date,
+                                $holiday->id
+                            )
+                        )
+                        ->get();
+                    }
+
+                  
 
                     foreach( $dtr_collection as $dtr ) {
+                        
+
                         $user =  $dtr->user()->first();
                         error_log($user->username);
                        if($user->country_id == $holiday->country_id || $holiday->country_id == null){
