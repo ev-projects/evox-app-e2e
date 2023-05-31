@@ -126,6 +126,16 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 
 });
 
+#UTC####################################################################################################
+
+Route::group(['prefix' => 'utc', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    
+    # Gets the User List of Specific Role
+    Route::get('/sync_adjustment', 'UtctimelogController@sync_adjustment');
+
+
+});
+
 
 #####################################################################################################
 

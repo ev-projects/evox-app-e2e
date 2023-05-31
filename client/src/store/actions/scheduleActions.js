@@ -48,7 +48,7 @@ export const getDefaultSchedule = (bind_to, bind_id) => {
             dispatch({'type': 'RELOAD_END'});
         })
         .catch(e => {
-            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
+            dispatch( Formatter.alert_error( e ) ) 
         });
     }
 }
@@ -79,7 +79,7 @@ export const getTemplateSchedule = (template_id,type) => {
             dispatch({'type': 'RELOAD_END'});
         })
         .catch(e => {
-            dispatch( Formatter.alert_error( API.format( e.response ) ) ) 
+            dispatch( Formatter.alert_error( e ) ) 
         });
     }
 }

@@ -2,12 +2,14 @@
 
 namespace App\Modules\Payroll\Resources;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Request\Resources\AlterLogResource;
-use App\Modules\Request\Resources\ChangeScheduleResource;
 use App\Modules\Request\Resources\OvertimeResource;
 use App\Modules\Request\Resources\RestDayWorkResource;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\DB;
+use App\Modules\Request\Resources\ChangeScheduleResource;
+
 class DtrResource extends JsonResource
 {
     /**
@@ -126,6 +128,21 @@ class DtrResource extends JsonResource
             // foreach( $this->work_from_home()->get() as $work_from_home){
             //     $requests[] = new WorkFromHomeResource( $work_from_home );
             // }
+
+            $now = Carbon::now()->timestamp;
+            
+
+            $is_within_time = false;
+            $is_within_time_extended = false;
+            $checked_end_time =  $this->end_datetime;
+            if($this->end_flexy_datetime != null){
+                $checked_end_time =  $this->end_flexy_datetime;
+            }
+            if($this->is_rest_day == 0){
+                $is_within_time = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $this->is_rest_day == 0 ;
+                $is_within_time_extended = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  21600) && $this->is_rest_day == 0 ;
+            }
+           
             $owner = $this->user()->first();
             $result =  array_merge( 
                 array(
@@ -136,7 +153,6 @@ class DtrResource extends JsonResource
                     'time_out' => timestamp_to_datetime( $this->time_out ),
                     'start_datetime' => timestamp_to_datetime( $this->start_datetime ),
                     'end_datetime' => timestamp_to_datetime( $this->end_datetime ),
-                    'end_datetime' => timestamp_to_datetime( $this->end_datetime ),
                     'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime ),
                     'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime ),
                     'break_time' => seconds_to_time( $this->break_time ),
@@ -145,7 +161,11 @@ class DtrResource extends JsonResource
                     'attendance_status' => [
                         'name' => $attendance_status,
                         'slug' => text_to_slug( $attendance_status )
-                    ]
+                    ],
+
+                    'with_in_time' => $is_within_time,
+                    'with_in_time_extended' => $is_within_time_extended,
+                    // 'timezone' =>  $owner->country_zone()->country_time_zone,
                 ), 
                 array('payroll_items' => $payroll_items),
                 array('policies' => $policies),
@@ -162,6 +182,13 @@ class DtrResource extends JsonResource
                     'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime , true ,  $owner),
                     'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
                 ]),
+
+                 array('raw_time' => [
+                    'start_datetime' =>  $this->start_datetime , true ,
+                    'end_datetime' =>  $this->end_datetime , true ,
+                    // 'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime , true ,  $owner),
+                    // 'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
+                ])
             );
         }
         return $result;
