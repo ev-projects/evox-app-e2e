@@ -25,7 +25,8 @@ class AlterLogResource extends JsonResource
 
             $owner_offset = $owner->country_timezone_to_offset();
 
-            $viewer_offset = Auth::user()->country_timezone_to_offset();
+            // $viewer_offset = Auth::user()->country_timezone_to_offset();
+            $viewer_offset = Auth::user() ?  Auth::user()->country_timezone_to_offset() :  $owner_offset ;
 
             $offset_seconds =  string_offset_to_seconds($viewer_offset);
             $owner_offset_seconds =  string_offset_to_seconds( $owner_offset);
