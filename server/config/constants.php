@@ -86,6 +86,12 @@ return [
         'jobTitle'
     ],
 
+    'BHR_COUNTRY_HOLIDAY_CALL' => [
+        'Phillippines'=> "BHR_API_LINK",
+        'India' => "BHR_API_LINK_INDIA",
+        'Bulgaria' => "BHR_API_LINK_BULGARIA",
+    ], 
+
     'BHR_USER_EMPLOYMENT_STATUS' => [
         'terminated'    =>  'Terminated', 
     ],

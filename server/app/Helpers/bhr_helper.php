@@ -12,14 +12,19 @@ if (! function_exists('bhr_api_call')) {
      * @param  array data (Optional)
      * @return array;
      */
-    function bhr_api_call($method = 'GET', $api_endpoint,  $data = array(), $send_as_json = false) {
+    function bhr_api_call($method = 'GET', $api_endpoint,  $data = array(), $send_as_json = false, $country = "default") {
         try{
             $result = null;
 
             log_to_file( 'info', 'Starting API call to this End Point: ' . $api_endpoint . ' ('.$method.')', [], "bhrlog");
 
             # Create the Response variable that handles the Curl Request
-            $response = Curl::to( env('BHR_API_LINK') . $api_endpoint )
+
+            $link = 'BHR_API_LINK';
+            if($country != "default"){
+                $link =  get_constant('BHR_COUNTRY_HOLIDAY_CALL.'. $country);
+            }
+            $response = Curl::to( env($link) . $api_endpoint )
                             ->withHeader('Accept: application/json')
                             ->withTimeout(300)
                             ->withConnectTimeout(300)
