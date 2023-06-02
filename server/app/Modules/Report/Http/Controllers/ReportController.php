@@ -464,56 +464,62 @@ class ReportController extends Controller
 
             $bhr_holidays_array = [];
 
-            // Define the End Point for the API.
-            $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
+            $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
+
+        //     // Define the End Point for the API.
+        //     $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
        
-            // Iterate the BHr Call Result
-            $user = $this->user->show(Auth::user()->id);
+        //     // Iterate the BHr Call Result
+        //     $user = $this->user->show(Auth::user()->id);
 
-            // if ($user->country_id == 2) {
-                // BHR API CALL For Fecthing Philippines Holiday
-                foreach( bhr_api_call('GET', $end_point) as $row ) {
+  
+        //     // if ($user->country_id == 2) {
+        //         // BHR API CALL For Fecthing Philippines Holiday
+        //         foreach( bhr_api_call('GET', $end_point) as $row ) {
 
-                    // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-                    if( $row->type == 'holiday' ) {
-                        $bhr_holidays_array[] = $row;
-                    }
-                }
-            // } else if ($user->country_id == 1) {
-                // BHR API CALL For Fecthing Indian Holiday
-                foreach( bhr_api_call_india('GET', $end_point) as $row ) {
+        //             // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+        //             if( $row->type == 'holiday' ) {
+        //                 $bhr_holidays_array[] = $row;
+        //             }
+        //         }
+        //     // } else if ($user->country_id == 1) {
+        //         // BHR API CALL For Fecthing Indian Holiday
+                
+        //         foreach( bhr_api_call_india('GET', $end_point) as $row ) {
+                    
+        //             // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+        //             if( $row->type == 'holiday' ) {
 
-                    // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-                    if( $row->type == 'holiday' ) {
+        //                 // Check Holidays Already Exist ion Array
+        //                 if(in_array($row, $bhr_holidays_array)) {
+        //                 }  else {
+        //                 $bhr_holidays_array[] = $row;
+        //                 }
+        //             }
+        //         // }
+        //         }
 
-                        // Check Holidays Already Exist ion Array
-                        if(in_array($row, $bhr_holidays_array)) {
-                        }  else {
-                        $bhr_holidays_array[] = $row;
-                        }
-                    }
-                // }
-            }
+        //       // BHR API CALL For Fecthing bulgaria Holiday
+            
+        //     foreach( bhr_api_call_bulgaria('GET', $end_point)  as $row ) {
 
-              // BHR API CALL For Fecthing bulgaria Holiday
-            foreach( bhr_api_call_bulgaria('GET', $end_point) as $row ) {
+        //         // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+        //         if( $row->type == 'holiday' ) {
 
-                // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-                if( $row->type == 'holiday' ) {
+        //             // Check Holidays Already Exist ion Array
+        //             if(in_array($row, $bhr_holidays_array)) {
+        //             }  else {
+        //             $bhr_holidays_array[] = $row;
+        //             }
 
-                    // Check Holidays Already Exist ion Array
-                    if(in_array($row, $bhr_holidays_array)) {
-                    }  else {
-                    $bhr_holidays_array[] = $row;
-                    }
-
-                }
-            // }
-            }
-            // Sort Holiday By Date And ID
-            usort($bhr_holidays_array, function($a, $b) {
-                return [$a->start,$a->id] <=> [$b->start,$b->id];
-           });
+        //         }
+        //     // }
+        //     }
+            
+        //     // Sort Holiday By Date And ID
+        //     usort($bhr_holidays_array, function($a, $b) {
+        //         return [$a->start,$a->id] <=> [$b->start,$b->id];
+        //    });
             
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_holidays_array, "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");

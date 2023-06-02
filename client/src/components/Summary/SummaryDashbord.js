@@ -10,6 +10,7 @@ import {
   Col,
 } from "../../components/GridComponent/AdminLte.js";
 import { useDispatch } from "react-redux";
+
 import { useParams, useHistory } from "react-router-dom";
 import "./SummaryDashboard.css";
 import BirthdayAnniversary from "../Dashboard/BirthdayAnniversary/BirthdayAnniversary.js";
@@ -452,7 +453,7 @@ export const SummaryDashbord = (props) => {
                           <tr>
                             <td>
                               {data.name} <br></br>
-                              <span className="leave_type">{data.start}</span>
+                              <span className="leave_type">{format(Date.parse(data.date), "yyyy-MM-dd")}</span>
                             </td>
                           </tr>
                         ))
