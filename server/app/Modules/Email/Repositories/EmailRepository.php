@@ -341,7 +341,7 @@ class EmailRepository implements EmailRepositoryInterface{
             
             
         } catch (Exception $e) {
-
+            error_log($e->getMessage());
             log_error($e, 'emails');
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
