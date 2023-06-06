@@ -4,7 +4,7 @@ namespace App\Modules\Email\Jobs;
 
 // use App\Modules\Email\Mail\RestDayWorkRequestEmail;
 
-use App\Modules\Email\Mail\SupervisorReminderInvalidCHeckInsEmail;
+use App\Modules\Email\Mail\SupervisorReminderInvalidCheckInsEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
