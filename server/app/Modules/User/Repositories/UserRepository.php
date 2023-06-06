@@ -1268,6 +1268,38 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+    public function get_users_under_supervisee_active_with_requests($start_date, $end_date, $supervisor_id = null, $department_id = null){
+        try {
+
+            $user_collection = DB::select('CALL SP_Employee_Request_Cutoff(?,?,?,?,?,?)',[
+                $start_date,
+                $end_date,
+                $supervisor_id,
+                $department_id,
+                null,
+                'mail'
+            ]);
+
+            return $user_collection;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function get_users_under_supervisee_active_with_invalid_check_ins($supervisor_id = null, $department_id = null){
+        try {
+
+            $user_collection = DB::select('CALL SP_InvalidChekin_Notification(?,?)',[
+                $supervisor_id,
+                $department_id
+            ]);
+
+            return $user_collection;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
     //....
 
 

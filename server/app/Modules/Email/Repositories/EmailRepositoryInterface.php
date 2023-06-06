@@ -36,6 +36,10 @@ interface EmailRepositoryInterface
 
     public function sendSupervisorReminderofNewUser($new_user_list_for_reminder );
 
+    public function sendSupervisorReminderRequestsEmail( $reminder);
+
+    public function sendSupervisorReminderInvalidCheckInsEmail( $reminder);
+
 
 }
 
