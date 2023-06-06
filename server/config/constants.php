@@ -157,7 +157,8 @@ return [
 
     'REMINDER_TYPE' => [
         'no_sched' => 'Employees_without_Scheduled', 
-       
+        'requests' => 'Employees_with_pending_requests',
+        'invalid_check_ins' => 'Employees_with_invalid_check_ins',
     ],
 
     'UNPAID_LEAVE_TYPES' => [

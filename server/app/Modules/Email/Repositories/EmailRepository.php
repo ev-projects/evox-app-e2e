@@ -28,8 +28,10 @@ use App\Modules\Email\Jobs\SendOvertimeRequestEmailJob;
 use App\Modules\Email\Jobs\SendRestDayWorkRequestEmailJob;
 use App\Modules\Email\Jobs\SendChangeScheduleRequestEmailJob;
 use App\Modules\Email\Jobs\SendForgotPasswordRequestEmailJob;
+use App\Modules\Email\Jobs\SendSupervisorReminderInvalidCheckInsEmailJob;
 use App\Modules\Email\Jobs\SendSupervisorReminderNoSchedEmailJob;
 use App\Modules\Email\Jobs\SendSupervisorReminderOfNewUserEmailJob;
+use App\Modules\Email\Jobs\SendSupervisorReminderRequestsEmailJob;
 
 class EmailRepository implements EmailRepositoryInterface{
     
@@ -298,6 +300,52 @@ class EmailRepository implements EmailRepositoryInterface{
             error_log($e->getMessage());
             DB::rollback();
             log_error($e);
+            throw $e;
+        }
+    }
+
+    public function sendSupervisorReminderRequestsEmail( $reminder){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendSupervisorReminderRequestsEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
+
+
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            
+            
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
+            throw $e;
+        }
+    }
+
+    public function sendSupervisorReminderInvalidCheckInsEmail( $reminder){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendSupervisorReminderInvalidCheckInsEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
+
+
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            
+            
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
             throw $e;
         }
     }
