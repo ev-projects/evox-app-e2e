@@ -905,7 +905,16 @@ class DtrRepository implements DtrRepositoryInterface{
                         $user =  $dtr->user()->first();
                         error_log($user->username);
                        if($user->country_id == $holiday->country_id || $holiday->country_id == null){
-                        $dtr->holidays()->save( $holiday );
+                        if($dtr->holidays()->count()  > 0){
+                            //should override the holiday if it has country _id
+                            if($dtr->holidays()->first()->country_id == null && $holiday->country_id != null){
+                                $dtr->holidays()->delete();
+                                $dtr->holidays()->save( $holiday );
+                            }
+                        }else{
+                            $dtr->holidays()->save( $holiday );
+                        }
+                        // $dtr->holidays()->save( $holiday );
                         $result->push( $dtr );
                         log_to_file( 'info', 'Holiday Inserted on this DTR.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
                        }
