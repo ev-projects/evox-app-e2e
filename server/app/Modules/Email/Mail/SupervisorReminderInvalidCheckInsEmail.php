@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\App;
 use App\Modules\User\Models\User;
+use Exception;
 
 class SupervisorReminderInvalidCheckInsEmail extends Mailable
 {
@@ -50,6 +51,7 @@ class SupervisorReminderInvalidCheckInsEmail extends Mailable
     public function build()
     {
 
+        try {
         # Send on BCC Email Address depending on the App environment
         if( App::environment('production') ) {
             $this->bcc( get_constant('BCC_EMAIL_ADDRESS') );
@@ -59,6 +61,10 @@ class SupervisorReminderInvalidCheckInsEmail extends Mailable
         
         $this->subject( "Reminder for Employees with Invalid Check-ins" )
              ->markdown('emails.reminders.invalid-check-ins-reminder');
+             
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+        }
 
         return $this;
     }
