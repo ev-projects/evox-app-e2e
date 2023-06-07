@@ -5,7 +5,7 @@ namespace App\Modules\Payroll\Resources;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Request\Resources\AlterLogResource;
-
+use Illuminate\Support\Facades\DB;
 class MyDtrNotificationsResource extends JsonResource
 {
 
@@ -30,8 +30,19 @@ class MyDtrNotificationsResource extends JsonResource
             // Declare the 2 variables to be needed for this iteration
             $status = "";
             $details = "";
+            $late=0;
+            $undertime=0;
 
-            
+            // Fetch the Data from Dtr Summary Report
+            $result = DB::table('drt_summary_report')
+            ->select(DB::raw("reg_late as late,reg_undertime as undertime"))
+                ->where('login_date', '=' , $dtr->date )
+                ->where('user_id','=',$dtr->user_id)->get();
+     
+            foreach( $result as  $key => $value){
+                $late = $value->late;
+                $undertime = $value->undertime;
+            }
             // Group the Payroll Items and compute the total on the payroll_items array.
             $payroll_items = [];
             foreach( $dtr->payroll_items()->get() as  $key => $payroll_item){
@@ -42,6 +53,8 @@ class MyDtrNotificationsResource extends JsonResource
                     $payroll_items[ $payroll_item->item] = $payroll_item->value;
                 }
             }
+
+            // dump($late. " ". $undertime. " Date : ". $dtr->date);
             
             // Fetch the leave connected to the DTR.
             $leave = $dtr->leaves()->first();
@@ -54,23 +67,36 @@ class MyDtrNotificationsResource extends JsonResource
 
                 // If the DTR has Complete Time In and Time Out Logs
                 if( $dtr->hasCompleteTimelogs() ) {
+                   // Check if there is an existing computed for Late and Undertime
+                    if($late > 0 && $undertime > 0){
+                    $status = "Late & Undertime";
+                    $details = seconds_to_time($late * 3600,true) . " & " . seconds_to_time($undertime * 3600,true);
+                    // Check if there is an existing computed for Late
+                    }else if($late > 0){
+                        $status = "Late";
+                        $details = seconds_to_time($late * 3600,true);
+                    // Check if there is an existing computed for Undertime
+                    }else if($undertime > 0){
+                        $status = "Undertime";
+                        $details = seconds_to_time($undertime * 3600,true);
+                    }
 
                     // Check if there is an existing computed for Late and Undertime
-                    if( isset( $payroll_items['late'] ) && is_valid( $payroll_items['late'] ) &&
-                        isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
-                        $status = "Late & Undertime";
-                        $details = seconds_to_time($payroll_items['late'],true) . " & " . seconds_to_time($payroll_items['undertime'],true);
+                    // if( isset( $payroll_items['late'] ) && is_valid( $payroll_items['late'] ) &&
+                    //     isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
+                    //     $status = "Late & Undertime";
+                    //     $details = seconds_to_time($payroll_items['late'],true) . " & " . seconds_to_time($payroll_items['undertime'],true);
 
                     // Check if there is an existing computed for Late
-                    } elseif( isset( $payroll_items['late'] ) && is_valid( $payroll_items['late'] ) ) {
-                        $status = "Late";
-                        $details = seconds_to_time($payroll_items['late'],true);
+                    // } elseif( isset( $payroll_items['late'] ) && is_valid( $payroll_items['late'] ) ) {
+                    //     $status = "Late";
+                    //     $details = seconds_to_time($payroll_items['late'],true);
 
                     // Check if there is an existing computed for Undertime
-                    } elseif( isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
-                        $status = "Undertime";
-                        $details = seconds_to_time($payroll_items['undertime'],true);
-                    }
+                    // } elseif( isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
+                    //     $status = "Undertime";
+                    //     $details = seconds_to_time($payroll_items['undertime'],true);
+                    // }
                     
                 // If the DTR has no Complete Time In and Time Out Logs
                 } else {
@@ -130,7 +156,6 @@ class MyDtrNotificationsResource extends JsonResource
                     'time_in' => timestamp_to_datetime( $dtr->time_in ),
                     'time_out' => timestamp_to_datetime( $dtr->time_out ),
                     'start_datetime' => timestamp_to_datetime( $dtr->start_datetime ),
-                    'end_datetime' => timestamp_to_datetime( $dtr->end_datetime ),
                     'end_datetime' => timestamp_to_datetime( $dtr->end_datetime ),
                     'start_flexy_datetime' => timestamp_to_datetime( $dtr->start_flexy_datetime ),
                     'end_flexy_datetime' => timestamp_to_datetime( $dtr->end_flexy_datetime ),
