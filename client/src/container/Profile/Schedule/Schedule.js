@@ -582,7 +582,7 @@ const MonthTeamSchedule = (props) => {
                             <Card>
                               <div className={"card-body " + details}>
                                 <div class="schedule_info">
-                                  {rest_day?.includes(
+                                  {rest_day.includes(
                                     day.format("ddd").toLowerCase()
                                   ) ? (
                                     "REST DAY"
