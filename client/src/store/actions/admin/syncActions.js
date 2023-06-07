@@ -19,24 +19,8 @@ export const syncBhrLeaves = ( data ) => {
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
         });
-    }// Fetch User Role
-
-}
-export const syncUTCAdjusetment = ( data ) => {
-    return (dispatch, getState) => {
-        API.call({
-            method: "get",
-            url: "/utc/sync_adjustment/"
-        })
-        .then(result => {
-            dispatch( Formatter.alert_success( result ));
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
     }
 }
-
 
 
 // Fetch User Role

@@ -1,7 +1,6 @@
 <?php
 
 use App\Modules\User\Models\User;
-use App\Modules\User\Repositories\UtcTimeLogRepository;
 
 /*
 |--------------------------------------------------------------------------

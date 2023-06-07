@@ -44,7 +44,6 @@ import PayrollCutoff from "../container/Admin/PayrollCutoff";
 import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandlers";
 import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervisors";
 import SyncBhrLeaves from "../container/Admin/SyncBhrLeaves"; 
-import SyncUTCAdjustment from "../container/Admin/SyncUTCAdjustment"; 
 import SyncUserUpdates from "../container/Admin/SyncUserUpdates"; 
 import AssignRolesPermissions from "../container/Admin/AssignRolesPermissions";
 import AdminAnnouncementsList from "../container/Admin/AdminAnnouncementsList";
@@ -316,10 +315,6 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.sync_bhr_leaves}>
           <SyncBhrLeaves  role={['admin']} permission={['sync_bhr_leaves']} />
         </ProtectedRoute> 
-
-        <ProtectedRoute exact path={global.links.sync_utc_adjustment}>
-          <SyncUTCAdjustment  role={['admin']}/>
-        </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.sync_bhr_user_updates}>
           <SyncUserUpdates  role={['admin']} permission={['sync_bhr_user_updates']} />
