@@ -22,6 +22,7 @@ use Spatie\Permission\Models\Permission;
 use App\Exports\TeamSummaryAttendanceExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
+use App\Exports\ExportDTRLog;
 use App\Modules\Payroll\Resources\HolidayResource;
 use App\Exports\TeamSummaryAttendanceMultiSheetExport;
 use App\Modules\Payroll\Resources\AnniversaryResources;
@@ -39,6 +40,7 @@ use App\Modules\Payroll\Repositories\HolidayRepositoryInterface;
 use App\Modules\Payroll\Resources\TeamAttendanceSummaryResource;
 use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
+use App\Modules\Payroll\Resources\DtrLogResource;
 use App\Modules\Report\Resources\NewDtrSummaryResource;
 
 class ReportController extends Controller
@@ -318,11 +320,15 @@ class ReportController extends Controller
      */
     public function export_team_dtr_logs(Request $request)
     {
+        // dd($request->toggle_pov == null);
 
+        $toggle_POV = !($request->toggle_pov == null);
         $result = $this->logs_list($request);
-
-        $this->export->data = $result;
-        return Excel::download($this->export, 'dtrsummary.csv');
+        // dd($this->logs_list($request));
+        $result = [
+            'data' =>  $result
+        ];
+        return Excel::download( new ExportDTRLog(DtrLogResource::collection( $this->logs_list($request)), $toggle_POV), 'dtr_log.csv');
     }
 
 
