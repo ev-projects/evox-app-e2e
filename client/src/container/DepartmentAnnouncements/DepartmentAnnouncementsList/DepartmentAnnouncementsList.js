@@ -133,9 +133,7 @@ class DepartmentAnnouncementsList extends Component {
     // var exdate = Date.parse("2023-05-31");
     // var expiredate = format(exdate, "yyyy-MM-dd");
     // const current = new Date();
-    // const date = `${current.getFullYear()}-${
-    //   current.getMonth() + 1
-    // }-${current.getDate()}`;
+    // const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
     // var cudate = Date.parse(date);
     // var currentdate = format(cudate, "yyyy-MM-dd");
     // // alert ("CurrentDate: "+ currentdate + "ExpDate: "+expiredate )

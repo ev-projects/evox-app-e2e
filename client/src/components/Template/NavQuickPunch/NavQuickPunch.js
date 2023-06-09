@@ -61,7 +61,7 @@ class NavQuickPunch extends Component {
       
       
   }
-  componentWillMount= async () => {
+  /*componentWillMount= async () => {
     // $(document).on('click', 'nav-clock-dropdown .dropdown .dropdown-menu', function (e) { // SAVE FOR LATER
     //   e.stopPropagation();
     // });
@@ -80,7 +80,7 @@ class NavQuickPunch extends Component {
   }
 
   componentWillUnmount() {
-  }
+  }*/
 
   render = () => {
     const initialValue = {

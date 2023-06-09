@@ -32,8 +32,7 @@ import dayjs from "dayjs";
 import { format, getDate } from "date-fns";
 import moment from "moment";
 import {
-  getcurrentdate,
-  getenddate
+  getcurrentdate
 } from "../../services/Helper";
 class Dashboard extends Component {
   constructor(props) {
@@ -142,9 +141,7 @@ class Dashboard extends Component {
     // var exdate = Date.parse("2023-05-31");
     // var expiredate = format(exdate, "yyyy-MM-dd");
     // const current = new Date();
-    // const date = `${current.getFullYear()}-${
-    //   current.getMonth() + 1
-    // }-${current.getDate()}`;
+    // const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
     // var cudate = Date.parse(date);
     // var currentdate = format(cudate, "yyyy-MM-dd");
     // if (expiredate >= currentdate) this.setState({ run: this.props.dashboard?.worktour });
