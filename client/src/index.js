@@ -23,23 +23,21 @@ import axios from "axios";
 const pending = {}
 const CancelToken = axios.CancelToken
 const removePending = (config, f) => {
-  if (config) {
-    // make sure the url is same for both request and response
-    const url = config.url.replace(config.baseURL, '/')
-    // stringify whole RESTful request with URL params
-    const flagUrl = url + '&' 
-                    + config.method + '&' 
-                    + JSON.stringify(config.params)
-    if (flagUrl in pending) {
-      if (f) {
-        f() // abort the request
-      } else {
-        delete pending[flagUrl]
-      }
+  // make sure the url is same for both request and response
+  const url = config.url.replace(config.baseURL, '/')
+  // stringify whole RESTful request with URL params
+  const flagUrl = url + '&' 
+                  + config.method + '&' 
+                  + JSON.stringify(config.params)
+  if (flagUrl in pending) {
+    if (f) {
+      f() // abort the request
     } else {
-      if (f) {
-        pending[flagUrl] = f // store the cancel function
-      }
+      delete pending[flagUrl]
+    }
+  } else {
+    if (f) {
+      pending[flagUrl] = f // store the cancel function
     }
   }
 }
@@ -53,8 +51,7 @@ axios.interceptors.request.use(config => {
   return config
 }, error => {
   Promise.reject(error)
-});
-
+})
 axios.interceptors.response.use(
   response => {
     removePending(response.config)
@@ -67,14 +64,10 @@ axios.interceptors.response.use(
       return Promise.reject(error)
     } else {
       // return empty object for aborted request
-      return Promise.resolve({
-        status: 200,
-        statusText: "OK",
-        data: { data:[]}
-      })
+      return Promise.resolve({})
     }
   }
-);
+)
 
 ReactDOM.render(
   <BrowserRouter>
