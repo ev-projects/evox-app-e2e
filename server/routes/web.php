@@ -1,6 +1,9 @@
 <?php
 
+use Carbon\Carbon;
 use App\Modules\User\Models\User;
+use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Bhr\Repositories\BhrRepository;
 use App\Modules\User\Repositories\UtcTimeLogRepository;
 
 /*
@@ -24,4 +27,10 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');
     //Route::get('/get-token', 'Auth\LoginController@getToken');
 });
+
+// Route::get('/test_utc', function () {
+//    $utc_test = new UtcTimeLogRepository;
+//    $utc_test->update();
+// });
+
 

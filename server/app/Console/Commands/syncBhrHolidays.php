@@ -65,13 +65,14 @@ class syncBhrHolidays extends Command
 
             // Binding of the Holidays within the Date Range to the DTR within the Date Range.
             $result = $this->dtr->bind_holidays_to_dtr( $start_date, $end_date );
-
+            error_log("finish_sync_holidays");
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
                 DtrResource::collection($result),
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){
+            error_log($e->getMessage());
             log_to_file( 'info', $e->getMessage(), [], "cron_errors");
             return error_response( trans('messages.error_default'), $e );
         }

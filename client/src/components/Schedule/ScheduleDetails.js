@@ -1005,7 +1005,6 @@ const ScheduledetailsWithTimezone = (props) => {
     
     if(data!==null){
       // only changes for flex
-      console.log(is_flex, "isflex")
       if(is_flex){
         
         var onDuty = data;
