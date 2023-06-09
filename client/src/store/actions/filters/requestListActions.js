@@ -38,9 +38,7 @@ export const fetchRequestList = (params = null) => {
         });
       })
       .catch((e) => {
-        if (e.status) {
-          dispatch(Formatter.alert_error(e));
-        }
+        dispatch(Formatter.alert_error(e));
       });
   };
 };
@@ -72,9 +70,7 @@ export const fetchStatusNumbers = (params) => {
       })
       })
       .catch((e) => {
-        if (e.status) {
-          dispatch(Formatter.alert_error(e));
-        }
+        dispatch(Formatter.alert_error(e));
       });
   };
 };
@@ -99,23 +95,23 @@ export const myfetchStatusNumbers_dashboard = (
       },
     })
       .then((result) => {
-        setMyaltercount(result.data.content.status_numbers.alterlogpending);
-        setMyOvertimecount(result.data.content.status_numbers.overtimepending);
-        setMyRestdayworkcount(result.data.content.status_numbers.restdayworkpending);
-        setMyChangeschedulecount(result.data.content.status_numbers.changeschedulepending);
-        setTaskcompletestatus1(true);
-        dispatch({
-          type: "MY_ALTER_LOG_PENDING",
-          myalterrequest: result.data.content.status_numbers.alterlogpending,
-          myovertimerequest : result.data.content.status_numbers.overtimepending,
-          myrestdayrequest :result.data.content.status_numbers.restdayworkpending,
-          mychangeschedulerequest : result.data.content.status_numbers.changeschedulepending,
-        });
+        if (result?.data?.status_numbers) {
+          setMyaltercount(result.data.content.status_numbers.alterlogpending);
+          setMyOvertimecount(result.data.content.status_numbers.overtimepending);
+          setMyRestdayworkcount(result.data.content.status_numbers.restdayworkpending);
+          setMyChangeschedulecount(result.data.content.status_numbers.changeschedulepending);
+          setTaskcompletestatus1(true);
+          dispatch({
+            type: "MY_ALTER_LOG_PENDING",
+            myalterrequest: result.data.content.status_numbers.alterlogpending,
+            myovertimerequest : result.data.content.status_numbers.overtimepending,
+            myrestdayrequest :result.data.content.status_numbers.restdayworkpending,
+            mychangeschedulerequest : result.data.content.status_numbers.changeschedulepending,
+          });
+        }
       })
       .catch((e) => {
-        if (e.status) {
-          dispatch(Formatter.alert_error(e));
-        }
+        dispatch(Formatter.alert_error(e));
       });
   };
 };
@@ -134,17 +130,18 @@ return (dispatch, getState) => {
     url: "/Gettodayleaves",
   })
     .then((result) => {
-      setTodayleaves(result.data.data);
-      console.log(result.data.data)
+      var data = [];
+      if (result?.data?.data) {
+        data = result.data.data;
+      }
+      setTodayleaves(data);
       dispatch({
         type: "TODAY_LEAVES",
-        todayleaves: result.data.data,
+        todayleaves: data,
       });
     })
     .catch((e) => {
-      if (e.status) {
-        dispatch(Formatter.alert_error(e));
-      }
+      dispatch(Formatter.alert_error(e));
     });
 };
 };
@@ -162,17 +159,18 @@ return (dispatch, getState) => {
     url: "/Gettommorowleaves",
   })
     .then((result) => {
-      setTommrowleaves(result.data.data);
-      console.log(result.data.data)
+      var data = [];
+      if (result?.data?.data) {
+        data = result.data.data;
+      }
+      setTommrowleaves(data);
       dispatch({
         type: "TOMMOROW_LEAVES",
-        tommorowleaves: result.data.data,
+        tommorowleaves: data,
       });
     })
     .catch((e) => {
-      if (e.status) {
-        dispatch(Formatter.alert_error(e));
-      }
+      dispatch(Formatter.alert_error(e));
     });
 };
 };
@@ -193,17 +191,18 @@ return (dispatch, getState) => {
     },
   })
     .then((result) => {
-      setHoliday(result.data);
-      console.log(result.data)
+      var data = [];
+      if (result?.data) {
+        data = result.data;
+      }
+      setHoliday(data);
       dispatch({
         type: "DASHBOARD_HOLIDAY",
-        dashboardholiday: result.data,
+        dashboardholiday: data,
       });
     })
     .catch((e) => {
-      if (e.status) {
-        dispatch(Formatter.alert_error(e));
-      }
+      dispatch(Formatter.alert_error(e));
     });
 };
 };
@@ -228,24 +227,23 @@ export const fetchStatusNumbers_dashboard = (
       },
     })
       .then((result) => {
-        setaltercount(result.data.content.status_numbers.alterlogpending);
-        setOvertimecount(result.data.content.status_numbers.overtimepending);
-        setRestdayworkcount(result.data.content.status_numbers.restdayworkpending);
-        setChangeschedulecount(result.data.content.status_numbers.changeschedulepending);
-        setTaskcompletestatus(true);
-        dispatch({
-          type: "ALTER_LOG_PENDING",
-          alterrequest: result.data.content.status_numbers.alterlogpending,
-          overtimerequest : result.data.content.status_numbers.overtimepending,
-          restdayrequest :result.data.content.status_numbers.restdayworkpending,
-          changeschedulerequest : result.data.content.status_numbers.changeschedulepending,
-        });
-       console.log()
+        if (result?.data?.status_numbers) {
+          setaltercount(result.data.content.status_numbers.alterlogpending);
+          setOvertimecount(result.data.content.status_numbers.overtimepending);
+          setRestdayworkcount(result.data.content.status_numbers.restdayworkpending);
+          setChangeschedulecount(result.data.content.status_numbers.changeschedulepending);
+          setTaskcompletestatus(true);
+          dispatch({
+            type: "ALTER_LOG_PENDING",
+            alterrequest: result.data.content.status_numbers.alterlogpending,
+            overtimerequest : result.data.content.status_numbers.overtimepending,
+            restdayrequest :result.data.content.status_numbers.restdayworkpending,
+            changeschedulerequest : result.data.content.status_numbers.changeschedulepending,
+          });
+        }
       })
       .catch((e) => {
-        if (e.status) {
-          dispatch(Formatter.alert_error(e));
-        }
+        dispatch(Formatter.alert_error(e));
       });
   };
 };
