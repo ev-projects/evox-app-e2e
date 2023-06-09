@@ -33,7 +33,10 @@ class DtrLogs extends Component {
 
 	onSubmitHandler = (values) => {
     var formData = {};
-
+    values["toggle_pov"] = false;
+    if(this.state.toggle_pov != undefined){
+      values["toggle_pov"] = this.state.toggle_pov
+    }
 		for (var key in values) {
 		  if( values[key] != null && values[key] != ""  ) {
 			  switch( key ) {
@@ -125,7 +128,7 @@ class DtrLogs extends Component {
                       <div className="form-group">
                       <label> </label>
                         <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
-                        {/* <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button> */}
+                        <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button>
                         <Button className="toggle-outlook-dtr"
                               onClick={() => this.setState({
                                 toggle_pov: !this.state.toggle_pov
@@ -173,13 +176,13 @@ class DtrLogs extends Component {
                                             <td>{list.full_name}</td>
                                             <td>{list.department}</td> 
                                             <td>{list.date}</td>
-                                            <td>{this.state.toggle_pov == true ?list.timezone: this.props.user.timezone}</td>
-                                            <td>{this.state.toggle_pov == false ? list.time_in : list.user_POV?.time_in}</td>
-                                            <td>{this.state.toggle_pov == false ? list.time_out :list.user_POV?.time_out }</td>
-                                            <td>{this.state.toggle_pov == false ? list.start_datetime :list.user_POV?.start_datetime }</td>
-                                            <td>{this.state.toggle_pov == false ? list.end_datetime : list.user_POV?.end_datetime }</td>
-                                            <td>{this.state.toggle_pov == false ? list.start_flexy_datetime : list.user_POV?.start_flexy_datetime }</td>
-                                            <td>{this.state.toggle_pov == false ? list.end_flexy_datetime :  list.user_POV?.end_flexy_datetime}</td>
+                                            <td>{this.state.toggle_pov == true ?this.props.user.timezone : list.timezone}</td>
+                                            <td>{this.state.toggle_pov == true ? list.time_in : list.user_POV?.time_in}</td>
+                                            <td>{this.state.toggle_pov == true ? list.time_out :list.user_POV?.time_out }</td>
+                                            <td>{this.state.toggle_pov == true ? list.start_datetime :list.user_POV?.start_datetime }</td>
+                                            <td>{this.state.toggle_pov == true ? list.end_datetime : list.user_POV?.end_datetime }</td>
+                                            <td>{this.state.toggle_pov == true ? list.start_flexy_datetime : list.user_POV?.start_flexy_datetime }</td>
+                                            <td>{this.state.toggle_pov == true ? list.end_flexy_datetime :  list.user_POV?.end_flexy_datetime}</td>
                                             <td>{list.break_time}</td>
                                             <td>{list.payroll_items?.rendered_hours}</td>
                                             <td>{list.payroll_items?.sl}</td>
