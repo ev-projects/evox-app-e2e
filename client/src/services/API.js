@@ -47,9 +47,7 @@ class API  {
         
         })
       ).then(response => {
-        if (response.status != 0) {
-          return this.format(response);
-        }
+        return this.format(response);
       }).catch(e => {  
         throw this.check_error(e);     
       });
