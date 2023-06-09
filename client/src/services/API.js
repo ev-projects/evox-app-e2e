@@ -9,7 +9,9 @@ import { trackPromise } from "react-promise-tracker";
  *  - Automatically handles the Redirect just in case there's a problem during the call.
  */
 
-class API  {  
+class API  {
+  
+  requests = [];
 
   // A secure API Call Function that automatically renders and checks the Token being passed from Local Storage.
   call(config){
@@ -17,6 +19,8 @@ class API  {
     // If the current instance is already Authenticated and the URL is VALID, Proceed on the call.
     if (Validator.isValid(config) && Validator.isValid(config.url)) {
 
+      var url = config.url;
+      var method = Validator.isValid(config.method) ? config.method : "get";
       // Declare the Default Headers that will be used on the API Call.
       var default_headers = {
         "Content-Type"    : "application/json" ,
@@ -27,30 +31,47 @@ class API  {
         // Pass the API KEY Given by the Backend for Secured Request Authentication
         'X-Authorization' : process.env.REACT_APP_API_KEY
       };
-      
-      // Tracks the AXIOS call (Automatically outputs the Loader)
-      return trackPromise(
-        axios({
-          // Renders the Method on the AXIOS Call
-          method: Validator.isValid(config.method) ? config.method : "get",
-  
-          // Renders the URL on the AXIOS Call
-          url: process.env.REACT_APP_API_BASE_URL + config.url,
-  
-          // Renders the Headers on the AXIOS Call
-          headers: Formatter.merge_json(default_headers, config.headers),
-  
-          // Renders the Data on the AXIOS Call
-          data: Validator.isValid(config.data) ? config.data  : {},
+      var extended_headers = Formatter.merge_json(default_headers, config.headers);
+      var data = Validator.isValid(config.data) ? config.data  : {};
+      var params = Validator.isValid(config.params) ? config.params  : {};
 
-          params :  Validator.isValid(config.params) ? config.params  : {}
-        
-        })
-      ).then(response => {
-        return this.format(response);
-      }).catch(e => {  
-        throw this.check_error(e);     
-      });
+      var request = JSON.stringify([url, method, data, params]);
+      if (!this.requests.includes(request)) {
+        this.requests.push(request);
+        console.log('Pending', this.requests);
+
+        // Tracks the AXIOS call (Automatically outputs the Loader)
+        return trackPromise(
+          axios({
+            // Renders the Method on the AXIOS Call
+            method: method,
+    
+            // Renders the URL on the AXIOS Call
+            url: process.env.REACT_APP_API_BASE_URL + url,
+    
+            // Renders the Headers on the AXIOS Call
+            headers: extended_headers,
+    
+            // Renders the Data on the AXIOS Call
+            data: data,
+
+            params :  params
+          
+          })
+        ).then(response => {
+          this.requestComplete(request)
+          return this.format(response);
+        }).catch(e => {
+          this.requestComplete(request);
+          throw this.check_error(e);     
+        });
+      } else {
+        return Promise.reject( {
+          status: 499,
+          statusText: "DUPLICATE_REQUEST_INTERCEPTED",
+          data: {}
+        } );
+      }
       
     // Returns Bad Request if there's no URL indicated.
     } else {
@@ -66,6 +87,8 @@ class API  {
       // If the current instance is already Authenticated and the URL is VALID, Proceed on the call.
       if (Validator.isValid(config) && Validator.isValid(config.url)) {
   
+        var url = config.url;
+        var method = Validator.isValid(config.method) ? config.method : "get";
         // Declare the Default Headers that will be used on the API Call.
         var default_headers = {
       
@@ -78,24 +101,27 @@ class API  {
           
           'Content-Type': 'blob',
         };
+        var extended_headers = Formatter.merge_json(default_headers, config.headers);
+        var data = Validator.isValid(config.data) ? config.data  : {};
+        var params = Validator.isValid(config.params) ? config.params  : {};
         
         // Tracks the AXIOS call (Automatically outputs the Loader)
         return trackPromise(
           axios({
             // Renders the Method on the AXIOS Call
-            method: Validator.isValid(config.method) ? config.method : "get",
+            method: method,
 
             responseType: 'arraybuffer',
             // Renders the URL on the AXIOS Call
-            url: process.env.REACT_APP_API_BASE_URL + config.url, 
+            url: process.env.REACT_APP_API_BASE_URL + url, 
     
             // Renders the Headers on the AXIOS Call
-            headers: Formatter.merge_json(default_headers, config.headers),
+            headers: extended_headers,
     
             // Renders the Data on the AXIOS Call
-            data: Validator.isValid(config.data) ? config.data  : {},
+            data: data,
   
-            params :  Validator.isValid(config.params) ? config.params  : {}
+            params :  params
           
           })
         ).then(response => {
@@ -140,6 +166,15 @@ class API  {
       statusText: Validator.isValid(response) && Validator.isValid(response.statusText)? response.statusText : "Bad Request",
       data: Validator.isValid(response) && Validator.isValid(response.data)? response.data : {}
     };
+  }
+
+  //remove completed request
+  requestComplete(request = '') {
+    const index = this.requests.indexOf(request);
+    if (index > -1) {
+      this.requests.splice(index, 1);
+    }
+    console.log('Done', this.requests)
   }
 };
 
