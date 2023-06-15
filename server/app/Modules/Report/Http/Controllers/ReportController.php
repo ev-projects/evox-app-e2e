@@ -470,7 +470,7 @@ class ReportController extends Controller
 
             $bhr_holidays_array = [];
 
-            // $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
+            $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
 
      // Define the End Point for the API.
         //     $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
