@@ -442,8 +442,8 @@ export const SummaryDashbord = (props) => {
                           <tr>
                             <td>
                               {data.name} <br></br>
-                              <span className="leave_type">{data.start}</span>
-                              {/* <span className="leave_type">{format(Date.parse(data.date), "yyyy-MM-dd")}</span> */}
+                              {/* <span className="leave_type">{data.start}</span> */}
+                              <span className="leave_type">{format(Date.parse(data.date), "yyyy-MM-dd")}</span>
                             </td>
                           </tr>
                         ))

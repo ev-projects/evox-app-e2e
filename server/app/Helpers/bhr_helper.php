@@ -21,9 +21,9 @@ if (! function_exists('bhr_api_call')) {
             # Create the Response variable that handles the Curl Request
 
             $link = 'BHR_API_LINK';
-            // if($country != "default"){
-            //     $link =  get_constant('BHR_COUNTRY_HOLIDAY_CALL.'. $country);
-            // }
+            if($country != "default"){
+                $link =  get_constant('BHR_COUNTRY_HOLIDAY_CALL.'. $country);
+            }
             $response = Curl::to( env($link) . $api_endpoint )
                             ->withHeader('Accept: application/json')
                             ->withTimeout(300)

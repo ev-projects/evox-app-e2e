@@ -128,7 +128,7 @@ class DtrLogs extends Component {
                       <div className="form-group">
                       <label> </label>
                         <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
-                        {/* <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button> */}
+                        <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button>
                         <Button className="toggle-outlook-dtr"
                               onClick={() => this.setState({
                                 toggle_pov: !this.state.toggle_pov

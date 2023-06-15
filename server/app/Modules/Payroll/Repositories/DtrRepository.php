@@ -850,32 +850,86 @@ class DtrRepository implements DtrRepositoryInterface{
                     // Parses the Proper Date of the Holiday ( To automate the condition for Pre-defined and non Pre-defined Holiday Dates. )
                     $date = $holiday->getProperDate( $start_date, $end_date );
 
-                    // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration.
-                    $dtr_collection = Dtr::select('dtrs.*')
-                                            ->whereRaw(
-                                                "dtrs.date = ?
-                                                    AND
-                                                    NOT EXISTS (
-                                                        SELECT *
-                                                        FROM dtr_holidays
-                                                        WHERE dtrs.id = dtr_holidays.dtr_id
-                                                            AND dtr_holidays.holiday_id = ?
-                                                    )
-                                                ",
-                                                array(
-                                                    $date,
-                                                    $holiday->id
-                                                )
-                                            )
-                                            ->get();
+                    // Fetch all the DTR that has a Holiday in the iteration.
+                    if($holiday->country_id != null){
+                        $holidays_ids_to_delete = Dtr::where("date",  $date)->whereHas('user', function ($query) use($holiday){
+                            return $query->whereNotNull('country_id')->where('country_id', $holiday->country_id);
+                        })
+                        ->pluck('id')
+                        ->toArray();
+                        DtrHoliday::whereIn('dtr_id', $holidays_ids_to_delete)->delete();
+                        
+                         // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration on specific users with country_id.
+                         $dtr_collection = Dtr::whereHas('user', function ($query) use($holiday){
+                            return $query->whereNotNull('country_id')->where('country_id', $holiday->country_id);
+                        })->whereRaw(
+                            "dtrs.date = ?
+                                AND
+                                NOT EXISTS (
+                                    SELECT *
+                                    FROM dtr_holidays
+                                    WHERE dtrs.id = dtr_holidays.dtr_id
+                                        AND dtr_holidays.holiday_id = ?
+                                )
+                            ",
+                            array(
+                                $date,
+                                $holiday->id
+                            )
+                        )
+                        ->get();
+
+                    }else{
+                        // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration.
+                        $dtr_collection = Dtr::whereRaw(
+                            "dtrs.date = ?
+                                AND
+                                NOT EXISTS (
+                                    SELECT *
+                                    FROM dtr_holidays
+                                    WHERE dtrs.id = dtr_holidays.dtr_id
+                                        AND dtr_holidays.holiday_id = ?
+                                )
+                            ",
+                            array(
+                                $date,
+                                $holiday->id
+                            )
+                        )
+                        ->get();
+                    }
+
+                  
 
                     foreach( $dtr_collection as $dtr ) {
-                        $dtr->holidays()->save( $holiday );
+                        
+
+                        $user =  $dtr->user()->first();
+                        error_log($user->username);
+                       if($user->country_id == $holiday->country_id || $holiday->country_id == null){
+                        if($dtr->holidays()->count()  > 0){
+                            //should override the holiday if it has country _id
+                            if($dtr->holidays()->first()->country_id == null && $holiday->country_id != null){
+                                $dtr->holidays()->delete();
+                                $dtr->holidays()->save( $holiday );
+                            }
+                        }else{
+                            $dtr->holidays()->save( $holiday );
+                        }
+                        // $dtr->holidays()->save( $holiday );
                         $result->push( $dtr );
                         log_to_file( 'info', 'Holiday Inserted on this DTR.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
+                       }
+                       else{
+                        log_to_file( 'info', 'Holiday was not Inserted on this DTR due to diffferent country_id.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
+                       }
+                        
+                       
                     }
 
                 } catch (Exception $e) {
+                    error_log($e->getMessage());
+                   
                     log_to_file( 'info', '[RECORD ERROR: ID - '. $holiday->id. ' ' . __FUNCTION__ , ['holiday' => $holiday ] , "holiday");
                     continue;
                 }
@@ -888,6 +942,7 @@ class DtrRepository implements DtrRepositoryInterface{
             return $result;
 
         } catch (Exception $e) {
+            error_log($e->getMessage());
             DB::rollback();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
@@ -895,153 +950,6 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
-    // public function bind_holidays_to_dtr( string $start_date, string $end_date )
-    // {
-    //     log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date], "dtr");
-
-    //     DB::beginTransaction();
-    //     try {
-
-    //         $result = new Collection;
-
-    //         /** This Holiday date range query and wildcard is created for the following scenarios:
-    //          *  1. Incase the Date Range is overlapping to next year like "2019" to "2020", we cannot query the Month-Date Range (ex. DATE BETWEEN 12-01 AND 01-01 )
-    //          *  2. This fetches all the Months between the Date Range and iterates manually the Start and End date of those months that will be converted as Query.
-    //          */
-    //             $holiday_date_range['query_array'] = [];
-    //             $holiday_date_range['wildcard_array']  = [];
-
-    //             foreach( get_month_date_range( $start_date, $end_date ) as $row ){
-    //                 $holiday_date_range['query_array'][] = "( DATE_FORMAT(date, '%m-%d') BETWEEN DATE_FORMAT(?,'%m-%d') AND DATE_FORMAT(?,'%m-%d') )";
-    //                 array_push($holiday_date_range['wildcard_array'], $row->start_date, $row->end_date);
-    //             }
-    //         /** */
-
-    //         // Fetch all the Holidays within the Start and End date as Parameter.
-    //         $holiday_collection = Holiday::whereRaw("
-    //                                             ( is_predefined = 1
-    //                                               AND (". implode( " OR ", $holiday_date_range['query_array'] ) ."))
-    //                                         OR
-    //                                             ( is_predefined = 0
-    //                                               AND date BETWEEN ? AND ? )
-    //                                         ", array_merge(
-    //                                                 $holiday_date_range['wildcard_array'],
-    //                                                 array(
-    //                                                     $start_date,
-    //                                                     $end_date
-    //                                                 )
-    //                                             )
-    //                                         )
-    //                                         ->orderBy('date', 'asc')
-    //                                         ->get();
-
-    //         // Iterate the Fetched Holidays.
-    //         foreach( $holiday_collection as $holiday ){
-
-    //             try{
-    //                 // Parses the Proper Date of the Holiday ( To automate the condition for Pre-defined and non Pre-defined Holiday Dates. )
-    //                 $date = $holiday->getProperDate( $start_date, $end_date );
-
-    //                 // Fetch all the DTR that has a Holiday in the iteration.
-    //                 if($holiday->country_id != null){
-    //                     $holidays_ids_to_delete = Dtr::where("date",  $date)->whereHas('user', function ($query) use($holiday){
-    //                         return $query->whereNotNull('country_id')->where('country_id', $holiday->country_id);
-    //                     })
-    //                     ->pluck('id')
-    //                     ->toArray();
-    //                     DtrHoliday::whereIn('dtr_id', $holidays_ids_to_delete)->delete();
-                        
-    //                      // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration on specific users with country_id.
-    //                      $dtr_collection = Dtr::whereHas('user', function ($query) use($holiday){
-    //                         return $query->whereNotNull('country_id')->where('country_id', $holiday->country_id);
-    //                     })->whereRaw(
-    //                         "dtrs.date = ?
-    //                             AND
-    //                             NOT EXISTS (
-    //                                 SELECT *
-    //                                 FROM dtr_holidays
-    //                                 WHERE dtrs.id = dtr_holidays.dtr_id
-    //                                     AND dtr_holidays.holiday_id = ?
-    //                             )
-    //                         ",
-    //                         array(
-    //                             $date,
-    //                             $holiday->id
-    //                         )
-    //                     )
-    //                     ->get();
-
-    //                 }else{
-    //                     // Fetch all the DTR that has no Tagging of the Current Holiday in the iteration.
-    //                     $dtr_collection = Dtr::whereRaw(
-    //                         "dtrs.date = ?
-    //                             AND
-    //                             NOT EXISTS (
-    //                                 SELECT *
-    //                                 FROM dtr_holidays
-    //                                 WHERE dtrs.id = dtr_holidays.dtr_id
-    //                                     AND dtr_holidays.holiday_id = ?
-    //                             )
-    //                         ",
-    //                         array(
-    //                             $date,
-    //                             $holiday->id
-    //                         )
-    //                     )
-    //                     ->get();
-    //                 }
-
-                  
-
-    //                 foreach( $dtr_collection as $dtr ) {
-                        
-
-    //                     $user =  $dtr->user()->first();
-    //                     error_log($user->username);
-    //                    if($user->country_id == $holiday->country_id || $holiday->country_id == null){
-    //                     if($dtr->holidays()->count()  > 0){
-    //                         //should override the holiday if it has country _id
-    //                         if($dtr->holidays()->first()->country_id == null && $holiday->country_id != null){
-    //                             $dtr->holidays()->delete();
-    //                             $dtr->holidays()->save( $holiday );
-    //                         }
-    //                     }else{
-    //                         $dtr->holidays()->save( $holiday );
-    //                     }
-    //                     // $dtr->holidays()->save( $holiday );
-    //                     $result->push( $dtr );
-    //                     log_to_file( 'info', 'Holiday Inserted on this DTR.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
-    //                    }
-    //                    else{
-    //                     log_to_file( 'info', 'Holiday was not Inserted on this DTR due to diffferent country_id.' , ['dtr'=>$dtr, 'holiday'=>$holiday], "dtr");
-    //                    }
-                        
-                       
-    //                 }
-
-    //             } catch (Exception $e) {
-    //                 error_log($e->getMessage());
-                   
-    //                 log_to_file( 'info', '[RECORD ERROR: ID - '. $holiday->id. ' ' . __FUNCTION__ , ['holiday' => $holiday ] , "holiday");
-    //                 continue;
-    //             }
-
-    //         }
-
-    //         log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
-    //         log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
-    //         DB::commit();
-    //         return $result;
-
-    //     } catch (Exception $e) {
-    //         error_log($e->getMessage());
-    //         DB::rollback();
-    //         log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
-    //         log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
-    //         log_error($e);
-    //         throw $e;
-    //     }
-    // }
 
 
 
