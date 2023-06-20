@@ -26,7 +26,6 @@ class DtrLogs extends Component {
         name: null,
         is_active: 1,
         export: false,
-        toggle_pov: false,
       }
     }; 
   }
@@ -149,7 +148,6 @@ class DtrLogs extends Component {
                                   <th scope="col" class="th-name">Name</th>
                                   <th scope="col" class="th-dept">Department</th>
                                   <th scope="col">Date</th>
-                                  <th scope="col">POV <div> {this.state.toggle_pov == true ?"(User)": "(Default)"}</div> </th>
                                   <th scope="col">Time In</th>
                                   <th scope="col">Time Out</th>
                                   <th scope="col">On Duty</th>

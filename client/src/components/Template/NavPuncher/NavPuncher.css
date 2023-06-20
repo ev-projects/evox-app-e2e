@@ -13,18 +13,3 @@
 .dropdown-toggle::after {
     display: none !important; 
   }
-
-.icon-dropdown-dtr{
-    /* position: absolute;
-    right: 10px;
-    top: 15px; */
-    /* top: 12px;
-    right: 30px; */
-    position: absolute;
-    top: 38px;
-    color: #aea9a987;
-    /* font-stretch: expanded;
-    transform: scaleY(0.5);
-    transform-origin: 0 0; */
-    /* background-color: red; */
-}

@@ -126,7 +126,7 @@ class User extends Authenticatable implements JWTSubject
     public function getUserInfo()
     {               $offset = $this->country_timezone_to_offset();
         return [    "full_name" => $this->getFullName() , 
-                    "department" => $this->department()->first()->department_name ?? '',
+                    "department" => $this->department()->first()->department_name,
 
 
                     /// SEPARATE
