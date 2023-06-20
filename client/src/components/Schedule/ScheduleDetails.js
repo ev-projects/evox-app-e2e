@@ -1001,7 +1001,7 @@ const ScheduledetailsWithTimezone = (props) => {
 
   };
 
-  const onSelectTimeHandlerStdOnTimezone = (data, index,setFieldValue,sched_type,offset_data, $is_flex =  false) => {
+  const onSelectTimeHandlerStdOnTimezone = (data, index,setFieldValue,sched_type,offset_data, is_flex =  false) => {
     
     if(data!==null){
       // only changes for flex
