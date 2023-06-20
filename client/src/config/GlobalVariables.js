@@ -39,6 +39,7 @@
     employee_list                   :  "/app/team/MyTeamList",
     my_team_requests                :  "/app/team/MyTeamRequests",
     my_team_all_requests            :  "/app/team/MyTeamAllRequests",
+    overallrequest                :    "/app/team/overallrequest",
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
     dtr_summary_new                 :  "/app/team/DtrSummaryTemp",
@@ -96,6 +97,7 @@
     location_list                   :  "/app/locationlist/",
     job_referal                     :  "/app/referjob/",
     requirement_list                :  "/app/requirement/"
+   
 };
 
 global.invalid_token_response = [

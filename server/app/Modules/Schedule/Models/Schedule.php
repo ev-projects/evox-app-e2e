@@ -172,7 +172,6 @@ class Schedule extends Model{
     public function owner(){
         switch( $this->bind_to ) {
             case "user":
-                error_log("11");
                 return $this->hasOne(User::class, 'id', 'bind_id');
                 break;
             case "department":

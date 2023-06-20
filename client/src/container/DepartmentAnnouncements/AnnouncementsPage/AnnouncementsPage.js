@@ -88,7 +88,7 @@ class AnnouncementsPage extends Component {
 
                       :
 
-                      <h5>The Page you are accessing does seem to be part of your departmnets list of annoucements</h5>
+                      <h5>The Page you are accessing does not seem to be part of your departments list of annoucements</h5>
                   
                   }
                     </Content>

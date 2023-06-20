@@ -2,15 +2,16 @@
 
 namespace App\Modules\Payroll\Models;
 
+use App\Modules\User\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\Overtime;
-use App\Modules\Request\Models\ChangeSchedule;
-use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Schedule\Models\Schedule;
-use App\Modules\User\Models\User;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Request\Models\RestDayWork;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Request\Models\ChangeSchedule;
 
 class Dtr extends Model
 {
@@ -858,6 +859,39 @@ class Dtr extends Model
         return $this->hasOne(RestDayWork::class, 'user_id', 'user_id')->where([
             'date' => $this->date
         ]);
+    }
+
+
+    public function summary_report_short(){
+        $payroll_items = [];
+        $result = DB::table('drt_summary_report')
+            
+            ->select(DB::raw("unpaid_leave as ul,reg_late as late,reg_undertime as undertime,
+            ((reg_rendered_hours + rd_rendered_hours + sh_rendered_hours + lh_rendered_hours + dlh_rendered_hours + dsh_rendered_hours + slh_rendered_hours) + IF(nigdiff_stauts=1,reg_rendered_hours_overlapp
+            + rd_rendered_hours_overlapp + lh_rendered_hours_overlapp + sh_rendered_hours_overlapp + dlh_rendered_hours_overlapp + dsh_rendered_hours_overlapp + slh_rendered_hours_overlapp,0)) 
+            - (reg_night_diff + rd_night_diff + sh_night_diff + lh_night_diff + dlh_night_diff + dsh_night_diff + slh_night_diff + IF(nigdiff_stauts=1,reg_night_diff_overlapp
+            + rd_night_diff_overlapp + lh_night_diff_overlapp + sh_night_diff_overlapp + dlh_night_diff_overlapp + dsh_night_diff_overlapp + slh_night_diff_overlapp,0)) as rendered_hours,
+            (reg_night_diff + rd_night_diff + sh_night_diff + lh_night_diff + dlh_night_diff + dsh_night_diff + slh_night_diff) + IF(nigdiff_stauts=1,reg_night_diff_overlapp
+            + rd_night_diff_overlapp + lh_night_diff_overlapp + sh_night_diff_overlapp + dlh_night_diff_overlapp + dsh_night_diff_overlapp + slh_night_diff_overlapp,0) as night_diff,
+            (reg_overtime + rd_overtime + sh_overtime + lh_overtime + dlh_overtime + dsh_overtime + slh_overtime)  as overtime,
+            (reg_overtime_night_diff + rd_overtime_night_diff + sh_overtime_night_diff + lh_overtime_night_diff + dlh_overtime_night_diff + dsh_overtime_night_diff + slh_overtime_night_diff)  as overtime_night_diff"))
+                ->where('login_date', '=' , $this->resource->date )
+                ->where('user_id','=',$this->resource->user_id)->get();
+
+            # Convert the time to seconds to 00:00:00 format
+            // foreach( $payroll_items as  $key => $value){
+            //     $payroll_items[$key] = seconds_to_time($value,true);
+            // }
+            foreach( $result as  $key => $value){
+                $payroll_items["late"] = $value->late > 0 ? seconds_to_time($value->late * 3600,true):"";
+                $payroll_items["undertime"] = $value->undertime > 0 ? seconds_to_time($value->undertime * 3600,true):"";
+                $payroll_items["overtime"] = $value->overtime > 0 ? seconds_to_time($value->overtime * 3600,true):"";
+                $payroll_items["overtime_night_diff"] = $value->overtime_night_diff > 0 ? seconds_to_time($value->overtime_night_diff * 3600,true):"";
+                $payroll_items["night_diff"] = $value->night_diff > 0 ? seconds_to_time($value->night_diff * 3600,true):"";
+                $payroll_items[ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] = $value->ul > 0 ? round($value->ul):"";
+                $payroll_items["rendered_hours"] = $value->rendered_hours > 0 ? seconds_to_time($value->rendered_hours * 3600,true):"";
+            }
+            return $payroll_items;
     }
 
     

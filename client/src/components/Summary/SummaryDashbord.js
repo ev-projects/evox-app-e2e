@@ -10,6 +10,7 @@ import {
   Col,
 } from "../../components/GridComponent/AdminLte.js";
 import { useDispatch } from "react-redux";
+
 import { useParams, useHistory } from "react-router-dom";
 import "./SummaryDashboard.css";
 import BirthdayAnniversary from "../Dashboard/BirthdayAnniversary/BirthdayAnniversary.js";
@@ -25,6 +26,7 @@ import { format, getDate } from "date-fns";
 import PageLoading from "../../container/PageLoading/PageLoading.js";
 import PageLoadingCard from "../../container/PageLoadingCard.js/PageLoadingCard.js";
 import Holiday from "../Dashboard/Holiday/Holiday.js";
+import moment from "moment";
 export const SummaryDashbord = (props) => {
   let history = useHistory();
   const dispatch = useDispatch();
@@ -42,20 +44,8 @@ export const SummaryDashbord = (props) => {
   const [taskcompletestatus1, setTaskcompletestatus1] = useState(false);
   const [holiday, setHoliday] = useState([]);
   useEffect(() => {
-
-    // Get Current Date And Last Date Of the Current Year
-    const current = new Date();
-    const date = `${current.getFullYear()}-${
-      current.getMonth() + 1
-    }-${current.getDate()}`;
-    const date1 = `${current.getFullYear()}-${
-      12
-    }-${31}`;
-    var cudate = Date.parse(date);
-    var edate = Date.parse(date1);
-    var currentdate = format(cudate, "yyyy-MM-dd");
-    var enddate = format(edate, "yyyy-MM-dd");
-    // alert("StartDate: "+ currentdate + "EndDate: "+enddate);
+    var currentdate = moment().format("YYYY-MM-DD");
+    var enddate = moment().format("YYYY") + '-12-31';
 
     // API CALL 
     dispatch(get_today_leaves(setTodayleaves));
@@ -452,7 +442,8 @@ export const SummaryDashbord = (props) => {
                           <tr>
                             <td>
                               {data.name} <br></br>
-                              <span className="leave_type">{data.start}</span>
+                              {/* <span className="leave_type">{data.start}</span> */}
+                              <span className="leave_type">{format(Date.parse(data.date), "yyyy-MM-dd")}</span>
                             </td>
                           </tr>
                         ))

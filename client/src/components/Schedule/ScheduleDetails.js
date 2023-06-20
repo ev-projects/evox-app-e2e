@@ -1005,7 +1005,8 @@ const ScheduledetailsWithTimezone = (props) => {
     
     if(data!==null){
       // only changes for flex
-      if($is_flex){
+      if(is_flex){
+        
         var onDuty = data;
       // var offDuty = new Date(); 
       var breakTime = new Date(); 

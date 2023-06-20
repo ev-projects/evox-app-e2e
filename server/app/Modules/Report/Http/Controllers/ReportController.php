@@ -22,6 +22,7 @@ use Spatie\Permission\Models\Permission;
 use App\Exports\TeamSummaryAttendanceExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
+use App\Exports\ExportDTRLog;
 use App\Modules\Payroll\Resources\HolidayResource;
 use App\Exports\TeamSummaryAttendanceMultiSheetExport;
 use App\Modules\Payroll\Resources\AnniversaryResources;
@@ -39,6 +40,7 @@ use App\Modules\Payroll\Repositories\HolidayRepositoryInterface;
 use App\Modules\Payroll\Resources\TeamAttendanceSummaryResource;
 use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
+use App\Modules\Payroll\Resources\DtrLogResource;
 use App\Modules\Report\Resources\NewDtrSummaryResource;
 
 class ReportController extends Controller
@@ -318,11 +320,15 @@ class ReportController extends Controller
      */
     public function export_team_dtr_logs(Request $request)
     {
+        // dd($request->toggle_pov == null);
 
+        $toggle_POV = !($request->toggle_pov == null);
         $result = $this->logs_list($request);
-
-        $this->export->data = $result;
-        return Excel::download($this->export, 'dtrsummary.csv');
+        // dd($this->logs_list($request));
+        $result = [
+            'data' =>  $result
+        ];
+        return Excel::download( new ExportDTRLog(DtrLogResource::collection( $this->logs_list($request)), $toggle_POV), 'dtr_log.csv');
     }
 
 
@@ -464,40 +470,58 @@ class ReportController extends Controller
 
             $bhr_holidays_array = [];
 
-            // Define the End Point for the API.
-            $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
+            $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
+
+     // Define the End Point for the API.
+        //     $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
        
-            // Iterate the BHr Call Result
-            $user = $this->user->show(Auth::user()->id);
+        //     // Iterate the BHr Call Result
+        //     $user = $this->user->show(Auth::user()->id);
 
-            if ($user->country_id == 2) {
-                // BHR API CALL For Fecthing Philippines Holiday
-                foreach( bhr_api_call('GET', $end_point) as $row ) {
+        //     // if ($user->country_id == 2) {
+        //         // BHR API CALL For Fecthing Philippines Holiday
+        //         foreach( bhr_api_call('GET', $end_point) as $row ) {
 
-                    // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-                    if( $row->type == 'holiday' ) {
-                        $bhr_holidays_array[] = $row;
-                    }
-                }
-            } else if ($user->country_id == 1) {
-                // BHR API CALL For Fecthing Indian Holiday
-                foreach( bhr_api_call_india('GET', $end_point) as $row ) {
+        //             // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+        //             if( $row->type == 'holiday' ) {
+        //                 $bhr_holidays_array[] = $row;
+        //             }
+        //         }
+        //     // } else if ($user->country_id == 1) {
+        //         // BHR API CALL For Fecthing Indian Holiday
+        //         foreach( bhr_api_call_india('GET', $end_point) as $row ) {
 
-                    // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-                    if( $row->type == 'holiday' ) {
+        //             // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+        //             if( $row->type == 'holiday' ) {
 
-                        // Check Holidays Already Exist ion Array
-                        if(in_array($row, $bhr_holidays_array)) {
-                        }  else {
-                        $bhr_holidays_array[] = $row;
-                        }
-                    }
-                }
-            }
-            // Sort Holiday By Date And ID
-            usort($bhr_holidays_array, function($a, $b) {
-                return [$a->start,$a->id] <=> [$b->start,$b->id];
-           });
+        //                 // Check Holidays Already Exist ion Array
+        //                 if(in_array($row, $bhr_holidays_array)) {
+        //                 }  else {
+        //                 $bhr_holidays_array[] = $row;
+        //                 }
+        //             }
+        //         // }
+        //     }
+
+        //       // BHR API CALL For Fecthing bulgaria Holiday
+        //     foreach( bhr_api_call_bulgaria('GET', $end_point) as $row ) {
+
+        //         // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
+        //         if( $row->type == 'holiday' ) {
+
+        //             // Check Holidays Already Exist ion Array
+        //             if(in_array($row, $bhr_holidays_array)) {
+        //             }  else {
+        //             $bhr_holidays_array[] = $row;
+        //             }
+
+        //         }
+        //     // }
+        //     }
+        //     // Sort Holiday By Date And ID
+        //     usort($bhr_holidays_array, function($a, $b) {
+        //         return [$a->start,$a->id] <=> [$b->start,$b->id];
+        //    });
             
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_holidays_array, "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");

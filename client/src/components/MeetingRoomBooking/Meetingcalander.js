@@ -340,9 +340,7 @@ const Meetingcalander = (props) => {
                     var e = format(eddate, "yyyy-MM-dd");
 
                     const current = new Date();
-                    const date = `${current.getFullYear()}-${
-                      current.getMonth() + 1
-                    }-${current.getDate()}`;
+                    const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
                     const cudate = Date.parse(date);
                     var dq = format(cudate, "yyyy-MM-dd");
                     var nextdate = new Date(d);
@@ -539,9 +537,7 @@ const Meetingcalander = (props) => {
             var d = format(stdate, "yyyy-MM-dd");
             var e = format(eddate, "yyyy-MM-dd");
             const current = new Date();
-            const date = `${current.getFullYear()}-${
-              current.getMonth() + 1
-            }-${current.getDate()}`;
+            const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
             const cudate = Date.parse(date);
             var dq = format(cudate, "yyyy-MM-dd");
             var nextdate = new Date(d);
@@ -717,9 +713,7 @@ const Meetingcalander = (props) => {
         var d = format(stdate, "yyyy-MM-dd");
         var e = format(eddate, "yyyy-MM-dd");
         const current = new Date();
-        const date = `${current.getFullYear()}-${
-          current.getMonth() + 1
-        }-${current.getDate()}`;
+        const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
         const cudate = Date.parse(date);
         var dq = format(cudate, "yyyy-MM-dd");
         var nextdate = new Date(d);
@@ -902,9 +896,7 @@ const Meetingcalander = (props) => {
         var d = format(stdate, "yyyy-MM-dd");
         var e = format(eddate, "yyyy-MM-dd");
         const current = new Date();
-        const date = `${current.getFullYear()}-${
-          current.getMonth() + 1
-        }-${current.getDate()}`;
+        const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
         const cudate = Date.parse(date);
         var dq = format(cudate, "yyyy-MM-dd");
         var nextdate = new Date(d);
