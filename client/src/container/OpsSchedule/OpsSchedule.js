@@ -162,12 +162,12 @@ class OpsSchedule extends Component {
 
 								<tr>
 									<td rowspan="2">Recruitment</td>
-									<td>Precious Balbedina<br/><small>CRM Recruitment Lead</small></td>
+									<td>Prachi Sharma<br/><small>IT Recruiter</small></td>
 									<td><small>M-F <br/>9am-6pm</small></td>
 									<td rowspan="2">recruit@eastvantage.com</td>
 								</tr>
 								<tr>
-									<td>MJ Visitacion<br/><small>Tech Recruitment Lead</small></td>
+									<td>Sandy Guevarra<br/><small>Senior Business Partner</small></td>
 									<td><small>M-F <br/>9am-6pm</small></td>
 								</tr>
 

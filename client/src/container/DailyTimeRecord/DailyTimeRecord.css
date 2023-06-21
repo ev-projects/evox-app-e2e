@@ -306,3 +306,8 @@ float: left;
     border-color: #888 !important;
     margin-left: 1rem !important;
 }
+
+.dtr-schedule-toggle-on{
+    color:#bcf44c !important;
+    font-weight: bold
+}

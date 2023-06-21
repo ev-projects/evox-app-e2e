@@ -278,7 +278,8 @@ class DailyTimeRecord extends Component {
                 }
 
 
-                  {    this.props.params.id != this.props.user.id ? <div style={{'float': 'right'}}><Button className="toggle-outlook-dtr"
+                {    this.props.params.id != this.props.user.id ? <div style={{'float': 'right'}}>
+                    <Button className="toggle-outlook-dtr"
               onClick={() => this.setState({
                 toggle_pov: !this.state.toggle_pov
               })}
@@ -290,7 +291,7 @@ class DailyTimeRecord extends Component {
                         <tr>
                             <th className="dtr-date">Date</th>
                             <th className="dtr-status">Status</th>
-                            <th className="dtr-schedule">Schedule  {    this.props.params.id != this.props.user.id && this.state.toggle_pov == true? "("+ this.props.dtr.employeeInfo.timezone+")": null}</th>
+                            <th className="dtr-schedule">Schedule <span className="dtr-schedule-toggle-on"> { this.props.params.id != this.props.user.id && this.state.toggle_pov == true? " ( "+ this.props.dtr.employeeInfo.timezone+" )": null}</span></th>
                             <th className="dtr-log">Clock In</th>
                             <th className="dtr-log">Clock Out</th>
                             <th className="dtr-item">Late</th>
@@ -347,8 +348,12 @@ class DailyTimeRecord extends Component {
                                   <td className="dtr-status">{status}</td>
                                   <td className="dtr-schedule">{this.state.toggle_pov == false ?<div>{DtrFormatter.displaySchedule(dtr)}</div> :
                                                                                                 <div>{DtrFormatter.displaySchedule(dtr.owner_POV)}</div>}</td>
-                                  <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_in)} </div></td>
-                                  <td className="dtr-log"><div>{DtrFormatter.displayLog(dtr.time_out)}</div></td>
+
+
+                                  <td className="dtr-log">{this.state.toggle_pov == false ? <div>{DtrFormatter.displayLog(dtr.time_in)}</div> :
+                                                                                            <div>{DtrFormatter.displayLog(dtr.owner_POV.time_in)}</div>}</td>
+                                  <td className="dtr-log">{this.state.toggle_pov == false ? <div>{DtrFormatter.displayLog(dtr.time_out)}</div> :
+                                                                                            <div>{DtrFormatter.displayLog(dtr.owner_POV.time_out)}</div>}</td>
                                   <td className="dtr-item">{dtr?.payroll_items?.late}</td>
                                   <td className="dtr-item">{dtr_undertime}</td>
                                   <td className="dtr-item">{dtr?.payroll_items?.night_diff}</td>

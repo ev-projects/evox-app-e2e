@@ -71,6 +71,7 @@
     assign_employee_supervisors     :  "/app/admin/AssignEmployeeSupervisors/",
     sync_biometrics                 :  "/app/admin/SyncBiometrics/",
     sync_bhr_leaves                 :  "/app/admin/SyncBhrLeaves/",
+    sync_utc_adjustment             : "/app/admin/SyncUTCAdjustment/",
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
     assign_role_permission          :  "/app/admin/AssignRolePermission/",
     register_user                   :  "/app/admin/RegisterUser/",

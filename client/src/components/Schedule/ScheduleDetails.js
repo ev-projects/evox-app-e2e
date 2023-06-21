@@ -489,7 +489,7 @@ const FlexibleSchedDetailsForm = (props) => {
                       selected={field.value.flx_schedule_details[0].start_flexy_time}                
                       //  onChange={(date) => onSelectTimeHandlerFlexi(date,0,form.setFieldValue,'flx_')}
                       onChange={(date) => {onSelectTimeHandlerFlexi(date,0,form.setFieldValue,'flx_');
-                      onSelectTimeHandlerStdOnTimezone(date,0,form.setFieldValue,'pov_',props.offset_data)}}
+                      onSelectTimeHandlerStdOnTimezone(date,0,form.setFieldValue,'pov_',props.offset_data, true)}}
                     />
                 <Form.Control.Feedback type="invalid">
                   <ErrorMessage component="div" name="flx_schedule_details[0].start_flexy_time" className="input-feedback" />
@@ -1001,7 +1001,7 @@ const ScheduledetailsWithTimezone = (props) => {
 
   };
 
-  const onSelectTimeHandlerStdOnTimezone = (data, index,setFieldValue,sched_type,offset_data, is_flex =  false) => {
+  const onSelectTimeHandlerStdOnTimezone = (data, index,setFieldValue,sched_type,offset_data, is_flex = false) => {
     
     if(data!==null){
       // only changes for flex

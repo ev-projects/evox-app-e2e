@@ -39,11 +39,11 @@ class AnniversaryResources extends JsonResource
                   break;
                 case "anniversary":
                     $year =  Carbon::now()->year - $date->year;
-
+                    // dump($year." ".$array->last_name);
                     array_push($birthday_anniv, [
                         "date" => $date->format('F d'),
                         "name" => $array->last_name.', '.$array->first_name ,
-                        "display" =>  ordinal($year) .' Anniversary',
+                        "display" => $year == 0 ? "EV Rookies" : ordinal($year) .' Anniversary',
                         "type" =>  $array->type
                     ]);
                   break;

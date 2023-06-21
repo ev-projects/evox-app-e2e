@@ -162,7 +162,8 @@ canClockOut(clock_in) {
                             dtr.time_out ? (
                               DtrFormatter.displayLog(dtr.time_out)
                             ) : (
-                              dtr.time_in && (this.canClockOut(dtr.time_in) < 22) ? (
+                              // dtr.time_in && ( dtr.with_in_time_extended== true ) ? (
+                                dtr.time_in && (this.canClockOut(dtr.time_in) < 22) ? (
                                 <>
                                 <Formik 
                                   enableReinitialize

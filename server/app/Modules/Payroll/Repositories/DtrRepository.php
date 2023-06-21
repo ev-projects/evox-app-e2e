@@ -768,6 +768,8 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr->start_flexy_datetime  =  null;
                 $dtr->end_flexy_datetime    =  null;
                 $dtr->break_time            =  null;
+                $dtr->time_in               =  null;
+                $dtr->time_out              =  null;
                 $dtr->is_rest_day           =  true;
                 $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.default');
 
@@ -1340,8 +1342,8 @@ class DtrRepository implements DtrRepositoryInterface{
                     DB::raw("sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as reg_night_dif"),
                     DB::raw("sum(drt_summary_report.reg_overtime) as reg_over_time"),
                     DB::raw("sum(drt_summary_report.reg_overtime_night_diff) as reg_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.rd_rendered_hours + drt_summary_report.rd_rendered_hours_overlapp) as rd_rendered_hr"),
-                    DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as rd_night_dif"),
+                    DB::raw("sum(drt_summary_report.rd_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.rd_rendered_hours_overlapp,0)) - sum(drt_summary_report.rd_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.rd_night_diff_overlapp,0)) as rd_rendered_hr"),
+                    // DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as rd_night_dif"),
                     DB::raw("sum(drt_summary_report.rd_overtime) as rd_over_time"),
                     DB::raw("sum(drt_summary_report.rd_overtime_night_diff) as rd_over_night_dif"),
                     DB::raw("sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) 
@@ -1522,6 +1524,23 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
                 $dtr->update();
                 $result = $dtr;
+
+
+                $dtr_prev = Dtr::where("user_id", Auth::user()->id)->where('date', Carbon::parse($biometrics->CheckTime)->subDay(1)->format("Y-m-d"))->first();;
+                if($dtr_prev == null &&  Auth::user()->date_hired){
+                    if(Auth::user()->date_hired <Carbon::parse($biometrics->CheckTime)->subDay(1)->format("Y-m-d") ){
+                                $days = 1;
+                                $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(1);
+                                $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
+                                $user_collection = new Collection();
+                                $user_collection->push((object)User::findOrFail(Auth::user()->id));
+                                $this->generate_dtr( $user_collection, $dates );
+
+                                log_to_file( 'info', "previous DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
+                    }
+
+                }
+
 
                 DB::commit();
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");

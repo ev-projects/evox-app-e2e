@@ -100,17 +100,28 @@ class ReportRepository implements ReportRepositoryInterface{
     public function get_team_birthday_anniversary_last_twodays(){
         try {
 
-            $user_list = auth()->user()->users_handled();
+            if(auth()->user()->department_id != "39"){
+                $user_list = auth()->user()->users_handled();
 
-            if( is_valid( request()->get('department_id') ) ) {
-                $user_list->where('department_id', '=', request()->get('department_id'));
+                if( is_valid( request()->get('department_id') ) ) {
+                    $user_list->where('department_id', '=', request()->get('department_id'));
+                }
             }
-    
-            $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ")->whereIn('users.id', $user_list->pluck('id')->toArray() )
-            ->whereRaw("DATE_FORMAT(birthDate,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")->whereRaw("is_active = 1");
-    
-            $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type")->whereIn('users.id', $user_list->pluck('id')->toArray() )
-                    ->whereRaw("DATE_FORMAT(date_hired,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")->whereRaw("is_active = 1");;
+
+
+            $birthdate = User::selectRaw("birthdate as date,first_name,last_name,'birthdate' AS type ");
+            // Get DOB by users supervisor, if Department ID Not Equal to 39 (OPS - Human Resources)
+            if(auth()->user()->department_id != "39"){
+                $birthdate->whereIn('users.id', $user_list->pluck('id')->toArray() );
+            }
+            $birthdate->whereRaw("DATE_FORMAT(birthDate,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")->whereRaw("is_active = 1");
+
+            // Get Anniversary by users supervisor, if Department ID Not Equal to 39 (OPS - Human Resources)
+            $anniversary = User::selectRaw("date_hired as date,first_name,last_name,'anniversary' AS type");
+            if(auth()->user()->department_id != "39"){
+            $anniversary->whereIn('users.id', $user_list->pluck('id')->toArray() );
+            }
+            $anniversary->whereRaw("DATE_FORMAT(date_hired,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")->whereRaw("is_active = 1");
     
             // $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
             // $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
@@ -119,11 +130,14 @@ class ReportRepository implements ReportRepositoryInterface{
             //             ->whereRaw("DATE_FORMAT(date_hired,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')")
             $date_from = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_from") );
             $date_to = Carbon::now()->subMonth( get_constant("REGULARIZATION.month_to") );
-            // dump($date_from);
-            // dump($date_to);
-            $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ")->whereIn('users.id', $user_list->pluck('id')->toArray() )
-                        ->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' AND DATE_ADD(date_hired, INTERVAL 6 MONTH) <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%Y-%m-%d')")
-                        ->whereRaw("is_active = 1");;
+
+            // Get Regularization by users supervisor, if Department ID Not Equal to 39 (OPS - Human Resources)
+            $regularization = User::selectRaw("DATE_ADD(date_hired, INTERVAL 6 MONTH) as date,first_name,last_name,'regularization' AS type ");
+            if(auth()->user()->department_id != "39"){
+            $regularization->whereIn('users.id', $user_list->pluck('id')->toArray());
+            }
+            $regularization->whereRaw("date_hired >= '".$date_from->format("Y-m-d") ."' AND date_hired <= '".$date_to->format("Y-m-d") ."' AND DATE_ADD(date_hired, INTERVAL 6 MONTH) <= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%Y-%m-%d')")
+            ->whereRaw("is_active = 1");
                         // ->whereRaw("DATE_FORMAT(date_hire,'%m-%d') BETWEEN DATE_FORMAT(NOW(),'%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 6 DAY),'%m-%d')");
     
             $birthdate->union($anniversary)->union($regularization)->orderByRaw('Month(date),Day(date)');
@@ -270,7 +284,7 @@ class ReportRepository implements ReportRepositoryInterface{
             $index = 0;
             foreach( $user_collection as $user ) {
                 $result = DB::table('drt_summary_report')
-                ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS Employee_Name"),'users.emp_num as Employee_Number', DB::raw("sum(drt_summary_report.unpaid_leave) as UL"), DB::raw("sum(drt_summary_report.on_leave) as Leaves"), DB::raw("sum(drt_summary_report.reg_late) as Late"), DB::raw("sum(drt_summary_report.reg_undertime) as Under_Time"), DB::raw("sum(drt_summary_report.reg_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.reg_rendered_hours_overlapp,0)) -sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as Render_Hr"), DB::raw("sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as Night_Diff"), DB::raw("sum(drt_summary_report.reg_overtime) as OverTime"), DB::raw("sum(drt_summary_report.reg_overtime_night_diff) as OT_ND"), DB::raw("sum(drt_summary_report.rd_rendered_hours + drt_summary_report.rd_rendered_hours_overlapp) as RD_Render_HR"), DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as RD_ND"), DB::raw("sum(drt_summary_report.rd_overtime) as RD_OT"), DB::raw("sum(drt_summary_report.rd_overtime_night_diff) as RD_OT_ND"), DB::raw("sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) -sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as LH_Render_HR"), DB::raw("sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as LH_ND"), DB::raw("sum(drt_summary_report.lh_overtime) as LH_OT"), DB::raw("sum(drt_summary_report.lh_overtime_night_diff) as LH_OT_ND"), DB::raw("sum(drt_summary_report.sh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.sh_rendered_hours_overlapp,0)) -sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as SH_Render_Hr"), DB::raw("sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as SH_ND"), DB::raw("sum(drt_summary_report.sh_overtime) as SH_OT"), DB::raw("sum(drt_summary_report.sh_overtime_night_diff) as SH_OT_ND"), DB::raw("sum(drt_summary_report.dsh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dsh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as DSH_Render_HR"), DB::raw("sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as DSH_ND"), DB::raw("sum(drt_summary_report.dsh_overtime) as DSH_OT"), DB::raw("sum(drt_summary_report.dsh_overtime_night_diff) as DSH_OT_ND"), DB::raw("sum(drt_summary_report.dlh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dlh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as DLH_Render_HR"), DB::raw("sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as DLH_ND"), DB::raw("sum(drt_summary_report.dlh_overtime) as DLH_OT"), DB::raw("sum(drt_summary_report.dlh_overtime_night_diff) as DLH_OT_ND"), DB::raw("sum(drt_summary_report.slh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.slh_rendered_hours_overlapp,0)) -sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as SLH_Render_HR"), DB::raw("sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as SLH_ND"), DB::raw("sum(drt_summary_report.slh_overtime) as SLH_OT"), DB::raw("sum(drt_summary_report.slh_overtime_night_diff) as SLH_OT_ND"))
+                ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS Employee_Name"),'users.emp_num as Employee_Number', DB::raw("sum(drt_summary_report.unpaid_leave) as UL"), DB::raw("sum(drt_summary_report.on_leave) as Leaves"), DB::raw("sum(drt_summary_report.reg_late) as Late"), DB::raw("sum(drt_summary_report.reg_undertime) as Under_Time"), DB::raw("sum(drt_summary_report.reg_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.reg_rendered_hours_overlapp,0)) -sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as Render_Hr"), DB::raw("sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as Night_Diff"), DB::raw("sum(drt_summary_report.reg_overtime) as OverTime"), DB::raw("sum(drt_summary_report.reg_overtime_night_diff) as OT_ND"), DB::raw("sum(drt_summary_report.rd_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.rd_rendered_hours_overlapp,0)) - sum(drt_summary_report.rd_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.rd_night_diff_overlapp,0)) as RD_Render_HR"), DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as RD_ND"), DB::raw("sum(drt_summary_report.rd_overtime) as RD_OT"), DB::raw("sum(drt_summary_report.rd_overtime_night_diff) as RD_OT_ND"), DB::raw("sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) -sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as LH_Render_HR"), DB::raw("sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as LH_ND"), DB::raw("sum(drt_summary_report.lh_overtime) as LH_OT"), DB::raw("sum(drt_summary_report.lh_overtime_night_diff) as LH_OT_ND"), DB::raw("sum(drt_summary_report.sh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.sh_rendered_hours_overlapp,0)) -sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as SH_Render_Hr"), DB::raw("sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as SH_ND"), DB::raw("sum(drt_summary_report.sh_overtime) as SH_OT"), DB::raw("sum(drt_summary_report.sh_overtime_night_diff) as SH_OT_ND"), DB::raw("sum(drt_summary_report.dsh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dsh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as DSH_Render_HR"), DB::raw("sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as DSH_ND"), DB::raw("sum(drt_summary_report.dsh_overtime) as DSH_OT"), DB::raw("sum(drt_summary_report.dsh_overtime_night_diff) as DSH_OT_ND"), DB::raw("sum(drt_summary_report.dlh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dlh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as DLH_Render_HR"), DB::raw("sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as DLH_ND"), DB::raw("sum(drt_summary_report.dlh_overtime) as DLH_OT"), DB::raw("sum(drt_summary_report.dlh_overtime_night_diff) as DLH_OT_ND"), DB::raw("sum(drt_summary_report.slh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.slh_rendered_hours_overlapp,0)) -sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as SLH_Render_HR"), DB::raw("sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as SLH_ND"), DB::raw("sum(drt_summary_report.slh_overtime) as SLH_OT"), DB::raw("sum(drt_summary_report.slh_overtime_night_diff) as SLH_OT_ND"))
                     ->join('users','users.id','=','drt_summary_report.user_id')
                     ->whereBetween('drt_summary_report.login_date', [$start_date, $end_date])
                     ->where('users.id','=',$user->id)->get();
@@ -337,7 +351,7 @@ class ReportRepository implements ReportRepositoryInterface{
                                                 'name'=> $user->first_name .' '. $user->last_name,
                                                 'department'=> (isset($user->department_id)) ? $user->department()->get()[0]->department_name : "" ,
                                                 'status'=> $user->employment_status,
-                                                
+                                                'timezone'=> $user->country_zone()->country_time_zone,
                                             ), 
                     'summary' =>  $data
                 );
@@ -511,7 +525,8 @@ class ReportRepository implements ReportRepositoryInterface{
                     DB::raw("sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as reg_night_dif"),
                     DB::raw("sum(drt_summary_report.reg_overtime) as reg_over_time"),
                     DB::raw("sum(drt_summary_report.reg_overtime_night_diff) as reg_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.rd_rendered_hours + drt_summary_report.rd_rendered_hours_overlapp) as rd_rendered_hr"),
+                    DB::raw("sum(drt_summary_report.rd_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.rd_rendered_hours_overlapp,0)) - sum(drt_summary_report.rd_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.rd_night_diff_overlapp,0)) as rd_rendered_hr"),
+                    // DB::raw("sum(drt_summary_report.rd_rendered_hours + drt_summary_report.rd_rendered_hours_overlapp) as rd_rendered_hr"),
                     DB::raw("sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp) as rd_night_dif"),
                     DB::raw("sum(drt_summary_report.rd_overtime) as rd_over_time"),
                     DB::raw("sum(drt_summary_report.rd_overtime_night_diff) as rd_over_night_dif"),

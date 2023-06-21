@@ -97,34 +97,34 @@ class ChangeSchedule extends Component {
 				
 			}
 
-			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HH')) || 
-			parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HH'))){
-				nsdAlertCall = true;
-				// console.log("1a");
+			// if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HH')) || 
+			// parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HH'))){
+			// 	nsdAlertCall = true;
+			// 	// console.log("1a");
 				
-			}
-			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) < 7 ){
-				nsdAlertCall = true;
-				// console.log("1b");
+			// }
+			// if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) < 7 ){
+			// 	nsdAlertCall = true;
+			// 	// console.log("1b");
 			
-			}
-			if(parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 ){
-				nsdAlertCall = true;
-				// console.log("1c");
+			// }
+			// if(parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 ){
+			// 	nsdAlertCall = true;
+			// 	// console.log("1c");
 				
-			}
+			// }
 			
 			
 
-			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HHmm'))  >  parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HHmm'))  ){
-				beforeFlexAlertCall = true;
-				// console.log(beforeFlexAlertCall);
-				// console.log("1");
-			}else if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HHmm'))  <  parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HHmm')) - 1200){
-				beforeFlexAlertCall = true;
-				// console.log(beforeFlexAlertCall);
-				// console.log("2");
-			}
+			// if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HHmm'))  >  parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HHmm'))  ){
+			// 	beforeFlexAlertCall = true;
+			// 	// console.log(beforeFlexAlertCall);
+			// 	// console.log("1");
+			// }else if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HHmm'))  <  parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HHmm')) - 1200){
+			// 	beforeFlexAlertCall = true;
+			// 	// console.log(beforeFlexAlertCall);
+			// 	// console.log("2");
+			// }
 		
 		}
 	  }

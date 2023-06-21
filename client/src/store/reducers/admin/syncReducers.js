@@ -18,6 +18,13 @@ const syncReducers = (state = initState, action) => {
                 leaves: action.content
             };
             break;
+
+        case "SYNC_UTC_ADJUST":
+            return {
+                ...state,
+                leaves: action.content
+            };
+            break;
         case "SYNC_USER_UPDATES":
             return {
                 ...state,

@@ -762,7 +762,7 @@ class Dtr extends Model
             $status[] = "on_leave"; 
             $isRestDayHolidayLeave = true;
         }
-        
+
         # Check if there is schedule
         if( $this->hasSchedule() ){
             if( !$isRestDayHolidayLeave ){
