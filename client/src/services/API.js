@@ -38,7 +38,7 @@ class API  {
       var request = JSON.stringify([url, method, data, params]);
       if (!this.requests.includes(request)) {
         this.requests.push(request);
-        console.log('Pending', this.requests);
+        //console.log('Pending', this.requests);
 
         // Tracks the AXIOS call (Automatically outputs the Loader)
         return trackPromise(
@@ -174,7 +174,7 @@ class API  {
     if (index > -1) {
       this.requests.splice(index, 1);
     }
-    console.log('Done', this.requests)
+    //console.log('Done', this.requests)
   }
 };
 
