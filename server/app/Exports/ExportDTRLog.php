@@ -44,6 +44,8 @@ class ExportDTRLog implements FromCollection,  WithHeadings, WithMapping
                 $data["full_name"],
                 $data["department"],
                 $data["date"],
+                count($data["holidays"]) > 0 ? $data["holidays"][0]['type'] : null,
+                count($data["holidays"]) > 0 ? $data["holidays"][0]['name'] : null,
                 $this->toggle_pov ? Auth::user()->country_zone()->country_time_zone : $data["timezone"],
                 $this->toggle_pov ? $data["time_in"] : $data['user_POV']["time_in"] ,
                 $this->toggle_pov ? $data["time_out"] : $data['user_POV']["time_out"],
@@ -80,6 +82,10 @@ class ExportDTRLog implements FromCollection,  WithHeadings, WithMapping
             "DEP",
 
             "DATE",
+
+            "HOL TYPE",
+
+            "HOLIDAY",
 
             "POV",
 
