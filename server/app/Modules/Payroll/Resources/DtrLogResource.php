@@ -34,6 +34,16 @@ class DtrLogResource extends JsonResource
             //         $payroll_items[ $payroll_item->item] = $payroll_item->value;
             //     }
             // }
+
+
+            # Create Resource for Holidays
+            $holidays = [];
+            foreach( $this->holidays()->get() as $holiday){
+                $holidays[ $holiday->id ] = [
+                    'name'  => $holiday->name,
+                    'type'  => strtoupper($holiday->type)
+                ];
+            }
             $result = DB::table('drt_summary_report')
             
             ->select(DB::raw("unpaid_leave as ul,reg_late as late,reg_undertime as undertime,
@@ -89,6 +99,7 @@ class DtrLogResource extends JsonResource
                 'full_name' => $user->getFullName(),
                 'payroll_items' => $payroll_items,
                 'timezone' =>  $user->country_zone()->country_time_zone,
+                'holidays' => $holidays,
                 'user_POV' => [
 
                     'time_in' => timestamp_to_time( $this->time_in , true ,  $user),

@@ -12,6 +12,7 @@ import { InputDate,InputTime   } from '../../../components/DatePickerComponent/D
 import { fetchDtrLogs, exportDtrLogs } from '../../../store/actions/dtr/dtrLogsAction';
 import { Form  } from 'react-bootstrap';
 import Paginate from "../../../components/Template/Paginate/index.js";
+import DtrFormatter from '../../../services/DtrFormatter';
 
 class DtrLogs extends Component {
 
@@ -137,7 +138,7 @@ class DtrLogs extends Component {
                     </Col>
                     </Row>       
 				  <div className="content-table">
-				  
+			
 
                       { this.props.dtrLogs?.isListLoaded? (
                         <div className="dtr-summary-table">
@@ -149,6 +150,7 @@ class DtrLogs extends Component {
                                   <th scope="col" class="th-name">Name</th>
                                   <th scope="col" class="th-dept">Department</th>
                                   <th scope="col">Date</th>
+                                  <th scope="col">HOL</th> 
                                   <th scope="col">POV <div> {this.state.toggle_pov == true ?"(User)": "(Default)"}</div> </th>
                                   <th scope="col">Time In</th>
                                   <th scope="col">Time Out</th>
@@ -176,6 +178,7 @@ class DtrLogs extends Component {
                                             <td>{list.full_name}</td>
                                             <td>{list.department}</td> 
                                             <td>{list.date}</td>
+                                            <td>{DtrFormatter.displayHolidayType(list.holidays)}</td>
                                             <td>{this.state.toggle_pov == true ?this.props.user.timezone : list.timezone}</td>
                                             <td>{this.state.toggle_pov == true ? list.time_in : list.user_POV?.time_in}</td>
                                             <td>{this.state.toggle_pov == true ? list.time_out :list.user_POV?.time_out }</td>

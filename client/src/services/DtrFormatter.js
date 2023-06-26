@@ -120,6 +120,19 @@ class DtrFormatter {
         
     }
 
+      /** Display List of Holiday */
+      displayHolidayType(holiday){ 
+        var holidayList = []; 
+
+        if(holiday!=undefined){
+            holiday.map((day, index) => { 
+                holidayList.push(<div className={"log-"+day.type}>{day.type}</div>);
+            }); 
+        }
+            return (<div>{holidayList}</div>);
+        
+    }
+
     /** Display the regular and previous day */
     displayOverlap(payroll_policies){ 
         if(payroll_policies!=undefined){
