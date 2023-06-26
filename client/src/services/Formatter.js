@@ -38,10 +38,10 @@ class Formatter {
   */
   alert_error( error_result, time_out ) {
     time_out = time_out || 0;
-    if (error_result && error_result.status == 499) {
+    if (!error_result || (error_result && error_result.status == 499)) {
       return {
         'type'      : 'DO_NOTHING',
-        'error'     : error_result.statusText ? error_result.statusText: 'DUPLICATE_REQUEST_INTERCEPTED',
+        'error'     : 'DUPLICATE_REQUEST_INTERCEPTED',
         'timeOut'   : time_out
       }
     }
