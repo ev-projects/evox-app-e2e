@@ -19,7 +19,6 @@ use App\Modules\Payroll\Models\Holiday;
 use Spatie\Permission\Models\Permission;
 use App\Modules\User\Resources\RoleResource;
 use Illuminate\Database\Eloquent\Collection;
-use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\User\Resources\HolidayResource;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\LeavesListResource;

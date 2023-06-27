@@ -18,6 +18,7 @@ use App\Modules\Payroll\Models\Biometrics;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\Computation;
 use App\Modules\Payroll\Models\DtrHoliday;
+use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Models\DtrSummaryReport;
 use App\Modules\Request\Models\RestDayWork;
 use Illuminate\Database\Eloquent\Collection;
@@ -1848,5 +1849,96 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
+    /**
+     * check if dtr is on multi clock in system
+     * @param Collection $dtr_collection
+     * @return Collection $leaves_collections
+     */
+    public function check_if_use_logs( $date , $user_id){
+        try{
+            $on_multi = false;
+            $dtr = Dtr::where("user_id", $user_id)->where("date",$date)->first();
+            if( $dtr != null ){
+                if( $dtr->use_schedule == false && $dtr->use_logs == true ){
+                    $on_multi = true;
+                }
+            }
+
+
+            return $on_multi;
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+      /**
+     * apply_punch_to_history
+     * @param Collection $dtr_collection
+     * @return Collection $leaves_collections
+     */
+    public function apply_punch_to_history( string $date , $user_id, Collection $biometrics_collection){
+        try{
+            DB::beginTransaction();
+
+            $dtr = Dtr::where("user_id", $user_id)->where("date",$date)->first();
+            if( $dtr != null ){
+                if( $dtr->use_schedule == false && $dtr->use_logs == true ){
+
+
+                    foreach( $biometrics_collection as $biometrics ){
+
+                        try{
+                            $dtr_punch = new DtrPunchHistory();
+
+
+                            $dtr_punch_check = DtrPunchHistory::where('date', $date)->latest('id')->first();
+                            if($dtr_punch_check){
+                            //   if(   $dtr_punch_check->){
+
+                            //   }
+                            }
+                                
+                            
+                            
+                            $dtr_punch = new DtrPunchHistory();
+                            $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
+                            $dtr_punch->user_id =  $user_id;
+                            $dtr_punch->date =  $date;
+                            $dtr_punch->log_action =  $biometrics->getTimeType();
+
+                            if($biometrics->getTimeType() == "time_out"){
+                                $previous_dtr_punch =  DtrPunchHistory::where('date', $date)->latest('id')->first();
+                                $dtr_punch->time_in = $previous_dtr_punch->time_in;
+                            }
+                            $dtr_punch->save();
+                        } catch (Exception $e) {
+                            log_to_file( 'info', '[RECORD ERROR' . __FUNCTION__ . ']',  ['biometrics'=> $biometrics], "biometrix");
+                            continue;
+                        }
+    
+                    }
+
+
+                }
+            }
+
+         
+            DB::commit();
+            
+            
+
+        
+        } catch (Exception $e) {
+            DB::rollBack();
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+
+
 
 }

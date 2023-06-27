@@ -100,17 +100,16 @@ class DtrController extends Controller
             $biometrics->CheckTime       = date("Y-m-d H:i:s");
             $biometrix_collection->push( $biometrics );
 
-                            // $date = Carbon::createFromFormat('Y-m-d H:i:s', $biometrics->CheckTime,  Auth::user()->timezone );
-                            //     // $date->setTimezone('UTC');
-                            //     // $date;
-                            //     $date = $date->setTimezone("UTC");
-                            // dd(
-                            //     Auth::user()->country_zone(),
-                            //     Auth::user()->timezone,
-                            //     $date,
-                            //     $date->format('Y-m-d H:i:s'),
-                                
-                            // );
+
+            $date_check =   Carbon::now()
+                            ->addSecond(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()))
+                            ->startOfDay();
+            $date_check_formatted = $date_check->format("Y-m-d");
+            if($this->dtr->check_if_use_logs($date_check_formatted,Auth::user()->id)){
+       
+                $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection);
+            }
+            // dd($biometrix_collection);
             $dtr_id = null;
             if ($request->dtr_id) {
                 $dtr_id = $request->dtr_id;

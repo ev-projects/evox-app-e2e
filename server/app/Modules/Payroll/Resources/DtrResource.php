@@ -131,7 +131,8 @@ class DtrResource extends JsonResource
 
             $now = Carbon::now()->timestamp;
 
-
+            
+      
             $is_within_time = false;
             $is_within_time_extended = false;
             $checked_end_time =  $this->end_datetime;
@@ -141,6 +142,28 @@ class DtrResource extends JsonResource
             if($this->is_rest_day == 0){
                 $is_within_time = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $this->is_rest_day == 0 ;
                 $is_within_time_extended = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  21600) && $this->is_rest_day == 0 ;
+            }
+
+
+
+            $on_multiple_log = false;
+
+            if($this->use_schedule == false && $this->use_logs == true){
+                // $is_within_time = true;
+                // $is_within_time_extended = true;
+
+                $on_multiple_log = true;
+
+                $recent_log = $this->get_dtr_history()->latest()->first();
+
+                
+                $this->time_in =  $recent_log ? $recent_log->time_in : null;
+                $this->time_out = $recent_log ? $recent_log->time_out : null;
+                // $this->start_datetime  = null;
+                // $this->end_datetime  = null;
+                // $this->start_flexy_datetime  = null;
+                // $this->end_flexy_datetime  = null;
+                // $this->break_time  = null;
             }
 
             $owner = $this->user()->first();
@@ -165,6 +188,7 @@ class DtrResource extends JsonResource
 
                     'with_in_time' => $is_within_time,
                     'with_in_time_extended' => $is_within_time_extended,
+                    'on_multiple_login' => $on_multiple_log
                     // 'timezone' =>  $owner->country_zone()->country_time_zone,
                 ), 
                 array('payroll_items' => $payroll_items),
