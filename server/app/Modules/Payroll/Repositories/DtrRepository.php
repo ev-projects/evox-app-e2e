@@ -1890,29 +1890,44 @@ class DtrRepository implements DtrRepositoryInterface{
                     foreach( $biometrics_collection as $biometrics ){
 
                         try{
-                            $dtr_punch = new DtrPunchHistory();
+                        
 
 
                             $dtr_punch_check = DtrPunchHistory::where('date', $date)->latest('id')->first();
+                            // dump($dtr_punch_check);
                             if($dtr_punch_check){
-                            //   if(   $dtr_punch_check->){
+                                // dd();
+                                if($dtr_punch_check->time_out == null){
+                                $dtr_punch = $dtr_punch_check;
 
-                            //   }
-                            }
-                                
-                            
-                            
-                            $dtr_punch = new DtrPunchHistory();
-                            $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
-                            $dtr_punch->user_id =  $user_id;
-                            $dtr_punch->date =  $date;
-                            $dtr_punch->log_action =  $biometrics->getTimeType();
+                                $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
+                                $dtr_punch->user_id =  $user_id;
+                                $dtr_punch->date =  $date;
+                                $dtr_punch->log_action =  $biometrics->getTimeType();
+    
+                      
+                                $dtr_punch->update();
+                                }else{
+                                    $dtr_punch = new DtrPunchHistory();
+        
+                                    $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
+                                    $dtr_punch->user_id =  $user_id;
+                                    $dtr_punch->date =  $date;
+                                    $dtr_punch->log_action =  $biometrics->getTimeType();
+        
+                                    $dtr_punch->save();
+                                }
 
-                            if($biometrics->getTimeType() == "time_out"){
-                                $previous_dtr_punch =  DtrPunchHistory::where('date', $date)->latest('id')->first();
-                                $dtr_punch->time_in = $previous_dtr_punch->time_in;
+                            }else{
+                                $dtr_punch = new DtrPunchHistory();
+        
+                                $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
+                                $dtr_punch->user_id =  $user_id;
+                                $dtr_punch->date =  $date;
+                                $dtr_punch->log_action =  $biometrics->getTimeType();
+    
+                                $dtr_punch->save();
                             }
-                            $dtr_punch->save();
                         } catch (Exception $e) {
                             log_to_file( 'info', '[RECORD ERROR' . __FUNCTION__ . ']',  ['biometrics'=> $biometrics], "biometrix");
                             continue;
