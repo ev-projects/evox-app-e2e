@@ -16,7 +16,7 @@ class CreateCollectivePunch extends Migration
         Schema::create('dtr_collective_punch', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('dtr_collective_punch_history_id')->nullable();;
-            $table->unsignedInteger('user_id')->nullable();;
+            $table->unsignedInteger('user_id')->nullable();
             $table->date('date');
             $table->bigInteger('time_in');
             $table->bigInteger('time_out');
