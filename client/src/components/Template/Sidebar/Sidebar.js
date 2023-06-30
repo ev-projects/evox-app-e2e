@@ -82,6 +82,19 @@ const Sidebar = (props) => {
                 </li>
               )}
 
+                     {/*  EMPLOYEE Links */}
+                     {Authenticator.check("employee", "employee_access") && (
+                <li className="nav-item">
+                  <Link
+                    className="nav-link"
+                    to={global.links.dtr_punch_history + user.id + "/"}
+                  >
+                    <i className="nav-icon fa fa-clock-o nav-icon" />
+                    <p> Punch History</p>
+                  </Link>
+                </li>
+              )}
+
               {Authenticator.check("employee", "employee_access") && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">

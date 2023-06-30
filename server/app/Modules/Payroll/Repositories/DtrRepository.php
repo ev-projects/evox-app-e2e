@@ -1849,28 +1849,28 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
-    /**
-     * check if dtr is on multi clock in system
-     * @param Collection $dtr_collection
-     * @return Collection $leaves_collections
-     */
-    public function check_if_use_logs( $date , $user_id){
-        try{
-            $on_multi = false;
-            $dtr = Dtr::where("user_id", $user_id)->where("date",$date)->first();
-            if( $dtr != null ){
-                if( $dtr->use_schedule == false && $dtr->use_logs == true ){
-                    $on_multi = true;
-                }
-            }
+    // /**
+    //  * check if dtr is on multi clock in system
+    //  * @param Collection $dtr_collection
+    //  * @return Collection $leaves_collections
+    //  */
+    // public function check_if_use_logs( $date , $user_id){
+    //     try{
+    //         $on_multi = false;
+    //         $dtr = Dtr::where("user_id", $user_id)->where("date",$date)->first();
+    //         if( $dtr != null ){
+    //             if( $dtr->use_schedule == false && $dtr->use_logs == true ){
+    //                 $on_multi = true;
+    //             }
+    //         }
 
 
-            return $on_multi;
-        } catch (Exception $e) {
-            log_error($e);
-            throw $e;
-        }
-    }
+    //         return $on_multi;
+    //     } catch (Exception $e) {
+    //         log_error($e);
+    //         throw $e;
+    //     }
+    // }
 
 
       /**
@@ -1882,13 +1882,10 @@ class DtrRepository implements DtrRepositoryInterface{
         try{
             DB::beginTransaction();
 
-            $dtr = Dtr::where("user_id", $user_id)->where("date",$date)->first();
-            if( $dtr != null ){
-                if( $dtr->use_schedule == false && $dtr->use_logs == true ){
 
-
+       
                     foreach( $biometrics_collection as $biometrics ){
-
+                        // dd($biometrics);
                         try{
                         
 
@@ -1915,7 +1912,12 @@ class DtrRepository implements DtrRepositoryInterface{
                                     $dtr_punch->date =  $date;
                                     $dtr_punch->log_action =  $biometrics->getTimeType();
         
-                                    $dtr_punch->save();
+                                    if(  $dtr_punch->time_in != null){
+                                        $dtr_punch->save();
+                                    }
+                                    else{
+                                        return false;
+                                    }
                                 }
 
                             }else{
@@ -1926,7 +1928,9 @@ class DtrRepository implements DtrRepositoryInterface{
                                 $dtr_punch->date =  $date;
                                 $dtr_punch->log_action =  $biometrics->getTimeType();
     
-                                $dtr_punch->save();
+                                if(  $dtr_punch->time_in != null){
+                                    $dtr_punch->save();
+                                }
                             }
                         } catch (Exception $e) {
                             log_to_file( 'info', '[RECORD ERROR' . __FUNCTION__ . ']',  ['biometrics'=> $biometrics], "biometrix");
@@ -1936,12 +1940,12 @@ class DtrRepository implements DtrRepositoryInterface{
                     }
 
 
-                }
-            }
+                
+            
 
          
             DB::commit();
-            
+            return true;
             
 
         

@@ -35,8 +35,8 @@ class ScheduleRequest extends FormRequest
         $rules = [
             'bind_to'                                   => 'string|in:user,department',
             'bind_id'                                   => 'string',
-            'schedule_type'                             => 'required|string|in:standard,flexible,customize',
-            'valid_from'                                => 'required_if:source_type,temporary|required_if:source_type,change_schedule|required_if:source_type,default|date_format:Y-m-d',
+            'schedule_type'                             => 'required|string|in:standard,flexible,customize, empty',
+            'valid_from'                                => 'required_if:source_type,temporary|required_if:source_type,change_schedule|required_if:source_type,default|required_if:source_type,empty|date_format:Y-m-d',
             'valid_to'                                  => 'required_if:source_type,temporary|required_if:source_type,change_schedule|date_format:Y-m-d',
             'work_days'                                 => 'array',            
             'schedule_policies.*'                       => 'bool|in:'.implode(',', array_merge(get_constant('SCHEDULE_POLICIES'), get_constant('SCHEDULE_HOLIDAY_POLICIES'))),
@@ -54,7 +54,7 @@ class ScheduleRequest extends FormRequest
             }
 
         // If Schedule Type is Standard/Flexible, set the rules for "All" Work Day 
-        } elseif( isset( $request->schedule_type ) && in_array($request->schedule_type, array('standard', 'flexible')) ) {
+        } elseif( isset( $request->schedule_type ) && in_array($request->schedule_type, array('standard', 'flexible', 'empty')) ) {
             $rules = array_merge($rules, create_work_day_rule("all"));
         }
         

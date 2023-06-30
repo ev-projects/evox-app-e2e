@@ -27,7 +27,7 @@ class Biometrics extends Model
      */
     public function isIn()
     {
-        return ( $this->CheckType == "I" ) ? true : false;
+        return ( $this->CheckType == "I" || $this->CheckType == "C"  ) ? true : false;
     }
 
     
@@ -38,7 +38,7 @@ class Biometrics extends Model
      */
     public function isOut()
     {
-        return ( $this->CheckType == "O" ) ? true : false;
+        return ( $this->CheckType == "O" || $this->CheckType == "P"  ) ? true : false;
     }
 
 

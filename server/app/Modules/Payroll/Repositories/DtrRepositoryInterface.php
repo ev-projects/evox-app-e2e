@@ -47,7 +47,7 @@ interface DtrRepositoryInterface
 
     public function apply_dtr_to_simcorp_dtr( $user, $bypass = false ,  $valid_from, $valid_to , $sched_policy);
 
-    public function check_if_use_logs( string $date , $user_id);
+    // public function check_if_use_logs( string $date , $user_id);
 
     public function apply_punch_to_history( string $date , $user_id, Collection $biometrics);
     

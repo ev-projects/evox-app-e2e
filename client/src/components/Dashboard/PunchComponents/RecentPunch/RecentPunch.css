@@ -1,0 +1,5 @@
+.recent_punch-table{
+    max-height: 400px !important;
+    overflow: hidden !important;
+    overflow-y: scroll !important;
+} 
