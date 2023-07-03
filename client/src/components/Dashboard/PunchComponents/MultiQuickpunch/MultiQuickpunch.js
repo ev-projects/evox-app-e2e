@@ -69,6 +69,34 @@ class MultiQuickpunch extends Component {
 		quickpunch : null
 	}
 
+	const { recent_punch, isRecentPunchLoaded } = this.props.dashboard;
+	var isLogIn = false;
+	var isContinue = false;
+	var islogOut = false;
+	var latest = null;
+	if(isRecentPunchLoaded == true){
+		if(recent_punch.length > 0){
+			// console.log(recent_punch[recent_punch.length - 1]);
+			latest = recent_punch[recent_punch.length - 1];
+
+			if(latest.recent_log == "Pause"){
+				isContinue = true;
+			}
+
+			if(latest.recent_log == "Log_out"  ){
+				isLogIn = true;
+			}
+
+			if(latest.recent_log == "Log_in" || latest.recent_log == "Continue"  ){
+				islogOut = true;
+			}
+
+		}
+		if(recent_punch.length == 0 ){
+			isLogIn = true;
+		}
+	}
+
     return(<Formik 
 		enableReinitialize
 		onSubmit={this.onSubmitHandler} 
@@ -93,13 +121,30 @@ class MultiQuickpunch extends Component {
 				<Col>Minutes</Col>
 				<Col>Seconds </Col>
 			</Row>
+			{
+				isRecentPunchLoaded == true? 
 
-			<Button  type="submit"  onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
-{/* 			
-			<Button onClick={(e)=> { setFieldValue('quickpunch','pause');   }}  type="submit" >Pause</Button>
-			<Button onClick={(e)=> { setFieldValue('quickpunch','continue');   }}  type="submit" >Continue</Button> */}
+				<>
+				<Button  type="submit"  disabled={!isLogIn}   onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
+			
+				{!isLogIn? 
+					<>
+						{isContinue ?
+						<Button onClick={(e)=> { setFieldValue('quickpunch','continue');   }}  type="submit" ><i className="fa fa-pause" /> Continue</Button>:
+							<Button onClick={(e)=> { setFieldValue('quickpunch','pause');   }}  type="submit" ><i className="fa fa-play" /> Pause</Button>
+							
+						}
+					</>
+				
+				:<></>}
+{/* 
+<Button onClick={(e)=> { setFieldValue('quickpunch','pause');   }}  type="submit" >--Pause</Button>:
+					<Button onClick={(e)=> { setFieldValue('quickpunch','continue');   }}  type="submit" >--Continue</Button> */}
 
-			<Button onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+				<Button disabled={!islogOut}  onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+				</>:<></>
+			}
+			
 
 		
 		</div>

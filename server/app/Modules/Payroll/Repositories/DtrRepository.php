@@ -1888,9 +1888,18 @@ class DtrRepository implements DtrRepositoryInterface{
                         // dd($biometrics);
                         try{
                         
+                            $same_day = false;
+                            $dtr_punch_date_check = DtrPunchHistory::where("user_id",  $user_id)->latest('id')->first();
+                            if($dtr_punch_date_check){
+                                if($dtr_punch_date_check->date == $date){
+                                    $same_day = true;
+                                }
+                            }
+                            if(DtrPunchHistory::where("user_id",  $user_id)->count() == 0){
+                                $same_day = true;
+                            }
 
-
-                            $dtr_punch_check = DtrPunchHistory::where('date', $date)->latest('id')->first();
+                            $dtr_punch_check = DtrPunchHistory::where("user_id",  $user_id)->where('date', $date)->latest('id')->first();
                             // dump($dtr_punch_check);
                             if($dtr_punch_check){
                                 // dd();
@@ -1899,11 +1908,17 @@ class DtrRepository implements DtrRepositoryInterface{
 
                                 $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
                                 $dtr_punch->user_id =  $user_id;
-                                $dtr_punch->date =  $date;
+                                // $dtr_punch->date =  $date;
                                 $dtr_punch->log_action =  $biometrics->getTimeType();
+                                $dtr_punch->log_out_type = $biometrics->getLogType();
+
+                                
     
-                      
+                                
                                 $dtr_punch->update();
+
+
+                                
                                 }else{
                                     $dtr_punch = new DtrPunchHistory();
         
@@ -1911,26 +1926,74 @@ class DtrRepository implements DtrRepositoryInterface{
                                     $dtr_punch->user_id =  $user_id;
                                     $dtr_punch->date =  $date;
                                     $dtr_punch->log_action =  $biometrics->getTimeType();
-        
+                                    $dtr_punch->log_in_type = $biometrics->getLogType();
+                                    
                                     if(  $dtr_punch->time_in != null){
                                         $dtr_punch->save();
+                                        
                                     }
                                     else{
                                         return false;
                                     }
                                 }
 
+
+                        // create a new DtrPunch    
                             }else{
-                                $dtr_punch = new DtrPunchHistory();
-        
-                                $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
-                                $dtr_punch->user_id =  $user_id;
-                                $dtr_punch->date =  $date;
-                                $dtr_punch->log_action =  $biometrics->getTimeType();
-    
-                                if(  $dtr_punch->time_in != null){
-                                    $dtr_punch->save();
+                                // dd($biometrics->getTimeType());
+                                if($same_day){
+                                    $dtr_punch = new DtrPunchHistory();
+
+                                
+                                    $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
+                                    // dd($dtr_punch->time_in != null);
+                                    $dtr_punch->user_id =  $user_id;
+                                    $dtr_punch->date =  $date;
+                                    $dtr_punch->log_action =  $biometrics->getTimeType();
+                                    $dtr_punch->log_in_type = $biometrics->getLogType();
+
+                                    if(  $dtr_punch->time_in != null){  
+                                        $dtr_punch->save();
+                                    }
                                 }
+                                else{
+                                    $date_check =   Carbon::createFromFormat('Y-m-d',  $date)
+                                    ->startOfDay()
+                                    ->subSecond(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()))
+                                    ;
+                                    
+                                    $dtr_punch = DtrPunchHistory::where("user_id",  $user_id)->latest('id')->first();
+
+                                
+                                    $dtr_punch->{ $biometrics->getTimeType() } = $date_check->timestamp+ 0;
+                                    // dd($dtr_punch->time_in != null);
+                                    $dtr_punch->user_id =  $user_id;
+                                    // $dtr_punch->date =  $date;
+                                    $dtr_punch->log_action =  $biometrics->getTimeType();
+                                    $dtr_punch->log_out_type = "Pause";
+
+                                    if(  $dtr_punch->time_in != null){  
+                                        $dtr_punch->update();
+                                    }
+
+
+                                    $dtr_punch_2 = new DtrPunchHistory();
+
+                                    $dtr_punch_2->time_in = $date_check->timestamp+ 1+ 0;
+                                    $dtr_punch_2->time_out = datetime_to_timestamp( $biometrics->CheckTime );
+                                    // dd($dtr_punch_2->time_in != null);
+                                    $dtr_punch_2->user_id =  $user_id;
+                                    $dtr_punch_2->date =  $date;
+                                    $dtr_punch_2->log_action =  $biometrics->getTimeType();
+                                    $dtr_punch_2->log_in_type = "Continue";
+                                    $dtr_punch_2->log_out_type = $biometrics->getLogType();
+
+                                    if(  $dtr_punch_2->time_in != null){  
+                                        $dtr_punch_2->save();
+                                    }
+                                }
+                               
+                                
                             }
                         } catch (Exception $e) {
                             log_to_file( 'info', '[RECORD ERROR' . __FUNCTION__ . ']',  ['biometrics'=> $biometrics], "biometrix");
@@ -1942,8 +2005,8 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 
             
-
-         
+                    // dump(timestamp_to_time(   $dtr_punch->time_out ),timestamp_to_time(   $dtr_punch_2->time_in));
+                    // dd($dtr_punch,  $dtr_punch_2);
             DB::commit();
             return true;
             

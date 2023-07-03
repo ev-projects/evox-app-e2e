@@ -183,18 +183,18 @@ class DtrController extends Controller
                             ->startOfDay();
             $date_check_formatted = $date_check->format("Y-m-d");
             if(Auth::user()->department_schedule_active()){
-       
+                
                 $result = $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection);
 
                 if(!$result){ 
                     return error_response( trans(' you need to clock in '),  );
                 }
             }
-            // dd($biometrix_collection);
-            $dtr_id = null;
-            if ($request->dtr_id) {
-                $dtr_id = $request->dtr_id;
-            }
+            // // dd($biometrix_collection);
+            // $dtr_id = null;
+            // if ($request->dtr_id) {
+            //     $dtr_id = $request->dtr_id;
+            // }
             
             return success_response(
                 trans('messages.quickpunch_'.$request->quickpunch.'_success'), 
