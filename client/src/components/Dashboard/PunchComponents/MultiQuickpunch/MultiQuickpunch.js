@@ -33,8 +33,16 @@ class MultiQuickpunch extends Component {
 				}
 			}
 		}
-		// console.log( formData)
-		this.props.biometrixLogMulti(  formData , this.props.user.id );
+		// console.log( values['on_date'] == true ,formData)
+		if( values['on_date'] == true){
+			if (window.confirm("Are you sure you want Update or create record on seleceted date")) {
+
+				this.props.biometrixLogMulti(  formData , this.props.user.id );
+			  }
+		}else{
+				this.props.biometrixLogMulti(  formData , this.props.user.id );
+
+		}
 	}
 	addSeconds(date, seconds) {
 		date.setSeconds(date.getSeconds() + seconds);
@@ -74,8 +82,9 @@ class MultiQuickpunch extends Component {
 	var isContinue = false;
 	var islogOut = false;
 	var latest = null;
-
 	var use_previous = false;
+
+
 	if(isRecentPunchLoaded == true){
 
 		
@@ -101,12 +110,23 @@ class MultiQuickpunch extends Component {
 		if(recent_punch.length > 0){
 			// console.log( latest.date, moment().format("Y-MM-DD"));
 			latest = recent_punch[recent_punch.length - 1];
+			console.log(latest.time_out,moment.unix(latest.time_out));
+			var time = new Date(latest.date_time_out);
+			var formatted = moment(time);
+			console.log(formatted); 
 			if(latest.recent_log == "Log_out"  && latest.date != moment(this.state.time).format("Y-MM-DD")){
 				// isLogIn = true;
 				
-				if(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(3, 'hours'))){
+				if(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(5, 'hours'))){
+					
 					use_previous = true;
-					// console.log(use_previous);
+				if(latest.time_out != null && latest.recent_log == "Log_out"){
+					var time = new Date(latest.date_time_out);
+					var formatted = moment(time);
+					if(formatted.isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(3, 'hours'))){
+						use_previous = false;
+					}
+				}
 				}
 			}
 			// console.log(recent_punch);
@@ -117,13 +137,19 @@ class MultiQuickpunch extends Component {
 
 		if(recent_punch.length == 0 ){
 			isLogIn = true;
+			if(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(3, 'hours'))){
+				console.log("2222");
+				use_previous = true;
+				console.log("2222");
+			}
 		}
 
 
 
 
 	}
-
+	console.log("333");
+	console.log(use_previous);
 	const initialValue = {
 		quickpunch : null,
 		date : "today",

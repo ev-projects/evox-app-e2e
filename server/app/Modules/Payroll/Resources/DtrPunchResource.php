@@ -27,6 +27,9 @@ class DtrPunchResource extends JsonResource
                 'time_in' => timestamp_to_time( $this->time_in ),
                 'time_out' =>timestamp_to_time( $this->time_out ),
 
+                'date_time_in' => timestamp_to_datetime( $this->time_in ),
+                'date_time_out' =>timestamp_to_datetime( $this->time_out ),
+
                 'log_action' => ( $this->log_action ),
                 'log_in_type' =>( $this->log_in_type ),
                 'log_out_type' =>( $this->log_out_type != null ? $this->log_out_type : null ),
