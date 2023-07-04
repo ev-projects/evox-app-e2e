@@ -181,6 +181,15 @@ class DtrController extends Controller
             $date_check =   Carbon::now()
                             ->addSecond(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()))
                             ->startOfDay();
+
+                            // dd($request->all(), $request->on_date == true);
+            if($request->date == "yesterday" && $request->on_date == true){
+
+                $date_check =   Carbon::now()
+                ->addSecond(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()))
+                ->startOfDay()
+                ->subDay(1);
+            }
             $date_check_formatted = $date_check->format("Y-m-d");
             if(Auth::user()->department_schedule_active()){
                 

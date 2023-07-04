@@ -1897,16 +1897,24 @@ class DtrRepository implements DtrRepositoryInterface{
                     $dtr_punch_date_check = $user->punch($date_prev, $date)
                         ->whereNotNull('log_out_type')
                         ->where('log_out_type', "Log_out")->latest('id')->first();
-
+                    // dd($dtr_punch_date_check);
                     if ($dtr_punch_date_check) {
                         if ($dtr_punch_date_check->date == $date) {
+                            // error_log(1);
                             $same_day = true;
                         }
                         if ($dtr_punch_date_check->log_out_type == "Log_out") {
+                            // error_log(3);
                             $same_day = true;
+                            // dd();
                         }
-                    }
 
+                        // if ($dtr_punch_date_check->log_out_type == "Log_out") {
+                        //     error_log(3);
+                        //     $same_day = true;
+                        // }
+                    }
+                    // dd($same_day);
                     $dtr_punch_check = $user->punch($date_prev, $date)->whereNull('log_out_type')->first();
 
                     if ($dtr_punch_check) {
@@ -1958,25 +1966,42 @@ class DtrRepository implements DtrRepositoryInterface{
                                 $dtr_punch->save();
                             }
                         } else {
-                            // dd("not smae");
+                
                             $check_paused = $user->punch($date_prev, $date)
                                 ->where('log_out_type', "!=", "Log_out")
                                 ->whereNotNull('log_out_type')->first();
-                            // dd("not smae",  $check_paused);
-                            if ($check_paused->log_out_type == "Pause") {
+                
+                            if ($check_paused) {
+                                if ($check_paused->log_out_type == "Pause") {
+                                    $dtr_punch = new DtrPunchHistory();
+    
+    
+                                    $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
+    
+                                    $dtr_punch->user_id =  $user_id;
+                                    $dtr_punch->date =  $check_paused->date;
+                                    $dtr_punch->log_action =  $biometrics->getTimeType();
+                                    $dtr_punch->log_in_type = $biometrics->getLogType();
+                                    if ($dtr_punch->time_in != null) {
+                                        $dtr_punch->save();
+                                    }
+                                }
+                            }
+                            else{
                                 $dtr_punch = new DtrPunchHistory();
 
 
                                 $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
-
                                 $dtr_punch->user_id =  $user_id;
-                                $dtr_punch->date =  $check_paused->date;
+                                $dtr_punch->date =  $date;
                                 $dtr_punch->log_action =  $biometrics->getTimeType();
                                 $dtr_punch->log_in_type = $biometrics->getLogType();
+    
                                 if ($dtr_punch->time_in != null) {
                                     $dtr_punch->save();
-                                }
+                                } 
                             }
+
                         }
                     }
                 } catch (Exception $e) {

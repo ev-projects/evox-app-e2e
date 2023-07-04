@@ -7,6 +7,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { biometrixLogMulti } from '../../../../store/actions/dtr/quickpunchActions'
 import * as Yup from 'yup';
+import Dropdown from 'react-bootstrap/Dropdown';
 // import { getRecentDtr } from '../../../../store/actions/dashboard/dashboardActions';
 
 class MultiQuickpunch extends Component {
@@ -32,6 +33,7 @@ class MultiQuickpunch extends Component {
 				}
 			}
 		}
+		// console.log( formData)
 		this.props.biometrixLogMulti(  formData , this.props.user.id );
 	}
 	addSeconds(date, seconds) {
@@ -65,16 +67,19 @@ class MultiQuickpunch extends Component {
     }
 
 	render = () => {  
-	const initialValue = {
-		quickpunch : null
-	}
+	
 
 	const { recent_punch, isRecentPunchLoaded } = this.props.dashboard;
 	var isLogIn = false;
 	var isContinue = false;
 	var islogOut = false;
 	var latest = null;
+
+	var use_previous = false;
 	if(isRecentPunchLoaded == true){
+
+		
+
 		if(recent_punch.length > 0){
 			// console.log(recent_punch[recent_punch.length - 1]);
 			latest = recent_punch[recent_punch.length - 1];
@@ -92,10 +97,40 @@ class MultiQuickpunch extends Component {
 			}
 
 		}
+
+		if(recent_punch.length > 0){
+			// console.log( latest.date, moment().format("Y-MM-DD"));
+			latest = recent_punch[recent_punch.length - 1];
+			if(latest.recent_log == "Log_out"  && latest.date != moment(this.state.time).format("Y-MM-DD")){
+				// isLogIn = true;
+				
+				if(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(3, 'hours'))){
+					use_previous = true;
+					// console.log(use_previous);
+				}
+			}
+			// console.log(recent_punch);
+		}
+		// console.log(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(12, 'hours')),
+		// moment(this.state.time).startOf('day'),
+		// moment(this.state.time).startOf('day').add(3, 'hours'));
+
 		if(recent_punch.length == 0 ){
 			isLogIn = true;
 		}
+
+
+
+
 	}
+
+	const initialValue = {
+		quickpunch : null,
+		date : "today",
+		on_date : use_previous,
+	}
+	
+
 
     return(<Formik 
 		enableReinitialize
@@ -125,7 +160,26 @@ class MultiQuickpunch extends Component {
 				isRecentPunchLoaded == true? 
 
 				<>
+				{!use_previous? 
+					<>
+						<Button  type="submit"  disabled={!isLogIn}   onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
+					</>
+				
+				:<>
+				
+				<label className=" select-date-multi">Select Date:
+				<select className="form-control-sm" style={{ display: 'block' }}>
+							{/* <option value="" label="" /> */}
+                            <option value="today" label={moment().format("Y-MM-DD")} onClick={(e)=> { setFieldValue('date',"today");   }} />
+                            <option value="yesterday" label={moment().subtract(1, 'day').format("Y-MM-DD")} onClick={(e)=> { setFieldValue('date',"yesterday");   }}  />
+                          </select>
+				</label>
+                         
+				<br />
 				<Button  type="submit"  disabled={!isLogIn}   onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
+				
+				</>}
+				
 			
 				{!isLogIn? 
 					<>
