@@ -130,8 +130,8 @@ class MultiQuickpunch extends Component {
 				{!isLogIn? 
 					<>
 						{isContinue ?
-						<Button onClick={(e)=> { setFieldValue('quickpunch','continue');   }}  type="submit" ><i className="fa fa-pause" /> Continue</Button>:
-							<Button onClick={(e)=> { setFieldValue('quickpunch','pause');   }}  type="submit" ><i className="fa fa-play" /> Pause</Button>
+						<Button onClick={(e)=> { setFieldValue('quickpunch','continue');   }}  type="submit" ><i className="fa fa-play" /> Continue</Button>:
+							<Button onClick={(e)=> { setFieldValue('quickpunch','pause');   }}  type="submit" ><i className="fa fa-pause" /> Pause</Button>
 							
 						}
 					</>
