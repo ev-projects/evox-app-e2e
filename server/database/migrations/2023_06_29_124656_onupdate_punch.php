@@ -15,7 +15,7 @@ class OnupdatePunch extends Migration
     {
         //
         DB::unprepared("
-        DROP TRIGGER IF EXISTS dtr_collective_punch_history;
+        DROP TRIGGER IF EXISTS onupdate_punch;
         CREATE TRIGGER onupdate_punch AFTER UPDATE ON dtr_collective_punch_history FOR EACH ROW BEGIN
         DECLARE v_timeid bigint;
         DECLARE v_timeout bigint;
@@ -30,11 +30,11 @@ class OnupdatePunch extends Migration
          SET v_timeid = UNIX_TIMESTAMP(CONVERT_TZ(FROM_UNIXTIME(NEW.time_in), @@session.time_zone, timelog ));
          SET v_timeout = UNIX_TIMESTAMP(CONVERT_TZ(FROM_UNIXTIME(NEW.time_out), @@session.time_zone, timelog ));
          
-         IF EXISTS(SELECT 1 From dtr_collective_punch_history WHERE user_id=NEW.user_id And date=NEW.date) THEN
+         IF NOT EXISTS(SELECT 1 From dtr_collective_punch WHERE dtr_collective_punch_history_id=NEW.id) THEN
          INSERT INTO dtr_collective_punch(date,dtr_collective_punch_history_id,user_id,time_in,time_out,duration)
          VALUES(NEW.date,NEW.id,NEW.user_id,NEW.time_in,New.time_out,if(New.time_out IS NOT Null,New.time_out - New.time_in,null));
          ELSE
-        UPDATE dtr_collective_punch SET date=New.date,dtr_collective_punch_history_id=New.id,user_id=New.user_id,
+         UPDATE dtr_collective_punch SET date=New.date,dtr_collective_punch_history_id=New.id,user_id=New.user_id,
          time_in=New.time_in,time_out=New.time_out,duration=if(time_out IS NOT Null,New.time_out - New.time_in,null)
          WHERE dtr_collective_punch_history_id = New.id;
          END IF;
@@ -57,7 +57,7 @@ class OnupdatePunch extends Migration
         UPDATE dtr_collective_punch SET render_hours=rendered_hours,render_hours_overlapp=rendered_hours_overlapped
         WHERE dtr_collective_punch_history_id = New.id;
         END IF;
-        END    
+        END   
         ");
     }
 
