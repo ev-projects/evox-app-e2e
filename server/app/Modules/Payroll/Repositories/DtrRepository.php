@@ -1873,89 +1873,158 @@ class DtrRepository implements DtrRepositoryInterface{
     // }
 
 
-      /**
+    /**
      * apply_punch_to_history
      * @param Collection $dtr_collection
      * @return Collection $leaves_collections
      */
-    public function apply_punch_to_history( string $date , $user_id, Collection $biometrics_collection){
-        try{
+    public function apply_punch_to_history(string $date, $user_id, Collection $biometrics_collection)
+    {
+        try {
             DB::beginTransaction();
 
+            $user = User::find($user_id);
 
-       
-                    foreach( $biometrics_collection as $biometrics ){
-                        // dd($biometrics);
-                        try{
-                        
+            $date_prev =   Carbon::createFromFormat('Y-m-d',  $date)
+                ->subDay(1)
+                ->format('Y-m-d');
+
+            foreach ($biometrics_collection as $biometrics) {
+
+                try {
+
+                    $same_day = false;
+                    $dtr_punch_date_check = $user->punch($date_prev, $date)
+                        ->whereNotNull('log_out_type')
+                        ->where('log_out_type', "Log_out")->latest('id')->first();
+                    // dd($dtr_punch_date_check);
+                    if ($dtr_punch_date_check) {
+                        if ($dtr_punch_date_check->date == $date) {
+                            // error_log(1);
+                            $same_day = true;
+                        }
+                        if ($dtr_punch_date_check->log_out_type == "Log_out") {
+                            // error_log(3);
+                            $same_day = true;
+                            // dd();
+                        }
+
+                        // if ($dtr_punch_date_check->log_out_type == "Log_out") {
+                        //     error_log(3);
+                        //     $same_day = true;
+                        // }
+                    }
+                    // dd($same_day);
+                    $dtr_punch_check = $user->punch($date_prev, $date)->whereNull('log_out_type')->first();
+
+                    if ($dtr_punch_check) {
+
+                        if ($dtr_punch_check->time_out == null) {
+                            $dtr_punch = $dtr_punch_check;
+                            $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
+                            $dtr_punch->user_id =  $user_id;
+                            // $dtr_punch->date =  $date;
+                            $dtr_punch->log_action =  $biometrics->getTimeType();
+                            $dtr_punch->log_out_type = $biometrics->getLogType();
 
 
-                            $dtr_punch_check = DtrPunchHistory::where('date', $date)->latest('id')->first();
-                            // dump($dtr_punch_check);
-                            if($dtr_punch_check){
-                                // dd();
-                                if($dtr_punch_check->time_out == null){
-                                $dtr_punch = $dtr_punch_check;
 
-                                $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
-                                $dtr_punch->user_id =  $user_id;
-                                $dtr_punch->date =  $date;
-                                $dtr_punch->log_action =  $biometrics->getTimeType();
-    
-                      
-                                $dtr_punch->update();
-                                }else{
+
+                            $dtr_punch->update();
+                        } else {
+                            $dtr_punch = new DtrPunchHistory();
+
+                            $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
+                            $dtr_punch->user_id =  $user_id;
+                            $dtr_punch->date =  $date;
+                            $dtr_punch->log_action =  $biometrics->getTimeType();
+                            $dtr_punch->log_in_type = $biometrics->getLogType();
+
+                            if ($dtr_punch->time_in != null) {
+                                $dtr_punch->save();
+                            } else {
+                                error_log("Error saving");
+                                return false;
+                            }
+                        }
+
+
+                        // create a new DtrPunch    
+                    } else {
+
+                        if ($same_day) {
+                            $dtr_punch = new DtrPunchHistory();
+
+
+                            $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
+                            $dtr_punch->user_id =  $user_id;
+                            $dtr_punch->date =  $date;
+                            $dtr_punch->log_action =  $biometrics->getTimeType();
+                            $dtr_punch->log_in_type = $biometrics->getLogType();
+
+                            if ($dtr_punch->time_in != null) {
+                                $dtr_punch->save();
+                            }
+                        } else {
+                
+                            $check_paused = $user->punch($date_prev, $date)
+                                ->where('log_out_type', "!=", "Log_out")
+                                ->whereNotNull('log_out_type')->first();
+                
+                            if ($check_paused) {
+                                if ($check_paused->log_out_type == "Pause") {
                                     $dtr_punch = new DtrPunchHistory();
-        
-                                    $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
+    
+    
+                                    $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
+    
                                     $dtr_punch->user_id =  $user_id;
-                                    $dtr_punch->date =  $date;
+                                    $dtr_punch->date =  $check_paused->date;
                                     $dtr_punch->log_action =  $biometrics->getTimeType();
-        
-                                    if(  $dtr_punch->time_in != null){
+                                    $dtr_punch->log_in_type = $biometrics->getLogType();
+                                    if ($dtr_punch->time_in != null) {
                                         $dtr_punch->save();
                                     }
-                                    else{
-                                        return false;
-                                    }
                                 }
-
-                            }else{
+                            }
+                            else{
                                 $dtr_punch = new DtrPunchHistory();
-        
-                                $dtr_punch->{ $biometrics->getTimeType() } = datetime_to_timestamp( $biometrics->CheckTime );
+
+
+                                $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
                                 $dtr_punch->user_id =  $user_id;
                                 $dtr_punch->date =  $date;
                                 $dtr_punch->log_action =  $biometrics->getTimeType();
+                                $dtr_punch->log_in_type = $biometrics->getLogType();
     
-                                if(  $dtr_punch->time_in != null){
+                                if ($dtr_punch->time_in != null) {
                                     $dtr_punch->save();
-                                }
+                                } 
                             }
-                        } catch (Exception $e) {
-                            log_to_file( 'info', '[RECORD ERROR' . __FUNCTION__ . ']',  ['biometrics'=> $biometrics], "biometrix");
-                            continue;
+
                         }
-    
                     }
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    dump($e);
+                    log_error($e);
+                    throw $e;
+                }
+            }
 
 
-                
-            
 
-         
+
+
             DB::commit();
             return true;
-            
-
-        
         } catch (Exception $e) {
             DB::rollBack();
+            dump($e);
             log_error($e);
             throw $e;
         }
     }
-
 
 
 

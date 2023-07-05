@@ -87,6 +87,17 @@ class Biometrics extends Model
     }
 
 
+    /**
+     *      
+     *  Gets the Time Type base on the CheckType
+     * @return bool 
+     */
+    public function getLogType()
+    {
+        return  get_constant('QUICKPUNCH_TYPE.'.$this->CheckType);
+    }
+
+
 
     /**
      *      

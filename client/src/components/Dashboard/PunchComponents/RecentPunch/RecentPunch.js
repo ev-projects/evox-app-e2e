@@ -121,7 +121,7 @@ componentDidMount(){
         </Table>
         </div>
               :
-              <div className="no-previous-dtr">No Previous DTR</div>
+              <div className="no-previous-dtr">No Previous Punch logs</div>
               } 
               </div>
     

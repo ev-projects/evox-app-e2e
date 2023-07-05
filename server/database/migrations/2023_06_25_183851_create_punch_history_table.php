@@ -20,7 +20,9 @@ class CreatePunchHistoryTable extends Migration
             $table->bigInteger('date_timestamp');
             $table->bigInteger('time_in')->nullable();
             $table->bigInteger('time_out')->nullable();
-            $table->string('log_action');
+            $table->string('log_action')->nullable();
+            $table->string('log_in_type')->nullable();
+            $table->string('log_out_type')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
         });
