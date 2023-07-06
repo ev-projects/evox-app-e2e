@@ -1081,7 +1081,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
     public function bind_leaves_to_dtr( array $bhr_leaves_array )
     {
-        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr-leaves");
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr_leaves");
 
         DB::beginTransaction();
         try {
@@ -1151,7 +1151,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                     }
                 } catch (Exception $t) {
-                    log_to_file( 'critical', '[FOR LOOP ERROR - ' . "$row->id" . "] [". $t->getMessage() . "]" . __FUNCTION__ , [], "dtr-leaves");
+                    log_to_file( 'critical', '[FOR LOOP ERROR - ' . "$row->id" . "] [". $t->getMessage() . "]" . __FUNCTION__ , [], "dtr_leaves");
                     continue;
                 }
             }
@@ -1190,16 +1190,16 @@ class DtrRepository implements DtrRepositoryInterface{
                 $this->compute_payroll_items( $dtr );
             }*/
 
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr-leaves");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr_leaves");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             DB::commit();
             return $processed_data;
 
         } catch (Exception $e) {
             DB::rollback();
-            log_to_file( 'critical', '['. $e->getMessage() . ']' . __FUNCTION__ , [$e], "dtr-leaves");
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr-leaves");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr-leaves");
+            log_to_file( 'critical', '['. $e->getMessage() . ']' . __FUNCTION__ , [$e], "dtr_leaves");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_leaves");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_leaves");
             log_error($e);
             throw $e;
         }
