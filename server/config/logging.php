@@ -185,6 +185,14 @@ return [
             'days' => 10,
             'permission' => 0666,
         ],
+        
+        'sync_bhr_user' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/sync_bhr_user.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
 
         'emails' => [
             'driver' => 'single',
