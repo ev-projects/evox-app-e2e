@@ -1081,7 +1081,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
     public function bind_leaves_to_dtr( array $bhr_leaves_array )
     {
-        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr");
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr_leaves");
 
         DB::beginTransaction();
         try {
@@ -1131,7 +1131,10 @@ class DtrRepository implements DtrRepositoryInterface{
 
                             # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
                             $leave_insert_array[] = implode(",", $leave_insert_values);
-                            $this->compute_payroll_items( $dtr );
+ 
+                            /*foreach( $dtr_collection as $dtr ) {
+                                $this->compute_payroll_items( $dtr );
+                            }*/
 
                         }
 
@@ -1148,7 +1151,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                     }
                 } catch (Exception $t) {
-                    log_to_file( 'info', '[FOR LOOP ERROR - ' . "$row->id" . "]" . __FUNCTION__ , [], "dtr");
+                    log_to_file( 'critical', '[FOR LOOP ERROR - ' . "$row->id" . "] [". $t->getMessage() . "]" . __FUNCTION__ , [], "dtr_leaves");
                     continue;
                 }
             }
@@ -1183,19 +1186,20 @@ class DtrRepository implements DtrRepositoryInterface{
             ];
 
             // Update DTR Computations
-            foreach( $dtr_collection as $dtr ) {
+            /*foreach( $dtr_collection as $dtr ) {
                 $this->compute_payroll_items( $dtr );
-            }
+            }*/
 
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr_leaves");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             DB::commit();
             return $processed_data;
 
         } catch (Exception $e) {
             DB::rollback();
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
+            log_to_file( 'critical', '['. $e->getMessage() . ']' . __FUNCTION__ , [$e], "dtr_leaves");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_leaves");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_leaves");
             log_error($e);
             throw $e;
         }
