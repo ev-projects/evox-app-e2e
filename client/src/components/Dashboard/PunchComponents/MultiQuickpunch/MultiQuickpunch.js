@@ -74,7 +74,7 @@ class MultiQuickpunch extends Component {
     	clearTimeout(this.timer);
     }
 
-	render = () => {  
+	render = () => {
 	
 
 	const { recent_punch, isRecentPunchLoaded } = this.props.dashboard;
@@ -207,10 +207,10 @@ class MultiQuickpunch extends Component {
 				:<>
 				
 				<label className=" select-date-multi">Select Date:
-				<select className="form-control-sm" style={{ display: 'block' }}>
+				<select className="form-control-sm" style={{ display: 'block' }} onChange={(e)=> {  setFieldValue('date',e.target.value); }}>
 							{/* <option value="" label="" /> */}
                             <option value="today" label={moment().format("Y-MM-DD")} onClick={(e)=> { setFieldValue('date',"today");   }} />
-                            <option value="yesterday" disabled={prev_disable_day} label={moment().subtract(1, 'day').format("Y-MM-DD")} onClick={(e)=> { setFieldValue('date',"yesterday");   }}  />
+                            <option value="yesterday"  disabled={prev_disable_day} label={moment().subtract(1, 'day').format("Y-MM-DD")} onClick={(e)=> { setFieldValue('date',"yesterday");  }}  />
                           </select>
 				</label>
                          

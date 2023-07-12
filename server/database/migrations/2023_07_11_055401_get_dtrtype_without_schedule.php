@@ -15,7 +15,7 @@ class GetDtrtypeWithoutSchedule extends Migration
     {
         //
         DB::unprepared("
-        DROP FUNCTION IF EXISTS get_dtrtype_without_schedule;
+        DROP TRIGGER IF EXISTS get_dtrtype_without_schedule;
         CREATE FUNCTION get_dtrtype_without_schedule(dtr_date date,user_country_id INT,v_user_id bigint) RETURNS varchar(20) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
@@ -42,7 +42,7 @@ BEGIN
     IF(holidaycount > 0)THEN
     
     INSERT INTO Temp_Type (dtrtype,pivot_date) 
-    SELECT holidays.type as dtrtype,holidays.date FROM holidays;
+    SELECT holidays.type as dtrtype,holidays.date FROM holidays where date=dtr_date and country_id=user_country_id;
     
     SELECT COUNT(id) INTO type_count from Temp_Type;
     SET var_user=1;
@@ -85,8 +85,9 @@ BEGIN
     END IF;
     drop temporary table Temp_Type;
     RETURN type;
-    END");
-    }
+    END
+        ");
+        }
 
     /**
      * Reverse the migrations.

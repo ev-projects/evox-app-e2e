@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class OnupdatePunch extends Migration
+class CalculateRenderhours extends Migration
 {
     /**
      * Run the migrations.
@@ -15,8 +15,8 @@ class OnupdatePunch extends Migration
     {
         //
         DB::unprepared("
-        DROP TRIGGER IF EXISTS onupdate_punch;
-        CREATE TRIGGER onupdate_punch AFTER UPDATE ON dtr_collective_punch_history FOR EACH ROW BEGIN
+        DROP TRIGGER IF EXISTS onupdate_renderhours_without_schedule;
+        CREATE TRIGGER onupdate_renderhours_without_schedule AFTER UPDATE ON dtr_collective_punch_history FOR EACH ROW BEGIN
         DECLARE v_timeid bigint;
         DECLARE v_timeout bigint;
         DECLARE timelog varchar(20);
@@ -57,7 +57,7 @@ class OnupdatePunch extends Migration
         UPDATE dtr_collective_punch SET render_hours=rendered_hours,render_hours_overlapp=rendered_hours_overlapped
         WHERE dtr_collective_punch_history_id = New.id;
         END IF;
-        END   
+        END
         ");
     }
 

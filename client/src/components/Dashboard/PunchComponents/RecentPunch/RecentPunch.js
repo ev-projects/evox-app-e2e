@@ -83,11 +83,12 @@ componentDidMount(){
                       <th className="dtr-log">Clock In</th>
                       <th className="dtr-log">Clock Out</th>
                       <th className="dtr-log">Hour Count</th>
+                      <th className="dtr-log">Punch Status</th>
                 </tr>
             </thead>
             <tbody>
             {recent_punch.slice().reverse().map((punch, index) => {
-                  //  let dtr_type = dtr.attendance_status.slug;
+                  // let dtr_type = dtr.attendance_status.slug;
                   // let status = <div><div className={dtr.attendance_status.slug}>{dtr.attendance_status.name}</div><div>{DtrFormatter.displayHoliday(dtr.holidays)}</div></div>;
 
                    // If the attendance status is absent but has a holiday, set the dtr_type and status to holiday
@@ -110,10 +111,16 @@ componentDidMount(){
                           <td className="dtr-log"><div>{(punch.time_in)}</div></td>
                           <td className="dtr-log"><div>
                             { (punch.time_out)}
-                            </div></td>
+                          </div></td>
 
                             <td className="dtr-log"><div>
                             { (punch.hours)}
+                            </div></td>
+                            <td className="dtr-log">
+                            <div>
+                          <span>{punch.log_out_type == "Log_out" ? <i className="fa fa-sign-out" /> : punch.log_out_type == "Pause" ? <i className="fa fa-pause" />: "" } </span>
+                           
+                          <b>{ (punch.log_out_type == "Log_out" ? "Logout" : punch.log_out_type == "Pause" ? "Pause" : "" )}</b>
                             </div></td>
                         </tr>
               })}

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class OvertimrWithoutSchedule extends Migration
+class OvertimeCalculationWithoutSchedule extends Migration
 {
     /**
      * Run the migrations.
@@ -35,13 +35,13 @@ DECLARE totalovertimenightdiff  DECIMAL(10,2) DEFAULT 0.00;
 DECLARE sectohrs DECIMAL(10,2);
 DECLARE dtr_type varchar(20);
 DECLARE v_timeid bigint;
- DECLARE v_timeout bigint;
- DECLARE timelog varchar(20);
- DECLARE dtr_timein bigint;
- DECLARE dtr_timeout bigint;
- DECLARE dtr_id int; 
- DECLARE country_id varchar(20);
- DECLARE dtr_isrestday INT(20);
+DECLARE v_timeout bigint;
+DECLARE timelog varchar(20);
+DECLARE dtr_timein bigint;
+DECLARE dtr_timeout bigint;
+DECLARE dtr_id int; 
+DECLARE country_id varchar(20);
+DECLARE dtr_isrestday INT(20);
  
  SET country_id = (Select country_id From users where id=New.user_id);
  SET timelog = (Select time_difference from utc_timelog tl
@@ -67,31 +67,31 @@ ELSEIF(dtr_type = 'rd')THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'sh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.sh_overtime = totalovertime,drt_summary_report.sh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'lh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.lh_overtime = totalovertime,drt_summary_report.lh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'dsh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.dsh_overtime = totalovertime,drt_summary_report.dsh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'dlh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.dlh_overtime = totalovertime,drt_summary_report.dlh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'slh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.slh_overtime = totalovertime,drt_summary_report.slh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
@@ -220,31 +220,31 @@ INSERT INTO drt_summary_report(login_date,user_id,reg_overtime,reg_overtime_nigh
 INSERT INTO drt_summary_report(login_date,user_id,rd_overtime,rd_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff);
   ELSEIF(dtr_type = 'sh')THEN
   -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
  INSERT INTO drt_summary_report(login_date,user_id,sh_overtime,sh_overtime_night_diff,rd_overtime,rd_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff,totalovertime,totalovertimenightdiff);
  else
   INSERT INTO drt_summary_report(login_date,user_id,sh_overtime,sh_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff);
    END IF;
   ELSEIF(dtr_type = 'lh')THEN
-  IF(dtr_isrestday=1) THEN
+  IF(dtr_isrestday>0) THEN
  INSERT INTO drt_summary_report(login_date,user_id,lh_overtime,lh_overtime_night_diff,rd_overtime,rd_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff,totalovertime,totalovertimenightdiff);
  else
  INSERT INTO drt_summary_report(login_date,user_id,lh_overtime,lh_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff);
  end if;
   ELSEIF(dtr_type = 'dsh')THEN
-    IF(dtr_isrestday=1) THEN
+    IF(dtr_isrestday>0) THEN
  INSERT INTO drt_summary_report(login_date,user_id,dsh_overtime,dsh_overtime_night_diff,rd_overtime,rd_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff,totalovertime,totalovertimenightdiff);
  else
  INSERT INTO drt_summary_report(login_date,user_id,dsh_overtime,dsh_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff);
  end if;
   ELSEIF(dtr_type = 'dlh')THEN
-     IF(dtr_isrestday=1) THEN
+     IF(dtr_isrestday>0) THEN
  INSERT INTO drt_summary_report(login_date,user_id,dlh_overtime,dlh_overtime_night_diff,rd_overtime,rd_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff,totalovertime,totalovertimenightdiff);
  else
 INSERT INTO drt_summary_report(login_date,user_id,dlh_overtime,dlh_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff);
 end if;
   ELSEIF(dtr_type = 'dsl')THEN
-    IF(dtr_isrestday=1) THEN
+    IF(dtr_isrestday>0) THEN
  INSERT INTO drt_summary_report(login_date,user_id,dsl_overtime,dsl_overtime_night_diff,rd_overtime,rd_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff,totalovertime,totalovertimenightdiff);
  else
 INSERT INTO drt_summary_report(login_date,user_id,dsl_overtime,dsl_overtime_night_diff)VALUES(NEW.date,NEW.user_id,totalovertime,totalovertimenightdiff);
@@ -257,31 +257,31 @@ ELSEIF(dtr_type = 'rd')THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'sh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.sh_overtime = totalovertime,drt_summary_report.sh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'lh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.lh_overtime = totalovertime,drt_summary_report.lh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'dsh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.dsh_overtime = totalovertime,drt_summary_report.dsh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'dlh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.dlh_overtime = totalovertime,drt_summary_report.dlh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 ELSEIF(dtr_type = 'slh')THEN 
 -- adding condition if that's a rest day then the over time hours got update
-IF(dtr_isrestday=1) THEN
+IF(dtr_isrestday>0) THEN
 UPDATE drt_summary_report SET drt_summary_report.rd_overtime = totalovertime,drt_summary_report.rd_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;
 END IF;
 UPDATE drt_summary_report SET drt_summary_report.slh_overtime = totalovertime,drt_summary_report.slh_overtime_night_diff = totalovertimenightdiff WHERE user_id=NEW.user_id And login_date=NEW.date;

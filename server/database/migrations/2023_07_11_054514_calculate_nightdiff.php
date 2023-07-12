@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class OnupdateNightDiffCal extends Migration
+class CalculateNightdiff extends Migration
 {
     /**
      * Run the migrations.
@@ -79,7 +79,6 @@ END IF;
 UPDATE dtr_collective_punch SET night_diff=night_diffhours,night_diff_over_lapp=night_diff_overlappedhours
 WHERE dtr_collective_punch_history_id = New.id;
 END
-
         ");
     }
 

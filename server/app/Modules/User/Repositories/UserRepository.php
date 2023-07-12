@@ -953,6 +953,41 @@ class UserRepository implements UserRepositoryInterface{
 
     }
 
+        /**
+     *  Responsible for changing the password of the User
+     * @param $id
+     * @param array $data
+     * @return User $user
+     */
+    public function get_user_department( $id ){
+
+        try {
+            $user =  User::findOrFail( $id );
+
+            if( get_authenticated_user( $user->id ) ) {
+
+
+                $user_count = DB::table('users')
+                ->join('department_without_schedule_employees','users.department_id','=','department_without_schedule_employees.department_id')
+                ->where('users.id','=', $user->id)
+                ->where('department_without_schedule_employees.is_active','=',1)
+                ->count();
+                if($user_count == 0){
+                    return false;
+                }else{
+                    return true;
+                }           
+
+            }
+
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+    }
+
+    
+
     /**
      *  Responsible for ticking the DPA field of the User
      * @param $id
