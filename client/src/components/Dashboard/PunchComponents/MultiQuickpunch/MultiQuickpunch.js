@@ -83,7 +83,8 @@ class MultiQuickpunch extends Component {
 	var islogOut = false;
 	var latest = null;
 	var use_previous = false;
-
+	var disable_day = false;
+	var prev_disable_day = false;
 
 	if(isRecentPunchLoaded == true){
 
@@ -110,10 +111,21 @@ class MultiQuickpunch extends Component {
 		if(recent_punch.length > 0){
 			// console.log( latest.date, moment().format("Y-MM-DD"));
 			latest = recent_punch[recent_punch.length - 1];
-			console.log(latest.time_out,moment.unix(latest.time_out));
+			// console.log(latest.time_out,moment.unix(latest.time_out));
 			var time = new Date(latest.date_time_out);
 			var formatted = moment(time);
-			console.log(formatted); 
+			console.log(formatted.format("Y-MM-DD")); 
+			console.log(moment(this.state.time).format("Y-MM-DD"));
+			if(formatted.format("Y-MM-DD") == moment(this.state.time).format("Y-MM-DD") && latest.completed_today == true){
+				// console.log(latest.completed_today, latest.completed_today == true ? "yes" : "no", latest.completed_today == "true" ? "yes" : "no")
+				disable_day = true;
+			}
+			if( latest.completed_today == true){
+				if(formatted.format("Y-MM-DD") == moment(this.state.time).subtract(1,"day").format("Y-MM-DD") ){
+					prev_disable_day = true;
+				}
+				// console.log(latest.completed_today, latest.completed_today == true ? "yes" : "no", latest.completed_today == "true" ? "yes" : "no")
+			}
 			if(latest.recent_log == "Log_out"  && latest.date != moment(this.state.time).format("Y-MM-DD")){
 				// isLogIn = true;
 				
@@ -138,18 +150,19 @@ class MultiQuickpunch extends Component {
 		if(recent_punch.length == 0 ){
 			isLogIn = true;
 			if(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(3, 'hours'))){
-				console.log("2222");
+				// console.log("2222");
 				use_previous = true;
-				console.log("2222");
+				// console.log("2222");
 			}
 		}
 
 
-
-
+	
 	}
-	console.log("333");
-	console.log(use_previous);
+	
+
+	// console.log("333");
+	// console.log(use_previous);
 	const initialValue = {
 		quickpunch : null,
 		date : "today",
@@ -188,7 +201,7 @@ class MultiQuickpunch extends Component {
 				<>
 				{!use_previous? 
 					<>
-						<Button  type="submit"  disabled={!isLogIn}   onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
+						<Button  type="submit"  disabled={!isLogIn || disable_day}   onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In</Button>
 					</>
 				
 				:<>
@@ -197,7 +210,7 @@ class MultiQuickpunch extends Component {
 				<select className="form-control-sm" style={{ display: 'block' }}>
 							{/* <option value="" label="" /> */}
                             <option value="today" label={moment().format("Y-MM-DD")} onClick={(e)=> { setFieldValue('date',"today");   }} />
-                            <option value="yesterday" label={moment().subtract(1, 'day').format("Y-MM-DD")} onClick={(e)=> { setFieldValue('date',"yesterday");   }}  />
+                            <option value="yesterday" disabled={prev_disable_day} label={moment().subtract(1, 'day').format("Y-MM-DD")} onClick={(e)=> { setFieldValue('date',"yesterday");   }}  />
                           </select>
 				</label>
                          
@@ -221,7 +234,7 @@ class MultiQuickpunch extends Component {
 <Button onClick={(e)=> { setFieldValue('quickpunch','pause');   }}  type="submit" >--Pause</Button>:
 					<Button onClick={(e)=> { setFieldValue('quickpunch','continue');   }}  type="submit" >--Continue</Button> */}
 
-				<Button disabled={!islogOut}  onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button>
+				<Button disabled={!islogOut}  onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit"  ><i className="fa fa-history" /> Clock Out</Button>
 				</>:<></>
 			}
 			
