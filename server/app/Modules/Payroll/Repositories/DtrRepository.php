@@ -1876,9 +1876,9 @@ class DtrRepository implements DtrRepositoryInterface{
     /**
      * apply_punch_to_history
      * @param Collection $dtr_collection
-     * @return Collection $leaves_collections
+     * 
      */
-    public function apply_punch_to_history(string $date, $user_id, Collection $biometrics_collection)
+    public function apply_punch_to_history(string $date, int $user_id, Collection $biometrics_collection)
     {
         try {
             DB::beginTransaction();
@@ -2006,7 +2006,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     }
                 } catch (Exception $e) {
                     DB::rollBack();
-                    dump($e);
+                    // dump($e);
                     log_error($e);
                     throw $e;
                 }
@@ -2020,7 +2020,7 @@ class DtrRepository implements DtrRepositoryInterface{
             return true;
         } catch (Exception $e) {
             DB::rollBack();
-            dump($e);
+            // dump($e);
             log_error($e);
             throw $e;
         }

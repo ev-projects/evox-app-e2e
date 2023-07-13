@@ -49,6 +49,6 @@ interface DtrRepositoryInterface
 
     // public function check_if_use_logs( string $date , $user_id);
 
-    public function apply_punch_to_history( string $date , $user_id, Collection $biometrics);
+    public function apply_punch_to_history( string $date , int $user_id, Collection $biometrics);
     
 }
