@@ -110,15 +110,15 @@ class DtrPunchHistory extends Component {
         isCurrentPayrollCutoffLoaded : true
       })
 
-      await this.props.viewEmployeeDtr(this.props.params.id , payrollCutoff.start_date, payrollCutoff.end_date);
+      // await this.props.viewEmployeeDtr(this.props.params.id , payrollCutoff.start_date, payrollCutoff.end_date);
 
-      await this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
+      // await this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
       
-      await this.props.setSelectedPayrollCutoff( payrollCutoff );
-      await this.setState({
-        payrollCutoff_start:payrollCutoff.start_date,
-        payrollCutoff_end:payrollCutoff.end_date
-      })
+      // await this.props.setSelectedPayrollCutoff( payrollCutoff );
+      // await this.setState({
+      //   payrollCutoff_start:payrollCutoff.start_date,
+      //   payrollCutoff_end:payrollCutoff.end_date
+      // })
       
      
       
