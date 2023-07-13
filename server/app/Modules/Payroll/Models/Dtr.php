@@ -894,6 +894,13 @@ class Dtr extends Model
             return $payroll_items;
     }
 
+
+    // public function get_dtr_history(){ NOT EXIST
+
+    //     $dtr_history = DtrPunchHistory::where('date',$this->date)->where('user_id',$this->user_id);
+
+    //     return  $dtr_history;
+    // }
     
 
     ###############################################################################################

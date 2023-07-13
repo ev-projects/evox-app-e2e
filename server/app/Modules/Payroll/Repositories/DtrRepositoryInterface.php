@@ -45,8 +45,10 @@ interface DtrRepositoryInterface
 
     public function get_leaves_from_dtr( Collection $dtr_collection );
 
-
-
     public function apply_dtr_to_simcorp_dtr( $user, $bypass = false ,  $valid_from, $valid_to , $sched_policy);
+
+    // public function check_if_use_logs( string $date , $user_id);
+
+    public function apply_punch_to_history( string $date , int $user_id, Collection $biometrics);
     
 }

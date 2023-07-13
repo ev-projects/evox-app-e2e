@@ -9,6 +9,7 @@ use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Http\Requests\OvertimeRequest;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Request\Resources\OvertimeResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -18,13 +19,17 @@ class OvertimeController extends Controller
     protected $overtime;
     protected $dtr;
     protected $email;
+    protected $user;
 
     public function __construct(OvertimeRepositoryInterface $overtime,
                                 DtrRepositoryInterface $dtr,
-                                EmailRepositoryInterface $email){
+                                EmailRepositoryInterface $email,
+                                UserRepositoryInterface $user
+                                ){
         $this->overtime = $overtime;
         $this->dtr = $dtr;
         $this->email = $email;
+        $this->user=$user;
     }
 
     /**
@@ -113,8 +118,12 @@ class OvertimeController extends Controller
 
             $overtime = $this->overtime->approve( $request->all(), $id );
 
+            $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
+            
+            if(!$with_out_schedule_employee){
             // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
-            $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
+            $this->dtr->compute_payroll_items($overtime->dtr()->first());
+            }
 
             return success_response(
                 trans('messages.approve_overtime_success'), 
@@ -135,10 +144,13 @@ class OvertimeController extends Controller
             log_activity( trans('messages.decline_overtime_attempt') );
 
             $overtime = $this->overtime->decline( $request->all(), $id );
-
+            
+            $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
+            
+            if(!$with_out_schedule_employee){
             // Call the function to compute for the Payroll Items (Which will automatically check for the Declined Overtime.)
             $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
-
+            }
             return success_response(
                 trans('messages.decline_overtime_success'), 
                 new OvertimeResource( $this->overtime->decline( $request->all(), $id ) ) 
@@ -161,6 +173,7 @@ class OvertimeController extends Controller
                 trans('messages.pending_overtime_success'), 
                 new OvertimeResource( $this->overtime->pending( $id ) ) 
             );
+            
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }

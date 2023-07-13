@@ -107,6 +107,24 @@ export const getRecentDtr = ( user_id, from ,to ) => {
     }
 }
 
+export const getRecentPunches = ( user_id, from ,to ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr/punch/"+user_id+"/"+from+"/"+to,
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_RECENT_PUNCH', 
+                'data'      : result.data,
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 // CHANGE LOGS
 export const getChangeLogs = ( id ) => {
     return (dispatch, getState) => {
