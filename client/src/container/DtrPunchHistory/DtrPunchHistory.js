@@ -129,23 +129,23 @@ class DtrPunchHistory extends Component {
 
     componentWillMount(){
         // Get the Filters to be used for the DTR (Payroll Cutoffs)
-        this.props.getFilterForDtr(this.props.params.id);
+        // this.props.getFilterForDtr(this.props.params.id);
     }
 
     componentWillReceiveProps = async(nextProps) => {
       // If the 'settings' props is not yet loaded OR the settings prop is already loaded but the isCurrentPayrollCutoffLoaded is FALSE, set the default selected data.
-      if( nextProps.settings != this.props.settings  ||
-          ( nextProps.settings == this.props.settings && !this.state.isCurrentPayrollCutoffLoaded )) {
+      // if( nextProps.settings != this.props.settings  ||
+      //     ( nextProps.settings == this.props.settings && !this.state.isCurrentPayrollCutoffLoaded )) {
           
-          // If there's a selected Payroll Cutoff AND there's no resetInitialState on the props, use it as the current instance.
-          if( Object.keys(this.props.dtr.selectedPayrollCutoff).length > 0 && (nextProps.location.resetInitialState == undefined  || !nextProps.location.resetInitialState) ) {
-            this.setPayrollCutoffInstance( this.props.dtr.selectedPayrollCutoff );
+      //     // If there's a selected Payroll Cutoff AND there's no resetInitialState on the props, use it as the current instance.
+      //     if( Object.keys(this.props.dtr.selectedPayrollCutoff).length > 0 && (nextProps.location.resetInitialState == undefined  || !nextProps.location.resetInitialState) ) {
+      //       this.setPayrollCutoffInstance( this.props.dtr.selectedPayrollCutoff );
 
-          // If there's NOT selected Payroll Cutoff OR there's a force reset of Initial State, use the default payroll cutoff instance.
-          } else {
-            this.setPayrollCutoffInstance( nextProps.settings.current_payroll_cutoff );
-          }
-      }
+      //     // If there's NOT selected Payroll Cutoff OR there's a force reset of Initial State, use the default payroll cutoff instance.
+      //     } else {
+      //       this.setPayrollCutoffInstance( nextProps.settings.current_payroll_cutoff );
+      //     }
+      // }
 
       
   }
