@@ -503,7 +503,7 @@ class User extends Authenticatable implements JWTSubject
             $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id')->pluck('id')->toArray(), 
             ( is_valid( $team ) ) ? $team->team_handlers()->pluck('id')->toArray() : []
         );
-        return User::whereIn('users.id', array_unique($user_id_array));
+        return User::whereIn('users.id', array_unique($user_id_array))->where('users.is_active', 1);
     }
 
     # Fetch the Users Handled of the current User Instance 
