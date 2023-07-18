@@ -37,11 +37,9 @@ class SendRestDayWorkRequestEmailJob implements ShouldQueue
     {
         try {
             foreach( $this->rest_day_work->user()->first()->user_handlers()->get() as $recepient ){
-                if ($recepient->is_active == 1) {
-                    Mail::send( new RestDayWorkRequestEmail( $recepient, $this->rest_day_work ) );
+                Mail::send( new RestDayWorkRequestEmail( $recepient, $this->rest_day_work ) );
 
-                    log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->rest_day_work], "emails");
-                }
+                log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->rest_day_work], "emails");
             }
             
         } catch (Exception $e) {
