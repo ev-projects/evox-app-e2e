@@ -26,7 +26,7 @@ class CreateMultiLoginPermission extends Migration
         
         $supervisor_role = Role::where('name', 'supervisor')->first();
         $supervisor_permission = [
-            Permission::create(['name' => 'edit_multi_login', 'label' => 'Edit Multi-Login']),
+            Permission::create(['name' => 'edit_permissions', 'label' => 'Edit User Permissions']),
         ];
         $supervisor_role->givePermissionTo($supervisor_permission);
 

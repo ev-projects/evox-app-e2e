@@ -510,7 +510,7 @@ class AssignDefault extends Component {
                     Customize &nbsp;</label>      
                   )}
                   />  
-                  <FieldArray name="std_schedule_details" render={arrayHelpers => (
+                  {/* <FieldArray name="std_schedule_details" render={arrayHelpers => (
                     <label>          
                       <input 
                         type="radio"
@@ -524,7 +524,7 @@ class AssignDefault extends Component {
                         }}
                       /> 
                     Empty &nbsp;</label>
-                  )}/>
+                  )}/> */}
                   <Form.Control.Feedback type="invalid">
                   &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
                   </Form.Control.Feedback>
