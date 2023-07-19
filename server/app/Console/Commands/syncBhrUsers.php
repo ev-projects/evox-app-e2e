@@ -160,7 +160,8 @@ class syncBhrUsers extends Command
                     */
                     $new_timestamp = (new Carbon($bhr_user->lastChanged))->getTimestamp();
                     if ($new_timestamp > $user_since_date_sync_ts) {
-                        Cache::put('user_since_date_sync_ts', $new_timestamp, 80);
+                        $user_since_date_sync_ts = $new_timestamp;
+                        Cache::put('user_since_date_sync_ts', $user_since_date_sync_ts, 80);
                         log_to_file('info', '[NEW START DATE ' . $bhr_user->lastChanged. ']' . __FUNCTION__, [], "sync_bhr_user");
                     }
                     #log_to_file('info', '[UPDATE DATE ' . $bhr_user->lastChanged. ']' . __FUNCTION__, $bhr_user, "sync_bhr_user");
