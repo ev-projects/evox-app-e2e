@@ -53,7 +53,6 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
                 $payroll_cutoff = PayrollCutoff::orderBy('end_date', 'desc')
                                                 ->first();
             }
-
             return $payroll_cutoff;
         } catch (Exception $e) {
             log_error($e);
