@@ -1089,6 +1089,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
             $result = new Collection;
             $processed_data = array();
+            
             // Iterate the fetched Employee Leaves that was fetched from BHr.
             foreach( $bhr_leaves_array as $row ) {
                 // Proceed only if the Status of the Leave Request is in the LEAVE REQUEST STATUS constant Array
@@ -1113,7 +1114,6 @@ class DtrRepository implements DtrRepositoryInterface{
 
                         // Iterate each DTR in order to bind the Leave on each DTR.
                         foreach( $dtr_collection as $dtr ) {
-
                             # Setting the Amount of Leave from the Leave request for the Corresponding Date
                             $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
 
@@ -1132,7 +1132,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                             # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
                             $leave_insert_array[] = implode(",", $leave_insert_values);
- 
+
                             /*foreach( $dtr_collection as $dtr ) {
                                 $this->compute_payroll_items( $dtr );
                             }*/
@@ -1148,8 +1148,6 @@ class DtrRepository implements DtrRepositoryInterface{
                             "status" => ( is_valid( $row->status->status ) ) ? $row->status->status : 'null',
                             "amount" =>   ( is_valid( $row->amount->amount ) ) ? $row->amount->amount : 'null',
                         ];
-
-
                     }
                 } catch (Exception $t) {
                     log_to_file( 'critical', '[FOR LOOP ERROR - ' . "$row->id" . "] [". $t->getMessage() . "]" . __FUNCTION__ , [], "dtr_leaves");

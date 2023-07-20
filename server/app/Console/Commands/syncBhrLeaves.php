@@ -18,7 +18,7 @@ class syncBhrLeaves extends Command
      *
      * @var string
      */
-    protected $signature = 'sync_bhr_leaves';
+    protected $signature = 'sync_bhr_leaves {cutoff?}';
 
     /**
      * The console command description.
@@ -50,7 +50,16 @@ class syncBhrLeaves extends Command
     public function handle()
     {
         try {
-            $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+            if($this->argument('cutoff') == null){
+                $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+            } else {
+                $cutoff = $this->argument('cutoff');
+                $payroll_cutoff = $this->payroll_cutoff->find(intval($cutoff));
+                if (!is_valid($payroll_cutoff)) {
+                    throw new Exception("Could not find Payroll Cut-off with ID: {$cutoff}");
+                }
+            }
+            log_to_file( 'info', "Payroll Cut-off", [$payroll_cutoff], "dtr_leaves");
             $start_date = $payroll_cutoff->start_date;
             $end_date = $payroll_cutoff->end_date;
 
@@ -71,7 +80,7 @@ class syncBhrLeaves extends Command
                 JsonResponse::HTTP_CREATED
             );
         } catch(Exception $e){
-            log_to_file( 'info', $e->getMessage(), [], "cron_errors");
+            log_to_file( 'info', $e->getMessage(), [], "dtr_leaves");
             return error_response( trans('messages.error_default'), $e );
         }
     }
