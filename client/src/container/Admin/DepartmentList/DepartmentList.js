@@ -80,7 +80,7 @@ class DepartmentList extends Component {
               {this.props.departmentList.Deplist.map((department, index) => {
                 return <tr>
                           <td>{index + 1}</td> 
-                          <td>{department.id + 1}</td> 
+                          <td>{department.id}</td> 
                           <td>{department.department_name}</td> 
                           <td>
                           <label>Multi Login:{department.schedule_active == true? "ON" : "OFF"}</label>
