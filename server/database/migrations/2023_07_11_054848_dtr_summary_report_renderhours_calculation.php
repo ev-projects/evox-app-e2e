@@ -94,7 +94,7 @@ class DtrSummaryReportRenderhoursCalculation extends Migration
         VALUES(NEW.date,NEW.user_id,rendered_hrs,rendered_hrs_overlapped);
         END IF;
         ELSEIF(dtr_type = 'lh')THEN
-        IF(rest_day_work>1) THEN
+        IF(rest_day_work>0) THEN
         INSERT INTO drt_summary_report(login_date,user_id,lh_rendered_hours,lh_rendered_hours_overlapp,rd_rendered_hours,rd_rendered_hours_overlapp)
         VALUES(NEW.date,NEW.user_id,rendered_hrs,rendered_hrs_overlapped,rendered_hrs,rendered_hrs_overlapped);
         END IF;
