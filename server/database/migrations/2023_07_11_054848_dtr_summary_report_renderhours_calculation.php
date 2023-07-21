@@ -14,16 +14,6 @@ class DtrSummaryReportRenderhoursCalculation extends Migration
     public function up()
     {
         //
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        //
         DB::unprepared("
         DROP TRIGGER IF EXISTS onupdate_rendertime_hr;
         CREATE TRIGGER onupdate_rendertime_hr AFTER UPDATE ON dtr_collective_punch FOR EACH ROW BEGIN
@@ -279,5 +269,16 @@ class DtrSummaryReportRenderhoursCalculation extends Migration
         END IF;
         END
         ");
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //
+       
     }
 }

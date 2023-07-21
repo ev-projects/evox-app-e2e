@@ -14,16 +14,6 @@ class DtrSummaryReportNightdiffCalculation extends Migration
     public function up()
     {
         //
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        //
         DB::unprepared("
         DROP TRIGGER IF EXISTS onupdate_night_diff;
         CREATE TRIGGER onupdate_night_diff AFTER UPDATE ON dtr_collective_punch FOR EACH ROW BEGIN
@@ -278,5 +268,16 @@ IF(rest_day_work=0) THEN
 END IF;
 END
         ");
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //
+        
     }
 }
