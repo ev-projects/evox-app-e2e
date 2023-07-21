@@ -41,3 +41,24 @@ export const deleteDepartment = (id) => {
         });
     }
 }
+
+export const updateDepartmentScheduleStatus = (id, post_data) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/department/"+id+"/switch_active_schedule",
+            data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result ));
+
+            dispatch({
+                'type'      : 'FETCH_DEPARTMENT_LIST_LOAD_SUCCESS',
+                'list'      : result.data.content,
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}

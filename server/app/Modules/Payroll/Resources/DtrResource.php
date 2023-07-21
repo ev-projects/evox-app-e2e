@@ -125,13 +125,15 @@ class DtrResource extends JsonResource
             foreach( $this->rest_day_work()->get() as $rest_day_work){
                 $requests[] = new RestDayWorkResource( $rest_day_work );
             }
+
             // foreach( $this->work_from_home()->get() as $work_from_home){
             //     $requests[] = new WorkFromHomeResource( $work_from_home );
             // }
 
             $now = Carbon::now()->timestamp;
 
-
+            
+      
             $is_within_time = false;
             $is_within_time_extended = false;
             $checked_end_time =  $this->end_datetime;
@@ -142,6 +144,34 @@ class DtrResource extends JsonResource
                 $is_within_time = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $this->is_rest_day == 0 ;
                 $is_within_time_extended = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  21600) && $this->is_rest_day == 0 ;
             }
+
+
+
+            // $on_multiple_log = false;
+            // $dtr_history = [];
+            // if($this->use_schedule == false && $this->use_logs == true){
+            //     // $is_within_time = true;
+            //     // $is_within_time_extended = true;
+
+            //     $on_multiple_log = true;
+
+            //     $recent_log = $this->get_dtr_history()->latest()->first();
+
+                
+            //     $this->time_in =  $recent_log ? $recent_log->time_in : null;
+            //     $this->time_out = $recent_log ? $recent_log->time_out : null;
+
+            //     foreach ($this->get_dtr_history()->get() as $history) {
+            //         $dtr_history[] = array(
+            //                                     'id' => $history->id,
+            //                                     'time_in' => timestamp_to_datetime( $history->time_in ),
+            //                                     'time_out' =>timestamp_to_datetime( $history->time_out ),
+            //                                     'hours' => seconds_to_time( ($history->time_in - ($history->time_out != null?$history->time_out: 0  )),true)
+            //                                 );
+            //     }
+            //     // dump($dtr_history);
+               
+            // }
 
             $owner = $this->user()->first();
             $result =  array_merge( 
@@ -165,6 +195,8 @@ class DtrResource extends JsonResource
 
                     'with_in_time' => $is_within_time,
                     'with_in_time_extended' => $is_within_time_extended,
+                    // 'on_multiple_login' => $on_multiple_log,
+                    // 'dtr_history' => $dtr_history,
                     // 'timezone' =>  $owner->country_zone()->country_time_zone,
                 ), 
                 array('payroll_items' => $payroll_items),

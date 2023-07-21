@@ -27,7 +27,8 @@ class DepartmentResource extends JsonResource
                                                                                                         ->get()),
                 'users'  => UserListResource::collection($this->users()->orderBy('first_name', 'asc')
                                                                        ->orderBy('last_name', 'asc')
-                                                                       ->get())
+                                                                       ->get()),
+                'schedule_active' => $this->departments_on_schedule_is_active(),
             );
         }
 

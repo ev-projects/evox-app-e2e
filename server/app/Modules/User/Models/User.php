@@ -5,6 +5,7 @@ namespace App\Modules\User\Models;
 use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\Dtr;
+use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Models\PayrollCutoff;
 use App\Modules\Schedule\Models\Schedule;
 
@@ -196,6 +197,11 @@ class User extends Authenticatable implements JWTSubject
         return $offset_string->format('P');
     }
 
+    public function department_schedule_active()
+    {
+        return $this->department()->first()->departments_on_schedule_is_active();
+    }
+
 
 
     # Fetch the User's Schedule (Source type is Default)
@@ -293,6 +299,23 @@ class User extends Authenticatable implements JWTSubject
             return $this->hasMany(Dtr::class);
         }
     }
+
+        # Fetch the User's Punch History
+        public function punch($start_date = null, $end_date = null){
+
+            # If the Start and End Date is valid, fetch the DTR between the Date Range.
+            if( is_valid( $start_date ) && is_valid( $end_date ) ){
+                return $this->hasMany(DtrPunchHistory::class)->whereBetween('date', [$start_date, $end_date]);
+    
+            # If the Start is valid AND End Date is NOT valid, fetch the DTR Date Range from Start Date Onwards.
+            } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
+                return $this->hasMany(DtrPunchHistory::class)->where('date', '>=', $start_date);
+    
+            # If the Start and End date is NOT valid, fetch the DTR as a whole
+            }elseif( !is_valid( $start_date ) && !is_valid( $end_date ) ){
+                return $this->hasMany(DtrPunchHistory::class);
+            }
+        }
 
     public function requests_list($request,$filter = array()){
         $column = array('id','status','created_at','created_by','updated_by');

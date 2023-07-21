@@ -37,7 +37,7 @@ class UserProfileResource extends JsonResource
         }
         $offset = $this->country_timezone_to_offset(); 
 
-       
+
         $main_info = array(
             'id' => $this->id,
             'emp_num' => $this->emp_num,
@@ -70,6 +70,8 @@ class UserProfileResource extends JsonResource
             'timezone'=>$this->country_zone()->country_time_zone,
             "current_offset" => $offset,
             "default_offset" => $this->country_zone()->time_difference,
+
+            "schedule_active" => $this->department()->first()->departments_on_schedule_is_active(),
             );
         if( $this->show_full_info ) {
 

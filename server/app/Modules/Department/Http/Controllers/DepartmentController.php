@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Department\Http\Requests\AssignDepartmentHandlersRequest;
+use App\Modules\Department\Models\Department;
 use App\Modules\Department\Resources\DepartmentResource;
 use App\Modules\Department\Repositories\DepartmentRepositoryInterface;
 use App\Modules\Department\Resources\DepartmentListResource;
@@ -96,6 +97,34 @@ class DepartmentController extends Controller
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
+
+
+        /**
+     * Deletes/SoftDelete an existing Department
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function set_active_on_sched(Request $request, $id){
+        try {
+         
+
+            $department = Department::find($id);
+            $department_has_set = $department->departments_on_schedule()->first();
+            
+            if( $department_has_set){
+                $department->departments_on_schedule()->update(['is_active' => !$department_has_set->is_active]);
+            }else{
+                $department->departments_on_schedule()->create(['is_active' => true]);
+            }
+            return success_response(
+                trans('messages.change_department_schedule_status'), 
+                // new DepartmentResource( $department ) $this->department->all();
+                DepartmentListResource::collection( $this->department->all()) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+
 
 
     /**

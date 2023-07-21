@@ -11,6 +11,7 @@ const initState = {
     holidays:[],
     changelogs:[],
     todayleaves:[],
+    recent_punch:[],
     tommorowleaves:[],
     dashboardholiday:[],
     alterrequest:null,
@@ -22,6 +23,7 @@ const initState = {
     myrestdayrequest:null,
     mychangeschedulerequest:null,
     worktour:true,
+    isRecentPunchLoaded: false,
 }
 
 const dashboardReducers = (state = initState, action) => {
@@ -55,6 +57,15 @@ const dashboardReducers = (state = initState, action) => {
                 isNavDtrLoaded : true,
             }
             break;     
+
+        case "FETCH_RECENT_PUNCH":
+            result = {
+                ...state,
+                recent_punch : action.data.content,
+                // nav_recent_dtr : action.data.content,
+                isRecentPunchLoaded : true,
+            }
+            break;    
             
         case "CLEAR_RECENT_DTR_INSTANCE":
             result = {

@@ -13,15 +13,16 @@ use App\Modules\Payroll\Models\Dtr;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Modules\Payroll\Models\Biometrics;
-use App\Modules\Payroll\Models\Holiday;
 use App\Modules\Payroll\Models\Leave;
+use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Payroll\Models\Biometrics;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
 
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
+use App\Modules\Payroll\Resources\DtrPunchResource;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
@@ -74,6 +75,36 @@ class DtrController extends Controller
         }
     }
 
+        /**
+     * Returns the Punches of the User by the User ID as Parameter
+     * @param string $user_id
+     * @param string $start_date
+     * @param string $end_date
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function punches( $user_id, $start_date, $end_date ){   
+        try {
+            $this->validate(new Request([
+                'user_id' => $user_id,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ]), [
+                'user_id' => 'int',
+                'start_date' => 'date_format:Y-m-d',
+                'end_date' => 'date_format:Y-m-d',
+            ]);
+            
+           $user = get_authenticated_user( $user_id );
+            
+            return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                DtrPunchResource::collection( $user->punch($start_date, $end_date)->orderBy('date', 'asc')->get() ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     /**
      * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
      * @param string $user_id
@@ -84,7 +115,7 @@ class DtrController extends Controller
     public function quickpunch(Request $request){    
         try { 
 
-           
+        //    dd( $request->all(), Auth::user()->department_schedule_active());
             $biometrix_collection = Collection::make();
             $biometrics = new Biometrics();
     
@@ -100,17 +131,6 @@ class DtrController extends Controller
             $biometrics->CheckTime       = date("Y-m-d H:i:s");
             $biometrix_collection->push( $biometrics );
 
-                            // $date = Carbon::createFromFormat('Y-m-d H:i:s', $biometrics->CheckTime,  Auth::user()->timezone );
-                            //     // $date->setTimezone('UTC');
-                            //     // $date;
-                            //     $date = $date->setTimezone("UTC");
-                            // dd(
-                            //     Auth::user()->country_zone(),
-                            //     Auth::user()->timezone,
-                            //     $date,
-                            //     $date->format('Y-m-d H:i:s'),
-                                
-                            // );
             $dtr_id = null;
             if ($request->dtr_id) {
                 $dtr_id = $request->dtr_id;
@@ -119,6 +139,75 @@ class DtrController extends Controller
             return success_response(
                 trans('messages.quickpunch_'.$request->quickpunch.'_success'), 
                 DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrix_collection, $dtr_id ) )
+            );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+        
+    }
+
+        /**
+     * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
+     * @param string $user_id
+     * @param string $start_date
+     * @param string $end_date
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function quickpunch_multi(Request $request){    
+        try { 
+
+        //    dd( $request->all(), Auth::user()->department_schedule_active());
+            $biometrix_collection = Collection::make();
+            $biometrics = new Biometrics();
+    
+            if($request->quickpunch=='in'){
+                $biometrics->CheckType = 'I';
+            }elseif($request->quickpunch=='out'){
+                $biometrics->CheckType = 'O';
+            }elseif($request->quickpunch=='pause'){
+                $biometrics->CheckType = 'P';
+            }elseif($request->quickpunch=='continue'){
+                $biometrics->CheckType = 'C';
+            }else{
+                return error_response( trans('messages.error_default'), $e );
+            }
+
+            $biometrics->Userid          = '20'.Auth::user()->emp_num;
+            $biometrics->CheckTime       = date("Y-m-d H:i:s");
+            $biometrix_collection->push( $biometrics );
+
+
+            $date_check =   Carbon::now()
+                            ->addSecond(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()))
+                            ->startOfDay();
+
+                            // dd($request->all(), $request->on_date == true);
+            if($request->date == "yesterday" && $request->on_date == true){
+
+                $date_check =   Carbon::now()
+                ->addSecond(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()))
+                ->startOfDay()
+                ->subDay(1);
+            }
+            $date_check_formatted = $date_check->format("Y-m-d");
+            if(Auth::user()->department_schedule_active()){
+                
+                $result = $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection);
+
+                if(!$result){ 
+                    return error_response( trans(' you need to clock in '),  );
+                }
+            }
+            // // dd($biometrix_collection);
+            // $dtr_id = null;
+            // if ($request->dtr_id) {
+            //     $dtr_id = $request->dtr_id;
+            // }
+            
+            return success_response(
+                trans('messages.quickpunch_'.$request->quickpunch.'_success'), 
+                // DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrix_collection, $dtr_id ) )
             );
 
         } catch(Exception $e){
