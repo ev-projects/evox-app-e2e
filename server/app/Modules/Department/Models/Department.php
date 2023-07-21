@@ -106,9 +106,7 @@ class Department extends Model
 
     public function departments_announcements_presented()
     {
-        return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
-
-        // return $this->hasMany('department_without_schedule_employees', 'department_id', 'id');
+        return $this->hasMany(Announcement::class, 'present_dep_id', 'id');
     }
 
     // public function departments_announcement_by_json()
