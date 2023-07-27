@@ -374,8 +374,9 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
-          <HrAnnouncementsForm  role={['hr']} />
-        </ProtectedRoute>
+          <HrAnnouncementsForm  role={['hr']} permission={['manage_hr_announcements']}/>
+        </ProtectedRoute> 
+        
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
         <Route exact path={["/", global.links.email_not_found ]} component={EmailNotFound} />
