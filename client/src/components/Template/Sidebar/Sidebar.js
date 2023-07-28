@@ -517,7 +517,7 @@ const Sidebar = (props) => {
 
               {/* Report Links Links */}
               {Authenticator.check(
-                ["supervisor", "client"],
+                ["supervisor", "client", "hr"],
                 ["supervisor_access", "client_access"]
               ) && (
                 <li className="nav-item has-treeview ">
@@ -535,6 +535,25 @@ const Sidebar = (props) => {
                                 <p>Attendance Summary</p> 
                               </Link>
                             </li>  */}
+
+                    <li className="nav-item">
+                      <a
+                        className="nav-link"
+                        onClick={() => {
+                          history.push(global.links.hr_team_attendance_summary);
+                          props.setSelectedAttendanceSummary("attendance");
+                        }}
+                      >
+                        <i
+                          className="nav-icon fa fa-bar-chart"
+                          aria-hidden="true"
+                        ></i>
+                        <p>
+                          Attendance Summary
+                          {/* <i className="right fa fa-chevron-left" /> */}
+                        </p>
+                      </a>
+                    </li>
 
                     <li className="nav-item">
                       <a

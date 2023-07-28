@@ -64,6 +64,7 @@
 
     // Report Links
     team_attendance_summary         :  "/app/report/TeamAttendanceSummary/",
+    hr_team_attendance_summary         :  "/app/report/HRTeamAttendanceSummary/",
     KPIReport                       :  "/app/report/KPIReport/",
 
     // Admin Links

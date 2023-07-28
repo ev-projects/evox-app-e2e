@@ -137,7 +137,7 @@ const ReportNavigatorShort = (props) => {
                     <Tab eventKey="day" title="Today" type="submit"></Tab>
                     {/* <Tab eventKey="week" title="Weekly" type="submit"></Tab> */}
                     <Tab eventKey="month" title="Monthly" type="submit"></Tab>
-                    {/* <Tab eventKey="custom" title="Custom" type="submit"></Tab> */}
+                    <Tab eventKey="custom" title="Custom" type="submit"></Tab>
                 </Tabs>
             </div> 
             { viewType == "custom" ? 
