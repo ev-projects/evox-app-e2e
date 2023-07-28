@@ -19,7 +19,7 @@ use App\Modules\Payroll\Models\Biometrics;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
-
+use App\Modules\Payroll\Resources\DtrPunchHistoryLogResources;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
 use App\Modules\Payroll\Resources\DtrPunchResource;
@@ -99,6 +99,37 @@ class DtrController extends Controller
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
                 DtrPunchResource::collection( $user->punch($start_date, $end_date)->orderBy('date', 'asc')->get() ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+        /**
+     * Returns the Punches of the User by the User ID as Parameter
+     * @param string $user_id
+     * @param string $start_date
+     * @param string $end_date
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function Dtr_punches( $user_id, $start_date, $end_date ){   
+        try {
+            $this->validate(new Request([
+                'user_id' => $user_id,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ]), [
+                'user_id' => 'int',
+                'start_date' => 'date_format:Y-m-d',
+                'end_date' => 'date_format:Y-m-d',
+            ]);
+            
+           $user = get_authenticated_user( $user_id );
+
+           
+           return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                DtrPunchHistoryLogResources::collection( $user->punchlogs($start_date, $end_date)->orderBy('date', 'asc')->get() )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

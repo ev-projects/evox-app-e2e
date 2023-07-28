@@ -14,13 +14,17 @@ use Illuminate\Http\Request;
 */
 
 # API Call for DTR
-Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+// , 'middleware' => ['jwtauth', 'auth.apikey']
+Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth']], function () {
     
     # Gets the DTR of the User indicated.
     Route::get('/{user_id}/{start_date}/{end_date}', 'DtrController@daily_time_record');//->middleware('auth.apikey');
 
     # Gets the DTR of the User indicated.
     Route::get('/punch/{user_id}/{start_date}/{end_date}', 'DtrController@punches');//->middleware('auth.apikey');
+
+     # Gets the DTR of the User indicated.
+     Route::get('/dtrpunch/{user_id}/{start_date}/{end_date}', 'DtrController@Dtr_punches');//->middleware('auth.apikey');
 
     Route::post('/quickpunch', 'DtrController@quickpunch');
 
