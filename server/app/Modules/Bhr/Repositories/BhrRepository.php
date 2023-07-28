@@ -31,20 +31,33 @@ class BhrRepository implements BhrRepositoryInterface{
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
 
-            $bhr_user_number_array = [];
-
             $since_date_to_sync = date('Y-m-d', strtotime($since_date_to_sync)) . 'T00:00:00-00:00';
 
             // Define the End Point for the API.
             $end_point = 'employees/changed?since=' . $since_date_to_sync;
             
+            $last_changed_collection = collect([]);
           
             // Iterate the BHr Call Result
             foreach( ( bhr_api_call('GET', $end_point) )->employees as $employee_sub_details ) {
-                $bhr_user_number_array[ $employee_sub_details->id ] = $employee_sub_details->id;
+                $last_changed_collection->push(['id' => $employee_sub_details->id, 'lastChanged' => (new Carbon($employee_sub_details->lastChanged))->getTimestamp()]);
             }
+
+            #log_to_file( 'info', 'BHR Response Collection' . __FUNCTION__ , $last_changed_collection->values(), "bhrlog");
+
+            $sorted_last_changed_collection = $last_changed_collection->sortBy('lastChanged');
+
+            #log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+
+            #log_to_file( 'info', 'BHR Sorted Collection ' . __FUNCTION__ , $sorted_last_changed_collection->values(), "bhrlog");
+
+            $bhr_user_number_array = [];
+
+            foreach($sorted_last_changed_collection->values()->all() as $item) {
+                $bhr_user_number_array[ $item['id'] ] = $item['id'];
+            };
              
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_user_number_array, "bhrlog");
+            log_to_file( 'info', ('LOG_END') .' '. __FUNCTION__ , $bhr_user_number_array, "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
 
             return $bhr_user_number_array;
@@ -469,7 +482,7 @@ class BhrRepository implements BhrRepositoryInterface{
      */
     public function get_leaves( string $start_date, string $end_date, User $user = null   )
     {
-        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date, 'user' => $user], "bhrlog");
+        log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date, 'user' => $user], "bhr_leaves");
         try {
 
             $bhr_leaves_array = [];
@@ -484,8 +497,8 @@ class BhrRepository implements BhrRepositoryInterface{
             
             $bhr_leaves_array = bhr_api_call('GET', $end_point);
             
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_leaves_array, "bhrlog");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_leaves_array, "bhr_leaves");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhr_leaves");
 
             return $bhr_leaves_array;
 
@@ -493,8 +506,9 @@ class BhrRepository implements BhrRepositoryInterface{
             DB::rollback();
             
             log_error($e);
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
+            log_to_file( 'info', 'GET LEAVES' . __FUNCTION__ , [$e], "bhr_leaves");
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhr_leaves");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "bhr_leaves");
 
             throw $e;
         }

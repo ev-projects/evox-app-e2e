@@ -43,6 +43,13 @@ class Authenticator {
     check =( role, permission ) => {
         return  this.checkRole( role ) && this.checkPermission( permission );
     }
+
+     /**
+     * Checks for both Permission and Role of the Currently Logged in user.
+     */
+     check_department_permissions =() => {
+      return store.getState().user?.schedule_active == true;
+  }
   }
   
   export default new Authenticator();

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Modules\Schedule\Models\Schedule;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Department\Models\Announcement;
+use App\Modules\Department\Models\DepartmentOnSchedule;
 // use App\Modules\Department\Models\AnnouncementDepartment;
 
 class Department extends Model
@@ -83,11 +84,31 @@ class Department extends Model
         return $this->hasMany(Announcement::class, 'dep_id', 'id');
     }
 
+    #check if the department is allowed to use schedule
+    public function departments_on_schedule()
+    {
+       
+
+        return $this->hasOne(DepartmentOnSchedule::class, 'department_id', 'id');
+    }
+
+    #check if the department is allowed to use schedule
+    public function departments_on_schedule_is_active()
+    {
+       
+        $condition = false;
+       
+        if($this->hasOne(DepartmentOnSchedule::class, 'department_id', 'id')->first()){
+            return $this->hasOne(DepartmentOnSchedule::class, 'department_id', 'id')->first()->is_active == true;
+        }
+        return false ;
+    }
+
     public function departments_announcements_presented()
     {
         // return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
 
-        return $this->hasMany(Announcement::class, 'present_dep_id', 'id');
+        return $this->hasMany('department_without_schedule_employees', 'department_id', 'id');
     }
 
     // public function departments_announcement_by_json()

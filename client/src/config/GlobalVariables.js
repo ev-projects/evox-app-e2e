@@ -19,6 +19,8 @@
 
     // Employee Links
     dtr                             :  "/app/dtr/",
+    dtr_punch_history                     :  "/app/punch_history/",
+    dtr_logs                        :  "/app/dtr_logs/",
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
     my_overall_request              :  "/app/account/MyOverallRequests",
@@ -62,6 +64,7 @@
 
     // Report Links
     team_attendance_summary         :  "/app/report/TeamAttendanceSummary/",
+    hr_team_attendance_summary         :  "/app/report/HRTeamAttendanceSummary/",
     KPIReport                       :  "/app/report/KPIReport/",
 
     // Admin Links

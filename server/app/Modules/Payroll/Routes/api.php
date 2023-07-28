@@ -19,7 +19,12 @@ Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], fu
     # Gets the DTR of the User indicated.
     Route::get('/{user_id}/{start_date}/{end_date}', 'DtrController@daily_time_record');//->middleware('auth.apikey');
 
+    # Gets the DTR of the User indicated.
+    Route::get('/punch/{user_id}/{start_date}/{end_date}', 'DtrController@punches');//->middleware('auth.apikey');
+
     Route::post('/quickpunch', 'DtrController@quickpunch');
+
+    Route::post('/quickpunch_multi', 'DtrController@quickpunch_multi');
 
     # TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.
     Route::get('/insert_time_in_out/{dtr_id}/{time_in}/{time_out}/{is_rest_day}', 'DtrController@insert_time_in_and_out');//->middleware('auth.apikey');

@@ -510,6 +510,21 @@ class AssignDefault extends Component {
                     Customize &nbsp;</label>      
                   )}
                   />  
+                  <FieldArray name="std_schedule_details" render={arrayHelpers => (
+                    <label>          
+                      <input 
+                        type="radio"
+                        name="schedule_type"
+                        checked={values.schedule_type === "empty"}
+                        onChange={() => {
+                          setFieldValue('std_schedule_details', []);
+                          setFieldValue('pov_schedule_details', []);
+                          arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
+                          setFieldValue('schedule_type', 'empty')
+                        }}
+                      /> 
+                    Empty &nbsp;</label>
+                  )}/>
                   <Form.Control.Feedback type="invalid">
                   &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
                   </Form.Control.Feedback>

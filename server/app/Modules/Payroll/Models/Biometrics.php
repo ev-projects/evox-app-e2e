@@ -27,7 +27,7 @@ class Biometrics extends Model
      */
     public function isIn()
     {
-        return ( $this->CheckType == "I" ) ? true : false;
+        return ( $this->CheckType == "I" || $this->CheckType == "C"  ) ? true : false;
     }
 
     
@@ -38,7 +38,7 @@ class Biometrics extends Model
      */
     public function isOut()
     {
-        return ( $this->CheckType == "O" ) ? true : false;
+        return ( $this->CheckType == "O" || $this->CheckType == "P"  ) ? true : false;
     }
 
 
@@ -84,6 +84,17 @@ class Biometrics extends Model
     public function getTimeType()
     {
         return ( $this->isIn() ? 'time_in' : ( $this->isOut() ? 'time_out' : null ) );
+    }
+
+
+    /**
+     *      
+     *  Gets the Time Type base on the CheckType
+     * @return bool 
+     */
+    public function getLogType()
+    {
+        return  get_constant('QUICKPUNCH_TYPE.'.$this->CheckType);
     }
 
 

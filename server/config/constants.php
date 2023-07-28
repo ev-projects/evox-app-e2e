@@ -38,7 +38,8 @@ return [
         'terminationDate',
         'employmentHistoryStatus',
         'supervisorEId',
-        'country'
+        'country',
+        'lastChanged'
     ],
     
     'BHR_USER_TABLE' => [
@@ -78,7 +79,8 @@ return [
         'zipcode',
         'bestEmail',
         'status',
-        'country'
+        'country',
+        'lastChanged'
     ],
 
     'BHR_USER_PERSONAL' => [
@@ -130,6 +132,7 @@ return [
         'denied', 
         'canceled'
     ],
+    
 
     'REQUEST_TABLES' => [
         'overtimes', 
@@ -325,6 +328,13 @@ return [
         7 => [
             'purpose' => 'Credit Card Application'
         ]
+    ],
+
+    'QUICKPUNCH_TYPE' => [
+        'I' => 'Log_in', 
+        'O' => 'Log_out', 
+        'P' => 'Pause', 
+        'C' => 'Continue'
     ],
 
 

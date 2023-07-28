@@ -20,6 +20,7 @@ import TemplateEdit from "../container/Schedule/TemplateEdit";
 import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
+import DtrPunchHistory from "../container/DtrPunchHistory";
 import EVLearning from "../container/EVLearning/EVLearning";
 import OpsSchedule from "../container/OpsSchedule/";
 
@@ -66,6 +67,7 @@ import ManageTeams from "../container/MyTeam/ManageTeams";
 import TimeOff from "../container/Profile/TimeOff";
 import Profile from "../container/Profile";
 import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
+import HRTeamAttendanceSummary from "../container/Report/HRTeamAttendanceSummary";
 import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
 import DepartmentList from "../container/Admin/DepartmentList";
@@ -120,6 +122,11 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.dtr+":id"} >
           <DailyTimeRecord role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_punch_history+":id"} >
+          <DtrPunchHistory role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+        
 
         <ProtectedRoute exact path={global.links.ev_learning} >
           <EVLearning role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
@@ -275,6 +282,9 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.team_attendance_summary}>
           <TeamAttendanceSummary role={['supervisor','client']} permission={['supervisor_access','client_access']} />
         </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.hr_team_attendance_summary}>
+          <HRTeamAttendanceSummary role={['hr']} permission={[]} />
+        </ProtectedRoute>
 
 
         {/* Announcement links */}
@@ -368,8 +378,9 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
-          <HrAnnouncementsForm  role={['hr']} />
-        </ProtectedRoute>
+          <HrAnnouncementsForm  role={['hr']} permission={['manage_hr_announcements']}/>
+        </ProtectedRoute> 
+        
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
         <Route exact path={["/", global.links.email_not_found ]} component={EmailNotFound} />
