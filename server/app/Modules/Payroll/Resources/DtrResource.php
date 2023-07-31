@@ -48,12 +48,12 @@ class DtrResource extends JsonResource
             // foreach( $payroll_items as  $key => $value){
             //     $payroll_items[$key] = seconds_to_time($value,true);
             // }
-            foreach( $result as  $key => $value){
-                $payroll_items["late"] = $value->late > 0 ? seconds_to_time($value->late * 3600,true):"";
-                $payroll_items["undertime"] = $value->undertime > 0 ?seconds_to_time($value->undertime * 3600,true):"";
-                $payroll_items["overtime"] = $value->overtime > 0 ?seconds_to_time($value->overtime * 3600,true):"";
-                $payroll_items["overtime_night_diff"] = $value->overtime_night_diff > 0 ?seconds_to_time($value->overtime_night_diff * 3600,true):"";
-                $payroll_items["night_diff"] = $value->night_diff > 0 ?seconds_to_time($value->night_diff * 3600,true):"";
+            foreach($result as  $key => $value){
+                $payroll_items["late"] = $value->late > 0 ? seconds_to_time(round($value->late * 3600),true):"";
+                $payroll_items["undertime"] = $value->undertime > 0 ? seconds_to_time(round($value->undertime * 3600),true):"";
+                $payroll_items["overtime"] = $value->overtime > 0 ? seconds_to_time(round($value->overtime * 3600),true):"";
+                $payroll_items["overtime_night_diff"] = $value->overtime_night_diff > 0 ? seconds_to_time(round($value->overtime_night_diff * 3600),true):"";
+                $payroll_items["night_diff"] = $value->night_diff > 0 ? seconds_to_time(round($value->night_diff * 3600),true):"";
             }
             
             # Create Resource for Policies
