@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 # API Call for DTR
 // , 'middleware' => ['jwtauth', 'auth.apikey']
-Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth']], function () {
+Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
     
     # Gets the DTR of the User indicated.
     Route::get('/{user_id}/{start_date}/{end_date}', 'DtrController@daily_time_record');//->middleware('auth.apikey');
