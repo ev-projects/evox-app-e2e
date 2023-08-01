@@ -440,23 +440,8 @@ const DtrSummaryBlock = ( props  ) => {
 
   return (<React.Fragment>
                 <Row className="SummaryBlock">
-                    <Col className="late col-lg-1 col-md-2 col-sm-3">
-                      <Toast >
-                        <Toast.Header>
-                          <span>LATE</span>
-                        </Toast.Header>
-                        <Toast.Body>{data.late}</Toast.Body>
-                      </Toast>
-                    </Col>
-                    <Col className="ut  col-lg-1 col-md-2 col-sm-3">
-                      <Toast >
-                        <Toast.Header>
-                          UT
-                        </Toast.Header>
-                        <Toast.Body>{data.undertime}</Toast.Body>
-                      </Toast>
-                      </Col>
-                  <Col className="nsd  col-lg-1 col-md-2 col-sm-3">
+                  
+                  <Col className="nsd  col-lg-2 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       NSD
@@ -464,7 +449,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Body>{data.night_diff}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="ot  col-lg-1 col-md-2 col-sm-3">
+                  <Col className="ot  col-lg-2 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       OT
@@ -472,7 +457,7 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Body>{data.overtime}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="otnd  col-lg-1 col-md-2 col-sm-3">
+                  <Col className="otnd  col-lg-2 col-md-2 col-sm-3">
                   <Toast >
                     <Toast.Header>
                       OTND
@@ -480,16 +465,9 @@ const DtrSummaryBlock = ( props  ) => {
                     <Toast.Body>{data.overtime_night_diff}</Toast.Body>
                   </Toast>
                   </Col>
-                  <Col className="ul  col-lg-1 col-md-2 col-sm-3">
-                  <Toast >
-                    <Toast.Header>
-                      ABSENT
-                    </Toast.Header>
-                    <Toast.Body>{data.ul}</Toast.Body>
-                  </Toast>
-                  </Col>
+                  
                   {holidaycolumn.map((dtr_type, index) => {
-                   return (<DtrSummaryHolidays column_name={eval('props.computations.column_names?.' + dtr_type)} data={eval('props.computations.data?.' + dtr_type)}/>);
+                    return (<DtrSummaryHolidays column_name={eval('props.computations.column_names?.' + dtr_type)} data={eval('props.computations.data?.' + dtr_type)}/>);
                     })}
                   </Row>
 </React.Fragment>);
