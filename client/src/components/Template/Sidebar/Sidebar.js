@@ -535,7 +535,7 @@ const Sidebar = (props) => {
                                 <p>Attendance Summary</p> 
                               </Link>
                             </li>  */}
-
+                    {Authenticator.check("hr", "hr_access") ? (
                     <li className="nav-item">
                       <a
                         className="nav-link"
@@ -554,7 +554,7 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                     </li>
-
+                    ) : (
                     <li className="nav-item">
                       <a
                         className="nav-link"
@@ -573,7 +573,7 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                     </li>
-
+                    )}
                     {Authenticator.check(
                       ["supervisor", "team_leader"],
                       ["supervisor_access", "team_leader_access"]
