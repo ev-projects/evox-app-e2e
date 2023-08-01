@@ -642,6 +642,34 @@ class Dtr extends Model
     public function payroll_items(){
         return $this->hasMany(DtrPayrollItems::class);
     }
+
+        /**
+     * get 
+     */
+    public function get_summary_row(){
+       
+        return DB::table('drt_summary_report')
+        ->select(DB::raw("unpaid_leave as ul,reg_late as late,reg_undertime as undertime,
+        ((reg_rendered_hours + rd_rendered_hours + sh_rendered_hours + lh_rendered_hours + dlh_rendered_hours + dsh_rendered_hours + slh_rendered_hours) + IF(nigdiff_stauts=1,reg_rendered_hours_overlapp
+        + rd_rendered_hours_overlapp + lh_rendered_hours_overlapp + sh_rendered_hours_overlapp + dlh_rendered_hours_overlapp + dsh_rendered_hours_overlapp + slh_rendered_hours_overlapp,0)) 
+        - (reg_night_diff + rd_night_diff + sh_night_diff + lh_night_diff + dlh_night_diff + dsh_night_diff + slh_night_diff + IF(nigdiff_stauts=1,reg_night_diff_overlapp
+        + rd_night_diff_overlapp + lh_night_diff_overlapp + sh_night_diff_overlapp + dlh_night_diff_overlapp + dsh_night_diff_overlapp + slh_night_diff_overlapp,0)) as rendered_hours,
+        (reg_night_diff + rd_night_diff + sh_night_diff + lh_night_diff + dlh_night_diff + dsh_night_diff + slh_night_diff) + IF(nigdiff_stauts=1,reg_night_diff_overlapp
+        + rd_night_diff_overlapp + lh_night_diff_overlapp + sh_night_diff_overlapp + dlh_night_diff_overlapp + dsh_night_diff_overlapp + slh_night_diff_overlapp,0) as night_diff,
+        (reg_overtime + rd_overtime + sh_overtime + lh_overtime + dlh_overtime + dsh_overtime + slh_overtime)  as overtime,
+        (reg_overtime_night_diff + rd_overtime_night_diff + sh_overtime_night_diff + lh_overtime_night_diff + dlh_overtime_night_diff + dsh_overtime_night_diff + slh_overtime_night_diff)  as overtime_night_diff"))
+                ->where('login_date', '=' , $this->date )
+                ->where('user_id','=',$this->user_id);
+
+        // $this->leftJoin('drt_summary_report', function($join){
+        //     $join->on('dtrs.date', '=', 'drt_summary_report.login_date');
+        //     $join->on('dtrs.user_id', '=', 'drt_summary_report.user_id');
+       
+        // })
+        // // ->take(3)
+        // ->get();
+    }
+    
     
     /**
      * hasMany Relationship for DTR Payroll Items Model that are tagged as Underlapped.

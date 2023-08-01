@@ -517,7 +517,7 @@ const Sidebar = (props) => {
 
               {/* Report Links Links */}
               {Authenticator.check(
-                ["supervisor", "client"],
+                ["supervisor", "client", "hr"],
                 ["supervisor_access", "client_access"]
               ) && (
                 <li className="nav-item has-treeview ">
@@ -535,7 +535,26 @@ const Sidebar = (props) => {
                                 <p>Attendance Summary</p> 
                               </Link>
                             </li>  */}
-
+                    {Authenticator.check("hr", "hr_access") ? (
+                    <li className="nav-item">
+                      <a
+                        className="nav-link"
+                        onClick={() => {
+                          history.push(global.links.hr_team_attendance_summary);
+                          props.setSelectedAttendanceSummary("attendance");
+                        }}
+                      >
+                        <i
+                          className="nav-icon fa fa-bar-chart"
+                          aria-hidden="true"
+                        ></i>
+                        <p>
+                          Attendance Summary
+                          {/* <i className="right fa fa-chevron-left" /> */}
+                        </p>
+                      </a>
+                    </li>
+                    ) : (
                     <li className="nav-item">
                       <a
                         className="nav-link"
@@ -554,7 +573,7 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                     </li>
-
+                    )}
                     {Authenticator.check(
                       ["supervisor", "team_leader"],
                       ["supervisor_access", "team_leader_access"]
@@ -577,7 +596,7 @@ const Sidebar = (props) => {
               )}
 
               {/* HR Links */}
-              {/* {Authenticator.check("hr", "hr_access") && (
+              {Authenticator.check("hr", "hr_access") && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-cog" />
@@ -586,8 +605,8 @@ const Sidebar = (props) => {
                       <i className="right fa fa-chevron-left" />
                     </p>
                   </a>
-                  <ul className="nav nav-treeview">
-        php artisan migrate  --path=/database/migrations/2023_02_15_112850_create_announcements_table.php            {Authenticator.check("hr", "manage_hr_announcements") && (
+                  {/* <ul className="nav nav-treeview">
+                {Authenticator.check("hr", "manage_hr_announcements") && (
                       <li className="nav-item">
                         <Link
                           className="nav-link"
@@ -598,9 +617,23 @@ const Sidebar = (props) => {
                         </Link>
                       </li>
                     )}
+                  </ul> */}
+
+                  <ul className="nav nav-treeview">
+                {Authenticator.check("hr", "hr_attendance_records") && (
+                      <li className="nav-item">
+                        <Link
+                          className="nav-link"
+                          // to={global.links.manage_hr_announcements}
+                        >
+                          <i  className="nav-icon fa fa-bar-chart" />
+                          <p style={{ fontSize: 13 }}>HR Attendance</p>
+                        </Link>
+                      </li>
+                    )}
                   </ul>
                 </li>
-              )} */}
+              )}
 
               {/* ADMIN Links */}
               {Authenticator.check("admin", "full_access") && (

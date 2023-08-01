@@ -706,7 +706,7 @@ class UserRepository implements UserRepositoryInterface{
      * @param Request $request
      * @return User $user_collection ( Collection )
      */
-    public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false){
+    public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false, $country_strict = false){
         try {
             
             $user_collection =  auth()->user()->users_handled();
@@ -750,7 +750,7 @@ class UserRepository implements UserRepositoryInterface{
                         $team_list[] = $id;
                     }
                 }
-            $user_collection->whereIn('users.id',array_unique($team_list) );
+                $user_collection->whereIn('users.id',array_unique($team_list) );
             }
 
   
@@ -769,6 +769,9 @@ class UserRepository implements UserRepositoryInterface{
             if (is_valid($request->page)) {
                 return $user_collection/*->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)*/->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->paginate(100);
             } else {
+                if ( auth()->user()->hasRole( get_constant('USER_ROLES.hr') ) && $country_strict ) {
+                    return $user_collection->where('country_id', auth()->user()->country_id)->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
+                }
                 return $user_collection/*->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)*/->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
             }
         } catch (Exception $e) {
