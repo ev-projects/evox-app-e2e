@@ -105,6 +105,7 @@ return [
         'admin'         =>  'admin',
         'client'        =>  'client',
         'hr'            =>  'hr',
+        'payroll'       =>  'payroll',
     ],
 
     'REGISTERED_USER' => 'Registered User',
