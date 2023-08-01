@@ -47,6 +47,7 @@ class UserListResource extends JsonResource
             'full_name' => $this->getFullName(),
             'departments_handled' => $departments_handled,
             'supervisee' => $supervisee,
+            "has_use_multi" => $this->permissions()->pluck('name')->contains('user_multi_login'),
             // 'users_handled' => $users_handled,
         );
 

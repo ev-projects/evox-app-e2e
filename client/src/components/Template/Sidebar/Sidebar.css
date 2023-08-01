@@ -145,11 +145,20 @@ padding-left: 10px !important;
   /* left:8px; */
   top:-5px;
   /* text-align: left !important; */
-  /* font-size: 3; */
 }
 .icon-stack-2x {
   font-size: 1.6em;
 }
 .icon-stack-3x {
   font-size: 1.8em;
+}
+
+
+.icon-stack-1x2 {
+  line-height: inherit;
+  position: absolute;
+  /* left:8px; */
+  top:-5px;
+  /* text-align: left !important; */
+  font-size: .7rem !important;
 }

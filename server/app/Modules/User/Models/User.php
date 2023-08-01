@@ -343,7 +343,8 @@ class User extends Authenticatable implements JWTSubject
 
         if( is_valid( $start_date )){
 
-            return $this->hasMany(DtrPunchHistory::class)->select('dtr_collective_punch_history.date as date', 'dtr_collective_punch_history.time_in', 
+            return $this->hasMany(DtrPunchHistory::class)->select('dtr_collective_punch_history.date as date', 'dtr_collective_punch_history.user_id as user_id',
+            'dtr_collective_punch_history.time_in', 
             'dtr_collective_punch_history.time_out', 'dtr_collective_punch_history.log_in_type', 'dtr_collective_punch_history.log_out_type', 
             'dtr_collective_punch.duration')
             ->join('dtr_collective_punch','dtr_collective_punch_history.id','=','dtr_collective_punch.dtr_collective_punch_history_id')

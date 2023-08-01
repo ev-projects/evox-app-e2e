@@ -292,8 +292,8 @@ class DailyTimeRecordPuncher extends Component {
                     <thead>
                         <tr>
                             <th className="dtr-date">Date</th>
-                            <th className="dtr-log">Clock In</th>
-                            <th className="dtr-log">Clock Out</th>
+                            <th className="dtr-log">Clock In  { this.props.params.id != this.props.user.id && this.state.toggle_pov == true? " ( "+ this.props.dtr.employeeInfo.timezone+" )": null}</th>
+                            <th className="dtr-log">Clock Out  { this.props.params.id != this.props.user.id && this.state.toggle_pov == true? " ( "+ this.props.dtr.employeeInfo.timezone+" )": null}</th>
                             <th className="dtr-status">Log Action</th>
                             <th className="dtr-item">Render HR </th>
                             <th className="dtr-item">NSD</th>
@@ -322,7 +322,8 @@ class DailyTimeRecordPuncher extends Component {
                                         {punch?.time_log.map((log, index) => {
                                           return(
                                             <li>
-                                              {log.time_in}
+                                              {this.state.toggle_pov == false ?<>{log.time_in}</> :<>{log.owner_POV.time_in}</>}
+                                           
                                             </li>)
 
                                         })}
@@ -334,7 +335,8 @@ class DailyTimeRecordPuncher extends Component {
                                         {punch?.time_log.map((log, index) => {
                                           return(
                                             <li>
-                                              {log.time_out}
+                                             
+                                              {this.state.toggle_pov == false ?<>{log.time_out}</> :<>{log.owner_POV.time_out}</>}
                                             </li>)
 
                                         })}
