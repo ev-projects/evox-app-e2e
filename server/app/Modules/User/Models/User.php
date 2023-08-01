@@ -514,6 +514,10 @@ class User extends Authenticatable implements JWTSubject
             return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
 
 
+        //HR and Payroll gets all the users
+        } elseif ( $this->hasRole( get_constant('USER_ROLES.hr') ) ) {
+            return User::whereNotNull('bhr_num');
+
         // If the User has Team Leader & Supervisor Role, get all the Users from the Department's Handled Team list AND the default users handled via users_supervivsors pivot table.
         } elseif( $this->hasRole( get_constant('USER_ROLES.supervisor') ) && $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
             $user_id_array = $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id')->pluck('id')->toArray();
