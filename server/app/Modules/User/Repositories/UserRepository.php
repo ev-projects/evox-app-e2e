@@ -717,6 +717,11 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection->where('date_hired', '<=',  Carbon::parse($end_date)->format("Y-m-d"));
             }
 
+            if ( $country_strict ) {
+                $country_id = auth()->user()->country_id;
+                $user_collection->where('country_id', $country_id);
+            }
+
 
             if( is_valid( $request->selectedDepartments ) ){
                 $dep_ids = $request->selectedDepartments;
@@ -769,9 +774,6 @@ class UserRepository implements UserRepositoryInterface{
             if (is_valid($request->page)) {
                 return $user_collection/*->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)*/->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->paginate(100);
             } else {
-                if ( auth()->user()->hasRole( get_constant('USER_ROLES.hr') ) && $country_strict ) {
-                    return $user_collection->where('country_id', auth()->user()->country_id)->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
-                }
                 return $user_collection/*->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)*/->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
             }
         } catch (Exception $e) {

@@ -104,7 +104,8 @@ return [
         'team_leader'   =>  'team_leader',
         'admin'         =>  'admin',
         'client'        =>  'client',
-        'hr'            =>  'HR',
+        'hr'            =>  'hr',
+        'payroll'       =>  'payroll',
     ],
 
     'REGISTERED_USER' => 'Registered User',
