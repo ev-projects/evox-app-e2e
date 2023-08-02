@@ -520,7 +520,7 @@ class User extends Authenticatable implements JWTSubject
             $this->hasRole( get_constant('USER_ROLES.hr') ) ||
             $this->hasRole( get_constant('USER_ROLES.payroll') )
          ) {
-            return User::where('id', '>=', 1);//practically all users
+            return User::whereNotNull("bhr_num")->orWhereNull("bhr_num");//practically all users
 
         // If the User has Team Leader & Supervisor Role, get all the Users from the Department's Handled Team list AND the default users handled via users_supervivsors pivot table.
         } elseif( $this->hasRole( get_constant('USER_ROLES.supervisor') ) && $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
