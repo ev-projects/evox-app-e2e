@@ -117,7 +117,8 @@ class DepartmentController extends Controller
             }
             return success_response(
                 trans('messages.change_department_schedule_status'), 
-                // new DepartmentResource( $department ) 
+                // new DepartmentResource( $department ) $this->department->all();
+                DepartmentListResource::collection( $this->department->all()) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);

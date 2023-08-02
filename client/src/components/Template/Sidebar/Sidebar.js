@@ -83,7 +83,7 @@ const Sidebar = (props) => {
               )}
 
                      {/*  EMPLOYEE Links */}
-                     {(Authenticator.check("employee", "employee_access") && Authenticator.check_department_permissions()) && (
+                     {(Authenticator.check("employee", "user_multi_login") && Authenticator.check_department_permissions()) && (
                 <li className="nav-item">
                   <Link
                     className="nav-link"
