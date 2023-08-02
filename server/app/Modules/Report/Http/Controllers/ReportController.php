@@ -692,7 +692,7 @@ class ReportController extends Controller
         $period = CarbonPeriod::between($new_start_date,  $new_end_date);
 
 
-        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true);
+        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true, true);
         $data =  $this->report->get_team_attendance_summary_dtr($user_collection,  $start_date, $end_date);
 
         $list = (array) $data['employee_list_summary'];
