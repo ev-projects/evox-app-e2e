@@ -161,7 +161,7 @@ class HRTeamAttendanceSummary extends Component {
             <ContainerWrapper> 
               <h2 className="header_text">Team Attendance Summary</h2> 
                 <div className="navigator-bar">
-                  <ReportNavigatorShort start_date={this.state.start_date} end_date={this.state.end_date} handleChangeDate={this.handleChangeDate}  default_view_type={"day"} hide_filter_button={true}/>
+                  <ReportNavigatorShort start_date={this.state.start_date} end_date={this.state.end_date} handleChangeDate={this.handleChangeDate}  default_view_type={"custom"} hide_filter_button={true}/>
                   {/* { Validator.isValid( start_date ) && Validator.isValid( end_date ) ? (start_date.format("LL") === end_date.format("LL") ? start_date.format("LL") : start_date.format("LL") + " - " + end_date.format("LL") )  : null } */}
                 </div>
                 <ContainerBody>        
