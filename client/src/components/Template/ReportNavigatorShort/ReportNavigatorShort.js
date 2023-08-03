@@ -135,7 +135,7 @@ const ReportNavigatorShort = (props) => {
                     defaultActiveKey={viewType}
                     onSelect={key => handleChangeViewType(key) }
                 >
-                    {Authenticator.check("hr", "hr_access") && (<Tab eventKey="custom" title="Custom" type="submit"></Tab>)}
+                    {Authenticator.check("hr", "hr_attendance_records") && (<Tab eventKey="custom" title="Custom" type="submit"></Tab>)}
                     <Tab eventKey="day" title="Today" type="submit"></Tab>
                     {/* <Tab eventKey="week" title="Weekly" type="submit"></Tab> */}
                     <Tab eventKey="month" title="Monthly" type="submit"></Tab>
