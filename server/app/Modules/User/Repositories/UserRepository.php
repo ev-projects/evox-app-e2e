@@ -752,7 +752,7 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection->whereIn('users.id',array_unique($team_list) );
             }
 
-            if (!is_valid( $request->department_id ) && !is_valid( $request->selectedDepartments ) && !is_valid( $request->selectedTeams ) && $country_strict ) {
+            if ( $country_strict ) {
                 $country_id = auth()->user()->country_id;
                 $user_collection->where('country_id', $country_id);
             }
