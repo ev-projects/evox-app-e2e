@@ -535,7 +535,7 @@ const Sidebar = (props) => {
                                 <p>Attendance Summary</p> 
                               </Link>
                             </li>  */}
-                    {Authenticator.check("hr", "hr_access") ? (
+                    {Authenticator.check("hr", "hr_attendance_records") ? (
                     <li className="nav-item">
                       <a
                         className="nav-link"
