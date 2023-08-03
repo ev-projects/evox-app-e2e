@@ -717,12 +717,6 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection->where('date_hired', '<=',  Carbon::parse($end_date)->format("Y-m-d"));
             }
 
-            if ( $country_strict ) {
-                $country_id = auth()->user()->country_id;
-                $user_collection->where('country_id', $country_id);
-            }
-
-
             if( is_valid( $request->selectedDepartments ) ){
                 $dep_ids = $request->selectedDepartments;
                 if(gettype($dep_ids) === "string"){
@@ -756,6 +750,11 @@ class UserRepository implements UserRepositoryInterface{
                     }
                 }
                 $user_collection->whereIn('users.id',array_unique($team_list) );
+            }
+
+            if (!is_valid( $request->department_id ) && !is_valid( $request->selectedDepartments ) && !is_valid( $request->selectedTeams ) && $country_strict ) {
+                $country_id = auth()->user()->country_id;
+                $user_collection->where('country_id', $country_id);
             }
 
   
