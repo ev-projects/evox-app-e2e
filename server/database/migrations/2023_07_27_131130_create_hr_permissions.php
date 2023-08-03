@@ -21,7 +21,7 @@ class CreateHrPermissions extends Migration
 
         // // hr Permissions
         $hr_permission = [
-            Permission::create(['name' => 'hr_access', 'label' => 'HR Access']),
+            Permission::create(['name' => 'hr_attendance_records', 'label' => 'View HR Attendance Records']),
         ];
        
 
