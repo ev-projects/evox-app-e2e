@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
 import Validator from "../../../services/Validator";
+import Authenticator from "../../../services/Authenticator";
 
 // Component for the Back Button 
 const ReportNavigatorShort = (props) => { 
@@ -134,10 +135,10 @@ const ReportNavigatorShort = (props) => {
                     defaultActiveKey={viewType}
                     onSelect={key => handleChangeViewType(key) }
                 >
+                    {Authenticator.check("hr", "hr_attendance_records") && (<Tab eventKey="custom" title="Custom" type="submit"></Tab>)}
                     <Tab eventKey="day" title="Today" type="submit"></Tab>
                     {/* <Tab eventKey="week" title="Weekly" type="submit"></Tab> */}
                     <Tab eventKey="month" title="Monthly" type="submit"></Tab>
-                    {/* <Tab eventKey="custom" title="Custom" type="submit"></Tab> */}
                 </Tabs>
             </div> 
             { viewType == "custom" ? 

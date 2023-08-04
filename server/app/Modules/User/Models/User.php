@@ -503,7 +503,7 @@ class User extends Authenticatable implements JWTSubject
             $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id')->pluck('id')->toArray(), 
             ( is_valid( $team ) ) ? $team->team_handlers()->pluck('id')->toArray() : []
         );
-        return User::whereIn('users.id', array_unique($user_id_array));
+        return User::whereIn('users.id', array_unique($user_id_array))->where('users.is_active', 1);
     }
 
     # Fetch the Users Handled of the current User Instance 
@@ -513,6 +513,14 @@ class User extends Authenticatable implements JWTSubject
         if( $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
             return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
 
+
+        //HR and Payroll gets all the users
+        } elseif ( 
+            $this->hasRole( get_constant('USER_ROLES.admin') ) ||
+            $this->hasRole( get_constant('USER_ROLES.hr') ) ||
+            $this->hasRole( get_constant('USER_ROLES.payroll') )
+         ) {
+            return User::whereNotNull("bhr_num");//practically all users
 
         // If the User has Team Leader & Supervisor Role, get all the Users from the Department's Handled Team list AND the default users handled via users_supervivsors pivot table.
         } elseif( $this->hasRole( get_constant('USER_ROLES.supervisor') ) && $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 

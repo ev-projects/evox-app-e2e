@@ -25,6 +25,8 @@ class DtrLogResource extends JsonResource
             
             # Create Resource for Payroll Items
             $payroll_items = [];
+
+
             // foreach( $this->payroll_items()->get() as  $key => $payroll_item){
                 
             //     // Sum the Payroll items
@@ -38,7 +40,7 @@ class DtrLogResource extends JsonResource
 
             # Create Resource for Holidays
             $holidays = [];
-            foreach( $this->holidays()->get() as $holiday){
+            foreach($this->holidays()->get() as $holiday){
                 $holidays[ $holiday->id ] = [
                     'name'  => $holiday->name,
                     'type'  => strtoupper($holiday->type)
@@ -63,13 +65,13 @@ class DtrLogResource extends JsonResource
             //     $payroll_items[$key] = seconds_to_time($value,true);
             // }
             foreach( $result as  $key => $value){
-                $payroll_items["late"] = $value->late > 0 ? seconds_to_time($value->late * 3600,true):"";
-                $payroll_items["undertime"] = $value->undertime > 0 ? seconds_to_time($value->undertime * 3600,true):"";
-                $payroll_items["overtime"] = $value->overtime > 0 ? seconds_to_time($value->overtime * 3600,true):"";
-                $payroll_items["overtime_night_diff"] = $value->overtime_night_diff > 0 ? seconds_to_time($value->overtime_night_diff * 3600,true):"";
-                $payroll_items["night_diff"] = $value->night_diff > 0 ? seconds_to_time($value->night_diff * 3600,true):"";
+                $payroll_items["late"] = $value->late > 0 ? seconds_to_time(round($value->late * 3600),true):"";
+                $payroll_items["undertime"] = $value->undertime > 0 ? seconds_to_time(round($value->undertime * 3600),true):"";
+                $payroll_items["overtime"] = $value->overtime > 0 ? seconds_to_time(round($value->overtime * 3600),true):"";
+                $payroll_items["overtime_night_diff"] = $value->overtime_night_diff > 0 ? seconds_to_time(round($value->overtime_night_diff * 3600),true):"";
+                $payroll_items["night_diff"] = $value->night_diff > 0 ? seconds_to_time(round($value->night_diff * 3600),true):"";
                 $payroll_items[ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] = $value->ul > 0 ? round($value->ul):"";
-                $payroll_items["rendered_hours"] = $value->rendered_hours > 0 ? seconds_to_time($value->rendered_hours * 3600,true):"";
+                $payroll_items["rendered_hours"] = $value->rendered_hours > 0 ? seconds_to_time(round($value->rendered_hours * 3600),true):"";
             }
 
             $leaves = $this->leaves()->get();
@@ -101,12 +103,10 @@ class DtrLogResource extends JsonResource
                 'timezone' =>  $user->country_zone()->country_time_zone,
                 'holidays' => $holidays,
                 'user_POV' => [
-
                     'time_in' => timestamp_to_time( $this->time_in , true ,  $user),
                     'time_out' => timestamp_to_time( $this->time_out , true ,  $user),
                     'start_datetime' => timestamp_to_time( $this->start_datetime , true ,  $user),
                     'end_datetime' => timestamp_to_time( $this->end_datetime , true ,  $user),
-                 
                     'start_flexy_datetime' => timestamp_to_time( $this->start_flexy_datetime , true ,  $user),
                     'end_flexy_datetime' => timestamp_to_time( $this->end_flexy_datetime , true ,  $user),
                 ],

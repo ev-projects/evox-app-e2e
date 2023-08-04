@@ -1,0 +1,44 @@
+.navigator-bar{
+    margin-bottom: -15px;
+    margin-left: 38px;
+    margin-top: 30px;
+}
+
+.summary-report label {
+    font-size: 12px;
+    text-transform: uppercase;
+    padding:0 !important;
+    margin: 0 0 5px 0 !important;
+    text-align: center;
+    display: block;
+}
+
+.header_text{
+    margin-left: 1.3rem !important;
+}
+
+.computed-summary-container{margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid #ccc}
+
+/* .summary-report > .dtr-list > div > span {
+    font-size: 30px;
+}
+
+.summary-report > .dtr-list > div > .green {
+    color: #82af13;
+}
+
+.summary-report > .dtr-list > div > .red {
+    color: #f12631;
+} */
+
+.filters.filter-dtr .multi-select .dropdown-container .dropdown-heading .dropdown-heading-value{
+    max-width: 320px;
+    display:inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.employee-name-input{
+    height: 40 !important;
+    width: 320px;
+}
