@@ -540,7 +540,8 @@ const Sidebar = (props) => {
                       <a
                         className="nav-link"
                         onClick={() => {
-                          history.push(global.links.hr_team_attendance_summary);
+                          //history.push(global.links.hr_team_attendance_summary);
+                          history.push(global.links.team_attendance_summary);
                           props.setSelectedAttendanceSummary("attendance");
                         }}
                       >
