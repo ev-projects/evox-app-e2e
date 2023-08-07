@@ -177,7 +177,7 @@ class syncBhrUsers extends Command
 
 
                         foreach ($admin_collection as $admin) {
-                            $admin->supervisee()->attach($user);
+                            $admin->supervisee()->syncWithoutDetaching($user);
                         }
                     }
                 } catch (Exception $e) {
