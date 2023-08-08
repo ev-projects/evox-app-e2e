@@ -71,8 +71,12 @@ class UserProfileResource extends JsonResource
             "current_offset" => $offset,
             "default_offset" => $this->country_zone()->time_difference,
 
-            "schedule_active" => $this->department()->first()->departments_on_schedule_is_active(),
+
+          
             "use_multi" => $this->permissions()->pluck('name')->contains('user_multi_login'),
+
+            "schedule_active" => ( is_valid( $department ) ? $this->department()->first()->departments_on_schedule_is_active(): false ),
+
             );
         if( $this->show_full_info ) {
 

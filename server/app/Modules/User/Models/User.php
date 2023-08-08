@@ -304,15 +304,18 @@ class User extends Authenticatable implements JWTSubject
 
             # If the Start and End Date is valid, fetch the DTR between the Date Range.
             if( is_valid( $start_date ) && is_valid( $end_date ) ){
-                return $this->hasMany(DtrPunchHistory::class)->whereBetween('date', [$start_date, $end_date]);
+                return $this->hasMany(DtrPunchHistory::class)->whereBetween('date', [$start_date, $end_date])
+                ->where('is_active','=','1');
     
             # If the Start is valid AND End Date is NOT valid, fetch the DTR Date Range from Start Date Onwards.
             } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
-                return $this->hasMany(DtrPunchHistory::class)->where('date', '>=', $start_date);
+                return $this->hasMany(DtrPunchHistory::class)->where('date', '>=', $start_date)
+                ->where('is_active','=','1');
     
             # If the Start and End date is NOT valid, fetch the DTR as a whole
             }elseif( !is_valid( $start_date ) && !is_valid( $end_date ) ){
-                return $this->hasMany(DtrPunchHistory::class);
+                return $this->hasMany(DtrPunchHistory::class)
+                 ->where('is_active','=','1');
             }
         }
 
