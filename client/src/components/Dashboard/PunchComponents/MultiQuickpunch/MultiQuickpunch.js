@@ -33,7 +33,7 @@ class MultiQuickpunch extends Component {
 				}
 			}
 		}
-		// console.log( values['on_date'] == true ,formData)
+	
 		if( values['on_date'] == true){
 			if (window.confirm("Are you sure you want Update or create record on seleceted date")) {
 
@@ -91,7 +91,7 @@ class MultiQuickpunch extends Component {
 		
 
 		if(recent_punch.length > 0){
-			// console.log(recent_punch[recent_punch.length - 1]);
+
 			latest = recent_punch[recent_punch.length - 1];
 
 			if(latest.recent_log == "Pause"){
@@ -109,22 +109,24 @@ class MultiQuickpunch extends Component {
 		}
 
 		if(recent_punch.length > 0){
-			// console.log( latest.date, moment().format("Y-MM-DD"));
+
 			latest = recent_punch[recent_punch.length - 1];
-			// console.log(latest.time_out,moment.unix(latest.time_out));
+
 			var time = new Date(latest.date_time_out);
 			var formatted = moment(time);
-			console.log(formatted.format("Y-MM-DD")); 
-			console.log(moment(this.state.time).format("Y-MM-DD"));
+
 			if(formatted.format("Y-MM-DD") == moment(this.state.time).format("Y-MM-DD") && latest.completed_today == true){
-				// console.log(latest.completed_today, latest.completed_today == true ? "yes" : "no", latest.completed_today == "true" ? "yes" : "no")
+			
 				disable_day = true;
+				if(latest.log_in_type == "rest_day_work" && !(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'),moment(new Date(latest.date_time_out)).add(1, 'hours')))){
+					disable_day = false;
+				}
 			}
 			if( latest.completed_today == true){
 				if(formatted.format("Y-MM-DD") == moment(this.state.time).subtract(1,"day").format("Y-MM-DD") ){
 					prev_disable_day = true;
 				}
-				// console.log(latest.completed_today, latest.completed_today == true ? "yes" : "no", latest.completed_today == "true" ? "yes" : "no")
+			
 			}
 			if(latest.recent_log == "Log_out"  && latest.date != moment(this.state.time).format("Y-MM-DD")){
 				// isLogIn = true;
@@ -132,27 +134,31 @@ class MultiQuickpunch extends Component {
 				if(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(5, 'hours'))){
 					
 					use_previous = true;
-				if(latest.time_out != null && latest.recent_log == "Log_out"){
-					var time = new Date(latest.date_time_out);
-					var formatted = moment(time);
-					if(formatted.isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(3, 'hours'))){
-						use_previous = false;
-					}
-				}
+						if(latest.time_out != null && latest.recent_log == "Log_out"){
+							var time = new Date(latest.date_time_out);
+							var formatted = moment(time);
+							if(formatted.isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(3, 'hours'))){
+								use_previous = false;
+							}
+							
+							if(latest.time_out != null && latest.recent_log == "Log_out" && latest.log_in_type == "rest_day_work"){
+								if(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'),moment(new Date(latest.date_time_out)))){
+									use_previous = false;
+								}
+							}
+						}
 				}
 			}
-			// console.log(recent_punch);
+			
 		}
-		// console.log(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(12, 'hours')),
-		// moment(this.state.time).startOf('day'),
-		// moment(this.state.time).startOf('day').add(3, 'hours'));
+	
 
 		if(recent_punch.length == 0 ){
 			isLogIn = true;
 			if(moment(this.state.time).isBetween(moment(this.state.time).startOf('day'), moment(this.state.time).startOf('day').add(3, 'hours'))){
-				// console.log("2222");
+				
 				use_previous = true;
-				// console.log("2222");
+				
 			}
 		}
 
@@ -161,8 +167,7 @@ class MultiQuickpunch extends Component {
 	}
 	
 
-	// console.log("333");
-	// console.log(use_previous);
+	
 	const initialValue = {
 		quickpunch : null,
 		date : "today",
@@ -170,7 +175,7 @@ class MultiQuickpunch extends Component {
 	}
 	
 
-
+	// console.log(isLogIn , disable_day, !isLogIn || disable_day);
     return(<Formik 
 		enableReinitialize
 		onSubmit={this.onSubmitHandler} 
