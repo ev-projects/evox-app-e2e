@@ -12,7 +12,9 @@ const initState = {
     list: [],
     filter: [],
     selectedPayrollCutoff: {},
-    incompleteDtr: {}
+    incompleteDtr: {},
+    punch_list: [],
+    isListPunchLoaded : false,
 }
 
 const dtrReducer = (state = initState, action) => {
@@ -27,6 +29,13 @@ const dtrReducer = (state = initState, action) => {
                 ...state,
                 list : action.list,
                 isDtrLoaded : true,
+            }
+            break;
+        case "FETCH_PUNCH_SUCCESS":
+            result = {
+                ...state,
+                punch_list : action.list,
+                isListPunchLoaded : true,
             }
             break;
 

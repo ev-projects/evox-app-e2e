@@ -8,7 +8,7 @@ use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Models\PayrollCutoff;
 use App\Modules\Schedule\Models\Schedule;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,7 +24,6 @@ use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\WorkFromHome;
-use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
 use Auth;
@@ -320,6 +319,42 @@ class User extends Authenticatable implements JWTSubject
             }
         }
 
+        # Fetch the User's Punch History Logs Dates
+        public function punchlogs($start_date = null, $end_date = null){
+              
+                    # If the Start and End Date is valid, fetch the Distinct Date in Dtr Collective Punch history between the Date Range.
+                    if( is_valid( $start_date ) && is_valid( $end_date ) ){
+
+                        return $this->hasMany(DtrPunchHistory::class)->select('date','user_id')->distinct()->whereBetween('date', [$start_date, $end_date]);
+            
+                    # If the Start is valid AND End Date is NOT valid, fetch the Distinct Date in Dtr Collective Punch history Date Range from Start Date Onwards.
+                    } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
+
+                        return $this->hasMany(DtrPunchHistory::class)->select('date','user_id')->distinct()->where('date', '>=', $start_date);
+            
+                    # If the Start and End date is NOT valid,  fetch the Distinct Date in Dtr Collective Punch history as a whole
+                    }elseif( !is_valid( $start_date ) && !is_valid( $end_date ) ){
+
+                        return $this->hasMany(DtrPunchHistory::class)->select('date','user_id')->distinct();
+
+                    }
+       }
+
+       #Fecth the Punch History Logs
+
+       public function get_punch_history($start_date = null){
+
+        if( is_valid( $start_date )){
+
+            return $this->hasMany(DtrPunchHistory::class)->select('dtr_collective_punch_history.date as date', 'dtr_collective_punch_history.user_id as user_id',
+            'dtr_collective_punch_history.time_in', 
+            'dtr_collective_punch_history.time_out', 'dtr_collective_punch_history.log_in_type', 'dtr_collective_punch_history.log_out_type', 
+            'dtr_collective_punch.duration')
+            ->join('dtr_collective_punch','dtr_collective_punch_history.id','=','dtr_collective_punch.dtr_collective_punch_history_id')
+            ->where('dtr_collective_punch_history.date','=',$start_date);
+        }
+       }
+
     public function requests_list($request,$filter = array()){
         $column = array('id','status','created_at','created_by','updated_by');
 
@@ -612,9 +647,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getHasSchedule(){
 
-       
-    
-        # Fetch the Default Schedule for the current User.
+       # Fetch the Default Schedule for the current User.
         $checkDefault_schedule = is_valid($this->defaultSchedule()->first());
 
             $temporary_schedule_condition = [
