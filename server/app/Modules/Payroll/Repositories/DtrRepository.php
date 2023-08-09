@@ -700,28 +700,35 @@ class DtrRepository implements DtrRepositoryInterface{
                     return get_constant('DTR_NOT_EXISTS');
                 }
 
-                # Updates the DTR properties
-                $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
-                $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
-                $dtr->time_in               =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
-                $dtr->time_out              =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
-                $dtr->start_flexy_datetime  =  null;
-                $dtr->end_flexy_datetime    =  null;
-                $dtr->break_time            =  $rest_day_work->break_time;
-                $dtr->is_rest_day           =  true;
-                $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work');
+               
+                if(!$dtr->user()->first()->permissions()->pluck('name')->contains('user_multi_login')){
+                    # Updates the DTR properties
+                    $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
+                    $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
+                    $dtr->time_in               =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
+                    $dtr->time_out              =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
+                    $dtr->start_flexy_datetime  =  null;
+                    $dtr->end_flexy_datetime    =  null;
+                    $dtr->break_time            =  $rest_day_work->break_time;
+                    $dtr->is_rest_day           =  true;
+                    $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work');
 
-                # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
-                if( $rest_day_work->start_time >= $rest_day_work->end_time ) {
-                    $dtr->end_datetime = add_days_to_timestamp( $dtr->end_datetime, 1 );
-                    $dtr->time_out = add_days_to_timestamp( $dtr->time_out, 1 );
+                    # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
+                    if( $rest_day_work->start_time >= $rest_day_work->end_time ) {
+                        $dtr->end_datetime = add_days_to_timestamp( $dtr->end_datetime, 1 );
+                        $dtr->time_out = add_days_to_timestamp( $dtr->time_out, 1 );
+                    }
+
+                    # Updates the DTR with the Rest Day Work Details.
+                    $dtr->save();
+
+                    # Compute for the Items
+                    $this->compute_payroll_items( $dtr );
+                }else{
+                    $dtr->is_rest_day           =  true;
+                    $dtr->save();
                 }
-
-                # Updates the DTR with the Rest Day Work Details.
-                $dtr->save();
-
-                # Compute for the Items
-                $this->compute_payroll_items( $dtr );
+                
 
                 DB::commit();
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
