@@ -242,6 +242,11 @@ class DtrController extends Controller
             );
 
         } catch(Exception $e){
+
+            // dd($e->getMessage());
+            if(str_contains($e->getMessage(), 'This date was already approved')){
+                return error_response( "This date was already approved as a rest day.", $e );
+            }
             return error_response( trans('messages.error_default'), $e );
         }
         
