@@ -63,9 +63,6 @@ componentDidMount(){
 
     if(isRecentPunchLoaded == true){
 
-    
-       
-
     return(
       <div >
       
@@ -118,9 +115,9 @@ componentDidMount(){
                             </div></td>
                             <td className="dtr-log">
                             <div>
-                          <span>{punch.log_out_type == "Log_out" ? <i className="fa fa-sign-out" /> : punch.log_out_type == "Pause" ? <i className="fa fa-pause" />: "" } </span>
+                          <span>{(punch.log_out_type == "Log_out" && punch.log_in_type == "Continue") || (punch.log_out_type == "Log_out" && punch.log_in_type == "Log_in") ? <i className="fa fa-sign-out" /> : punch.log_out_type == "Pause" ? <i className="fa fa-pause" /> : punch.log_in_type == "rest_day_work" ? <i className="fa fa-calendar-times-o" /> : "" } </span>
                            
-                          <b>{ (punch.log_out_type == "Log_out" ? "Logout" : punch.log_out_type == "Pause" ? "Pause" : "" )}</b>
+                          <b>{ ((punch.log_out_type == "Log_out" && punch.log_in_type == "Continue") || (punch.log_out_type == "Log_out" && punch.log_in_type == "Log_in")? "Logout" : punch.log_out_type == "Pause" ? "Pause" : punch.log_in_type == "rest_day_work" ? "Rest Day Work" : "" )}</b>
                             </div></td>
                         </tr>
               })}
@@ -136,7 +133,7 @@ componentDidMount(){
 
   }
   return(
-    <div >
+    <div>
     </div>);
 	}
   }

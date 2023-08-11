@@ -22,6 +22,25 @@ export const viewEmployeeDtr = (user_id,from,to) => {
     }
 }
 
+export const viewEmployeePunch= (user_id,from,to) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr/dtrpunch/"+user_id+"/"+from+"/"+to,
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_PUNCH_SUCCESS', 
+                'list'   : result.data.content
+            })
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 export const getFilterForDtr = (user_id) => {
     return (dispatch, getState) => {
         API.call({
@@ -69,6 +88,8 @@ export const getUserDtrSummary = ( id , from , to ) => {
         });
     }
 }
+
+
 
 
 // Set Selected Payroll Cutoff instance
