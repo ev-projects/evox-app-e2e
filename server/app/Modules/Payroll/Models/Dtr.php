@@ -923,12 +923,12 @@ class Dtr extends Model
     }
 
 
-    // public function get_dtr_history(){ NOT EXIST
+    public function get_dtr_history(){ 
 
-    //     $dtr_history = DtrPunchHistory::where('date',$this->date)->where('user_id',$this->user_id);
+        $dtr_history = DtrPunchHistory::where('date',$this->date)->where('user_id',$this->user_id);
 
-    //     return  $dtr_history;
-    // }
+        return  $dtr_history;
+    }
     
 
     ###############################################################################################

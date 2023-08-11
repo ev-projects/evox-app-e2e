@@ -119,3 +119,46 @@ padding-left: 10px !important;
  color: #ffffff !important;
 }
 
+
+
+.icon-stack {
+  position: relative;
+  display: inline-block;
+  width: 1.8em;
+  height: 2em;
+  line-height: 3em;
+  vertical-align: middle;
+  margin-right: 5px !important;
+  margin-left: 2px !important;
+}
+.icon-stack-1x,
+.icon-stack-2x,
+.icon-stack-3x {
+  position: absolute;
+  left: 0;
+  width: 100%;
+    text-align: center !important;
+}
+.icon-stack-1x {
+  line-height: inherit;
+  position: absolute;
+  /* left:8px; */
+  top:-5px;
+  /* text-align: left !important; */
+}
+.icon-stack-2x {
+  font-size: 1.6em;
+}
+.icon-stack-3x {
+  font-size: 1.8em;
+}
+
+
+.icon-stack-1x2 {
+  line-height: inherit;
+  position: absolute;
+  /* left:8px; */
+  top:-5px;
+  /* text-align: left !important; */
+  font-size: .7rem !important;
+}

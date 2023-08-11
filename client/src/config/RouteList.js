@@ -20,7 +20,8 @@ import TemplateEdit from "../container/Schedule/TemplateEdit";
 import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
-import DtrPunchHistory from "../container/DtrPunchHistory";
+import DailyTimeRecordPuncher from "../container/DailyTimeRecordPuncher";
+import DtrPunch from "../container/DtrPunch";
 import EVLearning from "../container/EVLearning/EVLearning";
 import OpsSchedule from "../container/OpsSchedule/";
 
@@ -123,8 +124,12 @@ const RoutesList = (props) => {
           <DailyTimeRecord role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.dtr_punch_history+":id"} >
-          <DtrPunchHistory role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        <ProtectedRoute exact path={global.links.dtr_punchlist+":id"} >
+          <DailyTimeRecordPuncher role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_punch_history} >
+          <DtrPunch role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
         
 

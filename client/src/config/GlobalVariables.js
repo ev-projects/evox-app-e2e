@@ -19,7 +19,8 @@
 
     // Employee Links
     dtr                             :  "/app/dtr/",
-    dtr_punch_history                     :  "/app/punch_history/",
+    dtr_punchlist                   :  "/app/dtr_punch_list/",
+    dtr_punch_history               :  "/app/punch_history/",
     dtr_logs                        :  "/app/dtr_logs/",
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
