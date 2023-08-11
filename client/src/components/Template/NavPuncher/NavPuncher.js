@@ -141,126 +141,103 @@ class NavPuncher extends Component {
 
     
   <div className="div-col ">
-  <Formik 
-		enableReinitialize
-		onSubmit={
-      this.onSubmitHandler
-    } 
-		validationSchema={validationSchema} 
-		initialValues={initialValue}>
-	  {
-	  ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-        <form onSubmit={handleSubmit}> 
-        {this.props.dashboard?.recent_dtr.length > 1 ? (
-				this.props.dashboard?.recent_dtr[1]?.is_rest_day == 1 ? (
-					this.props.dashboard?.recent_dtr[0]?.is_rest_day == 1  
-          || 	(this.props.dashboard?.recent_dtr[0]?.is_rest_day == 0 &&  this.props.dashboard?.recent_dtr[0]?.with_in_time == false)
-          || 	(this.props.dashboard?.recent_dtr[1]?.is_rest_day == 1 && this.props.dashboard?.recent_dtr[0]?.is_rest_day == 0 &&  this.props.dashboard?.recent_dtr[0]?.time_in != null && this.props.dashboard?.recent_dtr[0]?.time_out != null &&  this.props.dashboard?.recent_dtr[0]?.with_in_time == true) ? (
-						<>
+  {this.props.user.use_multi ?<>
+  <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Clock In</Button>
+  </>
+  :
+  <>
+    <Formik 
+      enableReinitialize
+      onSubmit={
+        this.onSubmitHandler
+      } 
+      validationSchema={validationSchema} 
+      initialValues={initialValue}>
+      {
+      ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+          <form onSubmit={handleSubmit}> 
+          {this.props.dashboard?.recent_dtr.length > 1 ? (
+          this.props.dashboard?.recent_dtr[1]?.is_rest_day == 1 ? (
+            this.props.dashboard?.recent_dtr[0]?.is_rest_day == 1  
+            || 	(this.props.dashboard?.recent_dtr[0]?.is_rest_day == 0 &&  this.props.dashboard?.recent_dtr[0]?.with_in_time == false)
+            || 	(this.props.dashboard?.recent_dtr[1]?.is_rest_day == 1 && this.props.dashboard?.recent_dtr[0]?.is_rest_day == 0 &&  this.props.dashboard?.recent_dtr[0]?.time_in != null && this.props.dashboard?.recent_dtr[0]?.time_out != null &&  this.props.dashboard?.recent_dtr[0]?.with_in_time == true) ? (
+              <>
 
-              <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Rest Day</Button>
-						</>
-					) : (
+                <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Rest Day</Button>
+              </>
+            ) : (
+              
+            <>
+            {
+              (this.props.dashboard?.recent_dtr[0]?.time_in == null) ? 
+              //CLOCK IN/OUT for YESTERDAY ONLY
+              (<>
+                <Button className="nav-clock-button dropdown newfeature" 
+              onClick={(e)=> { setFieldValue('quickpunch','in'); 
+              setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
+              type="submit" ><i className="fa fa-history" /> Clock In
+              </Button>
+              </>)
+              :
+              
+              (<>
+                <Button className="nav-clock-button dropdown newfeature" 
+              onClick={(e)=> { setFieldValue('quickpunch','out'); 
+              setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
+              type="submit" >
+                <i className="fa fa-history" /> Clock Out
+              </Button>
+              </>)
+            }
             
-					<>
-          {
-            (this.props.dashboard?.recent_dtr[0]?.time_in == null) ? 
-            //CLOCK IN/OUT for YESTERDAY ONLY
-            (<>
-              <Button className="nav-clock-button dropdown newfeature" 
-            onClick={(e)=> { setFieldValue('quickpunch','in'); 
-            setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
-            type="submit" ><i className="fa fa-history" /> Clock In
-            </Button>
-            </>)
-            :
-            
-            (<>
-              <Button className="nav-clock-button dropdown newfeature" 
-            onClick={(e)=> { setFieldValue('quickpunch','out'); 
-            setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
-            type="submit" >
-              <i className="fa fa-history" /> Clock Out
-            </Button>
-            </>)
-          }
-           
-					</>
-					)
-				) : (
-					<>
-
-          {!(this.props.dashboard?.recent_dtr[1]?.time_in || (this.props.dashboard?.recent_dtr[0]?.with_in_time == true && this.props.dashboard?.recent_dtr[0]?.time_in))? (
-           <>
-            <Button className="nav-clock-button dropdown newfeature"  type="submit" onClick={(e)=> { setFieldValue('quickpunch','in');   }} >
-              <i className="fa fa-clock-o" /> Clock In</Button>
-              {/* <input type="hidden" name="dtr_id" s/> */}
-           </>
+            </>
+            )
           ) : (
-            ((this.props.dashboard?.recent_dtr[1]?.time_in && this.props.dashboard?.recent_dtr[1]?.time_out) || (this.props.dashboard?.recent_dtr[0]?.with_in_time == true && this.props.dashboard?.recent_dtr[0]?.time_out && this.props.dashboard?.recent_dtr[0]?.time_in)) ?
-            (<><Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-sun-o" /> Day Completed</Button></>) : 
+            <>
+
+            {!(this.props.dashboard?.recent_dtr[1]?.time_in || (this.props.dashboard?.recent_dtr[0]?.with_in_time == true && this.props.dashboard?.recent_dtr[0]?.time_in))? (
+            <>
+              <Button className="nav-clock-button dropdown newfeature"  type="submit" onClick={(e)=> { setFieldValue('quickpunch','in');   }} >
+                <i className="fa fa-clock-o" /> Clock In</Button>
+            </>
+            ) : (
+              ((this.props.dashboard?.recent_dtr[1]?.time_in && this.props.dashboard?.recent_dtr[1]?.time_out) || (this.props.dashboard?.recent_dtr[0]?.with_in_time == true && this.props.dashboard?.recent_dtr[0]?.time_out && this.props.dashboard?.recent_dtr[0]?.time_in)) ?
+              (<><Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-sun-o" /> Day Completed</Button></>) : 
+              
+              (<><Button className="nav-clock-button dropdown newfeature" onClick={(e)=> { setFieldValue('quickpunch','out');   
             
-            (<><Button className="nav-clock-button dropdown newfeature" onClick={(e)=> { setFieldValue('quickpunch','out');   
           
-            // if(this.props.dashboard?.recent_dtr[0]?.time_in & this.props.dashboard?.recent_dtr[0]?.with_in_time == true){
-            //   setFieldValue('dtr_id',this.props.dashboard?.recent_dtr[0]?.id); 
-            // }
-          }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button></>)
-          )}
-			
-					</>
-				)
-			) : 
-      this.props.dashboard?.isNavDtrLoaded == true  ? (
-        <>
-        		
+            }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button></>)
+            )}
         
-          <Button className="nav-clock-button dropdown newfeature"  type="submit" onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
+            </>
+          )
+        ) : 
+        this.props.dashboard?.isNavDtrLoaded == true  ? (
+          <>
+              
+          
+            <Button className="nav-clock-button dropdown newfeature"  type="submit" onClick={(e)=> { setFieldValue('quickpunch','in');   }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
 
+        
+          </>)
+          : (
+          <>
+            
+
+              <Button  type="submit"  className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+
+          </>)
+
+              
+        }
       
-        </>)
-        : (
-        <>
-        	
-
-            <Button  type="submit"  className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Clock Loading</Button>
-
-        </>)
-
-            
-			}
-      {/* { target_previous  && this.props.dashboard?.recent_dtr[0]?.is_rest_day == 0 && this.props.dashboard?.recent_dtr[1]?.is_rest_day == 0? <> 
-      
-        {
-            (this.props.dashboard?.recent_dtr[0]?.time_in == null) ? 
-            
-            (<>
-              <Button className="nav-clock-button dropdown newfeature" 
-            onClick={(e)=> { setFieldValue('quickpunch','in'); 
-            setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
-            type="submit" ><i className="fa fa-history" /> Clock In Previous Day
-            </Button>
-            </>)
-            :
-            
-            (<>
-              <Button className="nav-clock-button dropdown newfeature" 
-            onClick={(e)=> { setFieldValue('quickpunch','out'); 
-            setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[0]?.id);  }}  
-            type="submit" >
-              <i className="fa fa-history" /> Clock Out Previous Day
-            </Button>
-            </>)
-          }
-      </>:null
-
-      } */}
-       
-    </form>
-	)}
-  
-	</Formik>
- 
+        
+      </form>
+    )}
+    
+    </Formik>
+  </>}
 
   </div>
 

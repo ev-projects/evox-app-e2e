@@ -33,11 +33,10 @@ class DtrNotifications extends Component {
     
 	render = () => {  
 
-    // if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
-    //   this.props.getMyDtrNotifications( this.props?.user?.id );
-    //   this.state.NavHasLoaded = true
+    if (this.props.user !=null && this.props.user.id !=null ){
+     var user_p = this.props.user
      
-    // }
+    }
 		const { my_dtr_notifications } = this.props.dashboard;
     return(
       <div>
@@ -68,7 +67,14 @@ class DtrNotifications extends Component {
                             <td className={ Formatter.title_to_slug(data.status) }>{data.status}</td>
                             <td>{data.details}</td>
                             <td>
-                            <Link className="btn btn-primary" 
+                            {user_p.use_multi ?<>
+                              <Button  type="submit"  disabled> <i className="fa fa-edit" /></Button>
+                            </>
+                            
+                            :
+                            
+                            <>
+                             <Link className="btn btn-primary" 
                                               title="Alter Log"
                                               to={{
                                                 pathname: global.links.base +'request/AlterLog/' + (( alter_log_id != null ) ? alter_log_id : ""),
@@ -77,10 +83,17 @@ class DtrNotifications extends Component {
                                                 current_time_in: data.time_in,
                                                 current_time_out: data.time_out
                                               }}
+                                              disabled
                                         >
+                                      
                                         <i className="fa fa-edit" 
                                            style={{color : "#ffffff" }}></i>
                                         </Link>
+                            </>}
+                           
+                                        
+                                  
+
                             </td>
                           </tr>
                       );
