@@ -726,6 +726,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     $this->compute_payroll_items( $dtr );
                 }else{
                     $dtr->is_rest_day           =  true;
+                    $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work');
                     $dtr->save();
                 }
                 
