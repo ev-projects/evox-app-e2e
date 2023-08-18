@@ -146,6 +146,15 @@ const Sidebar = (props) => {
                         <p>Change of Schedule</p>
                       </Link>
                     </li>
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        to={global.links.base + "request/AlterLogPunch/"}
+                      >
+                        <i className="nav-icon fa fa-clock-o nav-icon" />
+                        <p>Alter Punch Date</p>
+                      </Link>
+                    </li>
                     {country.toLowerCase() == "philippines" && (
                       <li className="nav-item">
                         <Link

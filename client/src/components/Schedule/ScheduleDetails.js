@@ -651,6 +651,7 @@ const Scheduledetails = (props) => {
     return (<Field>
         {({ field, form }) => (
           <div className="stripe">
+            {console.log(field.value)}
           <Form.Label>{eval('day.'+props.day)} :</Form.Label>
         <Form.Row>
             <Form.Group as={Col} sm={4}>
@@ -758,6 +759,7 @@ const ScheduledetailsWithTimezone = (props) => {
   return (<Field>
       {({ field, form }) => (
         <div className="stripe">
+             {console.log(field.value)}
         <Form.Label><b>{eval('day.'+props.day)} :</b></Form.Label>
       <Form.Row>
           <Form.Group as={Col} sm={4}>

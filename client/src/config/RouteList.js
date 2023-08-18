@@ -27,6 +27,7 @@ import OpsSchedule from "../container/OpsSchedule/";
 
 // Requests
 import AlterLog from "../container/Request/AlterLog";
+import AlterLogPunch from "../container/Request/AlterLogPunch";
 import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
 import RestDayWork from "../container/Request/RestDayWork";
@@ -186,6 +187,10 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.alter_log+":id?"}>
           <AlterLog onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.alter_log_punch+":id?"}>
+          <AlterLogPunch onApproval={false} role={['employee']} permission={['employee_access']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.change_schedule+":id?"}>

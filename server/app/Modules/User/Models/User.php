@@ -319,6 +319,19 @@ class User extends Authenticatable implements JWTSubject
             }
         }
 
+        # Fetch the User single date Punch History
+        public function target_punch($date){
+
+           
+          if( is_valid( $date )  ){
+                return $this->hasMany(DtrPunchHistory::class)->where('date', '==', $date)
+                ->where('is_active','=','1');
+    
+         
+            }
+        }
+
+
         # Fetch the User's Punch History Logs Dates
         public function punchlogs($start_date = null, $end_date = null){
               

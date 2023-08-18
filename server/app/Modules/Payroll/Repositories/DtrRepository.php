@@ -2029,7 +2029,29 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
+    public function apply_alter_to_punch(  $alter_punch_log){
+        DB::beginTransaction();
+        try{
+            $dtr_policies_array = [];
 
+            # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
+            // foreach( $schedule_policies_collection as $schedule_policy ){
+            //     $dtr_policies_array[ $schedule_policy->policy ] = new DtrPolicy();
+            //     $dtr_policies_array[ $schedule_policy->policy ]->policy        = $schedule_policy->policy;
+            //     $dtr_policies_array[ $schedule_policy->policy ]->value         = $schedule_policy->value;
+            // }
 
+            // $dtr->policies()->saveMany( $dtr_policies_array );
+
+            DB::commit();
+            log_to_file('info', 'Success', []);
+            return true;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
 
 }

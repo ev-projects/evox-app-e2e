@@ -15,6 +15,8 @@ const initState = {
     incompleteDtr: {},
     punch_list: [],
     isListPunchLoaded : false,
+    single_punch_list: [],
+    isSingleListPunchLoaded: false,
 }
 
 const dtrReducer = (state = initState, action) => {
@@ -36,6 +38,15 @@ const dtrReducer = (state = initState, action) => {
                 ...state,
                 punch_list : action.list,
                 isListPunchLoaded : true,
+            }
+            break;
+
+        case "FETCH_SINGLE_PUNCH_SUCCESS":
+            console.log(action);
+            result = {
+                ...state,
+                single_punch_list :  action.data.content,
+                isSingleListPunchLoaded : true,
             }
             break;
 

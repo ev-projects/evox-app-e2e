@@ -136,6 +136,38 @@ class DtrController extends Controller
         }
     }
 
+        /**
+     * Returns a single punch based on date
+     * @param string $user_id
+     * @param string $start_date
+     * @param string $end_date
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function dtr_single_punch( $user_id, $call_date ){   
+        dd( $user_id, $call_date );
+        try {
+            $this->validate(new Request([
+                'user_id' => $user_id,
+                'call_date' => $call_date,
+              
+            ]), [
+                'user_id' => 'int',
+                'call_date' => 'date_format:Y-m-d',
+              
+            ]);
+            
+           $user = get_authenticated_user( $user_id );
+
+           
+           return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                DtrPunchHistoryLogResources::collection( $user->target_punch($call_date)->orderBy('date', 'asc')->get() )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     /**
      * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
      * @param string $user_id

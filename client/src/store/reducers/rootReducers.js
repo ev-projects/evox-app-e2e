@@ -13,6 +13,8 @@ import constantReducers from "./settings/constantReducers";
 import settingsReducers from "./settings/settingsReducers";
 
 import alterLogReducers from "./requests/alterLogReducers";
+
+import alterLogPunchReducers from "./requests/alterLogPunchReducers";
 import changeScheduleReducers from "./requests/changeScheduleReducers";
 import overtimeReducers from "./requests/overtimeReducers";
 import coeReducers from './requests/coeReducers';
@@ -68,6 +70,7 @@ const rootReducer = combineReducers({
     settings : settingsReducers,
 
     alterLog : alterLogReducers,
+    alterLogPunch : alterLogPunchReducers,
     changeSchedule: changeScheduleReducers,
     overtime : overtimeReducers,
     coe: coeReducers,
