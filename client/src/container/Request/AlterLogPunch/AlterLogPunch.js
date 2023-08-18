@@ -111,7 +111,7 @@ showOriginalHandler = (user,date) => {
                    
                     new_punch_data[item] ={
                         start_time : moment( values.new_punch[item].start_time ).format("YYYY-MM-DD HH:mm:ss"),
-                        end_time : moment( values.new_punch[item].start_time ).format("YYYY-MM-DD HH:mm:ss")
+                        end_time : moment( values.new_punch[item].end_time ).format("YYYY-MM-DD HH:mm:ss")
                       }
               
                   }
