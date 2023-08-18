@@ -87,10 +87,10 @@ class Login extends Component {
                                         Forgot Password?
                                       </Link>
                                       </div>
-                                      <br />
+                                      {/*<br />
                                       <Button className="login_btn" variant="secondary" size="lg" href={googleLoginUrl}>
                                         <i class="fa fa-google" /> Log In with Google
-                                      </Button>
+                                      </Button>*/}
                                   </form>
                                   )}
                               </Formik>
