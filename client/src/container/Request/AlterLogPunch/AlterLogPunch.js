@@ -407,7 +407,7 @@ showOriginalHandler = (user,date) => {
                     <Col size="5">   
                       <div className="form-group">
                         <label>On Duty {index+1}: </label>
-                        <InputDateTimeIndex name="start_time"   popperPlacement="right-start"  value={values.date} minDate={values.date} maxDate={values.date} type="indexing" indexid={index}/>
+                        <InputDateTimeIndex name="start_time"   popperPlacement="right-start"  value={values.date} minDate={values.date} maxDate={index != 0 ?DateFormatter.add_day_to_datetime( values.date, 1 ):values.date } type="indexing" indexid={index}/>
                       </div>
                     </Col> 
                     <Col size="5"> 
