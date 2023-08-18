@@ -118,11 +118,11 @@ class AlterLogPunchController extends Controller
     public function approve(Request $request, $id){
         try {
             // log_activity( trans('messages.approve_alter_log_attempt') );
-
+     
             $alter_log = $this->alter_log_punch->approve( $request->all() , $id );
-
+           
             // Add code to apply the Alter Log on the specific DTR.
-            $punch = $this->dtr->apply_alter_log_to_dtr( $alter_log );
+            $punch = $this->dtr->apply_alter_to_punch( $alter_log );
 
             return success_response(
                 trans('messages.approve_alter_log_success'), 

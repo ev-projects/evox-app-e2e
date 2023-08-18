@@ -20,6 +20,7 @@ use App\Modules\Payroll\Models\Computation;
 use App\Modules\Payroll\Models\DtrHoliday;
 use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Models\DtrSummaryReport;
+use App\Modules\Request\Models\AlterLogPunch;
 use App\Modules\Request\Models\RestDayWork;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Request\Models\ChangeSchedule;
@@ -1912,12 +1913,9 @@ class DtrRepository implements DtrRepositoryInterface{
                             // dd();
                         }
 
-                        // if ($dtr_punch_date_check->log_out_type == "Log_out") {
-                        //     error_log(3);
-                        //     $same_day = true;
-                        // }
+
                     }
-                    // dd($same_day);
+
                     $dtr_punch_check = $user->punch($date_prev, $date)->whereNull('log_out_type')->first();
 
                     if ($dtr_punch_check) {
@@ -2032,14 +2030,29 @@ class DtrRepository implements DtrRepositoryInterface{
     public function apply_alter_to_punch(  $alter_punch_log){
         DB::beginTransaction();
         try{
-            $dtr_policies_array = [];
+           
+            //disable
+            $to_disable =  DtrPunchHistory::where('date', $alter_punch_log->date)->update(['is_active' => 0]);
 
             # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
-            // foreach( $schedule_policies_collection as $schedule_policy ){
-            //     $dtr_policies_array[ $schedule_policy->policy ] = new DtrPolicy();
-            //     $dtr_policies_array[ $schedule_policy->policy ]->policy        = $schedule_policy->policy;
-            //     $dtr_policies_array[ $schedule_policy->policy ]->value         = $schedule_policy->value;
-            // }
+            // dd( $alter_punch_log);
+            $to_add = $alter_punch_log->new_punch_array();
+            $to_add_count = count($alter_punch_log->new_punch_array()) - 1;
+            foreach(  $to_add as $key => $punch ){
+              
+                $dtr_punch = new DtrPunchHistory();
+
+                $dtr_punch->time_in         =   $punch->start_time;
+                $dtr_punch->time_out        =   $punch->end_time;
+                $dtr_punch->user_id         =   $alter_punch_log->user_id;
+                $dtr_punch->date            =   $alter_punch_log->date;
+               
+                $dtr_punch->log_in_type     =   $key == 0 ? "Log_in": "Countinue";
+                $dtr_punch->log_out_type    =   $key == $to_add_count  ? "Log_out": "Pause";
+                $dtr_punch->log_action      =  "time_out";
+
+                $dtr_punch->save();
+            }
 
             // $dtr->policies()->saveMany( $dtr_policies_array );
 

@@ -162,7 +162,7 @@ showOriginalHandler = (user,date) => {
         case "cancel":
             if (window.confirm("Are you sure you want to "+ values.action +" this request?")) {
                 formData.append('_method', 'PUT')
-                this.props.updateAlterLogStatus( values.id, formData, values.action ,this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date);
+                this.props.updateAlterLogPunchStatus( values.id, formData, values.action ,this.props?.user?.id, this.props.settings.current_payroll_cutoff.start_date , this.props.settings.current_payroll_cutoff.end_date);
                 await this.props.getMyDtrNotifications( this.props?.user?.id );
                 // let history = useHistory();
                 // history.push(global.links.my_team_all_requests);
