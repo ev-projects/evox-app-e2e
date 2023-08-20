@@ -160,7 +160,8 @@ return [
         'alteration' => 'alteration', 
         'overtime' => 'overtime', 
         'rest_day_work' => 'rest_day_work',
-        'change_schedule' => 'change_schedule'
+        'change_schedule' => 'change_schedule',
+        'alter_log_punch' => 'alter_logs_punches',
     ],
 
     'REMINDER_TYPE' => [

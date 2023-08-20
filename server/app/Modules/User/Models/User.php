@@ -442,6 +442,23 @@ class User extends Authenticatable implements JWTSubject
                     DB::raw('"alter_logs"  as table_name'),
                     'c.department_name',
                     'alter_logs.updated_at');
+                    $alter_logs_punches    =   DB::table('alter_log_punches')
+        ->Leftjoin('users as a', 'a.id', '=', 'alter_log_punches.user_id')
+        ->Leftjoin('users as b', 'b.id', '=', 'alter_log_punches.updated_by')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
+        ->select(  
+                    'alter_log_punches.id',
+                    'alter_log_punches.status',
+                    'alter_log_punches.created_at',
+                    'alter_log_punches.employee_note',
+                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
+                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                    'alter_log_punches.id As fourth_column',
+                    DB::raw('NULL fifth_column'),
+                    DB::raw('alter_log_punches.date As date_requested'),
+                    DB::raw('"alter_log_punches"  as table_name'),
+                    'c.department_name',
+                    'alter_log_punches.updated_at');
 
         #Team or Individual Request
         if($filter['url']=='my_team_requests'){
@@ -451,6 +468,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->whereIn('overtimes.user_id',$id);
             $rest_day_works  ->whereIn('rest_day_works.user_id',$id);
             $alter_logs      ->whereIn('alter_logs.user_id',$id);
+            $alter_logs_punches ->whereIn('alter_log_punches.user_id',$id);
         }elseif($filter['url']=='my_requests'){
             $id = auth()->user()->id;
 
@@ -458,6 +476,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->where('overtimes.user_id',$id);
             $rest_day_works  ->where('rest_day_works.user_id',$id);
             $alter_logs      ->where('alter_logs.user_id',$id);
+            $alter_logs_punches ->where('alter_log_punches.user_id',$id);
         }
         
         # Status
@@ -466,6 +485,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->where('overtimes.status',$filter['status']);
             $rest_day_works  ->where('rest_day_works.status',$filter['status']);
             $alter_logs      ->where('alter_logs.status',$filter['status']);
+            $alter_logs_punches ->where('alter_log_punches.status',$filter['status']);
         }
 
          # Department Filter
@@ -474,6 +494,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->where('a.department_id', $filter['department_id']);
             $rest_day_works  ->where('a.department_id', $filter['department_id']);
             $alter_logs      ->where('a.department_id', $filter['department_id']);
+            $alter_logs_punches ->where('a.department_id', $filter['department_id']);
         }
 
         # Name Filter
@@ -482,6 +503,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
             $rest_day_works  ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
             $alter_logs      ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+            $alter_logs_punches ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
         }
         
         
@@ -496,13 +518,15 @@ class User extends Authenticatable implements JWTSubject
             $rest_day_works ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
             $overtimes      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
             $alter_logs     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
+            $alter_logs_punches     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
         }
-  
+        
         if(isset($filter['request_type'])){
             if($filter['request_type']=='all'){
                 $query = $alter_logs->union($change_schedules)
                 ->union($overtimes)
                 ->union($rest_day_works)
+                ->union($alter_logs_punches)
                 ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
             }elseif($filter['request_type']=='alteration'){
                 $query = $alter_logs->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
@@ -512,6 +536,8 @@ class User extends Authenticatable implements JWTSubject
                 $query = $rest_day_works->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
             }elseif($filter['request_type']=='change_schedule'){
                 $query = $change_schedules->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+            }elseif($filter['request_type']=='alter_logs_punches'){
+                $query = $alter_logs_punches->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
             }
                
         }
@@ -522,7 +548,7 @@ class User extends Authenticatable implements JWTSubject
             $query->orderBy('updated_at','desc');
         }
 
-        
+
         $result = array(
             "query" =>  $query->paginate(10)
         );
