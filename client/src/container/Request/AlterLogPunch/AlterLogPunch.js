@@ -57,7 +57,7 @@ class AlterLogPunch extends Component {
     // this.state = this.initialState; 
 }
 addRecordHandler = (updated) => {
-  console.log(updated);
+
     this.setState({
       
       // ...this.state,
@@ -68,19 +68,60 @@ addRecordHandler = (updated) => {
       new_punch : updated.new_punch.concat({start_time : new Date( updated.date, ),end_time :new Date( updated.date, )}),
       
     })
-    // console.log(this.state.records)
-  // }
- 
-}
-minusRecordHandler = (updated) => {
 
+}
+ minusRecordHandler = async (updated) => {
+
+
+
+  // this javascript function splice has a bug where where splice deletes the wrong records.
+  // console.log(this.state.new_punch)
+  // let new_records =  this.state.new_punch;
+  // console.log(new_records.splice(-1, 1))
+  let length = this.state.new_punch.length;
+ console.log(length -1);
+  let  new_records =  [];
+  this.state.new_punch.forEach(function (value, i) {
+
+    if(i != length-1 ){
+       new_records[i] =  value;
+    }
+});
+console.log(new_records, "here");
   this.setState({
       
     // ...this.state,
     date:       updated.date,
     employee_note:       updated.employee_note,
-    records : this.state.records.splice(-1) ,
-    new_punch : updated.new_punch.splice(-1),
+    records : new_records ,
+    new_punch : new_records,
+    
+  })
+}
+minusSelectedHandler = async (updated,index) => {
+
+
+
+  // this javascript function splice has a bug where where splice deletes the wrong records.
+  // console.log(this.state.new_punch)
+  // let new_records =  this.state.new_punch;
+  // console.log(new_records.splice(-1, 1))
+//   let length = this.state.new_punch.length;
+//  console.log(length -1);
+  let  new_records =  [];
+  this.state.new_punch.forEach(function (value, i) {
+    if(i != index ){
+       new_records = new_records.concat(value);
+    }
+});
+console.log(new_records, "here");
+  this.setState({
+      
+    // ...this.state,
+    date:       updated.date,
+    employee_note:       updated.employee_note,
+    records : new_records ,
+    new_punch : new_records,
     
   })
 }
@@ -88,6 +129,10 @@ minusRecordHandler = (updated) => {
 showOriginalHandler = (user,date) => {
 
      this.props.getRecentPunches2(this.props.user.id , moment( date ).format("YYYY-MM-DD"), moment( date ).format("YYYY-MM-DD"));
+     this.setState({
+      ...this.state,
+      date: date
+     })
     console.log(this.props.dtr);
  
 }
@@ -117,8 +162,7 @@ showOriginalHandler = (user,date) => {
                   }
                 }
                 formData.set(key, JSON.stringify(new_punch_data));
-                // formData.append(key, moment( values[key] ).format("YYYY-MM-DD HH:mm:ss") );
-                  // console.log( moment( values[key]).subtract(this.props.user?.user_offset_seconds, 'seconds').format("YYYY-MM-DD HH:mm:ss"));
+      
 
                     break;
                 default:
@@ -173,7 +217,7 @@ showOriginalHandler = (user,date) => {
     
   }
   componentWillReceiveProps = (nextProps) => {
-
+    console.log(nextProps);
     // Detect if there's a change for the default schedule properties. Trigger the setting of Schedule if changed.
     let  new_punch_data =[];
     if(nextProps.isInstanceLoaded == true){
@@ -196,11 +240,39 @@ showOriginalHandler = (user,date) => {
         })
       }
     };
+    if(nextProps.isInstanceLoaded == false && Object.keys(nextProps.instance).length === 0){
+      // console.log(nextProps.dtr.single_punch_list);
+      if(nextProps.dtr.single_punch_list.length > 0){
+        for(var item in nextProps.dtr.single_punch_list){
+          console.log(nextProps.dtr.single_punch_list[item].date_time_in);
+          new_punch_data[item] ={
+              start_time :nextProps.dtr.single_punch_list[item].date_time_in != undefined ? new Date( nextProps.dtr.single_punch_list[item].date_time_in ) : ( nextProps.location.start_time != undefined ? new Date(  nextProps.location.start_time ) : null ), 
+              end_time : nextProps.dtr.single_punch_list[item].date_time_out != undefined ? new Date( nextProps.dtr.single_punch_list[item].date_time_out ) : ( nextProps.location.end_time != undefined ? new Date(  nextProps.location.end_time ) : null ), 
+            }
+        }
+       
+        this.setState({
+      
+          ...this.state,
+          records : nextProps.dtr.single_punch_list,
+          new_punch :  new_punch_data
+          
+        })
+      
+      }else{
+        this.setState({
+      
+          ...this.state,
+          records : [],
+          new_punch :  []
+          
+        })
+      }
+    }
     
   }
   
   componentWillMount(){
-      console.log( this.props.params);
       // Clear the Instance of Alter Log before rendering new Instance (If applicable)
       this.props.clearAlterLogPunchInstance();
 
@@ -222,7 +294,6 @@ showOriginalHandler = (user,date) => {
     const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )
 
     const   owner_offset = this.props.instance.offset_difference != undefined ? this.props.instance.offset_difference : null;
-    console.log(this.props.instance); 
     
     // Sets Initial Value of the current Formik form.
     const initialValue = {
@@ -234,11 +305,6 @@ showOriginalHandler = (user,date) => {
         user_id:            this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(), 
       
         approver_note:      this.state.approver_note != ""?this.state.approver_note :this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null,
-        // pov_current_time_in:    this.props.instance.pov_current_time_in != undefined ? new Date( this.props.instance.pov_current_time_in ) : ( this.props.location.pov_current_time_in != undefined ? new Date(  this.props.location.pov_current_time_in ) : null ), 
-        // pov_current_time_out:   this.props.instance.pov_current_time_out != undefined ? new Date( this.props.instance.pov_current_time_out ) : ( this.props.location.pov_current_time_out != undefined ? new Date(  this.props.location.pov_current_time_out ) : null ), 
-        // pov_new_time_in:        this.props.instance.pov_new_time_in != undefined ? new Date( this.props.instance.pov_new_time_in ) : ( this.props.location.pov_current_time_in != undefined ? new Date(  this.props.location.pov_current_time_in ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
-        // pov_new_time_out:       this.props.instance.pov_new_time_out != undefined ? new Date( this.props.instance.pov_new_time_out ) : ( this.props.location.pov_current_time_out != undefined ? new Date(  this.props.location.pov_current_time_out ) : ( this.props.location.date != undefined ? DateFormatter.get_specific_datetime( this.props.location.date, null ) : null ) ),
-        // pov_timezone:                 this.props.instance.pov_timezone != undefined ? "-" + this.props.instance.pov_timezone : null,
         new_punch:           this.state.new_punch,
     }
 
@@ -249,7 +315,7 @@ showOriginalHandler = (user,date) => {
 
 		const { single_punch_list, isSingleListPunchLoaded } = this.props.dtr;
     let punchList = single_punch_list;
-  
+    console.log(punchList);
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
       if( (method == 'store') || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
         if( (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded)){
@@ -278,7 +344,7 @@ showOriginalHandler = (user,date) => {
         <ContainerWrapper>
           <ContainerBody>
           
-          {/* <p> {this.state.records.length}</p> */}
+        
             <Row>
             <Content col="6" title={title} subtitle={<RequestSubtitle method={method}  />}>
         
@@ -328,7 +394,7 @@ showOriginalHandler = (user,date) => {
                 </tr>
             </thead>
             <tbody>
-            {punchList.slice().reverse().map((punch, index) => {
+            {punchList.slice().map((punch, index) => {
                 
 
                   return <tr className={"center "}>
@@ -396,12 +462,14 @@ showOriginalHandler = (user,date) => {
       </Content>
       <Content col="5" title={"EDIT"} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
 
-     {values.date !== null ? 
-     <>
-      <Button className="btn btn-primary-2" onClick={(e) => {this.addRecordHandler(values);}} ><i className="fa   fa-plus" /> </Button> &nbsp;
-        <Button className="btn btn-primary-2" onClick={(e) => { this.minusRecordHandler(values); }} ><i className="fa   fa-minus" /> </Button> &nbsp;
+    {values.date !== null ? 
+      <>
+        <div>
+          <Button className="btn btn-primary-2" onClick={(e) => {this.addRecordHandler(values);}} ><i className="fa   fa-plus" /> </Button> &nbsp;
+          <Button className="btn btn-primary-2" disabled={this.state.records.length === 0} onClick={(e) => {this.minusRecordHandler(values);}} ><i className="fa   fa-minus" /> </Button> &nbsp;
+        </div>
         {/* <Button className="btn btn-primary-2" ><i className="fa  is-green fa-car" /> </Button> &nbsp; */}
-
+ 
         {this.state.records?.map((item,index)=>{
                     return <Row>  
                     <Col size="5">   
@@ -416,6 +484,12 @@ showOriginalHandler = (user,date) => {
                         <InputDateTimeIndex name="end_time"   popperPlacement="right-start"  value={values.date} minDate={values.date} maxDate={DateFormatter.add_day_to_datetime( values.date, 1 )} type="indexing" indexid={index}/>
                       </div> 
                     </Col> 
+                    <Col size="1" >
+                      <div className="rmv-records-btn">
+                      <Button className="btn btn-primary-2 "  onClick={(e) => {this.minusSelectedHandler(values,index);}} ><i className="fa   fa-times" /> </Button>
+                      </div>
+                       
+                    </Col>
                   
                   </Row>;
                 })}

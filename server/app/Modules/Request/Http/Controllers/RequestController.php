@@ -107,6 +107,7 @@ class RequestController extends Controller
                   new RequestResource( $user->requests_list('my_request',$request) ) 
             );
         } catch(Exception $e){
+            dd($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }

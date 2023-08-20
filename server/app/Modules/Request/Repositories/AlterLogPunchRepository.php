@@ -233,20 +233,20 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
         try {
             
             # Fetch the Alter Log base on the ID
-            $alter_log = AlterLogPunch::findOrFail($id);
+            $alter_log_punch = AlterLogPunch::findOrFail($id);
 
             // Authenticate the User first if the Alter Log Submitter is under the user logged in's supervisee
-            if( is_under_supervisee( $alter_log->user_id ) ) {
+            if( is_under_supervisee( $alter_log_punch->user_id ) ) {
 
                 if(!empty($data)){ 
-                    $this->update($data, $alter_log);
+                    $this->update($data, $alter_log_punch);
                 }
 
-                $alter_log->decline();
+                $alter_log_punch->decline();
             }
 
             DB::commit();
-            return $alter_log;
+            return $alter_log_punch;
 
         } catch (Exception $e) {
             DB::rollback();
@@ -288,10 +288,10 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
     {
         try {
             
-            $alter_log = AlterLog::findOrFail($id);
-            $alter_log->cancel();
+            $alter_log_punch = AlterLogPunch::findOrFail($id);
+            $alter_log_punch->cancel();
 
-            return $alter_log;
+            return $alter_log_punch;
 
         } catch (Exception $e) {
             log_error($e);

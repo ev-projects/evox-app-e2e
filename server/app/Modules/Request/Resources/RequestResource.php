@@ -59,13 +59,16 @@ class RequestResource extends JsonResource
 
                       break;
                       case 'alter_log_punches':
+
+                      
                           $alter_log_punch = AlterLogPunch::find($request->fourth_column);
+                          // dump($alter_log_punch, json_decode($alter_log_punch->old_punch));
                           $old_time_logs = json_decode($alter_log_punch->old_punch);
                                                
                                                 $result = [];
                                                 foreach ($old_time_logs as $key => $value)
                                                 {
-                                                    $result[$key] =  $value->start_time . $value->end_time;
+                                                    $result[$key] =   ($key+1).".[".timestamp_to_datetime_small($value->time_in)."|".timestamp_to_datetime_small($value->time_out)."]  " ;
                                                 }
                                                 // $new_time_logs = array(   "new_time_in" =>  $alter_log_punch->new_punch,
                             $new_time_logs =  json_decode($alter_log_punch->new_punch);
@@ -74,7 +77,7 @@ class RequestResource extends JsonResource
                                                 foreach ($new_time_logs as $key => $value)
                                                 {
                                                  
-                                                    $result1[$key] = timestamp_to_datetime($value->start_time) . " , " .timestamp_to_datetime($value->end_time);
+                                                    $result1[$key] = ($key+1).".[".timestamp_to_datetime_small($value->start_time) . "|".timestamp_to_datetime_small($value->end_time)."]  ";
                                                 }                     
                           
                           $request->fourth_column =  $result;

@@ -42,7 +42,6 @@ const dtrReducer = (state = initState, action) => {
             break;
 
         case "FETCH_SINGLE_PUNCH_SUCCESS":
-            console.log(action);
             result = {
                 ...state,
                 single_punch_list :  action.data.content,
