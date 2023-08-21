@@ -79,7 +79,7 @@ addRecordHandler = (updated) => {
   // let new_records =  this.state.new_punch;
   // console.log(new_records.splice(-1, 1))
   let length = this.state.new_punch.length;
- console.log(length -1);
+//  console.log(length -1);
   let  new_records =  [];
   this.state.new_punch.forEach(function (value, i) {
 
@@ -87,7 +87,7 @@ addRecordHandler = (updated) => {
        new_records[i] =  value;
     }
 });
-console.log(new_records, "here");
+// console.log(new_records, "here");
   this.setState({
       
     // ...this.state,
@@ -114,7 +114,7 @@ minusSelectedHandler = async (updated,index) => {
        new_records = new_records.concat(value);
     }
 });
-console.log(new_records, "here");
+// console.log(new_records, "here");
   this.setState({
       
     // ...this.state,
@@ -133,13 +133,13 @@ showOriginalHandler = (user,date) => {
       ...this.state,
       date: date
      })
-    console.log(this.props.dtr);
+    // console.log(this.props.dtr);
  
 }
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = async(values) => {
     let new_punch_data = [];
-    console.log(values);
+    // console.log(values);
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
     for (var key in values) {
@@ -171,7 +171,7 @@ showOriginalHandler = (user,date) => {
             }
         }
     }
-    console.log(new_punch_data,formData);
+    // console.log(new_punch_data,formData);
     // this.props.addAlterLogPunch( formData );
 
     // Checks on what action to use depending on the values.action
@@ -217,7 +217,7 @@ showOriginalHandler = (user,date) => {
     
   }
   componentWillReceiveProps = (nextProps) => {
-    console.log(nextProps);
+    // console.log(nextProps);
     // Detect if there's a change for the default schedule properties. Trigger the setting of Schedule if changed.
     let  new_punch_data =[];
     if(nextProps.isInstanceLoaded == true){
@@ -281,7 +281,7 @@ showOriginalHandler = (user,date) => {
 
         this.props.fetchAlterLogPunch( this.props.params.id )
       }
-      console.log( this.props.instance);
+
   }
 
   render = () => {  
@@ -315,7 +315,7 @@ showOriginalHandler = (user,date) => {
     let isReadOnly = false;
 		const { single_punch_list, isSingleListPunchLoaded } = this.props.dtr;
     let punchList = single_punch_list;
-    console.log(punchList);
+    // console.log(punchList);
     // if( (method == 'store' && initialValue.date != undefined) || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
       if( (method == 'store') || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
         if( (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded)){
@@ -324,7 +324,7 @@ showOriginalHandler = (user,date) => {
         }
         let content = [];
       
-
+        // console.log(this.props.user.user_server_date);
         let title = 'Alter Log Punch';
       return <Wrapper {...this.props} >
         <Formik 
@@ -364,6 +364,7 @@ showOriginalHandler = (user,date) => {
                               dateFormat="MMMM d, yyyy"
                               timeFormat="MMMM d, yyyy"
                               selected={ eval('field.value.' +"date")}       
+                              maxDate={ this.props.user.user_server_date != undefined ? new Date(this.props.user.user_server_date) : false }
                               readOnly={ isReadOnly != undefined ? isReadOnly : false }
                               onChange={date => {this.showOriginalHandler(1, date) ;form.setFieldValue("date", date); }}
                           /> 
@@ -397,7 +398,6 @@ showOriginalHandler = (user,date) => {
             <tbody>
             {punchList.slice().map((punch, index) => {
                 
-
                   return <tr className={"center "}>
                           <td className="dtr-date">{(punch.date)}</td> 
                           
@@ -469,6 +469,10 @@ showOriginalHandler = (user,date) => {
           <Button className="btn btn-primary-2" onClick={(e) => {this.addRecordHandler(values);}} ><i className="fa   fa-plus" /> </Button> &nbsp;
           <Button className="btn btn-primary-2" disabled={this.state.records.length === 0} onClick={(e) => {this.minusRecordHandler(values);}} ><i className="fa   fa-minus" /> </Button> &nbsp;
         </div>
+    
+              <Form.Control.Feedback type="invalid">
+                <ErrorMessage component="div" name="new_punch"className="input-feedback" />
+              </Form.Control.Feedback> 
         {/* <Button className="btn btn-primary-2" ><i className="fa  is-green fa-car" /> </Button> &nbsp; */}
  
         {this.state.records?.map((item,index)=>{
@@ -530,8 +534,28 @@ const validationSchema = Yup.object().shape({
                         ,
                         end_time:  Yup.date().required("This field is required").nullable().min( Yup.ref('start_time') , 'Please select a valid Time-out.'),
                       })
+                     
+                    ) .test(
+                      "date_optimize",
+                      "One of the time logs conflict with another.",
+                      (value) => {
+                        for (var key in value){
+                        
+                          if(key !== "0"){
+                            // console.log(key,value[Number(key)])
+                           
+                              if(value[Number(key)].start_time < value[Number(key)-1].end_time){
+                                return false;
+                              }
+                         
+                          }
+                          
+                        }
+                       return true
+                      }
                     )
 });
+
 
 const mapStateToProps = (state) => {
   return {

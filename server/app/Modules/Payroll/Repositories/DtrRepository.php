@@ -2047,7 +2047,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr_punch->user_id         =   $alter_punch_log->user_id;
                 $dtr_punch->date            =   $alter_punch_log->date;
                
-                $dtr_punch->log_in_type     =   $key == 0 ? "Log_in": "Countinue";
+                $dtr_punch->log_in_type     =   $key == 0 ? "Log_in": "Continue";
                 $dtr_punch->log_out_type    =   $key == $to_add_count  ? "Log_out": "Pause";
                 $dtr_punch->log_action      =  "time_out";
 
