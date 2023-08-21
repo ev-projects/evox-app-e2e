@@ -2002,6 +2002,7 @@ class DtrRepository implements DtrRepositoryInterface{
 
                         }
                     }
+                    }
                 } catch (Exception $e) {
                     DB::rollBack();
                     // dump($e);
