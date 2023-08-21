@@ -1733,6 +1733,7 @@ class DtrRepository implements DtrRepositoryInterface{
          
             $difference_of_days = $date_of_schedule->diffInDays($date_of_dtr,false) ;
          
+            // dd($date_of_dtr ,$date_of_dtr->timestamp ,$date_of_schedule, $date_of_schedule->timestamp,$date_of_dtr->timestamp > $date_of_schedule->timestamp);
             if(   $difference_of_days != 0){
                 // add_days_to_timestamp();
                 if($parsed_schedule_detail != null){
@@ -1745,6 +1746,7 @@ class DtrRepository implements DtrRepositoryInterface{
                
             }
 
+            // dd(  $parsed_schedule_detail,$date_of_dtr,$date_of_schedule, $date_of_dtr == $date_of_schedule, $difference_of_days);
 
             return $parsed_schedule_detail;
 
@@ -1899,16 +1901,17 @@ class DtrRepository implements DtrRepositoryInterface{
                     $dtr_punch_date_check = $user->punch($date_prev, $date)
                         ->whereNotNull('log_out_type')
                         ->where('log_out_type', "Log_out")->latest('id')->first();
-                    
+                    // dd($dtr_punch_date_check);
                     if ($dtr_punch_date_check) {
                         if ($dtr_punch_date_check->date == $date) {
-                           
+                            // error_log(1);
                             $same_day = true;
                         }
                         if ($dtr_punch_date_check->log_out_type == "Log_out") {
-                            
+                            // error_log(3);
                             $same_day = true;
-                            
+                            // dd();
+                        }
 
 
                     }
@@ -1921,7 +1924,7 @@ class DtrRepository implements DtrRepositoryInterface{
                             $dtr_punch = $dtr_punch_check;
                             $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
                             $dtr_punch->user_id =  $user_id;
-                        
+                            // $dtr_punch->date =  $date;
                             $dtr_punch->log_action =  $biometrics->getTimeType();
                             $dtr_punch->log_out_type = $biometrics->getLogType();
 
@@ -2002,7 +2005,6 @@ class DtrRepository implements DtrRepositoryInterface{
 
                         }
                     }
-                    }
                 } catch (Exception $e) {
                     DB::rollBack();
                     // dump($e);
@@ -2033,7 +2035,7 @@ class DtrRepository implements DtrRepositoryInterface{
             $to_disable =  DtrPunchHistory::where('date', $alter_punch_log->date)->update(['is_active' => 0]);
 
             # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
-       
+            // dd( $alter_punch_log);
             $to_add = $alter_punch_log->new_punch_array();
             $to_add_count = count($alter_punch_log->new_punch_array()) - 1;
             foreach(  $to_add as $key => $punch ){
@@ -2071,10 +2073,11 @@ class DtrRepository implements DtrRepositoryInterface{
         try{
            
             //disable
+          
             $to_disable =  DtrPunchHistory::where('date', $alter_punch_log->date)->update(['is_active' => 0]);
 
             # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
-            
+            // dd( $alter_punch_log);
             $reopen = $alter_punch_log->old_punch_to_collection()->update(['is_active' => 1]);
            
 
