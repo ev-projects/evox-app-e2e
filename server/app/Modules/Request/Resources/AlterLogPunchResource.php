@@ -49,7 +49,7 @@ class AlterLogPunchResource extends JsonResource
 
            
           
-            // dd($this->old_punch_to_collection()->get());
+            
 
 
             $result = array(

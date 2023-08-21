@@ -144,7 +144,7 @@ class DtrController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function dtr_single_punch( $user_id, $call_date ){   
-        dd( $user_id, $call_date );
+        
         try {
             $this->validate(new Request([
                 'user_id' => $user_id,

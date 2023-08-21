@@ -320,11 +320,11 @@ class ReportController extends Controller
      */
     public function export_team_dtr_logs(Request $request)
     {
-        // dd($request->toggle_pov == null);
+        
 
         $toggle_POV = !($request->toggle_pov == null);
         $result = $this->logs_list($request);
-        // dd($this->logs_list($request));
+       
         $result = [
             'data' =>  $result
         ];
@@ -699,7 +699,7 @@ class ReportController extends Controller
         $data =  $this->report->get_team_attendance_summary_dtr($user_collection,  $start_date, $end_date);
 
         $list = (array) $data['employee_list_summary'];
-        // dd( $list);
+        
 
 
 
@@ -1332,7 +1332,7 @@ class ReportController extends Controller
             }else{
                 $result_to_page= $result->orderBy('departments.department_name')->orderby('users.date_hired', 'DESC')->orderBy('users.last_name', 'asc')->orderBy('users.first_name', 'asc');
             }
-            // dd(  $result_to_page->currentPage(), $result_to_page);
+         
    
         
             //  $current_page = $result_to_page->currentPage();

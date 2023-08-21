@@ -19,7 +19,7 @@ class DepartmentAnnouncementResource extends JsonResource
     public function toArray($request)
     {
         $result  = null;
-        // dd($this->resource);
+     
         if( ! is_null( $this->resource ) ) {
             $result = array(
                 'id' => $this->id,
