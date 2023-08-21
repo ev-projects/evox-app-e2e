@@ -292,7 +292,7 @@ const InputDateTimeIndex = (props) => {
                       disabled={props.isDisabled}
                   /> 
                 <Form.Control.Feedback type="invalid">
-                  <ErrorMessage component="div" name={'new_punch'+ "["+props.indexid+"]?."+ props.name} className="input-feedback" />
+                  <ErrorMessage component="div" name={'new_punch'+ "["+props.indexid+"]."+ props.name} className="input-feedback" />
                 </Form.Control.Feedback> 
               </span>)}
     </Field>

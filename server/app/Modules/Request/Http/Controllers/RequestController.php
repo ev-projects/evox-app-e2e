@@ -25,6 +25,7 @@ use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
+use App\Modules\Request\Repositories\AlterLogPunchRepositoryInterface;
 use App\Modules\Request\Resources\AlterLogResource;
 use App\Modules\Request\Resources\ChangeScheduleResource;
 use App\Modules\Request\Resources\RequestApprovalChangeStatusResource;
@@ -37,6 +38,7 @@ class RequestController extends Controller
 {
     protected $overtime;
     protected $alter_log;
+    protected $alter_log_punch;
     protected $rest_day_work;
     protected $change_schedule;
     protected $work_from_home;
@@ -45,6 +47,7 @@ class RequestController extends Controller
                                     RequestRepositoryInterface $request,
                                     RestDayWorkRepositoryInterface $rest_day_work,
                                     AlterLogRepositoryInterface $alter_log,
+                                    AlterLogPunchRepositoryInterface $alter_log_punch,
                                     ChangeScheduleRepositoryInterface $change_schedule,
                                     DtrRepositoryInterface $dtr,
                                     EmailRepositoryInterface $email){
@@ -53,6 +56,7 @@ class RequestController extends Controller
         $this->request          = $request;
         $this->rest_day_work    = $rest_day_work;
         $this->alter_log        = $alter_log;
+        $this->alter_log_punch  = $alter_log_punch;
         $this->change_schedule  = $change_schedule;
         $this->dtr              = $dtr;
         $this->email            = $email;
@@ -182,7 +186,21 @@ class RequestController extends Controller
                             $dtr = $this->dtr->remove_alter_log_from_dtr( $alter_log );
 
                         }
-                      break;
+                        break;
+                    #Alter Log
+                    case "alter_log_punches":
+                        if($request->bulk_action =="approve"){
+
+                            $alter_log_punch = $this->alter_log_punch->approve( $data , $request_bulk[0] );
+                            $dtr = $this->dtr->apply_alter_to_punch( $alter_log_punch );
+
+                        }elseif($request->bulk_action =="deny"){
+
+                            $alter_log_punch = $this->alter_log_punch->decline( $data , $request_bulk[0]);
+                            $dtr = $this->dtr->remove_alter_to_punch( $alter_log_punch );
+
+                        }
+                    break;
 
                     # Change Schedules
                     case "change_schedules":

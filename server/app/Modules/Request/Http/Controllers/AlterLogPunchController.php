@@ -119,14 +119,14 @@ class AlterLogPunchController extends Controller
         try {
             // log_activity( trans('messages.approve_alter_log_attempt') );
      
-            $alter_log = $this->alter_log_punch->approve( $request->all() , $id );
+            $alter_log_punch = $this->alter_log_punch->approve( $request->all() , $id );
            
             // Add code to apply the Alter Log on the specific DTR.
-            $punch = $this->dtr->apply_alter_to_punch( $alter_log );
+            $punch = $this->dtr->apply_alter_to_punch( $alter_log_punch );
 
             return success_response(
                 trans('messages.approve_alter_log_success'), 
-                new AlterLogPunchResource( $alter_log ) 
+                new AlterLogPunchResource( $alter_log_punch ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -142,14 +142,14 @@ class AlterLogPunchController extends Controller
         try {
             // log_activity( trans('messages.decline_alter_log_attempt') );
 
-            $alter_log = $this->alter_log_punch->decline( $request->all(),$id );
+            $alter_log_punch = $this->alter_log_punch->decline( $request->all(),$id );
 
             // Add code to Remove the Alter Log from the specific DTR.
-            $dtr = $this->dtr->remove_alter_log_from_dtr( $alter_log );
+            $dtr = $this->dtr->remove_alter_to_punch( $alter_log_punch );
 
             return success_response(
                 trans('messages.decline_alter_log_success'), 
-                new AlterLogPunchResource( $alter_log ) 
+                new AlterLogPunchResource( $alter_log_punch ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);

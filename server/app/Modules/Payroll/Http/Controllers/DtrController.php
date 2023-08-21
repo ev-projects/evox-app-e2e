@@ -129,7 +129,7 @@ class DtrController extends Controller
            
            return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
-                DtrPunchHistoryLogResources::collection( $user->punchlogs($start_date, $end_date)->orderBy('date', 'asc')->get() )
+                DtrPunchHistoryLogResources::collection( $user->punchlogs($start_date, $end_date)->orderBy('date', 'asc')->where("is_active", 1)->get() )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

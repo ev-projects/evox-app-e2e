@@ -312,7 +312,7 @@ showOriginalHandler = (user,date) => {
     let title = initialValue.date != undefined ? 'Alter Log - ' + moment(initialValue.date).format("MMMM D YYYY") : '';
  
 
-
+    let isReadOnly = false;
 		const { single_punch_list, isSingleListPunchLoaded } = this.props.dtr;
     let punchList = single_punch_list;
     console.log(punchList);
@@ -320,6 +320,7 @@ showOriginalHandler = (user,date) => {
       if( (method == 'store') || (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded) ){
         if( (['approval', 'update'].includes( method ) && this.props.isInstanceLoaded)){
           punchList = this.props.instance.old_punch
+          isReadOnly =  true;
         }
         let content = [];
       
@@ -363,7 +364,7 @@ showOriginalHandler = (user,date) => {
                               dateFormat="MMMM d, yyyy"
                               timeFormat="MMMM d, yyyy"
                               selected={ eval('field.value.' +"date")}       
-                              // readOnly={ props.readOnly != undefined ? props.readOnly : false }
+                              readOnly={ isReadOnly != undefined ? isReadOnly : false }
                               onChange={date => {this.showOriginalHandler(1, date) ;form.setFieldValue("date", date); }}
                           /> 
                           <Form.Control.Feedback type="invalid">
@@ -432,7 +433,7 @@ showOriginalHandler = (user,date) => {
             <label>Note:</label>
             <textarea className="form-control" rows="3" name="employee_note" onChange={handleChange} value={values.employee_note??''} placeholder="Enter Note..."></textarea>
             <Form.Control.Feedback type="invalid">
-              &nbsp;{errors.employee_note && touched.employee_note && errors.employee_note}
+                 <ErrorMessage component="div" name={"employee_note"} className="input-feedback" />
             </Form.Control.Feedback> 
           </div> 
           :
@@ -449,7 +450,7 @@ showOriginalHandler = (user,date) => {
             <label>Note:</label>
             <textarea className="form-control" rows="3" name="approver_note" onChange={handleChange} value={values.approver_note} placeholder="Enter Note..."></textarea>
             <Form.Control.Feedback type="invalid">
-              &nbsp;{errors.approver_note && touched.approver_note && errors.approver_note}
+                <ErrorMessage component="div" name={"approver_note"} className="input-feedback" />
             </Form.Control.Feedback> 
           </div> 
           </span>
@@ -520,9 +521,16 @@ showOriginalHandler = (user,date) => {
 
 const validationSchema = Yup.object().shape({
   
-
+    date:                     Yup.date().required("This field is required").nullable(),
     employee_note:            Yup.string().nullable(),
-    approver_note:            Yup.string().nullable()
+    approver_note:            Yup.string().nullable(),
+    new_punch:    Yup.array().of(
+                      Yup.object().shape({
+                        start_time:  Yup.date().required("This field is required").nullable().max( Yup.ref('end_time') , 'Please select a valid Time-In.')
+                        ,
+                        end_time:  Yup.date().required("This field is required").nullable().min( Yup.ref('start_time') , 'Please select a valid Time-out.'),
+                      })
+                    )
 });
 
 const mapStateToProps = (state) => {

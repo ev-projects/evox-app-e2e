@@ -2067,4 +2067,31 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
+
+    public function remove_alter_to_punch(  $alter_punch_log){
+        DB::beginTransaction();
+        try{
+           
+            //disable
+            dd(DtrPunchHistory::where('date', $alter_punch_log->date)->get());
+            $to_disable =  DtrPunchHistory::where('date', $alter_punch_log->date)->update(['is_active' => 0]);
+
+            # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
+            // dd( $alter_punch_log);
+            $reopen = $alter_punch_log->old_punch_to_collection()->update(['is_active' => 1]);
+           
+
+            // $dtr->policies()->saveMany( $dtr_policies_array );
+
+            DB::commit();
+            log_to_file('info', 'Success', []);
+            return true;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
+
 }

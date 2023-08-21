@@ -52,5 +52,7 @@ interface DtrRepositoryInterface
     public function apply_punch_to_history( string $date , int $user_id, Collection $biometrics);
 
     public function apply_alter_to_punch($alter_punch_log);
+
+    public function remove_alter_to_punch(  $alter_punch_log);
     
 }
