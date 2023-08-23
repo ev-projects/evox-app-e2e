@@ -316,7 +316,7 @@ class DailyTimeRecordPuncher extends Component {
               
 
                           return <tr className={"center punch-row"}>
-                                    <td className="punch-date">{punch.date}</td>
+                                    <td className="punch-date">{DtrFormatter.displayDate(punch.date)}</td>
                                     <td className="punch-log">
                                       <ul className='punch-bullet'>
                                         {punch?.time_log.map((log, index) => {
