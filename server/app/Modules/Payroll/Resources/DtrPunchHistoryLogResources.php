@@ -17,14 +17,14 @@ class DtrPunchHistoryLogResources extends JsonResource
      */
     public function toArray($request)
     {
-         
+        
         $result = null;
         
         $time_log = [];
 
         $user = get_authenticated_user( $this->user_id );
         # Get Punch history Logs For DTR
-        $time_log=DtrPunchLogResource::collection($user->get_punch_history($this->date)->orderBy('date', 'asc')->get());
+        $time_log=DtrPunchLogResource::collection($user->get_punch_history($this->date)->where("is_active", 1)->orderBy('date', 'asc')->get());
 
         
         if( ! is_null( $this->resource ) ) {
