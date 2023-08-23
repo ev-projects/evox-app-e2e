@@ -89,7 +89,13 @@ const dtrReducer = (state = initState, action) => {
                 incompleteDtr : action.data.data
             };
             break;
-        
+        case "CLEAR_SINGLE_PUNCH_SUCCESS":
+            return {
+                ...state,
+                single_punch_list : [],
+                isSingleListPunchLoaded : false,
+            };
+            break;
         
         default:
             result = state;

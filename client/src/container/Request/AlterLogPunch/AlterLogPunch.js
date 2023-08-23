@@ -27,7 +27,7 @@ import { fetchAlterLogPunch,
           clearAlterLogPunchInstance } from '../../../store/actions/requests/alterPunchLogActions';
 
 // import { viewEmployeeTargetPunch } from '../../../store/actions/dtr/dtrActions';
-import { getRecentPunches2 } from '../../../store/actions/dashboard/dashboardActions'
+import { getRecentPunches2, clearRecentPunches2 } from '../../../store/actions/dashboard/dashboardActions'
 
 
 import { setRedirect } from '../../../store/actions/redirectActions';
@@ -274,7 +274,9 @@ showOriginalHandler = (user,date) => {
   
   componentWillMount(){
       // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+      this.props.clearRecentPunches2();
       this.props.clearAlterLogPunchInstance();
+      
 
       // If the ID is defined, load the Overtime Instance base on the ID Parameter in Route.
       if( this.props.params.id != undefined ) {
@@ -579,6 +581,7 @@ const mapDispatchToProps = (dispatch) => {
       resetAlterLogPunchInstance : () => dispatch( resetAlterLogPunchInstance() ),
       clearAlterLogPunchInstance : () => dispatch( clearAlterLogPunchInstance() ),
       getMyDtrNotifications  : () => dispatch( getMyDtrNotifications() ),
+      clearRecentPunches2 : () => dispatch( clearRecentPunches2() ),
 
     }
 }

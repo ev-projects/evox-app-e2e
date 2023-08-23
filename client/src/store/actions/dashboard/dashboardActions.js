@@ -143,6 +143,17 @@ export const getRecentPunches2 = ( user_id, from ,to ) => {
     }
 }
 
+export const clearRecentPunches2 = () => {
+ 
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'CLEAR_SINGLE_PUNCH_SUCCESS'
+        })
+    }
+    
+    
+}
+
 // CHANGE LOGS
 export const getChangeLogs = ( id ) => {
     return (dispatch, getState) => {
