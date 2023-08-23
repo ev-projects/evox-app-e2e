@@ -164,10 +164,14 @@ class OpsSchedule extends Component {
 								</tr>
 
 								<tr>
-									<td>Projects<br/><small>(EVOX & NEO)</small></td>
+									<td rowspan="2">Projects<br/><small>(EVOX & NEO)</small></td>
 									<td>Vishnu Padmanabhan<br/><small>Global Software Lead</small></td>
 									<td><small>M-F <br/>9am-6pm</small></td>
-									<td>evox@eastvantage.com</td>
+									<td rowspan="2">evox@eastvantage.com</td>
+								</tr>
+								<tr>
+									<td>Gary Aure<br/><small>Laravel Developer</small></td>
+									<td><small>M-F <br/>9am-6pm</small></td>
 								</tr>
 							</tbody>
 						</table>
