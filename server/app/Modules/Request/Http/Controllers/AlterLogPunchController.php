@@ -2,22 +2,23 @@
 
 namespace App\Modules\Request\Http\Controllers;
 
+use Exception;
+
 use Illuminate\Http\Request;
-
-use App\Http\Controllers\Controller;
-use App\Modules\Email\Repositories\EmailRepositoryInterface;
-use App\Modules\Request\Http\Requests\AlterLogRequest;
-use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
-
-use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Request\Repositories\AlterLogPunchRepositoryInterface;
-
+use Illuminate\Http\JsonResponse;
 use App\Modules\Payroll\Models\Dtr;
-// use App\Modules\Request\Models\AlterLog;
+use App\Http\Controllers\Controller;
+
+use App\Modules\Request\Models\AlterLogPunch;
+use App\Modules\Request\Http\Requests\AlterLogRequest;
 
 use App\Modules\Request\Resources\AlterLogPunchResource;
-use Exception;
-use Illuminate\Http\JsonResponse;
+// use App\Modules\Request\Models\AlterLog;
+
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
+use App\Modules\Request\Repositories\AlterLogPunchRepositoryInterface;
 
 class AlterLogPunchController extends Controller
 {   
@@ -41,16 +42,28 @@ class AlterLogPunchController extends Controller
         try {
       
             // log_activity( trans('messages.create_alter_log_attempt') );
+            $check_alters = AlterLogPunch::where('date',$request->date)->where("user_id",$request->user_id)->where("status","pending")->latest();
+         
+            if($check_alters->count() > 0){
 
-            $alter_log_punch = $this->alter_log_punch->store( $request->all());
-            // dd("end");
-            // $this->email->sendAlterLogRequestEmail( $alter_log_punch );
+                $update_id = $check_alters->first()->id;
+
+                return success_response(
+                    trans('messages.update_alter_log_success'), 
+                    new AlterLogPunchResource( $this->alter_log_punch->update( $request->all(), $update_id ) ) 
+                );
+            }
+            else{
+                $alter_log_punch = $this->alter_log_punch->store( $request->all());
+          
             
-            return success_response(
-                trans('messages.create_alter_log_success'), 
-                new AlterLogPunchResource($alter_log_punch),
-                JsonResponse::HTTP_CREATED
-            );
+                return success_response(
+                    trans('messages.create_alter_log_success'), 
+                    new AlterLogPunchResource($alter_log_punch),
+                    JsonResponse::HTTP_CREATED
+                );
+            }
+          
 
         } catch(Exception $e){
             // dd($e);
