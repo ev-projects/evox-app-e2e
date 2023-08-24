@@ -2080,7 +2080,7 @@ class DtrRepository implements DtrRepositoryInterface{
             //disable
           
             $to_disable =  DtrPunchHistory::where('date', $alter_punch_log->date)->update(['is_active' => 0]);
-
+            $punch_to_delete = DtrPunch::whereIn('dtr_collective_punch_history_id',DtrPunchHistory::where('date', $alter_punch_log->date)->pluck('id')->toArray() )->delete();
             # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
             // dd( $alter_punch_log);
             $reopen = $alter_punch_log->old_punch_to_collection()->update(['is_active' => 1]);
