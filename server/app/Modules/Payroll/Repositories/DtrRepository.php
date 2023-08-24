@@ -11,20 +11,21 @@ use Illuminate\Support\Facades\DB;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\Leave;
 use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Payroll\Models\DtrPunch;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Payroll\Models\Biometrics;
+use App\Modules\Payroll\Models\DtrHoliday;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\Computation;
-use App\Modules\Payroll\Models\DtrHoliday;
-use App\Modules\Payroll\Models\DtrPunchHistory;
-use App\Modules\Payroll\Models\DtrSummaryReport;
-use App\Modules\Request\Models\AlterLogPunch;
 use App\Modules\Request\Models\RestDayWork;
 use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Request\Models\AlterLogPunch;
 use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Schedule\Models\SchedulePolicy;
+use App\Modules\Payroll\Models\DtrSummaryReport;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 
 class DtrRepository implements DtrRepositoryInterface{
@@ -2032,7 +2033,10 @@ class DtrRepository implements DtrRepositoryInterface{
         try{
            
             //disable
+
             $to_disable =  DtrPunchHistory::where('date', $alter_punch_log->date)->update(['is_active' => 0]);
+
+            $punch_to_delete = DtrPunch::whereIn('dtr_collective_punch_history_id',DtrPunchHistory::where('date', $alter_punch_log->date)->pluck('id')->toArray() )->delete();
 
             # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
             // dd( $alter_punch_log);
@@ -2061,6 +2065,7 @@ class DtrRepository implements DtrRepositoryInterface{
             return true;
 
         } catch (Exception $e) {
+            // dump($e);
             DB::rollback();
             log_error($e);
             throw $e;
