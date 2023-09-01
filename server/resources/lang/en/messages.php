@@ -318,4 +318,15 @@ return [
     'fetch_hr_announcement_success' => 'Get Announcement.',
     'update_hr_announcement_attempt' => 'Update HR Announcement Attempt.',
     'update_hr_announcement_success' => 'Update HR Announcement success.',
+
+    /**
+     * Ops Schedule
+     */
+
+     'create_ops_schedule_attempt' => 'Create OPS Schedule Attempt',
+     'create_ops_schedule_success' => 'A new OPS Schedule is now created!',
+     'fetch_ops_schedules_success' => 'List of all OPS Schedules.',
+     'delete_ops_schedule_success' => 'An existing OPS Schedule was deleted!',
+     'fetch_ops_schedule_success' => 'Instance of an OPS Schedule.',
+     'update_ops_schedule_success' => 'OPS Schedule was successfully updated!',
 ];

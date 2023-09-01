@@ -358,4 +358,15 @@ return [
     'LOG_SENT_SUCCESS'   => ' Sent Successfuly To: ',
     'LOG_ROLLBACK' => ' Rolling back all the Previous Transactions... ',
     'LOG_GAP' => '##################################################################################',
+
+    'OPS_DEPTS' => [
+        0  => ['name' => 'Marketing', 'description' => 'For marketing-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 4],
+        1  => ['name' => 'Finance and Accounting', 'description' => 'For finance-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 19],
+        2  => ['name' => 'Recruitment', 'description' => 'For recruitment-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 22],
+        3  => ['name' => 'Information Technology', 'description' => 'For it-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 28],
+        4  => ['name' => 'Facilities', 'description' => 'For facilities-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 30],
+        5  => ['name' => 'Sales', 'description' => 'For sales-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 35],
+        6  => ['name' => 'Human Resources', 'description' => 'For hr-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 39],
+        7  => ['name' => 'Projects', 'description' => 'For evox-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 56],
+    ],
 ];

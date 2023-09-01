@@ -100,7 +100,11 @@
     location_master                 :  "/app/createlocation/",
     location_list                   :  "/app/locationlist/",
     job_referal                     :  "/app/referjob/",
-    requirement_list                :  "/app/requirement/"
+    requirement_list                :  "/app/requirement/",
+
+    // OPS Links
+    ops_schedule_form               :  "/app/ops/ManageOpsSchedules/",
+    ops_schedule_list               :  "/app/ops/ManageOpsSchedulesList/",
    
 };
 
