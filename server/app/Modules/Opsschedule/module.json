@@ -1,0 +1,6 @@
+{
+    "name": "OpsSchedule",
+    "slug": "opsschedule",
+    "version": "1.0",
+    "description": "Responsible for creating and updating schedules of Ops support team."
+}
