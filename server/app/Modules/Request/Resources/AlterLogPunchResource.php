@@ -38,12 +38,12 @@ class AlterLogPunchResource extends JsonResource
             $pov_new_punch_formatted = [];
             foreach(  $this->new_punch_array() as $key =>$punch){
                 $new_punch_formatted[ $key ] =  (object) [
-                    'start_time' => ( $punch->start_time!=null)?date("Y-m-d H:i:s", $punch->start_time+ $offset_seconds ):null,
-                    'end_time' =>   ( $punch->end_time!=null)?date("Y-m-d H:i:s", $punch->end_time+ $offset_seconds ):null,
+                    'start_time' => ( $punch->start_time!=null)?date("Y-m-d H:i", $punch->start_time+ $offset_seconds ):null,
+                    'end_time' =>   ( $punch->end_time!=null)?date("Y-m-d H:i", $punch->end_time+ $offset_seconds ):null,
                 ];
                 $pov_new_punch_formatted[ $key ] =  (object) [
-                    'start_time' => ( $punch->start_time!=null)?date("Y-m-d H:i:s", $punch->start_time+ $owner_offset_seconds ):null,
-                    'end_time' =>   ( $punch->end_time!=null)?date("Y-m-d H:i:s", $punch->end_time+ $owner_offset_seconds ):null,
+                    'start_time' => ( $punch->start_time!=null)?date("Y-m-d H:i", $punch->start_time+ $owner_offset_seconds ):null,
+                    'end_time' =>   ( $punch->end_time!=null)?date("Y-m-d H:i", $punch->end_time+ $owner_offset_seconds ):null,
                 ];
             }
 
