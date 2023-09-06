@@ -202,6 +202,23 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+     # Fetch  all of the User's Schedule 
+     public function AllSchedules(){
+          return $this->hasMany(Schedule::class, 'bind_id', 'id');
+    }
+
+    public function Schedule_Find($schedule_id){
+        return $this->hasOne(Schedule::class, 'bind_id', 'id')->where([
+            'bind_to' => 'user',
+            'id' => $schedule_id
+        ]);
+
+        // return Schedule::where([
+        //     'bind_to' => 'user',
+        //     'user_id'=> $this->id,
+        //     'id' => $schedule_id
+        // ]);
+    }
 
     # Fetch the User's Schedule (Source type is Default)
     public function defaultSchedule(){

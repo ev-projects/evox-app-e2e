@@ -62,6 +62,7 @@
     template_list                   :  "/app/schedule/template/",
     schedule_assign_department      :  "/app/schedule/assign/department",
     schedule_assign_user            :  "/app/schedule/assign/user/",
+    schedule_assign_user            :  "/app/schedule/assign/user/",
 
     // Report Links
     team_attendance_summary         :  "/app/report/TeamAttendanceSummary/",

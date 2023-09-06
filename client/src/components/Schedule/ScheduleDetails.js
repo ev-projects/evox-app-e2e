@@ -20,6 +20,7 @@ const ScheduleHolidayPolicy = (props) => {
           <label>
           <input 
             type="checkbox"
+            disabled = {props.isDisabled} 
             checked={field.value.schedule_policies.allow_special_holiday=="1"}
             onChange={() => form.setFieldValue('schedule_policies.allow_special_holiday', field.value.schedule_policies.allow_special_holiday==1?0:1 )}
           />
@@ -29,6 +30,7 @@ const ScheduleHolidayPolicy = (props) => {
         <label>
           <input 
             type="checkbox"
+            disabled = {props.isDisabled} 
             checked={field.value.schedule_policies.allow_legal_holiday=="1"}
             onChange={() => form.setFieldValue('schedule_policies.allow_legal_holiday', field.value.schedule_policies.allow_legal_holiday==1?0:1)}
           />
@@ -59,6 +61,7 @@ const SchedulePolicy = (props) => {
               <input 
                 type="checkbox"
                 checked={field.value.schedule_policies.allow_undertime=="1"}
+                disabled = {props.isDisabled} 
                 onChange={() => form.setFieldValue('schedule_policies.allow_undertime', field.value.schedule_policies.allow_undertime==1?0:1 )}
               />
 
@@ -68,6 +71,7 @@ const SchedulePolicy = (props) => {
               <input 
                 type="checkbox"
                 checked={field.value.schedule_policies.allow_late=="1"}
+                disabled = {props.isDisabled}
                 onChange={() => form.setFieldValue('schedule_policies.allow_late', field.value.schedule_policies.allow_late==1?0:1)}
               />
               Tardiness &nbsp;
@@ -76,6 +80,7 @@ const SchedulePolicy = (props) => {
               <input 
                 type="checkbox"
                 checked={field.value.schedule_policies.allow_night_diff=="1"}
+                disabled = {props.isDisabled}
                 onChange={()  => {
                 form.setFieldValue('schedule_policies.allow_night_diff',field.value.schedule_policies.allow_night_diff==1?0:1)}}
               />
@@ -95,13 +100,14 @@ const SchedulePolicy = (props) => {
 }
 
 const WorkDays = (props) => {
-    return (<div>   <WorkDay day="mon" />
-                    <WorkDay day="tue" />
-                    <WorkDay day="wed" />
-                    <WorkDay day="thu" />
-                    <WorkDay day="fri" />
-                    <WorkDay day="sat" />
-                    <WorkDay day="sun" /></div>);
+    console.log(props);
+    return (<div>   <WorkDay day="mon" isDisabled ={props.isDisabled}/>
+                    <WorkDay day="tue" isDisabled ={props.isDisabled}/>
+                    <WorkDay day="wed" isDisabled ={props.isDisabled}/>
+                    <WorkDay day="thu" isDisabled ={props.isDisabled}/>
+                    <WorkDay day="fri" isDisabled ={props.isDisabled}/>
+                    <WorkDay day="sat" isDisabled ={props.isDisabled}/>
+                    <WorkDay day="sun" isDisabled ={props.isDisabled}/></div>);
 }
 
 
@@ -115,6 +121,7 @@ const WorkDay = (props) => {
             <input
               type="checkbox"
               checked={field.value.work_days.includes(props.day)}
+              disabled ={props.isDisabled == true}
               onChange={() => {
                   if(field.value.work_days.includes(props.day)){
                     // REMOVE
@@ -455,6 +462,7 @@ const FlexibleSchedDetailsForm = (props) => {
                       timeCaption="Time"
                       dateFormat="HH:mm"
                       timeFormat="HH:mm"
+                      readOnly = {props.isDisabled}
                       placeholder="On Duty"
                       selected={field.value.flx_schedule_details[0].start_time}              
                       onChange={(date) => {onSelectTimeHandlerStd(date,0,form.setFieldValue,'flx_'); console.log()
@@ -475,6 +483,7 @@ const FlexibleSchedDetailsForm = (props) => {
                       timeCaption="Time"
                       dateFormat="HH:mm"
                       timeFormat="HH:mm"
+                      readOnly = {props.isDisabled}
                       placeholder="On Duty"
                       selected={field.value.flx_schedule_details[0].end_time}                
                       onChange={date => form.setFieldValue('flx_schedule_details[0].end_time', date)}
@@ -496,6 +505,7 @@ const FlexibleSchedDetailsForm = (props) => {
                       timeCaption="Time"
                       dateFormat="HH:mm"
                       timeFormat="HH:mm"
+                      readOnly = {props.isDisabled}
                       placeholder="On Duty"
                       selected={field.value.flx_schedule_details[0].start_flexy_time}                
                       //  onChange={(date) => onSelectTimeHandlerFlexi(date,0,form.setFieldValue,'flx_')}
@@ -517,6 +527,7 @@ const FlexibleSchedDetailsForm = (props) => {
                       timeCaption="Time"
                       dateFormat="HH:mm"
                       timeFormat="HH:mm"
+                      readOnly = {props.isDisabled}
                       placeholder="On Duty"
                       selected={field.value.flx_schedule_details[0].end_flexy_time}                
                       onChange={date => form.setFieldValue('flx_schedule_details[0].end_flexy_time', date)}
@@ -536,6 +547,7 @@ const FlexibleSchedDetailsForm = (props) => {
                       timeCaption="Time"
                       dateFormat="HH:mm"
                       timeFormat="HH:mm"
+                      readOnly = {props.isDisabled}
                       placeholder="Break"
                       minTime={break_hours.setHours(0,0)}
                       maxTime={break_hours.setHours( 1)} 

@@ -197,6 +197,33 @@ export const fetchSchedule = ( id ) => {
     }
 }
 
+export const fetchScheduleHistory = ( id, params = null ) => {
+    return (dispatch, getState) => {
+
+        // dispatch({
+        //     'type'     : 'SET_MY_TEAM_LIST_FILTERS', 
+        //     'filters'  : params
+        // })
+
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/schedule_history/",
+            params : params
+        })
+        .then(result => {
+
+            dispatch({
+                'type'              : 'FETCH_SCHEDULE_HISTORY',
+                'schedule_history'     : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 export const fetchTemporarySchedule = ( id ) => {
     return (dispatch, getState) => {
 
