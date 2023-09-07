@@ -38,7 +38,8 @@ return [
         'terminationDate',
         'employmentHistoryStatus',
         'supervisorEId',
-        'country'
+        'country',
+        'lastChanged'
     ],
     
     'BHR_USER_TABLE' => [
@@ -78,7 +79,8 @@ return [
         'zipcode',
         'bestEmail',
         'status',
-        'country'
+        'country',
+        'lastChanged'
     ],
 
     'BHR_USER_PERSONAL' => [
@@ -102,7 +104,8 @@ return [
         'team_leader'   =>  'team_leader',
         'admin'         =>  'admin',
         'client'        =>  'client',
-        'hr'            =>  'HR',
+        'hr'            =>  'hr',
+        'payroll'       =>  'payroll',
     ],
 
     'REGISTERED_USER' => 'Registered User',

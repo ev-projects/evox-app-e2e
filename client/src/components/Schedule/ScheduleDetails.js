@@ -146,6 +146,7 @@ const WorkDay = (props) => {
 
 
 const StandardSchedDetailsForm = (props) => {
+  var break_hours = new Date(); 
    return (<Field>
         {({ field, form }) => (
           <div>
@@ -176,7 +177,9 @@ const StandardSchedDetailsForm = (props) => {
                       timeIntervals={60}
                       timeCaption="Time"
                       dateFormat="HH:mm"
-                      timeFormat="HH:mm" 
+                      timeFormat="HH:mm"
+                      minTime={break_hours.setHours(0,0)}
+                      maxTime={break_hours.setHours( 1)} 
                       selected={field.value.std_schedule_details[0].end_time}                
                       onChange={date => form.setFieldValue('std_schedule_details[0].end_time', date)}
                     />
@@ -194,6 +197,8 @@ const StandardSchedDetailsForm = (props) => {
                       timeCaption="Break"
                       dateFormat="HH:mm"
                       timeFormat="HH:mm" 
+                      minTime={break_hours.setHours(0,0)}
+                      maxTime={break_hours.setHours( 1)} 
                       selected={field.value.std_schedule_details[0].break_time}                
                       onChange={date => form.setFieldValue('std_schedule_details[0].break_time', date)}
                     />
@@ -208,6 +213,7 @@ const StandardSchedDetailsForm = (props) => {
 }
 
 const StandardSchedDetailsFormWithTimezone = (props) => {
+  var break_hours = new Date(); 
     return (<Field>
         {({ field, form }) => (
           <div>
@@ -258,6 +264,8 @@ const StandardSchedDetailsFormWithTimezone = (props) => {
                       timeCaption="Break"
                       dateFormat="HH:mm"
                       timeFormat="HH:mm" 
+                      minTime={break_hours.setHours(0,0)}
+                      maxTime={break_hours.setHours( 1)} 
                       selected={field.value.std_schedule_details[0].break_time}                
                       onChange={date => form.setFieldValue('std_schedule_details[0].break_time', date)}
                     />
@@ -320,6 +328,7 @@ const StandardSchedDetailsFormWithTimezone = (props) => {
   }
 
 const FlexibleSchedDetailsForm = (props) => {
+  var break_hours = new Date(); 
    return (<Field>
         {({ field, form }) => (
           <div>
@@ -413,6 +422,8 @@ const FlexibleSchedDetailsForm = (props) => {
                       dateFormat="HH:mm"
                       timeFormat="HH:mm"
                       placeholder="Break"
+                      minTime={break_hours.setHours(0,0)}
+                      maxTime={break_hours.setHours( 1)} 
                       selected={field.value.flx_schedule_details[0].break_time}                
                       onChange={date => form.setFieldValue('flx_schedule_details[0].break_time', date)}
                     />
@@ -427,7 +438,7 @@ const FlexibleSchedDetailsForm = (props) => {
 }
 
   const FlexibleSchedDetailsFormWithTimezone = (props) => {
-    
+    var break_hours = new Date(); 
     return (<Field>
       
         {({ field, form }) => (
@@ -526,6 +537,8 @@ const FlexibleSchedDetailsForm = (props) => {
                       dateFormat="HH:mm"
                       timeFormat="HH:mm"
                       placeholder="Break"
+                      minTime={break_hours.setHours(0,0)}
+                      maxTime={break_hours.setHours( 1)} 
                       selected={field.value.flx_schedule_details[0].break_time}                
                       onChange={date => form.setFieldValue('flx_schedule_details[0].break_time', date)}
                     />
@@ -648,6 +661,7 @@ const FlexibleSchedDetailsForm = (props) => {
 }
 
 const Scheduledetails = (props) => {
+  var break_hours = new Date(); 
     return (<Field>
         {({ field, form }) => (
           <div className="stripe">
@@ -741,6 +755,8 @@ const Scheduledetails = (props) => {
                   dateFormat="HH:mm"
                   timeFormat="HH:mm"
                   placeholder="On Duty"
+                  minTime={break_hours.setHours(0,0)}
+                  maxTime={break_hours.setHours( 1)} 
                   selected={field.value.cst_schedule_details[props.index].break_time}              
                   onChange={date => form.setFieldValue('cst_schedule_details['+props.index+'].break_time', date)}
                 />
@@ -755,7 +771,7 @@ const Scheduledetails = (props) => {
 }
 
 const ScheduledetailsWithTimezone = (props) => {
- 
+  var break_hours = new Date(); 
   return (<Field>
       {({ field, form }) => (
         <div className="stripe">
@@ -855,6 +871,8 @@ const ScheduledetailsWithTimezone = (props) => {
                 dateFormat="HH:mm"
                 timeFormat="HH:mm"
                 placeholder="On Duty"
+                minTime={break_hours.setHours(0,0)}
+                maxTime={break_hours.setHours( 1)} 
                 selected={field.value.cst_schedule_details[props.index].break_time}              
                 onChange={date => {form.setFieldValue('cst_schedule_details['+props.index+'].break_time', date)
               }}

@@ -58,6 +58,33 @@ const InputTime = (props) => {
     </Field>
           );
   }
+
+  if(props.type=="break_time"){
+    const event = new Date();
+
+    return(<Field>
+      {({ field, form }) => (
+              <span>
+                <DatePicker 
+                    className="form-control"                      
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={30}
+                    timeCaption="Time"
+                    dateFormat="HH:mm"
+                    timeFormat="HH:mm" 
+                    minTime={event.setHours(0,0)}
+                    maxTime={event.setHours( 1)}
+                    selected={ eval('field.value.' + props.name)?eval('field.value.' + props.name):event.setHours(1,0,0) }              
+                    onChange={date => form.setFieldValue(props.name, date)}
+                /> 
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={props.name} className="input-feedback" />
+                </Form.Control.Feedback> 
+              </span>)}
+    </Field>
+          );
+  }
   if(props.contrast_too!=null){
     return(<Field>
       {({ field, form }) => (

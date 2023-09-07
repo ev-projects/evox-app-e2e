@@ -416,7 +416,8 @@ class TeamAttendanceSummary
 
                         // Payroll Items
                         $payroll_items_collection = $dtr->payroll_items()->get();
-
+                        $summary_items = $dtr->get_summary_row()->first();
+                        // dd( $summary_items ,"here");
                         $status = '';
                         // $schedule = array();
                         $has_holiday = false;
@@ -532,30 +533,35 @@ class TeamAttendanceSummary
                         // Fetch User of the DTR
                         $user = $dtr->user()->first();
 
-                        foreach ($payroll_items_collection as $payroll_item) {
+                        // foreach ($payroll_items_collection as $payroll_item) {
 
-                            // If there is an approved rest day work and the current payroll item iterated is Rendered hours, add its value
-                            if (
+                          if($summary_items){
+                              // If there is an approved rest day work and the current payroll item iterated is Rendered hours, add its value
+                              if (
                                 is_valid($rest_day_work) && $rest_day_work->isApproved()
-                                && $payroll_item->item == get_constant('PAYROLL_ITEMS.rendered_hours')
+                                // && $payroll_item->item == get_constant('PAYROLL_ITEMS.rendered_hours')
                             ) {
-
-                                $this->result['total_rest_day_work']['total_hours'] += (int) $payroll_item->value;
+                                // $this->result['total_rest_day_work']['total_hours'] += (int) $payroll_item->value;
+                                
+                                $this->result['total_rest_day_work']['total_hours'] += (int) ($summary_items->rendered_hours + $summary_items->night_diff) *3600;
+                                // dump( ($summary_items->rendered_hours + $summary_items->night_diff) *3600, $rest_day_work);
                                 $has_rest_day_work = true;
                             }
 
                             // If there is an approved overtime and the current payroll item iterated is overtime, add its value
                             if (
                                 is_valid($overtime) && $overtime->isApproved()
-                                &&  in_array($payroll_item->item, [
-                                    get_constant('PAYROLL_ITEMS.overtime'),
-                                    get_constant('PAYROLL_ITEMS.overtime_night_diff')
-                                ])
+                                // &&  in_array($payroll_item->item, [
+                                //     get_constant('PAYROLL_ITEMS.overtime'),
+                                //     get_constant('PAYROLL_ITEMS.overtime_night_diff')
+                                // ])
                             ) {
-
-                                $this->result['total_overtime']['total_hours'] += (int) $payroll_item->value;
+                                // $this->result['total_overtime']['total_hours'] += (int) $payroll_item->value;
+                                $this->result['total_overtime']['total_hours'] += (int) ($summary_items->overtime + $summary_items->overtime_night_diff) *3600;
+                                // dump("over "+  $payroll_item->value);
                             }
-                        };
+                          }
+                        // };
                        
                         $employee_list_summary[$user->id][] = [
                             "date" => $dtr->date,

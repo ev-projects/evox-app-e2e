@@ -706,7 +706,7 @@ class UserRepository implements UserRepositoryInterface{
      * @param Request $request
      * @return User $user_collection ( Collection )
      */
-    public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false){
+    public function get_users_under_supervisee( Request $request , $start_date, $end_date , $hired_strict = false, $country_strict = false){
         try {
             
             $user_collection =  auth()->user()->users_handled();
@@ -716,7 +716,6 @@ class UserRepository implements UserRepositoryInterface{
             if( $hired_strict){
                 $user_collection->where('date_hired', '<=',  Carbon::parse($end_date)->format("Y-m-d"));
             }
-
 
             if( is_valid( $request->selectedDepartments ) ){
                 $dep_ids = $request->selectedDepartments;
@@ -750,7 +749,12 @@ class UserRepository implements UserRepositoryInterface{
                         $team_list[] = $id;
                     }
                 }
-            $user_collection->whereIn('users.id',array_unique($team_list) );
+                $user_collection->whereIn('users.id',array_unique($team_list) );
+            }
+
+            if ( $country_strict ) {
+                $country_id = auth()->user()->country_id;
+                $user_collection->where('country_id', $country_id);
             }
 
   

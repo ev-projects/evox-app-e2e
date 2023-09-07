@@ -70,15 +70,15 @@ class MyDtrNotificationsResource extends JsonResource
                    // Check if there is an existing computed for Late and Undertime
                     if($late > 0 && $undertime > 0){
                     $status = "Late & Undertime";
-                    $details = seconds_to_time($late * 3600,true) . " & " . seconds_to_time($undertime * 3600,true);
+                    $details = seconds_to_time(round($late * 3600),true) . " & " . seconds_to_time(round($undertime * 3600),true);
                     // Check if there is an existing computed for Late
                     }else if($late > 0){
                         $status = "Late";
-                        $details = seconds_to_time($late * 3600,true);
+                        $details = seconds_to_time(round($late * 3600),true);
                     // Check if there is an existing computed for Undertime
                     }else if($undertime > 0){
                         $status = "Undertime";
-                        $details = seconds_to_time($undertime * 3600,true);
+                        $details = seconds_to_time(round($undertime * 3600),true);
                     }
 
                     // Check if there is an existing computed for Late and Undertime

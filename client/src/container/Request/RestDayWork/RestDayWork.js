@@ -213,8 +213,8 @@ class RestDayWork extends Component {
                     </Col> 
                     <Col size="4">
                       <div className="form-group">
-                        <label>Break: </label>
-                        <InputTime name="break_time" value={values.break_time}/>
+                        <label>Break(Hours): </label>
+                        <InputTime name="break_time"  type= "break_time" value={values.break_time}/>
                       </div> 
                     </Col> 
                   </Row> 
@@ -245,7 +245,7 @@ class RestDayWork extends Component {
                               <Col size="4">
                                 <div className="form-group">
                                   <label>Break: </label>
-                                  <InputTime name="break_time" isDisabled={true} value={values.break_time}/>
+                                  <InputTime name="break_time"  isDisabled={true} value={values.break_time}/>
                                 </div> 
                               </Col> 
                             </Row> 

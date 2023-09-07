@@ -90,6 +90,22 @@ return [
             'permission' => 0666,
         ],
 
+        'bhr_leaves' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/bhr_leaves.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+
+        'dtr_leaves' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/dtr_leaves.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+
         'user_profile' => [
             'driver' => 'single',
             'path' => storage_path('logs/user_profile.log'),
@@ -165,6 +181,14 @@ return [
         'user' => [
             'driver' => 'single',
             'path' => storage_path('logs/user.log'),
+            'level' => 'debug',
+            'days' => 10,
+            'permission' => 0666,
+        ],
+        
+        'sync_bhr_user' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/sync_bhr_user.log'),
             'level' => 'debug',
             'days' => 10,
             'permission' => 0666,
