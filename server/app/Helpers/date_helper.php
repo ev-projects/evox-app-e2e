@@ -248,6 +248,34 @@ if (! function_exists('timestamp_to_datetime')) {
     }
 }
 
+if (! function_exists('timestamp_to_datetime_small')) {   
+    /**
+     * This function returns a converted Timestamp to Datetime
+     *
+     * @param  timestamp timestamp
+     * @return datetime
+     */
+    function timestamp_to_datetime_small( $timestamp, $use_OWNER = false, $owner = null ) 
+    {
+    
+        try {
+            if($use_OWNER = true && $owner != null ){
+                $user = $owner;
+                // dd($user);
+                return ( is_valid( $timestamp ) ) ? date('m-d H:i', $timestamp+ string_offset_to_seconds($user->country_timezone_to_offset())) : null;
+            }
+           
+        if(Auth::user() && Auth::user()->country_timezone_to_offset() != null){
+            
+            return ( is_valid( $timestamp ) ) ? date('m-d H:i', $timestamp+ string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) : null;
+        }
+            return ( is_valid( $timestamp ) ) ? date('m-d H:i', $timestamp) : null;
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
 if (! function_exists('timestamp_to_datetime_old')) {   
     /**
      * This function returns a converted Timestamp to Datetime

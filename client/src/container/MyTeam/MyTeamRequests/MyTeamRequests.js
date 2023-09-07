@@ -91,6 +91,7 @@ class MyTeamRequests extends Component {
 
   componentDidMount(){
 
+
     var filters = {
       ...this.state.filters,
       valid_from: Validator.isValid(this.state.filters.valid_from) ?  new Date(this.state.filters.valid_from).toISOString().substring(0, 10) : null,
@@ -119,15 +120,25 @@ class MyTeamRequests extends Component {
     // if( ! this.props.isNumbersLoaded ) {
       this.props.fetchStatusNumbers( filters );
     // }
+   
   }
 
+ 
   componentDidUpdate(){
 
   }
 
+  
+
   render = () => {  
 
-
+    // const alterlog_punch = (data) => {
+    //   let data1 = Array.from(data)
+    //   alert(data1);
+    //   data1.map(function(item, i){
+    //     return <li>${item.start_time} ${item.end_time}</li>
+    //   })
+    // };
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
 
@@ -204,13 +215,15 @@ class MyTeamRequests extends Component {
                   </Tab>
                   <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
                   </Tab>
+                  <Tab eventKey="alter_logs_punches" title="MultiPunch Alteration" type="submit">
+                  </Tab>
                 </Tabs>
             </div>
             
             <ContainerBody>  
                 <Content col="12">
                     <Row className="status-filter">
-                  <ButtonGroup toggle className=" flex-wrap">
+                  <ButtonGroup toggle className="flex-wrap">
                     {/* <ToggleButton
                       type="checkbox"
                       variant="secondary"
@@ -400,6 +413,23 @@ class MyTeamRequests extends Component {
                               );
                               link =  global.links.alter_log + item.id.toString();
                               break;
+                              case "alter_log_punches":
+                                fourthColumn.push(
+                                  <div>
+                                    <span className="alter-logs-new">New</span>
+                                    <p>
+                                      Timelog:  {item.fifth_column}
+                                    </p>
+                                  </div>
+                                );
+                                fifthColumn.push(
+                                  <div>
+                                    <span className="alter-logs-old">Old</span>
+                                    <p>Timelog: {item.fourth_column}</p>
+                                  </div>
+                                );
+                                link =  global.links.alter_log_punch + item.id.toString();
+                                break;
                           case "rest_day_works":
                             fourthColumn.push(
                               <span>From: {item.fourth_column}</span>
@@ -511,7 +541,7 @@ class MyTeamRequests extends Component {
   const mapDispatchToProps = (dispatch) => {
     return {
       fetchRequestList : ( params ) => dispatch( fetchRequestList(  params ) ), 
-      fetchStatusNumbers : ( params ) => dispatch( fetchStatusNumbers( params) ),
+      fetchStatusNumbers : ( params ) => dispatch( fetchStatusNumbers( params ) ),
       bulkRequest : ( post_data ) => dispatch( bulkRequest( post_data ) ),
     }
   }

@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Request\Models\AlterLog;
-
+use App\Modules\Request\Models\AlterLogPunch;
 class RequestResource extends JsonResource
 {
     /**
@@ -56,6 +56,33 @@ class RequestResource extends JsonResource
                             $request->fourth_column =  $days;
                             $request->fifth_column =  $schedule_policies;
                         }
+
+                      break;
+                      case 'alter_log_punches':
+
+                      
+                          $alter_log_punch = AlterLogPunch::find($request->fourth_column);
+                          // dump($alter_log_punch, json_decode($alter_log_punch->old_punch));
+                          $old_time_logs = json_decode($alter_log_punch->old_punch);
+                                               
+                                                $result = [];
+                                                foreach ($old_time_logs as $key => $value)
+                                                {
+                                                    $result[$key] =   ($key+1).".[".timestamp_to_datetime_small($value->time_in)."|".timestamp_to_datetime_small($value->time_out)."]  " ;
+                                                }
+                                                // $new_time_logs = array(   "new_time_in" =>  $alter_log_punch->new_punch,
+                            $new_time_logs =  json_decode($alter_log_punch->new_punch);
+                                              
+                                                $result1 = [];
+                                                foreach ($new_time_logs as $key => $value)
+                                                {
+                                                 
+                                                    $result1[$key] = ($key+1).".[".timestamp_to_datetime_small($value->start_time) . "|".timestamp_to_datetime_small($value->end_time)."]  ";
+                                                }                     
+                          
+                          $request->fourth_column =  $result;
+                          $request->fifth_column =  $result1;
+  
 
                       break;
                     case 'alter_logs':

@@ -26,6 +26,8 @@ Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], fu
      # Gets the DTR of the User indicated.
      Route::get('/dtrpunch/{user_id}/{start_date}/{end_date}', 'DtrController@Dtr_punches');//->middleware('auth.apikey');
 
+    Route::get('/dtrpunch/check/{user_id}/{call_date}', 'DtrController@dtr_single_punch');//->middleware('auth.apikey');
+
     Route::post('/quickpunch', 'DtrController@quickpunch');
 
     Route::post('/quickpunch_multi', 'DtrController@quickpunch_multi');

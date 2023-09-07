@@ -164,10 +164,87 @@ class OpsSchedule extends Component {
 								</tr>
 
 								<tr>
-									<td>Projects<br/><small>(EVOX & NEO)</small></td>
+									<td rowspan="2">Projects<br/><small>(EVOX & NEO)</small></td>
 									<td>Vishnu Padmanabhan<br/><small>Global Software Lead</small></td>
 									<td><small>M-F <br/>9am-6pm</small></td>
-									<td>evox@eastvantage.com</td>
+									<td rowspan="2">evox@eastvantage.com</td>
+								</tr>
+								<tr>
+									<td>Gary Aure<br/><small>Laravel Developer</small></td>
+									<td><small>M-F <br/>9am-6pm</small></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div className="row card">
+					<div className="col-11 card-body">
+						<div className="h3">HR Services</div>
+						<p>For issues, inquiries or requests related to HR, please reach us via email below.</p>
+						<table width="100%" cellpadding="5" border="1">
+							<thead>
+								<tr>
+									<th>Department</th>
+									<th>POC</th>
+									<th>Scope</th>
+									<th>Schedule</th>
+									<th>Contact Info</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td rowspan="7">HR</td>
+									<td>Hardy Jacob<br/><small>HR Head</small></td>
+									<td rowspan=""></td>
+									<td><small>M-F <br/>9am-6pm</small></td>
+									<td rowspan="7">happiness@eastvantage.com</td>
+								</tr>
+								<tr>
+									<td>Precious Delos Reyes<br/><small>HR Manager</small></td>
+									<td rowspan="4">
+										<ul className="no-bullet">
+											<li>Pre-Employment Requirements</li>
+											<li>New Hire Orientation</li>
+											<li>Employment Contract</li>
+											<li>Company ID</li>
+											<li>LOC</li>
+											<li>Promotion</li>
+											<li>Salary Increase</li>
+											<li>BambooHR</li>
+											<li>Government Mandatory Benefits</li>
+											<li>HMO</li>
+											<li>Leave Benefits</li>
+											<li>Certificate of Employment</li>
+											<li>Resignation</li>
+											<li>Exit Clearance and Exit Interview</li>
+										</ul> 
+									</td>
+									<td><small>M-F <br/>9am-6pm</small></td>
+								</tr>
+								
+								<tr>
+									<td>Jennifer Buce<br/><small>Senior HR Lead</small></td>
+									
+									<td><small>M-F <br/>9am-6pm</small></td>
+								</tr>
+								<tr>
+									<td>Jengel Perez<br/><small>HR Generalist</small></td>
+									
+									<td><small>M-F <br/>9am-6pm</small></td>
+								</tr>
+								<tr>
+									<td>Joemark Delima<br/><small>HR Project and Service Delivery Officer</small></td>
+									<td><small>M-F <br/>9am-6pm</small></td>
+								</tr>
+								<tr>
+									<td>Patrick Pineda<br/><small>Learning and Development Lead</small></td>
+									<td rowspan="">Learning and Development</td>
+									<td><small>M-F <br/>9am-6pm</small></td>
+								</tr>
+								<tr>
+									<td>Yong Mustard<br/><small>Happiness Ambassador</small></td>
+									<td rowspan="">Employee Engagement</td>
+									<td><small>M-F <br/>9am-6pm</small></td>
 								</tr>
 							</tbody>
 						</table>
