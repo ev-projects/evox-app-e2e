@@ -3,19 +3,21 @@
 namespace App\Modules\Request\Repositories;
 
 use Exception;
+use Carbon\Carbon;
+
 use App\Modules\User\Models\User;
 
 use Illuminate\Support\Facades\DB;
-
 use App\Modules\Payroll\Models\Dtr;
+
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Database\Eloquent\Model;
-
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\AlterLogPunch;
+use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Repositories\DtrRepository;
 use App\Modules\Request\Resources\AlterLogResource;
 
@@ -299,90 +301,71 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
         }
     }
 
-
+    
     /**
-     *  Responsible for Applying the newly fetched Drupal Overtimes to EVOX
-     * @param array $drupal_evox_alter_log_array
-     * 
-     * @return arrayu $to_compute_items
+     *  
+     * @param array $data
+     * @param $date
+     *
      */
-    public function apply_drupal_evox_data_to_alter_log( array $drupal_evox_alter_log_array )
-    {   
-        DB::beginTransaction();
+    public function on_conflict( $request )
+    {
         try {
-
-            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "drupal_migration");
-
-            $users_not_existing = [];
-            $to_compute_items = [];
-
-            // Iterates the Array fetched from the Drupal Database
-            foreach( $drupal_evox_alter_log_array as $drupal_evox_alter_log) {
-
-
-                // Fetch the User via the emp_num field of the User
-                $user = User::where(['emp_num' => $drupal_evox_alter_log->employee_number])->first();
-                // Checks if the user is existing
-                if( !is_null($user ) ) {
-                    $alter_log = $user->alter_log()->where(['date' => $drupal_evox_alter_log->date])->first();
-
-                    # Insert Alter Log
-                    if( $alter_log == null ) {
-                        $alter_log                   = new AlterLog();
-                    }
-
-                    $alter_log->user_id          =  $user->id;
-                    
-                    $alter_log->date             =  $drupal_evox_alter_log->date;
-
-                    $alter_log->current_time_in  =  $drupal_evox_alter_log->old_time_in;
-                    $alter_log->current_time_out =   $drupal_evox_alter_log->old_time_out;
-
-                    $alter_log->new_time_in      = $drupal_evox_alter_log->new_time_in;
-                    $alter_log->new_time_out     = $drupal_evox_alter_log->new_time_out;
-
-                    $alter_log->employee_note    =  $drupal_evox_alter_log->employee_note ?? null;
-                    $alter_log->approver_note    =  $drupal_evox_alter_log->superviser_note ?? null;
-
-                    $alter_log->status           =  $drupal_evox_alter_log->status;
-                    $alter_log->created_by       =  $user->id;
-                    $alter_log->created_at       =  $drupal_evox_alter_log->date_created;
-                    $alter_log->updated_at       =  $drupal_evox_alter_log->date_updated;
-                                        
-                    $alter_log->save();
-
-                     // Saved the To compute Items
-                     if( in_array($alter_log->status, array('approved','declined')) ) {
-                        $to_compute_items[] = $alter_log;
-                    }
-
-                    log_to_file( 'info', 'Success', [$alter_log->getAttributes()], "drupal_migration");
-
-                } else {
-                    // log_to_file( 'info', 'User not existing', [$drupal_evox_alter_log], "drupal_migration");
-                    // $users_not_existing[$drupal_evox_alter_log->emp_num] = $drupal_evox_alter_log->emp_num;
-                }
-
-            }
-
-            DB::commit();
-
-            if( count( $users_not_existing ) > 0 ){
-                log_to_file( 'info', 'Employee Numbers that does not exist"', [$users_not_existing], "drupal_migration");
-            }
-
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
-            return $to_compute_items;
-        } catch (Exception $e) {
             
-            DB::rollback();
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "drupal_migration");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "drupal_migration");
+        $message = "";
+        $first_log = false;
+        $auth_user_offset =  Auth::user() && Auth::user()->country_timezone_to_offset() ? string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): 0; 
+
+            $check_conflicts_pass = DtrPunchHistory::where('date',Carbon::parse($request->date)->subDays(1)->format('Y-m-d'))
+                ->where("user_id",$request->user_id)->where("is_active",1)->orderBy('id', 'desc')->first();
+            $check_conflicts_tomm = DtrPunchHistory::where('date',Carbon::parse($request->date)->addDays(1)->format('Y-m-d'))
+                ->where("user_id",$request->user_id)->where("is_active",1)->first();
+            
+        
+            $current_log = json_decode($request->new_punch);
+        
+            $alter_start = strtotime($current_log[0]->start_time) - $auth_user_offset;
+            $alter_end = strtotime(end($current_log)->end_time) - $auth_user_offset;
+
+        
+            if($check_conflicts_pass != null){
+                if($alter_start < $check_conflicts_pass->time_out){
+
+                    $first_log = true;
+                    $message = $message."Time in conflicts with  ".Carbon::parse($request->date)->subDays(1)->format('Y-m-d') 
+                    . " at [" 
+                    . date("Y-m-d H:i:s", $check_conflicts_pass->time_out+ $auth_user_offset ) 
+                    . "]" 
+                    ;
+                }
+            }
+
+            if($check_conflicts_tomm != null){
+                if($alter_end > $check_conflicts_tomm->time_in){
+
+                if($first_log){
+                    $message = $message. " and ";
+                }
+                    $message = $message . "Time out conflicts with  ".Carbon::parse($request->date)->addDays(1)->format('Y-m-d') 
+                    . " at [" 
+                    . date("Y-m-d H:i:s", $check_conflicts_tomm->time_in+ $auth_user_offset ) 
+                    . "]" 
+                    ;
+                }
+            }
+            // dd($message);
+            return $message;
+
+        } catch (Exception $e) {
             log_error($e);
             throw $e;
         }
     }
+
+
+
+   
+    
 
 
 

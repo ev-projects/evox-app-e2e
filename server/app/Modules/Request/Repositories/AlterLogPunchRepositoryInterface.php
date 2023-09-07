@@ -19,4 +19,6 @@ interface AlterLogPunchRepositoryInterface
     public function pending( $id );
 
     public function cancel( $id );
+
+    public function on_conflict( $reqeust );
 }

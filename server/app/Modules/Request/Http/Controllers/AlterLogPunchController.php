@@ -4,17 +4,18 @@ namespace App\Modules\Request\Http\Controllers;
 
 use Exception;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Modules\Payroll\Models\Dtr;
+
 use App\Http\Controllers\Controller;
-
 use App\Modules\Request\Models\AlterLogPunch;
-use App\Modules\Request\Http\Requests\AlterLogRequest;
 
-use App\Modules\Request\Resources\AlterLogPunchResource;
+use App\Modules\Request\Http\Requests\AlterLogRequest;
 // use App\Modules\Request\Models\AlterLog;
 
+use App\Modules\Request\Resources\AlterLogPunchResource;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
@@ -40,7 +41,11 @@ class AlterLogPunchController extends Controller
      */
     public function store(Request $request){
         try {
-      
+            $conflict = $this->alter_log_punch->on_conflict($request);
+            if($conflict != ""){
+                return error_response(  $conflict );
+            }
+
             // log_activity( trans('messages.create_alter_log_attempt') );
             $check_alters = AlterLogPunch::where('date',$request->date)->where("user_id",$request->user_id)->where("status","pending")->latest();
          
@@ -130,6 +135,12 @@ class AlterLogPunchController extends Controller
      */
     public function approve(Request $request, $id){
         try {
+            
+            $conflict = $this->alter_log_punch->on_conflict($request);
+            if($conflict != ""){
+                return error_response(  $conflict );
+            }
+
             // log_activity( trans('messages.approve_alter_log_attempt') );
      
             $alter_log_punch = $this->alter_log_punch->approve( $request->all() , $id );
