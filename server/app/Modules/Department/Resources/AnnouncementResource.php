@@ -18,7 +18,7 @@ class AnnouncementResource extends JsonResource
     {
 
         $result = null;
-        // dd( $this->announcement_clones_departments());
+    
         if( ! is_null( $this->resource ) ) {
             $result = array(
                 'id' => $this->id,

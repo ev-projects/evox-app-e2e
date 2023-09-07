@@ -488,28 +488,37 @@ class TeamAttendanceSummary
                                     }
                                     // else, set status as Absent
                                 } else {
-
                                     $status = 'A';
-                                    if (!$is_unplanned  == false && $has_leave == false) {
-                                        $this->result['unplanned_leaves']['users'][] = $dtr;
-                                    }
-
-                                    // if inside sched = absent
                                     if ($dtr->checkCurrentTime()) {
                                         $status = 'A';
 
                                         if (!$is_unplanned && $has_leave == false) {
 
-                                            $this->result['unplanned_leaves']['users'][] = $dtr;
+
+                                        }
+                                        if($user->permissions()->pluck('name')->contains('user_multi_login')){
+                                            if($dtr->get_dtr_history()->latest()->first() != null){
+                                                if($dtr->get_dtr_history()->latest()->first()->log_out_type = "Log_out"){
+                                                    $status = "P";
+                                                    $this->result['attendance']['users'][] = $dtr;
+                                                }
+                                               
+                                            }
                                         }
                                     } else {
                                         $status = "TBD";
 
-                                        $this->result['to_be_determinded']['users'][] = $dtr;
                                     }
                                 }
 
                                 // If the DTR is Rest Day, set status as Rest Day
+                                if ($dtr->isRestDay()) {
+                                    $status = 'RD';
+                                    if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
+                                        $status = 'P-RDW';
+                                        $has_rest_day_work = true;
+                                    }
+                                }
                             } elseif ($dtr->isRestDay()) {
                                 $status = 'RD';
                                 if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
@@ -726,6 +735,11 @@ class TeamAttendanceSummary
     
 
                                             }
+                                            if($user->permissions()->pluck('name')->contains('user_multi_login')){
+                                                if($dtr->get_dtr_history()->latest()->first() != null){
+                                                    $status = $dtr->get_dtr_history()->latest()->first()->log_out_type = "Log_out" ? "P":"A";
+                                                }
+                                            }
                                         } else {
                                             $status = "TBD";
     
@@ -733,6 +747,13 @@ class TeamAttendanceSummary
                                     }
     
                                     // If the DTR is Rest Day, set status as Rest Day
+                                    if ($dtr->isRestDay()) {
+                                        $status = 'RD';
+                                        if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
+                                            $status = 'P-RDW';
+                                            $has_rest_day_work = true;
+                                        }
+                                    }
                                 } elseif ($dtr->isRestDay()) {
                                     $status = 'RD';
                                     if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {

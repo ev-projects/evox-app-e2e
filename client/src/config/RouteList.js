@@ -20,12 +20,14 @@ import TemplateEdit from "../container/Schedule/TemplateEdit";
 import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
-import DtrPunchHistory from "../container/DtrPunchHistory";
+import DailyTimeRecordPuncher from "../container/DailyTimeRecordPuncher";
+import DtrPunch from "../container/DtrPunch";
 import EVLearning from "../container/EVLearning/EVLearning";
 import OpsSchedule from "../container/OpsSchedule/";
 
 // Requests
 import AlterLog from "../container/Request/AlterLog";
+import AlterLogPunch from "../container/Request/AlterLogPunch";
 import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
 import RestDayWork from "../container/Request/RestDayWork";
@@ -123,8 +125,12 @@ const RoutesList = (props) => {
           <DailyTimeRecord role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.dtr_punch_history+":id"} >
-          <DtrPunchHistory role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        <ProtectedRoute exact path={global.links.dtr_punchlist+":id"} >
+          <DailyTimeRecordPuncher role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_punch_history} >
+          <DtrPunch role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
         
 
@@ -182,6 +188,10 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.alter_log+":id?"}>
           <AlterLog onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.alter_log_punch+":id?"}>
+          <AlterLogPunch onApproval={false} role={['employee']} permission={['employee_access']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.change_schedule+":id?"}>

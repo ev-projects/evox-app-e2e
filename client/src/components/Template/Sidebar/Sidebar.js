@@ -83,16 +83,30 @@ const Sidebar = (props) => {
               )}
 
                      {/*  EMPLOYEE Links */}
-                     {(Authenticator.check("employee", "user_multi_login") && Authenticator.check_department_permissions()) && (
+                      {(Authenticator.check("employee", "user_multi_login") && Authenticator.check_department_permissions()) && (
+                <>
                 <li className="nav-item">
                   <Link
                     className="nav-link"
-                    to={global.links.dtr_punch_history + user.id + "/"}
+                    to={global.links.dtr_punch_history}
                   >
-                    <i className="nav-icon fa fa-clock-o nav-icon" />
-                    <p> Punch History</p>
+                    <i className="nav-icon fa fa-hand-rock-o nav-icon" />
+                    <p> Punch</p>
                   </Link>
                 </li>
+                    <li className="nav-item">
+                    <Link
+                      className="nav-link"
+                      to={global.links.dtr_punchlist + user.id + "/"}
+                    >
+                      <span class="icon-stack">
+                        <i class="fa fa-calendar-o icon-stack-3x"></i>
+                        <i class="fa fa-hand-rock-o icon-stack-1x"></i>
+                      </span>
+                      <p> Punch History</p>
+                    </Link>
+                  </li>
+                  </>
               )}
 
               {Authenticator.check("employee", "employee_access") && (
@@ -130,6 +144,15 @@ const Sidebar = (props) => {
                       >
                         <i className="nav-icon fa fa-calendar-check-o nav-icon" />
                         <p>Change of Schedule</p>
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        to={global.links.base + "request/AlterLogPunch/"}
+                      >
+                        <i className="nav-icon fa fa-clock-o nav-icon" />
+                        <p>Alter Punch Date</p>
                       </Link>
                     </li>
                     {country.toLowerCase() == "philippines" && (

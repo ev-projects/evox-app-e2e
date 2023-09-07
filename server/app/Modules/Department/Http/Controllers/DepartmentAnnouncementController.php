@@ -368,7 +368,7 @@ class DepartmentAnnouncementController extends Controller
             $announcements_list = $announcements_list->get();
         
        
-        // dd( AnnouncementResource::collection($announcements_list));
+  
         return success_response(
             trans('messages.fetch_change_log_success'), 
            AnnouncementResource::collection($announcements_list)
@@ -401,7 +401,7 @@ class DepartmentAnnouncementController extends Controller
         // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
         $announcements_list = $department->departments_announcements()->where("category", "Department")->latest()
         ->get();
-        // dd( AnnouncementResource::collection($announcements_list));
+
         return success_response(
             trans('messages.fetch_change_log_success'), 
            AnnouncementResource::collection($announcements_list)

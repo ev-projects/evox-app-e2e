@@ -109,6 +109,39 @@ const InputTime = (props) => {
     </Field>
         );
   }
+
+  if(props.type=="indexing"){
+    const event = new Date();
+    // console.log(event);
+    return(<Field>
+    
+      {({ field, form }) => (
+              <span>
+                  {/* {console.log(field.value,field.value.new_punch)} */}
+                 <DatePicker 
+                      className="form-control"                      
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeIntervals={60}
+                      timeCaption="Time"
+                      dateFormat="HH:mm"
+                      timeFormat="HH:mm" 
+                      // selected={field.value.new_punch[props.index].start_time}    
+                      selected={ eval('field.value.new_punch'+ "["+props.indexid+"]?."+ props.name)}              
+                      onChange={date => {
+                        console.log(date, 'new_punch'+ "["+props.indexid+"]?."+ props.name, field.value.new_punch);
+                        form.setFieldValue(  'new_punch'+ "["+props.indexid+"]."+ props.name, date);
+                        // this.setState({})
+                      }}
+                      disabled={props.isDisabled}
+                  /> 
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={'new_punch'+ "["+props.indexid+"]?."+ props.name} className="input-feedback" />
+                </Form.Control.Feedback> 
+              </span>)}
+    </Field>
+          );
+  }
       return(<Field>
         {({ field, form }) => (
                 <span>
@@ -226,6 +259,99 @@ const InputDateTime = (props) => {
     </Field>
         );
 }
+
+/** This is component for Date */
+const InputDateTimeIndex = (props) => {
+  if(props.contrast_too!=null){
+    return(<Field>
+      {({ field, form }) => (
+              <div>
+              <DatePicker 
+                  className="form-control" 
+                  showTimeInput
+                  customTimeInput={<CustomTimeInput />}
+                  popperPlacement={ props.popperPlacement != undefined ? props.popperPlacement : false }
+                  showTimeSelectOnly={ props.showTimeSelectOnly != undefined ? props.showTimeSelectOnly : false }
+                  showDateSelectOnly={ props.showDateSelectOnly != undefined ? props.showDateSelectOnly : false }
+                  minDate={ props.minDate != undefined ? props.minDate : false }
+                  maxDate={ props.maxDate != undefined ? props.maxDate : false }
+                  dateFormat="MMMM d, yyyy HH:mm"
+                  selected={ eval('field.value.' + props.name)}       
+                  readOnly={ props.readOnly != undefined ? props.readOnly : false }
+                  onChange={date => {form.setFieldValue(props.name, date); ;
+                    onSelectTimeHandlerAlterlog(date,form.setFieldValue,props.contrast_too,props.offset_data)}}
+              /> 
+              <Form.Control.Feedback type="invalid">
+                <ErrorMessage component="div" name={props.name} className="input-feedback" />
+              </Form.Control.Feedback> 
+            </div>)}
+    </Field>
+        );
+  }
+  if(props.type=="indexing"){
+    const event = new Date();
+    // console.log(event);
+    return(<Field>
+    
+      {({ field, form }) => (
+              <span>
+                  {/* {console.log(field.value,field.value.new_punch)} */}
+                 <DatePicker 
+                      className="form-control" 
+                       showTimeInput
+                       customTimeInput={<CustomTimeInput />}
+                       popperPlacement={ props.popperPlacement != undefined ? props.popperPlacement : false }
+                       showTimeSelectOnly={ props.showTimeSelectOnly != undefined ? props.showTimeSelectOnly : false }
+                       showDateSelectOnly={ props.showDateSelectOnly != undefined ? props.showDateSelectOnly : false }
+                       minDate={ props.minDate != undefined ? props.minDate : false }
+                       maxDate={ props.maxDate != undefined ? props.maxDate : false }
+                      // timeIntervals={60}
+                      // timeCaption="Time"
+                      dateFormat="MMMM d, yyyy HH:mm"
+                      // selected={field.value.new_punch[props.index].start_time}    
+                      selected={ eval('field.value.new_punch'+ "["+props.indexid+"]?."+ props.name)}     
+                      readOnly={ props.readOnly != undefined ? props.readOnly : false }         
+                      onChange={date => {
+                        console.log(date, 'new_punch'+ "["+props.indexid+"]?."+ props.name, field.value.new_punch);
+                        form.setFieldValue(  'new_punch'+ "["+props.indexid+"]."+ props.name, date);
+                        // this.setState({})
+                      }}
+                      disabled={props.isDisabled}
+                  /> 
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={'new_punch'+ "["+props.indexid+"]."+ props.name} className="input-feedback" />
+                </Form.Control.Feedback> 
+              </span>)}
+    </Field>
+          );
+  }
+  return(<Field>
+      {({ field, form }) => (
+              <div>
+                <DatePicker 
+                    className="form-control" 
+                    showTimeInput
+                    customTimeInput={<CustomTimeInput />}
+                    popperPlacement={ props.popperPlacement != undefined ? props.popperPlacement : false }
+                    showTimeSelectOnly={ props.showTimeSelectOnly != undefined ? props.showTimeSelectOnly : false }
+                    showDateSelectOnly={ props.showDateSelectOnly != undefined ? props.showDateSelectOnly : false }
+                    minDate={ props.minDate != undefined ? props.minDate : false }
+                    maxDate={ props.maxDate != undefined ? props.maxDate : false }
+                    dateFormat="MMMM d, yyyy HH:mm"
+                    selected={ eval('field.value.' + props.name)}       
+                    readOnly={ props.readOnly != undefined ? props.readOnly : false }
+                    onChange={date => form.setFieldValue(props.name, date)}
+                /> 
+                <Form.Control.Feedback type="invalid">
+                  <ErrorMessage component="div" name={props.name} className="input-feedback" />
+                </Form.Control.Feedback> 
+              </div>)}
+    </Field>
+        );
+
+        
+
+}
     
 
   const onSelectTimeHandlerStd = (data, setFieldValue) => {
@@ -287,5 +413,6 @@ const InputDateTime = (props) => {
 export {
   InputDate,
   InputTime,
-  InputDateTime
+  InputDateTime,
+  InputDateTimeIndex
 }

@@ -147,7 +147,8 @@ return [
         'alter_log' => 'alter_log', 
         'rest_day_work' => 'rest_day_work', 
         'change_schedule' => 'change_schedule',
-        'work_from_home' => 'work_from_home'
+        'work_from_home' => 'work_from_home',
+        'alter_log_punch' => 'alter_log_punch',
     ],
 
     'REQUEST_STATUS' => [
@@ -162,7 +163,8 @@ return [
         'alteration' => 'alteration', 
         'overtime' => 'overtime', 
         'rest_day_work' => 'rest_day_work',
-        'change_schedule' => 'change_schedule'
+        'change_schedule' => 'change_schedule',
+        'alter_log_punch' => 'alter_logs_punches',
     ],
 
     'REMINDER_TYPE' => [

@@ -11,19 +11,21 @@ use Illuminate\Support\Facades\DB;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\Leave;
 use App\Modules\Payroll\Models\Holiday;
+use App\Modules\Payroll\Models\DtrPunch;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Payroll\Models\Biometrics;
+use App\Modules\Payroll\Models\DtrHoliday;
 use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\Computation;
-use App\Modules\Payroll\Models\DtrHoliday;
-use App\Modules\Payroll\Models\DtrPunchHistory;
-use App\Modules\Payroll\Models\DtrSummaryReport;
 use App\Modules\Request\Models\RestDayWork;
 use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Request\Models\AlterLogPunch;
 use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Schedule\Models\SchedulePolicy;
+use App\Modules\Payroll\Models\DtrSummaryReport;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 
 class DtrRepository implements DtrRepositoryInterface{
@@ -700,28 +702,31 @@ class DtrRepository implements DtrRepositoryInterface{
                     return get_constant('DTR_NOT_EXISTS');
                 }
 
-                # Updates the DTR properties
-                $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
-                $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
-                $dtr->time_in               =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
-                $dtr->time_out              =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
-                $dtr->start_flexy_datetime  =  null;
-                $dtr->end_flexy_datetime    =  null;
-                $dtr->break_time            =  $rest_day_work->break_time;
-                $dtr->is_rest_day           =  true;
-                $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work');
+               
+                if(!$dtr->user()->first()->permissions()->pluck('name')->contains('user_multi_login')){
+                    # Updates the DTR properties
+                    $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
+                    $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
+                    $dtr->time_in               =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
+                    $dtr->time_out              =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );
+                    $dtr->start_flexy_datetime  =  null;
+                    $dtr->end_flexy_datetime    =  null;
+                    $dtr->break_time            =  $rest_day_work->break_time;
+                    $dtr->is_rest_day           =  true;
+                    $dtr->source_type_tagging   =  get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work');
 
-                # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
-                if( $rest_day_work->start_time >= $rest_day_work->end_time ) {
-                    $dtr->end_datetime = add_days_to_timestamp( $dtr->end_datetime, 1 );
-                    $dtr->time_out = add_days_to_timestamp( $dtr->time_out, 1 );
+                    # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
+                    if( $rest_day_work->start_time >= $rest_day_work->end_time ) {
+                        $dtr->end_datetime = add_days_to_timestamp( $dtr->end_datetime, 1 );
+                        $dtr->time_out = add_days_to_timestamp( $dtr->time_out, 1 );
+                    }
+
+                    # Updates the DTR with the Rest Day Work Details.
+                    $dtr->save();
+
+                    # Compute for the Items
+                    $this->compute_payroll_items( $dtr );
                 }
-
-                # Updates the DTR with the Rest Day Work Details.
-                $dtr->save();
-
-                # Compute for the Items
-                $this->compute_payroll_items( $dtr );
 
                 DB::commit();
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
@@ -1911,12 +1916,9 @@ class DtrRepository implements DtrRepositoryInterface{
                             // dd();
                         }
 
-                        // if ($dtr_punch_date_check->log_out_type == "Log_out") {
-                        //     error_log(3);
-                        //     $same_day = true;
-                        // }
+
                     }
-                    // dd($same_day);
+
                     $dtr_punch_check = $user->punch($date_prev, $date)->whereNull('log_out_type')->first();
 
                     if ($dtr_punch_check) {
@@ -2028,7 +2030,75 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
+    public function apply_alter_to_punch(  $alter_punch_log){
+        DB::beginTransaction();
+        try{
+           
+            //disable
+
+            $to_disable =  DtrPunchHistory::where('date', $alter_punch_log->date)->update(['is_active' => 0]);
+
+            $punch_to_delete = DtrPunch::whereIn('dtr_collective_punch_history_id',DtrPunchHistory::where('date', $alter_punch_log->date)->pluck('id')->toArray() )->delete();
+
+            # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
+            // dd( $alter_punch_log);
+            $to_add = $alter_punch_log->new_punch_array();
+            $to_add_count = count($alter_punch_log->new_punch_array()) - 1;
+            foreach(  $to_add as $key => $punch ){
+              
+                $dtr_punch = new DtrPunchHistory();
+
+                $dtr_punch->time_in         =   $punch->start_time;
+                $dtr_punch->time_out        =   $punch->end_time;
+                $dtr_punch->user_id         =   $alter_punch_log->user_id;
+                $dtr_punch->date            =   $alter_punch_log->date;
+               
+                $dtr_punch->log_in_type     =   $key == 0 ? "Log_in": "Continue";
+                $dtr_punch->log_out_type    =   $key == $to_add_count  ? "Log_out": "Pause";
+                $dtr_punch->log_action      =  "time_out";
+
+                $dtr_punch->save();
+            }
+
+            // $dtr->policies()->saveMany( $dtr_policies_array );
+
+            DB::commit();
+            log_to_file('info', 'Success', []);
+            return true;
+
+        } catch (Exception $e) {
+            // dump($e);
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
 
 
+    public function remove_alter_to_punch(  $alter_punch_log){
+        DB::beginTransaction();
+        try{
+           
+            //disable
+          
+            $to_disable =  DtrPunchHistory::where('date', $alter_punch_log->date)->update(['is_active' => 0]);
+            $punch_to_delete = DtrPunch::whereIn('dtr_collective_punch_history_id',DtrPunchHistory::where('date', $alter_punch_log->date)->pluck('id')->toArray() )->delete();
+            # Iterate the Schedule Policies Collection to be saved as Dtr Policies.
+            // dd( $alter_punch_log);
+            $reopen = $alter_punch_log->old_punch_to_collection()->update(['is_active' => 1]);
+           
+
+            // $dtr->policies()->saveMany( $dtr_policies_array );
+
+            DB::commit();
+            log_to_file('info', 'Success', []);
+            return true;
+
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
 
 }
