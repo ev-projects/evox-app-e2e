@@ -61,13 +61,32 @@ export const biometrixLogMulti = ( post_data, id ) => {
                 })
             })
             .catch(e => {
-                // console.log(e);
+                console.log(e.data);
                 dispatch( Formatter.alert_error( e ) ) 
             });
             dispatch( Formatter.alert_success( result ));
         })
         .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
+
+            dispatch( Formatter.alert_error( e ) );
+            // if (e.data.error !== undefined){
+            //     const Err_message = e.data.error.content;
+            //     const string = "This date was already approved as a rest day";
+            //     let response = {
+            //         data: { status: 400, message: "Rest Day Work is Already Approved For this Date" },
+            //         status: 200,
+            //         statusText: "Rest Day Work is Already Approved For this Date",
+            //       };
+            //     if(Err_message.includes(string) == true){
+            //         dispatch( Formatter.alert_error( response ) )
+            //     }else{
+            //         dispatch( Formatter.alert_error( e ) )
+            //     }
+            // }else{
+               
+            // }
+          
+           
         });
     }
 }

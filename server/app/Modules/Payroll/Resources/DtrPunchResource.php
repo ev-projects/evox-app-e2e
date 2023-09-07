@@ -19,7 +19,7 @@ class DtrPunchResource extends JsonResource
     public function toArray($request){    
         
         $result = null;
-
+        // dump($this);
         if( ! is_null( $this->resource ) ) {
             $result = array(
                 'id' => $this->id,

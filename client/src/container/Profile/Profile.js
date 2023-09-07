@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./Profile.css";
 import { Container, Row, Col, Tabs, Tab, Table, Image, Spinner, Button, Form, InputGroup, FormControl } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { fetchTimeOff, fetchPersonalInformation, fetchProfile, fetchJobInformation, fetchLeaveCredits, fetchSchedule, fetchTemporarySchedule, setDateList, setWeekList, setScope } from '../../store/actions/profile/profileActions';
+import { fetchTimeOff, fetchPersonalInformation, fetchProfile, fetchJobInformation, fetchLeaveCredits, fetchSchedule, fetchTemporarySchedule, setDateList, setWeekList, setScope, fetchScheduleHistory } from '../../store/actions/profile/profileActions';
 import Select from "react-select";
 import { ContainerHeader, Content, ContainerWrapper, ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import { Formik, FieldArray, Field, ErrorMessage, getIn } from 'formik';
@@ -18,6 +18,7 @@ import PersonalInformation from "./PersonalInformation";
 import JobInformation from "./JobInformation";
 import TimeOff from "./TimeOff";
 import Schedule from "./Schedule";
+import ScheduleHistory from "./ScheduleHistory";
 import Formatter from "../../services/Formatter";
 import LeaveCredits from "./LeaveCredits";
 import { generateWeekList, getDaysArrayInMonth, getDaysArrayInWeek } from "../../services/Helper";
@@ -74,6 +75,11 @@ class Profile extends Component {
                     this.props.fetchSchedule(this.props.params.id);
                     this.props.fetchTemporarySchedule(this.props.params.id);
 
+                    break;
+
+                case "schedule_history":
+                    this.props.fetchScheduleHistory(this.props.params.id, null);
+                
                     break;
             }
         }
@@ -142,6 +148,7 @@ class Profile extends Component {
                                                 {allow_view_job_info && <Tab eventKey="job_information" title="Job Info" type="submit"></Tab>}
                                                 {allow_view_time_off && <Tab eventKey="time_off" title="Time Off" type="submit"></Tab>}
                                                 {<Tab eventKey="schedule" title="Schedule" type="submit"></Tab>}
+                                                {<Tab eventKey="schedule_history" title="Schedule History" type="submit"></Tab>}
 
                                             </Tabs>
                                         </div>
@@ -162,6 +169,11 @@ class Profile extends Component {
                                         }
                                         {this.state.current_tab == "schedule" && profile.leaves_list != [] ?
                                             <Schedule id={this.props.params.id} dtr={dtr.list} start_date={this.state.start_date} end_date={this.state.end_date} schedule={profile.schedule} />
+                                            :
+                                            null
+                                        }
+                                         {allow_view_time_off && this.state.current_tab == "schedule_history" && profile.leaves_list != [] ?
+                                            <ScheduleHistory/>
                                             :
                                             null
                                         }
@@ -195,6 +207,7 @@ const mapDispatchToProps = (dispatch) => {
         fetchJobInformation: (id) => dispatch(fetchJobInformation(id)),
         fetchLeaveCredits: (id) => dispatch(fetchLeaveCredits(id)),
         fetchSchedule: (id) => dispatch(fetchSchedule(id)),
+        fetchScheduleHistory: (id ,params) => dispatch(fetchScheduleHistory(id ,params)),
         fetchTimeOff: (id, start_date, end_date) => dispatch(fetchTimeOff(id, start_date, end_date)),
         fetchTemporarySchedule: (id) => dispatch(fetchTemporarySchedule(id)),
         setDateList: (dates) => dispatch(setDateList(dates)),

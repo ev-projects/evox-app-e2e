@@ -129,7 +129,39 @@ class DtrController extends Controller
            
            return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
-                DtrPunchHistoryLogResources::collection( $user->punchlogs($start_date, $end_date)->orderBy('date', 'asc')->get() )
+                DtrPunchHistoryLogResources::collection( $user->punchlogs($start_date, $end_date)->where("is_active", 1)->orderBy('date', 'asc')->get() )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+        /**
+     * Returns a single punch based on date
+     * @param string $user_id
+     * @param string $start_date
+     * @param string $end_date
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function dtr_single_punch( $user_id, $call_date ){   
+        
+        try {
+            $this->validate(new Request([
+                'user_id' => $user_id,
+                'call_date' => $call_date,
+              
+            ]), [
+                'user_id' => 'int',
+                'call_date' => 'date_format:Y-m-d',
+              
+            ]);
+            
+           $user = get_authenticated_user( $user_id );
+
+           
+           return success_response(
+                trans('messages.'.__FUNCTION__.'_success'), 
+                DtrPunchHistoryLogResources::collection( $user->target_punch($call_date)->orderBy('date', 'asc')->get() )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -221,11 +253,12 @@ class DtrController extends Controller
                 ->startOfDay()
                 ->subDay(1);
             }
-            $date_check_formatted = $date_check->format("Y-m-d");
+                // dump(256,Auth::user()->department_schedule_active());
+                $date_check_formatted = $date_check->format("Y-m-d");
             if(Auth::user()->department_schedule_active()){
                 
                 $result = $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection);
-
+                // dd( $result );
                 if(!$result){ 
                     return error_response( trans(' you need to clock in '),  );
                 }

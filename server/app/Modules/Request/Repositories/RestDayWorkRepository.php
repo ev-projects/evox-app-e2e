@@ -92,7 +92,7 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                     $rest_day_work= $this->optimze_rest_day($rest_day_work->date, $timestamp_start,$rest_day_work);
                 }
                 $rest_day_work->updated_by   = auth()->user()->id;
-                // dd( $rest_day_work); 
+                
                 $rest_day_work->update();
                 
                 DB::commit();
@@ -467,7 +467,6 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
          
             $difference_of_days = $date_of_schedule->diffInDays($date_of_read,false) ;
          
-            // dd($date_of_read ,$date_of_read->timestamp ,$date_of_schedule, $date_of_schedule->timestamp,$date_of_read->timestamp > $date_of_schedule->timestamp);
             if(   $difference_of_days != 0){
                 // add_days_to_timestamp();
                 if($rest_day_check != null){
@@ -479,7 +478,6 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
                
             }
 
-            // dd(  $rest_day_check,$date_of_read,$date_of_schedule, $date_of_read == $date_of_schedule, $difference_of_days);
 
             return $rest_day_check;
 

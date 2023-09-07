@@ -61,7 +61,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             }
          
         }   
-        // dd($dep_ids,$request->all());
+      
         DB::beginTransaction();
         try {
             
@@ -242,8 +242,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 if(is_valid($dep_ids)){
                     
                     
-                    //                 dd($collection_todelete);
-                    // Announcement::forceDelete($collection_todelete->toArray());
+        
                     
                 $dep_ids = array_diff($dep_ids,  [auth()->user()->department_id]);
                 foreach( $dep_ids as $dep_id){
