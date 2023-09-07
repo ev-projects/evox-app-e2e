@@ -143,6 +143,27 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
     }
 
     /**
+     *  Responsible for fetching the Schedule list.
+     * @param $id
+     * @return Schedule $schedule collection
+     */
+    public function list($id){
+        try {
+
+            $schedule_collection = "something";
+            $schedule_collection = User::find($id)->AllSchedules()->paginate(5);
+
+            log_to_file('info', 'Success', [$schedule_collection]);
+            return $schedule_collection;
+
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+    /**
      *  Responsible for fetching the Schedule with the ID given.
      * @param $id
      * @return Schedule $schedule

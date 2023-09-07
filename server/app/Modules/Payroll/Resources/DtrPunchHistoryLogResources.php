@@ -17,7 +17,6 @@ class DtrPunchHistoryLogResources extends JsonResource
      */
     public function toArray($request)
     {
-        
         $result = null;
         
         $time_log = [];

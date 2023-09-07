@@ -108,7 +108,7 @@ class NavQuickPunch extends Component {
     }
 
     var logsLabel = (this.props.incompletedtr.length > 0) ? "Incomplete Timelogs: " + this.props.incompletedtr.length : "";
-    // console.log(user);
+
     return (
       <>
 
