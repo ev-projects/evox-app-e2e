@@ -146,7 +146,9 @@ const Sidebar = (props) => {
                         <p>Change of Schedule</p>
                       </Link>
                     </li>
-                    <li className="nav-item">
+
+                    {(Authenticator.check("employee", "user_multi_login") && Authenticator.check_department_permissions()) && (
+                      <li className="nav-item">
                       <Link
                         className="nav-link"
                         to={global.links.base + "request/AlterLogPunch/"}
@@ -155,6 +157,8 @@ const Sidebar = (props) => {
                         <p>Alter Punch Date</p>
                       </Link>
                     </li>
+                    )}
+                    
                     {country.toLowerCase() == "philippines" && (
                       <li className="nav-item">
                         <Link
