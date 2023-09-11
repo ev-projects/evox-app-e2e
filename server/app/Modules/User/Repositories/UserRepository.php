@@ -194,7 +194,9 @@ class UserRepository implements UserRepositoryInterface{
 
                     // Assign the Employee Role
                     $user->assignRole( $employee_role );
-
+                    
+                    //filter unneeded permissions
+                    $user->revokePermissionTo('user_multi_login');
 
                     # 3.
                     // Total Permissions that are not synced yet on the User
