@@ -9,7 +9,7 @@ import { Container,Row,Col,Table,Image, Spinner,Button, Badge, Tab, Tabs , Dropd
 import moment from 'moment';
 import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
 import $ from 'jquery';
-
+import Authenticator from "../../../services/Authenticator";
 import { getRecentDtr } from '../../../store/actions/dashboard/dashboardActions'
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import * as Yup from 'yup';
@@ -141,7 +141,7 @@ class NavPuncher extends Component {
 
     
   <div className="div-col ">
-  {this.props.user.use_multi ?<>
+  {(Authenticator.check("employee", "user_multi_login") && Authenticator.check_department_permissions())?<>
   <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Clock In</Button>
   </>
   :
