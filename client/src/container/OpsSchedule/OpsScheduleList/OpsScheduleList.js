@@ -86,26 +86,26 @@ class OpsScheduleList extends Component {
 
                     <div className="content-table">
                         { this.props.opsScheduleList.isListInstanceLoaded ? (<Row><div className="dtr-summary-table">
-                            <table className="table">
+                            <table className="table" style={{ width: '60%' }}>
                                 <thead className="thead-light">
                                     <tr>
                                         <th scope="col" className="th-id">Department</th>
                                         <th scope="col" className="th-id">Image</th>
-                                        <th scope="col" className="th-id">Name(POC)</th>
+                                        {/* <th scope="col" className="th-id">Name(POC)</th>
                                         <th scope="col" className="th-name">Position</th>
                                         <th scope="col" className="th-dept">Email</th>
                                         <th scope="col">Domain</th>
                                         <th scope="col">Scope</th>
-                                        <th scope="col">Schedule</th>
+                                        <th scope="col">Schedule</th> */}
                                         <th scope="col" className="ta-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 {this.props.opsScheduleList.listInstance.map((list, index) => {
                                     return <tr>
-                                        <td>{list.department}</td>
-                                        <td className="ta-center">{(list.path) ? <img src={list.path} width="300px" height="200px" /> : '' }</td>
-                                        <td>{list.name}</td>
+                                        <td><b>{list.department}</b></td>
+                                        <td className="ta-center">{(list.path) ? <img src={list.path} width="500px" /> : '' }</td>
+                                        {/* <td>{list.name}</td>
                                         <td>{list.position}</td>
                                         <td>{list.email}</td>
                                         <td>{list.domain}</td>
@@ -116,7 +116,7 @@ class OpsScheduleList extends Component {
                                                 })}
 											</ul>
                                         </td>
-                                        <td>{list.work_days}<br/>{list.start_end_time} {list.timezone}</td>
+                                        <td>{list.work_days}<br/>{list.start_end_time} {list.timezone}</td> */}
                                         <td className="ta-center">
                                             <Button id="btn-generate" className="ops-sched-btn" type="submit" onClick={() => { this.props.history.push(global.links.ops_schedule_form + list.id) }}><i className="fa fa-pencil-square-o ev-color" /></Button>&nbsp;&nbsp;
                                             <Button id="btn-generate" className="ops-sched-btn" type="submit" onClick={() => { setFieldValue("action", "delete"); setFieldValue("ops_sched_id", list.id); }}><i className="fa fa-times ev-color" /></Button>
