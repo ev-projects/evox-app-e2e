@@ -6,7 +6,7 @@ import "./OpsScheduleForm.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 /** Form Manipulation */
-import { Formik, ErrorMessage, getIn  } from 'formik';
+import { Formik, ErrorMessage, FieldArray, getIn  } from 'formik';
 import * as Yup from 'yup';
 
 import PageLoading from "../../PageLoading";
@@ -26,7 +26,9 @@ class OpsScheduleForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      action: null
+      action: null,
+      type: 'image',
+      department_id: null,
     }
   }
 
@@ -46,6 +48,10 @@ class OpsScheduleForm extends Component {
         }
     }
 
+    if (values.type === 'image') {
+      formData.set('image', this.state.thumbnail);
+    }
+
     if (values.method === "update") {
       const id = values.id;
       formData.append('_method', 'PUT');
@@ -58,7 +64,7 @@ class OpsScheduleForm extends Component {
   componentWillMount(){
       // Clear the Instance of Ops Schedule before rendering new Instance (If applicable)
       this.props.clearOpsScheduleInstance();
-      
+
       // If the ID is defined, load the Ops Schedule Instance base on the ID Parameter in Route.
       if( this.props.params.id != undefined ) {
         const id = this.props.params.id;
@@ -66,13 +72,22 @@ class OpsScheduleForm extends Component {
       }
   }
 
-  
+  handleSelectActionType = async (event) => {
+    this.setState({
+      type : event.target.value,
+      department_id: "",
+    });
+  }
+
   render = () => {  
     // Get all Ops Departments from server constants
     const opsDepts = this.props.constant.OPS_DEPTS != undefined ? this.props.constant.OPS_DEPTS : [];
 
     // Sets the Method of the current state.
     const method = this.props.params.id != undefined ? 'update' : 'store';
+
+    // Sets the Type of the current state.
+    const type = this.state.type;
 
     // Get the fetched ops schedule instance
     const opsSched = this.props.params.id != undefined ? this.props.instance : [];
@@ -81,8 +96,9 @@ class OpsScheduleForm extends Component {
     const initialValue = {
         action:           null,
         method:           method,
+        type:             type,
         id:               opsSched.id != undefined ? opsSched.id : null,
-        department:       opsSched.department_id != undefined ? opsSched.department_id : null,
+        department:       opsSched.department_id != undefined ? opsSched.department_id : this.state.department_id,
         name:             opsSched.name != undefined ? opsSched.name : null,
         position:         opsSched.position != undefined ? opsSched.position : null,
         email:            opsSched.email != undefined ? opsSched.email : null,
@@ -117,11 +133,47 @@ class OpsScheduleForm extends Component {
           <form onSubmit={handleSubmit}>
             <input type="hidden" name="action" value={values.action} />
             <input type="hidden" name="method" value={method} />
+            <input type="hidden" name="type" value={type} />
             <input type="hidden" name="date" value={values.date} />
             <input type="hidden" name="id"  value={values.id} />
             <ContainerWrapper>
               <ContainerBody>
                 <Content col="6"  title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
+                  <Row>
+                    <Col size="6">
+                      <Form.Group className="white_bg double-column-padding">
+                        <FieldArray render={arrayHelpers => (
+                          <label>
+                            <input
+                              type="radio"
+                              name="action_type"
+                              value="image"
+                              checked={this.state.type === "image"}
+                              onChange={(e) => {
+                                this.handleSelectActionType(e);
+                              }}
+                            />
+                            Upload Image
+                          </label>
+                          )}
+                          />
+                        <FieldArray render={arrayHelpers => (
+                          <label>
+                              <input
+                                type="radio"
+                                name="action_type"
+                                value="form"
+                                checked={this.state.type === "form"}
+                                onChange={(e) => {
+                                  this.handleSelectActionType(e);
+                                }}
+                              /> 
+                              Fill Form &nbsp;
+                            </label>
+                        )}/>
+                      </Form.Group>
+                    </Col>
+                  </Row>
                   <Row>  
                     <Col size="4"> 
                       <div className="form-group">
@@ -144,99 +196,141 @@ class OpsScheduleForm extends Component {
                     </Col>
                   </Row>
 
-                  <Row>
-                    <Col size="4"> 
-                      <div className="form-group">
-                        <label className="dep-announcement-required">Name(POC):</label>
-                        <FormControl variant="primary" name="name" className="name" onChange={handleChange} value={values.name} />
-                        <Form.Control.Feedback type="invalid">
-                            <ErrorMessage component="div" name="name" className="input-feedback" />
-                        </Form.Control.Feedback>
-                      </div>
-                    </Col>
-                    <Col size="4"> 
-                      <div className="form-group">
-                        <label className="dep-announcement-required">Position:</label>
-                        <FormControl variant="primary" name="position" className="position" onChange={handleChange} value={values.position} />
-                        <Form.Control.Feedback type="invalid">
-                            <ErrorMessage component="div" name="position" className="input-feedback" />
-                        </Form.Control.Feedback>
-                      </div>
-                    </Col>
-                    <Col size="4">
-                      <div className="form-group">
-                        <label className="dep-announcement-required">Email:</label>
-                        <FormControl variant="primary" name="email" className="email" onChange={handleChange} value={values.email} />
-                        <Form.Control.Feedback type="invalid">
-                            <ErrorMessage component="div" name="email" className="input-feedback" />
-                        </Form.Control.Feedback>
-                      </div>
-                    </Col>
-                  </Row> 
+                  {(type != null && type === "form") ? 
+                  <div id="form-fill-area">
+                    <Row>
+                      <Col size="4"> 
+                        <div className="form-group">
+                          <label className="dep-announcement-required">Name(POC):</label>
+                          <FormControl variant="primary" name="name" className="name" onChange={handleChange} value={values.name} />
+                          <Form.Control.Feedback type="invalid">
+                              <ErrorMessage component="div" name="name" className="input-feedback" />
+                          </Form.Control.Feedback>
+                        </div>
+                      </Col>
+                      <Col size="4"> 
+                        <div className="form-group">
+                          <label className="dep-announcement-required">Position:</label>
+                          <FormControl variant="primary" name="position" className="position" onChange={handleChange} value={values.position} />
+                          <Form.Control.Feedback type="invalid">
+                              <ErrorMessage component="div" name="position" className="input-feedback" />
+                          </Form.Control.Feedback>
+                        </div>
+                      </Col>
+                      <Col size="4">
+                        <div className="form-group">
+                          <label className="dep-announcement-required">Email:</label>
+                          <FormControl variant="primary" name="email" className="email" onChange={handleChange} value={values.email} />
+                          <Form.Control.Feedback type="invalid">
+                              <ErrorMessage component="div" name="email" className="input-feedback" />
+                          </Form.Control.Feedback>
+                        </div>
+                      </Col>
+                    </Row> 
 
-                  <Row>
-                    <Col size="4"> 
-                      <div className="form-group">
-                        <label>Domain:</label>
-                        <FormControl variant="primary" name="domain" className="domain" onChange={handleChange} value={values.domain} />
-                      </div>
-                    </Col>
-                    <Col size="4"> 
-                      <div className="form-group">
-                        <label>Scope:</label>
-                        <InputGroup>
-                            {/* <InputDate name="date" value={values.date} readOnly={onApproval}/> */}
-                            <FormControl variant="primary" name="scope" className="scope" onChange={handleChange} value={values.scope} placeholder="Use comma(,) for multiple answers" />
-                        </InputGroup>
-                      </div>
-                    </Col>
-                  </Row>
+                    <Row>
+                      <Col size="4"> 
+                        <div className="form-group">
+                          <label>Domain:</label>
+                          <FormControl variant="primary" name="domain" className="domain" onChange={handleChange} value={values.domain} />
+                        </div>
+                      </Col>
+                      <Col size="4"> 
+                        <div className="form-group">
+                          <label>Scope:</label>
+                          <InputGroup>
+                              {/* <InputDate name="date" value={values.date} readOnly={onApproval}/> */}
+                              <FormControl variant="primary" name="scope" className="scope" onChange={handleChange} value={values.scope} placeholder="Use comma(,) for multiple answers" />
+                          </InputGroup>
+                        </div>
+                      </Col>
+                    </Row>
 
-                  <Row>
-										<Col size="12">
-											<div className="form-group">
-												<label className="dep-announcement-required" htmlFor="valid_to">Work Days:</label>
-                          <div>
-                            <label><input type="checkbox" name="mon" onChange={handleChange} checked={values.mon} />Monday &nbsp;</label>
-                            <label><input type="checkbox" name="tue" onChange={handleChange} checked={values.tue} />Tuesday &nbsp;</label>
-                            <label><input type="checkbox" name="wed" onChange={handleChange} checked={values.wed} />Wednesday &nbsp;</label>
-                            <label><input type="checkbox" name="thu" onChange={handleChange} checked={values.thu} />Thursday &nbsp;</label>
-                            <label><input type="checkbox" name="fri" onChange={handleChange} checked={values.fri} />Friday &nbsp;</label>
-                            <label><input type="checkbox" name="sat" onChange={handleChange} checked={values.sat} />Saturday &nbsp;</label>
-                            <label><input type="checkbox" name="sun" onChange={handleChange} checked={values.sun} />Sunday &nbsp;</label>
+                    <Row>
+                      <Col size="12">
+                        <div className="form-group">
+                          <label className="dep-announcement-required" htmlFor="valid_to">Work Days:</label>
+                            <div>
+                              <label><input type="checkbox" name="mon" onChange={handleChange} checked={values.mon} />Monday &nbsp;</label>
+                              <label><input type="checkbox" name="tue" onChange={handleChange} checked={values.tue} />Tuesday &nbsp;</label>
+                              <label><input type="checkbox" name="wed" onChange={handleChange} checked={values.wed} />Wednesday &nbsp;</label>
+                              <label><input type="checkbox" name="thu" onChange={handleChange} checked={values.thu} />Thursday &nbsp;</label>
+                              <label><input type="checkbox" name="fri" onChange={handleChange} checked={values.fri} />Friday &nbsp;</label>
+                              <label><input type="checkbox" name="sat" onChange={handleChange} checked={values.sat} />Saturday &nbsp;</label>
+                              <label><input type="checkbox" name="sun" onChange={handleChange} checked={values.sun} />Sunday &nbsp;</label>
+                            </div>
+                        </div>
+                      </Col>
+                    </Row>
+
+                    <Row>  
+                      <Col size="4">   
+                        <div className="form-group">
+                          <label className="dep-announcement-required">Start Time: </label>
+                          <InputTime name="start_time" value={values.start_time} contrast_too = "start_time" />
+                        </div>
+                      </Col> 
+                      <Col size="4"> 
+                        <div className="form-group">
+                          <label className="dep-announcement-required">End Time: </label>
+                          <InputTime name="end_time" value={values.end_time} contrast_too = "end_time" />
+                        </div>  
+                      </Col> 
+                      <Col size="4"> 
+                        <div className="form-group">
+                          <label className="dep-announcement-required">Timezone: </label>
+                          <select name="timezone" value={ values.timezone } className="form-control" onChange={handleChange}>
+                              <option></option>
+                              <option value="PST">PST</option>
+                              <option value="IST">IST</option>
+                              <option value="EET">EET</option>
+                          </select>
+                          <Form.Control.Feedback type="invalid">
+                              <ErrorMessage component="div" name="timezone" className="input-feedback" />
+                          </Form.Control.Feedback>
+                        </div>  
+                      </Col>
+                    </Row>
+                  </div> : <></> 
+                  }
+
+                  {(type != null && type === "image") ? 
+                  <div id="image-upload-area">
+                    <Row>  
+                      <Col size="6">
+                        <div className="form-group">
+                          <label>Choose an image: </label>
+                          <input type="file" id="img-to-upload" accept="image/*" onChange={(event) => {
+                              if (event.currentTarget.files.length !== 0) {
+                                console.log(222, event.currentTarget.files);
+                                  this.setState({ thumbnail: event.currentTarget.files[0] })
+                                  this.setState({ imgPrevInputFile: URL.createObjectURL(event.currentTarget.files[0]) })
+                                  if(method == 'update'){
+                                    this.setState({ inputFileWasUpdated: true })
+                                    this.setState({ inputFileWasDeleted: false })
+                                  }
+                              }
+                          }} />
+                          <div className="thumbnail-image">
+                              {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg')
+                                  ? 
+                                  <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
+                                // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
+                                  : 
+                                <>
+
+                                {this.state.thumbnail == null ? 
+                                  <div><label htmlFor="img-to-upload" className="upload-imagealter">UPLOAD AN IMAGE <i class="fa fa-image" aria-hidden="true"/> </label></div> 
+                                  : <>
+                                  <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} /></>
+                                }</>
+                              }
                           </div>
-											</div>
-										</Col>
-									</Row>
-
-                  <Row>  
-                    <Col size="4">   
-                      <div className="form-group">
-                        <label className="dep-announcement-required">Start Time: </label>
-                        <InputTime name="start_time" value={values.start_time} contrast_too = "start_time" />
-                      </div>
-                    </Col> 
-                    <Col size="4"> 
-                      <div className="form-group">
-                        <label className="dep-announcement-required">End Time: </label>
-                        <InputTime name="end_time" value={values.end_time} contrast_too = "end_time" />
-                      </div>  
-                    </Col> 
-                    <Col size="4"> 
-                      <div className="form-group">
-                        <label className="dep-announcement-required">Timezone: </label>
-                        <select name="timezone" value={ values.timezone } className="form-control" onChange={handleChange}>
-                            <option></option>
-                            <option value="PST">PST</option>
-                            <option value="IST">IST</option>
-                            <option value="EET">EET</option>
-                        </select>
-                        <Form.Control.Feedback type="invalid">
-                            <ErrorMessage component="div" name="timezone" className="input-feedback" />
-                        </Form.Control.Feedback>
-                      </div>  
-                    </Col>
-                  </Row>
+                        </div>
+                      </Col>
+                    </Row>
+                  </div> : <></>
+                  }
 
                   <RequestButtons method={method} {...this} />
                 </Content>
@@ -255,14 +349,38 @@ class OpsScheduleForm extends Component {
 
 /** Form Validation */
 
-const validationSchema = Yup.object().shape({
-    department:     Yup.string().required("This field is required").nullable(),
-    name:           Yup.string().required("This field is required").nullable(),
-    position:       Yup.string().required("This field is required").nullable(),
-    email:          Yup.string().required("This field is required").nullable(),
-    start_time:     Yup.string().required("This field is required").nullable(),
-    end_time:       Yup.string().required("This field is required").nullable(),
-    timezone:       Yup.string().required("This field is required").nullable(),
+const validationSchema = Yup.object().shape({ 
+    department: Yup.string().required("This field is required").nullable(),
+    name: Yup.string().when('type', {
+      is: (type) => type === "form",
+      then: Yup.string().required("This field is required").nullable(),
+      otherwise: Yup.string().nullable(),
+    }),
+    position: Yup.string().when('type', {
+      is: (type) => type === "form",
+      then: Yup.string().required("This field is required").nullable(),
+      otherwise: Yup.string().nullable(),
+    }),
+    email: Yup.string().when('type', {
+      is: (type) => type === "form",
+      then: Yup.string().required("This field is required").nullable(),
+      otherwise: Yup.string().nullable(),
+    }),
+    start_time: Yup.string().when('type', {
+      is: (type) => type === "form",
+      then: Yup.string().required("This field is required").nullable(),
+      otherwise: Yup.string().nullable(),
+    }),
+    end_time: Yup.string().when('type', {
+      is: (type) => type === "form",
+      then: Yup.string().required("This field is required").nullable(),
+      otherwise: Yup.string().nullable(),
+    }),
+    timezone: Yup.string().when('type', {
+      is: (type) => type === "form",
+      then: Yup.string().required("This field is required").nullable(),
+      otherwise: Yup.string().nullable(),
+    }),
   });
 
 const mapStateToProps = (state) => {
