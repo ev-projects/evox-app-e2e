@@ -75,6 +75,14 @@ class TeamAttendanceSummaryResource extends JsonResource
                             $status = 'Not yet started';
                         }
                         // if not blank duty not started yet
+
+
+                        if($dtr->get_dtr_history()->latest()->first() != null){
+                            if($dtr->get_dtr_history()->latest()->first()->log_out_type = "Log_out"){
+                                $status = "Present";
+                            }
+                           
+                        }
                     }
                 
                 // If the DTR is Rest Day, set status as Rest Day

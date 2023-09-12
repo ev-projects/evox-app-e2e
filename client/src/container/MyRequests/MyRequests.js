@@ -149,6 +149,8 @@ class MyRequests extends Component {
                   </Tab>
                   <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
                   </Tab>
+                  <Tab eventKey="alter_logs_punches" title="MultiPunch Alteration" type="submit">
+                  </Tab>
                 </Tabs> 
                 </div>
             <div className="request-content my-request-page"> 
@@ -286,6 +288,23 @@ class MyRequests extends Component {
                             );
                             link =  global.links.alter_log + item.id.toString();
                               break;
+                              case "alter_log_punches":
+                                fourthColumn.push(
+                                  <div>
+                                    <span className="alter-logs-new">New</span>
+                                    <p>
+                                      Timelog:  {item.fifth_column}
+                                    </p>
+                                  </div>
+                                );
+                                fifthColumn.push(
+                                  <div>
+                                    <span className="alter-logs-old">Old</span>
+                                    <p>Timelog: {item.fourth_column}</p>
+                                  </div>
+                                );
+                                link =  global.links.alter_log_punch + item.id.toString();
+                                break;
                           case "rest_day_works":
                             fourthColumn.push(
                               <span>From: {item.fourth_column}</span>

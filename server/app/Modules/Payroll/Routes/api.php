@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 
 # API Call for DTR
+// , 'middleware' => ['jwtauth', 'auth.apikey']
 Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
     
     # Gets the DTR of the User indicated.
@@ -21,6 +22,11 @@ Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], fu
 
     # Gets the DTR of the User indicated.
     Route::get('/punch/{user_id}/{start_date}/{end_date}', 'DtrController@punches');//->middleware('auth.apikey');
+
+     # Gets the DTR of the User indicated.
+     Route::get('/dtrpunch/{user_id}/{start_date}/{end_date}', 'DtrController@Dtr_punches');//->middleware('auth.apikey');
+
+    Route::get('/dtrpunch/check/{user_id}/{call_date}', 'DtrController@dtr_single_punch');//->middleware('auth.apikey');
 
     Route::post('/quickpunch', 'DtrController@quickpunch');
 

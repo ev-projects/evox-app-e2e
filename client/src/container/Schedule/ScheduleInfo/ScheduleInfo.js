@@ -1,0 +1,683 @@
+import React, { Component,useState  } from "react";
+import { Redirect,Link } from "react-router-dom";
+import { Form,Button,Container,Col,InputGroup,FormControl,Tabs,Tab,Row  } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
+import DatePicker from "react-datepicker";
+import * as Yup from 'yup';
+import "react-datepicker/dist/react-datepicker.css";
+import "./ScheduleInfo.css";
+
+import { Scheduledetails, ScheduledetailsWithTimezone,  onSelectTimeHandlerStd ,onSelectTimeHandlerFlexi,  FlexibleSchedDetailsFormWithTimezone,SchedulePolicy, StandardSchedDetailsFormWithTimezone,WorkDays,StandardSchedDetailsForm,FlexibleSchedDetailsForm, ScheduleHolidayPolicy} from '../../../components/Schedule/ScheduleDetails.js';
+import PageLoading from "../../PageLoading";
+import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../../components/GridComponent/AdminLte.js';
+
+import Formatter from '../../../services/Formatter';
+
+import { scheduleAssign,getScheduleInfo,listTemplate,getTemplateSchedule } from '../../../store/actions/scheduleActions';
+import { getUserInfo } from '../../../store/actions/userActions'
+
+import Wrapper from "../../../components/Template/Wrapper/index.js";
+import BackButton from "../../../components/Template/BackButton/index.js";
+import Validator from "../../../services/Validator.js";
+import moment from 'moment';
+
+import RequestSubtitle from "../../../components/RequestComponent/RequestButtons/RequestSubtitle";
+
+class ScheduleInfo extends Component {    
+  constructor(props){
+    super(props);
+    
+
+    this.initialState = {
+      isInitialDataLoaded: false,
+      bind_to: 'user',
+      bind_id: this.props.params.user_id,
+      from_date : null,
+      to_date : null,
+      work_day : [],
+      default_schedule : null,
+      templateList : [],
+      std_schedule_details : [],
+      flx_schedule_details : [],
+      cst_schedule_details : [],
+      pov_schedule_details : [],
+      schedule_policies : {},
+      creation_type : 'customize',
+      schedule_type : null,
+      open_contrast:		true,
+      owner_offset: 0,
+      source_type: ""
+    
+    }
+
+    this.state = this.initialState;
+  }
+
+  onSubmitHandler = (values) => {
+    values.schedule_details = Formatter.format_schedule_details(values);
+    values.valid_from = moment( values.from ).format("YYYY-MM-DD");
+    values.valid_to = moment( values.to ).format("YYYY-MM-DD");
+    this.props.scheduleAssign(values)
+  }
+
+  loadTemplateSched = (template_id) => {
+    this.props.getTemplateSchedule(template_id,'Default');
+
+  }
+
+  // Setting of Schedule Instance
+  setSchedule = ( schedule ) => {
+
+    this.setState({
+      isInitialDataLoaded: false
+    });
+
+    var state = {};
+    
+    state.creation_type = Validator.isValid( schedule?.creation_type ) ? schedule.creation_type : 'customize';
+
+    state.source_type =  Validator.isValid( schedule?.source_type ) ?  (schedule.source_type) : (Validator.isValid( this.state.source_type ) ? this.state.source_type : null);
+    state.from_date = Validator.isValid( schedule?.valid_from ) ? new Date(schedule.valid_from) : (Validator.isValid( this.state.from_date ) ? this.state.from_date : null);
+    state.to_date = new Date();
+    state.to_date.setHours( state.to_date.getHours() + 9 );
+
+    state.work_day = Validator.isValid( schedule?.work_days ) ? schedule.work_days : [];
+
+    state.schedule_policies =  {
+      allow_late :            ( Validator.isNumeric( schedule.schedule_policies?.allow_late ) ) ? parseInt(schedule.schedule_policies.allow_late) : 0 , 
+      allow_undertime :       ( Validator.isNumeric( schedule.schedule_policies?.allow_undertime ) ) ? parseInt(schedule.schedule_policies.allow_undertime) : 0, 
+      allow_night_diff:       ( Validator.isNumeric( schedule.schedule_policies?.allow_night_diff ) ) ? parseInt(schedule.schedule_policies.allow_night_diff) : 0,
+      allow_special_holiday:  ( Validator.isNumeric( schedule.schedule_policies?.allow_special_holiday ) ) ? parseInt(schedule.schedule_policies.allow_special_holiday) : 0, 
+      allow_legal_holiday:    ( Validator.isNumeric( schedule.schedule_policies?.allow_legal_holiday ) ) ? parseInt(schedule.schedule_policies.allow_legal_holiday) : 0 
+    };
+    
+    state.schedule_type = schedule.schedule_type;
+
+    if( state.schedule_type == 'standard' ){
+      var std_SCHED = [{
+        start_time  :   new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
+        end_time    :   new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
+        break_time  :   new Date("2020-01-01 " +schedule.schedule_details.all.break_time)
+      }];
+      // if( schedule.pov_schedule_details!= null){
+
+      // }
+      state.std_schedule_details =  std_SCHED
+      var stored_std_SCHED = [{
+        start_time  :   new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
+        end_time    :   new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
+        break_time  :   new Date("2020-01-01 " +schedule.schedule_details.all.break_time)
+      }];
+      state.pov_schedule_details =schedule.pov_schedule_details!= null ? [{
+        start_time  :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.start_time), 
+        end_time    :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.end_time), 
+        // break_time  :   new Date("2020-01-01 " +schedule.pov_schedule_details.all.break_time)
+      }]
+      : [{
+        start_time  :   stored_std_SCHED[0].start_time.setSeconds(stored_std_SCHED[0].start_time.getSeconds() + this.state.owner_offset),
+        end_time    :   stored_std_SCHED[0].end_time.setSeconds(stored_std_SCHED[0].end_time.getSeconds() + this.state.owner_offset), 
+        // break_time  :   new Date("2020-01-01 " +schedule.pov_schedule_details.all.break_time)
+      }]
+      ;
+    
+    }else if( state.schedule_type == 'flexible' ){
+      var flex_SCHED = [{
+        start_time        : new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
+        end_time          : new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
+        start_flexy_time  : new Date("2020-01-01 " + schedule.schedule_details.all.start_flexy_time), 
+        end_flexy_time    : new Date("2020-01-01 " + schedule.schedule_details.all.end_flexy_time), 
+        break_time        : new Date("2020-01-01 " + schedule.schedule_details.all.break_time)
+      }];
+     state.flx_schedule_details = flex_SCHED;
+     var stored_flex_SCHED =  [{
+      start_time        : new Date("2020-01-01 " + schedule.schedule_details.all.start_time), 
+      end_time          : new Date("2020-01-01 " + schedule.schedule_details.all.end_time), 
+      start_flexy_time  : new Date("2020-01-01 " + schedule.schedule_details.all.start_flexy_time), 
+      end_flexy_time    : new Date("2020-01-01 " + schedule.schedule_details.all.end_flexy_time), 
+      break_time        : new Date("2020-01-01 " + schedule.schedule_details.all.break_time)
+    }];
+      state.pov_schedule_details =schedule.pov_schedule_details!= null ? [{
+        start_time  :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.start_time), 
+        end_time    :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.end_time), 
+        start_flexy_time  :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.start_flexy_time), 
+        end_flexy_time    :   new Date("2020-01-01 " + schedule.pov_schedule_details.all.end_flexy_time), 
+        // break_time  :   new Date("2020-01-01 " +schedule.pov_schedule_details.all.break_time)
+      }]
+      : [
+        {
+          start_time        :  stored_flex_SCHED[0].start_time.setSeconds(stored_flex_SCHED[0].start_time.getSeconds() + this.state.owner_offset), 
+          end_time          :  stored_flex_SCHED[0].end_time.setSeconds(stored_flex_SCHED[0].end_time.getSeconds() + this.state.owner_offset),
+          start_flexy_time  :  stored_flex_SCHED[0].start_flexy_time.setSeconds(stored_flex_SCHED[0].start_flexy_time.getSeconds() + this.state.owner_offset),
+          end_flexy_time    :  stored_flex_SCHED[0].end_flexy_time.setSeconds(stored_flex_SCHED[0].end_flexy_time.getSeconds() + this.state.owner_offset),
+ 
+        }
+      ]
+      ;
+    
+    }else if( state.schedule_type == 'customize' ){
+      console.log(this.props.instance, schedule);
+      state.cst_schedule_details = [];
+      state.pov_schedule_details = [];
+      var stored_cst_SCHED = [];
+      var index = 0;
+      for (var key in schedule.schedule_details ) {
+        state.cst_schedule_details[index] = {
+          start_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.start_time')), 
+          end_time          :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_time')), 
+          start_flexy_time  :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.start_flexy_time')), 
+          end_flexy_time    :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_flexy_time')), 
+          break_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.break_time')) 
+        }; 
+
+        stored_cst_SCHED[index] = {
+          start_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.start_time')), 
+          end_time          :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_time')), 
+          start_flexy_time  :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.start_flexy_time')), 
+          end_flexy_time    :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.end_flexy_time')), 
+          break_time        :  new Date("2020-01-01 " + eval('schedule.schedule_details.' +key+'.break_time')) 
+        }; 
+        if( schedule?.pov_schedule_details != undefined ) {
+          state.pov_schedule_details[index] = {
+            start_time: 		new Date("2020-01-01 " + eval('schedule.pov_schedule_details.' +key+'.start_time')), 
+            end_time : 			new Date("2020-01-01 " + eval('schedule.pov_schedule_details.' +key+'.end_time')), 
+            start_flexy_time: 	new Date("2020-01-01 " + eval('schedule.pov_schedule_details.' +key+'.start_flexy_time')), 
+            end_flexy_time : 	new Date("2020-01-01 " + eval('schedule.pov_schedule_details.' +key+'.end_flexy_time')), 
+            // break_time: 		new Date("2020-01-01 " + eval('schedule.pov_schedule_details.' +key+'.break_time')) 
+          }; 
+        }
+        else if(this.state.owner_offset != 0){
+          state.pov_schedule_details[index] = {
+            start_time        :   stored_cst_SCHED[index].start_time.setSeconds( stored_cst_SCHED[index].start_time.getSeconds() + this.state.owner_offset), 
+            end_time          :   stored_cst_SCHED[index].end_time.setSeconds( stored_cst_SCHED[index].end_time.getSeconds() + this.state.owner_offset),
+            start_flexy_time  :   stored_cst_SCHED[index].start_flexy_time.setSeconds( stored_cst_SCHED[index].start_flexy_time.getSeconds() + this.state.owner_offset),
+            end_flexy_time    :   stored_cst_SCHED[index].end_flexy_time.setSeconds( stored_cst_SCHED[index].end_flexy_time.getSeconds() + this.state.owner_offset),
+            // break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) 
+          }; 
+        }
+        index++;
+        console.log(state, state.pov_schedule_details);
+      }
+      // state.pov_schedule_details = [];
+      // index = 0;
+      // if( this.props.instance?.schedule?.pov_schedule_details != undefined ) {
+      //   for (var key in this.props.instance.schedule.pov_schedule_details) {
+      //     state.pov_schedule_details[index] = {
+      //       start_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_time')), 
+      //       end_time : 			new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_time')), 
+      //       start_flexy_time: 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_flexy_time')), 
+      //       end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_flexy_time')), 
+      //       // break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) 
+      //     }; 
+      //     index++;
+      //   }
+      // }
+      // else{
+      //   for  (var key in schedule.schedule_details ) {
+      //     state.pov_schedule_details[index] = {
+      //       start_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_time')), 
+      //       end_time : 			new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_time')), 
+      //       start_flexy_time: 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.start_flexy_time')), 
+      //       end_flexy_time : 	new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.end_flexy_time')), 
+      //       // break_time: 		new Date("2020-01-01 " + eval('this.props.instance.schedule.pov_schedule_details.' +key+'.break_time')) 
+      //     }; 
+      //     index++;
+      //   }
+      // }
+    }
+
+
+    state.isInitialDataLoaded = true;
+
+    this.setState(state);
+  }
+
+  componentWillMount(){
+    console.log(this.props.params);
+    console.log(this.props.params.schedule_id);
+    this.props.getUserInfo( this.props.params.user_id );
+    this.props.getScheduleInfo(this.state.bind_to, this.props.params.user_id,this.props.params.schedule_id );
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+
+    // Detect if there's a change for the default schedule properties. Trigger the setting of Schedule if changed.
+    if (nextProps.default_schedule !== this.props.default_schedule &&
+        nextProps.page_reloaded == true) {
+          this.setSchedule( nextProps.default_schedule );
+    }
+    const   viewer_offset = this.props.user?.user_offset_seconds != undefined ? this.props.user.user_offset_seconds : null;
+    const   viewed_offset = this.props.user_info?.user_offset_seconds != undefined ? this.props.user_info.user_offset_seconds : null;
+    const   owner_offset = viewed_offset != null ? viewed_offset - viewer_offset : null;
+    // Detect if there's a change for the template list properties. Set the update template list state if changed.
+    if (nextProps.template_list !== this.props.template_list) {
+          this.setState({
+            templateList: nextProps.template_list,
+            owner_offset:  owner_offset
+          });
+    }
+
+    // Detect if there's a change for the template data properties. Trigger the setting of Schedule base on the Template if changed.
+    if (nextProps.template_data !== this.props.template_data) {
+        this.setSchedule({
+          work_days :  nextProps.template_data.work_days,
+          schedule_policies :  nextProps.template_data.schedule_policies,
+          schedule_details :  nextProps.template_data.schedule_details,
+          schedule_type :  nextProps.template_data.schedule_type,
+          creation_type : 'template'
+        });
+    }
+
+
+    
+  }
+
+  render = () => {
+
+    const method = (this.props.user.id==this.props.params.user_id) ? 'store' : 'approval';
+    const   viewer_offset = this.props.user?.user_offset_seconds != undefined ? this.props.user.user_offset_seconds : null;
+    const   viewed_offset = this.props.user_info?.user_offset_seconds != undefined ? this.props.user_info.user_offset_seconds : null;
+    const   owner_offset = viewed_offset != null ? viewed_offset - viewer_offset : null;
+    // this.setState("owner_offset", owner_offset);
+    const pov_timezone_info =  this.props.user_info?.pov_timezone != undefined ? this.props.user_info?.pov_timezone : null;
+    return ( this.state.isInitialDataLoaded ) ? 
+          <Wrapper {...this.props} >
+            <ContainerWrapper>
+            <ContainerBody>
+            {/* <BackButton {...this.props} /> */}
+            <Content col="12" title="Schedule Details" subtitle={<RequestSubtitle method={method} user={this.props.user_info} />} >
+              <Formik 
+                enableReinitialize
+                onSubmit={this.onSubmitHandler} 
+                validationSchema={validationSchema} 
+                initialValues={{
+                  bind_to: this.state.bind_to, 
+                  bind_id: this.state.bind_id,
+                  sorted_weekday:['mon','tue','wed','thu','fri','sat','sun'],
+                  wd:{mon:{index:null},tue:{index:null},wed:{index:null},thu:{index:null},fri:{index:null},sat:{index:null},sun:{index:null}},
+                  from : this.state.from_date,
+                  to : this.state.to_date,
+                  std_schedule_details: this.state.std_schedule_details,
+                  flx_schedule_details: this.state.flx_schedule_details,
+                  cst_schedule_details: this.state.cst_schedule_details, 
+                  pov_schedule_details: this.state.pov_schedule_details, 
+                  creation_type : this.state.creation_type,
+                  source_type: 'default',
+                  schedule_policies : this.state.schedule_policies,
+                  schedule_type : this.state.schedule_type,
+                  work_days: this.state.work_day ,
+                  source_type : this.state.source_type
+              }}>{({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                <form onSubmit={handleSubmit}> 
+              <Col sm={7}>
+                <div>
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h4>
+                      Source Type
+                    </h4>
+                  </div>
+                  <div className="body">
+                    <label>          
+                      <input 
+                        type="radio"
+                        checked={values.source_type === "default"}
+                        disabled
+                      
+                      /> 
+                    Default &nbsp;</label>
+                    <label>
+                      <input 
+                        type="radio"
+                        checked={values.source_type === "temporary"}
+                        disabled
+                      /> 
+                    Temporary &nbsp;</label>
+
+                    <label>
+                      <input 
+                        type="radio"
+                        checked={values.source_type === "change_schedule"}
+                        disabled
+                      /> 
+                    Change Schedule &nbsp;</label>
+          
+                    <Form.Control.Feedback type="invalid">
+                      &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
+                      </Form.Control.Feedback>
+                  </div>
+                  </Form.Group>
+                </div>
+              </Col>
+              <Col sm={7}>
+                <div>
+                <Form.Group className="white_bg">
+                <div className="header">
+                  <h4>
+                      Schedule Scope
+                  </h4>
+                </div>
+                <div className="body">
+                  <Form.Row>
+                    <Col sm={4}>
+                    <Form.Label>Date From :</Form.Label>
+                      <DatePicker 
+                        className="form-control"
+                        timeIntervals={60}
+                        timeCaption="Time"
+                        dateFormat="MMMM d, yyyy"
+                        timeFormat="MMMM d, yyyy"
+                        disabled
+                        selected={values.from}              
+                      
+                      />           
+                      <Form.Control.Feedback type="invalid">
+                        &nbsp;<ErrorMessage component="div" name="from" className="input-feedback" />
+                      </Form.Control.Feedback>
+                      </Col>
+                      { values.source_type === 'temporary' ? (
+                      <Col sm={4}>
+                      <Form.Label>Date To :</Form.Label>
+                        <DatePicker 
+                          className="form-control"
+                          timeIntervals={60}
+                          timeCaption="Time"
+                          dateFormat="MMMM d, yyyy"
+                          timeFormat="MMMM d, yyyy"
+                          disabled
+                          selected={values.to}              
+                         
+                        />           
+                        <Form.Control.Feedback type="invalid">
+                          &nbsp;<ErrorMessage component="div" name="to" className="input-feedback" />
+                        </Form.Control.Feedback>
+                      </Col>
+                      ) : null}
+                    </Form.Row>
+                    </div>
+                  </Form.Group>
+                </div>
+              </Col>    
+                    
+              <Col sm={7}>
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h4>
+                      Holiday Policy
+                    </h4>
+                  </div>
+                  <div className="body">
+                    <ScheduleHolidayPolicy isDisabled={true}/> 
+                  </div>
+                </Form.Group>
+              </Col>    
+              <Col sm={7}>
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h4>
+                      Schedule Policy
+                    </h4>
+                  </div>
+                  <div className="body">
+                    <SchedulePolicy isDisabled={true}/> 
+                  </div>
+                </Form.Group>
+              </Col>
+              <Col sm={7}>
+              <Form.Group className="white_bg">
+                <div className="header">
+                  <h4>
+                    Schedule Type
+                  </h4>
+                </div>
+                <div className="body">
+                  <FieldArray name="std_schedule_details" render={arrayHelpers => (
+                    <label>          
+                      <input 
+                        type="radio"
+                        name="schedule_type"
+                        disabled
+                        checked={values.schedule_type === "standard"}
+                       
+                      /> 
+                    Standard &nbsp;</label>
+                  )}/>
+                  <FieldArray name="flx_schedule_details" render={arrayHelpers => (
+                    <label>
+                      <input 
+                        type="radio"
+                        name="schedule_type"
+                        disabled
+                        checked={values.schedule_type === "flexible"}
+                       
+                      /> 
+                    Flexible &nbsp;</label>
+                    )}
+                    />
+                    <FieldArray name="cst_schedule_details" render={arrayHelpers => (
+                    <label>
+                      <input 
+                        type="radio"
+                        name="schedule_type"
+                        disabled
+                        checked={values.schedule_type === "customize"}
+                      
+                      /> 
+                    Customize &nbsp;</label>      
+                  )}
+                  />  
+                  {/* <FieldArray name="std_schedule_details" render={arrayHelpers => (
+                    <label>          
+                      <input 
+                        type="radio"
+                        name="schedule_type"
+                        checked={values.schedule_type === "empty"}
+                        onChange={() => {
+                          setFieldValue('std_schedule_details', []);
+                          setFieldValue('pov_schedule_details', []);
+                          arrayHelpers.insert(0,{break_time : "",start_time : "",end_time : ""})
+                          setFieldValue('schedule_type', 'empty')
+                        }}
+                      /> 
+                    Empty &nbsp;</label>
+                  )}/> */}
+                  <Form.Control.Feedback type="invalid">
+                  &nbsp;{errors.schedule_type && touched.schedule_type && errors.schedule_type}
+                  </Form.Control.Feedback>
+                </div>
+                </Form.Group>
+              </Col>
+              <Col sm={7} >
+                <Form.Group className="white_bg">
+                  <div className="header">
+                    <h4>
+                      Work Days
+                    </h4>
+                  </div>
+                  <div className="body">
+                    <WorkDays isDisabled={true}/>
+                  </div>
+                </Form.Group>
+              </Col>
+              <Row size = "6">
+              <Col sm={7}>
+											<Button className="toggle-outlook"
+												onClick={() => this.setState({
+													open_contrast: !this.state.open_contrast
+												})}
+												// aria-controls="example-collapse-text"
+												// aria-expanded={open}
+											>
+												Toggle Outlook <i className="fa  fa-eye" />
+											</Button>
+
+                    <div className="header_pov">
+                      <h6 >{this.props.user.pov_timezone} 	<i className="fa  fa-arrow-right" />   {pov_timezone_info}</h6>
+                    </div>
+											</Col>
+										
+              </Row>
+              { values.schedule_type  === '' ? (
+                null
+              ) : values.schedule_type  === 'standard' ? ( 
+              <Col sm={7} >
+                <Form.Group className="white_bg">
+                  <div className="header">
+                      <h4>
+                        Standard Schedule
+                      </h4>
+                  </div>
+                  <div className="body">
+                    <StandardSchedDetailsFormWithTimezone
+                    offset_data={owner_offset}
+                    // show_pov = {true}
+                    open_contrast = {this.state.open_contrast}
+                    pov_timezone_info = {pov_timezone_info}
+                />
+                  </div>
+                </Form.Group>
+              </Col>
+              ) : values.schedule_type=== 'flexible' ? (
+              <Col sm={7} >
+                <Form.Group className="white_bg">
+                  <div className="header">
+                      <h4>
+                        Flexible Schedule
+                      </h4>
+                  </div>
+                  <div className="body">
+                    {/* <FlexibleSchedDetailsForm/> */}
+                    < FlexibleSchedDetailsFormWithTimezone
+                    isDisabled={true}
+                      offset_data={owner_offset}
+                      // show_pov = {true}
+                      open_contrast = {this.state.open_contrast}
+                      pov_timezone_info = {pov_timezone_info}
+                    />
+                  </div>
+                </Form.Group>
+              </Col>
+              ): values.schedule_type === 'customize' ? (
+                  <Col sm={7} >
+                    <Form.Group className="white_bg">
+                    <div className="header">
+                      <h4>
+                        Customize Schedule
+                      </h4>
+                    </div>
+                    <div className="body">
+                      {values.sorted_weekday.map((day, index) => {
+                            if(values.work_days.includes(day)==true){
+                            return <ScheduledetailsWithTimezone day={day} index={values.work_days.indexOf(day)} 
+                            offset_data={owner_offset}
+                            show_pov = {true}
+                            open_contrast = {this.state.open_contrast}
+													pov_timezone_info = {pov_timezone_info}/>
+                            }
+                      })}
+                    </div>
+                    </Form.Group>
+                  </Col>
+              ) : null}
+
+            </form>
+            )}
+          </Formik>
+          </Content>
+
+           </ContainerBody>
+          </ContainerWrapper>
+        </Wrapper>
+        :
+        <PageLoading/>;;
+   
+  }
+}
+
+
+// Object for Data Validation
+const required_field = "This field is required"
+
+const validation_var = Yup.string().required(required_field).nullable();
+
+
+
+const validationSchema = Yup.object().shape({
+
+  from: Yup.date().nullable().when('source_type', {
+    is: 'temporary',
+    then:   Yup.date().nullable()
+  }),
+  to: Yup.date().nullable().when('source_type', {
+        is: 'temporary',
+        then:   Yup.date()
+        .required("end time cannot be empty")
+        .test("is-equal-greater", "End time should be greater", function(value) {
+          var { from } = this.parent;
+          return moment( moment( value).format("YYYY-MM-DD") ).isSameOrAfter(moment( from).format("YYYY-MM-DD")) ;
+        })
+  }),
+
+  schedule_type: Yup
+    .string()
+    .min(3)
+    .max(255)
+    .required('Please Select Schedule Type'),
+  std_schedule_details: Yup.array().when('schedule_type', {
+        is: 'standard',
+        then:   Yup.array().of(
+        Yup.object().shape({
+          start_time: validation_var,
+          end_time: validation_var,
+          break_time: validation_var,
+        }))
+  }),
+  flx_schedule_details: Yup.array().when('schedule_type', {
+        is: 'flexible',
+        then:   Yup.array().of(
+        Yup.object().shape({
+         start_time: validation_var,
+          end_time: validation_var,
+          start_flexy_time: validation_var,
+          end_flexy_time: validation_var,
+          break_time: validation_var,
+        }))
+  }),
+  cst_schedule_details: Yup.array().when('schedule_type', {
+        is: 'customize',
+        then:   Yup.array().of(
+        Yup.object().shape({
+         start_time: validation_var,
+          end_time: validation_var,
+          start_flexy_time: validation_var,
+          end_flexy_time: validation_var,
+          break_time: validation_var,
+        }))
+  })
+});
+
+
+
+
+const mapStateToProps = (state) => {
+    return {
+        page_reloaded: state.schedule.isScheduleLoaded,
+        template_list : state.schedule.templateList,
+        default_schedule : state.schedule.defaultSchedule,
+        template_data : state.schedule.templateData,
+        user_info : state.schedule.userInfo,
+
+        
+    }
+  }
+  const mapDispatchToProps = (dispatch) => {
+    return {
+      listTemplate : () => dispatch( listTemplate() ),
+      getUserInfo : (id) => dispatch( getUserInfo(id) ),
+      scheduleAssign : (post_data) => dispatch( scheduleAssign(post_data) ),
+      getScheduleInfo : (bind_to, bind_id,schedule_id) => dispatch( getScheduleInfo(bind_to, bind_id,schedule_id) ),
+      getTemplateSchedule : (template_id,type) => dispatch( getTemplateSchedule(template_id,type) ),
+    }
+  }
+
+export default connect(mapStateToProps, mapDispatchToProps)(ScheduleInfo);

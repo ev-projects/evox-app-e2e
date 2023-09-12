@@ -103,6 +103,10 @@ class Formatter {
    * return | String
   */
   slug_to_title( slug ) {
+
+    if(slug == "alter_log_punche"){
+      slug =  "alter_log_punch"
+    }
     return slug.replace(/_/g, ' ')
               .replace(/\w\S*/g,
                 function(txt) {

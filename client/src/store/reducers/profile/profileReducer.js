@@ -15,7 +15,8 @@ const initState = {
     week_list:[],
     dates:[],
     scope:"week",
-    emp_sched:[]
+    emp_sched:[],
+    schedule_history: [],
 }
 
 const profileReducer = (state = initState, action) => {
@@ -67,6 +68,14 @@ const profileReducer = (state = initState, action) => {
             return {
                 ...state,
                 schedule: action.schedule
+            }
+            break;
+        /**  */
+
+        case "FETCH_SCHEDULE_HISTORY":
+            return {
+                ...state,
+                schedule_history: action.schedule_history
             }
             break;
         /**  */

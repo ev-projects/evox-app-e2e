@@ -190,7 +190,7 @@ class ReportRepository implements ReportRepositoryInterface{
     }
 
     /**
-     *  Responsible for fetching all the team attendance summary.
+     *  Responsible for fetching all the team attendance summary for UI.
      * @param Carbon $current_time
      * @return array
      */
@@ -209,7 +209,7 @@ class ReportRepository implements ReportRepositoryInterface{
         }
     }
      /**
-     *  Responsible for fetching all the team attendance summary.
+     *  Responsible for fetching all the team attendance summary for export.
      * @param Carbon $current_time
      * @return array
      */

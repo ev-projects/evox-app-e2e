@@ -17,6 +17,9 @@ use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
 use App\Modules\Request\Repositories\RequestRepository;
 use App\Modules\Request\Repositories\RequestRepositoryInterface;
 
+use App\Modules\Request\Repositories\AlterLogPunchRepository;
+use App\Modules\Request\Repositories\AlterLogPunchRepositoryInterface;
+
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +47,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->app->bind( ChangeScheduleRepositoryInterface::class, ChangeScheduleRepository::class );
         $this->app->bind( RestDayWorkRepositoryInterface::class, RestDayWorkRepository::class );
         $this->app->bind( RequestRepositoryInterface::class, RequestRepository::class );
+        $this->app->bind( AlterLogPunchRepositoryInterface::class, AlterLogPunchRepository::class );
         // $this->app->bind( OvertimeRepositoryInterface::class, OvertimeRepository::class );
         // $this->app->bind( OvertimeRepositoryInterface::class, OvertimeRepository::class );
         // $this->app->bind( OvertimeRepositoryInterface::class, OvertimeRepository::class );

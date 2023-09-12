@@ -41,6 +41,8 @@ use App\Modules\User\Resources\UserListResourceCollection;
 use App\Modules\User\Resources\PersonalInformationResource;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Schedule\Repositories\ScheduleRepository;
+use App\Modules\Schedule\Resources\ScheduleResourceCollection;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
 use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
@@ -51,18 +53,21 @@ class UserController extends Controller
     protected $dtr;
     protected $bhr;
     protected $email;
+    protected $schedule;
     protected $dpa_list_export;
 
     public function __construct(UserRepositoryInterface $user, 
                                 DtrRepositoryInterface $dtr, 
                                 BhrRepositoryInterface $bhr,
                                 DpaListExport $dpa_list_export,
-                                EmailRepositoryInterface $email){
+                                EmailRepositoryInterface $email,
+                                ScheduleRepository $schedule){
         $this->user = $user;
         $this->dtr = $dtr;
         $this->bhr = $bhr;
         $this->dpa_list_export = $dpa_list_export;
         $this->email = $email;
+        $this->schedule = $schedule;
     }
 
     /**
@@ -220,6 +225,32 @@ class UserController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
+    public function schedule_history( $id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+
+            $schedule_history = $this->schedule->list( $id );
+            
+           
+            return success_response(
+                trans('messages.show_default_schedule'), 
+                new ScheduleResourceCollection($schedule_history ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    /**
+     * Returns the Default Schedule of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function default_schedule( $id ){   
         try {
             
@@ -234,6 +265,33 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_default_schedule'), 
                 new ScheduleResource( $user->defaultSchedule()->first() ) 
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+     /**
+     * Returns the Default Schedule of the User by the User ID
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function schedule_info( $id, $schedule_id ){   
+        try {
+            
+            $this->validate(new Request([
+                'id' => $id,
+                'schedule_id' => $schedule_id
+            ]), [
+                'id' => 'int',
+                'schedule_id' =>  'int'
+            ]);
+
+            $user = $this->user->show( $id );
+
+            return success_response(
+                trans('messages.show_default_schedule'), 
+                new ScheduleResource( $user->Schedule_Find($schedule_id)->first() ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

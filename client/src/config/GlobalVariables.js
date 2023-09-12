@@ -19,7 +19,8 @@
 
     // Employee Links
     dtr                             :  "/app/dtr/",
-    dtr_punch_history                     :  "/app/punch_history/",
+    dtr_punchlist                   :  "/app/dtr_punch_list/",
+    dtr_punch_history               :  "/app/punch_history/",
     dtr_logs                        :  "/app/dtr_logs/",
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
@@ -34,6 +35,7 @@
     rest_day_work                   :  "/app/request/RestDayWork/",
     work_from_home                  :  "/app/request/WorkFromHome/",
     coe                             :  "/app/request/CertificateOfEmployment/",
+    alter_log_punch                 :  "/app/request/AlterLogPunch/",
 
     // Team Links
     manage_teams                    :  "/app/team/Manage",
@@ -60,6 +62,7 @@
     template_add                    :  "/app/schedule/",
     template_list                   :  "/app/schedule/template/",
     schedule_assign_department      :  "/app/schedule/assign/department",
+    schedule_assign_user            :  "/app/schedule/assign/user/",
     schedule_assign_user            :  "/app/schedule/assign/user/",
 
     // Report Links

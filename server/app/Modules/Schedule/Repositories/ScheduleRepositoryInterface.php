@@ -14,6 +14,8 @@ interface ScheduleRepositoryInterface
     public function destroy( $id );
 
     public function show( $id );
+    
+    public function list( $id );
 
     public function assign( array $data );
     

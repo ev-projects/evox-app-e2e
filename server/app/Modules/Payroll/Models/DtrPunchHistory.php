@@ -10,6 +10,7 @@ class DtrPunchHistory extends Model
 
     protected $table = 'dtr_collective_punch_history';
     protected $guarded = [];
+    
 
 
 }
