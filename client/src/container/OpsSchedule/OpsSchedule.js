@@ -36,6 +36,7 @@ class OpsSchedule extends Component {
 						<div className="col-11 card-body">
 							<div className="h3">{schedules.department} Services</div>
 							<p>{schedules.description}</p>
+							{(schedules.type === "image") ? <img src={schedules.image} width="100%" /> :
 							<table width="100%" cellpadding="5" border="1">
 								<thead>
 									<tr>
@@ -63,7 +64,7 @@ class OpsSchedule extends Component {
 									</tr>;
 								})}
 								</tbody>
-							</table>
+							</table>}
 						</div>
 					</div>;
 				})}

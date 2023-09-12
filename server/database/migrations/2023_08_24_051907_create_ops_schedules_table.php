@@ -16,15 +16,18 @@ class CreateOpsSchedulesTable extends Migration
         Schema::create('ops_schedules', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('department_id');
-            $table->string('name');
-            $table->string('position');
-            $table->string('email');
+            $table->string('type');
+            $table->integer('is_active')->default(0);
+            $table->string('path')->nullable();
+            $table->string('name')->nullable();
+            $table->string('position')->nullable();
+            $table->string('email')->nullable();
             $table->string('domain')->nullable();
             $table->string('scope')->nullable();
-            $table->string('work_days');
-            $table->integer('start_time');
-            $table->integer('end_time');
-            $table->string('timezone');
+            $table->string('work_days')->nullable();
+            $table->integer('start_time')->nullable();
+            $table->integer('end_time')->nullable();
+            $table->string('timezone')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
