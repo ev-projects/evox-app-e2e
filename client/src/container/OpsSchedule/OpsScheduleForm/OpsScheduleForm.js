@@ -139,7 +139,7 @@ class OpsScheduleForm extends Component {
             <ContainerWrapper>
               <ContainerBody>
                 <Content col="6"  title={title} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
-                  <Row>
+                  {/* <Row>
                     <Col size="6">
                       <Form.Group className="white_bg double-column-padding">
                         <FieldArray render={arrayHelpers => (
@@ -173,7 +173,7 @@ class OpsScheduleForm extends Component {
                         )}/>
                       </Form.Group>
                     </Col>
-                  </Row>
+                  </Row> */}
                   <Row>  
                     <Col size="4"> 
                       <div className="form-group">
@@ -295,41 +295,41 @@ class OpsScheduleForm extends Component {
                   }
 
                   {(type != null && type === "image") ? 
-                  <div id="image-upload-area">
-                    <Row>  
-                      <Col size="6">
-                        <div className="form-group">
-                          <label>Choose an image: </label>
-                          <input type="file" id="img-to-upload" accept="image/*" onChange={(event) => {
-                              if (event.currentTarget.files.length !== 0) {
-                                console.log(222, event.currentTarget.files);
-                                  this.setState({ thumbnail: event.currentTarget.files[0] })
-                                  this.setState({ imgPrevInputFile: URL.createObjectURL(event.currentTarget.files[0]) })
-                                  if(method == 'update'){
-                                    this.setState({ inputFileWasUpdated: true })
-                                    this.setState({ inputFileWasDeleted: false })
-                                  }
-                              }
-                          }} />
-                          <div className="thumbnail-image">
-                              {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg')
-                                  ? 
-                                  <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
-                                // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
-                                  : 
-                                <>
+                  <Row>  
+                    <Col size="6">
+                      <div className="form-group">
+                        <label className="dep-announcement-required">Choose an image: </label>
+                        <input type="file" name="file" id="img-to-upload" accept="image/*" onChange={(event) => {
+                            if (event.currentTarget.files.length !== 0) {
+                                this.setState({ thumbnail: event.currentTarget.files[0] })
+                                this.setState({ imgPrevInputFile: URL.createObjectURL(event.currentTarget.files[0]) })
+                                if(method == 'update'){
+                                  this.setState({ inputFileWasUpdated: true })
+                                  this.setState({ inputFileWasDeleted: false })
+                                }
+                            }
+                        }} />
+                        <div className="thumbnail-image">
+                            {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg')
+                                ? 
+                                <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
+                              // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
+                                : 
+                              <>
 
-                                {this.state.thumbnail == null ? 
-                                  <div><label htmlFor="img-to-upload" className="upload-imagealter">UPLOAD AN IMAGE <i class="fa fa-image" aria-hidden="true"/> </label></div> 
-                                  : <>
-                                  <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} /></>
-                                }</>
-                              }
-                          </div>
+                              {this.state.thumbnail == null ? 
+                                <div><label htmlFor="img-to-upload" className="upload-imagealter">UPLOAD AN IMAGE <i class="fa fa-image" aria-hidden="true"/> </label></div> 
+                                : <>
+                                <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} /></>
+                              }</>
+                            }
                         </div>
-                      </Col>
-                    </Row>
-                  </div> : <></>
+                        <Form.Control.Feedback type="invalid">
+                            <ErrorMessage component="div" name="file" className="input-feedback" />
+                        </Form.Control.Feedback>
+                      </div>
+                    </Col>
+                  </Row> : <></>
                   }
 
                   <RequestButtons method={method} {...this} />
