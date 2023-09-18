@@ -77,8 +77,13 @@ class DPAFormIndia extends Component {
                     <ReactGoogleSlides
                       width={"100%"}
                       height={540}
-                      slidesLink="https://docs.google.com/presentation/d/1vM61z8DLcJ8anfs3krQEHNGrtEE2-lR0/edit?usp=sharing&ouid=117493291069253670001&rtpof=true&sd=true"
+                      //old link
+                      // slidesLink="https://docs.google.com/presentation/d/1vM61z8DLcJ8anfs3krQEHNGrtEE2-lR0/edit?usp=sharing&ouid=117493291069253670001&rtpof=true&sd=true"
                   
+
+                      //new
+                      slidesLink="https://docs.google.com/presentation/d/1RkTgDxzDup7muLYdigHDVJhPOYEobyAf/edit?usp=sharing&ouid=110230619843845605120&rtpof=true&sd=true"
+
                       position={1}
                       showControls
                       loop
