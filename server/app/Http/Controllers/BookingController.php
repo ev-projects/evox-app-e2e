@@ -112,7 +112,7 @@ class BookingController extends Controller
       
             Mail::send('mail', $array1  , function ($message)
             {
-                $message->to('helpdesk@eastvantage.com', 'HelpDesk')
+                $message->to('lakshman001.be@gmail.com', 'HelpDesk')
                     ->subject('Request for IT Requirement for Meeting Room');
                 $message->from('evox@eastvantage.com', 'Evox');
             });
@@ -289,7 +289,7 @@ class BookingController extends Controller
                   
                         Mail::send('mail', $array1  , function ($message)
                         {
-                            $message->to('helpdesk@eastvantage.com', 'HelpDesk')
+                            $message->to('lakshman001.be@gmail.com', 'HelpDesk')
                                 ->subject('Request for IT Requirement for Meeting Room');
                             $message->from('evox@eastvantage.com', 'Evox');
                         });
@@ -456,7 +456,7 @@ class BookingController extends Controller
       
             Mail::send('mail', $array1  , function ($message)
             {
-                $message->to('helpdesk@eastvantage.com', 'HelpDesk')
+                $message->to('lakshman001.be@gmail.com', 'HelpDesk')
                     ->subject('Test.');
                 $message->from('evox@eastvantage.com', 'Evox');
             });
