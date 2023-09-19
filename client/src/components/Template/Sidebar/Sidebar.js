@@ -178,7 +178,7 @@ const Sidebar = (props) => {
               )}
 
                {/* IT Requirement Notification List  */}
-                  {/* {
+                  {
                     user.department_id === 28 &&
                     <li className="nav-item">
                     <Link className="nav-link" to={global.links.requirement_list}>
@@ -186,12 +186,12 @@ const Sidebar = (props) => {
                       <p>IT Requirement List</p>
                     </Link>
                   </li>
-                  } */}
+                  }
 
 
                   {/* Meeting Room  */}
 
-              {/* <li className="nav-item has-treeview ">
+              <li className="nav-item has-treeview ">
                 <a className="nav-link nav-link-main">
                   <i className="nav-icon fa fa-calendar" />
                   <p>
@@ -274,7 +274,7 @@ const Sidebar = (props) => {
                     </li>
                   )}
                 </ul>
-              </li> */}
+              </li>
 
               {/* <li className="nav-item">
                     <Link
