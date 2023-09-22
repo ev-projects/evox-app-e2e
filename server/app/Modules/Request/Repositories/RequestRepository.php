@@ -108,6 +108,13 @@ class RequestRepository implements RequestRepositoryInterface{
                     '.$id_filter.'
                     '.$change_sched_date.'
                     '.$filter_department.'
+                    '.$filter_name.'
+                    UNION  ALL
+                    SELECT status FROM alter_log_punches 
+                        LEFT JOIN users ON users.id = alter_log_punches.user_id
+                    '.$id_filter.'
+                    '.$date_filter.'
+                    '.$filter_department.'
                     '.$filter_name.'';
         
                 }elseif($data->request_type=='alteration'){
@@ -136,6 +143,13 @@ class RequestRepository implements RequestRepositoryInterface{
                     LEFT JOIN users ON users.id = change_schedules.user_id
                     '.$id_filter.'
                     '.$change_sched_date.'
+                    '.$filter_department.'
+                    '.$filter_name.'';
+                }elseif($data->request_type=='alter_logs_punches'){
+                    $filter ='SELECT status FROM alter_log_punches 
+                    LEFT JOIN users ON users.id = alter_log_punches.user_id
+                    '.$id_filter.'
+                    '.$date_filter.'
                     '.$filter_department.'
                     '.$filter_name.'';
                 }

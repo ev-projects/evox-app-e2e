@@ -16,16 +16,19 @@ import EmailNotFound from "../container/EmailNotFound";
 import Dashboard from "../container/Dashboard";
 import TemplateCreate from "../container/Schedule/TemplateCreate";
 import ScheduleAssign from "../container/Schedule/ScheduleAssign";
+import ScheduleInfo from "../container/Schedule/ScheduleInfo";
 import TemplateEdit from "../container/Schedule/TemplateEdit";
 import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
-import DtrPunchHistory from "../container/DtrPunchHistory";
+import DailyTimeRecordPuncher from "../container/DailyTimeRecordPuncher";
+import DtrPunch from "../container/DtrPunch";
 import EVLearning from "../container/EVLearning/EVLearning";
 import OpsSchedule from "../container/OpsSchedule/";
 
 // Requests
 import AlterLog from "../container/Request/AlterLog";
+import AlterLogPunch from "../container/Request/AlterLogPunch";
 import ChangeSchedule from "../container/Request/ChangeSchedule";
 import Overtime from "../container/Request/Overtime";
 import RestDayWork from "../container/Request/RestDayWork";
@@ -125,8 +128,12 @@ const RoutesList = (props) => {
           <DailyTimeRecord role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.dtr_punch_history+":id"} >
-          <DtrPunchHistory role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        <ProtectedRoute exact path={global.links.dtr_punchlist+":id"} >
+          <DailyTimeRecordPuncher role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_punch_history} >
+          <DtrPunch role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
         
 
@@ -184,6 +191,10 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.alter_log+":id?"}>
           <AlterLog onApproval={false} role={['employee']} permission={['employee_access']}/>
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.alter_log_punch+":id?"}>
+          <AlterLogPunch onApproval={false} role={['employee']} permission={['employee_access']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.change_schedule+":id?"}>
@@ -271,6 +282,10 @@ const RoutesList = (props) => {
 
         <ProtectedRoute path={global.links.schedule_assign_user+":user_id"} >
           <ScheduleAssign role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute path={global.links.profile+":user_id"+"/schedule/"+":schedule_id"} >
+          <ScheduleInfo  role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.schedule_assign_department} >

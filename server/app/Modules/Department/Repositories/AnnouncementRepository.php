@@ -61,7 +61,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             }
          
         }   
-        // dd($dep_ids,$request->all());
+      
         DB::beginTransaction();
         try {
             
@@ -170,6 +170,14 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
             $department =  Department::find(Auth::user()->department_id);
             // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
+
+            $exist_announcement = Announcement::find($id);
+
+            if( $exist_announcement){
+                if( $exist_announcement->set_all == 1){
+                    return  $exist_announcement;
+                }
+            }
             $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
         return  $dep_announcement;
     }
@@ -242,8 +250,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 if(is_valid($dep_ids)){
                     
                     
-                    //                 dd($collection_todelete);
-                    // Announcement::forceDelete($collection_todelete->toArray());
+        
                     
                 $dep_ids = array_diff($dep_ids,  [auth()->user()->department_id]);
                 foreach( $dep_ids as $dep_id){

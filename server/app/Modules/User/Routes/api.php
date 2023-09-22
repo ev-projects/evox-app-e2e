@@ -83,6 +83,15 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 
     # Gets the Default Schedule of the User indicated.
     Route::get('default_schedule', 'UserController@default_schedule');//->middleware('auth.apikey');
+
+     # Gets the Default Schedule of the User indicated.
+     Route::get('schedule/{schedule_id}', 'UserController@schedule_info');
+
+    # Gets the Default Schedule of the User indicated.
+    Route::get('schedule_history', 'UserController@schedule_history');
+
+     # Gets the Default Schedule of the User indicated.
+     Route::get('schedule_history', 'UserController@schedule_history');//->middleware('auth.apikey');
     
     # Gets the Temporary Schedules of the User indicated.
     Route::get('temporary_schedules', 'UserController@temporary_schedules');//->middleware('auth.apikey');

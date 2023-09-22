@@ -8,7 +8,7 @@ use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Models\PayrollCutoff;
 use App\Modules\Schedule\Models\Schedule;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,7 +24,6 @@ use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\WorkFromHome;
-use DB;
 use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
 use Auth;
@@ -203,6 +202,23 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+     # Fetch  all of the User's Schedule 
+     public function AllSchedules(){
+          return $this->hasMany(Schedule::class, 'bind_id', 'id');
+    }
+
+    public function Schedule_Find($schedule_id){
+        return $this->hasOne(Schedule::class, 'bind_id', 'id')->where([
+            'bind_to' => 'user',
+            'id' => $schedule_id
+        ]);
+
+        // return Schedule::where([
+        //     'bind_to' => 'user',
+        //     'user_id'=> $this->id,
+        //     'id' => $schedule_id
+        // ]);
+    }
 
     # Fetch the User's Schedule (Source type is Default)
     public function defaultSchedule(){
@@ -305,17 +321,68 @@ class User extends Authenticatable implements JWTSubject
 
             # If the Start and End Date is valid, fetch the DTR between the Date Range.
             if( is_valid( $start_date ) && is_valid( $end_date ) ){
-                return $this->hasMany(DtrPunchHistory::class)->whereBetween('date', [$start_date, $end_date]);
+                return $this->hasMany(DtrPunchHistory::class)->whereBetween('date', [$start_date, $end_date])
+                ->where('is_active','=','1');
     
             # If the Start is valid AND End Date is NOT valid, fetch the DTR Date Range from Start Date Onwards.
             } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
-                return $this->hasMany(DtrPunchHistory::class)->where('date', '>=', $start_date);
+                return $this->hasMany(DtrPunchHistory::class)->where('date', '>=', $start_date)
+                ->where('is_active','=','1');
     
             # If the Start and End date is NOT valid, fetch the DTR as a whole
             }elseif( !is_valid( $start_date ) && !is_valid( $end_date ) ){
-                return $this->hasMany(DtrPunchHistory::class);
+                return $this->hasMany(DtrPunchHistory::class)
+                 ->where('is_active','=','1');
             }
         }
+
+        # Fetch the User single date Punch History
+        public function target_punch($date){
+
+           
+          if( is_valid( $date )  ){
+                return $this->hasMany(DtrPunchHistory::class)->where('date', '==', $date)
+                ->where('is_active','=','1');
+    
+         
+            }
+        }
+
+        # Fetch the User's Punch History Logs Dates
+        public function punchlogs($start_date = null, $end_date = null){
+              
+                    # If the Start and End Date is valid, fetch the Distinct Date in Dtr Collective Punch history between the Date Range.
+                    if( is_valid( $start_date ) && is_valid( $end_date ) ){
+
+                        return $this->hasMany(DtrPunchHistory::class)->select('date','user_id')->distinct()->whereBetween('date', [$start_date, $end_date]);
+            
+                    # If the Start is valid AND End Date is NOT valid, fetch the Distinct Date in Dtr Collective Punch history Date Range from Start Date Onwards.
+                    } elseif( is_valid( $start_date ) && !is_valid( $end_date ) ){
+
+                        return $this->hasMany(DtrPunchHistory::class)->select('date','user_id')->distinct()->where('date', '>=', $start_date);
+            
+                    # If the Start and End date is NOT valid,  fetch the Distinct Date in Dtr Collective Punch history as a whole
+                    }elseif( !is_valid( $start_date ) && !is_valid( $end_date ) ){
+
+                        return $this->hasMany(DtrPunchHistory::class)->select('date','user_id')->distinct();
+
+                    }
+       }
+
+       #Fecth the Punch History Logs
+
+       public function get_punch_history($start_date = null){
+
+        if( is_valid( $start_date )){
+
+            return $this->hasMany(DtrPunchHistory::class)->select('dtr_collective_punch_history.date as date', 'dtr_collective_punch_history.user_id as user_id',
+            'dtr_collective_punch_history.time_in', 
+            'dtr_collective_punch_history.time_out', 'dtr_collective_punch_history.log_in_type', 'dtr_collective_punch_history.log_out_type', 
+            'dtr_collective_punch.duration')
+            ->join('dtr_collective_punch','dtr_collective_punch_history.id','=','dtr_collective_punch.dtr_collective_punch_history_id')
+            ->where('dtr_collective_punch_history.date','=',$start_date);
+        }
+       }
 
     public function requests_list($request,$filter = array()){
         $column = array('id','status','created_at','created_by','updated_by');
@@ -391,6 +458,23 @@ class User extends Authenticatable implements JWTSubject
                     DB::raw('"alter_logs"  as table_name'),
                     'c.department_name',
                     'alter_logs.updated_at');
+                    $alter_logs_punches    =   DB::table('alter_log_punches')
+        ->Leftjoin('users as a', 'a.id', '=', 'alter_log_punches.user_id')
+        ->Leftjoin('users as b', 'b.id', '=', 'alter_log_punches.updated_by')
+        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
+        ->select(  
+                    'alter_log_punches.id',
+                    'alter_log_punches.status',
+                    'alter_log_punches.created_at',
+                    'alter_log_punches.employee_note',
+                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
+                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                    'alter_log_punches.id As fourth_column',
+                    DB::raw('NULL fifth_column'),
+                    DB::raw('alter_log_punches.date As date_requested'),
+                    DB::raw('"alter_log_punches"  as table_name'),
+                    'c.department_name',
+                    'alter_log_punches.updated_at');
 
         #Team or Individual Request
         if($filter['url']=='my_team_requests'){
@@ -400,6 +484,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->whereIn('overtimes.user_id',$id);
             $rest_day_works  ->whereIn('rest_day_works.user_id',$id);
             $alter_logs      ->whereIn('alter_logs.user_id',$id);
+            $alter_logs_punches ->whereIn('alter_log_punches.user_id',$id);
         }elseif($filter['url']=='my_requests'){
             $id = auth()->user()->id;
 
@@ -407,6 +492,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->where('overtimes.user_id',$id);
             $rest_day_works  ->where('rest_day_works.user_id',$id);
             $alter_logs      ->where('alter_logs.user_id',$id);
+            $alter_logs_punches ->where('alter_log_punches.user_id',$id);
         }
         
         # Status
@@ -415,6 +501,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->where('overtimes.status',$filter['status']);
             $rest_day_works  ->where('rest_day_works.status',$filter['status']);
             $alter_logs      ->where('alter_logs.status',$filter['status']);
+            $alter_logs_punches ->where('alter_log_punches.status',$filter['status']);
         }
 
          # Department Filter
@@ -423,6 +510,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->where('a.department_id', $filter['department_id']);
             $rest_day_works  ->where('a.department_id', $filter['department_id']);
             $alter_logs      ->where('a.department_id', $filter['department_id']);
+            $alter_logs_punches ->where('a.department_id', $filter['department_id']);
         }
 
         # Name Filter
@@ -431,6 +519,7 @@ class User extends Authenticatable implements JWTSubject
             $overtimes       ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
             $rest_day_works  ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
             $alter_logs      ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+            $alter_logs_punches ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
         }
         
         
@@ -445,13 +534,15 @@ class User extends Authenticatable implements JWTSubject
             $rest_day_works ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
             $overtimes      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
             $alter_logs     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
+            $alter_logs_punches     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
         }
-  
+        
         if(isset($filter['request_type'])){
             if($filter['request_type']=='all'){
                 $query = $alter_logs->union($change_schedules)
                 ->union($overtimes)
                 ->union($rest_day_works)
+                ->union($alter_logs_punches)
                 ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
             }elseif($filter['request_type']=='alteration'){
                 $query = $alter_logs->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
@@ -461,6 +552,8 @@ class User extends Authenticatable implements JWTSubject
                 $query = $rest_day_works->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
             }elseif($filter['request_type']=='change_schedule'){
                 $query = $change_schedules->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+            }elseif($filter['request_type']=='alter_logs_punches'){
+                $query = $alter_logs_punches->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
             }
                
         }
@@ -471,7 +564,7 @@ class User extends Authenticatable implements JWTSubject
             $query->orderBy('updated_at','desc');
         }
 
-        
+
         $result = array(
             "query" =>  $query->paginate(10)
         );
@@ -617,9 +710,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getHasSchedule(){
 
-       
-    
-        # Fetch the Default Schedule for the current User.
+       # Fetch the Default Schedule for the current User.
         $checkDefault_schedule = is_valid($this->defaultSchedule()->first());
 
             $temporary_schedule_condition = [

@@ -194,7 +194,9 @@ class UserRepository implements UserRepositoryInterface{
 
                     // Assign the Employee Role
                     $user->assignRole( $employee_role );
-
+                    
+                    //filter unneeded permissions
+                    $user->revokePermissionTo('user_multi_login');
 
                     # 3.
                     // Total Permissions that are not synced yet on the User
@@ -971,11 +973,17 @@ class UserRepository implements UserRepositoryInterface{
             if( get_authenticated_user( $user->id ) ) {
 
 
-                $user_count = DB::table('users')
-                ->join('department_without_schedule_employees','users.department_id','=','department_without_schedule_employees.department_id')
+                // $user_count = DB::table('users')
+                // ->join('department_without_schedule_employees','users.department_id','=','department_without_schedule_employees.department_id')
+                // ->where('users.id','=', $user->id)
+                // ->where('department_without_schedule_employees.is_active','=',1)
+                // ->count();
+
+                $user_count = DB::table('user_has_permissions')
+                ->join('permissions','user_has_permissions.permission_id','=','permissions.id')
                 ->where('users.id','=', $user->id)
-                ->where('department_without_schedule_employees.is_active','=',1)
-                ->count();
+                ->where('permissions.name','=','user_multi_login');
+
                 if($user_count == 0){
                     return false;
                 }else{

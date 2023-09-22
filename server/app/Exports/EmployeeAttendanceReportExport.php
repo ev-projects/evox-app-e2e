@@ -94,17 +94,18 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
 
 
-                $this->colorFillStatusMonth($event, 'P', '38bf0d');
-                $this->colorFillStatusMonth($event, 'H', 'FFFF00');
-                $this->colorFillStatusMonth($event, 'A', 'ffb0b4');
-                $this->colorFillStatusMonth($event, 'UL', 'cf6969');
-                $this->colorFillStatusMonth($event, 'RD', 'BEBEBE');
-                $this->colorFillStatusMonth($event, 'SL', 'dca4ed');
-                $this->colorFillStatusMonth($event, 'VL', '72eddb');
-                $this->colorFillStatusMonth($event, 'X', 'fcf6e1');
+                $this->colorFillStatusMonth($event, 'P', '38bf0d'); // present
+                $this->colorFillStatusMonth($event, 'P-RDW', '9bdf86'); // present but on rest day work
+                $this->colorFillStatusMonth($event, 'H', 'FFFF00'); // holiday
+                $this->colorFillStatusMonth($event, 'A', 'ffb0b4'); // absent
+                $this->colorFillStatusMonth($event, 'UL', 'cf6969'); // unpaid leave
+                $this->colorFillStatusMonth($event, 'RD', 'BEBEBE'); // rest day
+                $this->colorFillStatusMonth($event, 'SL', 'dca4ed'); // leave
+                $this->colorFillStatusMonth($event, 'VL', '72eddb'); // leave
+                $this->colorFillStatusMonth($event, 'X', 'fcf6e1'); // no schedule or dtr
                 $this->colorFillStatusMonth($event, 'X', 'fcf6e1');
                 // $this->colorFillStatusMonth($event, 'XH', 'fcf6e1'); // no shedule holiday
-                $this->colorFillStatusMonth($event, 'TBD', 'dcfce4');
+                $this->colorFillStatusMonth($event, 'TBD', 'dcfce4'); // to be determined with in the date
                 $this->setMonthWidth($event);
 
 

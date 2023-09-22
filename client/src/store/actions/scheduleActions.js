@@ -25,6 +25,32 @@ export const addTemplateSchedule = ( post_data ) => {
     }
 }
 
+export const getScheduleInfo = (bind_to, bind_id,schedule_id) => {
+    
+    return (dispatch, getState) => {
+
+        // Sets the isReloading to True to current state while reloading the page.
+        dispatch({'type': 'RELOAD_START'});
+        
+        API.call({
+            method: "get",
+            url: "/"+bind_to+"/"+bind_id+"/schedule/"+schedule_id,
+        })
+        .then(result => {
+
+            dispatch({
+                'type'      : 'FETCH_DEFAULT_SCHEDULE_SUCCESS', 
+                'schedule'   : result.data.content
+            })
+
+            // Sets the Reloading to False
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e.response ) ) 
+        });
+    }
+}
 
 export const getDefaultSchedule = (bind_to, bind_id) => {
     

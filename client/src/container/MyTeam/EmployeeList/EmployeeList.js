@@ -275,6 +275,16 @@ const MyTeamListTable = (props) => {
                           <i className="fa fa-info ev-color" aria-hidden="true"></i>
                         </Link>
                       }
+                      { (Authenticator.check('supervisor', 'view_employee_dtr') && user.has_use_multi) &&
+                                  <Link to={{
+                                      pathname: global.links.dtr_punchlist + user.id,
+                                      resetInitialState: true
+                                    }}
+                                      title="View Punch History"
+                                  >
+                                    <i className="fa fa-hand-rock-o ev-color" aria-hidden="true"></i>
+                                  </Link>
+                            }
                     </td>
                   </tr>         
                 })}

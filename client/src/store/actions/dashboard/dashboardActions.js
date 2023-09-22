@@ -125,6 +125,35 @@ export const getRecentPunches = ( user_id, from ,to ) => {
     }
 }
 
+export const getRecentPunches2 = ( user_id, from ,to ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr/punch/"+user_id+"/"+from+"/"+to,
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_SINGLE_PUNCH_SUCCESS', 
+                'data'      : result.data,
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const clearRecentPunches2 = () => {
+ 
+    return (dispatch, getState) => {
+        dispatch({
+            'type'      : 'CLEAR_SINGLE_PUNCH_SUCCESS'
+        })
+    }
+    
+    
+}
+
 // CHANGE LOGS
 export const getChangeLogs = ( id ) => {
     return (dispatch, getState) => {

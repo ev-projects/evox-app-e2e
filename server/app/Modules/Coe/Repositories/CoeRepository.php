@@ -75,16 +75,20 @@ class COERepository implements COERepositoryInterface{
                 'user_id' => $user_id,
                 'purpose_index' => $purpose_index,
                 'full_name' => $employee['fullName2'],
-                'address' => $address,
+                'address' => encrypt($address),
                 'hire_date' => $employee['hireDate'],
                 'position' => $employee['jobTitle'],
-                'basic_pay' => $payRate,
-                'de_minimis' => $de_minimis,
+                'basic_pay' => encrypt($payRate.""),
+                'de_minimis' => encrypt($de_minimis.""),
                 'de_minimis_currency_code' => $employee['4206.7'],
-                'other_allowance' => str_to_float($employee['4200.2']),
+                'other_allowance' => encrypt(str_to_float($employee['4200.2']).""),
                 'other_allowance_currency_code' => '',
                 'show_compensation' => $show_compensation,
             ]);
+            $coe->address = decrypt($coe->address);
+            $coe->basic_pay = decrypt($coe->basic_pay);
+            $coe->de_minimis = str_to_float(decrypt($coe->de_minimis));
+            $coe->other_allowance = str_to_float(decrypt($coe->other_allowance));
             return $coe;
 
         } catch (Exception $e) {

@@ -2,17 +2,18 @@
 
 namespace App\Modules\Request\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Exception;
 
+use Illuminate\Http\Request;
+use App\Modules\User\Models\User;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Modules\Request\Resources\OvertimeResource;
+use App\Modules\Request\Http\Requests\OvertimeRequest;
+use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Request\Http\Requests\OvertimeRequest;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
-use App\Modules\User\Repositories\UserRepositoryInterface;
-use App\Modules\Request\Resources\OvertimeResource;
-use Exception;
-use Illuminate\Http\JsonResponse;
 
 class OvertimeController extends Controller
 {   
@@ -118,8 +119,10 @@ class OvertimeController extends Controller
 
             $overtime = $this->overtime->approve( $request->all(), $id );
 
-            $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
-            
+            // $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
+            $user =  User::find($overtime->user_id);
+            $with_out_schedule_employee =  ( is_valid( $user->department_id ) ? $user->department()->first()->departments_on_schedule_is_active(): false );
+
             if(!$with_out_schedule_employee){
             // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
             $this->dtr->compute_payroll_items($overtime->dtr()->first());
@@ -130,6 +133,7 @@ class OvertimeController extends Controller
                 new OvertimeResource( $overtime ) 
             );
         } catch(Exception $e){
+            // dd($e);
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
@@ -145,8 +149,10 @@ class OvertimeController extends Controller
 
             $overtime = $this->overtime->decline( $request->all(), $id );
             
-            $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
-            
+          // $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
+            $user =  User::find($overtime->user_id);
+            $with_out_schedule_employee =  ( is_valid( $user->department_id ) ? $user->department()->first()->departments_on_schedule_is_active(): false );
+
             if(!$with_out_schedule_employee){
             // Call the function to compute for the Payroll Items (Which will automatically check for the Declined Overtime.)
             $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
