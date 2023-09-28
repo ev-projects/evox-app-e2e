@@ -37,11 +37,12 @@ class SendOvertimeRequestEmailJob implements ShouldQueue
     {
         try {
             foreach( $this->overtime->user()->first()->user_handlers()->get() as $recepient ){
-                if(!$recepient->hasRole( get_constant('USER_ROLES.admin'))
+                if(
+                    !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
                     ||
-                    !$recepient->hasRole( get_constant('USER_ROLES.hr'))
+                    $recepient->hasRole( get_constant('USER_ROLES.hr'))
                     ||
-                    !$recepient->hasRole( get_constant('USER_ROLES.payroll'))
+                    $recepient->hasRole( get_constant('USER_ROLES.payroll')))
                 ){
                     Mail::send( new OvertimeRequestEmail( $recepient, $this->overtime ) );
                 

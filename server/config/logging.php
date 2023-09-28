@@ -86,7 +86,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/user_sync.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -94,7 +94,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/bhr_leaves.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -102,7 +102,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/dtr_leaves.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -110,7 +110,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/user_profile.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -118,7 +118,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/bhr.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -126,7 +126,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/coe.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -134,7 +134,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/biometrics.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -142,7 +142,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/dtr.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -150,7 +150,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/punch.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -158,7 +158,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/dtr_computation.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -166,7 +166,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/dtr_summary.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -174,7 +174,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/request.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -182,7 +182,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/assign.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -190,7 +190,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/user.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
         
@@ -198,7 +198,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/sync_bhr_user.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -206,7 +206,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/emails.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -214,7 +214,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/team.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -222,7 +222,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/drupal_migration.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -230,7 +230,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/cron_errors.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
@@ -238,7 +238,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/summary_errors.log'),
             'level' => 'debug',
-            'days' => 60,
+            'days' => 90,
             'permission' => 0666,
         ],
 
