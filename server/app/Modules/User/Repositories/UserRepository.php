@@ -211,7 +211,7 @@ class UserRepository implements UserRepositoryInterface{
                     // Assign the Employee's Permissions
                     $user->givePermissionTo( $permissions_to_sync );
                     /** */
-ne
+
                    // filter unneeded permissions
                    $user->revokePermissionTo('user_multi_login');
 
