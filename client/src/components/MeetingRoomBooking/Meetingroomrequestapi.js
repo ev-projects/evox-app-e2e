@@ -41,7 +41,7 @@ export const updateApprovalstatus = (id,evetstatus,approvalnote,userid,startdate
       };
 }
 
-export const fecthBookedroomdetails =  (id,setRoomname,setStartdate,setEnddate,setNote,setUsername,setUserid,setStatus,setApprovalnote) =>{
+export const fecthBookedroomdetails =  (id,setRoomname,setStartdate,setEnddate,setNote,setUsername,setUserid,setStatus,setApprovalnote,setItrequirement) =>{
 
 
     return async (dispatch, getState) => {
@@ -58,9 +58,18 @@ export const fecthBookedroomdetails =  (id,setRoomname,setStartdate,setEnddate,s
         setUserid(result.data[0].user_id);
         setStatus(result.data[0].status);
         setApprovalnote(result.data[0].approver_note)
+        setItrequirement(result.data[0].Reqiurement_List)
             dispatch({
-              "type": "SET_REDIRECT",
-              "link": global.links.dashboard,
+              type: "MEETING_ROOM_APPROVAL",
+              roomname : result.data[0].name,
+              startdate : result.data[0].start_date,
+              enddate : result.data[0].end_date,
+              note : result.data[0].note,
+              username : result.data[0].created_by,
+              userid : result.data[0].user_id,
+              status : result.data[0].status,
+              approvernote : result.data[0].approver_note,
+              itrequirement : result.data[0].Reqiurement_List,
             });
           })
           .catch((e) => {
