@@ -19,7 +19,7 @@ class RoomController extends Controller
     	$rooms = DB::table('rooms')
         ->select('rooms.id','rooms.name','rooms.seats','rooms.description','locations.location_name')
         ->join('locations', 'locations.id', '=', 'rooms.location')
-        ->orderBy('id', 'ASC')->paginate(10);
+        ->orderBy('id', 'DESC')->paginate(10);
 
         return [
             'data' => $rooms,

@@ -18,8 +18,11 @@ export const viewBookingdetails = (
         setCurrentpagecount(result.data.pagination.current_page);
         setStatuscount(result.data.statuscount);
         dispatch({
-          type: "SET_REDIRECT",
-          link: global.links.dashboard,
+          type: "MEETING_ROOM_APPROVAL_LIST",
+          bookedlist:result.data.data.data,
+          statuscount:result.data.statuscount,
+          totpagecount:result.data.pagination.last_page,
+          curpagecount:result.data.pagination.current_page,
         });
       })
       .catch((e) => {
@@ -66,8 +69,11 @@ export const statusChange = (
         setStatus(status);
         // setStatuscount(result.data.statuscount);
         dispatch({
-          type: "SET_REDIRECT",
-          link: global.links.dashboard,
+          type: "MEETING_ROOM_APPROVAL_LIST",
+          bookedlist:result.data.data.data,
+          totpagecount:result.data.pagination.last_page,
+          status:status,
+          statuscount:result.data.statuscount,
         });
       })
       .catch((e) => {
@@ -109,10 +115,11 @@ export const filterClick = (
         setTotalpagecount(result.data.pagination.last_page);
         setStatuscount(result.data.statuscount);
 
-        console.log(result.data.statuscount);
         dispatch({
-          type: "SET_REDIRECT",
-          link: global.links.dashboard,
+          type: "MEETING_ROOM_APPROVAL_LIST",
+          bookedlist:result.data.data.data,
+          statuscount:result.data.statuscount,
+          totpagecount:result.data.pagination.last_page,
         });
       })
       .catch((e) => {
@@ -147,8 +154,10 @@ export const requestPagenationclick = (status,page,fromdate,todate,setBookedlist
             setBookedlist(result.data.data.data);
             setTotalpagecount(result.data.pagination.last_page);
             dispatch({
-              type: "SET_REDIRECT",
-              link: global.links.dashboard,
+              type: "MEETING_ROOM_APPROVAL_LIST",
+              bookedlist:result.data.data.data,
+              totpagecount:result.data.pagination.last_page,
+              statuscount:result.data.statuscount,
             });
           })
           .catch((e) => {

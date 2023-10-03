@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -12,6 +13,10 @@ use App\Booking;
 use App\itrequirement;
 use Mail;
 use App\Modules\User\Resources\UserListResourceCollection;
+use App\Modules\User\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Jobs\SendItRequirementEmailJob;
+use App\Jobs\SendComfirmationEmailJob;
 class BookingController extends Controller
 {
     public function GetBookingRoomDetails($roomid)
@@ -46,10 +51,12 @@ class BookingController extends Controller
             $count = $items->count;
           }
          $createdby ='';
-         $username = DB::select( DB::raw("SELECT CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS created_by FROM `bookings` join `users` ON users.id=bookings.user_id WHERE ('". $startdate."' BETWEEN DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) and DATE_SUB(bookings.end_date, INTERVAL 1 SECOND) OR '".$enddate."' BETWEEN DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) and bookings.end_date OR DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) BETWEEN  '". $startdate."' AND '".$enddate."' OR DATE_SUB(bookings.end_date, INTERVAL 1 SECOND) BETWEEN '". $startdate."' AND '".$enddate."') AND (bookings.status = 'approved' OR bookings.status = 'pending') AND bookings.room_id='".$room_id."'"));
+         $bookingstatus='';
+         $username = DB::select( DB::raw("SELECT CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS created_by,bookings.status FROM `bookings` join `users` ON users.id=bookings.user_id WHERE ('". $startdate."' BETWEEN DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) and DATE_SUB(bookings.end_date, INTERVAL 1 SECOND) OR '".$enddate."' BETWEEN DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) and bookings.end_date OR DATE_ADD(bookings.start_date, INTERVAL 1 SECOND) BETWEEN  '". $startdate."' AND '".$enddate."' OR DATE_SUB(bookings.end_date, INTERVAL 1 SECOND) BETWEEN '". $startdate."' AND '".$enddate."') AND (bookings.status = 'approved' OR bookings.status = 'pending') AND bookings.room_id='".$room_id."'"));
          foreach($username as $items)
           {
             $createdby =  $items->created_by;
+            $bookingstatus = $items->status;
           }
        if($count == 0){
         $store = new Booking;
@@ -90,35 +97,82 @@ class BookingController extends Controller
                         
                     ];
                 }
+                // $storerequirement->itrequirement = $items;
+                // $storerequirement->bookingid = $lastbookingid;
+                // $savedata1 = $storerequirement->save();
                 itrequirement::insert($answers);
             }
-            if($totalhours <= 2){
-                if(count($requirement) > 0){
-        $requirementlist= DB::table('itrequirements')
-        ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'rooms.name', DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
-        ->join('bookings','itrequirements.bookingid','=','bookings.id')
-        ->join('rooms','bookings.room_id','=','rooms.id')
-        ->join('locations','rooms.location','=','locations.id')
-        ->join('users','users.id','=','bookings.user_id')
-        ->where('bookings.id','=', $lastbookingid)
-        ->groupBy('itrequirements.bookingid')
-        ->get();
-
-        $array1 =  [
-                    'data' => $requirementlist,
-        ];
+        if($totalhours <= 2){           
         
+             
+        if(count($requirement) > 0){
+       
         try {
+            $requirementlist= DB::table('itrequirements')
+            ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'users.email','locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'rooms.name', DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
+            ->join('bookings','itrequirements.bookingid','=','bookings.id')
+            ->join('rooms','bookings.room_id','=','rooms.id')
+            ->join('locations','rooms.location','=','locations.id')
+            ->leftjoin('users','users.id','=','bookings.user_id')
+            ->where('bookings.id','=', $lastbookingid)
+            ->groupBy('itrequirements.bookingid')
+            ->get();
+            $array1 =  [
+                'data' => $requirementlist,
+                'user_type' => "Helpdesk"
+            ];
+            $array2 =  [
+                'data' => $requirementlist,
+                'user_type' => "User"   
+            ];
+  
+            SendItRequirementEmailJob::dispatch($array1)
+            ->delay( Carbon::now()->addSeconds(5) );
+
+            SendComfirmationEmailJob::dispatch($array2, $requirementlist)
+            ->delay( Carbon::now()->addSeconds(5) );
+            
+            // Mail::send('mail', $array2  , function ($message)use($requirementlist)
+            // {
+            //     $message->to($requirementlist[0]->email, $requirementlist[0]->name)
+            //         ->subject('Comformation Mail for Reserved Meeting Room');
+            //     $message->from('evox@eastvantage.com', 'Evox');
+            // });
       
-            Mail::send('mail', $array1  , function ($message)
-            {
-                $message->to('lakshman001.be@gmail.com', 'HelpDesk')
-                    ->subject('Request for IT Requirement for Meeting Room');
-                $message->from('evox@eastvantage.com', 'Evox');
-            });
+            // Mail::send('mail', $array1  , function ($message)
+            // {
+            //     $message->to('lakshman001.be@gmail.com', 'HelpDesk')
+            //         ->subject('Request for IT Requirement for Meeting Room');
+            //     $message->from('evox@eastvantage.com', 'Evox');
+            // });
+            
+         
                 } catch (Exception $e) {
                     return error_response(trans('messages.error_default'), $e);
                 } 
+                
+            }else{
+                $requirementlist= DB::table('bookings')
+                ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),
+                'users.email','locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'bookings.approver_note','rooms.name')
+                ->join('rooms','bookings.room_id','=','rooms.id')
+                ->join('locations','rooms.location','=','locations.id')
+                ->leftjoin('users','users.id','=','bookings.user_id')
+                ->where('bookings.id','=', $lastbookingid)
+                ->get();
+                 $array2 =  [
+                    'data' => $requirementlist,
+                    'user_type' => "User"   
+                ];
+                // Mail::send('mail', $array2  , function ($message)use($requirementlist)
+                // {
+                //     $message->to($requirementlist[0]->email, $requirementlist[0]->user_name)
+                //         ->subject('Comformation Mail for Reserved Meeting Room');
+                //     $message->from('evox@eastvantage.com', 'Evox');
+                // });
+                
+            SendComfirmationEmailJob::dispatch($array2, $requirementlist)
+            ->delay( Carbon::now()->addSeconds(5) );
             }
         }
             if($savedata1){
@@ -135,10 +189,15 @@ class BookingController extends Controller
                         return ["Result"=>"Data Not Saved"];
                     }
        } else{
+        if($bookingstatus == "approved"){
+            $message = 'Meeting Room Already Booked For this time by '.$createdby.'';
+        }else{
+            $message = 'This meeting room reservation has been requested by '.$createdby.' at this scheduled time and is currently pending approval.';
+        }
         return response()->json([
          
             'status' => '201',
-            'message' => 'Meeting Room Already Booked For this Date by '.$createdby.'',
+            'message' => $message,
             
        ]);
        }
@@ -148,7 +207,7 @@ class BookingController extends Controller
     }
 
     public function GetBookeddetails(Request $request){
-     
+
         try {
         $numbers = array(
             "All" => 0,
@@ -157,13 +216,15 @@ class BookingController extends Controller
             "decline" => 0,
             "canceled" => 0,
         );
-            
+          $id = under_supervisee_id_list(Auth::user()->users_handled_meetingroom_approval()->select('id')->get());
+        // $list = implode(', ', $id); 
                 $booking = DB::table('bookings')
                 ->select('bookings.id','bookings.room_id','bookings.start_date','bookings.end_date','bookings.total_hours','bookings.status','rooms.name',DB::raw("CONCAT(IF(approveduser.first_name IS NOT NULL,approveduser.first_name,''),IF(approveduser.middle_name IS NOT NULL,approveduser.middle_name,''),IF(approveduser.last_name IS NOT NULL,approveduser.last_name,'')) AS approved_by"),DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS created_by"))
                 ->join('rooms', 'rooms.id', '=', 'bookings.room_id')
                 ->join('users','users.id', '=', 'bookings.user_id')
                 ->leftjoin(DB::raw("users as approveduser"), 'approveduser.id', '=', 'bookings.approved_by')
-                ->where('bookings.total_hours','>',2);
+                ->where('bookings.total_hours','>',2)
+                ->whereIn('users.id', $id);
                 if( is_valid($request->status) ){
                 $booking->where('bookings.status','=',$request->status);
                 }
@@ -176,7 +237,9 @@ class BookingController extends Controller
                 
                 $count = DB::table('bookings')
                 ->select('status', DB::raw('count(*) as total'))
-                ->where('bookings.total_hours','>',2);
+                ->join('users','users.id', '=', 'bookings.user_id')
+                ->where('bookings.total_hours','>',2)
+                ->whereIn('users.id', $id);
                 // if( is_valid($request->status) ){
                 // $count->where('bookings.status','=',$request->status);
                 // }
@@ -224,15 +287,22 @@ class BookingController extends Controller
         if($id != null){
         
         return $booking = DB::table('bookings')
-        ->select('bookings.id','bookings.user_id','bookings.note','bookings.approver_note','bookings.room_id','bookings.start_date','bookings.end_date','bookings.total_hours','bookings.status','rooms.name',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS created_by"))
+        ->select('bookings.id','bookings.user_id','bookings.note','bookings.approver_note','bookings.room_id',
+        'bookings.start_date','bookings.end_date','bookings.total_hours','bookings.status',
+        'rooms.name',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),
+        IF(users.last_name IS NOT NULL,users.last_name,'')) AS created_by"),DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
+        ->leftjoin('itrequirements','itrequirements.bookingid','=','bookings.id')
         ->join('rooms', 'rooms.id', '=', 'bookings.room_id')
         ->join('users','users.id', '=', 'bookings.user_id')
-        ->where('bookings.id','=',$id)->get();
+        ->where('bookings.id','=',$id)
+        ->groupBy('itrequirements.bookingid')
+        ->get();
 
         }
     } catch (Exception $e) {
         return error_response(trans('messages.error_default'), $e);
     }
+
     }
 
     
@@ -253,14 +323,6 @@ class BookingController extends Controller
             ->where('bookingid','=',$id)
             ->get();
             
-    //       $eventcount = DB::select( DB::raw("SELECT count(*) as count FROM `bookings` WHERE ('". $startdate."' BETWEEN DATE_ADD(`start_date`, INTERVAL 1 SECOND) and DATE_SUB(`end_date`, INTERVAL 1 SECOND) OR '".$enddate."' BETWEEN DATE_ADD(`start_date`, INTERVAL 1 SECOND) and `end_date` OR DATE_ADD(`start_date`, INTERVAL 1 SECOND) BETWEEN  '". $startdate."' AND '".$enddate."' OR DATE_SUB(`end_date`, INTERVAL 1 SECOND) BETWEEN '". $startdate."' AND '".$enddate."') AND status = 'approved'"));
-        
-    //       foreach($eventcount as $items)
-    //       {
-    //         $count = $items->count;
-    //       }
-
-    //    if($count == 0){
             $updatestatus = Booking::where('id', $id)
             ->update([
                 'approver_note' => $request->ApprovalNote,
@@ -269,35 +331,126 @@ class BookingController extends Controller
              ]);
              $message = $request->Status == "declined" ? "Request Deny Successfully":"Request Approved Successfully";
              if($updatestatus){
+                $requirementlist= DB::table('itrequirements')
+                ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'users.email','locations.location_name',
+                'bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.approver_note', 'bookings.total_hours', 'rooms.name', DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
+                ->join('bookings','itrequirements.bookingid','=','bookings.id')
+                ->join('rooms','bookings.room_id','=','rooms.id')
+                ->join('locations','rooms.location','=','locations.id')
+                ->join('users','users.id','=','bookings.user_id')
+                ->where('bookings.id','=', $id)
+                ->groupBy('itrequirements.bookingid')
+                ->get();
+        
+                $array1 =  [
+                    'data' => $requirementlist,
+                    'user_type' => "Helpdesk"  
+                ];
+                $array2 =  [
+                    'data' => $requirementlist,
+                    'user_type' => "User"   
+                ];
+              
+               
                if($request->Status != "declined" )  {
+
                 if($itcount[0]->count != 0){
-                    $requirementlist= DB::table('itrequirements')
-                    ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.total_hours', 'rooms.name', DB::raw("GROUP_CONCAT(itrequirements.itrequirement) as Reqiurement_List"))
-                    ->join('bookings','itrequirements.bookingid','=','bookings.id')
+                    try {
+
+                        SendItRequirementEmailJob::dispatch($array1)
+                        ->delay( Carbon::now()->addSeconds(5) );
+            
+                        SendComfirmationEmailJob::dispatch($array2, $requirementlist)
+                        ->delay( Carbon::now()->addSeconds(5) );
+                        
+                        // Mail::send('mail', $array2  , function ($message)use($requirementlist)
+                        // {
+                        //     $message->to($requirementlist[0]->email, $requirementlist[0]->name)
+                        //         ->subject('Comformation Mail for Reserved Meeting Room');
+                        //     $message->from('evox@eastvantage.com', 'Evox');
+                        // });
+                  
+                        // Mail::send('mail', $array1  , function ($message)
+                        // {
+                        //     $message->to('lakshman001.be@gmail.com', 'HelpDesk')
+                        //         ->subject('Request for IT Requirement for Meeting Room');
+                        //     $message->from('evox@eastvantage.com', 'Evox');
+                        // });
+                    } catch (Exception $e) {
+                                return error_response(trans('messages.error_default'), $e);
+                    } 
+                }else{
+                    $requirementlist= DB::table('bookings')
+                    ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),
+                    'users.email','locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.approver_note', 'bookings.total_hours', 
+                    'rooms.name')
                     ->join('rooms','bookings.room_id','=','rooms.id')
                     ->join('locations','rooms.location','=','locations.id')
-                    ->join('users','users.id','=','bookings.user_id')
+                    ->leftjoin('users','users.id','=','bookings.user_id')
                     ->where('bookings.id','=', $id)
-                    ->groupBy('itrequirements.bookingid')
                     ->get();
-            
-                    $array1 =  [
-                                'data' => $requirementlist,
+                     $array2 =  [
+                        'data' => $requirementlist,
+                        'user_type' => "User"   
                     ];
-                    
-                    try {
-                  
-                        Mail::send('mail', $array1  , function ($message)
-                        {
-                            $message->to('lakshman001.be@gmail.com', 'HelpDesk')
-                                ->subject('Request for IT Requirement for Meeting Room');
-                            $message->from('evox@eastvantage.com', 'Evox');
-                        });
-                            } catch (Exception $e) {
-                                return error_response(trans('messages.error_default'), $e);
-                            } 
+                    // Mail::send('mail', $array2  , function ($message)use($requirementlist)
+                    // {
+                    //     $message->to($requirementlist[0]->email, $requirementlist[0]->user_name)
+                    //         ->subject('Comformation Mail for Reserved Meeting Room');
+                    //     $message->from('evox@eastvantage.com', 'Evox');
+                    // });
+                    SendComfirmationEmailJob::dispatch($array2, $requirementlist)
+                        ->delay( Carbon::now()->addSeconds(5) );
                 }
                    
+                }else{
+
+                    $array2 =  [
+                        'data' => $requirementlist,
+                        'user_type' => "Deny"   
+                    ];
+                    if($itcount[0]->count != 0){
+                try {
+                    
+                    // Mail::send('mail', $array3  , function ($message)use($requirementlist)
+                    // {
+                    //     $message->to($requirementlist[0]->email, $requirementlist[0]->name)
+                    //     ->subject('Comformation Mail for Reserved Meeting Room');
+                    //     $message->from('evox@eastvantage.com', 'Evox');
+                    // });
+                    SendComfirmationEmailJob::dispatch($array2, $requirementlist)
+                    ->delay( Carbon::now()->addSeconds(5) );
+                } catch (Exception $e) {
+                    return error_response(trans('messages.error_default'), $e);
+                } 
+            }else{
+                $requirementlist= DB::table('bookings')
+                ->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),IF(users.middle_name IS NOT NULL,users.middle_name,''),IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),
+                'users.email','locations.location_name','bookings.user_id', 'bookings.start_date', 'bookings.end_date', 'bookings.approver_note', 'bookings.total_hours', 
+                'rooms.name')
+                ->join('rooms','bookings.room_id','=','rooms.id')
+                ->join('locations','rooms.location','=','locations.id')
+                ->leftjoin('users','users.id','=','bookings.user_id')
+                ->where('bookings.id','=', $id)
+                ->get();
+                $array2 =  [
+                    'data' => $requirementlist,
+                    'user_type' => "Deny"   
+                ];
+                try {
+                    
+                    // Mail::send('mail', $array3  , function ($message)use($requirementlist)
+                    // {
+                    //     $message->to($requirementlist[0]->email, $requirementlist[0]->name)
+                    //     ->subject('Comformation Mail for Reserved Meeting Room');
+                    //     $message->from('evox@eastvantage.com', 'Evox');
+                    // });
+                    SendComfirmationEmailJob::dispatch($array2, $requirementlist)
+                    ->delay( Carbon::now()->addSeconds(5) );
+                } catch (Exception $e) {
+                    return error_response(trans('messages.error_default'), $e);
+                } 
+            }
                 }
                
                  return response()->json([
@@ -309,13 +462,6 @@ class BookingController extends Controller
                          
                          return ["Result"=>"Data Not Saved"];
                      }
-        //   }else{
-        //     return response()->json([
-          
-        //         'status' => '200',
-        //         'message' => 'Already Room Booked For This Date',                     
-        //    ]);
-        //   }
        
         }
     } catch (Exception $e) {
@@ -390,7 +536,9 @@ class BookingController extends Controller
         ->join('users','users.id','=','bookings.user_id')
         ->where('users.country_id','=',$country_id)
         ->where('bookings.start_date','>=',DB::raw("DATE_FORMAT(NOW(),'%Y-%m-%d')"))
+        ->where('bookings.status','=','approved')
         ->groupBy('itrequirements.bookingid')
+        ->orderBy('itrequirements.id', 'Desc')
         ->paginate(10);
             return [
                 'data' => $requirementlist,

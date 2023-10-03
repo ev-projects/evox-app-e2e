@@ -12,8 +12,29 @@ export const dropdownLocationdetails = (setDatalocation)=>{
         .then((result) => {
           setDatalocation(result.data);
           dispatch({
-            "type": "SET_REDIRECT",
-            "link": global.links.dashboard,
+            type: "FETCH_DROPDOWN_LOCATION",
+            dropdownlocation:result.data ,
+          });
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        });
+  
+  };
+  }
+
+  export const getItrequirement = (setItlist)=>{
+
+    return async (dispatch, getState) => {
+      await API.call({
+        method: "get",
+        url: `/getItrequirement_list`,
+      })
+        .then((result) => {
+          setItlist(result.data);
+          dispatch({
+            type: "FETCH_IT_REQUIREMENT_MASTER",
+            itrequirementmaster:result.data,
           });
         })
         .catch((e) => {
