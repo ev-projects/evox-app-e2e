@@ -53,6 +53,7 @@ import reportReducers from './report/reportReducers';
 import departmentListReducers from "./admin/departmentListReducers";
 import hrAnnouncementReducers from "./hr/hrAnnouncementReducers";
 import opsScheduleReducers from "./opsschedule/opsScheduleReducers";
+import meetingroomReducers from './meetingrooms/roomapproval';
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 
@@ -101,6 +102,8 @@ const rootReducer = combineReducers({
     redirect : redirectReducers,
 
     dashboard  : dashboardReducers,
+
+    meetingroom:meetingroomReducers,
 
     report  : reportReducers,
     departmentList:   departmentListReducers,

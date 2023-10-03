@@ -183,7 +183,7 @@ const Sidebar = (props) => {
                     <li className="nav-item">
                     <Link className="nav-link" to={global.links.requirement_list}>
                       <i className="nav-icon fa fa-th-list" />
-                      <p>IT Requirement List</p>
+                      <p>Meeting Room Requirement</p>
                     </Link>
                   </li>
                   }
@@ -262,10 +262,7 @@ const Sidebar = (props) => {
                     </Link>
                   </li>
                   
-                  {Authenticator.check(
-                    ["supervisor", "team_leader"],
-                    ["supervisor_access", "team_leader_access"]
-                  ) && (
+                  {Authenticator.check("supervisor", "meeting_room_approval") && (
                     <li className="nav-item">
                       <Link className="nav-link" to={global.links.booked_list}>
                         <i className="nav-icon fa fa-inbox" />
