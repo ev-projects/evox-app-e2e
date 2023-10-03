@@ -44,7 +44,7 @@ const LocationMaster = (props) => {
   };
 
   const handlesave = async (e) => {
-    alert(meetingroom.location);
+    // alert(meetingroom.location);
     if (meetingroom.location !== "") {
       await API.call({
         method: "post",
@@ -114,7 +114,10 @@ const LocationMaster = (props) => {
                     required
                     onChange={(e) => {
                       setLocationname(e.target.value);
-                     
+                      dispatch({
+                        type: "UPDATE_LOCATION",
+                        location: e.target.value,
+                      });
                       if (e.target.value == "") {
                         setvalidlocationname(true);
                       } else {
