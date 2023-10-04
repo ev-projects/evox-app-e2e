@@ -1394,8 +1394,10 @@ const Meetingcalander = (props) => {
                 <Col>
                   <Collapse in={open}>
                     <div id="example-collapse-text">
-                    { meetingroom.itrequirementmaster?.map((item, index) => (
-                      
+                    
+                      <Row>
+                        { meetingroom.itrequirementmaster?.map((item, index) => (
+                        <Col xs={3}>
                       <Form.Group className="mt-2" id="formGridCheckbox">
                         <Form.Check
                           type="checkbox"
@@ -1405,7 +1407,9 @@ const Meetingcalander = (props) => {
                           onChange={(e) => handleOnChange(e, item, index)}
                         />
                       </Form.Group>
+                        </Col>
                       ))}
+                      </Row>
                       {/* <Form.Group className="mt-2" id="formGridCheckbox">
                         <Form.Check
                           type="checkbox"
