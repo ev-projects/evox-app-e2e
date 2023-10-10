@@ -368,5 +368,6 @@ return [
         5  => ['name' => 'Sales', 'description' => 'For sales-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 35],
         6  => ['name' => 'Human Resources', 'description' => 'For hr-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 39],
         7  => ['name' => 'Projects', 'description' => 'For evox-related concerns, please refer to the email addresses indicated in the table below.', 'id' => 56],
+        8  => ['name' => 'Shared Services', 'description' => 'For shared services, please refer to the email addresses indicated in the table below.', 'id' => 0],
     ],
 ];
