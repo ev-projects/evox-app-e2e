@@ -97,6 +97,8 @@ import MyTeamAllRequest from "../container/MyTeam/MyTeamRequests/MyTeamAllReques
 import MyOverallRequest from "../container/MyOverallRequest/MyOverallRequest";
 import ItRequirementList from "../components/MeetingRoomBooking/ItRequirementList";
 import OverallRequest from "../container/MyTeam/OverallRequest";
+import OpsScheduleForm from "../container/OpsSchedule/OpsScheduleForm";
+import OpsScheduleList from "../container/OpsSchedule/OpsScheduleList";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -385,6 +387,15 @@ const RoutesList = (props) => {
          />
 
          
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.ops_schedule_form+":id?"}>
+          <OpsScheduleForm role={['ops']} permission={['manage_ops_schedules']}
+          />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.ops_schedule_list}>
+          <OpsScheduleList role={['ops']} permission={['manage_ops_schedules']} />
         </ProtectedRoute>
 
 

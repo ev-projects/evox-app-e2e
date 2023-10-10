@@ -1,10 +1,29 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux';
 import { Container,Col } from 'react-bootstrap';
+import ModalImage from "react-modal-image";
 import "./OpsSchedule.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
+import { fetchOpsSchedules } from '../../store/actions/opsschedule/opsScheduleActions';
 
 class OpsSchedule extends Component {
+
+  // Set the default constructor with Action state in null
+  constructor(props) {
+    super(props);
+    this.state = {
+      action: null
+    }
+  }
+
+  componentWillMount(){
+	// Get ops schedules per department
+	this.props.fetchOpsSchedules();
+  }
+
   render() {
+    // Get all Ops Departments from server constants
+	const opsScheduleList = this.props.opsSchedules.listInstance != undefined ? this.props.opsSchedules.listInstance : [];
     return  <ContainerWrapper> 
 
 	<h2 className="header_text">EV Support Team Schedule</h2>
@@ -12,6 +31,46 @@ class OpsSchedule extends Component {
 	<div className="ops-schedule header_text">
 		<div className="row">
 			<div className="col-6 col-lg-6 col-md-6 col-sm-12">
+
+				{opsScheduleList.map((schedules, index1) => {
+					return <div className="row card">
+						<div className="col-11 card-body">
+							<div className="h3">{schedules.department} Services</div>
+							<p>{schedules.description}</p>
+							<ModalImage small={schedules.image} large={schedules.image} alt={schedules.image} />
+							{/* {(schedules.type === "image") ? <img src={schedules.image} width="100%" /> :
+							<table width="100%" cellpadding="5" border="1">
+								<thead>
+									<tr>
+										<th>POC</th>
+										<th>Domain</th>
+										<th>Scope</th>
+										<th>Schedule</th>
+										<th>Email</th>
+									</tr>
+								</thead>
+								<tbody>
+								{schedules.list?.map((schedule, index2) => {
+									return <tr>
+										<td>{schedule.name}<br/><small>{schedule.position}</small></td>
+										<td>{schedule.domain}</td>
+										<td>
+											<ul>
+											{schedule.scope.map((scope, index3) => {
+												return <li>{scope}</li>;
+											})}
+											</ul>
+										</td>
+										<td><small>{schedule.work_days}<br/>{schedule.start_time} - {schedule.end_time} {schedule.timezone}</small></td>
+										<td>{schedule.email}</td>
+									</tr>;
+								})}
+								</tbody>
+							</table>} */}
+						</div>
+					</div>;
+				})}
+
 				<div className="row card">
 					<div className="col-11 card-body">
 						<div className="h3">IT Department</div>
@@ -260,12 +319,16 @@ class OpsSchedule extends Component {
   }
 }
 
-export default OpsSchedule;
+const mapStateToProps = (state) => {
+	return {
+	  constant		: state.constant,
+	  opsSchedules	: state.opsSchedule,
+	}
+}
+const mapDispatchToProps = (dispatch) => {
+    return {
+      fetchOpsSchedules : () => dispatch( fetchOpsSchedules() )
+    }
+}
 
-
-
-
-
-
-
-
+export default connect(mapStateToProps, mapDispatchToProps)(OpsSchedule);

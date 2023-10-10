@@ -1,0 +1,115 @@
+.title {
+    border-radius: .25em !important;
+}
+
+
+.thumbnail-image { 
+    /* max-width: 70%; */
+    /* margin: 5px auto 20px; */
+    padding: 10px;
+    /* border: 1px solid #e9e9e9;  */
+}
+
+.feature-checkbox{
+    /* margin-left: 18px; */
+}
+
+.dep-announcement-col{
+    background-color: #0096a70c  !important;
+    /* border: 1px solid ;  */
+    /* border-color: red; */
+    border-radius: 5px !important;
+    margin: 3px;
+  }
+
+  .dep-announcement-label{
+    font-size: 12px !important;
+    font-weight: 500 !important;
+  }
+
+  .dep-announcement-label-white{
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: white !important;
+  }
+.dep-announcement-tabs-form .nav-item{
+    color:rgba(0, 83, 147) !important;
+    border-radius: 5px 5px 0 0 !important;
+    background-color: #d4e7f0 !important;
+   margin-top: 12px;
+   font-size: 13px;
+  
+}
+
+.dep-announcement-tabs-form .nav-item.active{
+  
+    background-color: #78909C !important;
+    border-style:thin;
+    border-color: #78909C !important;
+    color: #c7e094 !important;
+    font-weight: bold !important;
+    border-radius: 5px 5px 0 0 !important;
+        /* border-top-style: solid !important;
+    border-top: rgb(106, 0, 255) !important; */
+}
+
+.fill-dep-ann-tab{
+    background-color: #78909C !important;
+    border-radius: 0 10px 10px 10px;
+     margin-bottom: 2% !important;
+
+    
+}
+.content-input{
+    padding: 1%;
+    padding-bottom: 1%;
+}
+
+.content-input-note{
+    /* margin: 1%; */
+    padding: 1%;
+    border-radius: 10px;
+    background-color:#d8e3e9;
+}
+
+.img-to-upload{
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+
+.upload-imagealter{
+    /* background-color: rgb(122, 122, 122); */
+    /* max-width: 100% !important; */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    min-height:110px;
+    padding-top:40px;
+    border: 15px;
+    border-style: dashed;
+    border-width: 3px;
+    border-color: rgba(122, 122, 122, 0.507);
+    font-size: 15PX;
+    text-align: center;
+}
+
+
+.for-all{
+   font-size: 13px !important;
+}
+
+.dep-announcement-required:after {
+    content:" *";
+    color: red;
+  }
+
+  a[data-tool-tip]{
+    /* position: relative !important; */
+  }
+
+  a[data-tool-tip]::after{
+    content: attr(data-tool-tip);
+    /* position: relative !important; */
+  }
