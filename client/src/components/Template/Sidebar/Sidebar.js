@@ -662,6 +662,32 @@ const Sidebar = (props) => {
                 </li>
               )}
 
+              {/* OPS Links */}
+              {Authenticator.check("ops", "ops_access") && (
+                <li className="nav-item has-treeview ">
+                  <a className="nav-link">
+                    <i className="nav-icon fa fa-cubes" />
+                    <p>
+                      OPS Functions
+                      <i className="right fa fa-chevron-left" />
+                    </p>
+                  </a>
+                  <ul className="nav nav-treeview">
+                    {Authenticator.check("ops", "manage_ops_schedules") && (
+                      <li className="nav-item">
+                        <Link
+                          className="nav-link"
+                          to={global.links.ops_schedule_list}
+                        >
+                          <i className="nav-icon fa fa-wrench nav-icon" />
+                          <p style={{ fontSize: 13 }}>Manage OPS Schedules</p>
+                        </Link>
+                      </li>
+                    )}
+                  </ul>
+                </li>
+              )}
+
               {/* ADMIN Links */}
               {Authenticator.check("admin", "full_access") && (
                 <li className="admin-sidebar nav-item has-treeview ">
