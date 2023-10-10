@@ -195,8 +195,7 @@ class UserRepository implements UserRepositoryInterface{
                     // Assign the Employee Role
                     $user->assignRole( $employee_role );
                     
-                    //filter unneeded permissions
-                    $user->revokePermissionTo('user_multi_login');
+                   
 
                     # 3.
                     // Total Permissions that are not synced yet on the User
@@ -212,6 +211,9 @@ class UserRepository implements UserRepositoryInterface{
                     // Assign the Employee's Permissions
                     $user->givePermissionTo( $permissions_to_sync );
                     /** */
+
+                   // filter unneeded permissions
+                   $user->revokePermissionTo('user_multi_login');
 
                     log_to_file( 'info', 'User Inserted', [$user], 'user_sync');
                     log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $user, "user_sync");

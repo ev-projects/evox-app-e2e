@@ -141,7 +141,7 @@ class Overtime extends Component {
         id:               this.props.instance.id != undefined ? this.props.instance.id : null, 
         date:             this.props.instance.date != undefined ? new Date( this.props.instance.date ) : null,         
         user_id:          this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(), 
-        amount:           this.props.instance.amount != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.amount+":00" ) :  new Date(new Date().setHours(1,0,0,0)) ,  
+        amount:           this.props.instance.amount != undefined ? DateFormatter.get_specific_datetime( null, this.props.instance.amount+":00" ) :  new Date(new Date().setHours(0,0,0,0)) ,  
         type:             this.props.instance.type != undefined ? this.props.instance.type : null, 
         employee_note:    this.props.instance.employee_note != undefined ? this.props.instance.employee_note : null,
         approver_note:    this.props.instance.approver_note != undefined ? this.props.instance.approver_note : null
