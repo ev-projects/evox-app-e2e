@@ -71,7 +71,7 @@ class OpsSchedule extends Component {
 					</div>;
 				})}
 
-				<div className="row card">
+				{/* <div className="row card">
 					<div className="col-11 card-body">
 						<div className="h3">IT Department</div>
 						<p>For IT concerns please send an email or chat us via google chat at helpdesk@eastvantage.com</p>
@@ -169,10 +169,10 @@ class OpsSchedule extends Component {
 							</tbody>
 						</table>
 					</div>
-				</div>
+				</div> */}
 			</div>
 
-			<div className="col-6 col-lg-6 col-md-6 col-sm-12">
+			{/* <div className="col-6 col-lg-6 col-md-6 col-sm-12">
 
 				<div className="row card">
 					<div className="col-11 card-body">
@@ -382,7 +382,7 @@ class OpsSchedule extends Component {
 						</table>
 					</div>
 				</div>
-			</div>
+			</div> */}
 
 			
 		</div>
