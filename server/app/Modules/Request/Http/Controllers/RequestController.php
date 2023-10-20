@@ -139,7 +139,7 @@ class RequestController extends Controller
             if($request->url == "my_team_requests"){
               
                 $redisresponse = Redis::get($user->id.':my_team_request_list');
-                Redis::del(Redis::keys('laravel_cache:*'));
+                // Redis::del(Redis::keys('laravel_cache:*'));
                 if(isset($redisresponse)) {
                   return success_response(
                         trans('messages.request_display_success_from_redis'), json_decode($redisresponse, FALSE)
@@ -163,7 +163,7 @@ class RequestController extends Controller
                 }
             }else{
                 $redisresponse = Redis::get($user->id.':my_request_list');
-                Redis::del(Redis::keys('laravel_cache:*'));
+                // Redis::del(Redis::keys('laravel_cache:*'));
                 if(isset($redisresponse)) {
                   return success_response(
                         trans('messages.request_display_success_from_redis'), json_decode($redisresponse, FALSE)
@@ -291,7 +291,7 @@ class RequestController extends Controller
 
             Redis::del($user->id.':my_team_request_list');
             Redis::del($user->id.':my_request_list');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             return success_response(
                 trans('messages.bulk_request_update'),$request->bulk_action 
             );

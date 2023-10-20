@@ -122,7 +122,7 @@ class ChangeScheduleController extends Controller
             $dtr = $this->dtr->apply_schedule_to_dtr( $change_schedule->user_id, $change_schedule->schedule()->first() );
             Redis::del($user->id.':my_team_request_list');
             Redis::del($user->id.':my_request_list');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             return success_response(
                 trans('messages.approve_change_schedule_success'), 
                 new ChangeScheduleResource( $change_schedule ) 
@@ -148,7 +148,7 @@ class ChangeScheduleController extends Controller
             $dtr = $this->dtr->remove_schedule_to_dtr( $change_schedule->user_id, $change_schedule->schedule()->first() );
             Redis::del($user->id.':my_team_request_list');
             Redis::del($user->id.':my_request_list');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             return success_response(
                 trans('messages.decline_change_schedule_success'), 
                 new ChangeScheduleResource( $change_schedule ) 

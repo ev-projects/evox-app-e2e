@@ -334,7 +334,7 @@ class BookingController extends Controller
 
             $user = User::find(auth()->user()->id);
             $redisresponse = Redis::get($user->id.':get_today_leave_list');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             $data = json_decode($redisresponse, FALSE);
 
             if(isset($data->today_leaves)) {
@@ -390,7 +390,7 @@ class BookingController extends Controller
         try {
             $user = User::find(auth()->user()->id);
             $redisresponse = Redis::get($user->id.':get_tommorow_leave_list');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             // $current_time = datetime_to_timestamp(  date("Y-m-d H:i:s") );
             // dump(date("Y-m-d H:i:s"));
             

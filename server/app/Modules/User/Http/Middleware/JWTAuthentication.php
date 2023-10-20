@@ -35,7 +35,7 @@ class JWTAuthentication
 
             # If the token is expired, this exception will handle it.
         } catch (TokenExpiredException $e) {
-
+            Redis::del(Redis::keys('laravel_cache:*'));
             return error_response( trans('messages.token_expired') , ['code' =>'token_expired'], JsonResponse::HTTP_UNAUTHORIZED);
 
             # If the token is invalid, this exception will handle it.

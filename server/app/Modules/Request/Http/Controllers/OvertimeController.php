@@ -153,7 +153,7 @@ class OvertimeController extends Controller
             log_activity( trans('messages.decline_overtime_attempt') );
             Redis::del($user->id.':my_team_request_list');
             Redis::del($user->id.':my_request_list');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             $overtime = $this->overtime->decline( $request->all(), $id );
             
           // $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
