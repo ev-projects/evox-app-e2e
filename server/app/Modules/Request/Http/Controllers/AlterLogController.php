@@ -124,7 +124,7 @@ class AlterLogController extends Controller
         
             Redis::del($user->id.':my_team_request_list');
             Redis::del($user->id.':my_request_list');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             return success_response(
                 trans('messages.approve_alter_log_success'), 
                 new AlterLogResource( $alter_log ) 
@@ -150,7 +150,7 @@ class AlterLogController extends Controller
             $dtr = $this->dtr->remove_alter_log_from_dtr( $alter_log );
             Redis::del($user->id.':my_team_request_list');
             Redis::del($user->id.':my_request_list');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             return success_response(
                 trans('messages.decline_alter_log_success'), 
                 new AlterLogResource( $alter_log ) 

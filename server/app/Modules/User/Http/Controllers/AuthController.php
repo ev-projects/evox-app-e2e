@@ -230,8 +230,7 @@ class AuthController extends Controller
 
             log_to_file('info', 'Success', true, 'user');
             $user = auth()->user();
-            // Redis::del(Redis::keys($user->id.':*'));
-            // Redis::del(Redis::keys('laravel_cache:*'));
+            Redis::del(Redis::keys('laravel_cache:*'));
             auth()->logout();
          
             

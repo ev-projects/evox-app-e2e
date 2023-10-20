@@ -472,7 +472,7 @@ class ReportController extends Controller
 
            
             $redisresponse = Redis::get($user->id.':get_dashboard_holidays'.date('Y-m-d'));
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
             if(isset($redisresponse)) {
              
               return json_decode($redisresponse, FALSE);
@@ -604,7 +604,7 @@ class ReportController extends Controller
             log_activity(trans('messages.get_anniversary_birthday_attempt'));
             $user = User::find(auth()->user()->id);
             $getteambirthdayanniversary = Redis::get($user->id.':team_birthday_anniversary');
-            Redis::del(Redis::keys('laravel_cache:*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
                 if(isset($getteambirthdayanniversary)) {
                   return success_response(
                         trans('messages.get_anniversary_birthday_success_from_redis'), json_decode($getteambirthdayanniversary, FALSE)

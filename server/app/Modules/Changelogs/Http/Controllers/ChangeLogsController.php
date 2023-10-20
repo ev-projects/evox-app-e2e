@@ -31,7 +31,7 @@ class ChangeLogsController extends Controller
             $changelogs_array[$key]['log_date']     = date_format(new \DateTime($changelog->log_date), "F d, Y");
         }
         $getchangelogs = Redis::get('get_change_logs');
-        Redis::del(Redis::keys('laravel_cache:*'));
+        // Redis::del(Redis::keys('laravel_cache:*'));
                 if(isset($getchangelogs)) {
                   return success_response(
                         trans('messages.fetch_change_log_success_from_redis'), json_decode($getchangelogs, FALSE)

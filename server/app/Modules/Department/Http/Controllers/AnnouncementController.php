@@ -244,7 +244,7 @@ class AnnouncementController extends Controller
             
             }else{
                 $redisresponse = Redis::get('get_announcements_dashboard');
-                Redis::del(Redis::keys('laravel_cache:*'));
+                // Redis::del(Redis::keys('laravel_cache:*'));
                 if(isset($redisresponse)) {
                   return success_response(
                     trans('messages.fetch_change_log_success_from_redis'),  json_decode($redisresponse, FALSE)
