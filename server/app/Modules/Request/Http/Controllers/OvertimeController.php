@@ -5,6 +5,7 @@ namespace App\Modules\Request\Http\Controllers;
 use Exception;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -115,8 +116,11 @@ class OvertimeController extends Controller
      */
     public function approve(OvertimeRequest $request, $id){
         try {
+            $user = User::find(auth()->user()->id);
             log_activity( trans('messages.approve_overtime_attempt') );
-
+            Redis::del($user->id.':my_team_request_list');
+            Redis::del($user->id.':my_request_list');
+            Redis::del(Redis::keys('laravel_cache:*'));
             $overtime = $this->overtime->approve( $request->all(), $id );
 
             // $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
@@ -127,7 +131,7 @@ class OvertimeController extends Controller
             // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
             $this->dtr->compute_payroll_items($overtime->dtr()->first());
             }
-
+          
             return success_response(
                 trans('messages.approve_overtime_success'), 
                 new OvertimeResource( $overtime ) 
@@ -145,8 +149,11 @@ class OvertimeController extends Controller
      */
     public function decline(OvertimeRequest $request, $id){
         try {
+            $user = User::find(auth()->user()->id);
             log_activity( trans('messages.decline_overtime_attempt') );
-
+            Redis::del($user->id.':my_team_request_list');
+            Redis::del($user->id.':my_request_list');
+            Redis::del(Redis::keys('laravel_cache:*'));
             $overtime = $this->overtime->decline( $request->all(), $id );
             
           // $with_out_schedule_employee = $this->user->get_user_department($overtime->user_id);
