@@ -5,7 +5,7 @@ namespace App\Modules\Report\Http\Controllers;
 use Exception;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Http\Request;
 use App\Exports\DtrSummaryExport;
 use Illuminate\Http\JsonResponse;
@@ -42,7 +42,7 @@ use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResource;
 use App\Modules\Report\Resources\NewDtrSummaryResource;
-
+use App\Modules\User\Models\User;
 class ReportController extends Controller
 {
     protected $report;
@@ -467,10 +467,29 @@ class ReportController extends Controller
     {
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $request->start_date, 'end_date' => $request->end_date], "bhrlog");
         try {
-
+            $user = User::find(auth()->user()->id);
             $bhr_holidays_array = [];
 
-            $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
+           
+            $redisresponse = Redis::get($user->id.':get_dashboard_holidays'.date('Y-m-d'));
+            Redis::del(Redis::keys('laravel_cache:*'));
+            if(isset($redisresponse)) {
+             
+              return json_decode($redisresponse, FALSE);
+                
+            }else{
+
+                $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
+                $Expiretime = (strtotime('tomorrow') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) - datetime_to_timestamp(  date("Y-m-d H:i:s"));
+                if($Expiretime < 0){
+                 $Expiretime = $Expiretime + (86400);
+                 Redis::set($user->id.':get_dashboard_holidays', $bhr_holidays_array,"EX",$Expiretime);
+                }else{
+                 Redis::set($user->id.':get_dashboard_holidays', $bhr_holidays_array,"EX",$Expiretime);
+                }
+                
+                return $bhr_holidays_array;
+            }
 
      // Define the End Point for the API.
         //     $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
@@ -583,12 +602,35 @@ class ReportController extends Controller
     {
         try {
             log_activity(trans('messages.get_anniversary_birthday_attempt'));
-
-            return success_response(
-                trans('messages.get_anniversary_birthday_success'),
-                // new AnniversaryResources($this->report->get_team_birthday_anniversary())
-                new AnniversaryResources($this->report->get_team_birthday_anniversary_last_twodays()) 
-            );
+            $user = User::find(auth()->user()->id);
+            $getteambirthdayanniversary = Redis::get($user->id.':team_birthday_anniversary');
+            Redis::del(Redis::keys('laravel_cache:*'));
+                if(isset($getteambirthdayanniversary)) {
+                  return success_response(
+                        trans('messages.get_anniversary_birthday_success_from_redis'), json_decode($getteambirthdayanniversary, FALSE)
+                    );
+                }else{
+                   $teambirthdayanniversary = new AnniversaryResources($this->report->get_team_birthday_anniversary_last_twodays());
+                   $jsonmyteambirthday = json_encode($teambirthdayanniversary);
+                   $Expiretime = (strtotime('tomorrow') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) - datetime_to_timestamp(  date("Y-m-d H:i:s"));
+                   if($Expiretime < 0){
+                    $Expiretime = $Expiretime + (86400);
+                    Redis::set($user->id.':team_birthday_anniversary', $jsonmyteambirthday,"EX",$Expiretime
+                     );
+                   }else{
+                    Redis::set($user->id.':team_birthday_anniversary', $jsonmyteambirthday,"EX",$Expiretime
+                    );
+                   }
+                    
+                    return success_response(
+                        trans('messages.get_anniversary_birthday_success'), $teambirthdayanniversary
+                    );
+                }
+            // return success_response(
+            //     trans('messages.get_anniversary_birthday_success'),
+            //     // new AnniversaryResources($this->report->get_team_birthday_anniversary())
+            //     new AnniversaryResources($this->report->get_team_birthday_anniversary_last_twodays()) 
+            // );
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
         }
