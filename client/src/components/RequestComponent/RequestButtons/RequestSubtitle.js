@@ -16,7 +16,7 @@ const RequestSubtitle = ( props ) => {
         </Link>
         { Authenticator.check('supervisor', ['view_employee_personal_info','view_employee_job_info']) ?
                         <Link to={{
-                                pathname: global.links.profile + user.id
+                                pathname: global.links.profile + props.user.id
                               }}
                             title="View Profile"
                         >
