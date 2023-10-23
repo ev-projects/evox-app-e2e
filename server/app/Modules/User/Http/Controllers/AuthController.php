@@ -3,7 +3,7 @@
 namespace App\Modules\User\Http\Controllers;
 
 use Exception;
-
+use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Modules\User\Models\User;
@@ -14,7 +14,7 @@ use App\Modules\User\Resources\UserProfileResource;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Resources\PayrollCutoffResource;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     protected $payroll_cutoff;
@@ -68,23 +68,39 @@ class AuthController extends Controller
 
             // Attempt to check if the User is active. If not active, return User not active.
             if ( ! auth()->user()->is_active ) {
-                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                if ( Carbon::today() > Carbon::parse(auth()->user()->termination_date)->addDay() ) {
                     return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
-                }
-               
+                }  
             }
 
             log_activity( trans('messages.login') );
-
+            // $token1 = JWTAuth::getToken();
+            // dd($token);
             // Set the User that was fetched into Session
             $result = [
                 'access_token' => $token,
                 'token_type' => 'bearer',
                 'expires_in' => auth()->factory()->getTTL() * 60
             ];
-
+            
+            
             $result = $this->get_default_payload( $result );
+            $userid = $result["user"]["id"];
+            // Redis::del('team_birthday_anniversary'.date('Y-m-d').$userid);
+            // Redis::del('my_team_request_list:user_id:'.$userid);
+            // Redis::del('my_request_list'.$userid);
+            // Redis::del('getChangeLogs'.$userid);
+            // Redis::del('get_announcements_dashboard');
+            // Redis::del('get_tommorow_leave_list'.date('Y-m-d').$userid);
+            // Redis::del('get_today_leave_list'.date('Y-m-d').$userid);
+            // Redis::del('get_dashboard_holidays'.date('Y-m-d').$userid);
+            // Redis::del('user_id'.$userid);
 
+            // Redis::del(Redis::keys($userid.':*'));
+            // Redis::del(Redis::keys('laravel_cache:*'));
+
+            Redis::set($result["user"]["id"].':userid',  $result["user"]["id"],"EX",3600);
+          
             log_to_file('info', 'Success', [], 'user');
             return success_response( trans('messages.login_success'), $result );
         } catch(Exception $e){
@@ -131,7 +147,6 @@ class AuthController extends Controller
                 if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
                     return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
                 }
-
             }
 
             // Log the date, time and user_id upon login (mobile version)
@@ -148,9 +163,10 @@ class AuthController extends Controller
                 'token_type' => 'bearer',
                 'expires_in' => auth()->factory()->getTTL() * 60
             ];
+           
 
             $result = $this->get_default_payload( $result );
-
+        
             log_to_file('info', 'Success', [], 'user');
             return success_response( trans('messages.login_success'), $result );
         } catch(Exception $e){
@@ -165,8 +181,11 @@ class AuthController extends Controller
      */
     public function authenticateClient(User $user){   
         try {
+
             $user = auth()->user();
             auth()->logout();
+           
+           
             // Attempt to check the Credentials. If credentials not found, return User Not Found.
             if (!$token = auth()->login($user)) {
                 return error_response( trans('messages.user_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
@@ -182,6 +201,7 @@ class AuthController extends Controller
 
             log_activity( trans('messages.login') );
 
+
             // Set the User that was fetched into Session
             $result = [
                 'access_token' => $token,
@@ -190,7 +210,7 @@ class AuthController extends Controller
             ];
 
             $result = $this->get_default_payload( $result );
-
+          
             log_to_file('info', 'Success', [], 'user');
             return success_response( trans('messages.login_success'), $result );
         } catch(Exception $e){
@@ -209,10 +229,13 @@ class AuthController extends Controller
             log_activity( trans('messages.logout') );
 
             log_to_file('info', 'Success', true, 'user');
-
+            $user = auth()->user();
+            Redis::del(Redis::keys('laravel_cache:*'));
             auth()->logout();
-
+         
+            
             return success_response( trans('messages.logout_success') );
+           
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

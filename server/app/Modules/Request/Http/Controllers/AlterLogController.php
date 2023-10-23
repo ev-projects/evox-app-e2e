@@ -11,7 +11,8 @@ use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
 
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
-
+use Illuminate\Support\Facades\Redis;
+use App\Modules\User\Models\User;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Request\Models\AlterLog;
 
@@ -113,13 +114,17 @@ class AlterLogController extends Controller
      */
     public function approve(AlterLogRequest $request, $id){
         try {
+            $user = User::find(auth()->user()->id);
             log_activity( trans('messages.approve_alter_log_attempt') );
 
             $alter_log = $this->alter_log->approve( $request->all() , $id );
 
             // Add code to apply the Alter Log on the specific DTR.
             $dtr = $this->dtr->apply_alter_log_to_dtr( $alter_log );
-
+        
+            Redis::del($user->id.':my_team_request_list');
+            Redis::del($user->id.':my_request_list');
+            // Redis::del(Redis::keys('laravel_cache:*'));
             return success_response(
                 trans('messages.approve_alter_log_success'), 
                 new AlterLogResource( $alter_log ) 
@@ -136,13 +141,16 @@ class AlterLogController extends Controller
      */
     public function decline(AlterLogRequest $request, $id){
         try {
+            $user = User::find(auth()->user()->id);
             log_activity( trans('messages.decline_alter_log_attempt') );
 
             $alter_log = $this->alter_log->decline( $request->all(),$id );
 
             // Add code to Remove the Alter Log from the specific DTR.
             $dtr = $this->dtr->remove_alter_log_from_dtr( $alter_log );
-
+            Redis::del($user->id.':my_team_request_list');
+            Redis::del($user->id.':my_request_list');
+            // Redis::del(Redis::keys('laravel_cache:*'));
             return success_response(
                 trans('messages.decline_alter_log_success'), 
                 new AlterLogResource( $alter_log ) 

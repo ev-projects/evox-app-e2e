@@ -14,9 +14,9 @@ use App\itrequirement;
 use Mail;
 use App\Modules\User\Resources\UserListResourceCollection;
 use App\Modules\User\Models\User;
+use Illuminate\Support\Facades\Redis;
+use DateTime;
 use Illuminate\Support\Facades\Auth;
-use App\Jobs\SendItRequirementEmailJob;
-use App\Jobs\SendComfirmationEmailJob;
 class BookingController extends Controller
 {
     public function GetBookingRoomDetails($roomid)
@@ -32,9 +32,9 @@ class BookingController extends Controller
     ->orderBy('bookings.id', 'ASC')->get();
     return $booking;
     
-} catch (Exception $e) {
+    } catch (Exception $e) {
     return error_response(trans('messages.error_default'), $e);
-}
+    }
     }
 
     public function storeBookingRoomDetails(Request $request)
@@ -393,14 +393,18 @@ class BookingController extends Controller
                         'data' => $requirementlist,
                         'user_type' => "User"   
                     ];
-                    // Mail::send('mail', $array2  , function ($message)use($requirementlist)
-                    // {
-                    //     $message->to($requirementlist[0]->email, $requirementlist[0]->user_name)
-                    //         ->subject('Comformation Mail for Reserved Meeting Room');
-                    //     $message->from('evox@eastvantage.com', 'Evox');
-                    // });
-                    SendComfirmationEmailJob::dispatch($array2, $requirementlist)
-                        ->delay( Carbon::now()->addSeconds(5) );
+                    
+                    // try {
+                  
+                    //     Mail::send('mail', $array1  , function ($message)
+                    //     {
+                    //         $message->to('helpdesk@eastvantage.com', 'HelpDesk')
+                    //             ->subject('Request for IT Requirement for Meeting Room');
+                    //         $message->from('evox@eastvantage.com', 'Evox');
+                    //     });
+                    //         } catch (Exception $e) {
+                    //             return error_response(trans('messages.error_default'), $e);
+                    //         } 
                 }
                    
                 }else{
@@ -474,46 +478,115 @@ class BookingController extends Controller
         
         try {
 
-         $user_list = auth()->user()->users_handled();
+            $user = User::find(auth()->user()->id);
+            $redisresponse = Redis::get($user->id.':get_today_leave_list');
+            // Redis::del(Redis::keys('laravel_cache:*'));
+            $data = json_decode($redisresponse, FALSE);
 
-         $booking = DB::table('leaves')
-         ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
-         ->join('dtrs', 'dtrs.id', '=', 'leaves.dtr_id')
-         ->join('users','users.id', '=', 'dtrs.user_id')
-         ->whereIn('users.id', $user_list->pluck('id')->toArray())
-         ->where('leaves.status','=','approved')
-         ->where('leaves.amount','>','0')
-         ->where('users.is_active','=','1')
-         ->where('dtrs.date','=',DB::raw("DATE_FORMAT(NOW(),'%Y-%m-%d')"))->get();
+            if(isset($data->today_leaves)) {
+               
+                return [
+                    'data' => $data->today_leaves,
+                    'message' => "From redis",
+                ];
+            }else{
+                $user_list = auth()->user()->users_handled();
+                
+                $booking = DB::table('leaves')
+                ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
+                ->join('dtrs', 'dtrs.id', '=', 'leaves.dtr_id')
+                ->join('users','users.id', '=', 'dtrs.user_id')
+                ->whereIn('users.id', $user_list->pluck('id')->toArray())
+                ->where('leaves.status','=','approved')
+                ->where('leaves.amount','>','0')
+                ->where('users.is_active','=','1')
+                ->where('dtrs.date','=',DB::raw("DATE_FORMAT(NOW(),'%Y-%m-%d')"))->get();
+                
+                $Expiretime = (strtotime('tomorrow') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) - datetime_to_timestamp(  date("Y-m-d H:i:s"));
+                if($Expiretime < 0){
+                    $Expiretime = $Expiretime + (86400);
+                    Redis::set($user->id.':get_today_leave_list',json_encode(array_merge( 
+                        array('today_leaves' => $booking),
+                    )),"EX",$Expiretime);
+                }else{
+                    Redis::set($user->id.':get_today_leave_list',json_encode(array_merge( 
+                        array('today_leaves' => $booking),
+                    )),"EX",$Expiretime);
+                }
+               
 
-         return [
-            'data' => $booking,
-            
-        ];
+                
+
+                return [
+                   'data' => $booking,
+                   
+               ];
+               
+            }
+          
+      
 
      } catch (Exception $e) {
          return error_response(trans('messages.error_default'), $e);
      }
-     }
+    }
      public function get_tommorow_leave_list(){
+
         
         try {
-
-         $user_list = auth()->user()->users_handled();
-
-         $booking = DB::table('leaves')
-         ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
-         ->join('dtrs', 'dtrs.id', '=', 'leaves.dtr_id')
-         ->join('users','users.id', '=', 'dtrs.user_id')
-         ->whereIn('users.id', $user_list->pluck('id')->toArray())
-         ->where('leaves.status','=','approved')
-         ->where('leaves.amount','>','0')
-         ->where('users.is_active','=','1')
-         ->where('dtrs.date','=',DB::raw("DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY),'%Y-%m-%d')"))->get();
-         return [
-            'data' => $booking,
+            $user = User::find(auth()->user()->id);
+            $redisresponse = Redis::get($user->id.':get_tommorow_leave_list');
+            // Redis::del(Redis::keys('laravel_cache:*'));
+            // $current_time = datetime_to_timestamp(  date("Y-m-d H:i:s") );
+            // dump(date("Y-m-d H:i:s"));
             
-        ];
+            if(isset($redisresponse)) {
+            $data = json_decode($redisresponse , FALSE);
+
+                return [
+                    'data' => $data,
+                    'message' => "From redis",
+                ];
+            }else{
+                // dd("Test");
+                $user_list = auth()->user()->users_handled();
+                $booking = DB::table('leaves')
+                ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
+                ->join('dtrs', 'dtrs.id', '=', 'leaves.dtr_id')
+                ->join('users','users.id', '=', 'dtrs.user_id')
+                ->whereIn('users.id', $user_list->pluck('id')->toArray())
+                ->where('leaves.status','=','approved')
+                ->where('leaves.amount','>','0')
+                ->where('users.is_active','=','1')
+                ->where('dtrs.date','=',DB::raw("DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY),'%Y-%m-%d')"))->get();
+                // dump(strtotime('tomorrow'));
+                // dump(strtotime('tomorrow') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset()));
+                // dd( datetime_to_timestamp(  date("Y-m-d H:i:s")));
+                $Expiretime = (strtotime('tomorrow') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) - datetime_to_timestamp(  date("Y-m-d H:i:s"));
+                if($Expiretime < 0){
+                    $Expiretime = $Expiretime + (86400);
+                    Redis::set($user->id.':Expiretime', $Expiretime,"EX",$Expiretime);
+                    Redis::set($user->id.':get_tommorow_leave_list', $booking,"EX", $Expiretime);
+                }else{
+                    Redis::set($user->id.':get_tommorow_leave_list', $booking,"EX", $Expiretime);
+                    Redis::set($user->id.':Expiretime', $Expiretime,"EX",$Expiretime);
+                }
+
+                // dd($Expiretime );
+             
+                
+                return [
+                   'data' => $booking,
+                   
+               ];
+               
+            }
+
+      
+
+
+
+        
      } catch (Exception $e) {
          return error_response(trans('messages.error_default'), $e);
      }

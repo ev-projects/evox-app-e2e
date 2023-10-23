@@ -8,7 +8,8 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
+use Illuminate\Support\Facades\Redis;
+use App\Modules\User\Models\User;
 /**
  * 
  *  Handles all the JWT related validation for tokens and other things.
@@ -26,12 +27,15 @@ class JWTAuthentication
     public function handle($request, Closure $next)
     {
         try {
+
+       
             if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return error_response( trans('messages.user_not_found') , [], JsonResponse::HTTP_NOT_FOUND);
             }
 
             # If the token is expired, this exception will handle it.
         } catch (TokenExpiredException $e) {
+            Redis::del(Redis::keys('laravel_cache:*'));
             return error_response( trans('messages.token_expired') , ['code' =>'token_expired'], JsonResponse::HTTP_UNAUTHORIZED);
 
             # If the token is invalid, this exception will handle it.
