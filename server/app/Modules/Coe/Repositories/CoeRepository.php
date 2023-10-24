@@ -74,7 +74,7 @@ class COERepository implements COERepositoryInterface{
             $coe = COE::create([
                 'user_id' => $user_id,
                 'purpose_index' => $purpose_index,
-                'full_name' => $employee['fullName2'],
+                'full_name' => $employee['fullname1'],
                 'address' => encrypt($address),
                 'hire_date' => $employee['hireDate'],
                 'position' => $employee['jobTitle'],
