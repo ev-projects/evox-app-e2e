@@ -42,7 +42,6 @@ class ScheduleResource extends JsonResource
                  $pov_schedule_details[ $schedule_detail->day ] = $schedule_detail->getFormattedDetailPOV($this->owner()->first());
                 }
              }
-            //  dd($this, $this->created_at);
             $result =  array_merge( 
                 array(
                     'id' => $this->id,
@@ -53,8 +52,6 @@ class ScheduleResource extends JsonResource
                     'valid_to'  => ( is_valid( $this->valid_to )? $this->valid_to : ""),
                     'rest_day' => $this->rest_days,
                     'work_days' => get_work_days($this->rest_days),
-                    'created_at' => $this->created_at->format('Y-m-d'),
-                    'updated_at' => $this->updated_at->format('Y-m-d'),
                 ), 
                 array('schedule_details' => $schedule_details),
                 array('schedule_policies' => $schedule_policies),

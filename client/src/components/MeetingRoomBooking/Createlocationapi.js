@@ -81,7 +81,7 @@ export const deleteLocationmaster = (id) => {
   };
 };
 
-export const fecthLocationdetails = (id) => {
+export const fecthLocationdetails = (id, setLocationname) => {
   return async (dispatch, getState) => {
     await API.call({
       method: "get",
@@ -89,10 +89,10 @@ export const fecthLocationdetails = (id) => {
     })
       .then((result) => {
         // dispatch(Formatter.alert_success(result, 3000));
-        // setLocationname(result.data[0].location_name);
+        setLocationname(result.data[0].location_name);
         dispatch({
-          type: "UPDATE_LOCATION",
-          location: result.data[0].location_name,
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
         });
       })
       .catch((e) => {
@@ -112,10 +112,8 @@ export const viewLocationlist = (setLocationlist,setTotalpagecount,setCurrentpag
         setTotalpagecount(result.data.pagination.last_page);
         setCurrentpagecount(result.data.pagination.current_page);
         dispatch({
-          type: "LOCATION_DETAILS",
-          location: result.data.data.data,
-          totalpagecount: result.data.pagination.last_page,
-          currentpagecount: result.data.pagination.current_page,
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
         });
       })
       .catch((e) => {
@@ -141,10 +139,8 @@ export const pagenationLocationlist = (
         setTotalpagecount(result.data.pagination.last_page);
         setCurrentpagecount(result.data.pagination.current_page);
         dispatch({
-          type: "LOCATION_DETAILS",
-          location: result.data.data.data,
-          totalpagecount: result.data.pagination.last_page,
-          currentpagecount: result.data.pagination.current_page,
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
         });
       })
       .catch((e) => {
@@ -186,10 +182,8 @@ export const viewRequestlist = (setRequestlist,setTotalpagecount,setCurrentpagec
         setTotalpagecount(result.data.pagination.last_page);
         setCurrentpagecount(result.data.pagination.current_page);
         dispatch({
-          type: "FECTH_ITREQUIREMENT_LIST",
-          itrequirementlist:result.data.data.data,
-          totalpage_count_itrequirement:result.data.pagination.last_page,
-          currentpage_count_itrequirement:result.data.pagination.current_page,
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
         });
       })
       .catch((e) => {
@@ -216,10 +210,8 @@ export const pagenationRequestlist = (
         setTotalpagecount(result.data.pagination.last_page);
         setCurrentpagecount(result.data.pagination.current_page);
         dispatch({
-          type: "FECTH_ITREQUIREMENT_LIST",
-          itrequirementlist:result.data.data.data,
-          totalpage_count_itrequirement:result.data.pagination.last_page,
-          currentpage_count_itrequirement:result.data.pagination.current_page,
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
         });
       })
       .catch((e) => {

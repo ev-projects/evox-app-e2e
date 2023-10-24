@@ -3,7 +3,7 @@
 namespace App\Modules\Request\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
+
 use App\Http\Controllers\Controller;
 use App\Modules\Email\Mail\OvertimeRequestEmail;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
@@ -135,57 +135,9 @@ class RequestController extends Controller
     public function requestlistNumbers_dashboard(Request $request){
         try {
             log_activity( trans('messages.request_number_display_attempt') );
-            $user = User::find(auth()->user()->id);
-            if($request->url == "my_team_requests"){
-              
-                $redisresponse = Redis::get($user->id.':my_team_request_list');
-                // Redis::del(Redis::keys('laravel_cache:*'));
-                if(isset($redisresponse)) {
-                  return success_response(
-                        trans('messages.request_display_success_from_redis'), json_decode($redisresponse, FALSE)
-                    );
-                }else{
-                   $myrequest_team = $this->request->get_status_numbers_dashboard( $request );
-                   $jsonmyteamrequest = json_encode($myrequest_team);
-                   $Expiretime = (strtotime('tomorrow') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) - datetime_to_timestamp(  date("Y-m-d H:i:s"));
-                   if($Expiretime < 0){
-                    $Expiretime = $Expiretime + (86400);
-                    Redis::set($user->id.':my_team_request_list', $jsonmyteamrequest,"EX",$Expiretime
-                    );
-                   }else{
-                    Redis::set($user->id.':my_team_request_list', $jsonmyteamrequest,"EX",$Expiretime
-                    );
-                   }
-                   
-                    return success_response(
-                        trans('messages.request_display_success'), $myrequest_team
-                    );
-                }
-            }else{
-                $redisresponse = Redis::get($user->id.':my_request_list');
-                // Redis::del(Redis::keys('laravel_cache:*'));
-                if(isset($redisresponse)) {
-                  return success_response(
-                        trans('messages.request_display_success_from_redis'), json_decode($redisresponse, FALSE)
-                    );
-                }else{
-                    $Expiretime = (strtotime('tomorrow') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) - datetime_to_timestamp(  date("Y-m-d H:i:s"));
-                    if($Expiretime < 0){
-                        $Expiretime = $Expiretime + (86400);
-                        Redis::set($user->id.':my_request_list', json_encode($this->request->get_status_numbers_dashboard( $request )
-                    ),"EX",$Expiretime);
-                    }else{
-                        Redis::set($user->id.':my_request_list', json_encode($this->request->get_status_numbers_dashboard( $request )
-                    ),"EX",$Expiretime);
-                    }
-                  
-                    return success_response(
-                        trans('messages.request_display_success'), $this->request->get_status_numbers_dashboard( $request )
-                    );
-                }
-            }
-           
-           
+            return success_response(
+                trans('messages.request_display_success'), $this->request->get_status_numbers_dashboard( $request )
+            );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -193,7 +145,6 @@ class RequestController extends Controller
 
     public function bulkRequest(Request $request){
         try {
-            $user = User::find(auth()->user()->id);
             log_activity( trans('messages.bulk_request_change_status_attempt') );
             $data = array();
             foreach ( $request->checkedList as $value ) {
@@ -289,9 +240,6 @@ class RequestController extends Controller
                   }                
             }
 
-            Redis::del($user->id.':my_team_request_list');
-            Redis::del($user->id.':my_request_list');
-            // Redis::del(Redis::keys('laravel_cache:*'));
             return success_response(
                 trans('messages.bulk_request_update'),$request->bulk_action 
             );

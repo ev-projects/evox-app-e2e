@@ -291,9 +291,7 @@ class DailyTimeRecord extends Component {
                         <tr>
                             <th className="dtr-date">Date</th>
                             <th className="dtr-status">Status</th>
-                            <th className="dtr-schedule">Schedule <span className="dtr-schedule-toggle-on"> 
-                                                                      { this.props.params.id != this.props.user.id && this.state.toggle_pov == true? " ( "+ this.props.dtr.employeeInfo.timezone+" )":" ( "+ this.props.user.timezone+" )"}
-                                                                  </span></th>
+                            <th className="dtr-schedule">Schedule <span className="dtr-schedule-toggle-on"> { this.props.params.id != this.props.user.id && this.state.toggle_pov == true? " ( "+ this.props.dtr.employeeInfo.timezone+" )": null}</span></th>
                             <th className="dtr-log">Clock In</th>
                             <th className="dtr-log">Clock Out</th>
                             <th className="dtr-item">Late</th>

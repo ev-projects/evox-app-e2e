@@ -646,15 +646,6 @@ class User extends Authenticatable implements JWTSubject
             
     }
 
-       # Fetch the Users Handled of the current User Instance 
-       public function users_handled_meetingroom_approval()
-       {  
-        if( $this->hasRole( get_constant('USER_ROLES.supervisor') )  ) { 
-            return $this->belongsToMany(User::class, 'users_supervisors_meetingroom_approvals', 'supervisor_id', 'user_id')
-            ->where('users_supervisors_meetingroom_approvals.is_active','=', 1);
-        }
-       }
-
     # Fetch the User Teams Handled
     public function teams_handled()
     {

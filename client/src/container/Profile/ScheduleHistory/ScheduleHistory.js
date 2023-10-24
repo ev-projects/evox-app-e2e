@@ -93,13 +93,11 @@ onSubmitHandler = (values) => {
                             <Table className="responsive schedule-info" striped bordered hover>
                             <thead>
                                 <tr>
-                                {/* <th>id</th> */}
+                                <th>id</th>
                                 <th>Type</th>
                                 <th>Work Days</th>
                                 <th>Valid From</th>
                                 <th>Valid to</th>
-                                <th>Created</th>
-                                <th>Updated</th>
                                 <th>Action</th>
                                 
                             
@@ -109,14 +107,12 @@ onSubmitHandler = (values) => {
                             <tbody>
                                 { profile.schedule_history.data.map((item) => {
                                     return <tr>
-                                    {/* <td>{item.id}</td> */}
-                                    <td>{item.source_type.toUpperCase()}</td>
+                                    <td>{item.id}</td>
+                                    <td>{item.source_type}</td>
                                     <td>{item.work_days.join(", ")}</td>
                                     <td>{ item.valid_from}</td>
                                     <td>{item.valid_to !=null || item.valid_to !="" ? item.valid_to : "ONWARDS"}</td>
                                     {/* <td> <Link to={{ pathname: global.links.profile+ profile.details.id+"/schedule/"+item.id  }} className="nav-link" >Details <i className="fa fa-eye" aria-hidden="true"></i></Link></td> */}
-                                    <td>{item.created_at}</td>
-                                    <td>{item.updated_at}</td>
                                     <td>  <a href={ global.links.profile+ profile.details.id+"/schedule/"+item.id} target={ "_blank"}>Details <i className="fa fa-eye" aria-hidden="true"></i></a></td>
                                 </tr>         
                                 })}

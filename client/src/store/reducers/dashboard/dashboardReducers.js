@@ -14,14 +14,6 @@ const initState = {
     recent_punch:[],
     tommorowleaves:[],
     dashboardholiday:[],
-    location:[],
-    bookedlist:[],
-    statuscount:[],
-    status:"All",
-    totalpage_count:1,
-    currentpage_count:1,
-    totalpagecount:1,
-    currentpagecount:1,
     alterrequest:null,
     overtimerequest:null,
     restdayrequest:null,
@@ -32,8 +24,6 @@ const initState = {
     mychangeschedulerequest:null,
     worktour:true,
     isRecentPunchLoaded: false,
-    totpagecount:1,
-    curpagecount:1,
 }
 
 const dashboardReducers = (state = initState, action) => {
@@ -139,26 +129,6 @@ const dashboardReducers = (state = initState, action) => {
                                 dashboardholiday : action.dashboardholiday,
                             }
                             break;
-                            case "LOCATION_DETAILS":
-                                result = {
-                                    ...state,
-                                    location : action.location,
-                                    totalpagecount:action.totalpagecount,
-                                    currentpagecount:action.currentpagecount
-                                }
-                                break;
-                                case "MEETING_ROOM_APPROVAL_LIST":
-                                    result = {
-                                        ...state,
-                                        bookedlist: action.bookedlist,
-                                        statuscount: action.statuscount,
-                                        totalpage_count: action.totalpage_count,
-                                        currentpage_count: action.currentpage_count,
-                                        status: action.status,
-                                        totpagecount:action.totpagecount,
-                                        curpagecount:action.curpagecount,
-                                    }
-                                    break;
             
         default:
             result = state;

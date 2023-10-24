@@ -17,7 +17,7 @@ class LocationController extends Controller
     {
         try {
         if($id == null){
-             $location = DB::table('locations')->orderBy('id', 'DESC')->paginate(10);
+             $location = DB::table('locations')->orderBy('id', 'ASC')->paginate(10);
             return [
                 'data' => $location,
                 'pagination' => [
@@ -30,7 +30,7 @@ class LocationController extends Controller
                 
             ];
         }else{
-            return $location = DB::table('locations')->where('id','=',$id)->orderBy('id', 'DESC')->get();
+            return $location = DB::table('locations')->where('id','=',$id)->orderBy('id', 'ASC')->get();
         }
     } catch (Exception $e) {
         return error_response(trans('messages.error_default'), $e);

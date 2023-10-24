@@ -13,20 +13,18 @@ import { useDispatch } from "react-redux";
 import { pagenationRoomlist, viewRoomlist } from "./Createroomapi";
 import Pagination from "react-bootstrap-4-pagination";
 import "./MeetingRoom.css";
-import { connect, dispatch } from "react-redux";
-const Roomlist = (props) => {
+const Roomlist = () => {
   const dispatch = useDispatch();
   const [totalpagecount, setTotalpagecount] = useState(1);
   const [currentpagecount, setCurrentpagecount] = useState(1);
   const [loader, setLoader] = useState(false);
   const [roomlist, setRoomlist] = useState([]);
-  const { meetingroom }= props;
   useEffect(() => {
     dispatch(viewRoomlist(setRoomlist, setTotalpagecount, setCurrentpagecount));
   }, []);
 
   let paginationConfig = {
-    totalPages: meetingroom.total_page_count,
+    totalPages: totalpagecount,
     currentPage: currentpagecount,
     showMax: 10,
     size: "sm",
@@ -79,10 +77,10 @@ const Roomlist = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {meetingroom.roomlist.length > 0 &&
-                    meetingroom.roomlist.map((room, index) => (
+                  {roomlist.length > 0 &&
+                    roomlist.map((room, pos) => (
                       <tr>
-                        <td>{index + 1}</td>
+                        <td>{room.id}</td>
                         <td>{room.name}</td>
                         <td>{room.location_name}</td>
                         <td>{room.seats} </td>
@@ -121,11 +119,5 @@ const Roomlist = (props) => {
     </div>
   );
 };
-const mapStateToProps = (state) => {
-  return {
-    meetingroom:state.meetingroom,
-  };
-};
 
-export default connect(mapStateToProps)(Roomlist);
-
+export default Roomlist;

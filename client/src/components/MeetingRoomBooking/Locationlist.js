@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {Table} from 'react-bootstrap';
-import { connect, dispatch } from "react-redux";
 import { Link } from "react-router-dom"; 
 import Authenticator from "../../services/Authenticator";
 import axios from "axios";
@@ -14,13 +13,13 @@ import PreLoader from "./PreLoader";
 import Pagination from "react-bootstrap-4-pagination";
 import { pagenationLocationlist, viewLocationlist } from "./Createlocationapi";
 import "./MeetingRoom.css";
-const Locationlist = (props) => {
+const Locationlist = () => {
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);
   const [totalpagecount, setTotalpagecount] = useState(1);
   const [currentpagecount, setCurrentpagecount] = useState(1);
     const [locationlist, setLocationlist] = useState([]);
-    const { dashboard } = props;
+  
     useEffect(() => {
      
       dispatch(viewLocationlist(setLocationlist,setTotalpagecount,setCurrentpagecount))
@@ -31,8 +30,8 @@ const Locationlist = (props) => {
         
 
         let paginationConfig = {
-          totalPages: dashboard.totalpagecount,
-          currentPage: dashboard.currentpagecount,
+          totalPages: totalpagecount,
+          currentPage: currentpagecount,
           showMax: 10,
           size: "sm",
           threeDots: true,
@@ -63,24 +62,21 @@ const Locationlist = (props) => {
     <ContainerWrapper>
       <ContainerBody>
       <Content label="Create Room">
-        <h2 className="page-title">Location List</h2>
+        <h2 className="page-title">Country list</h2>
         <div className="mb-3">
         <Table striped bordered hover >
           <thead>
             <tr>
-              
-              <th>
-                Sno
-              </th>
+              <th>Location ID</th>
               <th>Location Name</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {dashboard.location.length > 0 &&
-              dashboard.location.map((location, index) => (
+            {locationlist.length > 0 &&
+              locationlist.map((location, pos) => (
                 <tr>
-                  <td>{index + 1}</td>
+                  <td>{location.id}</td>
                   <td>{location.location_name}</td>
                   <td className="actions">
                     <span>
@@ -116,10 +112,4 @@ const Locationlist = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    dashboard: state.dashboard,
-  };
-};
-
-export default connect(mapStateToProps)(Locationlist);
+export default Locationlist;

@@ -24,10 +24,6 @@ class OpsSchedule extends Component {
   render() {
     // Get all Ops Departments from server constants
 	const opsScheduleList = this.props.opsSchedules.listInstance != undefined ? this.props.opsSchedules.listInstance : [];
-	const opsScheduleList_col1 = opsScheduleList[0];
-	const opsScheduleList_col2 = opsScheduleList[1];
-	console.log(111, opsScheduleList_col1);
-	console.log(222, opsScheduleList_col2);
     return  <ContainerWrapper> 
 
 	<h2 className="header_text">EV Support Team Schedule</h2>
@@ -36,7 +32,7 @@ class OpsSchedule extends Component {
 		<div className="row">
 			<div className="col-6 col-lg-6 col-md-6 col-sm-12">
 
-				{opsScheduleList_col1?.map((schedules, index1) => {
+				{opsScheduleList.map((schedules, index1) => {
 					return <div className="row card">
 						<div className="col-11 card-body">
 							<div className="h3">{schedules.department} Services</div>
@@ -176,48 +172,9 @@ class OpsSchedule extends Component {
 				</div> */}
 			</div>
 
-			<div className="col-6 col-lg-6 col-md-6 col-sm-12">
+			{/* <div className="col-6 col-lg-6 col-md-6 col-sm-12">
 
-				{opsScheduleList_col2?.map((schedules, index1) => {
-						return <div className="row card">
-							<div className="col-11 card-body">
-								<div className="h3">{schedules.department} Services</div>
-								<p>{schedules.description}</p>
-								<ModalImage small={schedules.image} large={schedules.image} alt={schedules.image} />
-								{/* {(schedules.type === "image") ? <img src={schedules.image} width="100%" /> :
-								<table width="100%" cellpadding="5" border="1">
-									<thead>
-										<tr>
-											<th>POC</th>
-											<th>Domain</th>
-											<th>Scope</th>
-											<th>Schedule</th>
-											<th>Email</th>
-										</tr>
-									</thead>
-									<tbody>
-									{schedules.list?.map((schedule, index2) => {
-										return <tr>
-											<td>{schedule.name}<br/><small>{schedule.position}</small></td>
-											<td>{schedule.domain}</td>
-											<td>
-												<ul>
-												{schedule.scope.map((scope, index3) => {
-													return <li>{scope}</li>;
-												})}
-												</ul>
-											</td>
-											<td><small>{schedule.work_days}<br/>{schedule.start_time} - {schedule.end_time} {schedule.timezone}</small></td>
-											<td>{schedule.email}</td>
-										</tr>;
-									})}
-									</tbody>
-								</table>} */}
-							</div>
-						</div>;
-					})}
-
-				{/* <div className="row card">
+				<div className="row card">
 					<div className="col-11 card-body">
 						<div className="h3">Shared Services</div>
 						<p>For issues, inquiries or requests, please reach us via email below.</p>
@@ -351,8 +308,8 @@ class OpsSchedule extends Component {
 							</tbody>
 						</table>
 					</div>
-				</div> */}
-			</div>
+				</div>
+			</div> */}
 
 			
 		</div>

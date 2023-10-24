@@ -55,16 +55,3 @@
 .fc .fc-timegrid-axis-cushion {
   text-transform: capitalize !important;
 }
-
-.modal-header{
-  background-color: #07315a !important;
-}
-
-.header-text{
-  color: white !important;
-}
-
-.modal-footer{
-
-  background-color: #07315ae6;
-}
