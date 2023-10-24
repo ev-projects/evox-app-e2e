@@ -18,9 +18,8 @@ use App\Modules\Department\Resources\AnnouncementResource;
 
 use App\Modules\Department\Http\Requests\AnnouncementRequest;
 
-use Illuminate\Support\Facades\Redis;
+
 use App\Modules\Department\Repositories\AnnouncementRepositoryInterface;
-use App\Modules\User\Models\User;
 
 class AnnouncementController extends Controller
 {
@@ -41,10 +40,9 @@ class AnnouncementController extends Controller
     {
         
         try {
-            
         //  $announcements_list = Announcement::orderBy('created_at', 'desc')->get();
 
-        $announcements_list = $this->announcement->index();
+         $announcements_list = $this->announcement->index();
         return success_response(
             trans('messages.fetch_change_log_success'), 
            AnnouncementResource::collection($announcements_list)
@@ -70,9 +68,8 @@ class AnnouncementController extends Controller
             
             
             log_activity( trans('messages.create_department_announcement_attempt') );
-            $user = User::find(auth()->user()->id);
+
             $dep_announcement = $this->announcement->store($request);
-            Redis::del('get_announcements_dashboard');
             return success_response(
                 trans('messages.create_department_announcement_success'), 
                 $dep_announcement
@@ -125,18 +122,17 @@ class AnnouncementController extends Controller
 
         return success_response(
             trans('messages.create_department_announcement_success'), 
-            new AnnouncementResource( $dep_announcement ) 
+            new AnnouncementResource(  $dep_announcement ) 
         );
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-
     public function update(AnnouncementRequest $request, $id)
     {   
         
@@ -147,7 +143,6 @@ class AnnouncementController extends Controller
             $check_announcement = $department->departments_announcements()->find($id);
             if($check_announcement || Auth::user()->hasRole( get_constant('USER_ROLES.admin'))){
                 $dep_announcement = $this->announcement->update($request, $id);
-            Redis::del('get_announcements_dashboard');
             return success_response(
                 trans('messages.update_department_announcement_success'), 
                 $dep_announcement
@@ -233,39 +228,12 @@ class AnnouncementController extends Controller
         
        
         try {
-            $user = User::find(auth()->user()->id);
             $announcements_list = $this->announcement->dashboard_index($request);
-            if(isset($request->dep_id) && $request->dep_id <> "all"){
-
-            return success_response(
+        return success_response(
             trans('messages.fetch_change_log_success'), 
-            AnnouncementResource::collection($announcements_list)
-            );
-            
-            }else{
-                $redisresponse = Redis::get('get_announcements_dashboard');
-                // Redis::del(Redis::keys('laravel_cache:*'));
-                if(isset($redisresponse)) {
-                  return success_response(
-                    trans('messages.fetch_change_log_success_from_redis'),  json_decode($redisresponse, FALSE)
-                    );
-                }else{
-                  
-                   $getannouncements = AnnouncementResource::collection($announcements_list);
-                   $jsongetannouncements= json_encode($getannouncements);
-                   $Expiretime = (strtotime('tomorrow') - string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) - datetime_to_timestamp(  date("Y-m-d H:i:s"));
-                   if($Expiretime < 0){
-                    $Expiretime = $Expiretime + (86400);
-                    Redis::set('get_announcements_dashboard', $jsongetannouncements,"EX",$Expiretime);
-                   }else{
-                    Redis::set('get_announcements_dashboard', $jsongetannouncements,"EX",$Expiretime);
-                   }
-                    
-                    return success_response(
-                        trans('messages.fetch_change_log_success'), $getannouncements
-                    );
-                }
-            }
+           AnnouncementResource::collection($announcements_list)
+        );
+
         
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);

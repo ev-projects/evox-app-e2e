@@ -97,9 +97,6 @@ class OpsScheduleController extends Controller
             }
         }
         $ops_scheds = array_values($ops_scheds);
-        if ($ops_scheds) {
-            $ops_scheds = array_chunk($ops_scheds, ceil(count($ops_scheds) / 2));
-        }
 
         return success_response(
             trans('messages.fetch_ops_schedules_success'), 

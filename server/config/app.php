@@ -151,7 +151,6 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         Spatie\Activitylog\ActivitylogServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
-        
 
         /*
          * Package Service Providers...
@@ -235,8 +234,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Socialite' => 'Laravel\Socialite\Facades\Socialite',
-        'PDF' => Barryvdh\DomPDF\Facade::class,
-        'Redis' => Illuminate\Support\Facades\Redis::class
+        'PDF' => Barryvdh\DomPDF\Facade::class
 
     ],
 

@@ -21,7 +21,7 @@ const Meetingroomapproval = (props) => {
   const [loader, setLoader] = useState(false);
   let history = useHistory();
   // const { id } = props.params.id;
-  // const [locationname, setLocationname] = useState("");
+  //   const [locationname, setLocationname] = useState("");
   const [roomname, setRoomname] = useState("");
   const [startdate, setStartdate] = useState("");
   const [enddate, setEnddate] = useState("");
@@ -30,13 +30,11 @@ const Meetingroomapproval = (props) => {
   const [userid, setUserid] = useState("");
   const [username, setUsername] = useState("");
   const [status, setStatus] = useState("");
-  const [itrequirement, setItrequirement] = useState("");
   const [validateapproval, setValidateapproval] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
     if (props.params.id !== "0") {
-
       dispatch(
         fecthBookedroomdetails(
           props.params.id,
@@ -47,15 +45,13 @@ const Meetingroomapproval = (props) => {
           setUsername,
           setUserid,
           setStatus,
-          setApprovalnote,
-          setItrequirement
+          setApprovalnote
         )
       );
     }
   }, []);
 
   const { user } = props;
-  const { meetingroom } = props
   const handleupdatestatus = async (evetstatus) => {
     var statustext = evetstatus == 1 ? "Approve" : "Decline";
     if (window.confirm("Are you sure you want to "+ statustext +" this request?")) {
@@ -84,9 +80,9 @@ const Meetingroomapproval = (props) => {
       <ContainerWrapper>
         <ContainerBody>
           <Content col="6" label="Create Room">
-            <h3>{meetingroom.roomname}</h3>
+            <h3>{roomname}</h3>
             <div>
-              <h5>Created By: {meetingroom.username}</h5>
+              <h5>Created By: {username}</h5>
             </div>
             <form>
               <Row>
@@ -97,7 +93,7 @@ const Meetingroomapproval = (props) => {
                       type="text"
                       placeholder="Room Name"
                       className="form-control"
-                      value={meetingroom.startdate}
+                      value={startdate}
                       disabled
                     ></input>
                   </div>
@@ -109,7 +105,7 @@ const Meetingroomapproval = (props) => {
                       type="text"
                       placeholder="Enter Location"
                       className="form-control"
-                      value={meetingroom.enddate}
+                      value={enddate}
                       disabled
                     ></input>
                   </div>
@@ -117,13 +113,7 @@ const Meetingroomapproval = (props) => {
                 <Col size="12">
                   <div className="form-group">
                     <label>Note:</label>
-                    <p>{meetingroom.note}</p>
-                  </div>
-                </Col>
-                <Col size="12">
-                  <div className="form-group">
-                    <label>Requested IT Requirement:</label>
-                    <p><ul>{meetingroom.itrequirement != null ? meetingroom.itrequirement.split(',').map((step)=> <li>{step.toUpperCase()}{""}</li>) : <b>Requirement Not Requested</b>}</ul></p>
+                    <p>{note}</p>
                   </div>
                 </Col>
                 <Col size="12">
@@ -134,21 +124,9 @@ const Meetingroomapproval = (props) => {
                       rows="3"
                       name="approvalnote"
                       placeholder="Enter Approval Note..."
-                      value={meetingroom.approvernote}
+                      value={approvalnote}
                       onChange={(e) => {
                         setApprovalnote(e.target.value);
-                        dispatch({
-                          type: "MEETING_ROOM_APPROVAL",
-                          roomname :meetingroom.roomname,
-                          startdate : meetingroom.startdate,
-                          enddate : meetingroom.enddate,
-                          note : meetingroom.note,
-                          username : meetingroom.username,
-                          userid : meetingroom.userid,
-                          status :  meetingroom.status,
-                          approvernote : e.target.value,
-                          itrequirement : meetingroom.itrequirement,
-                        })
                       }}
                     ></textarea>
                     {validateapproval && (
@@ -167,7 +145,7 @@ const Meetingroomapproval = (props) => {
                 }}
               >
                 <div className="col-4">
-                  {meetingroom.status == "pending" && (
+                  {status == "pending" && (
                     <Button
                       type="button"
                       className="btn btn-primary"
@@ -178,7 +156,7 @@ const Meetingroomapproval = (props) => {
                   )}
                 </div>
                 <div className="col-3">
-                {(meetingroom.status === "pending" || meetingroom.status === "approved") && (
+                {(status === "pending" || status === "approved") && (
                   <button
                     type="button"
                     className="btn btn-danger"
@@ -202,7 +180,6 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     myTeamList: state.myTeamList,
-    meetingroom:state.meetingroom,
   };
 };
 

@@ -18,11 +18,8 @@ export const viewBookingdetails = (
         setCurrentpagecount(result.data.pagination.current_page);
         setStatuscount(result.data.statuscount);
         dispatch({
-          type: "MEETING_ROOM_APPROVAL_LIST",
-          bookedlist:result.data.data.data,
-          statuscount:result.data.statuscount,
-          totpagecount:result.data.pagination.last_page,
-          curpagecount:result.data.pagination.current_page,
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
         });
       })
       .catch((e) => {
@@ -69,11 +66,8 @@ export const statusChange = (
         setStatus(status);
         // setStatuscount(result.data.statuscount);
         dispatch({
-          type: "MEETING_ROOM_APPROVAL_LIST",
-          bookedlist:result.data.data.data,
-          totpagecount:result.data.pagination.last_page,
-          status:status,
-          statuscount:result.data.statuscount,
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
         });
       })
       .catch((e) => {
@@ -115,11 +109,10 @@ export const filterClick = (
         setTotalpagecount(result.data.pagination.last_page);
         setStatuscount(result.data.statuscount);
 
+        console.log(result.data.statuscount);
         dispatch({
-          type: "MEETING_ROOM_APPROVAL_LIST",
-          bookedlist:result.data.data.data,
-          statuscount:result.data.statuscount,
-          totpagecount:result.data.pagination.last_page,
+          type: "SET_REDIRECT",
+          link: global.links.dashboard,
         });
       })
       .catch((e) => {
@@ -154,10 +147,8 @@ export const requestPagenationclick = (status,page,fromdate,todate,setBookedlist
             setBookedlist(result.data.data.data);
             setTotalpagecount(result.data.pagination.last_page);
             dispatch({
-              type: "MEETING_ROOM_APPROVAL_LIST",
-              bookedlist:result.data.data.data,
-              totpagecount:result.data.pagination.last_page,
-              statuscount:result.data.statuscount,
+              type: "SET_REDIRECT",
+              link: global.links.dashboard,
             });
           })
           .catch((e) => {

@@ -16,23 +16,23 @@ import { pagenationRequestlist, viewRequestlist } from "./Createlocationapi";
 import "./MeetingRoom.css";
 
 const ItRequirementList = (props) => {
- 
+
   const dispatch = useDispatch();
   const [totalpagecount, setTotalpagecount] = useState(1);
   const [currentpagecount, setCurrentpagecount] = useState(1);
   const [requestlist, setRequestlist] = useState([]);
-  const { user ,meetingroom } = props;
+  const { user } = props;
     useEffect(() => {
-    
+     
       dispatch(viewRequestlist(setRequestlist,setTotalpagecount,setCurrentpagecount,user.id))
-
-    },[]);
+       
+        },[]);
 
 
         
 
         let paginationConfig = {
-          totalPages: meetingroom.totalpage_count_itrequirement,
+          totalPages: totalpagecount,
           currentPage: currentpagecount,
           showMax: 10,
           size: "sm",
@@ -54,6 +54,8 @@ const ItRequirementList = (props) => {
           dispatch(pagenationRequestlist(setRequestlist,page,setTotalpagecount,
            setCurrentpagecount,user.id))
       
+           
+            
           },
         };
   return (
@@ -61,12 +63,11 @@ const ItRequirementList = (props) => {
     <ContainerWrapper>
       <ContainerBody>
       <Content label="Create Room">
-        <h2 className="page-title">Meeting Room Requirement List</h2>
+        <h2 className="page-title">IT Requirement Request list</h2>
         <div className="mb-3">
         <Table striped bordered hover >
           <thead>
             <tr>
-              <th>Sno</th>
               <th>Room Name</th>
               <th>Reserved By</th>
               <th>Start Date</th>
@@ -77,10 +78,9 @@ const ItRequirementList = (props) => {
             </tr>
           </thead>
           <tbody>
-            {meetingroom.itrequirementlist.length > 0 &&
-              meetingroom.itrequirementlist?.map((requestlist, index) => (
+            {requestlist.length > 0 &&
+              requestlist.map((requestlist, pos) => (
                 <tr>
-                  <td>{index + 1}</td>
                   <td>{requestlist.name}</td>
                   <td>{requestlist.user_name}</td>
                   <td>{requestlist.start_date}</td>
@@ -120,7 +120,6 @@ const mapStateToProps = (state) => {
     return {
       user: state.user,
       myTeamList: state.myTeamList,
-      meetingroom:state.meetingroom,
     };
   };
   

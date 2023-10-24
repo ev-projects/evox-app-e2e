@@ -22,7 +22,6 @@ import {
   updatedRoomdetails,
 } from "./Createroomapi.js";
 import { useDispatch } from "react-redux";
-import { connect, dispatch } from "react-redux";
 const RoomMaster = (props) => {
   // const { id } = useParams();
   const [name, setRoomname] = useState("");
@@ -34,8 +33,6 @@ const RoomMaster = (props) => {
   const [validseat, setvalidseat] = useState(false);
   const [datalocation, setDatalocation] = useState([]);
   const [loader, setLoader] = useState(false);
-  const {meetingroom} = props;
-  
   let history = useHistory();
   const dispatch = useDispatch();
   // const locations = useLocation();
@@ -140,169 +137,7 @@ const RoomMaster = (props) => {
         <ContainerBody>
           <Content col="6" label="Create Room">
             <h2>Create Master</h2>
-            {props.params.id !== "0" ? 
-             <form>
-             <Row>
-               <Col size="6">
-                 <div className="form-group">
-                   <label>RoomName:</label>
-                   <input
-                     type="text"
-                     placeholder="RoomName"
-                     className="form-control"
-                     required
-                     onChange={(e) => {
-                       setRoomname(e.target.value);
-                       dispatch({
-                        type: "UPDATE_ROOM",
-                        roomname : e.target.value,
-                        locationname:meetingroom.locationname,
-                        description:meetingroom.description,
-                        noofseats:meetingroom.noofseats,
-                        });
-                       if (e.target.value == "") {
-                         setvalidroomname(true);
-                       } else {
-                         setvalidroomname(false);
-                       }
-                     }}
-                     value={meetingroom.roomname}
-                   ></input>
-                   {validroomname && (
-                     <label style={{ color: "red" }}>
-                       Please Enter Room Name
-                     </label>
-                   )}
-                 </div>
-               </Col>
-               <Col size="6">
-                 <div className="form-group">
-                   <label>Location:</label>
-                   <select
-                     name="type"
-                     className="form-control"
-                     required
-                     value={meetingroom.locationname}
-                     onChange={(e) => {
-                       setLocation(e.target.value);
-                       dispatch({
-                        type: "UPDATE_ROOM",
-                        roomname : meetingroom.roomname,
-                        locationname:e.target.value,
-                        description:meetingroom.description,
-                        noofseats:meetingroom.noofseats,
-                        });
-                       
-                       if (e.target.value == "") {
-                         setvalidlocation(true);
-                       } else {
-                         setvalidlocation(false);
-                       }
-                     }}
-                   >
-                     <option value="">- Select Location -</option>
-                     {meetingroom.locationlist.length > 0 &&
-                       meetingroom.locationlist.map((location, pos) => (
-                         <option value={location.id}>
-                           {location.location_name}
-                         </option>
-                       ))}
-                   </select>
-                   {validlocation && (
-                     <label style={{ color: "red" }}>
-                       Please Select Location
-                     </label>
-                   )}
-                 </div>
-               </Col>
-               <Col size="6">
-                 <div className="form-group">
-                   <label>No of Seats:</label>
-                   <input
-                     type="number"
-                     placeholder="Seats"
-                     className="form-control"
-                     required
-                     value={meetingroom.noofseats}
-                     onChange={(e) => {
-                       setSeats(e.target.value);
-                       dispatch({
-                        type: "UPDATE_ROOM",
-                        roomname : meetingroom.roomname,
-                        locationname:meetingroom.locationname,
-                        description:meetingroom.description,
-                        noofseats:e.target.value,
-                        });
-                       if (e.target.value == "") {
-                         setvalidseat(true);
-                       } else {
-                         setvalidseat(false);
-                       }
-                     }}
-                   ></input>
-                   {validseat && (
-                     <label style={{ color: "red" }}>Please Enter Seats</label>
-                   )}
-                 </div>
-               </Col>
-               <Col size="12">
-                 <div className="form-group">
-                   <label>Description:</label>
-                   <textarea
-                     className="form-control"
-                     rows="3"
-                     name="employee_note"
-                     value={meetingroom.description}
-                     placeholder="Enter Description..."
-                     onChange={(e) => {
-                       setdescription(e.target.value);
-                       dispatch({
-                        type: "UPDATE_ROOM",
-                        roomname : meetingroom.roomname,
-                        locationname:meetingroom.locationname,
-                        description:e.target.value,
-                        noofseats:meetingroom.noofseats,
-                        });
-                     }}
-                   ></textarea>
-                 </div>
-               </Col>
-             </Row>
-
-             <div className="row">
-               <div className="col-3">
-                 {props.params.id == "0" ? (
-                   <Button
-                     type="button"
-                     className="btn btn-primary"
-                     onClick={handlesave}
-                   >
-                     <i className="fa fa-location-arrow" /> Submit
-                   </Button>
-                 ) : (
-                   <Button
-                     type="button"
-                     className="btn btn-primary"
-                     onClick={handleupdate}
-                   >
-                     <i className="fa fa-location-arrow" /> Update
-                   </Button>
-                 )}
-               </div>
-               {props.params.id !== "0" && (
-                 <div className="col-3">
-                   <button
-                     type="button"
-                     className="btn btn-danger"
-                     onClick={handledelete}
-                     style={{ backgroundColor: "red !important" }}
-                   >
-                     <i className="fa fa-trash" /> Delete
-                   </button>
-                 </div>
-               )}
-             </div>
-           </form>: <form>
+            <form>
               <Row>
                 <Col size="6">
                   <div className="form-group">
@@ -347,8 +182,8 @@ const RoomMaster = (props) => {
                       }}
                     >
                       <option value="">- Select Location -</option>
-                      {meetingroom.locationlist.length > 0 &&
-                        meetingroom.locationlist.map((location, pos) => (
+                      {datalocation.length > 0 &&
+                        datalocation.map((location, pos) => (
                           <option value={location.id}>
                             {location.location_name}
                           </option>
@@ -435,8 +270,6 @@ const RoomMaster = (props) => {
                 )}
               </div>
             </form>
-            }
-           
           </Content>
         </ContainerBody>
       </ContainerWrapper>
@@ -444,11 +277,4 @@ const RoomMaster = (props) => {
   );
 };
 
-
-const mapStateToProps = (state) => {
-  return {
-    meetingroom:state.meetingroom,
-  };
-};
-
-export default connect(mapStateToProps)(RoomMaster);
+export default RoomMaster;

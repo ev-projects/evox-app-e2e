@@ -80,13 +80,6 @@ export const fecthRoomdetails = (
         setLocation(result.data[0].location);
         setdescription(result.data[0].description);
         setSeats(result.data[0].seats);
-        dispatch({
-        type: "UPDATE_ROOM",
-        roomname : result.data[0].name,
-        locationname:result.data[0].location,
-        description:result.data[0].description,
-        noofseats:result.data[0].seats,
-        });
       })
       .catch((e) => {
         dispatch(Formatter.alert_error(e));
@@ -169,12 +162,6 @@ export const viewRoomlist = (setRoomlist,setTotalpagecount,setCurrentpagecount) 
         setRoomlist(result.data.data.data);
         setTotalpagecount(result.data.pagination.last_page);
         setCurrentpagecount(result.data.pagination.current_page);
-        dispatch({
-          type: "FECTH_ROOM_LIST",
-          roomlist : result.data.data.data,
-          total_page_count : result.data.pagination.last_page,
-          current_page_count : result.data.pagination.current_page,
-        });
       })
       .catch((e) => {
         dispatch(Formatter.alert_error(e));
@@ -192,12 +179,6 @@ export const pagenationRoomlist = (setRoomlist,page,setTotalpagecount,setCurrent
         setRoomlist(result.data.data.data);
         setTotalpagecount(result.data.pagination.last_page);
         setCurrentpagecount(result.data.pagination.current_page);
-        dispatch({
-          type: "FECTH_ROOM_LIST",
-          roomlist : result.data.data.data,
-          total_page_count : result.data.pagination.last_page,
-          current_page_count : result.data.pagination.current_page,
-        });
       })
       .catch((e) => {
         dispatch(Formatter.alert_error(e));
@@ -214,10 +195,6 @@ export const drpdownLocationlist = (setDatalocation)=>{
     })
       .then((result) => {
         setDatalocation(result.data);
-        dispatch({
-          type: "FECTH_LOCATION_LIST",
-          locationlist:result.data,
-        });
       })
       .catch((e) => {
         dispatch(Formatter.alert_error(e));
