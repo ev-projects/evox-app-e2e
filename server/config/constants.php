@@ -83,28 +83,6 @@ return [
         'lastChanged'
     ],
 
-    'BHR_COE_USER_FIELDS' => [
-        'employeeNumber',
-        'fullname1',
-        'hireDate',
-        'jobTitle',
-        'address1',
-        'address2',
-        'city',
-        'state',
-        'zipcode',
-        'country',
-        'payRate',
-        '4206.4',//De Minimis
-        '4206.7',//De Minimis Currency Code
-        '4500.4',//Rice Allowance Company pays,                DMB
-        '4527.4',//Actual Medical Assistance Company pays,     DMB
-        '4526.4',//Laundry Allowance Company pays,             DMB
-        '4529.4',//Medical Allowance (DMB) Company pays,       DMB
-        '4525.4',//Clothing Allowance Company pays,            DMB
-        '4200.2'//Transportation Allowance (non-taxable) Coverage,    OTHER
-    ],
-
     'BHR_USER_PERSONAL' => [
         'mobilePhone',
         'jobTitle'
