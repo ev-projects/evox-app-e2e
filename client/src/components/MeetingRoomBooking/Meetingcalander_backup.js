@@ -16,7 +16,7 @@ import {
 } from "react-bootstrap";
 // import ModalAlert from "./Modal";
 import "./MeetingRoom.css";
-import { getDate, isLastDayOfMonth } from "date-fns";
+import { format, getDate } from "date-fns";
 import dayjs from "dayjs";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -32,16 +32,14 @@ import {
   changeLocation,
   dropdownLocationdetails,
   dropdownMeetingRoomdetails,
-  getItrequirement
 } from "./FecthDetailsapi";
 import { connect, dispatch } from "react-redux";
 import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
-import ItRequirementList from "./ItRequirementList";
 
 const Meetingcalander = (props) => {
   const dispatch = useDispatch();
-  const { user, meetingroom } = props;
+  const { user } = props;
   const [showalert, setShowalert] = useState(false);
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
@@ -72,41 +70,17 @@ const Meetingcalander = (props) => {
   const [validtimeout, setValidtimeout] = useState(false);
   const [timeinhours, setTimeinhours] = useState(0);
   const [timeouthours, setTimeouthours] = useState(0);
-  const [itlist, setItlist] = useState([]);
   const clearcheck = () => {
-    // setProjectorchk(false);
-    // setMonitorchk(false);
-    // setAudiochk(false);
-    // setLaptopchk(false);
-    // setDesktopchk(false);
-    // setItlist(...itlist.map((check) => {
-    //  check.isAdded=false;
-    // }));
-    updateState();
+    setProjectorchk(false);
+    setMonitorchk(false);
+    setAudiochk(false);
+    setLaptopchk(false);
+    setDesktopchk(false);
     setMyArray([]);
-
-  };
-
-  const updateState = () => {
-    const newState = meetingroom.itrequirementmaster.map(obj => {
-      // 👇️ if id equals 2, update country property
-      if (obj.isAdded === true) {
-        return {...obj, isAdded: false};
-      }
-
-      // 👇️ otherwise return the object as is
-      return obj;
-    });
-    dispatch({
-      type: "FETCH_IT_REQUIREMENT_MASTER",
-      itrequirementmaster:newState,
-    });
-    setItlist(newState);
   };
 
   useEffect(() => {
     dispatch(dropdownLocationdetails(setDatalocation));
-    dispatch(getItrequirement(setItlist));
 
     // dispatch(dropdownMeetingRoomdetails(setRoomlist));
 
@@ -163,13 +137,9 @@ const Meetingcalander = (props) => {
 
           var stdate = Date.parse(startdate);
           var eddate = Date.parse(enddate);
-          var d = moment(stdate).format("yyyy-MM-DD");
-          var e = moment(eddate).format("yyyy-MM-DD");
+          var d = format(stdate, "yyyy-MM-dd");
+          var e = format(eddate, "yyyy-MM-dd");
 
-          // var d = moment(stdate,'yyyy-MM-DD').format();
-          // var e = moment(eddate,'yyyy-MM-DD').format();
-
-          // alert(d+" to "+e);
           setStartdate(d);
           setEnddate(e);
           setStarttime(starttime);
@@ -196,57 +166,27 @@ const Meetingcalander = (props) => {
 
     calendar.render();
   }, []);
-
-  const handleOnChange = (event, option, index) => {
-
-    // alert(event.target.checked);
-    const values = [...meetingroom.itrequirementmaster];
-    values[index].isAdded = event.target.checked;
-    setItlist(values);
-    if (event.target.checked == true) {
-     
-      myArray.push(event.target.value);
-    } else {
-      var index = myArray.indexOf(event.target.value);
-      if (index !== -1) {
-        myArray.splice(index, 1);
-      }
-    }
-
- };
   let validit = false;
-  const found = meetingroom.itrequirementmaster.find(obj => {
-    return obj.isAdded === true;
-  });
   const vaildatecheck = async () => {
     if (itchk == true) {
-    //   // alert("test11")
-    //   if (
-    //     projectchk == true ||
-    //     monitorchk == true ||
-    //     desktopchk == true ||
-    //     audiochk == true ||
-    //     laptopchk == true
-    //   ) {
+      // alert("test11")
+      if (
+        projectchk == true ||
+        monitorchk == true ||
+        desktopchk == true ||
+        audiochk == true ||
+        laptopchk == true
+      ) {
   
-    //     setValidateit(false);
-    //     validit = false;
-    //   } else {
-
-    //     setValidateit(true);
-    //     validit = true;
-    //   }
-   
-  if(found === undefined){
-       setValidateit(true);
-        validit = true;
-      } else {
         setValidateit(false);
         validit = false;
+      } else {
+
+        setValidateit(true);
+        validit = true;
       }
     }
   };
-
 
   const handlesave = async (e) => {
     if (hours > 0) {
@@ -262,37 +202,35 @@ const Meetingcalander = (props) => {
         if (day == "Mon") {
           dateq = dayjs(idate).subtract(1, "day");
           var d = Date.parse(dateq);
-          // dateq = moment(d).format("yyyy-MM-DD");
-          dateq = moment(d).format("yyyy-MM-DD");
+          dateq = format(d, "yyyy-MM-dd");
         }
         if (day == "Tue") {
           dateq = dayjs(idate).subtract(2, "day");
           var d = Date.parse(dateq);
-          dateq = moment(d).format("yyyy-MM-DD");
+          dateq = format(d, "yyyy-MM-dd");
         }
         if (day == "Wed") {
           dateq = dayjs(idate).subtract(3, "day");
           var d = Date.parse(dateq);
-          dateq = moment(d).format("yyyy-MM-DD");
+          dateq = format(d, "yyyy-MM-dd");
         }
         if (day == "Thu") {
           dateq = dayjs(idate).subtract(4, "day");
           var d = Date.parse(dateq);
-          dateq = moment(d).format("yyyy-MM-DD");
+          dateq = format(d, "yyyy-MM-dd");
         }
         if (day == "Fri") {
           dateq = dayjs(idate).subtract(5, "day");
           var d = Date.parse(dateq);
-          dateq = moment(d).format("yyyy-MM-DD");
+          dateq = format(d, "yyyy-MM-dd");
         }
         if (day == "Sat") {
           dateq = dayjs(idate).subtract(6, "day");
           var d = Date.parse(dateq);
-          dateq = moment(d).format("yyyy-MM-DD");
+          dateq = format(d, "yyyy-MM-dd");
         }
         if (day == "Sun") {
-          // dateq = moment(d).format("yyyy-MM-DD");
-          dateq = moment(d).format("yyyy-MM-DD");
+          dateq = format(idate, "yyyy-MM-dd");
         }
         if (note !== "") {
           API.call({
@@ -337,12 +275,11 @@ const Meetingcalander = (props) => {
                   myArray.pop();
                 }
                 setOpen(false);
-                updateState();
-                // setProjectorchk(false);
-                // setMonitorchk(false);
-                // setAudiochk(false);
-                // setDesktopchk(false);
-                // setLaptopchk(false);
+                setProjectorchk(false);
+                setMonitorchk(false);
+                setAudiochk(false);
+                setDesktopchk(false);
+                setLaptopchk(false);
                 setITchk(false);
                 // setOpen(false);
 
@@ -399,16 +336,16 @@ const Meetingcalander = (props) => {
                     setDay(day);
                     var stdate = Date.parse(startdate);
                     var eddate = Date.parse(enddate);
-                    var d = moment(stdate).format("yyyy-MM-DD");
-                    var e = moment(eddate).format("yyyy-MM-DD");
+                    var d = format(stdate, "yyyy-MM-dd");
+                    var e = format(eddate, "yyyy-MM-dd");
 
                     const current = new Date();
                     const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
                     const cudate = Date.parse(date);
-                    var dq = moment(cudate).format("yyyy-MM-DD");
+                    var dq = format(cudate, "yyyy-MM-dd");
                     var nextdate = new Date(d);
                     var date1 = nextdate.setDate(nextdate.getDate() + 1)
-                    var nextdate1 = moment(date1).format("yyyy-MM-DD");
+                    var nextdate1 = format(date1, "yyyy-MM-dd");
                     if (d >= dq) {
                       if (d == e) {
                         const startDate = moment(d + " " + starttime);
@@ -511,17 +448,10 @@ const Meetingcalander = (props) => {
   };
 
   const onlocationchange = (e) => {
-  
-    if(e.target.value != 0){
-      setRoomlist([]);
-      dispatch(changeLocation(e.target.value, setRoomlist));
-    }
- 
+    dispatch(changeLocation(e.target.value, setRoomlist));
   };
 
   const onroomchange = (e) => {
-    
-    if(e.target.value != 0){
     var len = event.length + 1;
 
     for (var i = 0; i <= len; i++) {
@@ -604,21 +534,15 @@ const Meetingcalander = (props) => {
 
             var stdate = Date.parse(startdate);
             var eddate = Date.parse(enddate);
-            // var d = moment(stdate).format("yyyy-MM-DD");
-            // var e = moment(eddate).format("yyyy-MM-DD");
-            var d = moment(stdate).format("yyyy-MM-DD");
-            var e = moment(eddate).format("yyyy-MM-DD");
-  
-            // alert(d+" to "+e);
+            var d = format(stdate, "yyyy-MM-dd");
+            var e = format(eddate, "yyyy-MM-dd");
             const current = new Date();
             const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
             const cudate = Date.parse(date);
-            // var dq = moment(cudate).format("yyyy-MM-DD");
-            var dq = moment(cudate).format("yyyy-MM-DD");
+            var dq = format(cudate, "yyyy-MM-dd");
             var nextdate = new Date(d);
             var date1 = nextdate.setDate(nextdate.getDate() + 1)
-            // var nextdate1 = moment(date1).format("yyyy-MM-DD");
-            var nextdate1 = moment(date1).format("yyyy-MM-DD");
+            var nextdate1 = format(date1, "yyyy-MM-dd");
             // alert("startDate:- " + d + " " + starttime + " End Date:-" +nextdate1 );
             if (d >= dq) {
               if (d == e) {
@@ -690,7 +614,6 @@ const Meetingcalander = (props) => {
       .catch((e) => {
         dispatch(Formatter.alert_error(e));
       });
-    }
   };
 
   const handleClose = () => {
@@ -703,35 +626,35 @@ const Meetingcalander = (props) => {
     if (day == "Mon") {
       dateq = dayjs(idate).subtract(1, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Tue") {
       dateq = dayjs(idate).subtract(2, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Wed") {
       dateq = dayjs(idate).subtract(3, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Thu") {
       dateq = dayjs(idate).subtract(4, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Fri") {
       dateq = dayjs(idate).subtract(5, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Sat") {
       dateq = dayjs(idate).subtract(6, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Sun") {
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(idate, "yyyy-MM-dd");
     }
 
     const calendarEl = document.getElementById("calendar");
@@ -787,15 +710,15 @@ const Meetingcalander = (props) => {
         setDay(day);
         var stdate = Date.parse(startdate);
         var eddate = Date.parse(enddate);
-        var d = moment(stdate).format("yyyy-MM-DD");
-        var e = moment(eddate).format("yyyy-MM-DD");
+        var d = format(stdate, "yyyy-MM-dd");
+        var e = format(eddate, "yyyy-MM-dd");
         const current = new Date();
         const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
         const cudate = Date.parse(date);
-        var dq = moment(cudate).format("yyyy-MM-DD");
+        var dq = format(cudate, "yyyy-MM-dd");
         var nextdate = new Date(d);
         var date1 = nextdate.setDate(nextdate.getDate() + 1)
-        var nextdate1 = moment(date1).format("yyyy-MM-DD");
+        var nextdate1 = format(date1, "yyyy-MM-dd");
         if (d >= dq) {
           if (d == e) {
             const startDate = moment(d + " " + starttime);
@@ -860,14 +783,12 @@ const Meetingcalander = (props) => {
 
     calendar.render();
     setShow(false);
-    updateState();
-    // setProjectorchk(false);
-    // setMonitorchk(false);
-    // setAudiochk(false);
-    // setDesktopchk(false);
-    // setLaptopchk(false);
+    setProjectorchk(false);
+    setMonitorchk(false);
+    setAudiochk(false);
+    setDesktopchk(false);
+    setLaptopchk(false);
     setITchk(false);
-    clearcheck();
     setOpen(false);
     setNote("");
     setValidtimein(false);
@@ -886,35 +807,35 @@ const Meetingcalander = (props) => {
     if (day == "Mon") {
       dateq = dayjs(idate).subtract(1, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Tue") {
       dateq = dayjs(idate).subtract(2, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Wed") {
       dateq = dayjs(idate).subtract(3, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Thu") {
       dateq = dayjs(idate).subtract(4, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Fri") {
       dateq = dayjs(idate).subtract(5, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Sat") {
       dateq = dayjs(idate).subtract(6, "day");
       var d = Date.parse(dateq);
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(d, "yyyy-MM-dd");
     }
     if (day == "Sun") {
-      dateq = moment(d).format("yyyy-MM-DD");
+      dateq = format(idate, "yyyy-MM-dd");
     }
 
     // alert(dateq)
@@ -972,15 +893,15 @@ const Meetingcalander = (props) => {
         setDay(day);
         var stdate = Date.parse(startdate);
         var eddate = Date.parse(enddate);
-        var d = moment(stdate).format("yyyy-MM-DD");
-        var e = moment(eddate).format("yyyy-MM-DD");
+        var d = format(stdate, "yyyy-MM-dd");
+        var e = format(eddate, "yyyy-MM-dd");
         const current = new Date();
         const date = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
         const cudate = Date.parse(date);
-        var dq = moment(cudate).format("yyyy-MM-DD");
+        var dq = format(cudate, "yyyy-MM-dd");
         var nextdate = new Date(d);
         var date1 = nextdate.setDate(nextdate.getDate() + 1)
-        var nextdate1 = moment(date1).format("yyyy-MM-DD");
+        var nextdate1 = format(date1, "yyyy-MM-dd");
         if (d >= dq) {
           if (d == e) {
             const startDate = moment(d + " " + starttime);
@@ -1045,12 +966,11 @@ const Meetingcalander = (props) => {
 
     calendar.render();
     setShow(false);
-    // setProjectorchk(false);
-    // setMonitorchk(false);
-    // setAudiochk(false);
-    // setDesktopchk(false);
-    // setLaptopchk(false);
-    updateState();
+    setProjectorchk(false);
+    setMonitorchk(false);
+    setAudiochk(false);
+    setDesktopchk(false);
+    setLaptopchk(false);
     setITchk(false);
     setOpen(false);
     setNote("");
@@ -1072,8 +992,8 @@ const Meetingcalander = (props) => {
                 onChange={onlocationchange}
               >
                 <option value="">- Select Location -</option>
-                {meetingroom.dropdownlocation.length > 0 &&
-                  meetingroom.dropdownlocation.map((items, pos) => (
+                {datalocation.length > 0 &&
+                  datalocation.map((items, pos) => (
                     <option value={items.id}>{items.location_name}</option>
                   ))}
               </select>
@@ -1113,8 +1033,8 @@ const Meetingcalander = (props) => {
           onHide={handleClose}
         >
           {loader && <PreLoader />}
-          <Modal.Header closeButton={false} className="modal-header">
-            <Modal.Title id="contained-modal-title-vcenter" className="header-text">
+          <Modal.Header closeButton={false}>
+            <Modal.Title id="contained-modal-title-vcenter">
               Reserve Meeting Room
             </Modal.Title>
           </Modal.Header>
@@ -1252,7 +1172,7 @@ const Meetingcalander = (props) => {
                         if(e.target.value === "00:00"){
                           var nextdate = new Date(startdate);
                           var date1 = nextdate.setDate(nextdate.getDate() + 1)
-                          var nextdate1 = moment(date1).format("yyyy-MM-DD");
+                          var nextdate1 = format(date1, "yyyy-MM-dd");
                           setEnddate(nextdate1)
                         }else{
                           setEnddate(startdate)
@@ -1394,23 +1314,28 @@ const Meetingcalander = (props) => {
                 <Col>
                   <Collapse in={open}>
                     <div id="example-collapse-text">
-                    
-                      <Row>
-                        { meetingroom.itrequirementmaster?.map((item, index) => (
-                        <Col xs={3}>
                       <Form.Group className="mt-2" id="formGridCheckbox">
                         <Form.Check
                           type="checkbox"
-                          label={item.name}
-                          value={item.name}
-                          checked={Boolean(item.isAdded)}
-                          onChange={(e) => handleOnChange(e, item, index)}
+                          label="Projector"
+                          value="projector"
+                          checked={projectchk}
+                          onChange={(e) => {
+                            if (projectchk == false) {
+                              setProjectorchk(true);
+                              myArray.push(e.target.value);
+                            } else {
+                              setProjectorchk(false);
+                              // myArray.pop(e.target.value);
+                              var index = myArray.indexOf(e.target.value);
+                              if (index !== -1) {
+                                myArray.splice(index, 1);
+                              }
+                            }
+                          }}
                         />
                       </Form.Group>
-                        </Col>
-                      ))}
-                      </Row>
-                      {/* <Form.Group className="mt-2" id="formGridCheckbox">
+                      <Form.Group className="mt-2" id="formGridCheckbox">
                         <Form.Check
                           type="checkbox"
                           label="Monitor"
@@ -1430,8 +1355,8 @@ const Meetingcalander = (props) => {
                             }
                           }}
                         />
-                      </Form.Group> */}
-                      {/* <Form.Group className="mt-2" id="formGridCheckbox">
+                      </Form.Group>
+                      <Form.Group className="mt-2" id="formGridCheckbox">
                         <Form.Check
                           type="checkbox"
                           label="Laptop"
@@ -1451,8 +1376,8 @@ const Meetingcalander = (props) => {
                             }
                           }}
                         />
-                      </Form.Group> */}
-                      {/* <Form.Group className="mt-2" id="formGridCheckbox">
+                      </Form.Group>
+                      <Form.Group className="mt-2" id="formGridCheckbox">
                         <Form.Check
                           type="checkbox"
                           label="Desktop"
@@ -1472,8 +1397,8 @@ const Meetingcalander = (props) => {
                             }
                           }}
                         />
-                      </Form.Group> */}
-                      {/* <Form.Group className="mt-2" id="formGridCheckbox">
+                      </Form.Group>
+                      <Form.Group className="mt-2" id="formGridCheckbox">
                         <Form.Check
                           type="checkbox"
                           label="Audio"
@@ -1493,7 +1418,7 @@ const Meetingcalander = (props) => {
                             }
                           }}
                         />
-                      </Form.Group> */}
+                      </Form.Group>
                       {validateit && (
                         <label style={{ color: "red" }}>
                           Please Check Atleast One
@@ -1505,16 +1430,13 @@ const Meetingcalander = (props) => {
               </Row>
             </Container>
           </Modal.Body>
-          <Modal.Footer className="modal-footer">
+          <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               Close
             </Button>
-            <Button variant="primary" onClick={handlesave} className="btn-save">
+            <Button variant="primary" onClick={handlesave}>
               Save Changes
             </Button>
-            {/* <Button variant="primary" onClick={handlesave1}>
-              Save TEst
-            </Button> */}
           </Modal.Footer>
         </Modal>
 
@@ -1522,6 +1444,7 @@ const Meetingcalander = (props) => {
 
         {/* {pageload && <PageLoading />} */}
 
+        {/* <button onClick={handleClose}>asddadsadasdadasdasdasdasdasdasdddddddddddddddddddddddddddddd</button> */}
       </div>
     </div>
   );
@@ -1531,7 +1454,6 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     myTeamList: state.myTeamList,
-    meetingroom:state.meetingroom,
   };
 };
 

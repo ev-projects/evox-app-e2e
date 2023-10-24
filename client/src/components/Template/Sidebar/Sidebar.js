@@ -178,20 +178,20 @@ const Sidebar = (props) => {
               )}
 
                {/* IT Requirement Notification List  */}
-                  {/* {
+                  {
                     user.department_id === 28 &&
                     <li className="nav-item">
                     <Link className="nav-link" to={global.links.requirement_list}>
                       <i className="nav-icon fa fa-th-list" />
-                      <p>IT Requirement List</p>
+                      <p>Meeting Room Requirement</p>
                     </Link>
                   </li>
-                  } */}
+                  }
 
 
                   {/* Meeting Room  */}
 
-              {/* <li className="nav-item has-treeview ">
+              <li className="nav-item has-treeview ">
                 <a className="nav-link nav-link-main">
                   <i className="nav-icon fa fa-calendar" />
                   <p>
@@ -262,10 +262,7 @@ const Sidebar = (props) => {
                     </Link>
                   </li>
                   
-                  {Authenticator.check(
-                    ["supervisor", "team_leader"],
-                    ["supervisor_access", "team_leader_access"]
-                  ) && (
+                  {Authenticator.check("supervisor", "meeting_room_approval") && (
                     <li className="nav-item">
                       <Link className="nav-link" to={global.links.booked_list}>
                         <i className="nav-icon fa fa-inbox" />
@@ -274,7 +271,7 @@ const Sidebar = (props) => {
                     </li>
                   )}
                 </ul>
-              </li> */}
+              </li>
 
               {/* <li className="nav-item">
                     <Link

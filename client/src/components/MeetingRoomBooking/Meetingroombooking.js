@@ -9,6 +9,7 @@ import {
   ToggleButton,
   ButtonGroup,
 } from "react-bootstrap";
+import { connect, dispatch } from "react-redux";
 import Pagination from "react-bootstrap-4-pagination";
 import "./MeetingRoom.css";
 import { Link } from "react-router-dom";
@@ -31,7 +32,9 @@ import {
   statusChange,
   viewBookingdetails,
 } from "./MeetingApprovalapi";
-const Meetingroombooking = () => {
+const Meetingroombooking = (prop) => {
+
+  const { dashboard } = prop;
   const dispatch = useDispatch();
   const [bookedlist, setBookedlist] = useState([]);
   const [totalpagecount, setTotalpagecount] = useState(1);
@@ -53,7 +56,7 @@ const Meetingroombooking = () => {
   }, []);
 
   let paginationConfig = {
-    totalPages: totalpagecount,
+    totalPages: dashboard.totpagecount,
     currentPage: currentpagecount,
     showMax: 10,
     size: "sm",
@@ -69,7 +72,6 @@ const Meetingroombooking = () => {
     // circle: true,
     // shadow: true,
     onClick: function (page) {
-      console.log(page);
       setCurrentpagecount(page);
       dispatch(
         requestPagenationclick(
@@ -194,7 +196,7 @@ const Meetingroombooking = () => {
                 ></i>
                 All Status &nbsp;
                 <Badge className="counter-request" variant="light">
-                  {statuscount.All}
+                  {dashboard.statuscount["All"]}
                 </Badge>
                 {/* <Badge variant="light">{statuscount.All}</Badge>
                 &nbsp;All Status */}
@@ -216,7 +218,8 @@ const Meetingroombooking = () => {
                 ></i>
                 pending &nbsp;
                 <Badge className="counter-request" variant="light">
-                  {statuscount.pending}
+                {dashboard.statuscount["pending"]}
+                {/* {statuscount.pending} */}
                 </Badge>
                 {/* <Badge className="pending" variant="light">
                   {statuscount.pending}
@@ -240,7 +243,8 @@ const Meetingroombooking = () => {
                 ></i>
                 Approved &nbsp;
                 <Badge className="counter-request" variant="light">
-                  {statuscount.approved}
+                {dashboard.statuscount["approved"]}
+                  {/* {statuscount.approved} */}
                 </Badge>
                 {/* <Badge className="approved" variant="light">
                   {statuscount.approved}
@@ -265,7 +269,8 @@ const Meetingroombooking = () => {
                 ></i>
                 Declined &nbsp;
                 <Badge className="counter-request" variant="light">
-                  {statuscount.declined}
+                  {/* {statuscount.declined} */}
+                  {dashboard.statuscount["declined"]}
                 </Badge>
                 {/* <Badge className="denied" variant="light">
                   {statuscount.declined}
@@ -335,7 +340,7 @@ const Meetingroombooking = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {bookedlist.map((room, pos) => (
+                  {dashboard.bookedlist.map((room, pos) => (
                     <tr>
                       {/* <td>   <Form.Check
                       type="checkbox"
@@ -388,5 +393,11 @@ const Meetingroombooking = () => {
     </div>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    dashboard: state.dashboard,
+  };
+};
 
-export default Meetingroombooking;
+export default connect(mapStateToProps)(Meetingroombooking);
+
