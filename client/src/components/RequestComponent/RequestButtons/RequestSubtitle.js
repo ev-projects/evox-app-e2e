@@ -20,7 +20,7 @@ const RequestSubtitle = ( props ) => {
                               }}
                             title="View Profile"
                         >
-                          <i className="fa fa-info ev-color" aria-hidden="true"></i>
+                         
                         </Link>
                      :
                     <> <span>Name: {   (props.user.full_name==undefined ? props.user.name : props.user.full_name ) }</span> <br/></>
