@@ -52,18 +52,7 @@ class COEController extends Controller
         try {
             $user = auth()->user();
 
-            $employees = $this->bhr->get_report( get_constant('BHR_REPORT_ID')['COE'] );
-            $employee = null;
-
-            if ($employees) {
-                $filtered_employees = array_filter(
-                    $employees->employees,
-                    function ($employee) use ($user) {
-                        return $employee->id === $user->bhr_num."";
-                    }
-                );
-                $employee = array_shift($filtered_employees);
-            }
+            $employee = $this->bhr->get_user_bhr_field( $user->bhr_num, 'BHR_COE_USER_FIELDS' );
 
             if (!$employee) {
                 //log_to_file( 'info', "Employee could not be found.", [], "coelog");
