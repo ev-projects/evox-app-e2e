@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import Validator from "../../../services/Validator";
 import { Link } from "react-router-dom";
 import { logOut } from '../../../store/actions/userActions'
-import { Container,Row,Col,Table,Image, Spinner,Button, Badge, Tab, Tabs , Dropdown  } from 'react-bootstrap';
+import { Modal, Form, Container,Row,Col,Table,Image, Spinner,Button, Badge, Tab, Tabs , Dropdown  } from 'react-bootstrap';
 import moment from 'moment';
 import { biometrixLog } from '../../../store/actions/dtr/quickpunchActions'
 import $ from 'jquery';
@@ -24,36 +24,54 @@ class NavPuncher extends Component {
         time: new Date(),
         compare_to_clock_in: new Date(),
         NavHasLoaded : false,
-        offsetHasLoaded : false
+        offsetHasLoaded : false,
+        earlyOutShow : false
       };
+  }
+
+  handleOnhide = () => {
+    this.setState({
+      earlyOutShow: false
+    });
   }
 
   onSubmitHandler = async (values) => {
     // this.onUIHandler();
 
-    var formData = new FormData();
-    
-		for (var key in values) {
-	
-			if( values[key] != null ) {
-				switch( key ) {
-					default:
-						formData.set(key, values[key]);
-						break;
-				}
-			}
-		}
-    if(this.props.dashboard?.recent_dtr[1]?.id != undefined && values["dtr_id"] == null) {
+        var formData = new FormData();
+        
+        for (var key in values) {
+      
+          if( values[key] != null ) {
+            switch( key ) {
+              default:
+                formData.set(key, values[key]);
+                break;
+            }
+          }
+        }
+      
+        if(this.props.dashboard?.recent_dtr[1]?.id != undefined && values["dtr_id"] == null) {
+         if(this.props.dashboard?.recent_dtr[1]?.before_time_in_half == true && (values["early_clock_out"] ==null)){
+          this.setState({
+            earlyOutShow: true
+          });
+         }
+         else
+         {
+          console.log("PASS1");
+          formData.set("dtr_id", this.props.dashboard?.recent_dtr[1].id);
+          this.props.biometrixLog(  formData , this.props.user.id );
+         }
+         
+        }
 
-      formData.set("dtr_id", this.props.dashboard?.recent_dtr[1].id);
-    }
-
-    if(this.props.dashboard?.recent_dtr[0]?.id != undefined && this.props.dashboard?.recent_dtr[0]?.with_in_time == true &&  this.props.dashboard?.recent_dtr[1]?.with_in_time != true) {
-
-      formData.set("dtr_id", this.props.dashboard?.recent_dtr[0].id);
-    }
-    // formData.set("dtr_id", this.props.dashboard?.recent_dtr[1].id);
-		this.props.biometrixLog(  formData , this.props.user.id );
+        if(this.props.dashboard?.recent_dtr[0]?.id != undefined && this.props.dashboard?.recent_dtr[0]?.with_in_time == true &&  this.props.dashboard?.recent_dtr[1]?.with_in_time != true) {
+          console.log("PASS0");
+          formData.set("dtr_id", this.props.dashboard?.recent_dtr[0].id);
+          this.props.biometrixLog(  formData , this.props.user.id );
+        }
+       
 	}
 
   
@@ -141,6 +159,7 @@ class NavPuncher extends Component {
 
     
   <div className="div-col ">
+
   {(Authenticator.check("employee", "user_multi_login") && Authenticator.check_department_permissions())?<>
   <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Clock In</Button>
   </>
@@ -204,10 +223,16 @@ class NavPuncher extends Component {
               ((this.props.dashboard?.recent_dtr[1]?.time_in && this.props.dashboard?.recent_dtr[1]?.time_out) || (this.props.dashboard?.recent_dtr[0]?.with_in_time == true && this.props.dashboard?.recent_dtr[0]?.time_out && this.props.dashboard?.recent_dtr[0]?.time_in)) ?
               (<><Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-sun-o" /> Day Completed</Button></>) : 
               
-              (<><Button className="nav-clock-button dropdown newfeature" onClick={(e)=> { setFieldValue('quickpunch','out');   
-            
-          
-            }}  type="submit" ><i className="fa fa-history" /> Clock Out</Button></>)
+                (<><Button className="nav-clock-button dropdown newfeature" onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit" >
+                  <i className="fa fa-history" /> Clock Out</Button>
+                  {
+                  this.state.earlyOutShow &&
+                  <EarlyOutModal 
+                  props = {this.props}
+                  handleModalClose = {() => {this.handleOnhide()}}
+								/>
+                }
+                  </>)
             )}
         
             </>
@@ -264,6 +289,80 @@ class NavPuncher extends Component {
     );
   };
 }
+
+function EarlyOutModal(props) {
+	return (
+	  <div id="myModal" className="modal-main">
+		<div className="modal-content">
+		  <div className="modal-header">
+			<span className="close" onClick = {() => props.handleModalClose()}>&times;</span>
+		  </div>
+
+		  <div className="modal-body">
+			<h6>Clock Out Early?</h6>
+     
+
+			<p>This could result in undertime on this date.</p>
+		
+      <Field>
+          {({ field, form }) => (
+            <div>
+                  <Button className="early-out-btn"
+                  onClick={(e)=> { 
+                                  form.setFieldValue('quickpunch','out'); 
+                                  form.setFieldValue('dtr_id', props.dashboard?.recent_dtr[1]?.id);  
+                                  form.setFieldValue('early_clock_out',true);
+                                
+                                }}  
+                  type="submit" >
+                    <i className="fa fa-history" /> Continue
+                  </Button>      
+                  <Button  className ="early-out-btn-cancel btn-secondary" onClick = {() => props.handleModalClose()}>
+                    Cancel
+                  </Button>      
+            </div>
+          )}
+        </Field>
+        <br />
+      
+		  </div>
+		</div>
+	  </div>    
+	)
+  }
+
+  // function EarlyOutModal(props) {
+  //   return (
+  //     <div>
+  //     <Modal centered show>
+  //       <Modal.Header >
+  //         <Modal.Title><b>Early Clock Out.</b></Modal.Title>
+  //         <span className="close" onClick = {() => props.handleModalClose()}>&times;</span>
+  //       </Modal.Header>
+  //       <Modal.Body>
+  //       <p>This could result in undertime.</p>
+  //       <Field>
+  //         {({ field, form }) => (
+  //           <div>
+  //                 <Button className="nav-clock-button dropdown newfeature" 
+  //                 onClick={(e)=> { form.setFieldValue('quickpunch','out'); 
+  //                 form.setFieldValue('dtr_id', this.props.dashboard?.recent_dtr[1]?.id);  }}  
+  //                 type="submit" >
+  //                   <i className="fa fa-history" /> Clock Out
+  //                 </Button>            
+  //           </div>
+  //         )}
+  //       </Field>
+  //       <br />
+  //         <Button onClick = {() => props.handleModalClose()}>
+  //           Cancel
+  //         </Button>
+  //       </Modal.Body>
+       
+  //     </Modal>
+  //   </div>
+  //   )
+  //   }
 
 const validationSchema = Yup.object().shape({});
 
