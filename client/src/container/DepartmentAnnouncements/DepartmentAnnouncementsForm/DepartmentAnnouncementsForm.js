@@ -63,7 +63,7 @@ class DepartmentAnnouncementsForm extends Component {
           <div>
             <p>Set your announcement as a:</p>
             <ul>
-              <li>Page: users access it as a page in EVOX</li>
+              <li>Page: users access it as a page in EVOX, you cannout pload a video/image, but you can embed it</li>
               <li>Link: Redirects user to External Link</li>                    
             </ul> 
           </div>
@@ -135,7 +135,7 @@ class DepartmentAnnouncementsForm extends Component {
         }
       }
     }
-
+    
   
     formData.set('category', "Department");
     formData.set('inputFileWasDeleted', false);
@@ -423,7 +423,8 @@ class DepartmentAnnouncementsForm extends Component {
                           checked={values.set_all}
                           onChange={() =>  setFieldValue('set_all',values.set_all==1?0:1)}
                         />
-                       <span className="for-all"> For All Departments</span>  <a href="#" data-tool-tip="tooltip" ><i className="fa  fa-question-circle "/></a>&nbsp;
+                       <span className="for-all"> For All Departments</span>  
+                       {/* <a href="#" data-tool-tip="tooltip" ><i className="fa  fa-question-circle "/></a>&nbsp; */}
                       </label>
                       <br/>
                         <label className ="dep-announcement-label">By Selected Departments:{values.set_all ?  "(disabled)" : null}</label>
@@ -539,20 +540,32 @@ class DepartmentAnnouncementsForm extends Component {
                                 plugins: [
                                   'advlist','autolink', 'emoticons',
                                   'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
-                                  'fullscreen','insertdatetime','media','table','help','wordcount'
+                                  'fullscreen','insertdatetime','media','table','help','wordcount','media'
+
+                                  //  plugins: 'media',
+  // toolbar: 'media'
                               ],
                             //    paste_preprocess: function (plugin, args) {
                             //     // console.log("Attempted to paste: ", args.content);
                             //     // replace copied text with empty string
                             //     args.content = '';
                             // },
-                                toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons | ' +
+                                toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons media | ' +
                                 'alignleft aligncenter alignright alignjustify | link | ' +
                                 'bullist numlist checklist outdent indent | removeformat | help ',
                                 // smart_paste: false,
                                 // paste_data_images: false,
+                                
                                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                                branding: false
+                                branding: false,
+
+
+                                // video_template_callback: function(data) {
+                                //   console.log(data);
+                                //   //return '<video width="' + data.width + '" height="' + data.height + '"' + (data.poster ? ' poster="' + data.poster + '"' : '') + ' controls="controls">\n' + '<source src="' + data.source + '"' + (data.sourcemime ? ' type="' + data.sourcemime + '"' : '') + ' />\n' + (data.altsource ? '<source src="' + data.altsource + '"' + (data.altsourcemime ? ' type="' + data.altsourcemime + '"' : '') + ' />\n' : '') + '</video>'; 
+                                // }
+
+
                               }}
                             />
                             {/* <Form.Control.Feedback type="invalid">
