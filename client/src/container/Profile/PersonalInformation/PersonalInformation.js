@@ -13,7 +13,7 @@ import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import BackButton from "../../../components/Template/BackButton";
 import Validator from "../../../services/Validator";
-import ChangePasswordForm from "../../../components/ChangePasswordForm";
+import ChangePasswordFormComponent from "../../../components/ChangePasswordFormComponent";
 import { Link } from "react-router-dom"; 
 
 const PersonalInformation = ( props ) => {
@@ -214,7 +214,7 @@ const PersonalInformation = ( props ) => {
                         {
                             showChangePasswordForm ? 
                             <div id="change_password_id">
-                                <ChangePasswordForm {...props} setShowChangePasswordForm={setShowChangePasswordForm} size="12"/>
+                                <ChangePasswordFormComponent {...props} setShowChangePasswordForm={setShowChangePasswordForm} size="12"/>
                             </div>
                             : 
                             null
