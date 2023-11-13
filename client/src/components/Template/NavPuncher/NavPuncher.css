@@ -10,6 +10,19 @@
     transition: 0.3s;
 }
 
+
+.early-out-btn{
+    /* margin-left: 10px; */
+    margin-right: 10px;
+}
+
+.early-out-btn-cancel{
+    /* margin-left: 10px; */
+    margin-right: 10px;
+    background-color: black !important;
+}
+
+
 .dropdown-toggle::after {
     display: none !important; 
   }

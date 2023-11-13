@@ -127,6 +127,12 @@ const profileReducer = (state = initState, action) => {
                 closeAllForm: true
             };
             break;
+        case "CLOSE_ALL_FORM_FALSE":
+            return {
+                ...state,
+                closeAllForm: false
+            };
+            break;
 
         /**  */
 

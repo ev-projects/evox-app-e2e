@@ -254,7 +254,9 @@ export const changePassword = ( id, formData ) => {
             data: formData
         })
         .then(result => {
-
+            dispatch({
+                'type'              : 'CLOSE_ALL_FORM'
+            })
             dispatch( Formatter.alert_success( result, 3000 ));
             
             dispatch({
@@ -271,6 +273,9 @@ export const changePassword = ( id, formData ) => {
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
+            // dispatch({
+            //     'type'              : 'CLOSE_ALL_FORM_FALSE'
+            // })
         });
     }
 }
