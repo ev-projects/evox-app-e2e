@@ -233,12 +233,27 @@ if (! function_exists('timestamp_to_datetime')) {
         try {
             if($use_OWNER = true && $owner != null ){
                 $user = $owner;
-                // dd($user);
+                
+                $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone($user->country_timezone_name())->format("P"));
+
+                if(!(string_offset_to_seconds($user->country_timezone_to_offset()) == ($target_date_offset))){
+                    return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds($target_date_offset)) : null;
+                }
+
                 return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds($user->country_timezone_to_offset())) : null;
+
+                
             }
            
         if(Auth::user() && Auth::user()->country_timezone_to_offset() != null){
             
+
+                $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone(Auth::user()->country_timezone_name())->format("P"));
+               
+                if(!(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()) == ($target_date_offset))){
+                    return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ ($target_date_offset)) : null;
+                }
+
             return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) : null;
         }
             return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp) : null;
@@ -261,12 +276,23 @@ if (! function_exists('timestamp_to_datetime_small')) {
         try {
             if($use_OWNER = true && $owner != null ){
                 $user = $owner;
-                // dd($user);
+                $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone($user->country_timezone_name())->format("P"));
+
+                if(!(string_offset_to_seconds($user->country_timezone_to_offset()) == ($target_date_offset))){
+                    return ( is_valid( $timestamp ) ) ? date('m-d H:i', $timestamp+ string_offset_to_seconds($target_date_offset)) : null;
+                }
+
                 return ( is_valid( $timestamp ) ) ? date('m-d H:i', $timestamp+ string_offset_to_seconds($user->country_timezone_to_offset())) : null;
             }
            
         if(Auth::user() && Auth::user()->country_timezone_to_offset() != null){
             
+            $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone(Auth::user()->country_timezone_name())->format("P"));
+               
+            if(!(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()) == ($target_date_offset))){
+                return ( is_valid( $timestamp ) ) ? date('m-d H:i', $timestamp+ ($target_date_offset)) : null;
+            }
+
             return ( is_valid( $timestamp ) ) ? date('m-d H:i', $timestamp+ string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) : null;
         }
             return ( is_valid( $timestamp ) ) ? date('m-d H:i', $timestamp) : null;
@@ -344,10 +370,23 @@ if (! function_exists('timestamp_to_time')) {
             if($use_OWNER && $owner != null ){
                 $user = $owner;
                 // dd($user);
+
+                $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone($user->country_timezone_name())->format("P"));
+
+                if(!(string_offset_to_seconds($user->country_timezone_to_offset()) == ($target_date_offset))){
+                    return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp+ string_offset_to_seconds($target_date_offset)) : null;
+                }
+                
                 return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp+ string_offset_to_seconds($user->country_timezone_to_offset())) : null;
             }
         if(Auth::user() && Auth::user()->country_timezone_to_offset() != null){
             
+            $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone(Auth::user()->country_timezone_name())->format("P"));
+               
+            if(!(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()) == ($target_date_offset))){
+                return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp+ ($target_date_offset)) : null;
+            }
+
             return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp+ string_offset_to_seconds(Auth::user()->country_timezone_to_offset())) : null;
         }
             return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp) : null;
