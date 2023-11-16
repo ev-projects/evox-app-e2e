@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import { Form,Button,InputGroup,FormControl, Tabs,Tab,  } from 'react-bootstrap';
+import { Form,Button,InputGroup,FormControl, Tabs,Tab, Badge, } from 'react-bootstrap';
 import moment from 'moment';
 
 import "./DepartmentAnnouncementsForm.css";
@@ -8,7 +8,7 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 
 /** Form Manipulation */
-import { Formik, ErrorMessage,getIn  } from 'formik';
+import { Formik, ErrorMessage,getIn,Field  } from 'formik';
 import * as Yup from 'yup';
 import MultiSelect from "react-multi-select-component";
 import Joyride, { ACTIONS, EVENTS, STATUS } from "react-joyride";
@@ -99,8 +99,10 @@ class DepartmentAnnouncementsForm extends Component {
 
         set_all : false,
         run:  pre_run,
-        steps: joyride_steps
+        steps: joyride_steps,
         
+        previewSample : false,
+        previewSampleValues : {}
     }
     this.state = this.initialState; 
 
@@ -233,6 +235,27 @@ class DepartmentAnnouncementsForm extends Component {
     }
 
   }
+
+  handleOnShow = (values) => {
+
+    this.setState({
+      previewSampleValues: values
+    });
+
+    this.setState({
+      previewSample: true
+    });
+    // console.log(values);
+    // console.log(this.state,this.state.previewSampleValues);
+  }
+
+
+  handleOnhide = () => {
+    this.setState({
+      previewSample: false
+    });
+  }
+
 
    handleOnLInk=(values) => {
     // var formData = {};
@@ -656,7 +679,7 @@ class DepartmentAnnouncementsForm extends Component {
                             </Form.Control.Feedback> */}
 
                           <br/>
-                        <div className="form-group content-input-note">Note: This be will publish as an announcement page and viewed only in the EVOX site. Editor for announcement pages does not accept inserted images.</div>
+                        <div className="form-group content-input-note"><b>Note: This be will publish as an announcement page and viewed only in the EVOX site. Editor for announcement pages does not accept inserted images.</b></div>
                           </div>
                       
   
@@ -672,7 +695,7 @@ class DepartmentAnnouncementsForm extends Component {
                               </Form.Control.Feedback>
                           </InputGroup>
                           <br/>
-                        <div className="form-group content-input-note">Note: This will be publish as an link, users who click on the announcement will be redirected to the external link.</div>
+                        <div className="form-group content-input-note"><b>Note: This will be publish as an link, users who click on the announcement will be redirected to the external link.</b></div>
                         </div>
                     
                     
@@ -689,9 +712,30 @@ class DepartmentAnnouncementsForm extends Component {
                    
                     <BackButton  {...this.props} />
                     &nbsp;
+                 
                     <Button style={{'float': 'right'}} type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action',null); handleSubmit(e); }}>
                       <i className="fa fa-location-arrow is-green" /> Submit
                     </Button>
+
+                       <Button style={{'float': 'right', 'margin-right': '5px'}} className="btn btn-primary-3" onClick={(e)=>{  this.handleOnShow(values); }}>
+                      <i className="fa fa-eye  is-black" /> Preview Page 
+                    </Button>
+
+
+                    {
+                  this.state.previewSample &&
+                  <PreviewAnnouncment 
+                  props = {this.props}
+                  handleModalClose = {() => {this.handleOnhide()}}
+                  values = {this.state.previewSampleValues}
+                  imageCondtion = {this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg' && method == "update"}
+                  imageSource = {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg' && method == "update")
+                  ? this.props?.instance?.thumbnail 
+                  : (this.state.thumbnail == null)? "on_update": this.state.imgPrevInputFile}
+                  content = {this.state.content}
+								/>
+                }
+
                   </span>
                   
                 </Content>
@@ -707,6 +751,70 @@ class DepartmentAnnouncementsForm extends Component {
     return <PageLoading/>;
   }
 }
+
+
+
+function PreviewAnnouncment(props) {
+  console.log(props);
+      return (
+       
+        <div id="myModal" className="modal-main">
+          
+        <div className="modal-content modal-content-preview">
+          <div className="modal-header">
+            Preview
+          <span className="close" onClick = {() => props.handleModalClose()}>&times;</span>
+          </div>
+
+          <div className="modal-body">
+          {/* <h6>Clock Out Early?</h6> */}
+        
+
+          {/* <p>This could result in undertime on this date.</p> */}
+        
+          
+            
+                    <div  className="announcement-content-page">
+                                   
+                                          <div >
+                                            {/* <div className="page-content-title">TITLE</div> */}
+                                            <div className="page-content-title">{props.values.title}</div>
+                                              <div className="page-content-info">Posted: {props.values.release_date != null? moment(props.values.release_date).format("YYYY-MM-DD"):  null }
+                                              <br/><Badge className="tag-badge">{"Department"}</Badge></div>
+
+                                              {
+                                                props.imageCondtion ? 
+                                                  <>
+                                                       <img src={props.imageSource} className="page-img" alt={null}></img>
+                                                  </>
+                                                  :
+                                                  <>
+                                                  {
+                                                      props.imageSource == 'on_update' ? null :  
+                                                      <>
+                                                       <img src={props.imageSource} className="page-img" alt={null}></img>
+                                                      </>
+
+                                                  }
+                                                  </>
+                                              }
+                                             
+                                          <div className="page-content" dangerouslySetInnerHTML={{ __html:   props.content}} />
+                                        </div>
+                      </div>
+          
+
+              
+
+            
+            <br />
+          
+          </div>
+        </div>
+        </div>    
+      )
+    }
+
 /** Form Validation */
 
 const validationSchema = Yup.object().shape({
