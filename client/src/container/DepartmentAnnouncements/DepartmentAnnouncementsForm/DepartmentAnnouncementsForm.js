@@ -317,7 +317,7 @@ class DepartmentAnnouncementsForm extends Component {
     const method = (this.props.params.id != undefined) ? 'update' : 'store'
 
     var today = new Date();
-
+    console.log(method)
     const initialValue = {
         action:             null,
         method:             method,
@@ -325,14 +325,14 @@ class DepartmentAnnouncementsForm extends Component {
         // log_date:        this.props.instance?.log_date != undefined  && method == "update" ? new Date( this.props.instance.log_date ) : null,
         release_date:       this.props.instance?.release_date != undefined  && method == "update" ? new Date( this.props.instance?.release_date ) : null,
         expiry_date:        this.props.instance?.expiry_date != undefined  && method == "update" ? new Date( this.props.instance?.expiry_date ) : null,
-        title:              this.props.instance?.title != undefined  && method == "update" ? this.props.instance.title : null,
-        headline:           this.props.instance?.headline != undefined  && method == "update" ? this.props.instance.headline : null,
+        title:              this.props.instance?.title != undefined  && method == "update" ? this.props.instance.title : "",
+        headline:           this.props.instance?.headline != undefined  && method == "update" ? this.props.instance.headline : "",
         
         link:               this.props.instance?.link != undefined  && method == "update" ? this.props.instance.link : null,
         content:            this.props.instance?.content != undefined  && method == "update" ? this.props.instance.content : null,
         category:           this.props.instance?.category != undefined  && method == "update" ? this.props.instance.category : null,
         selectedDepartments:           this.props.instance?.selectedDepartments != undefined  && method == "update" ? this.props.instance.selectedDepartments : null,
-        set_all:            this.props.instance?.set_all != undefined  && method == "update" ? this.props.instance.set_all == 1? true : false : null,
+        set_all:            this.props.instance?.set_all != undefined  && method == "update" ? this.props.instance.set_all == 1? true : false : false,
         set_country_all:            this.props.instance?.set_country_all != undefined  && method == "update" ? this.props.instance.set_country_all == 1? true : false : true,
         country_id:           this.props.instance?.country_id != undefined  && method == "update" ? this.props.instance.country_id : null,
 
@@ -547,7 +547,7 @@ class DepartmentAnnouncementsForm extends Component {
                                                   <Row >
                                                       <Col size="7">
                                                           <label for="img-to-upload"><div className="btn btn-primary"style={{'height': '45px'}} >
-                                                            <i class="fa fa-upload" aria-hidden="true"/> <br/>Upload Image</div></label>
+                                                            <i class="fa fa-upload" aria-hidden="true"/> <br/>Upload</div></label>
                                                       </Col>
                                                       <Col size="2">
                                                       <div className="btn btn-secondary" style={{'height': '45px'}} onClick={(event) => {
@@ -571,7 +571,7 @@ class DepartmentAnnouncementsForm extends Component {
                       </Col>
                       <Col size="7 dep-announcement-col"> 
                                 <div className="thumbnail-image">
-                                    {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg')
+                                    {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg' && method == "update")
                                         ? 
                                         <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
                                       // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}

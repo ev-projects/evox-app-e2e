@@ -494,12 +494,12 @@ const Sidebar = (props) => {
                                 <p>My Announcement List</p>
                               </Link>
                             </li>
-                              {/* <li className="nav-item">
+                              <li className="nav-item">
                                 <Link className="nav-link" to={global.links.department_announcement_form} >
                                   <i className="nav-icon fa fa-plus" aria-hidden="true"></i>
                                   <p>Create Announcement</p>
                                 </Link>
-                              </li> */}
+                              </li>
                             </ul>
                           </li>
                         </React.Fragment>
