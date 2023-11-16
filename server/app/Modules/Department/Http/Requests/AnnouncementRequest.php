@@ -35,8 +35,9 @@ class AnnouncementRequest extends FormRequest
             // 'on_link'=> 'boolean',
            
             
-            'link' => 'required_if:on_link,true|url',
+            'link' => 'required_if:on_link,true',
             'selectedDepartments' => 'required_if:set_all,0',
+            'country_id' => 'required_if:set_country_all,0',
 
 
             // 'inputFileWasDeleted'=> 'boolean',
@@ -56,6 +57,7 @@ class AnnouncementRequest extends FormRequest
             'link.required_if' => 'A URL :attribute must be set when "Redirect as Link" is set.',
           
             'selectedDepartments.required_if' =>' :attribute must have atleast one department set.',
+            'country_id.required_if' =>' :attribute must have selected a country or if set to Global Viewing.',
           ];
     }
 
