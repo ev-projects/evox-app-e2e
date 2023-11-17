@@ -425,7 +425,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 })
                 ->get();
 
-                return $announcements_list = $list_all->merge($list_dep)->where()->sortByDesc('release_date');;
+                return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');;
 
               
             }
