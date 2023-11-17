@@ -187,7 +187,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $exist_announcement = Announcement::find($id);
 
             if( $exist_announcement){
-                if( $exist_announcement->set_all == 1){
+                if( ($exist_announcement->set_all == 1 && $exist_announcement->set_country_all == 1)|| ( $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)){
                     return  $exist_announcement;
                 }
             }
@@ -425,7 +425,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 })
                 ->get();
 
-                return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');;
+                return $announcements_list = $list_all->merge($list_dep)->where()->sortByDesc('release_date');;
 
               
             }
