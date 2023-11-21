@@ -36,6 +36,8 @@ class AnnouncementResource extends JsonResource
                 'exposure_level' => $this->exposure_level,
                 'dep' => $this->dep_id != null? $this->department() : $this->present_department(),
                 'set_all' => $this->set_all,
+                'set_country_all' => $this->set_country_all,
+                'country_id' => $this->country_id,
                 'selectedDepartments'=> $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()):null,
                 'is_expired'=> $this->is_expired(),
               

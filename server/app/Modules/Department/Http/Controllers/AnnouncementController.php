@@ -65,7 +65,7 @@ class AnnouncementController extends Controller
     {   
        
         try {
-            
+            // dd( $request->all());
             
             log_activity( trans('messages.create_department_announcement_attempt') );
 
@@ -136,7 +136,7 @@ class AnnouncementController extends Controller
     public function update(AnnouncementRequest $request, $id)
     {   
         
-      
+    // dd($request->all(),$id);
         try {
             log_activity( trans('messages.update_department_announcement_attempt') );
             $department =  Department::find(Auth::user()->department_id);

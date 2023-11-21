@@ -61,7 +61,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             }
          
         }   
-      
+
+    
         DB::beginTransaction();
         try {
             
@@ -79,12 +80,18 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $dep_announcement->on_link          = $request->on_link;
             $dep_announcement->link             = $request->link;
             $dep_announcement->status           = $request->status;
-            $dep_announcement->country_id       = Auth::user()->country_id;
+
+
+            // $dep_announcement->country_id       = Auth::user()->country_id;
+            $dep_announcement->country_id       = $request->country_id != null ? $request->country_id : Auth::user()->country_id;
+
+
             $dep_announcement->dep_id           = auth()->user()->department_id;
             $dep_announcement->present_dep_id   = auth()->user()->department_id;
             $dep_announcement->created_by       = auth()->user()->id;
             $dep_announcement->updated_by       = auth()->user()->id;
             $dep_announcement->set_all          = $request->set_all == 1? 1:0;
+            $dep_announcement->set_country_all  = $request->set_country_all == 1? 1:0;
 
             $dep_announcement->save();
 
@@ -117,7 +124,11 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     $dep_announcement->on_link          = $saved_dep_announcement->on_link;
                     $dep_announcement->link             = $saved_dep_announcement->link;
                     $dep_announcement->status           = $saved_dep_announcement->status;
-                    $dep_announcement->country_id       = Auth::user()->country_id;
+                  
+                    // $dep_announcement->country_id       = Auth::user()->country_id;
+                    $dep_announcement->country_id       = $request->country_id != null ? $request->country_id : Auth::user()->country_id;
+
+
                     // $dep_announcement->exposure_level   = $saved_dep_announcement->exposure_level;
                     // $dep_announcement->dep_id           = auth()->user()->department_id;
                     if ($saved_dep_announcement->thumbnail != null){
@@ -125,6 +136,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     }
                     $dep_announcement->present_dep_id   = $dep_id;
                     $dep_announcement->set_all          = 0;
+                    $dep_announcement->set_country_all  = $request->set_country_all == 1? 1:0;
+
                     $dep_announcement->created_by       = auth()->user()->id;
                     $dep_announcement->updated_by       = auth()->user()->id;
 
@@ -174,7 +187,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $exist_announcement = Announcement::find($id);
 
             if( $exist_announcement){
-                if( $exist_announcement->set_all == 1){
+                if( ($exist_announcement->set_all == 1 && $exist_announcement->set_country_all == 1)|| ( $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)){
                     return  $exist_announcement;
                 }
             }
@@ -204,24 +217,37 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         }   
         DB::beginTransaction();
         try {
+            // dd($request->content, gettype($request->content));
          
                 $dep_announcement = Announcement::find($id);
 
 
                 $dep_announcement->title            = $request->title;
                 $dep_announcement->category         = $request->category;
-                $dep_announcement->content          = $request->content;
+                if( $request->content != "null"){
+                    $dep_announcement->content          = $request->content;
+                }
+              
                 $dep_announcement->headline         = $request->headline;
                 $dep_announcement->release_date     = $request->release_date;
                 $dep_announcement->expiry_date      = $request->expiry_date;
                 $dep_announcement->on_link          = $request->on_link == "true" ? 1 : 0;
                 $dep_announcement->link             = $request->link;
                 $dep_announcement->status           = $request->status;
+
+
+
+            // $dep_announcement->country_id       = Auth::user()->country_id;
+            $dep_announcement->country_id       = $request->country_id != null ? $request->country_id : Auth::user()->country_id;
+
+
+
                 // $dep_announcement->dep_id           = auth()->user()->department_id;
                 // $dep_announcement->created_by       = auth()->user()->id;
                 $dep_announcement->updated_by       = auth()->user()->id;
 
                 $dep_announcement->set_all          = $request->set_all == 1? 1:0;
+                $dep_announcement->set_country_all  = $request->set_country_all == 1? 1:0;
 
                 $dep_announcement->update();
 
@@ -260,7 +286,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
                     $dep_announcement->title            = $saved_dep_announcement->title;
                     $dep_announcement->category         = $saved_dep_announcement->category;
-                    $dep_announcement->content          = $saved_dep_announcement->content;
+                    if( $request->content != "null"){
+                        $dep_announcement->content          = $request->content;
+                    }                    
                     $dep_announcement->headline         = $saved_dep_announcement->headline;
                     // $dep_announcement->log_date          = $saved_dep_announcement->log_date;
                     $dep_announcement->release_date     = $saved_dep_announcement->release_date;
@@ -268,7 +296,14 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     $dep_announcement->on_link          = $saved_dep_announcement->on_link;
                     $dep_announcement->link             = $saved_dep_announcement->link;
                     $dep_announcement->status           = $saved_dep_announcement->status;
-                    $dep_announcement->country_id       = Auth::user()->country_id;
+                    
+
+
+                    // $dep_announcement->country_id       = Auth::user()->country_id;
+                    $dep_announcement->country_id       = $request->country_id != null ? $request->country_id : Auth::user()->country_id;
+
+
+
                     // $dep_announcement->exposure_level   = $saved_dep_announcement->exposure_level;
                     // $dep_announcement->dep_id           = auth()->user()->department_id;
                     if ($saved_dep_announcement->thumbnail != null){
@@ -276,6 +311,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     }
                     $dep_announcement->present_dep_id   = $dep_id;
                     $dep_announcement->set_all          = 0;
+                    $dep_announcement->set_country_all  = $request->set_country_all == 1? 1:0;
+
                     $dep_announcement->created_by       = auth()->user()->id;
                     $dep_announcement->updated_by       = auth()->user()->id;
 
@@ -355,7 +392,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     public function dashboard_index($request)
     {
 
- 
+//  dasdasdasd
         $date_time = Carbon::now()->toDateString();
         try {
             $department =  Department::find(Auth::user()->department_id);
@@ -370,12 +407,23 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 $list_all = Announcement::latest()->where('set_all',1)->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
-                })->get();
+                })
+                
+                ->where(function ($query)  {
+                    $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                    // $query;
+                })
+                ->get();
 
                 $list_dep = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
-                })->get();
+                })
+                ->where(function ($query)  {
+                    $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                    // $query;
+                })
+                ->get();
 
                 return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');;
 

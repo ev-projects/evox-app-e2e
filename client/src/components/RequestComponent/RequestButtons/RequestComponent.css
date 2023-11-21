@@ -4,6 +4,13 @@ background-color: #005493 !important;
 /* font-weight: 500 !important; */
 }
 
+.btn-primary-3{
+    border-color: #e1eaae !important;
+background-color: #e1eaae !important;
+color: black !important;
+/* font-weight: 500 !important; */
+}
+
 
 i.is-green{
     color: #b3fa25

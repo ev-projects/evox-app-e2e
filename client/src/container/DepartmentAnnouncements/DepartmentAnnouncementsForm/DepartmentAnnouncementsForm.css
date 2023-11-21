@@ -113,3 +113,7 @@
     content: attr(data-tool-tip);
     /* position: relative !important; */
   }
+
+  .modal-content.modal-content-preview{
+    width: 70% !important;
+  }
