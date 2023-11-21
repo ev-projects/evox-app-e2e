@@ -108,7 +108,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $saved_dep_announcement = $dep_announcement;
             
             if(is_valid($dep_ids)){
-                $dep_ids = array_diff($dep_ids,  [auth()->user()->department_id]);
+                // $dep_ids = array_diff($dep_ids,  [auth()->user()->department_id]);
                 foreach( $dep_ids as $dep_id){
                     $dep_announcement = new Announcement;
 
@@ -278,7 +278,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     
         
                     
-                $dep_ids = array_diff($dep_ids,  [auth()->user()->department_id]);
+                // $dep_ids = array_diff($dep_ids,  [auth()->user()->department_id]);
+                // dd($dep_ids);
                 foreach( $dep_ids as $dep_id){
                     $dep_announcement = new Announcement;
 
@@ -396,7 +397,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         $date_time = Carbon::now()->toDateString();
         try {
             $department =  Department::find(Auth::user()->department_id);
+            $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
 
+            // dd(array_unique($toExclude) );
             // $announcement_ids = AnnouncementDepartment::whereJsonContains('department_ids',[ $department->id])
             // ->pluck('announcement_id')
             // ->toArray();
@@ -423,7 +426,10 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
                     // $query;
                 })
+                ->whereNotIn('id', $toExclude)
                 ->get();
+                // dd(  $list_all,"-----------------------------------------", $list_dep);
+
 
                 return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');;
 
