@@ -68,27 +68,24 @@ class JobOpenings extends Component {
                 {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
                 <br />
                 <ul>
-                  <li><a href="https://careers.eastvantage.com/jobs/full-stack-developer-reactjs-laravel-onsite-bgc-taguig-mid-shift-1pm-10pm" target="_blank">Full Stack Developer</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/reactjs-developer" target="_blank">ReactJS Developer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/python-developer-onsite-bgc-taguig" target="_blank">Python Developer</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/power-bi-analyst-hybrid" target="_blank">Power BI Analyst</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/data-engineer-onsite-bgc" target="_blank">Data Engineer (ETL)</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/technical-recruiter" target="_blank">Technical Recruiter</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/software-engineer-net" target="_blank">Software Engineer (.NET Developer)</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/performance-test-engineer-0" target="_blank">Performance Test Engineer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-java-developer" target="_blank">Senior Java Developer</a></li>
 
-                  <li><a href="https://careers.eastvantage.com/jobs/urgent-hiring-operations-supervisor-site-bgc-taguig" target="_blank">Urgent Hiring| Operations Supervisor| On Site| BGC, Taguig</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/compliance-manager-iso27001pci-dssgdprdpa" target="_blank">Compliance Manager</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/recruitment-team-lead-hybrid-set-fixed-weekends" target="_blank">Recruitment Team Lead</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/proposal-writer-sales-support-lead-hybrid-set" target="_blank">Proposal Writer & Sales Support Lead</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/graphic-designer-instructional-designs-onsite" target="_blank">Graphic Designer </a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/us-recruiter-professional-executive-hirings-exp" target="_blank">US Professional Recruiter</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/us-recruiter-incentives-0" target="_blank">US Admin Recruiter</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/technical-recruiter-us-tech-role-hirings-exp" target="_blank">US Technical Recruiter</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/us-light-industrial-recruiter-4096" target="_blank">US Light Industrial Recruiter</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-procurement-officer" target="_blank">Sr. Procurement Officer </a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/customer-service-specialist-am-shift-ortigas" target="_blank">Customer Service Representative (Dayshift)</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/customer-service-specialist-life-insurance-local-account-urgent-hiring-start-asap-0" target="_blank">Customer Service Representative (Insurance)</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/trainer-quality-analyst-insurance-account" target="_blank">Training Specialist/Quality Analyst </a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/bpo-team-leader-life-insurance-local-account-onsite-hmo-day-1" target="_blank">CSR Team Lead </a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/email-marketing-assistant-onsite-ortigas-pasig" target="_blank">Email Marketing Assistant</a></li>
 
                   <li><a href="https://careers.eastvantage.com/jobs/senior-net-developer-remote-set" target="_blank">Senior .Net Developer | Remote Set Up</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/senior-system-architect-0" target="_blank">Senior System Architect | Remote Set Up</a></li>
@@ -111,13 +108,12 @@ class JobOpenings extends Component {
                 {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
                 <br />
                 <ul>
+                  <li><a href="https://careers.eastvantage.com/jobs/performance-test-engineer-bangalore" target="_blank">Performance Test Engineer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/qa-engineer-bangalore" target="_blank">QA Engineer</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/senior-powerbi-analyst" target="_blank">Senior Power BI Analyst</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/react-js-developer" target="_blank">React JS Developer</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/automation-tester" target="_blank">Automation Tester</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/python-developer-bangalore-india" target="_blank">Python Developer</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/data-engineer-etl" target="_blank">Data Engineer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/full-stack-developer-bengaluru" target="_blank">Full Stack Developer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/project-manager" target="_blank">Project Manager</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/fpa-analyst" target="_blank">FP & A Analyst</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/admissions-officer" target="_blank">Admissions Officer</a></li>
                   <li><a href="https://careers.eastvantage.com/jobs/compliance-director-bangalore" target="_blank">Compliance Director</a></li>
