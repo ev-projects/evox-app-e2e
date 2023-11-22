@@ -461,16 +461,18 @@ class DtrRepository implements DtrRepositoryInterface{
                             $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
                             $dtr->break_time            =  $parsed_schedule_detail['break_time'];
                         }
-                       
-                        $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
-                        $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
-                        $dtr->update();
 
+                        
                         # Delete the existing DTR Policies before saving the new ones.
                         $dtr->policies()->delete();
 
                         # Save the DTR Policies base on the Schedule Policies.
                         $this->save_dtr_policies( $dtr, $schedule->schedule_policies()->get() );
+                       
+                        $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
+                        $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
+                        $dtr->update();
+
 
                         # Compute for the Items
                         $this->compute_payroll_items( $dtr );
