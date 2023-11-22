@@ -59,6 +59,29 @@ export const fetchNewDtrSummary = ( data = null ) => {
     }
 }
 
+// Fetch Request new List
+export const fetchDtrMismatch = ( data = null ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/dtr/export_confilt_dtr",
+            params : data
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_NEW_DTR_SUMMARY_SUCCESS', 
+                'dtrSummary'  : result.data.content,
+            })
+        })
+        .catch(e => {
+            dispatch( {
+                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
+                'e'  : e,
+            } ) 
+        });
+    }
+}
+
 
 
 
@@ -126,6 +149,32 @@ export const exportNewDtrSummary = ( data = null) => {
                     'data'      : result.data
                 })
             }
+        })
+        .catch(e => {
+            dispatch( {
+                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
+                'e'  : e,
+            } )
+        });
+    }
+}
+
+
+export const exportNewDtrSummary1 = ( data = null) => {
+    // console.log('Params', data)
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/report/dtr_summary/export_dtr_conflict",
+            params : data
+        })
+        .then(result => {
+            console.log(result.data.content)
+           
+                dispatch({
+                    'type'      : 'FETCH_DTR_CONFLICT_EXPORT_SUCCESS',
+                    'data'      : result.data
+                })
         })
         .catch(e => {
             dispatch( {
