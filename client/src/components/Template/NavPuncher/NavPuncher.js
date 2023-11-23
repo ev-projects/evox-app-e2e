@@ -157,10 +157,10 @@ class NavPuncher extends Component {
       <div className="nav-puncher">
 
 
-    
+      
   <div className="div-col ">
 
-  {(Authenticator.check("employee", "user_multi_login") && Authenticator.check_department_permissions())?<>
+  {(Authenticator.check("employee", "user_multi_login") && Authenticator.check_department_permissions()) || !(Authenticator.check("employee", "allow_quickpunch"))?<>
   <Button  type="submit"  className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Clock In</Button>
   </>
   :
