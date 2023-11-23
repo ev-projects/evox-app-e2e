@@ -732,7 +732,7 @@ class DepartmentAnnouncementsForm extends Component {
                   imageSource = {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg' && method == "update")
                   ? this.props?.instance?.thumbnail 
                   : (this.state.thumbnail == null)? "on_update": this.state.imgPrevInputFile}
-                  content = {this.state.content}
+                  content = {this.state.content != null ? this.state.content : ( this.props.instance?.content != undefined  && method == "update" ? this.props.instance.content : null)}
 								/>
                 }
 
