@@ -287,9 +287,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
                     $dep_announcement->title            = $saved_dep_announcement->title;
                     $dep_announcement->category         = $saved_dep_announcement->category;
-                    if( $request->content != "null"){
-                        $dep_announcement->content          = $request->content;
-                    }                    
+                    // if( $request->content != "null"){
+                        $dep_announcement->content          = $saved_dep_announcement->content;
+                    // }                    
                     $dep_announcement->headline         = $saved_dep_announcement->headline;
                     // $dep_announcement->log_date          = $saved_dep_announcement->log_date;
                     $dep_announcement->release_date     = $saved_dep_announcement->release_date;
