@@ -133,11 +133,14 @@ const AnnouncementListTable = (props) => {
               {props.departmentAnnouncement.depAnnouncementlist.slice(0,3).map((announcement, index) => {
 
               // let default_link  = announcement.on_link == 1 ? announcement.link : default_link
+              // console.log(announcement.on_link, announcement.on_link);
                 return <Col  md={4} className="announcement-list-content dashbaord-content card-content">
                       
                   {announcement.on_link == 1 ? 
                     
-                    <a  href={announcement.link}  target="_blank">
+                    <a  href={  announcement.link.startsWith("http://") || announcement.link.startsWith("https://") ?
+                                announcement.link
+                                : `http://${announcement.link}`}  target="_blank">
                       <AnnouncementItem {...announcement}/>
                     </a>
 
@@ -170,15 +173,29 @@ const AnnouncementListTable = (props) => {
                    
                       {current.map((announcement, index)=> (
                       <Col  md={4} className="announcement-list-content dashbaord-content card-content">
-                      
-                      <Link to={{
-                                pathname: global.links.announcement_page + announcement.id
+
+
+                             
+                  {announcement.on_link == 1 ? 
+                    
+                    <a  href={  announcement.link.startsWith("http://") || announcement.link.startsWith("https://") ?
+                    announcement.link
+                    : `http://${announcement.link}`}  target="_blank">
+                      <AnnouncementItem {...announcement}/>
+                    </a>
+
+                    :  
+                    
+                    <Link to={{
+                              pathname: global.links.announcement_page + announcement.id
                               }}
-                                  title="View Announcement"
+                                  title="View Announcement" 
                               >
+
                         <AnnouncementItem {...announcement}/>
                       </Link>
-
+                      
+                    }
                     
                       </Col>
                       ))}
