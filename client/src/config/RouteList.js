@@ -99,6 +99,7 @@ import ItRequirementList from "../components/MeetingRoomBooking/ItRequirementLis
 import OverallRequest from "../container/MyTeam/OverallRequest";
 import OpsScheduleForm from "../container/OpsSchedule/OpsScheduleForm";
 import OpsScheduleList from "../container/OpsSchedule/OpsScheduleList";
+import JobOpeningsUpdate from "../container/Admin/JobOpeningsUpdate/JobOpeningsUpdate";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -406,6 +407,10 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
           <HrAnnouncementsForm  role={['hr']} permission={['manage_hr_announcements']}/>
         </ProtectedRoute> 
+
+        <ProtectedRoute exact path={global.links.admin_import_careers}>
+          <JobOpeningsUpdate  role={['admin']} permission={['full_access']}/>
+        </ProtectedRoute>
         
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

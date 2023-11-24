@@ -8,6 +8,7 @@ import {
   ContainerBody,
 } from "../../GridComponent/AdminLte.js";
 import { fetchDashboardAnnouncementList } from "../../../store/actions/announcement/departmentAnnouncementActions";
+import { fetchJobOpenings } from '../../../store/actions/admin/jobOpeningActions.js';
 import Figure from "react-bootstrap/Figure";
 import DashboardAnnouncementsList from "../DashboardAnnouncementsList";
 
@@ -46,13 +47,19 @@ class JobOpenings extends Component {
       key: "all-announcements",
     };
   }
-  componentWillMount() {}
+  componentWillMount() {
+    this.props.fetchJobOpenings();
+  }
   handleSelect = (values) => {
     var formData = {};
     formData["category"] = values;
     this.props.fetchDashboardAnnouncementList(formData);
   };
   render() {
+    const careers = this.props.careerList;
+    const careers_phl = careers !== undefined ? careers.PHL : '';
+    const careers_ind = careers !== undefined ? careers.IND : '';
+
     return (
       <>
         <div className="jobs-tab">
@@ -62,41 +69,21 @@ class JobOpenings extends Component {
               <div className="card-body evbuddy">
                 <br />
 
-                <h4 align="center" className="refer-h4">
-                  <strong>Refer a friend and earn as much as 30K PHP!</strong>
-                </h4>
+                {careers_phl !== '' ?
+                  <h4 align="center" className="refer-h4">
+                    <strong>Refer a friend and earn as much as 30K PHP!</strong>
+                  </h4>
+                : '' }
                 {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
                 <br />
                 <ul>
-                  <li><a href="https://careers.eastvantage.com/jobs/full-stack-developer-reactjs-laravel-onsite-bgc-taguig-mid-shift-1pm-10pm" target="_blank">Full Stack Developer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/reactjs-developer" target="_blank">ReactJS Developer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/python-developer-onsite-bgc-taguig" target="_blank">Python Developer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/power-bi-analyst-hybrid" target="_blank">Power BI Analyst</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/data-engineer-onsite-bgc" target="_blank">Data Engineer (ETL)</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/technical-recruiter" target="_blank">Technical Recruiter</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/software-engineer-net" target="_blank">Software Engineer (.NET Developer)</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/performance-test-engineer-0" target="_blank">Performance Test Engineer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-java-developer" target="_blank">Senior Java Developer</a></li>
-
-                  <li><a href="https://careers.eastvantage.com/jobs/urgent-hiring-operations-supervisor-site-bgc-taguig" target="_blank">Urgent Hiring| Operations Supervisor| On Site| BGC, Taguig</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/compliance-manager-iso27001pci-dssgdprdpa" target="_blank">Compliance Manager</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/us-recruiter-professional-executive-hirings-exp" target="_blank">US Professional Recruiter</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/us-recruiter-incentives-0" target="_blank">US Admin Recruiter</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/technical-recruiter-us-tech-role-hirings-exp" target="_blank">US Technical Recruiter</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/us-light-industrial-recruiter-4096" target="_blank">US Light Industrial Recruiter</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-procurement-officer" target="_blank">Sr. Procurement Officer </a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/customer-service-specialist-am-shift-ortigas" target="_blank">Customer Service Representative (Dayshift)</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/customer-service-specialist-life-insurance-local-account-urgent-hiring-start-asap-0" target="_blank">Customer Service Representative (Insurance)</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/trainer-quality-analyst-insurance-account" target="_blank">Training Specialist/Quality Analyst </a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/bpo-team-leader-life-insurance-local-account-onsite-hmo-day-1" target="_blank">CSR Team Lead </a></li>
-
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-net-developer-remote-set" target="_blank">Senior .Net Developer | Remote Set Up</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-system-architect-0" target="_blank">Senior System Architect | Remote Set Up</a></li>
-
-                  <li><a href="https://careers.eastvantage.com/jobs/azure-site-reliability-engineer-hybrid-bgc" target="_blank">Azure Site Reliability Engineer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-devops-engineer-apac-hybrid" target="_blank">Senior Devops Engineer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/service-delivery-technical-consultant-fintech" target="_blank">Service Delivery Technical Consultant</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-devops-engineer-ansible-and-terraform" target="_blank">Senior Devops Engineer (Ansible and Terraform)</a></li>
+                  {careers_phl !== '' ?
+                    careers_phl.map((career, key) => {
+                      return (
+                        <li key={key}><a href={career.link} target="_blank">{career.title}</a></li>
+                      )
+                    })
+                  : '' }
                 </ul>
               </div>
             </Tab>
@@ -105,50 +92,48 @@ class JobOpenings extends Component {
               {/* <Tab eventKey="ERP India" title="ERP India" type="submit"> */}
               <div className="card-body evbuddy">
                 <br />
-                <h4 align="center" className="refer-h4">
-                  <strong>Refer a friend and earn as much as 25K INR!</strong>
-                </h4>
+                {careers_ind !== '' ?
+                  <h4 align="center" className="refer-h4">
+                    <strong>Refer a friend and earn as much as 25K INR!</strong>
+                  </h4>
+                : '' }
                 {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
                 <br />
                 <ul>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-powerbi-analyst" target="_blank">Senior Power BI Analyst</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/react-js-developer" target="_blank">React JS Developer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/automation-tester" target="_blank">Automation Tester</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/python-developer-bangalore-india" target="_blank">Python Developer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/data-engineer-etl" target="_blank">Data Engineer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/full-stack-developer-bengaluru" target="_blank">Full Stack Developer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/project-manager" target="_blank">Project Manager</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/fpa-analyst" target="_blank">FP & A Analyst</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/admissions-officer" target="_blank">Admissions Officer</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/compliance-director-bangalore" target="_blank">Compliance Director</a></li>
-                  <li><a href="https://careers.eastvantage.com/jobs/senior-recruiter-0" target="_blank">Senior Recruiter</a></li>
+                  {careers_ind !== '' ?
+                    careers_ind.map((career, key) => {
+                      return (
+                        <li key={key}><a href={career.link} target="_blank">{career.title}</a></li>
+                      )
+                    })
+                  : '' }
                 </ul>
               </div>
             </Tab>
 
             {/* <Tab eventKey="Tech4Tech" title="Tech4Tech" type="submit">
-                            <div className="card-body evbuddy">
-                              <br />
-                              <h4 align="center"><strong>Refer a friend and earn as much as 30K PHP!</strong></h4>
-                              <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
-                              <br />
-                              <ul>
-                                <li><a href="https://careers.eastvantage.com/jobs/front-end-developer-vuejs" target="_blank">Front End Developer (Vue.js)</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/python-developer-temporary-wfh" target="_blank">Python Developer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/devops-engineer-aws-docker-kubernetes" target="_blank">DevOps Engineer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/reactjs-frontend-developer-bgc" target="_blank">ReactJS Developer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/full-stack-developer-0" target="_blank">Full Stack Developer (Laravel and Reactjs)</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/java-application-developer" target="_blank">JAVA Developer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/wordpress-developer" target="_blank">WordPress Developer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/etl-specialist" target="_blank">ETL Engineer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/web-application-security-professional" target="_blank">Penetration Tester</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/react-jsreact-native-developer" target="_blank">ReactJS/React Native Developer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/release-train-engineer" target="_blank">Release Train Engineer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/sql-azure-developer" target="_blank">SQL Azure Developer</a></li>
-                                <li><a href="https://careers.eastvantage.com/jobs/technical-seo-specialist" target="_blank">Technical SEO Specialist</a></li>
-                              </ul>
-                            </div>
-                          </Tab> */}
+              <div className="card-body evbuddy">
+                <br />
+                <h4 align="center"><strong>Refer a friend and earn as much as 30K PHP!</strong></h4>
+                <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div>
+                <br />
+                <ul>
+                  <li><a href="https://careers.eastvantage.com/jobs/front-end-developer-vuejs" target="_blank">Front End Developer (Vue.js)</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/python-developer-temporary-wfh" target="_blank">Python Developer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/devops-engineer-aws-docker-kubernetes" target="_blank">DevOps Engineer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/reactjs-frontend-developer-bgc" target="_blank">ReactJS Developer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/full-stack-developer-0" target="_blank">Full Stack Developer (Laravel and Reactjs)</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/java-application-developer" target="_blank">JAVA Developer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/wordpress-developer" target="_blank">WordPress Developer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/etl-specialist" target="_blank">ETL Engineer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/web-application-security-professional" target="_blank">Penetration Tester</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/react-jsreact-native-developer" target="_blank">ReactJS/React Native Developer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/release-train-engineer" target="_blank">Release Train Engineer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/sql-azure-developer" target="_blank">SQL Azure Developer</a></li>
+                  <li><a href="https://careers.eastvantage.com/jobs/technical-seo-specialist" target="_blank">Technical SEO Specialist</a></li>
+                </ul>
+              </div>
+            </Tab> */}
           </Tabs>
         </div>
       </>
@@ -159,8 +144,8 @@ class JobOpenings extends Component {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    // holiday : state.dashboard
     departmentAnnouncement: state.departmentAnnouncement,
+    careerList: state.careerList.careerlist,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -169,6 +154,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(fetchDashboardAnnouncementList()),
     fetchDashboardAnnouncementList: (data) =>
       dispatch(fetchDashboardAnnouncementList(data)),
+    fetchJobOpenings : () =>
+      dispatch(fetchJobOpenings()),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(JobOpenings);
