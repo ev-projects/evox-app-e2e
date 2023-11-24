@@ -13,7 +13,7 @@ import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import BackButton from "../../../components/Template/BackButton";
 import Validator from "../../../services/Validator";
-import ChangePasswordForm from "../../../components/ChangePasswordForm";
+import ChangePasswordFormComponent from "../../../components/ChangePasswordFormComponent";
 import { Link } from "react-router-dom"; 
 
 const PersonalInformation = ( props ) => {
@@ -49,6 +49,21 @@ const PersonalInformation = ( props ) => {
             props.updateUserProfile( profile.details.id, formData );
         }
     }
+
+    
+    function onOpenChangePasswordForm(){
+        var objDiv = document.getElementById("change_password_id");
+       
+        // setTimeout(function(){  window.scrollTo(0, document.body.scrollHeight);},200)
+        setTimeout(function(){   var element =  document.getElementById('change_password_id');
+        if (typeof(element) != 'undefined' && element != null)
+        {
+          console.log("exist");
+          element.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+     
+        }},150)
+    }
+
   
     const initialValue = {
         first_name : profile.details?.first_name ? profile.details.first_name : null,
@@ -188,7 +203,7 @@ const PersonalInformation = ( props ) => {
                                 user.id === profile.details.id ?
                                     <React.Fragment>
                                         { Authenticator.checkRole('client') ? <Button type="submit" className="btn btn-primary" ><i className="fa fa-edit" /> Save</Button> : null }&nbsp;
-                                        <Button type="button" className="btn btn-secondary" onClick={()=> {setShowChangePasswordForm(true)}} ><i className="fa fa-edit" /> Change Password</Button>
+                                        <Button type="button" className="btn btn-secondary" onClick={()=> {setShowChangePasswordForm(true);   onOpenChangePasswordForm();}} ><i className="fa fa-edit" /> Change Password</Button>
                                     </React.Fragment>
                                     : 
                                     null
@@ -198,7 +213,9 @@ const PersonalInformation = ( props ) => {
                         <br/>
                         {
                             showChangePasswordForm ? 
-                            <ChangePasswordForm {...props} setShowChangePasswordForm={setShowChangePasswordForm} size="12"/>
+                            <div id="change_password_id">
+                                <ChangePasswordFormComponent {...props} setShowChangePasswordForm={setShowChangePasswordForm} size="12"/>
+                            </div>
                             : 
                             null
                         }

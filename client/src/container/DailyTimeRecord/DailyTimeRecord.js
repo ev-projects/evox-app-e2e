@@ -337,7 +337,7 @@ class DailyTimeRecord extends Component {
                           let dtr_undertime = dtr?.payroll_items?.undertime;
                           if ( dtr.leaves.length > 0 ) {
                             dtr.leaves.forEach(element => {
-                              if (element.amount > 0) {
+                              if (element.amount > 0 && element.status == 'approved') {
                                 dtr_undertime = null;
                               }
                             });
