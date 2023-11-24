@@ -230,7 +230,9 @@ class DepartmentAnnouncementsList extends Component {
 
                                   {announcement.on_link == 1 ? 
                     
-                                      <a  href={announcement.link}  target="_blank">
+                                      <a  href={  announcement.link.startsWith("http://") || announcement.link.startsWith("https://") ?
+                                                  announcement.link
+                                                  : `http://${announcement.link}`}  target="_blank">
                                         <Button  className="btn btn-primary-2">Visit Link <i className="nav-icon fa fa-link is-green" /></Button>
                                       </a>
 
