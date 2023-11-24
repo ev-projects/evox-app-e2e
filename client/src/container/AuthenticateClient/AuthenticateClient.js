@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
-import { authenticateClient } from '../../store/actions/userActions'
+import { authenticateClient, authenticateMSClient } from '../../store/actions/userActions'
 import { showAlert } from '../../store/actions/settings/alertActions'
 import { Redirect } from "react-router-dom";
 import Validator from "../../services/Validator";
@@ -15,9 +15,15 @@ import styles from "./AuthenticateClient.css";
 class AuthenticateClient extends Component {
     
   componentWillMount() {
-    let token = new URLSearchParams(this.props.location.search).get('token');
-    if (token)
-    this.props.authenticateClient(token)
+    if( !Validator.isValid( localStorage.getItem("access_token") ) && !Validator.isValid(this.props.user.id) ) {
+      let token = new URLSearchParams(this.props.location.search).get('token');
+      let code = new URLSearchParams(this.props.location.search).get('code');
+      if (token) {
+        this.props.authenticateClient(token);
+      } else if (code) {
+        this.props.authenticateMSClient(code);
+      }
+    }
   }
 
   render = () => {  
@@ -89,6 +95,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
       authenticateClient: ( token ) => dispatch( authenticateClient(token) ),
+      authenticateMSClient: ( token ) => dispatch( authenticateMSClient(token) ),
       showAlert: ( message, timeout ) => dispatch( showAlert( message, timeout ) ),
     }
 }
