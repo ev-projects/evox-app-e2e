@@ -1,0 +1,6 @@
+{
+    "name": "Careers",
+    "slug": "careers",
+    "version": "1.0",
+    "description": "Responsible for careers related api actions."
+}

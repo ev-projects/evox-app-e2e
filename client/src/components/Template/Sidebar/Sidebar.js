@@ -827,6 +827,17 @@ const Sidebar = (props) => {
                       </li>
                     )}
 
+                    {Authenticator.check("admin", "full_access") && (
+                      <li className="nav-item">
+                        <Link
+                          className="nav-link"
+                          to={global.links.admin_import_careers}
+                        >
+                          <i className="nav-icon fa fa-arrow-up nav-icon" />
+                          <p>Careers</p>
+                        </Link>
+                      </li>
+                    )}
                     {Authenticator.check("admin", "manage_payroll_cutoff") && (
                       <li className="nav-item">
                         <Link

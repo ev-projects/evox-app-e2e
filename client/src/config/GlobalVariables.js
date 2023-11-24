@@ -85,6 +85,7 @@
 
     department_list                 :  "/app/admin/DepartmentList/",
     admin_announcement_list         :  "/app/admin/AnnouncementList/",
+    admin_import_careers            :  "/app/admin/CareersImport/",
 
 
     // Performance Measure

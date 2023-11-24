@@ -294,7 +294,12 @@ return [
     'create_change_log_success' => 'A new change log is now created!',
     'fetch_change_log_success' => 'List of all change logs',
 
-
+    /**
+     *  Careers
+     */
+    'import_careers_attempt' => 'Import Careers Attempt',
+    'import_careers_success' => 'A new list of careers are now imported!',
+    'fetch_careers_success' => 'List of all imported careers!',
 
     /**
      * Department Announcements
