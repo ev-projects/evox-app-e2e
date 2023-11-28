@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect, Link } from "react-router-dom";
 import "./DashboardAnnouncementsList.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../GridComponent/AdminLte.js';
-import { fetchDashboardAnnouncementList } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchDashboardAnnouncementList, clearDepartmentAnnouncementListInstance } from '../../../store/actions/announcement/departmentAnnouncementActions'
 import { fetchDepartmentListWithAnnouncements  } from '../../../store/actions/lookup/lookupListActions';
 
 import Figure from 'react-bootstrap/Figure';
@@ -27,6 +27,7 @@ class DashboardAnnouncementsList extends Component {
     };
   }
   componentWillMount  = async() =>{ 
+    await this.props.clearDepartmentAnnouncementListInstance();
     await this.props.fetchDashboardAnnouncementList( );
     await this.props.fetchDepartmentListWithAnnouncements();
 	}
@@ -282,6 +283,7 @@ return {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchDepartmentListWithAnnouncements               : () => dispatch( fetchDepartmentListWithAnnouncements() ),
+    clearDepartmentAnnouncementListInstance : () => dispatch( clearDepartmentAnnouncementListInstance() ),
     fetchDashboardAnnouncementList : () => dispatch( fetchDashboardAnnouncementList() ),
     fetchDashboardAnnouncementList : (data) => dispatch( fetchDashboardAnnouncementList(data) ),
   }

@@ -19,6 +19,7 @@ use App\Modules\Department\Resources\AnnouncementResource;
 use App\Modules\Department\Http\Requests\AnnouncementRequest;
 
 
+use App\Modules\Department\Resources\AnnouncementStrictResource;
 use App\Modules\Department\Repositories\AnnouncementRepositoryInterface;
 
 class AnnouncementController extends Controller
@@ -231,7 +232,7 @@ class AnnouncementController extends Controller
             $announcements_list = $this->announcement->dashboard_index($request);
         return success_response(
             trans('messages.fetch_change_log_success'), 
-           AnnouncementResource::collection($announcements_list)
+            AnnouncementStrictResource::collection($announcements_list)
         );
 
         

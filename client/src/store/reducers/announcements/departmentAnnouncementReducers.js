@@ -22,6 +22,7 @@ const departmentAnnouncementReducers = (state = initState, action) => {
                 isDepartmentAnnouncementListLoaded : true
             };
         break;
+        
         case "FETCH_DEPARTMENT_ANNOUNCEMENT_SUCCESS":
             return {
                 instance : action.announcement,

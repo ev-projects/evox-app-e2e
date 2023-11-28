@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./DepartmentAnnouncementsList.css";
 import { format, getDate } from "date-fns";
-import { fetchMyHandleAnnouncementList, deleteDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchMyHandleAnnouncementList, deleteDepartmentAnnouncement , clearDepartmentAnnouncementListInstance} from '../../../store/actions/announcement/departmentAnnouncementActions'
 import Joyride, { ACTIONS, EVENTS, STATUS } from "react-joyride";
 import Authenticator from "../../../services/Authenticator";
 import moment from 'moment';
@@ -124,6 +124,7 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   componentWillMount(){
+    this.props.clearDepartmentAnnouncementListInstance();
     this.props.fetchMyHandleAnnouncementList();
   }
   componentDidMount() {
@@ -278,6 +279,7 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
+      clearDepartmentAnnouncementListInstance : () => dispatch( clearDepartmentAnnouncementListInstance() ),
       fetchMyHandleAnnouncementList : () => dispatch( fetchMyHandleAnnouncementList() ),
       deleteDepartmentAnnouncement : (id) => dispatch( deleteDepartmentAnnouncement(id) ),
     }

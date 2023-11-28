@@ -34,7 +34,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
 
         try {
-            $announcements_list = Announcement::orderBy('created_at', 'desc')->get();
+            $announcements_list = Announcement::where('announcement_id', null )->orderBy('created_at', 'desc')->get();
 
 
             return $announcements_list;
@@ -186,6 +186,10 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
             $exist_announcement = Announcement::find($id);
 
+            if($exist_announcement->set_all == 0){
+                $exist_announcement = Announcement::where('announcement_id', $id)->where("present_dep_id",  Auth::user()->department_id)->first();
+            }
+
             if( $exist_announcement){
                 // if( ($exist_announcement->set_all == 1 && $exist_announcement->set_country_all == 1)|| ( $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)
                     
@@ -199,7 +203,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 // }
 
 
-                   if(($exist_announcement->set_all == 1 || ($exist_announcement->set_all == 0&& $exist_announcement->department_id == Auth::user()->department_id))  
+                   if(($exist_announcement->set_all == 1 || ($exist_announcement->set_all == 0&& $exist_announcement->present_dep_id == Auth::user()->department_id))  
                 && ($exist_announcement->set_country_all == 1||  ($exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id))){
                     return  $exist_announcement;
                 }
@@ -412,14 +416,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $department =  Department::find(Auth::user()->department_id);
             $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
 
-            // dd(array_unique($toExclude) );
-            // $announcement_ids = AnnouncementDepartment::whereJsonContains('department_ids',[ $department->id])
-            // ->pluck('announcement_id')
-            // ->toArray();
-            // ->get();
+        
             if($request->dep_id == "all" || $request->dep_id == null){
-                // $announcements_list = Announcement::latest()->where('dep_id',"!=", null)->where(function ($query) use ($date_time) {
-                // $announcements_list = Announcement::latest()->where(function ($query) use ($date_time) {
+
                 $list_all = Announcement::latest()->where('set_all',1)->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
@@ -441,7 +440,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 })
                 ->whereNotIn('id', $toExclude)
                 ->get();
-                // dd(  $list_all,"-----------------------------------------", $list_dep);
+                
 
 
                 return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');;
