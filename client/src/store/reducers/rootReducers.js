@@ -56,6 +56,7 @@ import opsScheduleReducers from "./opsschedule/opsScheduleReducers";
 import jobOpeningReducers from "./admin/jobOpeningReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
+import modalLoginReducer from './settings/modalLoginReducer';
 
 const rootReducer = combineReducers({
     
@@ -66,6 +67,7 @@ const rootReducer = combineReducers({
     profile : profileReducer,
     
     alert: alertReducer,
+    modalLogin: modalLoginReducer,
     dtr: dtrReducer,
     schedule: scheduleReducer,
     constant : constantReducers,

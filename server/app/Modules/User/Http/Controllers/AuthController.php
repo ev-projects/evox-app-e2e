@@ -198,6 +198,74 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Authenticate User via MS Account.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function authenticateMSClient(Request $request){   
+        try {
+            $tenant_id = env('MSGRAPH_TENANT_ID');
+            $client_id = env('MSGRAPH_CLIENT_ID');
+            $scope = 'User.Read';
+            $code = $request->code;
+            $redirect_uri = env('MSGRAPH_LANDING_URL');
+            $grant_type = "authorization_code";
+            $client_secret = env('MSGRAPH_SECRET_ID');
+            $token_request = ms_get_access_token($tenant_id, array(
+                'client_id' => $client_id,
+                'scope' => $scope,
+                'code' => $code,
+                'redirect_uri' => $redirect_uri,
+                'grant_type' => $grant_type,
+                'client_secret' => $client_secret
+            ));
+
+            if (!$token_request or !isset($token_request->access_token)) {
+                return error_response( "Microsoft login failed, please try again.", [], 403);
+            }
+
+            $me = ms_call_api($token_request->access_token, 'GET', 'me');
+
+            if (!$me) {
+                return error_response( "Microsoft login failed, please try again.", [], JsonResponse::HTTP_NOT_FOUND);
+            }
+            
+            $user = User::where('email', $me->mail)->first();
+            if (!$user) {
+                return error_response( trans('messages.user_email_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+            }
+            // Attempt to check the Credentials. If credentials not found, return User Not Found.
+            if (!$token = auth()->login($user)) {
+                return error_response( trans('messages.user_not_found'), [], JsonResponse::HTTP_NOT_FOUND);
+            }
+
+            // Attempt to check if the User is active. If not active, return User not active.
+            if ( ! auth()->user()->is_active ) {
+                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                    return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
+                }
+               
+            }
+
+            log_activity( trans('messages.login') );
+
+            // Set the User that was fetched into Session
+            $result = [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth()->factory()->getTTL() * 60
+            ];
+
+            $result = $this->get_default_payload( $result );
+
+            log_to_file('info', 'Success', [], 'user');
+            return success_response( trans('messages.login_success'), $result );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 
     /**
      * Log the user out (Invalidates the token).

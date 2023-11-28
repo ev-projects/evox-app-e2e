@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Facades\Socialite;
 use App\Modules\User\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 class LoginController extends Controller
 {
@@ -46,7 +47,7 @@ class LoginController extends Controller
     *
     * @return \Illuminate\Http\Response
     */
-    public function redirectToProvider()
+    public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
     }
@@ -56,7 +57,7 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function handleProviderCallback()
+    public function handleGoogleCallback()
     {
         try {
             $user = Socialite::driver('google')->user();
@@ -75,6 +76,39 @@ class LoginController extends Controller
         } else {
             return redirect()->away(env('FRONT_END_URL') . "email-not-found");
         }
+    }
+
+    /**
+    * Redirect the user to the Google authentication page.
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function redirectToMS(Request $request)
+    {
+        /*$msGraph = new MsGraph();
+        return $msGraph->connect();*/
+        $tenant_id = env('MSGRAPH_TENANT_ID');
+        $client_id = env('MSGRAPH_CLIENT_ID');
+        $redirect_uri = urlencode(env('MSGRAPH_LANDING_URL'));
+        $user_state = Str::random(30);
+        $auth_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/authorize?client_id={$client_id}&response_type=code&redirect_uri={$redirect_uri}&response_mode=query&scope=user.read&state={$user_state}";
+
+        return redirect()->away($auth_url);
+    }
+
+    public function handleMSCallback()
+    {
+        /*try {
+            dd((new MsGraph)->get('me'));
+        } catch (\Exception $e) {
+            return redirect()->away(env('FRONT_END_URL') . "login");
+        }
+        $existingUser = User::where('email', $user->email)->first();
+        if($existingUser){
+            
+        } else {
+            return redirect()->away(env('FRONT_END_URL') . "email-not-found");
+        }*/
     }
 
     /*public function getToken(Request $request)
