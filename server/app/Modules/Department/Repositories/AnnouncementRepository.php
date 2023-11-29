@@ -34,7 +34,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
 
         try {
-            $announcements_list = Announcement::orderBy('created_at', 'desc')->get();
+            $announcements_list = Announcement::where('announcement_id', null )->orderBy('created_at', 'desc')->get();
 
 
             return $announcements_list;
@@ -186,8 +186,25 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
             $exist_announcement = Announcement::find($id);
 
+            if($exist_announcement->set_all == 0){
+                $exist_announcement = Announcement::where('announcement_id', $id)->where("present_dep_id",  Auth::user()->department_id)->first();
+            }
+
             if( $exist_announcement){
-                if( ($exist_announcement->set_all == 1 && $exist_announcement->set_country_all == 1)|| ( $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)){
+                // if( ($exist_announcement->set_all == 1 && $exist_announcement->set_country_all == 1)|| ( $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)
+                    
+                // ){
+                //     return  $exist_announcement;
+                // }
+
+                // if($exist_announcement->set_all == 0 && $exist_announcement->department_id == Auth::user()->department_id  
+                // && ($exist_announcement->set_country_all == 1||  $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)){
+                //     return  $exist_announcement;
+                // }
+
+
+                   if(($exist_announcement->set_all == 1 || ($exist_announcement->set_all == 0&& $exist_announcement->present_dep_id == Auth::user()->department_id))  
+                && ($exist_announcement->set_country_all == 1||  ($exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id))){
                     return  $exist_announcement;
                 }
             }
@@ -399,14 +416,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $department =  Department::find(Auth::user()->department_id);
             $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
 
-            // dd(array_unique($toExclude) );
-            // $announcement_ids = AnnouncementDepartment::whereJsonContains('department_ids',[ $department->id])
-            // ->pluck('announcement_id')
-            // ->toArray();
-            // ->get();
+        
             if($request->dep_id == "all" || $request->dep_id == null){
-                // $announcements_list = Announcement::latest()->where('dep_id',"!=", null)->where(function ($query) use ($date_time) {
-                // $announcements_list = Announcement::latest()->where(function ($query) use ($date_time) {
+
                 $list_all = Announcement::latest()->where('set_all',1)->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
@@ -427,11 +439,12 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     // $query;
                 })
                 ->whereNotIn('id', $toExclude)
+                 // only 6 but we get 7 to check if there is a next (show)
                 ->get();
-                // dd(  $list_all,"-----------------------------------------", $list_dep);
+                
 
 
-                return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');;
+                return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date')->take(6);
 
               
             }
@@ -441,7 +454,12 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 $announcements_list = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
-                });
+                })
+                ->where(function ($query)  {
+                    $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                    // $query;
+                })
+                ->whereNotIn('id', $toExclude);
             }
 
 
@@ -453,7 +471,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             //     $announcements_list->where("category", "Department");
             // }
 
-            $announcements_list = $announcements_list->get()->sortByDesc('release_date');
+            $announcements_list = $announcements_list->get()->sortByDesc('release_date')->take(6) ;
 
             return $announcements_list;
             
@@ -461,6 +479,85 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             throw $e;
         }
     }
+
+
+    public function increment_dashboard_index($request)
+    {
+
+        
+//  dasdasdasd
+        $date_time = Carbon::now()->toDateString();
+        try {
+            $department =  Department::find(Auth::user()->department_id);
+            $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
+
+        
+            if($request->dep_id == "all" || $request->dep_id == null){
+
+                $list_all = Announcement::latest()->where('set_all',1)->where(function ($query) use ($date_time) {
+                    $query->where('release_date', '<=', $date_time);
+                    $query->where('expiry_date', '>', $date_time);
+                })
+                
+                ->where(function ($query)  {
+                    $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                    // $query;
+                })
+                ->get();
+
+                $list_dep = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                    $query->where('release_date', '<=', $date_time);
+                    $query->where('expiry_date', '>', $date_time);
+                })
+                ->where(function ($query)  {
+                    $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                    // $query;
+                })
+                ->whereNotIn('id', $toExclude)
+               // only 6 but we get 7 to check if there is a next (show)
+                ->get();
+                
+
+                error_log($request->page);
+                return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date')->forPage($request->page, 3);
+
+              
+            }
+
+            if( $request->dep_id != null  && is_numeric($request->dep_id)){
+                $department =  Department::find($request->dep_id);
+                $announcements_list = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                    $query->where('release_date', '<=', $date_time);
+                    $query->where('expiry_date', '>', $date_time);
+                })
+                ->where(function ($query)  {
+                    $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                    // $query;
+                })
+                ->whereNotIn('id', $toExclude);
+            }
+
+
+
+            // if ($request->category == "hr") {
+            //     $announcements_list->where("category", "HR");
+            // }
+            // if ($request->category == "department") {
+            //     $announcements_list->where("category", "Department");
+            // }
+            error_log("here222");
+
+            $announcements_list = $announcements_list
+            // only 6 but we get 7 to check if there is a next (show)
+            ->get()->sortByDesc('release_date')->forPage($request->page, 3);
+
+            return $announcements_list;
+            
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
 
 
 

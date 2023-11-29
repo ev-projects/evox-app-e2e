@@ -19,6 +19,8 @@ interface AnnouncementRepositoryInterface
     public function update_status( $request, $id);
     
     public function dashboard_index($request);
+
+    public function increment_dashboard_index($request);
     
      public function handle_announcements_index();
      

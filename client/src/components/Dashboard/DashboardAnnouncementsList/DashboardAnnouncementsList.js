@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect, Link } from "react-router-dom";
 import "./DashboardAnnouncementsList.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../GridComponent/AdminLte.js';
-import { fetchDashboardAnnouncementList } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchDashboardAnnouncementList, clearDepartmentAnnouncementListInstance, incrementDashboardAnnouncementList } from '../../../store/actions/announcement/departmentAnnouncementActions'
 import { fetchDepartmentListWithAnnouncements  } from '../../../store/actions/lookup/lookupListActions';
 
 import Figure from 'react-bootstrap/Figure';
@@ -21,12 +21,15 @@ class DashboardAnnouncementsList extends Component {
     this.state = {
       key: "all-announcements",
       filters: {
-        department_id:  this.props.myTeamList?.filters?.department_id,
+        page: 3,
+        dep_id: null,
+        // department_id:  this.props.myTeamList?.filters?.department_id,
       },
 
     };
   }
   componentWillMount  = async() =>{ 
+    await this.props.clearDepartmentAnnouncementListInstance();
     await this.props.fetchDashboardAnnouncementList( );
     await this.props.fetchDepartmentListWithAnnouncements();
 	}
@@ -37,6 +40,14 @@ class DashboardAnnouncementsList extends Component {
     // console.log(formData)
     // var formData = {};
     // formData["category"] = values;
+    var item_id = event.target.value;
+    this.setState(prevState => ({
+      filters: {
+      
+        page:3,
+        dep_id:  item_id
+      }
+    }));
     this.props.fetchDashboardAnnouncementList(formData );
 
   }
@@ -44,6 +55,23 @@ class DashboardAnnouncementsList extends Component {
     var formData = {};
     formData["category"] = values;
     this.props.fetchDashboardAnnouncementList(formData );
+  }
+
+  handleIncrement = (values) => {
+    var formData = {};
+    formData["page"] =this.state.filters.page ;
+     formData["dep_id"] =this.state.filters.dep_id ;
+    console.log(this.state.filters);
+     this.props.incrementDashboardAnnouncementList(this.state.filters );
+     this.setState(prevState => ({
+      filters: {
+        ...prevState.filters,
+        page: this.state.filters.page + 1
+      }
+    }));
+
+   
+   console.log(this.state.filters);
   }
   render= () => {  
 
@@ -76,6 +104,7 @@ class DashboardAnnouncementsList extends Component {
                   className="form-control"
                   value={values.department_id}
                   onChange={(e) => {
+                    this.props.clearDepartmentAnnouncementListInstance()
                     this.handleSelectDepartmentAnnouncement(e);
                   }}
                   style={{ display: 'block' }}
@@ -103,7 +132,7 @@ class DashboardAnnouncementsList extends Component {
           
               </Col> 
           </Row>
-          <AnnouncementListTable  {...this.props} />
+          <AnnouncementListTable  {...this} />
 
             
           </form>
@@ -123,14 +152,14 @@ class DashboardAnnouncementsList extends Component {
 const AnnouncementListTable = (props) => {
   {
     var showOpen = false;
-    if(props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
-    console.log(props.departmentAnnouncement.depAnnouncementlist.length > 6)
-      if(props.departmentAnnouncement.depAnnouncementlist.length !== 0){
-        showOpen = props.departmentAnnouncement.depAnnouncementlist.length > 6 ? true : false
+    if(props.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
+    console.log(props.props.departmentAnnouncement)
+      if(props.props.departmentAnnouncement.depAnnouncementlist.length !== 0){
+        showOpen = props.props.departmentAnnouncement.depAnnouncementlist.length > 6 ? true : false
         return < >
 
           <Row>
-              {props.departmentAnnouncement.depAnnouncementlist.slice(0,3).map((announcement, index) => {
+              {props.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
 
               // let default_link  = announcement.on_link == 1 ? announcement.link : default_link
               // console.log(announcement.on_link, announcement.on_link);
@@ -160,7 +189,29 @@ const AnnouncementListTable = (props) => {
                     
                       </Col>;
               })}
+{
+  !props.props.departmentAnnouncement.hideShowMore ? <><Col  md={12} align="center">
+  <Button
+      
+        onClick={() => {
+          props.handleIncrement();
+        }}
 
+        className="show-more-dashboard"
+      >
+        Show More
+      </Button> 
+   
+    </Col></>:<>
+    
+          <Col  md={12} align="center" className="">
+              <h5>No More Announcements to Show</h5>
+          </Col>
+        
+    </>
+}
+
+{/* 
             <ShowMore
                 items={props.departmentAnnouncement.depAnnouncementlist.slice(3, props.departmentAnnouncement.depAnnouncementlist.length)}
                 by={3}
@@ -215,7 +266,7 @@ const AnnouncementListTable = (props) => {
                     </Col>
                   </React.Fragment>
                 )}
-              </ShowMore>
+              </ShowMore> */}
         </Row>
           
       
@@ -258,6 +309,7 @@ const AnnouncementItem = (announcement) => {
                               <div className="card-text-black ">
                                 <div  className="card-bottom-content"> 
                                 <Badge className="tag-badge">{announcement.dep.department_name}</Badge>
+                                {announcement.is_new == true ? <Badge className="new-badge">NEW ANNOUNCEMENT</Badge> : <></>}
                                 {/* {console.log(announcement.dep)} */}
                                 <br/>
                                 <> Posted on: {announcement.release_date}</> 
@@ -280,9 +332,13 @@ return {
 }
 const mapDispatchToProps = (dispatch) => {
   return {
+
     fetchDepartmentListWithAnnouncements               : () => dispatch( fetchDepartmentListWithAnnouncements() ),
+    clearDepartmentAnnouncementListInstance : () => dispatch( clearDepartmentAnnouncementListInstance() ),
     fetchDashboardAnnouncementList : () => dispatch( fetchDashboardAnnouncementList() ),
     fetchDashboardAnnouncementList : (data) => dispatch( fetchDashboardAnnouncementList(data) ),
+    incrementDashboardAnnouncementList : () => dispatch( incrementDashboardAnnouncementList() ),
+    incrementDashboardAnnouncementList : (data) => dispatch( incrementDashboardAnnouncementList(data) ),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardAnnouncementsList);

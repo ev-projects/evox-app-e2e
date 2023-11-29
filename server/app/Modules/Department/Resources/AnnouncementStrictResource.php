@@ -2,12 +2,12 @@
 
 namespace App\Modules\Department\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Modules\User\Resources\UserListResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Carbon\Carbon;
 
-class AnnouncementResource extends JsonResource
+class AnnouncementStrictResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,21 +18,15 @@ class AnnouncementResource extends JsonResource
     public function toArray($request)
     {
 
-      
-            // $endDate  = Carbon::now();
-            // $startDate = Carbon::now()->subDays(3);
-            // $dateToCheck = Carbon::parse( $this->release_date);
-
-            $startDate  = Carbon::parse($this->release_date);
-            $endDate = Carbon::parse($this->release_date)->addDays(3);
-            $dateToCheck = Carbon::now();
-                
+        $startDate  = Carbon::parse($this->release_date);
+        $endDate = Carbon::parse($this->release_date)->addDays(3);
+        $dateToCheck = Carbon::now();
 
         $result = null;
     
         if( ! is_null( $this->resource ) ) {
             $result = array(
-                'id' => $this->id,
+                'id' =>  $this->announcement_id == null? $this->id :  $this->announcement_id,
                 'title' => $this->title,
                 'headline' => $this->headline,
                 'thumbnail' => $this->thumbnail != null ? env('ASSET_URL').Storage::url($this->thumbnail): null,
@@ -51,7 +45,10 @@ class AnnouncementResource extends JsonResource
                 'country_id' => $this->country_id,
                 'selectedDepartments'=> $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()):null,
                 'is_expired'=> $this->is_expired(),
+
                 'is_new' =>  $dateToCheck->between($startDate, $endDate),
+
+                
               
                 'created_at' => $this->created_at->format('Y-m-d h:m:s'),
 

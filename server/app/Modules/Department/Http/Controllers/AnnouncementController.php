@@ -19,6 +19,7 @@ use App\Modules\Department\Resources\AnnouncementResource;
 use App\Modules\Department\Http\Requests\AnnouncementRequest;
 
 
+use App\Modules\Department\Resources\AnnouncementStrictResource;
 use App\Modules\Department\Repositories\AnnouncementRepositoryInterface;
 
 class AnnouncementController extends Controller
@@ -230,8 +231,8 @@ class AnnouncementController extends Controller
         try {
             $announcements_list = $this->announcement->dashboard_index($request);
         return success_response(
-            trans('messages.fetch_change_log_success'), 
-           AnnouncementResource::collection($announcements_list)
+            trans('got the dashboard items'), 
+            AnnouncementStrictResource::collection($announcements_list)
         );
 
         
@@ -239,6 +240,25 @@ class AnnouncementController extends Controller
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
+
+    public function increment_dashboard_index(Request $request)
+    {
+        // error_log("hererrrrr" . implode(" ", $request->all()));
+        
+       
+        try {
+            $announcements_list = $this->announcement->increment_dashboard_index($request);
+        return success_response(
+            trans('messages.fetch_change_log_success'), 
+            AnnouncementStrictResource::collection($announcements_list)
+        );
+
+        
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+    
 
 
     /**
