@@ -119,6 +119,9 @@ class AnnouncementController extends Controller
         else {
             $dep_announcement =  $this->announcement->show_strict($id);
         }
+        if(  $dep_announcement == null){
+            return error_response( trans('You cant see this announcement'), "You Dont Have the right to see this Announcement" );
+        }
       
 
         return success_response(
