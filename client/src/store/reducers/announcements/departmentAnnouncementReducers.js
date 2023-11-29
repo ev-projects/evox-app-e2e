@@ -22,6 +22,15 @@ const departmentAnnouncementReducers = (state = initState, action) => {
                 isDepartmentAnnouncementListLoaded : true
             };
         break;
+
+        case "INCREMENT_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS":
+
+        return {
+            ...state,
+            depAnnouncementlist :  state.depAnnouncementlist.concat(action.list),
+            isDepartmentAnnouncementListLoaded : true
+        };
+    break;
         
         case "FETCH_DEPARTMENT_ANNOUNCEMENT_SUCCESS":
             return {
