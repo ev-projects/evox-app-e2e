@@ -189,20 +189,28 @@ const AnnouncementListTable = (props) => {
                     
                       </Col>;
               })}
+{
+  !props.props.departmentAnnouncement.hideShowMore ? <><Col  md={12} align="center">
+  <Button
+      
+        onClick={() => {
+          props.handleIncrement();
+        }}
 
-<Col  md={12} align="center">
-                  <Button
-                      
-                        onClick={() => {
-                          props.handleIncrement();
-                        }}
+        className="show-more-dashboard"
+      >
+        Show More
+      </Button> 
+   
+    </Col></>:<>
+    
+          <Col  md={12} align="center" className="">
+              <h5>No More Announcements to Show</h5>
+          </Col>
+        
+    </>
+}
 
-                        className="show-more-dashboard"
-                      >
-                        Show More
-                      </Button> 
-                   
-                    </Col>
 {/* 
             <ShowMore
                 items={props.departmentAnnouncement.depAnnouncementlist.slice(3, props.departmentAnnouncement.depAnnouncementlist.length)}
