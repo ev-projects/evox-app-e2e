@@ -309,7 +309,7 @@ const AnnouncementItem = (announcement) => {
                               <div className="card-text-black ">
                                 <div  className="card-bottom-content"> 
                                 <Badge className="tag-badge">{announcement.dep.department_name}</Badge>
-                                {announcement.is_new == true ? <Badge className="new-badge">NEW</Badge> : <></>}
+                                {announcement.is_new == true ? <Badge className="new-badge">NEW ANNOUNCEMENT</Badge> : <></>}
                                 {/* {console.log(announcement.dep)} */}
                                 <br/>
                                 <> Posted on: {announcement.release_date}</> 
