@@ -2,7 +2,7 @@ import axios from "axios";
 import API from "../../../services/API";
 import { trackPromise } from "react-promise-tracker";
 import Formatter from "../../../services/Formatter";
-
+import exportFromJSON from 'export-from-json'  
 
 
 // Fetch Request List
@@ -44,6 +44,37 @@ export const fetchNewDtrSummary = ( data = null ) => {
             dispatch({
                 'type'      : 'FETCH_NEW_DTR_SUMMARY_SUCCESS', 
                 'dtrSummary'  : result.data.content,
+            })
+            if (result.data.content.has_next_page) {
+                var btnGenerate = document.getElementById('btn-generate');
+                btnGenerate.click();
+            }
+        })
+        .catch(e => {
+            dispatch( {
+                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
+                'e'  : e,
+            } ) 
+        });
+    }
+}
+
+// Fetch Request new List
+export const fetchDtrConflict = ( data = null ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/report/dtr_summary/dtr_conflict",
+            params : data
+        })
+        .then(result => {
+            const data = result.data.content.dtrItems;
+            const fileName = 'Dtr_Conflict_Report';
+            const exportType = 'csv';
+            exportFromJSON({ data, fileName,exportType });
+            dispatch({
+                'type'      : 'FETCH_DTR_CONFLICT_REPORT_SUCCESS', 
+                'dtrConflict'  : result.data.content,
             })
             if (result.data.content.has_next_page) {
                 var btnGenerate = document.getElementById('btn-generate');
@@ -169,12 +200,16 @@ export const exportNewDtrSummary1 = ( data = null) => {
             params : data
         })
         .then(result => {
-            console.log(result.data.content)
+            const data = result.data;
+            const fileName = 'Dtr_Conflict_Report'  ;
+            const exportType = 'csv';
+            exportFromJSON({ data, fileName,exportType });
+            // console.log(result.data.content)
            
-                dispatch({
-                    'type'      : 'FETCH_DTR_CONFLICT_EXPORT_SUCCESS',
-                    'data'      : result.data
-                })
+                // dispatch({
+                //     'type'      : 'FETCH_DTR_CONFLICT_EXPORT_SUCCESS',
+                //     'data'      : result.data
+                // })
         })
         .catch(e => {
             dispatch( {

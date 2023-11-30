@@ -61,6 +61,8 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
         Route::get('new_export', 'ReportController@new_dtr_summary_report_csv_export');
 
         Route::get('export_dtr_conflict', 'ReportController@dtr_half_day_mismatch');
+
+        Route::get('dtr_conflict', 'ReportController@dtr_conflict_report');
     });
 
     # API Call for DTR Summary

@@ -34,7 +34,7 @@ import syncReducers from "./admin/syncReducers"
 import lookupListReducers from "./lookup/lookupListReducers"
 
 import dtrReducer from "./dtr/dtrReducers";
-
+import dtrConflict from "./dtr/dtrConflictReducer";
 import dtrSummaryReducers from "./dtr/dtrSummaryReducers";
 import dtrLogsReducers from "./dtr/dtrLogsReducers";
 
@@ -94,6 +94,7 @@ const rootReducer = combineReducers({
     
 
     dtrSummary: dtrSummaryReducers,
+    dtrConflict:dtrConflict,
     dtrLogs: dtrLogsReducers,
 
     lookup:   lookupListReducers,
