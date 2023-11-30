@@ -1413,36 +1413,50 @@ DB::raw("round(sum(drt_summary_report.slh_overtime),2) as SLH_OT"), DB::raw("rou
     // Export HalfDay Conflit Report
     public function dtr_half_day_mismatch( Request $request ){   
         try {
+
+          return $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
+           
+        //  return $res = Excel::download(new ExportDTRMismatch($result), 'DtrConflitReport.csv');
           
-          
-        //  return  $result = DB::table('dtrs')
-        //     ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS Employee_Name"),'users.emp_num as Employee_Number','departments.department_name as Department', 
-        //     'dtrs.date as date','dtrs.time_in as time_in','dtrs.time_out as time_out','leaves.type as type','leaves.amount as amount','leaves.status as status','leaves.employee_note as employee_note','leaves.created_at','leaves.updated_at') 
-        //     ->join('users','users.id','=','dtrs.user_id')
-        //     ->join('leaves', 'dtrs.id', '=', 'leaves.dtr_id')
-        //     ->join('departments', 'users.department_id', '=', 'departments.id')
-        //     ->join('drt_summary_report',function($join) {
-        //         $join->on('dtrs.date','=','drt_summary_report.login_date')
-        //         ->on('dtrs.user_id','=','drt_summary_report.user_id');
-        //     })
-        //     ->whereBetween('dtrs.date', [$request->valid_from, $request->valid_to])
-        //     ->where('leaves.amount','=',0.5)
-        //     ->where('leaves.status','=','approved')
-        //     ->where('users.is_active','=',1)
-        //     ->whereNotNull('dtrs.time_in')
-        //     ->whereNotNull('dtrs.time_out')
-        //     ->whereRaw('drt_summary_report.reg_rendered_hours + drt_summary_report.reg_rendered_hours_overlapp > 5')
-        //     ->orderBy('users.id', 'asc')->orderby('dtrs.date', 'asc')->get();
 
-            $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
-            $collection = collect($result);
-                         
-            $result1 = DtrHalfDayMismacth::collection( $collection );
-
-            return Excel::download(new ExportDTRMismatch($result1), 'DtrConflitReport.csv');
-
-        } catch(Exception $e){
+        }catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function dtr_conflict_report(Request $request)
+    {
+   
+        try {       
+            $user_collection_paginated = [];    
+            
+         
+             $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
+             $current_page = 1;
+             $last_page = 1;
+             foreach($result as $user) {
+                array_push($user_collection_paginated, $user);
+             }
+           
+             $report = $user_collection_paginated;
+             if($report == NULL || empty($report)) {
+                return response()->json(["message" => "Not Found"],404);                
+             }
+             $response = [];
+             $response['current_page'] = $current_page;
+             $response['last_page'] = $last_page;
+             $response['has_next_page'] = $current_page < $last_page;
+             $response['dtrItems'] =  $report;
+             
+            return success_response(
+                trans('messages.' . __FUNCTION__ . '_success'),
+                $response,
+            );
+            
+
+     
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
         }
     }
 

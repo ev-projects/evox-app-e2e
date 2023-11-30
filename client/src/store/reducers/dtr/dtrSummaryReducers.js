@@ -8,7 +8,7 @@ const initState = {
     isListLoaded: false,
     instance: {},
     pagination: {current_page: 1, last_page: 1, has_next_page: false},
-    dtrItems: []
+    dtrItems: [],
 }
 
 const dtrSummary = (state = initState, action) => {
