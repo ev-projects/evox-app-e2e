@@ -113,14 +113,21 @@ class AnnouncementController extends Controller
     public function show_strict($id)
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
-        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') )  ) { 
+
+        $called_announcement = Announcement::find($id);
+        if($called_announcement){
+           $owner_pass=  $called_announcement->created_by ==Auth::user()->id;
+        }
+
+
+        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') ) ||  $owner_pass ) { 
             $dep_announcement =  $this->announcement->show($id);
         }
         else {
             $dep_announcement =  $this->announcement->show_strict($id);
         }
         if(  $dep_announcement == null){
-            return error_response( trans('You cant see this announcement'), "You Dont Have the right to see this Announcement" );
+            return error_response( trans('You not allowed to see this announcement'), "You Dont Have the right to see this Announcement" );
         }
       
 
