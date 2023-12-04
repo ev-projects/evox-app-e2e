@@ -23,6 +23,29 @@ class AnnouncementStrictResource extends JsonResource
         $dateToCheck = Carbon::now();
 
         $result = null;
+
+        $owner = [];
+        if($this->created_by !=0){
+            $user = $this->creator();
+
+            $department = $user->department()->first();
+
+            $owner = [
+                'id' => $user->id,
+                'emp_num' => $user->emp_num,
+                'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'is_active' => $user->is_active,
+                'job_title' => $user->job_title,
+                'email' => $user->email,
+                'full_name' => $user->getFullName(),
+                // 'departments_handled' => $departments_handled,
+                // 'supervisee' => $supervisee,
+                // "has_use_multi" => $user->permissions()->pluck('name')->contains('user_multi_login'),
+            ];
+        }
     
         if( ! is_null( $this->resource ) ) {
             $result = array(
@@ -45,6 +68,8 @@ class AnnouncementStrictResource extends JsonResource
                 'country_id' => $this->country_id,
                 'selectedDepartments'=> $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()):null,
                 'is_expired'=> $this->is_expired(),
+
+                'creator' => $owner,
 
                 'is_new' =>  $dateToCheck->between($startDate, $endDate),
 
