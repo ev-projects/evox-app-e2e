@@ -34,3 +34,9 @@
 .manage-announcement-option .btn{
  margin-right: 3px!important;
 }
+
+.card-body.ann-details{
+    /* background-color: red !important; */
+
+    /* height: 120% !important; */
+}

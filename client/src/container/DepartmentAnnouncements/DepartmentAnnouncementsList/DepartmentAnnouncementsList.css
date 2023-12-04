@@ -31,6 +31,12 @@
     margin-bottom:20px;
 }
 
+.manage-announcement-option.ann-admin {
+    position: absolute;
+    right:    0;
+    bottom:   30px;
+   }
+
 .manage-announcement-option .btn{
  margin-right: 3px!important;
 }
@@ -42,6 +48,8 @@
     border-radius: 12px !important;
     margin-bottom: 10px;
     font-size: 13px !important;
+
+    
 }
 
 .create-announcement-card{

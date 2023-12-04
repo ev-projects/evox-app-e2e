@@ -18,9 +18,19 @@
 .announcement-list-card.card{
     border-radius: 10px !important;
     margin-bottom: 18px;
+
+
     
 
 }
+.announcement-list-card.card.on-manager{
+    height: 100% !important;
+    padding-bottom: 20px !important;
+
+    
+
+}
+
 .announcement-list-item{
    background-color: rgb(229, 229, 229);
    border-radius:   10px !important;

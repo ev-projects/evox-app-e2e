@@ -514,7 +514,7 @@ class DepartmentAnnouncementsForm extends Component {
                           checked={values.set_country_all}
                           onChange={() =>  setFieldValue('set_country_all',values.set_country_all==1?0:1)}
                         />
-                      <span className="for-all"> Global</span>  
+                      <span className="for-all"> Set to Global</span>  
                       {/* <a href="#" data-tool-tip="tooltip" ><i className="fa  fa-question-circle "/></a>&nbsp; */}
                       </label>
                       <br/>
