@@ -363,7 +363,7 @@ class DailyTimeRecord extends Component {
                                   <td className="dtr-actions">
                                       {
                                         ( this.props.params.id == this.props.user.id 
-                                          && alter_log_status != "approved" ) ?
+                                          && alter_log_status != "approved" && dtr.is_rest_day != 1 ) ?
                                         <Link className="btn btn-primary" 
                                               title="Alter Log"
                                               to={{

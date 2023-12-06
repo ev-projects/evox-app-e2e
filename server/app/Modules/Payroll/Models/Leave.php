@@ -82,6 +82,16 @@ class Leave extends Model
         return ( ! in_array( $this->type, get_constant("UNPAID_LEAVE_TYPES") ) ) ? true : false;
     }
 
+    /**
+     * 
+     *  Check if the current Unpaid Leave is Paid.
+     * @return bool 
+     */
+    public function isUnPaidLeave()
+    {
+        return ( in_array( $this->type, get_constant("UNPAID_LEAVE_TYPES") ) ) ? true : false;
+    }
+
     ########################################################################
 
     /**

@@ -831,7 +831,14 @@ class Dtr extends Model
      */
     public function onLeave(){
         return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->where( 'type' , '<>' ,'Unpaid Leave' )->where( 'amount' , '>' ,0 );
-    } 
+    }
+    
+    /**
+     * hasMany Relationship for Dtr Leaves model
+     */
+    public function onUnpaidLeave(){
+        return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->where( 'type' , '=' ,'Unpaid Leave' )->where( 'amount' , '>' ,0 );
+    }
     
     /**
      * hasOne Relationship for Previous Dtr Model
