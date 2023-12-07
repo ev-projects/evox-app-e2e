@@ -6,12 +6,12 @@ import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./AdminAnnouncementsList.css";
-
+import { useFormikContext } from 'formik';
 import { fetchDepartmentAnnouncementList, deleteDepartmentAnnouncement , clearDepartmentAnnouncementListInstance} from '../../../store/actions/announcement/departmentAnnouncementActions'
-
+import { fetchDepartmentListWithAnnouncements  } from '../../../store/actions/lookup/lookupListActions';
 
 import Formatter from '../../../services/Formatter'
-
+import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import { ContainerHeader,Content,ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 import PageLoading from "../../PageLoading";
 import Wrapper from "../../../components/Template/Wrapper";
@@ -19,9 +19,52 @@ import Wrapper from "../../../components/Template/Wrapper";
 class AdminAnnouncementsList extends Component {    
   state = { modal_bool:false, modal_name: '', modal_id : '',index : null }
 
+    
+  constructor(props){
+    super(props);
+
+    this.initialState = {
+      modal_bool:false,
+      modal_name: '',
+      modal_id : ''
+      ,index : null,
+        filters: {
+          status:         1,
+          department_id:  '',
+          team_id:        '',
+          country_id:        '',
+          announcement_title:      '',
+          name:           '',
+          page:           '',
+          order_by:      '',
+          url:           'MyTeam'
+      }
+    }
+    
+    this.state = this.initialState; 
+  }
+
   onSubmitHandler = (props,index) => {
     // this.setState({ modal_bool: !this.state.modal_bool , modal_name: props.name, modal_id : props.id, index : index}) 
     // this.onDeleteHandler(props.id, index);
+  }
+
+
+  onSubmitHandler = (values) => {
+
+    var formData = {};
+
+    for (var key in values) {
+      if( values[key] != null && values[key] != ""  ) {
+          switch( key ) {
+            default:
+              formData[key] = values[key];
+            break;
+          }
+      } 
+  }
+  this.props.fetchDepartmentAnnouncementList(formData)
+  
   }
 
   onDeleteHandler = (announcement, index) => {
@@ -38,11 +81,15 @@ class AdminAnnouncementsList extends Component {
   }
 
   componentWillMount(){
+    this.props.fetchDepartmentListWithAnnouncements()
     this.props.clearDepartmentAnnouncementListInstance();
     this.props.fetchDepartmentAnnouncementList();
   }
   
   render = () => {
+   
+  
+    var validationSchema = Yup.object().shape({});
     // console.log(this.props.departmentAnnouncement);
     if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
 
@@ -53,7 +100,30 @@ class AdminAnnouncementsList extends Component {
           <Content col="12" title="Manage All EVOX Announcements">
           
           <p>All Announcements from Each Department</p>
+
+          <Formik 
+          enableReinitialize
+          onSubmit={this.onSubmitHandler} 
+          validationSchema={validationSchema} 
+          initialValues={this.state.filters}>
+          {
+          ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+          <form onSubmit={handleSubmit}>
+         
+               
+             
+  
+                <ListFilter {...this} />
+               
+             
+             
+                   
+            
+          </form>
+          )}
         
+          </Formik>
+          
          <Row>
               {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
                 return <Col  md={4} className="announcement-list-content">
@@ -150,17 +220,110 @@ class AdminAnnouncementsList extends Component {
   }
 }
 
+
+const ListFilter = (props) => {
+  const { values, handleChange, setFieldValue,handleSubmit } = useFormikContext();
+  let country_list = props.props.settings.countries !== undefined ?(props.props.settings.countries): []
+  // const { team_list } = props.props.myTeamList;
+  // console.log(props.props.user.departments_handled , props.props);
+    return <React.Fragment> <Row className="filters filter-dtr">  
+              <Col size="2"> 
+                <div className="form-group">
+                    <select
+                    className="form-control" 
+                      name="department_id"
+                      value={values.department_id}
+                      onChange={(e) => { setFieldValue('department_id', e.target.value);}}
+                      style={{ display: 'block' }}
+                    >
+                    <option label="Select Department(Default - ALL)" value=''/>
+                    {props.props.department.map(function(item){
+                      return <option value={item.id} label={item.department_name} />;
+                    })}
+                    </select>
+                </div>
+              </Col> 
+              <Col size="2"> 
+                <div className="form-group">
+                    <select
+                    className="form-control" 
+                      name="country_id"
+                      value={values.country_id}
+                      onChange={(e) => { setFieldValue('country_id', e.target.value);}}
+                      style={{ display: 'block' }}
+                    >
+                    <option label="Select Country(Default - Global)" value=''/>
+                    {country_list.map(function(item){
+                                return <option value={item.country_id} label={item.country_name} />;
+                    })}
+                    </select>
+                </div>
+              </Col> 
+              <Col size="2"> 
+                <div className="form-group">
+                    <input type="textfield" className="form-control" variant="primary" placeholder="Enter Announcement Title" name="announcement_title" onChange={handleChange} value={values.announcement_title} />
+                </div>
+              </Col> 
+              {/* <Col size="2"> 
+                <div className="form-group">
+                    <input type="textfield" className="form-control" variant="primary" placeholder="Enter Name" name="name" onChange={handleChange} value={values.name} />
+                </div>
+              </Col>  */}
+
+              <Col size="2">
+              <Row className="sortby">
+                <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12"> 
+                  <label>Sort</label>
+                  <div className="form-group">
+                      <select
+                      className="form-control" 
+                        name="order_by"
+                        value={values.order_by}
+                        onChange={(e) => { setFieldValue('order_by', e.target.value);   handleSubmit();}}
+                        style={{ display: 'block' }}
+                      >
+                      <option label="Created: Latest(Default)" />
+                      <option value="created_at:desc" label="Created: Oldest" />
+                      <option value="announcement_title:asc" label="Title: Ascending" />
+                      <option value="announcement_title:desc" label="Title: Descending" />
+                      
+                      </select>
+                  </div>
+
+                </div> 
+                </Row>
+              </Col>
+              
+            </Row>
+              <Col size="2"> 
+                
+                  <Button variant="primary" type="submit" onClick={() => setFieldValue("page", 1)}>
+                    <i className="fa fa-filter" /> Filter
+                  </Button>
+              
+              </Col> 
+         
+            {/* <Row className="sortby">
+            
+              
+            </Row> */}
+            </React.Fragment>;
+}
+
 const mapStateToProps = (state) => {
 
       return {
         departmentAnnouncement             : state.departmentAnnouncement,
         settings                           : state.settings,
+        department                         : state.lookup.department,
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
+      fetchDepartmentListWithAnnouncements               : () => dispatch( fetchDepartmentListWithAnnouncements() ),
       clearDepartmentAnnouncementListInstance : () => dispatch( clearDepartmentAnnouncementListInstance() ),
       fetchDepartmentAnnouncementList : () => dispatch( fetchDepartmentAnnouncementList() ),
+      fetchDepartmentAnnouncementList : (params) => dispatch( fetchDepartmentAnnouncementList(params) ),
       deleteDepartmentAnnouncement : (id) => dispatch( deleteDepartmentAnnouncement(id) ),
     }
   }

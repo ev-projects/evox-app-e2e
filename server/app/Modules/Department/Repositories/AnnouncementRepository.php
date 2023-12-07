@@ -34,10 +34,58 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
 
         try {
-            $announcements_list = Announcement::where('announcement_id', null )->orderBy('created_at', 'desc')->get();
+            $announcements_list = null;
+
+// ->orderBy('created_at', 'desc')->get();
+
+            // dd($announcements_list);
+
+       
+            if(is_valid( request()->get('department_id') )){
+                // $announcements_list = Announcement::where('present_dep_id',  request()->get('department_id') )->orWhere('set_all', 1);
+                $department_id = request()->get('department_id');
+                $announcements_list = Announcement::where(function($query) use (  $department_id){
+                    
+                    $query->where('present_dep_id',"==", $department_id);
+                    $query->orWhere('set_all', 1);
+                });
+            }
+            else{
+                $announcements_list =  Announcement::where('announcement_id', null );
+            }
+            // dd( $announcements_list->get());
+            if(is_valid( request()->get('country_id') )){
+                
+
+                $announcements_list->where('set_country_all', 0);
+                $announcements_list->where('country_id',  request()->get('country_id'));
+              
+            }
 
 
-            return $announcements_list;
+            if( is_valid( request()->get('announcement_title') ) ) {
+                $announcements_list->where('title', 'like', '%' .request()->get('announcement_title'). '%');
+            }
+
+            if( is_valid( request()->get('order_by') ) ) {
+                $order = explode(":", request()->get('order_by'));
+
+                switch ($order[0]) {
+                    case "announcement_title":
+                         $announcements_list->orderBy('title',  $order[1]);
+                        break;
+
+                    case "created_at":
+                        $announcements_list->orderBy('created_at',  $order[1]);
+                        break;
+                    
+                       
+                  }
+            }else{
+                 $announcements_list->orderBy('created_at', 'desc');
+            }
+            
+            return $announcements_list->get();
         } catch (Exception $e) {
             throw $e;
         }

@@ -101,11 +101,12 @@ export const fetchDepartmentAnnouncementStrict = ( id ) => {
 
 
     // used only by admin
-export const fetchDepartmentAnnouncementList = () => {
+export const fetchDepartmentAnnouncementList = (params = null) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/department/announcements/all"
+            url: "/department/announcements/all",
+            params: params
         })
         .then(result => {
             
