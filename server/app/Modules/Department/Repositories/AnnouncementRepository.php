@@ -39,11 +39,14 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 // ->orderBy('created_at', 'desc')->get();
 
             // dd($announcements_list);
+// dd(request()->all());
+            $pov_user = null;
+            if(is_valid( request()->get('employee') )){
+                $pov_user = User::find(request()->get('employee'));
+            }
 
-       
-            if(is_valid( request()->get('department_id') )){
-                // $announcements_list = Announcement::where('present_dep_id',  request()->get('department_id') )->orWhere('set_all', 1);
-                $department_id = request()->get('department_id');
+            if(is_valid( request()->get('department_id') ) || $pov_user){
+                $department_id = $pov_user == null ? request()->get('department_id') : $pov_user->department_id;
                 $announcements_list = Announcement::where(function($query) use (  $department_id){
                     
                     $query->where('present_dep_id',"==", $department_id);
@@ -53,18 +56,44 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             else{
                 $announcements_list =  Announcement::where('announcement_id', null );
             }
-            // dd( $announcements_list->get());
-            if(is_valid( request()->get('country_id') )){
-                
+            if($pov_user){
+                if($pov_user->country_id){
+                    // $announcements_list->where('set_country_all', 1);
+                    // $announcements_list->orWhere('country_id', $pov_user->country_id);
+                    $country_id = $pov_user->country_id;
+                    // dd(  $country_id);
+                    $announcements_list->where(function($query) use (  $country_id){
 
+                        $query->where('set_country_all', 1);
+                        $query->orWhere('country_id',$country_id);
+                     
+                    });
+                }
+               
+            }
+        
+            if(is_valid( request()->get('country_id') ) && $pov_user == null){
+                
+                $country_id =  request()->get('country_id');
                 $announcements_list->where('set_country_all', 0);
-                $announcements_list->where('country_id',  request()->get('country_id'));
-              
+                $announcements_list->where('country_id', $country_id);
+            
             }
 
 
             if( is_valid( request()->get('announcement_title') ) ) {
                 $announcements_list->where('title', 'like', '%' .request()->get('announcement_title'). '%');
+            }
+            if( is_valid( request()->get('status') ) ) {
+                $now = Carbon::now()->format('Y-m-d');
+                if(request()->get('status') == "ongoing"){
+                    $announcements_list->whereDate('expiry_date', '>=', $now);
+                }
+
+                if(request()->get('status') == "expired"){
+                    $announcements_list->whereDate('expiry_date', '<', $now);
+                }
+                
             }
 
             if( is_valid( request()->get('order_by') ) ) {
@@ -72,17 +101,17 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
                 switch ($order[0]) {
                     case "announcement_title":
-                         $announcements_list->orderBy('title',  $order[1]);
+                            $announcements_list->orderBy('title',  $order[1]);
                         break;
 
                     case "created_at":
                         $announcements_list->orderBy('created_at',  $order[1]);
                         break;
                     
-                       
-                  }
+                        
+                    }
             }else{
-                 $announcements_list->orderBy('created_at', 'desc');
+                    $announcements_list->orderBy('created_at', 'desc');
             }
             
             return $announcements_list->get();

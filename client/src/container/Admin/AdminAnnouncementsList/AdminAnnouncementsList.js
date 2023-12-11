@@ -9,12 +9,13 @@ import "./AdminAnnouncementsList.css";
 import { useFormikContext } from 'formik';
 import { fetchDepartmentAnnouncementList, deleteDepartmentAnnouncement , clearDepartmentAnnouncementListInstance} from '../../../store/actions/announcement/departmentAnnouncementActions'
 import { fetchDepartmentListWithAnnouncements  } from '../../../store/actions/lookup/lookupListActions';
-
+import Select from "react-select";
 import Formatter from '../../../services/Formatter'
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import { ContainerHeader,Content,ContainerWrapper } from '../../../components/GridComponent/AdminLte.js';
 import PageLoading from "../../PageLoading";
 import Wrapper from "../../../components/Template/Wrapper";
+import { fetchUserList } from '../../../store/actions/lookup/lookupListActions';
 
 class AdminAnnouncementsList extends Component {    
   state = { modal_bool:false, modal_name: '', modal_id : '',index : null }
@@ -34,11 +35,14 @@ class AdminAnnouncementsList extends Component {
           team_id:        '',
           country_id:        '',
           announcement_title:      '',
+          status:  '',
+          employee:      '',
           name:           '',
           page:           '',
           order_by:      '',
           url:           'MyTeam'
-      }
+      },
+      disable_others: false
     }
     
     this.state = this.initialState; 
@@ -80,10 +84,12 @@ class AdminAnnouncementsList extends Component {
     this.setState({ modal_bool: !this.state.modal_bool });
   }
 
-  componentWillMount(){
-    this.props.fetchDepartmentListWithAnnouncements()
-    this.props.clearDepartmentAnnouncementListInstance();
-    this.props.fetchDepartmentAnnouncementList();
+  componentWillMount = async () => {
+    
+    await this.props.fetchDepartmentListWithAnnouncements()
+    await this.props.clearDepartmentAnnouncementListInstance();
+    await this.props.fetchDepartmentAnnouncementList();
+    await this.props.fetchUserList('employee', { page: 'all' });
   }
   
   render = () => {
@@ -224,10 +230,12 @@ class AdminAnnouncementsList extends Component {
 const ListFilter = (props) => {
   const { values, handleChange, setFieldValue,handleSubmit } = useFormikContext();
   let country_list = props.props.settings.countries !== undefined ?(props.props.settings.countries): []
+  let employee_list = Formatter.array_to_multiselect_array(props.props?.employee, 'full_name', 'id');
   // const { team_list } = props.props.myTeamList;
+  console.log(props.state.filters);
   // console.log(props.props.user.departments_handled , props.props);
     return <React.Fragment> <Row className="filters filter-dtr">  
-              <Col size="2"> 
+              <Col size="4"> 
                 <div className="form-group">
                     <select
                     className="form-control" 
@@ -235,6 +243,8 @@ const ListFilter = (props) => {
                       value={values.department_id}
                       onChange={(e) => { setFieldValue('department_id', e.target.value);}}
                       style={{ display: 'block' }}
+                      // disabled = {values.employee.length > 0}
+                      //  disabled = {props.state.disable_others}
                     >
                     <option label="Select Department(Default - ALL)" value=''/>
                     {props.props.department.map(function(item){
@@ -243,7 +253,7 @@ const ListFilter = (props) => {
                     </select>
                 </div>
               </Col> 
-              <Col size="2"> 
+              <Col size="4"> 
                 <div className="form-group">
                     <select
                     className="form-control" 
@@ -251,6 +261,7 @@ const ListFilter = (props) => {
                       value={values.country_id}
                       onChange={(e) => { setFieldValue('country_id', e.target.value);}}
                       style={{ display: 'block' }}
+                      // disabled = {props.state.filters?.employee != null || props.state.filters?.employee != ''}
                     >
                     <option label="Select Country(Default - Global)" value=''/>
                     {country_list.map(function(item){
@@ -259,12 +270,44 @@ const ListFilter = (props) => {
                     </select>
                 </div>
               </Col> 
-              <Col size="2"> 
+              <Col size="4"> 
+                <div className="form-group">
+                    <select
+                    className="form-control" 
+                      name="status"
+                      value={values.status}
+                      onChange={(e) => { setFieldValue('status', e.target.value);}}
+                      style={{ display: 'block' }}
+                    >
+                    <option label="Select Status(Default)" value=''/>
+                    <option label="Ongoing" value='ongoing'/>
+                    <option label="Expired" value='expired'/>
+                   
+                    </select>
+                </div>
+              </Col> 
+              <Col size="4"> 
                 <div className="form-group">
                     <input type="textfield" className="form-control" variant="primary" placeholder="Enter Announcement Title" name="announcement_title" onChange={handleChange} value={values.announcement_title} />
                 </div>
               </Col> 
-              {/* <Col size="2"> 
+              <Col size="4"> 
+                <div className="form-group">
+                <Select
+                        name="employee"
+                        options={employee_list}
+                        // value={values.employee}
+                        onChange={(e) => {  
+                          e != null ? setFieldValue('employee', e.value):setFieldValue('employee', null) ;
+                          this.setState({ disable_others:true})
+                        
+                        }}
+                        placeholder = "Select Employee POV"
+                        isClearable
+                      />
+                </div>
+              </Col> 
+              {/* <Col size="4"> 
                 <div className="form-group">
                     <input type="textfield" className="form-control" variant="primary" placeholder="Enter Name" name="name" onChange={handleChange} value={values.name} />
                 </div>
@@ -316,10 +359,13 @@ const mapStateToProps = (state) => {
         departmentAnnouncement             : state.departmentAnnouncement,
         settings                           : state.settings,
         department                         : state.lookup.department,
+        employee: state.lookup.employee,
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
+
+      fetchUserList: (role, params) => dispatch(fetchUserList(role, params)),
       fetchDepartmentListWithAnnouncements               : () => dispatch( fetchDepartmentListWithAnnouncements() ),
       clearDepartmentAnnouncementListInstance : () => dispatch( clearDepartmentAnnouncementListInstance() ),
       fetchDepartmentAnnouncementList : () => dispatch( fetchDepartmentAnnouncementList() ),
