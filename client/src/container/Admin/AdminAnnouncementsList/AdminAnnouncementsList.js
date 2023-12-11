@@ -4,6 +4,7 @@ import { Modal,Button,Container,Row,Col,Table, Card } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import DatePicker from "react-datepicker";
 import * as Yup from 'yup';
+import Paginate from '../../../components/Template/Paginate'
 import "react-datepicker/dist/react-datepicker.css";
 import "./AdminAnnouncementsList.css";
 import { useFormikContext } from 'formik';
@@ -18,7 +19,7 @@ import Wrapper from "../../../components/Template/Wrapper";
 import { fetchUserList } from '../../../store/actions/lookup/lookupListActions';
 
 class AdminAnnouncementsList extends Component {    
-  state = { modal_bool:false, modal_name: '', modal_id : '',index : null }
+  // state = { modal_bool:false,disable_others: false, modal_name: '', modal_id : '',index : null }
 
     
   constructor(props){
@@ -26,6 +27,7 @@ class AdminAnnouncementsList extends Component {
 
     this.initialState = {
       modal_bool:false,
+      disable_others: false,
       modal_name: '',
       modal_id : ''
       ,index : null,
@@ -40,9 +42,9 @@ class AdminAnnouncementsList extends Component {
           name:           '',
           page:           '',
           order_by:      '',
-          url:           'MyTeam'
+          url:           'admin/AnnouncementList'
       },
-      disable_others: false
+      
     }
     
     this.state = this.initialState; 
@@ -75,13 +77,18 @@ class AdminAnnouncementsList extends Component {
     if (window.confirm("Are you sure you want to Remove this Department ?")) {
 
       this.props.deleteDepartmentAnnouncement(announcement.id);
-      this.props.departmentAnnouncement.depAnnouncementlist.splice(index, 1);
+      this.props.departmentAnnouncement.depAnnouncementlist.data.splice(index, 1);
       this.toggleModal();
     }
   }
 
   toggleModal = () => {
     this.setState({ modal_bool: !this.state.modal_bool });
+  }
+
+  toggleOtherFields = ($item) => {
+    // console.log(this.state);
+    this.setState({ disable_others: $item });
   }
 
   componentWillMount = async () => {
@@ -97,7 +104,7 @@ class AdminAnnouncementsList extends Component {
   
     var validationSchema = Yup.object().shape({});
     // console.log(this.props.departmentAnnouncement);
-    if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
+    if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded && this.props.departmentAnnouncement.depAnnouncementlist.data != undefined){
 
 
 
@@ -105,7 +112,7 @@ class AdminAnnouncementsList extends Component {
         <ContainerWrapper>   
           <Content col="12" title="Manage All EVOX Announcements">
           
-          <p>All Announcements from Each Department</p>
+          <p>All Announcements from Each Department, Searching on POV will disable department and country filter.</p>
 
           <Formik 
           enableReinitialize
@@ -125,13 +132,10 @@ class AdminAnnouncementsList extends Component {
              
                    
             
-          </form>
-          )}
-        
-          </Formik>
-          
+         
+          <br></br>
          <Row>
-              {this.props.departmentAnnouncement.depAnnouncementlist.map((announcement, index) => {
+              {this.props.departmentAnnouncement.depAnnouncementlist.data.map((announcement, index) => {
                 return <Col  md={4} className="announcement-list-content">
           
                           <Card className="announcement-list-card on-manager"  >
@@ -216,7 +220,16 @@ class AdminAnnouncementsList extends Component {
                           </Card>
                       </Col>;
               })}
+
+         
         </Row>
+        <Row>
+          <Paginate pagination={this.props.departmentAnnouncement.depAnnouncementlist.pagination} />
+        </Row>
+         </form>
+          )}
+        
+          </Formik>
           </Content>
         </ContainerWrapper>
       </Wrapper>;
@@ -232,7 +245,7 @@ const ListFilter = (props) => {
   let country_list = props.props.settings.countries !== undefined ?(props.props.settings.countries): []
   let employee_list = Formatter.array_to_multiselect_array(props.props?.employee, 'full_name', 'id');
   // const { team_list } = props.props.myTeamList;
-  console.log(props.state.filters);
+  console.log(props.state);
   // console.log(props.props.user.departments_handled , props.props);
     return <React.Fragment> <Row className="filters filter-dtr">  
               <Col size="4"> 
@@ -244,7 +257,7 @@ const ListFilter = (props) => {
                       onChange={(e) => { setFieldValue('department_id', e.target.value);}}
                       style={{ display: 'block' }}
                       // disabled = {values.employee.length > 0}
-                      //  disabled = {props.state.disable_others}
+                       disabled = {props.state.disable_others}
                     >
                     <option label="Select Department(Default - ALL)" value=''/>
                     {props.props.department.map(function(item){
@@ -261,6 +274,7 @@ const ListFilter = (props) => {
                       value={values.country_id}
                       onChange={(e) => { setFieldValue('country_id', e.target.value);}}
                       style={{ display: 'block' }}
+                      disabled = {props.state.disable_others}
                       // disabled = {props.state.filters?.employee != null || props.state.filters?.employee != ''}
                     >
                     <option label="Select Country(Default - Global)" value=''/>
@@ -299,7 +313,8 @@ const ListFilter = (props) => {
                         // value={values.employee}
                         onChange={(e) => {  
                           e != null ? setFieldValue('employee', e.value):setFieldValue('employee', null) ;
-                          this.setState({ disable_others:true})
+                          e != null ? props.toggleOtherFields(true):props.toggleOtherFields( false) ;
+                          
                         
                         }}
                         placeholder = "Select Employee POV"

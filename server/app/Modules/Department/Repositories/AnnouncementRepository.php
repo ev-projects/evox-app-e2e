@@ -36,10 +36,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         try {
             $announcements_list = null;
 
-// ->orderBy('created_at', 'desc')->get();
+            // dd(request()->all());
 
-            // dd($announcements_list);
-// dd(request()->all());
             $pov_user = null;
             if(is_valid( request()->get('employee') )){
                 $pov_user = User::find(request()->get('employee'));
@@ -114,7 +112,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                     $announcements_list->orderBy('created_at', 'desc');
             }
             
-            return $announcements_list->get();
+            // return $announcements_list->get();
+            return $announcements_list->paginate(6);
         } catch (Exception $e) {
             throw $e;
         }
