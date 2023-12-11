@@ -123,9 +123,9 @@ class DepartmentAnnouncementsList extends Component {
     this.setState({ modal_bool: !this.state.modal_bool });
   }
 
-  componentWillMount(){
-    this.props.clearDepartmentAnnouncementListInstance();
-    this.props.fetchMyHandleAnnouncementList();
+  componentWillMount= async () => {
+    await this.props.clearDepartmentAnnouncementListInstance();
+    await this.props.fetchMyHandleAnnouncementList();
   }
   componentDidMount() {
     // alert(this.props.dashboard?.worktour);
@@ -143,7 +143,7 @@ class DepartmentAnnouncementsList extends Component {
   render = () => {
     const { run, steps, stepIndex } = this.state;
     console.log(this.props.departmentAnnouncement);
-    if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
+    if(this.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded&& this.props.departmentAnnouncement.depAnnouncementlist  instanceof Array){
       return <Wrapper  {...this.props} >
        
         <Joyride

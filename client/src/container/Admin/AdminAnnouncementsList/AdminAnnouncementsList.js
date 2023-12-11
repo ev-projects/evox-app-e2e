@@ -167,7 +167,7 @@ class AdminAnnouncementsList extends Component {
                               </Card.Text>
                               <div className="manage-announcement-option ann-admin">
                                   <Link to={{
-                                    pathname: global.links.department_announcement_form + announcement.id
+                                    pathname: global.links.department_announcement_form + announcement.id, originPath:  'AdminAnnouncementList'
                                   }}
                                       title="Edit Announcement"
                                   >

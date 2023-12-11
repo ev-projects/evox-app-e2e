@@ -49,10 +49,20 @@ export const updateDepartmentAnnouncement = ( id, data ) => {
         .then(result => {
             dispatch( Formatter.alert_success( result, 3000 ));
             
-            dispatch({
-                'type'      : 'SET_REDIRECT',
-                'link'      : global.links.department_announcement_list
-            })
+
+            if(data.get("previousPath" ) != null && data.get("previousPath" ) == "AdminAnnouncementList" ){
+                dispatch({
+                    'type'      : 'SET_REDIRECT',
+                    'link'      : global.links.admin_announcement_list
+                })
+            }
+            else{
+                dispatch({
+                    'type'      : 'SET_REDIRECT',
+                    'link'      : global.links.department_announcement_list
+                })
+            }
+           
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
