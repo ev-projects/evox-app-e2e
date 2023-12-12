@@ -185,97 +185,98 @@ class RequestRepository implements RequestRepositoryInterface{
     }
 
 
-    public function get_status_numbers_dashboard($data)
-    {
-        DB::beginTransaction();
-        try {
-            $numbers = array(
-                "alterlogpending" => 0,
-                "overtimepending" => 0,
-                "restdayworkpending" => 0,
-                "changeschedulepending" => 0,
-            );
-
-
-            # Initialize the variable
-            $query = '';
-            $request_tables     = get_constant('REQUEST_TABLES');
-            $request_tables_no  = count(get_constant('REQUEST_TABLES')) - 1;
-            
-            # Get the Id of Team or User and add it to the query
-            if($data->url=='my_team_requests'){
-                $id = under_supervisee_id_list(Auth::user()->users_handled()->select('id')->get());
-                $list = implode(', ', $id); 
-                $id_filter = '
-                WHERE user_id IN ('.$list.') AND status = "pending"'; 
-                
-                # Return default status number if there is no assigned employee
-                if(count($id)<=0){
-                    return array( 'status_numbers' => $numbers  );
-                }
-                
-            }elseif($data->url=='my_requests'){
-                $id = Auth::user()->id;
-                $id_filter = '
-                WHERE user_id = '.$id.' AND status = "pending"';  
-            }
-            if(isset($data->request_type)){
-                if($data->request_type=='all'){
-                    $filter = 'SELECT Count(*) as al  FROM alter_logs 
-                    LEFT JOIN users ON users.id = alter_logs.user_id
-                    '.$id_filter.'
-                    UNION  ALL
-                    SELECT Count(*) as ot FROM overtimes
-                    LEFT JOIN users ON users.id = overtimes.user_id
-                    '.$id_filter.'
-                    UNION  ALL
-                    SELECT Count(*) as  rd FROM rest_day_works 
-                        LEFT JOIN users ON users.id = rest_day_works.user_id
-                    '.$id_filter.'
-                    UNION  ALL
-                    SELECT Count(*) as cs FROM change_schedules 
-                        LEFT JOIN users ON users.id = change_schedules.user_id
-                    '.$id_filter.'
-                    ';
+        public function get_status_numbers_dashboard($data)
+        {
         
+            try {
+                $numbers = array(
+                    "alterlogpending" => 0,
+                    "overtimepending" => 0,
+                    "restdayworkpending" => 0,
+                    "changeschedulepending" => 0,
+                );
+    
+    
+                # Initialize the variable
+                $id = Auth::user()->id;
+                $query = '';
+                $request_tables     = get_constant('REQUEST_TABLES');
+                $request_tables_no  = count(get_constant('REQUEST_TABLES')) - 1;
+            
+                # Get the Id of Team or User and add it to the query
+                if($data->url=='my_team_requests'){ 
+                    $id_filter = '
+                    WHERE exists (select users_supervisors.user_id from users_supervisors where users_supervisors.user_id = users.id and users_supervisors.supervisor_id = '.$id.' ) AND status = "pending"';
+                
+                }elseif($data->url=='my_requests'){
+                  
+                    $id_filter = '
+                    WHERE user_id = '.$id.' AND status = "pending"';  
                 }
-                   
+                if(isset($data->request_type)){
+                    if($data->request_type=='all'){
+                        $filter = 'SELECT Count(alter_logs.id) as pendingCount  FROM alter_logs
+                        JOIN users ON users.id = alter_logs.user_id
+                        '.$id_filter.'
+                        UNION  ALL
+                        SELECT Count(overtimes.id) as pendingCount FROM overtimes
+                        JOIN users ON users.id = overtimes.user_id
+                        '.$id_filter.'
+                        UNION  ALL
+                        SELECT Count(rest_day_works.id) as  pendingCount FROM rest_day_works
+                        JOIN users ON users.id = rest_day_works.user_id
+                        '.$id_filter.'
+                        UNION  ALL
+                        SELECT Count(change_schedules.id) as pendingCount FROM change_schedules
+                        JOIN users ON users.id = change_schedules.user_id
+                        '.$id_filter.'
+                        ';
+        
+                    }
+                    
+                }
+    
+                # Construct the Query by Looping the Tables that will be fetch for request numbers
+                $query .= ''.$filter .'';
+    
+    
+                # Run the Query
+                $status =  DB::select( DB::raw( $query ) );
+            
+                $i = 0;
+                # Loop the result of query
+                if(!count($status)<= 0){
+                    foreach ($status as $key => $value) {
+    
+                
+                        if($i == 0){
+                            $numbers["alterlogpending"] = $value->{'pendingCount'};
+                        }else if($i == 1){
+                            $numbers["overtimepending"] = $value->{'pendingCount'};
+                        }
+                        else if($i == 2){
+                            $numbers["restdayworkpending"] = $value->{'pendingCount'};
+                        }
+                        else if($i == 3){
+                            $numbers["changeschedulepending"] = $value->{'pendingCount'};
+                        }
+                        $i=$i+1;
+                    
+                    }
+                }
+                else{
+                    $status = $numbers;
+                }
+                
+    
+                return array( 'status_numbers' => $numbers  );
+            } catch (Exception $e) {
+            
+                log_error($e);
+                throw $e;
             }
-
-            # Construct the Query by Looping the Tables that will be fetch for request numbers
-            $query .= ''.$filter .'';
-
-
-            # Run the Query
-            $status =  DB::select( DB::raw( $query ) );
-          
-             $i = 0;
-              # Loop the result of query
-              foreach ($status as $key => $value) {
-
-               
-                if($i == 0){
-                    $numbers["alterlogpending"] = $value->{'al'};
-                }else if($i == 1){
-                    $numbers["overtimepending"] = $value->{'al'};
-                }
-                else if($i == 2){
-                    $numbers["restdayworkpending"] = $value->{'al'};
-                }
-                else if($i == 3){
-                    $numbers["changeschedulepending"] = $value->{'al'};
-                }
-                $i=$i+1;
-             
-            }
-
-            return array( 'status_numbers' => $numbers  );
-        } catch (Exception $e) {
-            DB::rollback();
-            log_error($e);
-            throw $e;
+        
         }
-    }
 
 
 
