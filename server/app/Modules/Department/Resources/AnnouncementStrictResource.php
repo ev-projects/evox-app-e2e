@@ -41,13 +41,19 @@ class AnnouncementStrictResource extends JsonResource
                 'job_title' => $user->job_title,
                 'email' => $user->email,
                 'full_name' => $user->getFullName(),
-                // 'departments_handled' => $departments_handled,
-                // 'supervisee' => $supervisee,
-                // "has_use_multi" => $user->permissions()->pluck('name')->contains('user_multi_login'),
             ];
         }
-    
-        if( ! is_null( $this->resource ) ) {
+
+                $depList = NULL;
+                $depList = $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()): null;
+                if($this->set_all == 0 && $this->present_dep_id != null&& $this->announcement_id != null){
+                    $depList = DepartmentLabelResource::collection( Announcement::find($this->announcement_id)->announcement_clones_departments());
+
+                }
+
+            $result = null;
+
+            if( ! is_null( $this->resource ) ) {
             $result = array(
                 'id' =>  $this->announcement_id == null? $this->id :  $this->announcement_id,
                 'title' => $this->title,
@@ -66,7 +72,7 @@ class AnnouncementStrictResource extends JsonResource
                 'set_all' => $this->set_all,
                 'set_country_all' => $this->set_country_all,
                 'country_id' => $this->country_id,
-                'selectedDepartments'=> $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()):null,
+                'selectedDepartments'=>  $depList,
                 'is_expired'=> $this->is_expired(),
 
                 'creator' => $owner,

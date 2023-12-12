@@ -45,21 +45,25 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
             if(is_valid( request()->get('department_id') ) || $pov_user){
                 $department_id = $pov_user == null ? request()->get('department_id') : $pov_user->department_id;
+            
+
                 $announcements_list = Announcement::where(function($query) use (  $department_id){
                     
-                    $query->where('present_dep_id',"==", $department_id);
-                    $query->orWhere('set_all', 1);
+                    $query->where('set_all', 1);
+                    $query->orWhere('present_dep_id', $department_id);
+                    
                 });
+
+                // dd($announcements_list->toSql());
             }
             else{
                 $announcements_list =  Announcement::where('announcement_id', null );
             }
             if($pov_user){
                 if($pov_user->country_id){
-                    // $announcements_list->where('set_country_all', 1);
-                    // $announcements_list->orWhere('country_id', $pov_user->country_id);
+               
                     $country_id = $pov_user->country_id;
-                    // dd(  $country_id);
+                  
                     $announcements_list->where(function($query) use (  $country_id){
 
                         $query->where('set_country_all', 1);
