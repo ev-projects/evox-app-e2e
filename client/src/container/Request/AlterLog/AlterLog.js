@@ -140,12 +140,16 @@ class AlterLog extends Component {
 
     const   owner_offset = this.props.instance.offset_difference != undefined ? this.props.instance.offset_difference : null;
 
-    // Sets Initial Value of the current Formik form.
+    
+    var target_date = new Date(  this.props.location.date );
+    
+    target_date.setSeconds(target_date.getSeconds() + (this.props.user?.user_offset_seconds+ ( target_date.getTimezoneOffset() != 0 ? target_date.getTimezoneOffset() * 60 : 0)))
+    
     const initialValue = {
         action:             null,
         method:             method,
         id:                 this.props.instance.id != undefined ? this.props.instance.id : null, 
-        date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : ( this.props.location.date != undefined ? new Date(  this.props.location.date ) : null ),
+        date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : ( this.props.location.date != undefined ? target_date : null ),
         user_id:            this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(), 
         current_time_in:    this.props.instance.current_time_in != undefined ? new Date( this.props.instance.current_time_in ) : ( this.props.location.current_time_in != undefined ? new Date(  this.props.location.current_time_in ) : null ), 
         current_time_out:   this.props.instance.current_time_out != undefined ? new Date( this.props.instance.current_time_out ) : ( this.props.location.current_time_out != undefined ? new Date(  this.props.location.current_time_out ) : null ), 

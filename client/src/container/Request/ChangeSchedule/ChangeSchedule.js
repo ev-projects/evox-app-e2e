@@ -101,17 +101,17 @@ class ChangeSchedule extends Component {
 			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HH')) || 
 			parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) > parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HH'))){
 				nsdAlertCall = true;
-				// console.log("1a");
+				console.log("1a");
 				
 			}
-			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) < 7 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) < 7 ){
+			if(parseInt(moment(newValues[key][keyList]['start_time']).add(time_diff, 'seconds').format('HH')) < 6 || parseInt(moment(newValues[key][keyList]['start_flexy_time']).add(time_diff, 'seconds').format('HH')) < 6 ){
 				nsdAlertCall = true;
-				// console.log("1b");
+				console.log("1b");
 			
 			}
 			if(parseInt(moment(newValues[key][keyList]['end_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 || parseInt(moment(newValues[key][keyList]['end_flexy_time']).add(time_diff, 'seconds').format('HHmm')) > 2200 ){
 				nsdAlertCall = true;
-				// console.log("1c");
+				console.log("1c");
 				
 			}
 			
@@ -474,7 +474,7 @@ function NightShiftModal(props) {
 			<p>Conditions for this to apply is only if one or more of your days has:</p>
 				<ul>
 					<li>a schedule that has time in and time out after after 10 PM</li>
-					<li>or before 7 AM</li>
+					<li>or before 6 AM</li>
 				</ul>
 			<></>
 		  </div>
