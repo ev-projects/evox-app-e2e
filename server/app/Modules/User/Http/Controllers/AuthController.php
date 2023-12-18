@@ -14,6 +14,8 @@ use App\Modules\User\Resources\UserProfileResource;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Resources\PayrollCutoffResource;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
+use App\Modules\User\Models\UtcTimelog;
+use App\Modules\User\Resources\CountryResource;
 
 class AuthController extends Controller
 {
@@ -315,11 +317,12 @@ class AuthController extends Controller
         $result['constant'] = get_constant();
 
         $bhr_details = $this->bhr->get_user( auth()->user()->bhr_num ? auth()->user()->bhr_num : '');
-
+        // dd(UtcTimelog::where('id','!=',"0"));
         $result['settings'] = [
             'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll_cutoff->get_payroll_cutoff()),
             'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num ),
-            'country' =>  $bhr_details ? $bhr_details->country : ''
+            'country' =>  $bhr_details ? $bhr_details->country : '',
+            'countries' => CountryResource::collection(UtcTimelog::orderBy('country_name')->get() )
         ];
         
 

@@ -19,6 +19,7 @@ use App\Modules\Department\Resources\AnnouncementResource;
 use App\Modules\Department\Http\Requests\AnnouncementRequest;
 
 
+use App\Modules\Department\Resources\AnnouncementStrictResource;
 use App\Modules\Department\Repositories\AnnouncementRepositoryInterface;
 
 class AnnouncementController extends Controller
@@ -65,7 +66,7 @@ class AnnouncementController extends Controller
     {   
        
         try {
-            
+            // dd( $request->all());
             
             log_activity( trans('messages.create_department_announcement_attempt') );
 
@@ -112,11 +113,21 @@ class AnnouncementController extends Controller
     public function show_strict($id)
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
-        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') )  ) { 
+
+        $called_announcement = Announcement::find($id);
+        if($called_announcement){
+           $owner_pass=  $called_announcement->created_by ==Auth::user()->id;
+        }
+
+
+        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') ) ||  $owner_pass ) { 
             $dep_announcement =  $this->announcement->show($id);
         }
         else {
             $dep_announcement =  $this->announcement->show_strict($id);
+        }
+        if(  $dep_announcement == null){
+            return error_response( trans('You not allowed to see this announcement'), "You Dont Have the right to see this Announcement" );
         }
       
 
@@ -136,7 +147,7 @@ class AnnouncementController extends Controller
     public function update(AnnouncementRequest $request, $id)
     {   
         
-      
+    // dd($request->all(),$id);
         try {
             log_activity( trans('messages.update_department_announcement_attempt') );
             $department =  Department::find(Auth::user()->department_id);
@@ -230,8 +241,8 @@ class AnnouncementController extends Controller
         try {
             $announcements_list = $this->announcement->dashboard_index($request);
         return success_response(
-            trans('messages.fetch_change_log_success'), 
-           AnnouncementResource::collection($announcements_list)
+            trans('got the dashboard items'), 
+            AnnouncementStrictResource::collection($announcements_list)
         );
 
         
@@ -239,6 +250,25 @@ class AnnouncementController extends Controller
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
+
+    public function increment_dashboard_index(Request $request)
+    {
+        // error_log("hererrrrr" . implode(" ", $request->all()));
+        
+       
+        try {
+            $announcements_list = $this->announcement->increment_dashboard_index($request);
+        return success_response(
+            trans('messages.fetch_change_log_success'), 
+            AnnouncementStrictResource::collection($announcements_list)
+        );
+
+        
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+        }
+    }
+    
 
 
     /**

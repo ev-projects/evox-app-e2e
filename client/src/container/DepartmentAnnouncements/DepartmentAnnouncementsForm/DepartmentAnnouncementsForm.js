@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import { Form,Button,InputGroup,FormControl, Tabs,Tab,  } from 'react-bootstrap';
+import { Form,Button,InputGroup,FormControl, Tabs,Tab, Badge, } from 'react-bootstrap';
 import moment from 'moment';
 
 import "./DepartmentAnnouncementsForm.css";
@@ -8,7 +8,7 @@ import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
 
 /** Form Manipulation */
-import { Formik, ErrorMessage,getIn  } from 'formik';
+import { Formik, ErrorMessage,getIn,Field  } from 'formik';
 import * as Yup from 'yup';
 import MultiSelect from "react-multi-select-component";
 import Joyride, { ACTIONS, EVENTS, STATUS } from "react-joyride";
@@ -51,7 +51,7 @@ class DepartmentAnnouncementsForm extends Component {
       },
       {
         target: ".joyride-set-dep",
-        content: "Select to publish to all departments or limit it  to a selected accounts.",
+        content: "Select to publish to all departments/country or limit it to a selected accounts or locations.",
       },
       {
         target: ".joyride-set-image",
@@ -88,6 +88,7 @@ class DepartmentAnnouncementsForm extends Component {
     }
     this.initialState = {
         selectedDepartments: null,
+        selectedCountries: null,
         content : null,
         thumbnail: null,
         imgPrevInputFile: '/thumbnail/defthumb.jpg',
@@ -98,8 +99,10 @@ class DepartmentAnnouncementsForm extends Component {
 
         set_all : false,
         run:  pre_run,
-        steps: joyride_steps
+        steps: joyride_steps,
         
+        previewSample : false,
+        previewSampleValues : {}
     }
     this.state = this.initialState; 
 
@@ -142,11 +145,21 @@ class DepartmentAnnouncementsForm extends Component {
     formData.set('on_link', this.state.on_link);
     formData.set('content', this.state.content != null ? this.state.content : null);
     values['set_all'] = values['set_all'] != null && values['set_all'] != undefined ?values['set_all'] : false;
+    values['set_country_all'] = values['set_country_all'] != null && values['set_country_all'] != undefined ?values['set_country_all'] : false;
+
     formData.set('set_all', values['set_all'] == true ? 1: 0);
     // console.log(values["set_all"] ,values["set_all"] == false ,values["set_all"] == 0,values["set_all"] == "0");
         if(values["set_all"] == false || values["set_all"] == 0 || values["set_all"] == "0"){
           formData.set('selectedDepartments', this.state.selectedDepartments!= null?(Formatter.array_to_getvalue(this.state.selectedDepartments)).toString(): (Formatter.array_to_getvalue(values['selectedDepartments'])));
         }
+    formData.set('set_country_all', values['set_country_all'] == true ? 1: 0);
+    // console.log(values["set_country_all"] ,values["set_country_all"] == false ,values["set_country_all"] == 0,values["set_country_all"] == "0");
+        // if(values["set_country_all"] == false || values["set_country_all"] == 0 || values["set_country_all"] == "0"){
+        //   formData.set('selectedCountries', this.state.selectedCountries!= null?(Formatter.array_to_getvalue(this.state.selectedCountries)).toString(): (Formatter.array_to_getvalue(values['selectedCountries'])));
+        // }
+        // if(values["set_country_all"] == false || values["set_country_all"] == 0 || values["set_country_all"] == "0"){
+        //   formData.set('country_id', this.state.selectedCountries!= null?(Formatter.array_to_getvalue(this.state.selectedCountries)).toString(): (Formatter.array_to_getvalue(values['selectedCountries'])));
+        // }
         // console.log(formData)
     // Checks on what action to use depending on the values.action
     if (values.method) {
@@ -211,6 +224,39 @@ class DepartmentAnnouncementsForm extends Component {
 
   }
 
+   setSelectedCountry = ( values ) => {
+
+    this.setState({
+      selectedCountries: values,
+    
+    });
+    const params = {
+      "countries" : Formatter.array_to_getvalue(values)
+    }
+
+  }
+
+  handleOnShow = (values) => {
+
+    this.setState({
+      previewSampleValues: values
+    });
+
+    this.setState({
+      previewSample: true
+    });
+    // console.log(values);
+    // console.log(this.state,this.state.previewSampleValues);
+  }
+
+
+  handleOnhide = () => {
+    this.setState({
+      previewSample: false
+    });
+  }
+
+
    handleOnLInk=(values) => {
     // var formData = {};
     // formData["category"] = values;
@@ -241,7 +287,11 @@ class DepartmentAnnouncementsForm extends Component {
   handleJoyrideCallback = (data) => {
     const { dispatch } = this.props;
     const { action, index, status, type } = data;
-    console.log(index)
+
+    console.log(STATUS);
+    console.log(status);
+
+    // console.log(index)
     this.setState({ stepIndex: index });
     // if (index === 1) {
     //   this.setState({ run:  });
@@ -270,6 +320,12 @@ class DepartmentAnnouncementsForm extends Component {
       console.log(localStorage.getItem("joyride-local-announcement-form"));
     }
 
+     if (status == "skipped") {
+      var set_local = JSON.stringify({local_expiration: moment().add(6, 'M').format("YYYY-MM-DD"), step: 5});
+      localStorage.setItem("joyride-local-announcement-form", set_local);
+      console.log(localStorage.getItem("joyride-local-announcement-form"));
+    }
+
     // if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type)) {
     //   // Update state to advance the tour
     //   this.setState({ stepIndex: index + (action === ACTIONS.PREV ? -1 : 1) });
@@ -284,7 +340,7 @@ class DepartmentAnnouncementsForm extends Component {
     const method = (this.props.params.id != undefined) ? 'update' : 'store'
 
     var today = new Date();
-
+    console.log(method)
     const initialValue = {
         action:             null,
         method:             method,
@@ -292,20 +348,23 @@ class DepartmentAnnouncementsForm extends Component {
         // log_date:        this.props.instance?.log_date != undefined  && method == "update" ? new Date( this.props.instance.log_date ) : null,
         release_date:       this.props.instance?.release_date != undefined  && method == "update" ? new Date( this.props.instance?.release_date ) : null,
         expiry_date:        this.props.instance?.expiry_date != undefined  && method == "update" ? new Date( this.props.instance?.expiry_date ) : null,
-        title:              this.props.instance?.title != undefined  && method == "update" ? this.props.instance.title : null,
-        headline:           this.props.instance?.headline != undefined  && method == "update" ? this.props.instance.headline : null,
+        title:              this.props.instance?.title != undefined  && method == "update" ? this.props.instance.title : "",
+        headline:           this.props.instance?.headline != undefined  && method == "update" ? this.props.instance.headline : "",
         
         link:               this.props.instance?.link != undefined  && method == "update" ? this.props.instance.link : null,
         content:            this.props.instance?.content != undefined  && method == "update" ? this.props.instance.content : null,
         category:           this.props.instance?.category != undefined  && method == "update" ? this.props.instance.category : null,
         selectedDepartments:           this.props.instance?.selectedDepartments != undefined  && method == "update" ? this.props.instance.selectedDepartments : null,
-        set_all:            this.props.instance?.set_all != undefined  && method == "update" ? this.props.instance.set_all == 1? true : false : null,
+        set_all:            this.props.instance?.set_all != undefined  && method == "update" ? this.props.instance.set_all == 1? true : false : false,
+        set_country_all:            this.props.instance?.set_country_all != undefined  && method == "update" ? this.props.instance.set_country_all == 1? true : false : true,
+        country_id:           this.props.instance?.country_id != undefined  && method == "update" ? this.props.instance.country_id : null,
+
         // selectedDepartments:this.props.instance?.selectedDepartments != undefined  && method == "update" ? this.props.instance.selectedDepartments : [],
     }
   
     let tab_set =          this.props.instance?.on_link != undefined  && method == "update" ? this.props.instance.on_link : null;
     tab_set = tab_set != null ?  tab_set == 1 ? "by-link": "by-content":  "by-content";
-    console.log(tab_set);
+    // console.log(tab_set);
     let title = 'Announcement Form';
 
     if( (method == 'store') || ([ 'update'].includes( method ) && this.props.isInstanceLoaded) ){
@@ -314,12 +373,18 @@ class DepartmentAnnouncementsForm extends Component {
       
       let department_list = [];
 
+      // let country_list = this.props.settings.countries !== undefined ?(Formatter.array_to_multiselect_array(this.props.settings.countries, 'country_name', 'country_id')): []
+      let country_list = this.props.settings.countries !== undefined ?(this.props.settings.countries): []
+  
       
       if(!this.state.reloadingDepartmentList  && this.props.department != undefined){
         // console.log((Formatter.array_to_multiselect_array(this.props.department, 'department_name', 'id')));
          department_list =this.props.department.length > 0 ?(Formatter.array_to_multiselect_array(this.props.department, 'department_name', 'id')): [];
 
       }
+
+
+
 
       const { run, steps, stepIndex } = this.state;
 
@@ -438,6 +503,47 @@ class DepartmentAnnouncementsForm extends Component {
                               hasSelectAll = {false}
                             />
                       </div>
+
+                      <div className="form-group">
+
+
+
+                      <label>
+                        <input 
+                          type="checkbox"
+                          checked={values.set_country_all}
+                          onChange={() =>  setFieldValue('set_country_all',values.set_country_all==1?0:1)}
+                        />
+                      <span className="for-all"> Global</span>  
+                      {/* <a href="#" data-tool-tip="tooltip" ><i className="fa  fa-question-circle "/></a>&nbsp; */}
+                      </label>
+                      <br/>
+
+                              <select
+                              className="form-control" 
+                                name="country_id"
+                                value={this.state.country_id != null ? this.state.country_id : values.country_id}
+                                onChange={(e) => { setFieldValue('country_id', e.target.value);  }}
+                                style={{ display: 'block' }}
+                                 disabled = {values.set_country_all}
+                              >
+                              <option label="Select Country" value=''/>
+                              {country_list.map(function(item){
+                                return <option value={item.country_id} label={item.country_name} />;
+                              })}
+                              </select>
+                        {/* <label className ="dep-announcement-label">By Selected Countries:{values.set_country_all ?  "(disabled)" : null}</label>
+                          <MultiSelect
+                              disabled = {values.set_country_all}
+                              name="country_id[]"
+                              options={country_list}
+                              value={this.state.selectedCountries != null ? this.state.selectedCountries : values.selectedCountries}
+                              onChange={this.setSelectedCountry}
+                              labelledBy={"Select Departments"}
+                              hasSelectAll = {false}
+                            /> */}
+                      </div>
+
                     </Col>
                   </Row>
                   <div className="joyride-set-image">
@@ -464,7 +570,7 @@ class DepartmentAnnouncementsForm extends Component {
                                                   <Row >
                                                       <Col size="7">
                                                           <label for="img-to-upload"><div className="btn btn-primary"style={{'height': '45px'}} >
-                                                            <i class="fa fa-upload" aria-hidden="true"/> <br/>Upload Image</div></label>
+                                                            <i class="fa fa-upload" aria-hidden="true"/> <br/>Upload</div></label>
                                                       </Col>
                                                       <Col size="2">
                                                       <div className="btn btn-secondary" style={{'height': '45px'}} onClick={(event) => {
@@ -488,7 +594,7 @@ class DepartmentAnnouncementsForm extends Component {
                       </Col>
                       <Col size="7 dep-announcement-col"> 
                                 <div className="thumbnail-image">
-                                    {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg')
+                                    {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg' && method == "update")
                                         ? 
                                         <img style={{ maxWidth: '100%' }} src={this.props?.instance?.thumbnail} />
                                       // : <img style={{ maxWidth: '100%' }} src={this.state.imgPrevInputFile} />}
@@ -573,7 +679,7 @@ class DepartmentAnnouncementsForm extends Component {
                             </Form.Control.Feedback> */}
 
                           <br/>
-                        <div className="form-group content-input-note">Note: This be will publish as an announcement page and viewed only in the EVOX site. Editor for announcement pages does not accept inserted images.</div>
+                        <div className="form-group content-input-note"><b>Note: This be will publish as an announcement page and viewed only in the EVOX site. Editor for announcement pages does not accept inserted images.</b></div>
                           </div>
                       
   
@@ -589,7 +695,7 @@ class DepartmentAnnouncementsForm extends Component {
                               </Form.Control.Feedback>
                           </InputGroup>
                           <br/>
-                        <div className="form-group content-input-note">Note: This will be publish as an link, users who click on the announcement will be redirected to the external link.</div>
+                        <div className="form-group content-input-note"><b>Note: This will be publish as an link, users who click on the announcement will be redirected to the external link.</b></div>
                         </div>
                     
                     
@@ -606,9 +712,30 @@ class DepartmentAnnouncementsForm extends Component {
                    
                     <BackButton  {...this.props} />
                     &nbsp;
+                 
                     <Button style={{'float': 'right'}} type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action',null); handleSubmit(e); }}>
                       <i className="fa fa-location-arrow is-green" /> Submit
                     </Button>
+
+                       <Button style={{'float': 'right', 'margin-right': '5px'}} className="btn btn-primary-3" onClick={(e)=>{  this.handleOnShow(values); }}>
+                      <i className="fa fa-eye  is-black" /> Preview Page 
+                    </Button>
+
+
+                    {
+                  this.state.previewSample &&
+                  <PreviewAnnouncment 
+                  props = {this.props}
+                  handleModalClose = {() => {this.handleOnhide()}}
+                  values = {this.state.previewSampleValues}
+                  imageCondtion = {this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg' && method == "update"}
+                  imageSource = {(this.props?.instance?.thumbnail != null && this?.state?.inputFileWasDeleted == false && this?.state?.imgPrevInputFile == '/thumbnail/defthumb.jpg' && method == "update")
+                  ? this.props?.instance?.thumbnail 
+                  : (this.state.thumbnail == null)? "on_update": this.state.imgPrevInputFile}
+                  content = {this.state.content != null ? this.state.content : ( this.props.instance?.content != undefined  && method == "update" ? this.props.instance.content : null)}
+								/>
+                }
+
                   </span>
                   
                 </Content>
@@ -624,6 +751,70 @@ class DepartmentAnnouncementsForm extends Component {
     return <PageLoading/>;
   }
 }
+
+
+
+function PreviewAnnouncment(props) {
+  console.log(props);
+      return (
+       
+        <div id="myModal" className="modal-main">
+          
+        <div className="modal-content modal-content-preview">
+          <div className="modal-header">
+            Preview
+          <span className="close" onClick = {() => props.handleModalClose()}>&times;</span>
+          </div>
+
+          <div className="modal-body">
+          {/* <h6>Clock Out Early?</h6> */}
+        
+
+          {/* <p>This could result in undertime on this date.</p> */}
+        
+          
+            
+                    <div  className="announcement-content-page">
+                                   
+                                          <div >
+                                            {/* <div className="page-content-title">TITLE</div> */}
+                                            <div className="page-content-title">{props.values.title}</div>
+                                              <div className="page-content-info">Posted: {props.values.release_date != null? moment(props.values.release_date).format("YYYY-MM-DD"):  null }
+                                              <br/><Badge className="tag-badge">{"Department"}</Badge></div>
+
+                                              {
+                                                props.imageCondtion ? 
+                                                  <>
+                                                       <img src={props.imageSource} className="page-img" alt={null}></img>
+                                                  </>
+                                                  :
+                                                  <>
+                                                  {
+                                                      props.imageSource == 'on_update' ? null :  
+                                                      <>
+                                                       <img src={props.imageSource} className="page-img" alt={null}></img>
+                                                      </>
+
+                                                  }
+                                                  </>
+                                              }
+                                             
+                                          <div className="page-content" dangerouslySetInnerHTML={{ __html:   props.content}} />
+                                        </div>
+                      </div>
+          
+
+              
+
+            
+            <br />
+          
+          </div>
+        </div>
+        </div>    
+      )
+    }
+
 /** Form Validation */
 
 const validationSchema = Yup.object().shape({
@@ -647,7 +838,8 @@ const mapStateToProps = (state) => {
     constant          : state.constant,
     instance          : state.departmentAnnouncement.instance,
     isInstanceLoaded  : state.departmentAnnouncement.isInstanceLoaded,
-		user			        : state.user
+		user			        : state.user,
+    settings          : state.settings,
   }
 }
 const mapDispatchToProps = (dispatch) => {

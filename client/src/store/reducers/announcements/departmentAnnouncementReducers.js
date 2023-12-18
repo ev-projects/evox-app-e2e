@@ -5,6 +5,7 @@
 const initState = {
     department: [],
     isDepartmentAnnouncementListLoaded : false,
+    hideShowMore : false,
 }
 
 const departmentAnnouncementReducers = (state = initState, action) => {
@@ -19,9 +20,21 @@ const departmentAnnouncementReducers = (state = initState, action) => {
             return {
                 ...state,
                 depAnnouncementlist : action.list,
-                isDepartmentAnnouncementListLoaded : true
+                isDepartmentAnnouncementListLoaded : true,
+                hideShowMore : false
             };
         break;
+
+        case "INCREMENT_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS":
+            // concsole.log(action.list);
+        return {
+            ...state,
+            depAnnouncementlist :  state.depAnnouncementlist.concat(action.list),
+            isDepartmentAnnouncementListLoaded : true,
+            hideShowMore : action.list.length == 0 ||action.list.length < 3,
+        };
+    break;
+        
         case "FETCH_DEPARTMENT_ANNOUNCEMENT_SUCCESS":
             return {
                 instance : action.announcement,
@@ -37,7 +50,9 @@ const departmentAnnouncementReducers = (state = initState, action) => {
         case "CLEAR_DEPARTMENT_ANNOUNCEMENT_LIST_INSTANCE":
             return {
                 depAnnouncementlist : {},
-                isDepartmentAnnouncementListLoaded : false
+                isDepartmentAnnouncementListLoaded : false,
+                hideShowMore : false
+                
             };
         break;
         default:

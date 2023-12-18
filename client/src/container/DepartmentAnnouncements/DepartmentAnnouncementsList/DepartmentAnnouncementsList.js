@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./DepartmentAnnouncementsList.css";
 import { format, getDate } from "date-fns";
-import { fetchMyHandleAnnouncementList, deleteDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchMyHandleAnnouncementList, deleteDepartmentAnnouncement , clearDepartmentAnnouncementListInstance} from '../../../store/actions/announcement/departmentAnnouncementActions'
 import Joyride, { ACTIONS, EVENTS, STATUS } from "react-joyride";
 import Authenticator from "../../../services/Authenticator";
 import moment from 'moment';
@@ -124,6 +124,7 @@ class DepartmentAnnouncementsList extends Component {
   }
 
   componentWillMount(){
+    this.props.clearDepartmentAnnouncementListInstance();
     this.props.fetchMyHandleAnnouncementList();
   }
   componentDidMount() {
@@ -230,7 +231,9 @@ class DepartmentAnnouncementsList extends Component {
 
                                   {announcement.on_link == 1 ? 
                     
-                                      <a  href={announcement.link}  target="_blank">
+                                      <a  href={  announcement.link.startsWith("http://") || announcement.link.startsWith("https://") ?
+                                                  announcement.link
+                                                  : `http://${announcement.link}`}  target="_blank">
                                         <Button  className="btn btn-primary-2">Visit Link <i className="nav-icon fa fa-link is-green" /></Button>
                                       </a>
 
@@ -276,6 +279,7 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
+      clearDepartmentAnnouncementListInstance : () => dispatch( clearDepartmentAnnouncementListInstance() ),
       fetchMyHandleAnnouncementList : () => dispatch( fetchMyHandleAnnouncementList() ),
       deleteDepartmentAnnouncement : (id) => dispatch( deleteDepartmentAnnouncement(id) ),
     }

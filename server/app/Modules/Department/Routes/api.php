@@ -54,6 +54,8 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
         # Gets all the Department Announcements Lists
         Route::get('/dashboard_departments', 'AnnouncementController@dashboard_index');
 
+        Route::get('/increment_dashboard_departments', 'AnnouncementController@increment_dashboard_index');
+
         #creates a new  Announcement for a Department
         Route::post('/create', 'AnnouncementController@store');
 

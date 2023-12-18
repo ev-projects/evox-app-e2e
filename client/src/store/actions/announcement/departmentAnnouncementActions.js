@@ -143,6 +143,28 @@ export const fetchDashboardAnnouncementList = (params = null) => {
     }
 }
 
+export const incrementDashboardAnnouncementList = (params = null) => {
+    
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/department/announcements/increment_dashboard_departments",
+            params: params,
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'INCREMENT_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 export const fetchMyHandleAnnouncementList = () => {
     return (dispatch, getState) => {
         API.call({
