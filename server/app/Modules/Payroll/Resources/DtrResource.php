@@ -82,6 +82,11 @@ class DtrResource extends JsonResource
                 if( $leave->isApproved() && $leave->isPaidLeave() && $leave->amount > 0 ){
                     $approved_leave_type =  $leave->type; 
                 }
+
+                # If the Leave is Approved, an Unpaid Leave, and has a Valid amount, Sets the Approved Leave Name to get the Slug format of the Leave Type.
+                if( $leave->isApproved() && $leave->isUnPaidLeave() && $leave->amount > 0 ){
+                    $approved_leave_type =  $leave->type; 
+                }
             }
 
 
@@ -90,6 +95,9 @@ class DtrResource extends JsonResource
             # Check if absent
             if( $this->isAbsent() ){
                 $attendance_status = get_constant("ATTENDANCE_STATUS.absent");
+                if ($this->onUnpaidLeave()->get()->count() > 0 ) {//override ABSENT with approved UNPAID LEAVE; DTR display only
+                    $attendance_status = $approved_leave_type;
+                }
 
             }elseif( $this->onLeave()->get()->count() > 0 ) {
                 $attendance_status = $approved_leave_type;
@@ -133,45 +141,31 @@ class DtrResource extends JsonResource
             $now = Carbon::now()->timestamp;
 
             
-      
+            $user_half_time = 0;
             $is_within_time = false;
+            $after_time_half = false;
             $is_within_time_extended = false;
             $checked_end_time =  $this->end_datetime;
             if($this->end_flexy_datetime != null){
                 $checked_end_time =  $this->end_flexy_datetime;
             }
+         
+            
             if($this->is_rest_day == 0){
                 $is_within_time = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $this->is_rest_day == 0 ;
                 $is_within_time_extended = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  21600) && $this->is_rest_day == 0 ;
+
+            if($this->is_rest_day == 0 && $this->time_in && !$this->time_out){
+                $user_half_time = 12600 + $this->time_in; 
+                $after_time_half = Carbon::now()->timestamp < $user_half_time ;
+            }
+           
+
+
             }
 
 
 
-            // $on_multiple_log = false;
-            // $dtr_history = [];
-            // if($this->use_schedule == false && $this->use_logs == true){
-            //     // $is_within_time = true;
-            //     // $is_within_time_extended = true;
-
-            //     $on_multiple_log = true;
-
-            //     $recent_log = $this->get_dtr_history()->latest()->first();
-
-                
-            //     $this->time_in =  $recent_log ? $recent_log->time_in : null;
-            //     $this->time_out = $recent_log ? $recent_log->time_out : null;
-
-            //     foreach ($this->get_dtr_history()->get() as $history) {
-            //         $dtr_history[] = array(
-            //                                     'id' => $history->id,
-            //                                     'time_in' => timestamp_to_datetime( $history->time_in ),
-            //                                     'time_out' =>timestamp_to_datetime( $history->time_out ),
-            //                                     'hours' => seconds_to_time( ($history->time_in - ($history->time_out != null?$history->time_out: 0  )),true)
-            //                                 );
-            //     }
-            //     // dump($dtr_history);
-               
-            // }
 
             $owner = $this->user()->first();
             $result =  array_merge( 
@@ -195,6 +189,7 @@ class DtrResource extends JsonResource
 
                     'with_in_time' => $is_within_time,
                     'with_in_time_extended' => $is_within_time_extended,
+                    'before_time_in_half' =>  $after_time_half ,
                     // 'on_multiple_login' => $on_multiple_log,
                     // 'dtr_history' => $dtr_history,
                     // 'timezone' =>  $owner->country_zone()->country_time_zone,

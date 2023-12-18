@@ -12,6 +12,9 @@ import Validator from "../../services/Validator";
 
 const ChangePasswordForm = ( context ) => {
 
+   
+  
+
     async function onSubmitHandler (values) {
 
         var formData = {};
@@ -34,6 +37,7 @@ const ChangePasswordForm = ( context ) => {
         // If action is NULL, it means it's either store/update
         if (window.confirm("Are you sure you want to change your password?")) {
             context.changePassword( context.user.id, formData );
+            context.setShowChangePasswordForm(false)
         }
       
     }
@@ -47,11 +51,12 @@ const ChangePasswordForm = ( context ) => {
     var validationSchema = Yup.object().shape({
         current_password:            Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable(),         
         new_password:            Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable(),
-        confirm_new_password:    Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable()/*.match( Yup.ref('new_password'), 'Passwords do not match')*/,
+        confirm_new_password:    Yup.string().min(6, '6 Minimum Characters').max(255, '255 Maximum Characters').required("This field is required").nullable().oneOf([Yup.ref('new_password')], 'Your passwords do not match.'),
     });
 
-    return  <Content col={ (context.size ? context.size : "8")} title={ (context.forceChangePassword ? "Reset" : "Change") +  " Password"} subtitle={ (context.forceChangePassword ? <div>This is required before doing any transactions.</div> : null)} >
-                <Formik 
+    return  <Content  col={ (context.size ? context.size : "8")} title={ (context.forceChangePassword ? "Reset" : "Change") +  " Password"} subtitle={ (context.forceChangePassword ? <div>This is required before doing any transactions.</div> : null)} >
+               <div >
+               <Formik 
                     enableReinitialize
                     onSubmit={onSubmitHandler} 
                     validationSchema={validationSchema} 
@@ -108,6 +113,7 @@ const ChangePasswordForm = ( context ) => {
                     )}
                     
                 </Formik>
+               </div>
         </Content>;
 }
 

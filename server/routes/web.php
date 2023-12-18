@@ -22,11 +22,18 @@ Route::get('/', function () {
 });
 
 
-Route::group(['middleware' => 'web'], function () {
-    Route::get('/google-login', 'Auth\LoginController@redirectToProvider')->name('login');
-    Route::get('/google-callback', 'Auth\LoginController@handleProviderCallback');
+Route::group(['middleware' => ['web', 'guest']], function () {
+    Route::get('/google-login', 'Auth\LoginController@redirectToGoogle')->name('login');
+    Route::get('/google-callback', 'Auth\LoginController@handleGoogleCallback');
+
+
+    Route::get('/microsoft-login', 'Auth\LoginController@redirectToMS')->name('login');
+    Route::get('/microsoft-callback', 'Auth\LoginController@handleMSCallback');
     //Route::get('/get-token', 'Auth\LoginController@getToken');
 });
+/*Route::group(['middleware' => ['web', 'MsGraphAuthenticated']], function () {
+    Route::get('/microsoft-callback', 'Auth\LoginController@handleMSCallback');
+});*/
 
 // Route::get('/test_utc', function () {
 //    $utc_test = new UtcTimeLogRepository;

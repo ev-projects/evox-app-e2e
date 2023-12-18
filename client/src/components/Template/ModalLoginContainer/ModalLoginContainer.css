@@ -1,0 +1,14 @@
+/*
+ * ModalLoginContainer css File
+*/
+.modal-login-dialog .modal-content {
+    max-width: 500px !important;
+    width: 100% !important;
+}
+.modal-login-dialog .modal-content .modal-body {
+    padding: 30px 20px !important;
+}
+
+.modal-login-dialog .modal-content .modal-header button {
+    display: none !important;
+}

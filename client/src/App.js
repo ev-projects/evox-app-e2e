@@ -16,6 +16,9 @@ import Validator from "./services/Validator";
 import { fetchUser } from './store/actions/userActions'
 import { fetchStatusNumbers } from './store/actions/filters/requestListActions';
 
+//Import ModalLoginContainer Component
+import ModalLoginContainer from "./components/Template/ModalLoginContainer";
+
 class App extends Component {
 
   componentDidMount() {
@@ -49,6 +52,7 @@ class App extends Component {
       <div className="App">
         <LoaderContainer />
         <AlertContainer />
+        <ModalLoginContainer />
         <RouteList />
       </div>
     );

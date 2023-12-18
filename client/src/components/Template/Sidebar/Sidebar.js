@@ -454,6 +454,12 @@ const Sidebar = (props) => {
                       </Link>
                     </li>
                     <li className="nav-item">
+                      <Link className="nav-link" to={global.links.dtr_conflict}>
+                        <i className="nav-icon fa fa-file-text nav-icon" />
+                        <p>DTR Conflict Report</p>
+                      </Link>
+                    </li>
+                    <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_logs}>
                         <i className="nav-icon fa fa-bars nav-icon" />
                         <p>DTR Logs</p>
@@ -827,6 +833,17 @@ const Sidebar = (props) => {
                       </li>
                     )}
 
+                    {Authenticator.check("admin", "full_access") && (
+                      <li className="nav-item">
+                        <Link
+                          className="nav-link"
+                          to={global.links.admin_import_careers}
+                        >
+                          <i className="nav-icon fa fa-arrow-up nav-icon" />
+                          <p>Careers</p>
+                        </Link>
+                      </li>
+                    )}
                     {Authenticator.check("admin", "manage_payroll_cutoff") && (
                       <li className="nav-item">
                         <Link

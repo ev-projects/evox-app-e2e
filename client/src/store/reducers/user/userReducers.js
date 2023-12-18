@@ -18,6 +18,13 @@ const userReducer = (state = initState, action) => {
          */
         case "LOGIN_SUCCESS":
             message = "Login Success!"
+            //console.log(action.user);
+            localStorage.setItem("user_server_timestamp", action.user.user_server_timestamp);//based on code from API code, "user_server_timestamp" was already converted to User Local Time
+            localStorage.setItem("user_server_timestamp_mils", action.user.user_server_timestamp_mils);//based on code from API code, "user_server_timestamp_mils" was already converted to User Local Time
+            localStorage.setItem("user_local_offset_mils", action.user.user_offset_seconds * 1000);
+            localStorage.setItem("user_local_timestamp_mils", action.user.user_server_timestamp_mils);//based on code from API code, "user_server_timestamp_mils" was already converted to User Local Time
+            //console.log('Server TS', new Date(action.user.user_server_timestamp_mils));
+            //console.log('Local TS', new Date(action.user.user_server_timestamp_mils + (action.user.user_offset_seconds * 1000)));
             return {
                 ...action.user,
                 payload : action.payload
@@ -30,6 +37,9 @@ const userReducer = (state = initState, action) => {
          */
         case "LOGOUT_SUCCESS":
             message = "Login Success!"
+            localStorage.removeItem("user_server_timestamp");
+            localStorage.removeItem("user_server_timestamp_mils");
+            localStorage.removeItem("browser_timestamp_mils");
             return {
                 ...initState,
                 clearLoginParameters : true

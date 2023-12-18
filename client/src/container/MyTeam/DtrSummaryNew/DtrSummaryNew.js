@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
-import { fetchNewDtrSummary,exportDtrSummary, exportNewDtrSummary } from '../../../store/actions/dtr/dtrSummaryActions';
+import { fetchNewDtrSummary,exportDtrSummary, exportNewDtrSummary, exportNewDtrSummary1 } from '../../../store/actions/dtr/dtrSummaryActions';
 import { Form  } from 'react-bootstrap';
 import Authenticator from "../../../services/Authenticator.js";
 
@@ -146,8 +146,11 @@ class DtrSummaryNew extends Component {
         } 
       }
       this.props.exportNewDtrSummary( formData );
-    }
-    
+    }else if(values.export == "dtr_conflict"){
+
+      this.props.exportNewDtrSummary1( formData );
+
+    }    
     else{
 
 
@@ -252,6 +255,7 @@ class DtrSummaryNew extends Component {
                               <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>  OLD */}
                               <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department_new")}>Export</Dropdown.Item>
                               <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all_new")}>Export All</Dropdown.Item>
+                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "dtr_conflict")}>Export DTR Conflict</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
                         }
@@ -386,6 +390,7 @@ class DtrSummaryNew extends Component {
     fetchNewDtrSummary : ( params ) => dispatch( fetchNewDtrSummary(  params ) ),
     exportDtrSummary : ( params ) => dispatch( exportDtrSummary( params ) ),
     exportNewDtrSummary : ( params ) => dispatch( exportNewDtrSummary( params ) ),
+    exportNewDtrSummary1 : ( params ) => dispatch( exportNewDtrSummary1( params ) ),
     }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(DtrSummaryNew);

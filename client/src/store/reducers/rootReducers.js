@@ -34,7 +34,7 @@ import syncReducers from "./admin/syncReducers"
 import lookupListReducers from "./lookup/lookupListReducers"
 
 import dtrReducer from "./dtr/dtrReducers";
-
+import dtrConflict from "./dtr/dtrConflictReducer";
 import dtrSummaryReducers from "./dtr/dtrSummaryReducers";
 import dtrLogsReducers from "./dtr/dtrLogsReducers";
 
@@ -53,8 +53,10 @@ import reportReducers from './report/reportReducers';
 import departmentListReducers from "./admin/departmentListReducers";
 import hrAnnouncementReducers from "./hr/hrAnnouncementReducers";
 import opsScheduleReducers from "./opsschedule/opsScheduleReducers";
+import jobOpeningReducers from "./admin/jobOpeningReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
+import modalLoginReducer from './settings/modalLoginReducer';
 
 const rootReducer = combineReducers({
     
@@ -65,6 +67,7 @@ const rootReducer = combineReducers({
     profile : profileReducer,
     
     alert: alertReducer,
+    modalLogin: modalLoginReducer,
     dtr: dtrReducer,
     schedule: scheduleReducer,
     constant : constantReducers,
@@ -94,6 +97,7 @@ const rootReducer = combineReducers({
     
 
     dtrSummary: dtrSummaryReducers,
+    dtrConflict:dtrConflict,
     dtrLogs: dtrLogsReducers,
 
     lookup:   lookupListReducers,
@@ -106,6 +110,7 @@ const rootReducer = combineReducers({
     departmentList:   departmentListReducers,
     hrAnnouncement:   hrAnnouncementReducers,
     opsSchedule:   opsScheduleReducers,
+    careerList:   jobOpeningReducers,
 });
 
 export default rootReducer;

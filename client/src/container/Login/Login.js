@@ -31,6 +31,7 @@ class Login extends Component {
     const { user } = this.props
 
     let googleLoginUrl = process.env.REACT_APP_BACKED_ROOT_URL + "/google-login";
+    let msLoginUrl = process.env.REACT_APP_BACKED_ROOT_URL + "/microsoft-login";
 
     // Check if there's a redirect link and if so, use that redirect link instead of the default dashboard link.
     let redirect_link = global.links.dashboard;
@@ -90,6 +91,10 @@ class Login extends Component {
                                       {/*<br />
                                       <Button className="login_btn" variant="secondary" size="lg" href={googleLoginUrl}>
                                         <i class="fa fa-google" /> Log In with Google
+                                      </Button>*/}
+                                      {/*<br />
+                                      <Button className="login_btn" variant="secondary" size="lg" href={msLoginUrl}>
+                                        <i class="fa fa-windows" /> Log In with Microsoft
                                       </Button>*/}
                                   </form>
                                   )}
