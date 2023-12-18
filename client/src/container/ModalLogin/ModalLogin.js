@@ -74,10 +74,10 @@ class ModalLogin extends Component {
                                       <Button className="login_btn" variant="secondary" size="lg" href={googleLoginUrl}>
                                         <i class="fa fa-google" /> Log In with Google
                               </Button>*/}
-                                      <br />
+                                      {/*<br />
                                       <Button className="login_btn" variant="secondary" size="lg" href={msLoginUrl}>
                                         <i class="fa fa-windows" /> Log In with Microsoft
-                                      </Button>
+                                      </Button>*/}
                                   </form>
                                   )}
                               </Formik>
