@@ -147,9 +147,10 @@ class API  {
         && global.invalid_token_response.includes( e.response.data.error.content.code )){
       localStorage.removeItem("access_token");
       // alert( e.response.data.error.message )
+      //console.log(e.response);
       
-      history.push(global.links.login)
-      window.location.reload(true);
+      /*history.push(global.links.login)
+      window.location.reload(true);*/
      
       return this.format(e.response);
 

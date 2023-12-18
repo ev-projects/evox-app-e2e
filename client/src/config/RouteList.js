@@ -42,7 +42,7 @@ import MyRequests from "../container/MyRequests/MyRequests";
 
 import DtrSummary from "../container/MyTeam/DtrSummary";
 import DtrSummaryNew from "../container/MyTeam/DtrSummaryNew";
-
+import DtrSummaryConflictReport from "../container/MyTeam/DtrConflictReport";
 // Admin
 import PayrollCutoff from "../container/Admin/PayrollCutoff";
 import AssignDepartmentHandlers from "../container/Admin/AssignDepartmentHandlers";
@@ -97,6 +97,9 @@ import MyTeamAllRequest from "../container/MyTeam/MyTeamRequests/MyTeamAllReques
 import MyOverallRequest from "../container/MyOverallRequest/MyOverallRequest";
 import ItRequirementList from "../components/MeetingRoomBooking/ItRequirementList";
 import OverallRequest from "../container/MyTeam/OverallRequest";
+import OpsScheduleForm from "../container/OpsSchedule/OpsScheduleForm";
+import OpsScheduleList from "../container/OpsSchedule/OpsScheduleList";
+import JobOpeningsUpdate from "../container/Admin/JobOpeningsUpdate/JobOpeningsUpdate";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -253,6 +256,11 @@ const RoutesList = (props) => {
           <DtrSummaryNew role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
+        <ProtectedRoute exact path={global.links.dtr_conflict}>
+          {/* <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
+          <DtrSummaryConflictReport role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
+        </ProtectedRoute>
+
         <ProtectedRoute exact path={global.links.dtr_summary_new}>
           {/* <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
           <DtrSummaryNew role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
@@ -387,6 +395,15 @@ const RoutesList = (props) => {
          
         </ProtectedRoute>
 
+        <ProtectedRoute exact path={global.links.ops_schedule_form+":id?"}>
+          <OpsScheduleForm role={['ops']} permission={['manage_ops_schedules']}
+          />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.ops_schedule_list}>
+          <OpsScheduleList role={['ops']} permission={['manage_ops_schedules']} />
+        </ProtectedRoute>
+
 
         <ProtectedRoute exact path={global.links.manage_hr_announcements}>
           <HrAnnouncementsList  role={['hr']} />
@@ -395,6 +412,10 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
           <HrAnnouncementsForm  role={['hr']} permission={['manage_hr_announcements']}/>
         </ProtectedRoute> 
+
+        <ProtectedRoute exact path={global.links.admin_import_careers}>
+          <JobOpeningsUpdate  role={['admin']} permission={['full_access']}/>
+        </ProtectedRoute>
         
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

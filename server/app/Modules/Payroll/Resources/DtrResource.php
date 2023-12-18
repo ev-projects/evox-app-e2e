@@ -82,6 +82,11 @@ class DtrResource extends JsonResource
                 if( $leave->isApproved() && $leave->isPaidLeave() && $leave->amount > 0 ){
                     $approved_leave_type =  $leave->type; 
                 }
+
+                # If the Leave is Approved, an Unpaid Leave, and has a Valid amount, Sets the Approved Leave Name to get the Slug format of the Leave Type.
+                if( $leave->isApproved() && $leave->isUnPaidLeave() && $leave->amount > 0 ){
+                    $approved_leave_type =  $leave->type; 
+                }
             }
 
 
@@ -90,6 +95,9 @@ class DtrResource extends JsonResource
             # Check if absent
             if( $this->isAbsent() ){
                 $attendance_status = get_constant("ATTENDANCE_STATUS.absent");
+                if ($this->onUnpaidLeave()->get()->count() > 0 ) {//override ABSENT with approved UNPAID LEAVE; DTR display only
+                    $attendance_status = $approved_leave_type;
+                }
 
             }elseif( $this->onLeave()->get()->count() > 0 ) {
                 $attendance_status = $approved_leave_type;

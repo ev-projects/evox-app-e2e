@@ -291,9 +291,7 @@ class DailyTimeRecord extends Component {
                         <tr>
                             <th className="dtr-date">Date</th>
                             <th className="dtr-status">Status</th>
-                            <th className="dtr-schedule">Schedule <span className="dtr-schedule-toggle-on"> 
-                                                                      { this.props.params.id != this.props.user.id && this.state.toggle_pov == true? " ( "+ this.props.dtr.employeeInfo.timezone+" )":" ( "+ this.props.user.timezone+" )"}
-                                                                  </span></th>
+                            <th className="dtr-schedule">Schedule <span className="dtr-schedule-toggle-on"> { this.props.params.id != this.props.user.id && this.state.toggle_pov == true? " ( "+ this.props.dtr.employeeInfo.timezone+" )": null}</span></th>
                             <th className="dtr-log">Clock In</th>
                             <th className="dtr-log">Clock Out</th>
                             <th className="dtr-item">Late</th>
@@ -339,7 +337,7 @@ class DailyTimeRecord extends Component {
                           let dtr_undertime = dtr?.payroll_items?.undertime;
                           if ( dtr.leaves.length > 0 ) {
                             dtr.leaves.forEach(element => {
-                              if (element.amount > 0) {
+                              if (element.amount > 0 && element.status == 'approved') {
                                 dtr_undertime = null;
                               }
                             });
@@ -365,7 +363,7 @@ class DailyTimeRecord extends Component {
                                   <td className="dtr-actions">
                                       {
                                         ( this.props.params.id == this.props.user.id 
-                                          && alter_log_status != "approved" ) ?
+                                          && alter_log_status != "approved" && dtr.is_rest_day != 1 ) ?
                                         <Link className="btn btn-primary" 
                                               title="Alter Log"
                                               to={{

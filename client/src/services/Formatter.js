@@ -45,6 +45,11 @@ class Formatter {
         'timeOut'   : time_out
       }
     }
+    if (!error_result || (error_result && error_result.status == 401)) {
+      return {
+        'type'      : 'SHOW_MODAL_LOGIN'
+      }
+    }
     return {
       'type'      : 'SHOW_ALERT',
       'error'     : error_result,

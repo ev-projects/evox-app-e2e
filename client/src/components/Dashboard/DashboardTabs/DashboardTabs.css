@@ -38,9 +38,17 @@
 
 .tag-badge{
     color: #000000;
-    background-color: #8FD402;
+    background-color: #aee343;
     font-size: 11px !important;
 }
+
+.new-badge{
+    color: white !important;
+    background-color:rgba(0, 83, 147);
+    font-size: 11px !important;
+    margin-left: 5px;
+}
+
 
 .announcement-tabs .nav-item{
     color:rgba(0, 83, 147) !important;

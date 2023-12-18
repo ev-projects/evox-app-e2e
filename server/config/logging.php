@@ -130,6 +130,14 @@ return [
             'permission' => 0666,
         ],
 
+        'mslog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/microsoft.log'),
+            'level' => 'debug',
+            'days' => 90,
+            'permission' => 0666,
+        ],
+
         'biometrics' => [
             'driver' => 'daily',
             'path' => storage_path('logs/biometrics.log'),

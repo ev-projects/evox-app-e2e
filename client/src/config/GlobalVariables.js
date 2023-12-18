@@ -46,6 +46,7 @@
     overallrequest                :    "/app/team/overallrequest",
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
+    dtr_conflict                    :  "/app/team/DtrConflict",
     dtr_summary_new                 :  "/app/team/DtrSummaryTemp",
     dtr_logs                        :  "/app/team/DtrLogs", 
     weekly_team_schedule            :  "/app/team/WeeklyTeamSchedule", 
@@ -85,6 +86,7 @@
 
     department_list                 :  "/app/admin/DepartmentList/",
     admin_announcement_list         :  "/app/admin/AnnouncementList/",
+    admin_import_careers            :  "/app/admin/CareersImport/",
 
 
     // Performance Measure
@@ -103,7 +105,11 @@
     location_master                 :  "/app/createlocation/",
     location_list                   :  "/app/locationlist/",
     job_referal                     :  "/app/referjob/",
-    requirement_list                :  "/app/requirement/"
+    requirement_list                :  "/app/requirement/",
+
+    // OPS Links
+    ops_schedule_form               :  "/app/ops/ManageOpsSchedules/",
+    ops_schedule_list               :  "/app/ops/ManageOpsSchedulesList/",
    
 };
 

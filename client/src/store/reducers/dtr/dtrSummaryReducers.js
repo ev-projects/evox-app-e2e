@@ -8,7 +8,7 @@ const initState = {
     isListLoaded: false,
     instance: {},
     pagination: {current_page: 1, last_page: 1, has_next_page: false},
-    dtrItems: []
+    dtrItems: [],
 }
 
 const dtrSummary = (state = initState, action) => {
@@ -62,6 +62,24 @@ const dtrSummary = (state = initState, action) => {
                 },
                 dtrItems: []
             };
+            case "FETCH_DTR_CONFLICT_EXPORT_SUCCESS":
+                var fileURL = window.URL.createObjectURL(new Blob([action.data]));
+                var fileLink = document.createElement('a');
+                fileLink.href = fileURL;
+                fileLink.setAttribute('download', 'dtr_conflict_data.csv');
+                document.body.appendChild(fileLink);
+                fileLink.click();
+                return {
+                    instance : {},
+                    isListLoaded : false,
+                    pagination: {
+                        current_page: 1,
+                        last_page: 1,
+                        has_next_page: false,
+                    },
+                    dtrItems: []
+                };
+                break;
             break;
         // Apply the Instance that was recently fetched
         case "FETCH_DTR_SUMMARY_SUCCESS":

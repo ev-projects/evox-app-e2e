@@ -42,6 +42,8 @@ use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResource;
 use App\Modules\Report\Resources\NewDtrSummaryResource;
+use App\Exports\ExportDTRMismatch;
+use App\Modules\Payroll\Resources\DtrHalfDayMismacth;
 
 class ReportController extends Controller
 {
@@ -1408,6 +1410,55 @@ DB::raw("round(sum(drt_summary_report.slh_overtime),2) as SLH_OT"), DB::raw("rou
         }
     }
 
+    // Export HalfDay Conflit Report
+    public function dtr_half_day_mismatch( Request $request ){   
+        try {
+
+          return $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
+           
+        //  return $res = Excel::download(new ExportDTRMismatch($result), 'DtrConflitReport.csv');
+          
+
+        }catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function dtr_conflict_report(Request $request)
+    {
+   
+        try {       
+            $user_collection_paginated = [];    
+            
+         
+             $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
+             $current_page = 1;
+             $last_page = 1;
+             foreach($result as $user) {
+                array_push($user_collection_paginated, $user);
+             }
+           
+             $report = $user_collection_paginated;
+             if($report == NULL || empty($report)) {
+                return response()->json(["message" => "Not Found"],404);                
+             }
+             $response = [];
+             $response['current_page'] = $current_page;
+             $response['last_page'] = $last_page;
+             $response['has_next_page'] = $current_page < $last_page;
+             $response['dtrItems'] =  $report;
+             
+            return success_response(
+                trans('messages.' . __FUNCTION__ . '_success'),
+                $response,
+            );
+            
+
+     
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        }
+    }
 
 
 

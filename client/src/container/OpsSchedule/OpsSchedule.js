@@ -1,10 +1,29 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux';
 import { Container,Col } from 'react-bootstrap';
+import ModalImage from "react-modal-image";
 import "./OpsSchedule.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
+import { fetchOpsSchedules } from '../../store/actions/opsschedule/opsScheduleActions';
 
 class OpsSchedule extends Component {
+
+  // Set the default constructor with Action state in null
+  constructor(props) {
+    super(props);
+    this.state = {
+      action: null
+    }
+  }
+
+  componentWillMount(){
+	// Get ops schedules per department
+	this.props.fetchOpsSchedules();
+  }
+
   render() {
+    // Get all Ops Departments from server constants
+	const opsScheduleList = this.props.opsSchedules.listInstance != undefined ? this.props.opsSchedules.listInstance : [];
     return  <ContainerWrapper> 
 
 	<h2 className="header_text">EV Support Team Schedule</h2>
@@ -12,7 +31,47 @@ class OpsSchedule extends Component {
 	<div className="ops-schedule header_text">
 		<div className="row">
 			<div className="col-6 col-lg-6 col-md-6 col-sm-12">
-				<div className="row card">
+
+				{opsScheduleList.map((schedules, index1) => {
+					return <div className="row card">
+						<div className="col-11 card-body">
+							<div className="h3">{schedules.department} Services</div>
+							<p>{schedules.description}</p>
+							<ModalImage small={schedules.image} large={schedules.image} alt={schedules.image} />
+							{/* {(schedules.type === "image") ? <img src={schedules.image} width="100%" /> :
+							<table width="100%" cellpadding="5" border="1">
+								<thead>
+									<tr>
+										<th>POC</th>
+										<th>Domain</th>
+										<th>Scope</th>
+										<th>Schedule</th>
+										<th>Email</th>
+									</tr>
+								</thead>
+								<tbody>
+								{schedules.list?.map((schedule, index2) => {
+									return <tr>
+										<td>{schedule.name}<br/><small>{schedule.position}</small></td>
+										<td>{schedule.domain}</td>
+										<td>
+											<ul>
+											{schedule.scope.map((scope, index3) => {
+												return <li>{scope}</li>;
+											})}
+											</ul>
+										</td>
+										<td><small>{schedule.work_days}<br/>{schedule.start_time} - {schedule.end_time} {schedule.timezone}</small></td>
+										<td>{schedule.email}</td>
+									</tr>;
+								})}
+								</tbody>
+							</table>} */}
+						</div>
+					</div>;
+				})}
+
+				{/* <div className="row card">
 					<div className="col-11 card-body">
 						<div className="h3">IT Department</div>
 						<p>For IT concerns please send an email or chat us via google chat at helpdesk@eastvantage.com</p>
@@ -110,10 +169,10 @@ class OpsSchedule extends Component {
 							</tbody>
 						</table>
 					</div>
-				</div>
+				</div> */}
 			</div>
 
-			<div className="col-6 col-lg-6 col-md-6 col-sm-12">
+			{/* <div className="col-6 col-lg-6 col-md-6 col-sm-12">
 
 				<div className="row card">
 					<div className="col-11 card-body">
@@ -250,80 +309,7 @@ class OpsSchedule extends Component {
 						</table>
 					</div>
 				</div>
-				<div className="row card">
-					<div className="col-11 card-body">
-						<div className="h3">HR Services</div>
-						<p>For issues, inquiries or requests related to HR, please reach us via email below.</p>
-						<table width="100%" cellpadding="5" border="1">
-							<thead>
-								<tr>
-									<th>Department</th>
-									<th>POC</th>
-									<th>Scope</th>
-									<th>Schedule</th>
-									<th>Contact Info</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td rowspan="7">HR</td>
-									<td>Hardy Jacob<br/><small>HR Head</small></td>
-									<td rowspan=""></td>
-									<td><small>M-F <br/>9am-6pm</small></td>
-									<td rowspan="7">happiness@eastvantage.com</td>
-								</tr>
-								<tr>
-									<td>Precious Delos Reyes<br/><small>HR Manager</small></td>
-									<td rowspan="4">
-										<ul className="no-bullet">
-											<li>Pre-Employment Requirements</li>
-											<li>New Hire Orientation</li>
-											<li>Employment Contract</li>
-											<li>Company ID</li>
-											<li>LOC</li>
-											<li>Promotion</li>
-											<li>Salary Increase</li>
-											<li>BambooHR</li>
-											<li>Government Mandatory Benefits</li>
-											<li>HMO</li>
-											<li>Leave Benefits</li>
-											<li>Certificate of Employment</li>
-											<li>Resignation</li>
-											<li>Exit Clearance and Exit Interview</li>
-										</ul> 
-									</td>
-									<td><small>M-F <br/>9am-6pm</small></td>
-								</tr>
-								
-								<tr>
-									<td>Jennifer Buce<br/><small>Senior HR Lead</small></td>
-									
-									<td><small>M-F <br/>9am-6pm</small></td>
-								</tr>
-								<tr>
-									<td>Jengel Perez<br/><small>HR Generalist</small></td>
-									
-									<td><small>M-F <br/>9am-6pm</small></td>
-								</tr>
-								<tr>
-									<td>Joemark Delima<br/><small>HR Project and Service Delivery Officer</small></td>
-									<td><small>M-F <br/>9am-6pm</small></td>
-								</tr>
-								<tr>
-									<td>Patrick Pineda<br/><small>Learning and Development Lead</small></td>
-									<td rowspan="">Learning and Development</td>
-									<td><small>M-F <br/>9am-6pm</small></td>
-								</tr>
-								<tr>
-									<td>Yong Mustard<br/><small>Happiness Ambassador</small></td>
-									<td rowspan="">Employee Engagement</td>
-									<td><small>M-F <br/>9am-6pm</small></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
+			</div> */}
 
 			
 		</div>
@@ -333,12 +319,16 @@ class OpsSchedule extends Component {
   }
 }
 
-export default OpsSchedule;
+const mapStateToProps = (state) => {
+	return {
+	  constant		: state.constant,
+	  opsSchedules	: state.opsSchedule,
+	}
+}
+const mapDispatchToProps = (dispatch) => {
+    return {
+      fetchOpsSchedules : () => dispatch( fetchOpsSchedules() )
+    }
+}
 
-
-
-
-
-
-
-
+export default connect(mapStateToProps, mapDispatchToProps)(OpsSchedule);

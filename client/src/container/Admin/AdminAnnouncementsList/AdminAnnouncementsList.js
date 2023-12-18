@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import "react-datepicker/dist/react-datepicker.css";
 import "./AdminAnnouncementsList.css";
 
-import { fetchDepartmentAnnouncementList, deleteDepartmentAnnouncement } from '../../../store/actions/announcement/departmentAnnouncementActions'
+import { fetchDepartmentAnnouncementList, deleteDepartmentAnnouncement , clearDepartmentAnnouncementListInstance} from '../../../store/actions/announcement/departmentAnnouncementActions'
 
 
 import Formatter from '../../../services/Formatter'
@@ -38,6 +38,7 @@ class AdminAnnouncementsList extends Component {
   }
 
   componentWillMount(){
+    this.props.clearDepartmentAnnouncementListInstance();
     this.props.fetchDepartmentAnnouncementList();
   }
   
@@ -119,6 +120,7 @@ const mapStateToProps = (state) => {
   }
   const mapDispatchToProps = (dispatch) => {
     return {
+      clearDepartmentAnnouncementListInstance : () => dispatch( clearDepartmentAnnouncementListInstance() ),
       fetchDepartmentAnnouncementList : () => dispatch( fetchDepartmentAnnouncementList() ),
       deleteDepartmentAnnouncement : (id) => dispatch( deleteDepartmentAnnouncement(id) ),
     }

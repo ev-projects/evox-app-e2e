@@ -461,16 +461,18 @@ class DtrRepository implements DtrRepositoryInterface{
                             $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
                             $dtr->break_time            =  $parsed_schedule_detail['break_time'];
                         }
-                       
-                        $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
-                        $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
-                        $dtr->update();
 
+                        
                         # Delete the existing DTR Policies before saving the new ones.
                         $dtr->policies()->delete();
 
                         # Save the DTR Policies base on the Schedule Policies.
                         $this->save_dtr_policies( $dtr, $schedule->schedule_policies()->get() );
+                       
+                        $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
+                        $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
+                        $dtr->update();
+
 
                         # Compute for the Items
                         $this->compute_payroll_items( $dtr );
@@ -1101,11 +1103,11 @@ class DtrRepository implements DtrRepositoryInterface{
                 try {
                     
                     if( in_array( $row->status->status, get_constant('LEAVE_REQUEST_STATUS') ) )   {
+                        $bhr_leave_status = $row->status->status;
                         $user = $this->user->show_via_bhr_number( $row->employeeId );
-
                         
                         // Get the DTR related on the Leave Request's Date Range
-                       $dtr_collection = Dtr::select('dtrs.*')
+                        $dtr_collection = Dtr::select('dtrs.*')
                                                 ->join('users', 'dtrs.user_id', '=', 'users.id')
                                                 ->whereRaw("
                                                         users.bhr_num = ?
@@ -1136,7 +1138,11 @@ class DtrRepository implements DtrRepositoryInterface{
                             ];
 
                             # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
-                            $leave_insert_array[] = implode(",", $leave_insert_values);
+                            if ($bhr_leave_status == "approved") {
+                                $approved_leave_insert_array[] = implode(",", $leave_insert_values);
+                            } else {
+                                $leave_insert_array[] = implode(",", $leave_insert_values);
+                            }
 
                             /*foreach( $dtr_collection as $dtr ) {
                                 $this->compute_payroll_items( $dtr );
@@ -1159,6 +1165,8 @@ class DtrRepository implements DtrRepositoryInterface{
                     continue;
                 }
             }
+
+            $merged_leave_insert_array = array_merge($leave_insert_array, $approved_leave_insert_array);
  
             # Creates the Customized Query for Batch inserting the To-be-generated Leaves.
             $leave_insert_query = "INSERT INTO leaves (
@@ -1171,7 +1179,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                                 updated_by,
                                                 updated_at,
                                                 created_at)
-                                            VALUES (".implode( "), (", $leave_insert_array ).")
+                                            VALUES (".implode( "), (", $merged_leave_insert_array ).")
                                             ON DUPLICATE KEY UPDATE
                                                 dtr_id          = VALUES(dtr_id),
                                                 type            = VALUES(type),
