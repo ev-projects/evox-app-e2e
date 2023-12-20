@@ -16,7 +16,7 @@ interface BhrRepositoryInterface
 
     public function get_profile_picture( string $bhr_user_number );
 
-    public function get_user_bhr_field( string $bhr_user_number );
+    public function get_user_bhr_field( string $bhr_user_number, string $user_fields_key = '' );
 
     public function get_user_job_information( string $bhr_user_number , string $field_name );
 
