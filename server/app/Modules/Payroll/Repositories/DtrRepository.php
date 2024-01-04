@@ -1505,6 +1505,8 @@ class DtrRepository implements DtrRepositoryInterface{
             if ($dtr_id) {
                 $dtr = Dtr::find($dtr_id);
             } else {
+
+                $bio_timestamp = datetime_to_timestamp( $biometrics->CheckTime ) +  string_offset_to_seconds(Auth::user()->country_timezone_to_offset());
                 $dtr = Dtr::select('dtrs.*')
                             ->join('users', 'dtrs.user_id', '=', 'users.id')
                                     ->whereRaw(
@@ -1514,7 +1516,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                             OR 
                                             ". $biometrics->getFlexyType() ." BETWEEN  '". $biometrics->getFrom() ."' AND '". $biometrics->getTo() ."'
                                             OR 
-                                            date = '".date("Y-m-d" , datetime_to_timestamp( $biometrics->CheckTime ))."'
+                                            date = '".date("Y-m-d" ,   $bio_timestamp)."'
                                             )"
                                     )->first();
             }
@@ -1562,12 +1564,29 @@ class DtrRepository implements DtrRepositoryInterface{
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
                 if (Auth::user()) {
-                    $days = 23;
+                 
+              
+                    $startDate = Carbon::now()->subDay(30);
+
+                    $endDate = Carbon::now();
+
+                    $check = Carbon::createFromFormat('Y-m-d',Auth::user()->date_hired)->between($startDate,$endDate);
                     $start_generated_date = Carbon::parse($biometrics->CheckTime)->subDay(7);
+                    $days = 23;
+
+                    // check if new do not pass the before the hire date
+                    if( $check){
+                        $start_generated_date = Carbon::createFromFormat('Y-m-d',Auth::user()->date_hired);
+                        $days = 30;
+                    }
+                   
+                    
                     $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
                     $user_collection = new Collection();
                     $user_collection->push((object)User::findOrFail(Auth::user()->id));
                     $result = $this->generate_dtr( $user_collection, $dates );
+
+                    
                     $result =$this->apply_biometrics_to_dtr($biometrics);
 
                     log_to_file( 'info', "DTR not Existing." , ['biometrics'=> $biometrics], "biometrics");
