@@ -50,9 +50,14 @@ class NavPuncher extends Component {
         }
       }
     }
-
     if (this.props.dashboard?.recent_dtr[1]?.id != undefined && values["dtr_id"] == null) {
-      if (this.props.dashboard?.recent_dtr[1]?.before_time_in_half == true && (values["early_clock_out"] == null)) {
+      console.log(this.state.time.getTime() 
+        
+        ,this.props.dashboard?.recent_dtr[1]?.user_half_timestamp,new Date(parseInt(this.props.dashboard?.recent_dtr[1]?.user_half_timestamp)* 1000));
+
+      if (this.props.dashboard?.recent_dtr[1]?.before_time_in_half == true 
+            && (values["early_clock_out"] == null) 
+            && (this.state.time.getTime() <  (this.props.dashboard?.recent_dtr[1]?.user_half_timestamp)* 1000)) {
         this.setState({
           earlyOutShow: true
         });
@@ -64,13 +69,13 @@ class NavPuncher extends Component {
       }
 
     }
-
+    console.log(values["isGenerate"] );
     if (this.props.dashboard?.recent_dtr[0]?.id != undefined && this.props.dashboard?.recent_dtr[0]?.with_in_time == true && this.props.dashboard?.recent_dtr[1]?.with_in_time != true) {
       console.log("PASS0");
       formData.set("dtr_id", this.props.dashboard?.recent_dtr[0].id);
       this.props.biometrixLog(formData, this.props.user.id);
     }
-
+    
     if (this.props.dashboard?.recent_dtr[0]?.id == undefined && values["isGenerate"] == true) {
       console.log("PASS_GEN");
       // formData.set("dtr_id", this.props.dashboard?.recent_dtr[0].id);
