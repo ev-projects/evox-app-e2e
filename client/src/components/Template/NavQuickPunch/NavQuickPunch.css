@@ -38,15 +38,89 @@ span .nav-clock{
   
 }
 
-.nav-clock-button{
-    margin-top: 4px;
-    margin-right: 3px;
+.nav-clock-button.btn{
+    /* margin-top: 4px;
+    margin-right: 3px; */
+    font-size: 11px !important;
 }
+
+.timezone-item{
+    position: absolute;
+    top: 24px;
+    right: 13px;
+    font-size: 7px;
+}
+
+.timezone-item-tooltip{
+    position: absolute;
+    top: 32px;
+    right: 15px;
+    font-size: 8px;
+}
+
+
+
+a[data-tool-tip] {
+    position: relative;
+  }
+  
+a[data-tool-tip]::after {
+    content: attr(data-tool-tip);
+    display: block;
+    position: absolute;
+    background-color: #78909C !important;
+    padding: 1em 3em;
+    color: white;
+    border-radius: 5px;
+    font-size: 10px;
+    top: 14px;
+    right: 1px;
+    white-space: nowrap;
+    transform: scale(0);
+    /* left: 1px; */
+    /* transition:
+      transform ease-out 150ms,
+      bottom ease-out 150ms; */
+  }
+  
+  a[data-tool-tip]:hover::after {
+    transform: scale(1);
+    /* bottom: 100%; */
+    /* top: 10px; */
+   
+  }
+
+
+
 
 /* .nav-clock-dropdown:hover .dropdown-menu{
     display: block;
 } */
 
+
+.nav-item .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+  
+.nav-item.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .nav-item .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
 
 
 

@@ -280,7 +280,7 @@ class NavPuncher extends Component {
                             <>
 
 
-                              <Button type="submit" className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+                              <Button type="submit" className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Loading</Button>
 
                             </>)
 
@@ -303,7 +303,25 @@ class NavPuncher extends Component {
                 <div className="nav-date">	{moment(this.state.time).format("dddd, Do MMMM")}    </div>
               </div>
               <div>
-                <div className="nav-time">{moment(this.state.time).format("hh")} : {moment(this.state.time).format("mm")} : {moment(this.state.time).format("ss")}  {moment(this.state.time).format("A")}  </div>
+                <div className="nav-time">{moment(this.state.time).format("hh")} : {moment(this.state.time).format("mm")} : {moment(this.state.time).format("ss")}  {moment(this.state.time).format("A")} 
+                
+                {
+                  this.props.user.timezone !== undefined ? <>
+                   <div className="timezone-item">
+                { this.props.user.timezone }
+
+                </div>
+                
+                <div className="timezone-item-tooltip">
+                <a href="#" data-tool-tip={ "Your Timezone is "  + this.props.user.timezone + ", since your country set by HR is " + this.props.user.country }><i className="fa  fa-question-circle "/></a>
+                </div>
+                  </> : <></>
+                }
+               
+
+          
+                
+                 </div>
               </div>
               <i class="fa fa-angle-down  icon-dropdown-dtr" aria-hidden="true"></i>
             </div>
