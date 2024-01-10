@@ -1,5 +1,6 @@
 <?php
 
+use App\AuditTrail;
 use Illuminate\Support\Facades\Log;
 use App\Classes\EvoxActivityLogger;
 
@@ -94,6 +95,29 @@ if (! function_exists('log_error')) {
     function log_error( $error, $channel="" ) {
         try{
             log_to_file('critical', 'Error', [$error], $channel);
+        }catch(Exception $e){
+            throw $e;
+        }
+    }
+}
+
+if (! function_exists('log_to_audit_trail')) {
+    /**
+     * Logs the activity that's being executed in audit_trail table
+     *
+     * @param  string message
+     * @return void
+     */
+    function log_to_audit_trail( $data ) {
+        try{
+            if ($data['action'] === 'Logout') {
+                $audit = AuditTrail::updateOrCreate(
+                    ['user_id' => $data['user_id'], 'session_id' => $data['session_id']], $data
+                );
+            } else {
+                $audit = AuditTrail::create($data);
+            }
+            return $audit;
         }catch(Exception $e){
             throw $e;
         }
