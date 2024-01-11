@@ -20,6 +20,8 @@ use App\Modules\Department\Http\Requests\AnnouncementRequest;
 
 
 use App\Modules\Department\Resources\AnnouncementStrictResource;
+
+use App\Modules\Department\Resources\AnnouncementResourceCollection;
 use App\Modules\Department\Repositories\AnnouncementRepositoryInterface;
 
 class AnnouncementController extends Controller
@@ -46,7 +48,8 @@ class AnnouncementController extends Controller
          $announcements_list = $this->announcement->index();
         return success_response(
             trans('messages.fetch_change_log_success'), 
-           AnnouncementResource::collection($announcements_list)
+        //    AnnouncementResource::collection($announcements_list)
+        new AnnouncementResourceCollection($announcements_list ) 
         );
 
         
@@ -113,14 +116,18 @@ class AnnouncementController extends Controller
     public function show_strict($id)
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
-
+        $owner_pass= false;
+        $manager_pass = false;
         $called_announcement = Announcement::find($id);
         if($called_announcement){
            $owner_pass=  $called_announcement->created_by ==Auth::user()->id;
         }
+        if(Auth::user()->permissions()->pluck('name')->contains('admin_manage_all_announcements') || Auth::user()->permissions()->pluck('name')->contains('manage_all_announcements')){
+            $manager_pass= true;
+        }
 
 
-        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') ) ||  $owner_pass ) { 
+        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') ) ||  $owner_pass ||  $manager_pass ) { 
             $dep_announcement =  $this->announcement->show($id);
         }
         else {
