@@ -158,6 +158,8 @@ class DtrResource extends JsonResource
             if($this->is_rest_day == 0 && $this->time_in && !$this->time_out){
                 $user_half_time = 12600 + $this->time_in; 
                 $after_time_half = Carbon::now()->timestamp < $user_half_time ;
+                error_log(Carbon::now()->timestamp);
+                error_log($user_half_time);
             }
            
 
@@ -190,6 +192,7 @@ class DtrResource extends JsonResource
                     'with_in_time' => $is_within_time,
                     'with_in_time_extended' => $is_within_time_extended,
                     'before_time_in_half' =>  $after_time_half ,
+                    'user_half_timestamp' => $user_half_time,
                     // 'on_multiple_login' => $on_multiple_log,
                     // 'dtr_history' => $dtr_history,
                     // 'timezone' =>  $owner->country_zone()->country_time_zone,
