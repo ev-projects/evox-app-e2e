@@ -335,7 +335,7 @@ class NavPuncher extends Component {
 function EarlyOutModal(props) {
   return (
     <div id="myModal" className="modal-main">
-      <div className="modal-content">
+      <div className="modal-content modal-content-preview">
         <div className="modal-header">
           <span className="close" onClick={() => props.handleModalClose()}>&times;</span>
         </div>
