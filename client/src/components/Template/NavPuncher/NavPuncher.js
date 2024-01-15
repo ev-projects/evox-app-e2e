@@ -53,7 +53,7 @@ class NavPuncher extends Component {
 
     // include session id in the parameter
     formData.set('session_id', localStorage.getItem('session_id'));
-    this.props.biometrixLog(formData, this.props.user.id);
+
     if (this.props.dashboard?.recent_dtr[1]?.id != undefined && values["dtr_id"] == null) {
       if (this.props.dashboard?.recent_dtr[1]?.before_time_in_half == true && (values["early_clock_out"] == null)) {
         this.setState({
