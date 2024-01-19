@@ -44,6 +44,9 @@ class ChangeScheduleController extends Controller
 
             $this->email->sendChangeScheduleRequestEmail( $change_schedule );
 
+            // log action to audit_trail table
+            log_to_audit_trail(['action' => 'Change Schedule', 'description' => 'has requested for change schedule', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
             return success_response(
                 trans('messages.create_change_schedule_success'), 
                 new ChangeScheduleResource($change_schedule),

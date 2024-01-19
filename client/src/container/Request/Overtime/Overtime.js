@@ -65,6 +65,9 @@ class Overtime extends Component {
             }
         }
     }
+
+    // include session id in the post parameter
+    formData.set('session_id', localStorage.getItem('session_id'));
     
     
    // Checks on what method to use depending on the values.method
