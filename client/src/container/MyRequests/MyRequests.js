@@ -232,7 +232,7 @@ class MyRequests extends Component {
                     </Col>
                     
                     </Row>
-                    { request_list.length > 0  ? (<div>
+                    { request_list.data.length > 0  ? (<div>
                       {/* Record Displayed:  */}
                       { record_number }
                 <Table striped bordered hover>
@@ -247,7 +247,7 @@ class MyRequests extends Component {
                     </tr>
                   </thead>
                   <tbody className="request_list">
-                    {request_list.map(function(item){
+                    {request_list.data.map(function(item){
                         var fourthColumn = [];
                         var fifthColumn = [];
                         var link= '';
