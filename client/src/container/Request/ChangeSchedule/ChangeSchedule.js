@@ -144,6 +144,10 @@ class ChangeSchedule extends Component {
             }
         } 
     }
+
+	// include session id in the post parameter
+	formData['session_id'] = localStorage.getItem('session_id');
+
     // console.log(newValues,nsdAlertCall, formData.schedule_policies.allow_night_diff == 0);
 	if((!nsdAlertCall || !(formData.schedule_policies.allow_night_diff == 0)) && (!beforeFlexAlertCall)){
 		switch( values.action ) { 

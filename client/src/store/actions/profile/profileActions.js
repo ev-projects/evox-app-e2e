@@ -287,7 +287,8 @@ export const tickDpa = ( id ) => {
         
         API.call({
             method: "post",
-            url: "/user/" + id + "/tick_dpa"
+            url: "/user/" + id + "/tick_dpa",
+            data: {'session_id' : localStorage.getItem('session_id')}
         })
         .then(result => {
 

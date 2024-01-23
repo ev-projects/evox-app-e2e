@@ -27,6 +27,7 @@ export const logIn = (credentials) => {
 
             // Set the Returned token on localStorage
             localStorage.setItem("access_token", result.data.content.access_token); 
+            localStorage.setItem("session_id", result.data.content.session_id);
 
             // Dispatch Login Success
             dispatch({
@@ -171,12 +172,14 @@ export const logOut = () => {
     return (dispatch, getState) => {
         API.call({
             method: "post",
-            url: "/auth/logout"
+            url: "/auth/logout",
+            data: {session_id: localStorage.getItem('session_id')}
         })
         .then(result => {
 
             // Remove the Token from the localStorage
             localStorage.removeItem("access_token");
+            localStorage.removeItem("session_id");
             dispatch({'type': 'CLEAR_RECENT_DTR_INSTANCE'})
             dispatch({'type': 'LOGOUT_SUCCESS'})
             window.location.reload();
