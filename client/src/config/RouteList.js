@@ -375,7 +375,7 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.admin_announcement_list}>
-          <AdminAnnouncementsList  role={['admin']}  />
+          <AdminAnnouncementsList role={[ 'supervisor', 'admin']}   permission={['manage_all_announcements' , 'admin_manage_all_announcements']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.manage_change_logs}>

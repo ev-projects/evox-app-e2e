@@ -381,7 +381,7 @@ class CronController extends Controller
      */
     public function sync_leaves($start_date = null, $end_date = null){
         try {
-
+            
             // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
                 $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
@@ -402,6 +402,8 @@ class CronController extends Controller
             // });
 
             // Binding of the Leaves fetched from BHr within the Date Range to the DTR within the Date Range.
+            $superceded_result = $this->dtr->bind_superceded_leaves_to_dtr( $bhr_leaves_array );
+
             $result = $this->dtr->bind_leaves_to_dtr( $bhr_leaves_array );
 
             return success_response(

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from 'react-redux';
 import { Form,Button,InputGroup,FormControl, Tabs,Tab, Badge, } from 'react-bootstrap';
 import moment from 'moment';
-
+import { useParams, useLocation, useHistory } from "react-router-dom";
 import "./DepartmentAnnouncementsForm.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
 import { InputDate,InputTime } from '../../../components/DatePickerComponent/DatePicker.js';
@@ -86,6 +86,10 @@ class DepartmentAnnouncementsForm extends Component {
       }
       
     }
+
+  // const location = useLocation();
+    console.log(this.props.location?.originPath);
+
     this.initialState = {
         selectedDepartments: null,
         selectedCountries: null,
@@ -117,6 +121,8 @@ class DepartmentAnnouncementsForm extends Component {
   onSubmitHandler = (values) => {
     values['content'] = this.state.content;
     console.log(this.state.selectedDepartments);
+
+  
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
 
@@ -139,6 +145,7 @@ class DepartmentAnnouncementsForm extends Component {
       }
     }
     
+ 
   
     formData.set('category', "Department");
     formData.set('inputFileWasDeleted', false);
@@ -180,6 +187,11 @@ class DepartmentAnnouncementsForm extends Component {
             
               break;
             case "update":
+
+            if( this.props.location?.originPath != undefined && this.props.location.originPath =="AdminAnnouncementList"){
+              formData.set('previousPath', "AdminAnnouncementList");
+              console.log('previousPath');
+            }
               
               if (window.confirm("Are you sure you want to update this Announcement?")) {
                 
@@ -514,7 +526,7 @@ class DepartmentAnnouncementsForm extends Component {
                           checked={values.set_country_all}
                           onChange={() =>  setFieldValue('set_country_all',values.set_country_all==1?0:1)}
                         />
-                      <span className="for-all"> Global</span>  
+                      <span className="for-all"> Set to Global</span>  
                       {/* <a href="#" data-tool-tip="tooltip" ><i className="fa  fa-question-circle "/></a>&nbsp; */}
                       </label>
                       <br/>

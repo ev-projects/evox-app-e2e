@@ -37,7 +37,7 @@ class NavPuncher extends Component {
 
   onSubmitHandler = async (values) => {
     // this.onUIHandler();
-
+    console.log("here");
     var formData = new FormData();
 
     for (var key in values) {
@@ -55,7 +55,13 @@ class NavPuncher extends Component {
     formData.set('session_id', localStorage.getItem('session_id'));
 
     if (this.props.dashboard?.recent_dtr[1]?.id != undefined && values["dtr_id"] == null) {
-      if (this.props.dashboard?.recent_dtr[1]?.before_time_in_half == true && (values["early_clock_out"] == null)) {
+      console.log(this.state.time.getTime() 
+        
+        ,this.props.dashboard?.recent_dtr[1]?.user_half_timestamp,new Date(parseInt(this.props.dashboard?.recent_dtr[1]?.user_half_timestamp)* 1000));
+
+      if (this.props.dashboard?.recent_dtr[1]?.before_time_in_half == true 
+            && (values["early_clock_out"] == null) 
+            && (this.state.time.getTime() <  (this.props.dashboard?.recent_dtr[1]?.user_half_timestamp)* 1000)) {
         this.setState({
           earlyOutShow: true
         });
@@ -67,10 +73,16 @@ class NavPuncher extends Component {
       }
 
     }
-
+    console.log(values["isGenerate"] );
     if (this.props.dashboard?.recent_dtr[0]?.id != undefined && this.props.dashboard?.recent_dtr[0]?.with_in_time == true && this.props.dashboard?.recent_dtr[1]?.with_in_time != true) {
       console.log("PASS0");
       formData.set("dtr_id", this.props.dashboard?.recent_dtr[0].id);
+      this.props.biometrixLog(formData, this.props.user.id);
+    }
+    
+    if (this.props.dashboard?.recent_dtr[0]?.id == undefined && values["isGenerate"] == true) {
+      console.log("PASS_GEN");
+      // formData.set("dtr_id", this.props.dashboard?.recent_dtr[0].id);
       this.props.biometrixLog(formData, this.props.user.id);
     }
 
@@ -160,7 +172,8 @@ class NavPuncher extends Component {
   }
   render = () => {
     const initialValue = {
-      quickpunch: null
+      quickpunch: null,
+      isGenerate: false,
     }
 
     const { recent_dtr } = this.props.dashboard;
@@ -275,7 +288,7 @@ class NavPuncher extends Component {
                           <>
 
 
-                            <Button className="nav-clock-button dropdown newfeature" type="submit" onClick={(e) => { setFieldValue('quickpunch', 'in'); }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
+                            <Button className="nav-clock-button dropdown newfeature" type="submit" onClick={(e) => { setFieldValue('quickpunch', 'in');  setFieldValue('isGenerate', true); }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
 
 
                           </>)
@@ -283,7 +296,7 @@ class NavPuncher extends Component {
                             <>
 
 
-                              <Button type="submit" className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Clock Loading</Button>
+                              <Button type="submit" className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Loading</Button>
 
                             </>)
 
@@ -306,7 +319,27 @@ class NavPuncher extends Component {
                 <div className="nav-date">	{moment(this.state.time).format("dddd, Do MMMM")}    </div>
               </div>
               <div>
-                <div className="nav-time">{moment(this.state.time).format("hh")} : {moment(this.state.time).format("mm")} : {moment(this.state.time).format("ss")}  {moment(this.state.time).format("A")}  </div>
+                <div className="nav-time">
+                  <div className="nav-time-clock">
+                  {moment(this.state.time).format("hh")} : {moment(this.state.time).format("mm")} : {moment(this.state.time).format("ss")}  {moment(this.state.time).format("A")} 
+                  </div>
+                {
+                  this.props.user.timezone !== undefined ? <>
+                   <div className="timezone-item">
+                { this.props.user.timezone }
+
+                </div>
+                
+                <div className="timezone-item-tooltip">
+                <a href="#" data-tool-tip={ "Your Timezone is "  + this.props.user.timezone + ", since your country set by HR is " + this.props.user.country }><i className="fa  fa-question-circle "/></a>
+                </div>
+                  </> : <></>
+                }
+               
+
+          
+                
+                 </div>
               </div>
               <i class="fa fa-angle-down  icon-dropdown-dtr" aria-hidden="true"></i>
             </div>
@@ -326,7 +359,7 @@ class NavPuncher extends Component {
 function EarlyOutModal(props) {
   return (
     <div id="myModal" className="modal-main">
-      <div className="modal-content">
+      <div className="modal-content modal-content-preview">
         <div className="modal-header">
           <span className="close" onClick={() => props.handleModalClose()}>&times;</span>
         </div>
