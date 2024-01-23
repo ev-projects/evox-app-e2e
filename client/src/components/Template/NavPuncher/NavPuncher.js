@@ -50,6 +50,10 @@ class NavPuncher extends Component {
         }
       }
     }
+
+    // include session id in the parameter
+    formData.set('session_id', localStorage.getItem('session_id'));
+
     if (this.props.dashboard?.recent_dtr[1]?.id != undefined && values["dtr_id"] == null) {
       console.log(this.state.time.getTime() 
         
