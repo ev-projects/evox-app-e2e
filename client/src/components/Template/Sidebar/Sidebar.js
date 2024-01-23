@@ -506,8 +506,20 @@ const Sidebar = (props) => {
                                   <p>Create Announcement</p>
                                 </Link>
                               </li>
+                              {(Authenticator.check("admin", "admin_manage_all_announcements")|| Authenticator.check("supervisor", "manage_all_announcements")) && (
+                              <li className="nav-item">
+                                  <Link
+                                    className="nav-link"
+                                    to={global.links.admin_announcement_list}
+                                  >
+                                    <i className="nav-icon fa fa-comments-o  nav-icon" />
+                                    <p>All Announcement List</p>
+                                  </Link>
+                                </li>
+                              )}
                             </ul>
                           </li>
+                    
                         </React.Fragment>
                     }
               {/* CLIENT Links */}

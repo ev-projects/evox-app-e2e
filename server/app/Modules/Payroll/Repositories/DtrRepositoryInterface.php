@@ -34,6 +34,8 @@ interface DtrRepositoryInterface
     public function bind_holidays_to_dtr( string $start_date, string $end_date );
 
     public function bind_leaves_to_dtr( array $bhr_leaves_array );
+
+    public function bind_superceded_leaves_to_dtr( array $bhr_leaves_array );
  
     public function sync_biometrics_to_dtr( Collection $biometrics_collection, $dtr_id = null );
 

@@ -3,9 +3,11 @@
 namespace App\Modules\Department\Models;
 
 use Carbon\Carbon;
+use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Department\Models\Department;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Announcement extends Model
 {
@@ -22,6 +24,15 @@ class Announcement extends Model
     {
       
         return Department::find($this->dep_id);
+    }
+
+    //owner of the annoucment
+    public function creator()
+    {
+      if($this->created_by != 0){
+        return User::find($this->created_by);
+      }
+       
     }
 
     public function present_department()
