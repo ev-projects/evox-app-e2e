@@ -103,7 +103,7 @@ class RequestController extends Controller
      */
     public function requestlist(RequestFilterRequest $request){
         $user = User::find(auth()->user()->id);
-
+      
         try {
             log_activity( trans('messages.request_display_attempt') );
             return success_response(
@@ -111,6 +111,7 @@ class RequestController extends Controller
                   new RequestResource( $user->requests_list('my_request',$request) ) 
             );
         } catch(Exception $e){
+            // dd($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
