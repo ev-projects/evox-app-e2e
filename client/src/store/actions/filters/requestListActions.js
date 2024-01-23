@@ -31,6 +31,7 @@ export const fetchRequestList = (params = null) => {
       params: params,
     })
       .then((result) => {
+        console.log(result.data.content)
         dispatch({
           type: dispatch_commands.fetch_list,
           requestList: result.data.content,
