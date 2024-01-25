@@ -75,51 +75,100 @@ class DtrController extends Controller
             $dtr_sets = call_sp('SP_DTR_By_UserId', [(int)$user_id, $start_date, $end_date]);
 
             $dtr_records = $dtr_sets[0];
-            $dtr_summary = $dtr_sets[1];
+            $dtr_summary = $dtr_sets[1][0];
             $dtr_holidays = $dtr_sets[2];
             $dtr_leaves = $dtr_sets[3];
             $dtr_requests = $dtr_sets[4];
 
-            /*foreach ($dtr_records as $dtr_record) {
-                $result[] = [$dtr_record->date, $dtr_record->undertime];
-            }
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'),
-                $dtr_records
-            );*/
+
+            $dtr_summary_res = array(
+                'items' => array(
+                    'employee_info' => array(
+                        'employee_id'=> $owner->emp_num,
+                        'name'=> $owner->first_name .' '. $owner->last_name,
+                        'department'=> (isset($owner->department_id)) ? $owner->department()->get()[0]->department_name : "" ,
+                        'status'=> $owner->employment_status,
+                        'timezone'=> $owner->country_zone()->country_time_zone,
+                    ),
+                    'data' => array(
+                        'reg' => array(
+                            'late' => $dtr_summary->Late,
+                            'undertime' => $dtr_summary->Under_Time,
+                            'rendered_hours' => $dtr_summary->Render_Hr,
+                            'night_diff' => $dtr_summary->Night_Diff,
+                            'overtime' => $dtr_summary->OverTime,
+                            'overtime_night_diff' => $dtr_summary->OT_ND,
+                            'vl_sl' => $dtr_summary->Leaves,
+                            'ul' => $dtr_summary->UL
+                        ),
+                        'rd' => array(
+                            'rendered_hours' => $dtr_summary->RD_Render_HR,
+                            'night_diff' => $dtr_summary->RD_ND,
+                            'overtime' => $dtr_summary->RD_OT,
+                            'overtime_night_diff' => $dtr_summary->RD_OT_ND
+                        ),
+                        'lh' => array(
+                            'rendered_hours' => $dtr_summary->LH_Render_HR,
+                            'night_diff' => $dtr_summary->LH_ND,
+                            'overtime' => $dtr_summary->LH_OT,
+                            'overtime_night_diff' => $dtr_summary->LH_OT_ND
+                        ),
+                        'sh' => array(
+                            'rendered_hours' => $dtr_summary->SH_Render_Hr,
+                            'night_diff' => $dtr_summary->SH_ND,
+                            'overtime' => $dtr_summary->SH_OT,
+                            'overtime_night_diff' => $dtr_summary->SH_OT_ND
+                        ),
+                        'dsh' => array(
+                            'rendered_hours' => $dtr_summary->DSH_Render_HR,
+                            'night_diff' => $dtr_summary->DSH_ND,
+                            'overtime' => $dtr_summary->DSH_OT,
+                            'overtime_night_diff' => $dtr_summary->DSH_OT_ND
+                        ),
+                        'dlh' => array(
+                            'rendered_hours' => $dtr_summary->DLH_Render_HR,
+                            'night_diff' => $dtr_summary->DLH_ND,
+                            'overtime' => $dtr_summary->DLH_OT,
+                            'overtime_night_diff' => $dtr_summary->DLH_OT_ND
+                        ),
+                        'slh' => array(
+                            'rendered_hours' => $dtr_summary->SLH_Render_HR,
+                            'night_diff' => $dtr_summary->SLH_ND,
+                            'overtime' => $dtr_summary->SLH_OT,
+                            'overtime_night_diff' => $dtr_summary->SLH_OT_ND
+                        )
+                    )
+                ),
+                'column' => array(
+                    'rd' => 'rd',
+                    'lh' => 'lh',
+                    'sh' => 'sh'
+                ),
+                'column_names' => array(
+                    'rd' => 'Rest Day',
+                    'lh' => 'Legal Holiday',
+                    'dlh' => 'Double Legal Holiday',
+                    'sh' => 'Special Holiday',
+                    'dsh' => 'Double Special Holiday',
+                    'slh' => 'Special and Legal Holiday'
+
+                )
+            );
 
             foreach ($dtr_records as $dtr_record) {
 
                 # Create Resource for Payroll Items
                 $payroll_items = [];
 
-                /*$result = DB::table('drt_summary_report')
-                ->select(DB::raw("reg_late as late,reg_undertime as undertime,
-                (reg_night_diff + rd_night_diff + sh_night_diff + lh_night_diff + dlh_night_diff + dsh_night_diff + slh_night_diff) + IF(nigdiff_stauts=1,reg_night_diff_overlapp
-                + rd_night_diff_overlapp + lh_night_diff_overlapp + sh_night_diff_overlapp + dlh_night_diff_overlapp + dsh_night_diff_overlapp + slh_night_diff_overlapp,0) as night_diff,
-                (reg_overtime + rd_overtime + sh_overtime + lh_overtime + dlh_overtime + dsh_overtime + slh_overtime)  as overtime,
-                (reg_overtime_night_diff + rd_overtime_night_diff + sh_overtime_night_diff + lh_overtime_night_diff + dlh_overtime_night_diff + dsh_overtime_night_diff + slh_overtime_night_diff)  as overtime_night_diff"))
-                    ->where('login_date', '=' , $this->resource->date )
-                    ->where('user_id','=',$this->resource->user_id)->get();*/
-
                 $payroll_items["late"] = $dtr_record->late > 0 ? seconds_to_time(round($dtr_record->late * 3600),true):"";
                 $payroll_items["undertime"] = $dtr_record->undertime > 0 ? seconds_to_time(round($dtr_record->undertime * 3600),true):"";
                 $payroll_items["overtime"] = $dtr_record->overtime > 0 ? seconds_to_time(round($dtr_record->overtime * 3600),true):"";
                 $payroll_items["overtime_night_diff"] = $dtr_record->overtime_night_diff > 0 ? seconds_to_time(round($dtr_record->overtime_night_diff * 3600),true):"";
                 $payroll_items["night_diff"] = $dtr_record->night_diff > 0 ? seconds_to_time(round($dtr_record->night_diff * 3600),true):"";
-                
-                # Create Resource for Policies
-                $policies = [];
-                /*foreach( $this->policies()->get() as $policy){
-                    $policies[ $policy->policy ] = $policy->value;
-                }*/
-                
-                # Flag for catching Approved Leaves that would be use later for Attendance Status.
-                $approved_leave_type = null;
 
                 # Create Resource for Leaves
                 $leaves = [];
-                foreach( $dtr_leaves as $leave){
+                foreach( $dtr_leaves as $leave) {
                     if ($dtr_record->dtr_id == $leave->dtr_id) {
                         $leaves[] = [
                             'type'  => $leave->type,
@@ -131,39 +180,11 @@ class DtrController extends Controller
                             ]
                         ];
                     }
-
-                    /*# If the Leave is Approved, a Paid Leave, and has a Valid amount, Sets the Approved Leave Name to get the Slug format of the Leave Type.
-                    if( $leave->status == "approved" && $leave->isPaidLeave() && $leave->amount > 0 ){
-                        $approved_leave_type =  $leave->type; 
-                    }
-
-                    # If the Leave is Approved, an Unpaid Leave, and has a Valid amount, Sets the Approved Leave Name to get the Slug format of the Leave Type.
-                    if( $leave == "approved" && $leave->isUnPaidLeave() && $leave->amount > 0 ){
-                        $approved_leave_type =  $leave->type; 
-                    }*/
                 }
 
 
                 $attendance_status = 'Absent';
                 if ($dtr_record->attendance_status) $attendance_status = $dtr_record->attendance_status;
-
-                # Check if absent
-                /*if( $this->isAbsent() ){
-                    $attendance_status = get_constant("ATTENDANCE_STATUS.absent");
-                    if ($this->onUnpaidLeave()->get()->count() > 0 ) {//override ABSENT with approved UNPAID LEAVE; DTR display only
-                        $attendance_status = $approved_leave_type;
-                    }
-
-                }elseif( $this->onLeave()->get()->count() > 0 ) {
-                    $attendance_status = $approved_leave_type;
-
-                } elseif( $this->is_rest_day == 1 ) {
-                    $attendance_status = get_constant("ATTENDANCE_STATUS.rest_day");
-
-                }   elseif( $this->hasCompleteTimelogs() ) {
-                    $attendance_status = get_constant("ATTENDANCE_STATUS.present");
-
-                }*/
 
                 # Create Resource for Holidays
                 $holidays = [];
@@ -186,22 +207,14 @@ class DtrController extends Controller
                         ];
                     }
                 }
-
-                // foreach( $this->work_from_home()->get() as $work_from_home){
-                //     $requests[] = new WorkFromHomeResource( $work_from_home );
-                // }
-
-                $now = Carbon::now()->timestamp;
-
                 
                 $user_half_time = 0;
                 $is_within_time = false;
                 $after_time_half = false;
                 $is_within_time_extended = false;
                 $checked_end_time =  $dtr_record->end_datetime;
-            
                 
-                if($dtr_record->is_rest_day == 0){
+                if($dtr_record->is_rest_day == 0) {
                     $is_within_time = Carbon::now()->timestamp > ($dtr_record->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $dtr_record->is_rest_day == 0 ;
                     $is_within_time_extended = Carbon::now()->timestamp > ($dtr_record->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  21600) && $dtr_record->is_rest_day == 0 ;
 
@@ -232,18 +245,13 @@ class DtrController extends Controller
 
                         'with_in_time' => $is_within_time,
                         'with_in_time_extended' => $is_within_time_extended,
-                        'before_time_in_half' =>  $after_time_half ,
-                        // 'on_multiple_login' => $on_multiple_log,
-                        // 'dtr_history' => $dtr_history,
-                        // 'timezone' =>  $owner->country_zone()->country_time_zone,
+                        'before_time_in_half' =>  $after_time_half
                     ), 
                     array('payroll_items' => $payroll_items),
-                    array('policies' => $policies),
                     array('holidays' => $holidays),
                     array('leaves' => $leaves),
                     array('requests' => $requests),
                     array('owner_POV' => [
-
                         'time_in' => timestamp_to_datetime( $dtr_record->time_in , true ,  $owner),
                         'time_out' => timestamp_to_datetime( $dtr_record->time_out , true ,  $owner),
                         'start_datetime' => timestamp_to_datetime( $dtr_record->start_datetime , true ,  $owner),
@@ -255,17 +263,14 @@ class DtrController extends Controller
 
                     array('raw_time' => [
                         'start_datetime' =>  $dtr_record->start_datetime , true ,
-                        'end_datetime' =>  $dtr_record->end_datetime , true ,
-                        // 'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime , true ,  $owner),
-                        // 'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
+                        'end_datetime' =>  $dtr_record->end_datetime , true
                     ])
                 );
             }
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'),
-                //DtrResource::collection( $result ) 
-                $result
+                array('summary' => $dtr_summary_res, 'dtr_records' => $result)
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
