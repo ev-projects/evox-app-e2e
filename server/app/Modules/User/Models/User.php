@@ -151,6 +151,24 @@ class User extends Authenticatable implements JWTSubject
     {            
         return $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id');
     }
+
+      # Fetch the User's Supervisors
+      public function direct_supervisors()
+      {           
+        
+        $response =  call_sp("EH_SP_Direct_Supervisor", [$this->id ]);
+            $result = array(
+                "query" =>  $response ?? [],
+            );
+         
+
+            if(is_valid( $result["query"][0][0])){
+                return User::find($result["query"][0][0]->SupervisorId);
+            }
+
+          return [];
+      }
+      
     
     # Fetch the User's Supervisee
     public function supervisee()

@@ -36,19 +36,28 @@ class SendRestDayWorkRequestEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-            foreach( $this->rest_day_work->user()->first()->user_handlers()->get() as $recepient ){
-                if(
-                    !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
-                    ||
-                    $recepient->hasRole( get_constant('USER_ROLES.hr'))
-                    ||
-                    $recepient->hasRole( get_constant('USER_ROLES.payroll')))
-                ){
-                    Mail::send( new RestDayWorkRequestEmail( $recepient, $this->rest_day_work ) );
+            // foreach( $this->rest_day_work->user()->first()->user_handlers()->get() as $recepient ){
+            //     if(
+            //         !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
+            //         ||
+            //         $recepient->hasRole( get_constant('USER_ROLES.hr'))
+            //         ||
+            //         $recepient->hasRole( get_constant('USER_ROLES.payroll')))
+            //     ){
+            //         Mail::send( new RestDayWorkRequestEmail( $recepient, $this->rest_day_work ) );
 
-                    log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->rest_day_work], "emails");
-                }
+            //         log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->rest_day_work], "emails");
+            //     }
                
+            // }
+
+
+            $recepient  = $this->rest_day_work->user()->direct_supervisor();
+            
+            if(is_valid($recepient)){
+                Mail::send( new RestDayWorkRequestEmail( $recepient, $this->rest_day_work ) );
+                
+                log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->rest_day_work], "emails");
             }
             
         } catch (Exception $e) {

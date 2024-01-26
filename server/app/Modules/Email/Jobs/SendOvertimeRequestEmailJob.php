@@ -36,20 +36,28 @@ class SendOvertimeRequestEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-            foreach( $this->overtime->user()->first()->user_handlers()->get() as $recepient ){
-                if(
-                    !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
-                    ||
-                    $recepient->hasRole( get_constant('USER_ROLES.hr'))
-                    ||
-                    $recepient->hasRole( get_constant('USER_ROLES.payroll')))
-                ){
-                    Mail::send( new OvertimeRequestEmail( $recepient, $this->overtime ) );
+            // foreach( $this->overtime->user()->first()->user_handlers()->get() as $recepient ){
+            //     if(
+            //         !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
+            //         ||
+            //         $recepient->hasRole( get_constant('USER_ROLES.hr'))
+            //         ||
+            //         $recepient->hasRole( get_constant('USER_ROLES.payroll')))
+            //     ){
+            //         Mail::send( new OvertimeRequestEmail( $recepient, $this->overtime ) );
                 
-                    log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->overtime], "emails");
-                }
+            //         log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->overtime], "emails");
+            //     }
             
+            // }
+            $recepient  = $this->overtime->user()->direct_supervisor();
+            
+            if(is_valid($recepient)){
+                Mail::send( new OvertimeRequestEmail( $recepient, $this->overtime ) );
+                
+                log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->overtime], "emails");
             }
+
             
         } catch (Exception $e) {
 
