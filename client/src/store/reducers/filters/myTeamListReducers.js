@@ -5,6 +5,7 @@
 const initState = {
     list : null,
     team_list : [],
+    sub_department : [],
     team_schedule: { data: [], date_list: [], week_list: [] },
     filters : {},
     current_page : 0,
@@ -38,6 +39,12 @@ const myTeamListReducers = (state = initState, action) => {
                 ...state,
                 team_list : action.list
             } 
+
+            case "FETCH_SUB_DEPARTMENT_LIST_SUCCESS":
+                return {
+                    ...state,
+                    sub_department : action.list
+                } 
         /**  */
         
         

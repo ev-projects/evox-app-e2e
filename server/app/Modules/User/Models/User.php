@@ -4,6 +4,7 @@ namespace App\Modules\User\Models;
 
 use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
+use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Models\PayrollCutoff;
@@ -718,6 +719,14 @@ class User extends Authenticatable implements JWTSubject
             );
         }
         return Department::whereIn('departments.id', array_unique($departments_id_array));
+    }
+
+    
+    # Fetch the User Departments Handled
+    public function evox_departments_handled()
+    {
+      
+        return EvoxDepartment::where('HeadId', '=', $this->id);
     }
 
     public function getHasSchedule(){

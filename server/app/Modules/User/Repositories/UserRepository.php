@@ -669,6 +669,74 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+      /**
+     *  Responsible for fetching all the Supervisee of the User
+     * @param $id
+     * @return User $user_collection
+     */
+    public function new_get_my_team_list( $id ){
+        try {
+
+            // dd(request()->all(),request()->get('page'));
+            $collection = [];
+            if( get_authenticated_user( $id )  ) {
+                
+                $user = Auth::user();
+             
+                $perpage_count = 15;
+                $response = call_sp("EH_SP_Employee_List",
+                
+                [
+                    $user->id, // vishnu user_id
+                    is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
+                    is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
+                    is_valid( request()->get('sub_department_id') ) ? request()->get('sub_department_id'): null,
+                    1, // active
+                    is_valid( request()->get('name') ) ? request()->get('name'): null, // name
+                    is_valid( request()->get('job_title') ) ? request()->get('job_title'): null, // job_title
+                    is_valid( request()->get('page') ) ? request()->get('page'): 1,
+                     $perpage_count,
+                    1 
+                    
+                    ]
+
+
+                ); 
+                
+                    $result = array(
+                        "query" =>  $response ?? [],
+                    );
+
+           
+                if( count($result['query']) > 2){
+                    $paginate = $result['query'][count($result['query'])-2][0];
+                    
+                    $collection["data"] = $result['query'][count($result['query'])-3];
+                    $collection["pagination"] = [
+                                                    'total' => (int) $paginate->TotalCount,
+                                                    'count' => count( $collection["data"]),
+                                                    'per_page' =>  (int) $paginate->PerPage,
+                                                    'current_page' => (int) $paginate->CurrentPage,
+                                                    'last_page' => round($paginate->TotalCount /  $perpage_count)
+                                                ];
+
+                                                if( ($paginate->TotalCount % $perpage_count) > 0 
+                                                && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
+                                                    $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
+                                                }
+                }
+     
+            }
+           
+           
+            log_to_file('info', 'Success', [$collection]);
+            return $collection;
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
 
 
     /**

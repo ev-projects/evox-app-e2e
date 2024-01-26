@@ -97,12 +97,19 @@ class UserProfileResource extends JsonResource
                 array_push( $departments_handled, $departments );
             }
 
+             $evox_departments_handled = [];
+             $evox_departments_handled=  $this->evox_departments_handled()->orderBy('Name', 'asc')->get()->toArray();
+            // foreach( $this->evox_departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
+            //     array_push( $departments_handled, $departments );
+            // }
+
 
             return array_merge( 
                 $main_info, 
                 array('permissions' => $permissions),
                 array('roles' => $roles),
                 array('departments_handled' => $departments_handled),
+                array('evox_departments_handled' => $evox_departments_handled),
             );
             
         } else {
