@@ -36,6 +36,8 @@ class SendRestDayWorkRequestEmailJob implements ShouldQueue
     public function handle()
     {
         try {
+
+            //////////////////////////////////////////////////////////////// OLD
             // foreach( $this->rest_day_work->user()->first()->user_handlers()->get() as $recepient ){
             //     if(
             //         !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
@@ -50,7 +52,7 @@ class SendRestDayWorkRequestEmailJob implements ShouldQueue
             //     }
                
             // }
-
+            ////////////////////////////////////////////////////////////////NEW
 
             $recepient  = $this->rest_day_work->user()->first()->direct_supervisor();
             
