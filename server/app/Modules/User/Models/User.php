@@ -153,7 +153,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
       # Fetch the User's Supervisors
-      public function direct_supervisors()
+      public function direct_supervisor()
       {           
         
         $response =  call_sp("EH_SP_Direct_Supervisor", [$this->id ]);
