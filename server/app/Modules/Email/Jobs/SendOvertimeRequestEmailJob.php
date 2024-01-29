@@ -60,7 +60,7 @@ class SendOvertimeRequestEmailJob implements ShouldQueue
 
             
         } catch (Exception $e) {
-
+            error_log($e->getMessage());
             log_error($e, 'emails');
             throw $e;
         }
