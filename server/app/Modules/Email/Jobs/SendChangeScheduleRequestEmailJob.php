@@ -53,7 +53,7 @@ class SendChangeScheduleRequestEmailJob implements ShouldQueue
 
             // }
 
-            $recepient  = $this->change_schedule->user()->direct_supervisor();
+            $recepient  = $this->change_schedule->user()->find()->direct_supervisor();
             
             if(is_valid($recepient)){
                 Mail::send( new ChangeScheduleRequestEmail( $recepient, $this->change_schedule ) );

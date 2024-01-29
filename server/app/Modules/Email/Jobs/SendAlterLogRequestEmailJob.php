@@ -50,7 +50,7 @@ class SendAlterLogRequestEmailJob implements ShouldQueue
             //     }
 
 
-                $recepient  = $this->alter_log->user()->direct_supervisor();
+                $recepient  = $this->alter_log->user()->find()->direct_supervisor();
             
                 if(is_valid($recepient)){
                     Mail::send( new AlterLogRequestEmail( $recepient, $this->alter_log ) );
@@ -61,7 +61,7 @@ class SendAlterLogRequestEmailJob implements ShouldQueue
             // }
             
         } catch (Exception $e) {
-
+           
             log_error($e, 'emails');
             throw $e;
         }
