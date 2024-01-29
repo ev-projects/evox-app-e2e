@@ -52,7 +52,7 @@ class SendRestDayWorkRequestEmailJob implements ShouldQueue
             // }
 
 
-            $recepient  = $this->rest_day_work->user()->find()->direct_supervisor();
+            $recepient  = $this->rest_day_work->user()->first()->direct_supervisor();
             
             if(is_valid($recepient)){
                 Mail::send( new RestDayWorkRequestEmail( $recepient, $this->rest_day_work ) );
