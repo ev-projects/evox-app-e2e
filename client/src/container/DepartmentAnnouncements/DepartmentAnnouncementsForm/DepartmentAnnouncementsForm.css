@@ -117,3 +117,8 @@
   .modal-content.modal-content-preview{
     width: 400px !important;
   }
+
+  .modal-content.modal-content-preview.modal-preview-announcement{
+    width: 70% !important;
+  
+  }

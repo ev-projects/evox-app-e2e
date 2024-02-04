@@ -3,8 +3,9 @@ span .nav-clock{
 }
 .nav-item .time-info{
     
-    padding-right: 10px !important;
+    padding-right: 15px !important;
     padding-left: 10px !important;
+    /* min-width: 20px !important;; */
     /* border: #fff;
     border-width: thin; */
   
@@ -39,12 +40,17 @@ span .nav-clock{
 .nav-date{
     font-size:0.8rem;
     color: #fff !important;
+    min-width: 120px !important;
+    min-height: 18px !important;
     /* background: #ccc;
     float: none;
     overflow: hidden; */
     /* border: #fff;
     border-width: thin; */
   
+}
+.nav-date-item{
+  float: left !important;
 }
 
 .nav-clock-button.btn{

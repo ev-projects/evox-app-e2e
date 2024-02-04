@@ -311,8 +311,8 @@ class NavPuncher extends Component {
         <Dropdown.Toggle className="nav-clock" >
           <div className="nav-clock-dropdown nav-clock div-col">
             <div className=" time-info " >
-              <div>
-                <div className="nav-date">	{moment(this.state.time).format("dddd, Do MMMM")}    </div>
+              <div className="nav-date">
+                <div  className="nav-date-item">	{moment(this.state.time).format("dddd, Do MMMM")} </div>
               </div>
               <div>
                 <div className="nav-time">
