@@ -111,14 +111,23 @@ const RoutesList = (props) => {
 
         { /* General Links */ }
         <ProtectedRoute exact path={global.links.dashboard} >
-          <Dashboard role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']} />
+          <Dashboard 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          
+          
+          
+          />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dpa} >
             {country.toLowerCase() == "india" ? 
-              <><DPAFormIndia  role={['employee']} permission={['employee_access']}/> </> 
+              <><DPAFormIndia  
+              level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+              /> </> 
               :
-              <><DPAForm  role={['employee']} permission={['employee_access']}/></>
+              <><DPAForm  
+              level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+              /></>
             }
       </ProtectedRoute>
 
@@ -126,27 +135,38 @@ const RoutesList = (props) => {
         
         { /* Employee Links */ }
         <ProtectedRoute exact path={global.links.dtr+":id"} >
-          <DailyTimeRecord role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+          <DailyTimeRecord 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_punchlist+":id"} >
-          <DailyTimeRecordPuncher role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+          <DailyTimeRecordPuncher 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          feature={["multi_login"]}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_punch_history} >
-          <DtrPunch role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+          <DtrPunch 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          feature={["multi_login"]}/>
         </ProtectedRoute>
         
 
         <ProtectedRoute exact path={global.links.ev_learning} >
-          <EVLearning role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+          <EVLearning 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          />
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.ops_schedule} >
-          <OpsSchedule role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+          <OpsSchedule 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.profile+":id"} >
-          <Profile role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']}/>
+          <Profile 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.room_list}>
@@ -179,7 +199,11 @@ const RoutesList = (props) => {
         <ItRequirementList/>
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.my_request}>
-          <MyRequests role={['employee']} permission={['employee_access']}/>
+          <MyRequests 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          
+          
+          />
         </ProtectedRoute>
 
 
@@ -187,60 +211,107 @@ const RoutesList = (props) => {
 
         { /* Request Links */ }
         <ProtectedRoute exact path={global.links.overtime+":id?"}>
-          <Overtime onApproval={false} role={['employee']} permission={['employee_access']}/>
+          <Overtime onApproval={false} 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          feature={['request_overtime']}
+          />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.alter_log+":id?"}>
-          <AlterLog onApproval={false} role={['employee']} permission={['employee_access']}/>
+          <AlterLog onApproval={false} 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          feature={['request_alter_logs']}
+          />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.alter_log_punch+":id?"}>
-          <AlterLogPunch onApproval={false} role={['employee']} permission={['employee_access']}/>
+          <AlterLogPunch onApproval={false} 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          feature={['multi_login']}
+          />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.change_schedule+":id?"}>
-          <ChangeSchedule onApproval={false} role={['employee']} permission={['employee_access']}/>
+          <ChangeSchedule onApproval={false} 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          feature={['request_change_schedule']}
+          />
         </ProtectedRoute>
         
         <ProtectedRoute exact path={global.links.rest_day_work+":id?"}>
-          <RestDayWork onApproval={false} role={['employee']} permission={['employee_access']}/>
+          <RestDayWork onApproval={false} 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          feature={['request_rest_day_work']}
+          />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.work_from_home+":id?"}>
-          <WorkFromHome onApproval={false} role={['employee']} permission={['employee_access']}/>
-        </ProtectedRoute>
+        {/* <ProtectedRoute exact path={global.links.work_from_home+":id?"}>
+          <WorkFromHome onApproval={false} 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          feature={[]}
+          />
+        </ProtectedRoute> */}
 
         <ProtectedRoute exact path={global.links.coe+":id?"}>
-          <COE onApproval={false} role={['employee']} permission={['employee_access']}/>
+          <COE onApproval={false} 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          feature={['request_coe']}
+          />
         </ProtectedRoute>
 
         { /* Team Links */ }
-        <ProtectedRoute exact path={global.links.manage_teams}>
-          <ManageTeams role={['supervisor']} permission={['manage_teams']}/>
-        </ProtectedRoute>
+        {/* <ProtectedRoute exact path={global.links.manage_teams}>
+          <ManageTeams 
+          level={["Department Head","Board","HR","Payroll","Client"]} 
+          role={['supervisor']} permission={['manage_teams']}/>
+        </ProtectedRoute> */}
 
         <ProtectedRoute exact path={global.links.dpa_list}>
-          <DPAList role={['supervisor']} permission={['view_dpa_list']} />
+          <DPAList 
+          level={["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]} 
+          role={['supervisor']} permission={['view_dpa_list']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.employee_list}>
-          <EmployeeList role={['supervisor', 'team_leader', 'client']} permission={['supervisor_access', 'team_leader_access', 'client_access']}/>
+          <EmployeeList 
+          level={["SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} feature={["view_employee_list"] }
+          role={['supervisor', 'team_leader', 'client']} permission={['supervisor_access', 'team_leader_access', 'client_access']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.my_team_requests}>
-          <MyTeamRequests role={['supervisor', 'team_leader']} permission={['view_employee_requests', 'team_leader_access']} />
+          <MyTeamRequests 
+          level={["SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]}   
+          feature={['manage_alter_log_request',
+            'manage_change_schedules_request',
+            'manage_rest_day_work_request',
+            'manage_overtime_request'] }
+          role={['supervisor', 'team_leader']} permission={['view_employee_requests', 'team_leader_access']} />
         </ProtectedRoute> 
 
         <ProtectedRoute exact path={global.links.my_team_schedule}>
-          <MyTeamSchedule role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+          <MyTeamSchedule 
+          level={["SubDepartment Head","Department Head","Board","Admin","HR"]} feature = {['manage_department_schedules']}
+          role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.my_team_all_requests}>
-          <MyTeamAllRequest role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+          <MyTeamAllRequest 
+          level={["SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]}   
+          feature={['manage_alter_log_request',
+            'manage_change_schedules_request',
+            'manage_rest_day_work_request',
+            'manage_overtime_request'] }
+          role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.my_overall_request}>
-          <MyOverallRequest role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+          <MyOverallRequest 
+          level={["SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]}   
+          feature={['manage_alter_log_request',
+            'manage_change_schedules_request',
+            'manage_rest_day_work_request',
+            'manage_overtime_request'] }
+          role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
         </ProtectedRoute>
         
         {/* <ProtectedRoute exact path={global.links.overallrequest}>
@@ -248,26 +319,42 @@ const RoutesList = (props) => {
         </ProtectedRoute> */}
 
         {/* <ProtectedRoute exact path={global.links.dtr_summary}>
-          <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
+          <DtrSummary 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute> */}
 
         <ProtectedRoute exact path={global.links.dtr_summary}>
-          {/* <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
-          <DtrSummaryNew role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
+          {/* <DtrSummary 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
+          <DtrSummaryNew 
+         feature={['view_dtr_summary'] }
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_conflict}>
-          {/* <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
-          <DtrSummaryConflictReport role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
+          {/* <DtrSummary 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
+          <DtrSummaryConflictReport 
+          feature={['view_dtr_summary'] }
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_summary_new}>
-          {/* <DtrSummary role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
-          <DtrSummaryNew role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
+          {/* <DtrSummary 
+          level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
+          <DtrSummaryNew 
+          feature={['view_dtr_summary'] }
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_logs}>
-          <DtrLogs role={['supervisor', 'team_leader', 'client']} permission={['view_dtr_logs', 'team_leader_access', 'client_access']} />
+          <DtrLogs 
+          feature={['view_dtr_logs']} 
+          role={['supervisor', 'team_leader', 'client']} permission={['view_dtr_logs', 'team_leader_access', 'client_access']} />
         </ProtectedRoute>
 
         
@@ -275,27 +362,37 @@ const RoutesList = (props) => {
 
         { /* Schedule Links */ }
         <ProtectedRoute exact path={global.links.template_add} >
-          <TemplateCreate role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+          <TemplateCreate 
+          level={["SubDepartment Head","Department Head","Board","Admin","HR"]} feature = {['manage_department_schedules']}
+          />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.template_list+":templateid"} >
-          <TemplateEdit  role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+          <TemplateEdit  
+          level={["SubDepartment Head","Department Head","Board","Admin","HR"]} feature = {['manage_department_schedules']}
+          />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.template_list} >
-          <TemplateList  role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+          <TemplateList  
+          level={["SubDepartment Head","Department Head","Board","Admin","HR"]} feature = {['manage_department_schedules']}
+          />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.schedule_assign_user+":user_id"} >
-          <ScheduleAssign role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
+          <ScheduleAssign 
+          level={["SubDepartment Head","Department Head","Board","Admin","HR"]} feature = {['change_employee_schedule']} 
+          />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.profile+":user_id"+"/schedule/"+":schedule_id"} >
-          <ScheduleInfo  role={['employee', 'supervisor', 'team_leader', 'client']} permission={['employee_access', 'supervisor_access', 'team_leader_access', 'client_access']} />
+          <ScheduleInfo   />
         </ProtectedRoute>
 
         <ProtectedRoute path={global.links.schedule_assign_department} >
-          <ScheduleAssignDepartment role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']}/>
+          <ScheduleAssignDepartment 
+
+          />
         </ProtectedRoute>
 
 
@@ -303,17 +400,22 @@ const RoutesList = (props) => {
 
         {/* Report Links */}
         <ProtectedRoute exact path={global.links.team_attendance_summary}>
-          <TeamAttendanceSummary role={['supervisor','client']} permission={['supervisor_access','client_access']} />
+          <TeamAttendanceSummary 
+          feature = {['view_attendance_report']} 
+          />
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.hr_team_attendance_summary}>
-          <HRTeamAttendanceSummary role={['hr']} permission={[]} />
+          <HRTeamAttendanceSummary 
+            feature = {['view_attendance_report']}  
+            />
         </ProtectedRoute>
 
 
         {/* Announcement links */}
         <ProtectedRoute exact path={global.links.department_announcement_list}>
         <DepartmentAnnouncementsList  
-          role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
+          
+          feature = {['manage_announcement']}   
         />
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.announcement_page+":id"}>
@@ -331,64 +433,94 @@ const RoutesList = (props) => {
 
         {/* Admin Links */}
         <ProtectedRoute exact path={global.links.payroll_cutoff}>
-          <PayrollCutoff role={['admin']} permission={['manage_payroll_cutoff']} />
+          <PayrollCutoff 
+          level={["Admin","Payroll"]} 
+          role={['admin']} permission={['manage_payroll_cutoff']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.assign_department_handlers}>
-          <AssignDepartmentHandlers  role={['admin']} permission={['assign_department_handlers']} />
+          <AssignDepartmentHandlers  
+          level={["Admin"]} 
+          role={['admin']} permission={['assign_department_handlers']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.assign_employees_client}>
-          <AssignEmployeesClient  role={['admin']} permission={['assign_employees_client']} />
+          <AssignEmployeesClient  
+          level={["Admin"]} 
+          role={['admin']} permission={['assign_employees_client']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.assign_employee_supervisors}>
-          <AssignEmployeeSupervisors  role={['admin']} permission={['assign_employee_supervisors']} />
+          <AssignEmployeeSupervisors  
+          level={["Admin"]} 
+          role={['admin']} permission={['assign_employee_supervisors']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.sync_biometrics}>
-          <SyncBiometrics  role={['admin']} permission={['sync_biometrics']} />
+          <SyncBiometrics  
+          level={["Admin"]} 
+          role={['admin']} permission={['sync_biometrics']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.sync_bhr_leaves}>
-          <SyncBhrLeaves  role={['admin']} permission={['sync_bhr_leaves']} />
+          <SyncBhrLeaves  
+          level={["Admin"]} 
+          role={['admin']} permission={['sync_bhr_leaves']} />
         </ProtectedRoute> 
 
         <ProtectedRoute exact path={global.links.sync_utc_adjustment}>
-          <SyncUTCAdjustment  role={['admin']}/>
+          <SyncUTCAdjustment  
+          level={["Admin"]} 
+          role={['admin']}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.sync_bhr_user_updates}>
-          <SyncUserUpdates  role={['admin']} permission={['sync_bhr_user_updates']} />
+          <SyncUserUpdates  
+          level={["Admin"]} 
+          role={['admin']} permission={['sync_bhr_user_updates']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.assign_role_permission}>
-          <AssignRolesPermissions  role={['admin']} permission={['assign_role_permission']} />
+          <AssignRolesPermissions  
+          level={["Admin"]} 
+          role={['admin']} permission={['assign_role_permission']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.register_user}>
-          <RegisterUser  role={['admin']} permission={['allow_register_user']} />
+          <RegisterUser  
+          level={["Admin"]} 
+          role={['admin']} permission={['allow_register_user']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.generate_date}>
-          <GenerateDate  role={['admin']}  />
+          <GenerateDate  
+          level={["Admin"]} 
+          role={['admin']}  />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.admin_announcement_list}>
-          <AdminAnnouncementsList  role={['admin']}  />
+          <AdminAnnouncementsList  
+          level={["Admin"]} 
+          role={['admin']}  />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.manage_change_logs}>
-          <ChangeLogs  role={['admin']}  />
+          <ChangeLogs  
+          level={["Admin"]} 
+          role={['admin']}  />
         </ProtectedRoute>
           
         <ProtectedRoute exact path={global.links.department_list}>
-          <DepartmentList  role={['admin']} permission={['access_department_list']} />
+          <DepartmentList  
+          level={["Admin"]} 
+          role={['admin']} permission={['access_department_list']} />
         </ProtectedRoute>
 
 
         <ProtectedRoute exact path={global.links.department_announcement_form+":id?"}>
           <DepartmentAnnouncementsForm
+            
+            feature = {['manage_announcement']}    
             role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
          />
 
@@ -396,25 +528,36 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.ops_schedule_form+":id?"}>
-          <OpsScheduleForm role={['ops']} permission={['manage_ops_schedules']}
+          <OpsScheduleForm 
+          // level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          // role={['ops']} permission={['manage_ops_schedules']}
           />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.ops_schedule_list}>
-          <OpsScheduleList role={['ops']} permission={['manage_ops_schedules']} />
+          <OpsScheduleList 
+          // level={["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]} 
+          // role={['ops']} permission={['manage_ops_schedules']} 
+          />
         </ProtectedRoute>
 
 
         <ProtectedRoute exact path={global.links.manage_hr_announcements}>
-          <HrAnnouncementsList  role={['hr']} />
+          <HrAnnouncementsList  
+          level={["HR"]} 
+          role={['hr']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
-          <HrAnnouncementsForm  role={['hr']} permission={['manage_hr_announcements']}/>
+          <HrAnnouncementsForm  
+          feature = {['manage_announcement']} 
+          role={['hr']} permission={['manage_hr_announcements']}/>
         </ProtectedRoute> 
 
         <ProtectedRoute exact path={global.links.admin_import_careers}>
-          <JobOpeningsUpdate  role={['admin']} permission={['full_access']}/>
+          <JobOpeningsUpdate  
+          level={["Admin"]} 
+          role={['admin']} permission={['full_access']}/>
         </ProtectedRoute>
         
         

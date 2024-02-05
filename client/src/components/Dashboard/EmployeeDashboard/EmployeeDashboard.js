@@ -84,7 +84,7 @@ const EmployeeDashboard = ( props ) => {
                 {/* </div> */}
                 <Col size="12">
                 
-                {/* { !Authenticator.checkRole('client')  ?
+                {/* { !Authenticator.scanLevel("Client")  ?
                             <Row>
                             <Content title="Upcoming holidays" col="12">
                                 <Holiday/>

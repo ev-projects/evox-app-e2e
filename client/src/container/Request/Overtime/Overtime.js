@@ -124,7 +124,7 @@ class Overtime extends Component {
   render = () => {  
     // console.log(this.props.user);
     // Checks if the Instance is On Approval state.
-    const onApproval = this.props.instance?.is_under_supervisee && Authenticator.check('supervisor', 'manage_employee_request') ? this.props.instance.is_under_supervisee : false;
+    const onApproval = this.props.instance?.is_under_supervisee ? this.props.instance.is_under_supervisee : false;
 
     const isManager = this.props.instance?.is_under_supervisee;
     // Sets the Method of the current state.

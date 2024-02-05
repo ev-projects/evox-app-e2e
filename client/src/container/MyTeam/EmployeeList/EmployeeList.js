@@ -240,9 +240,9 @@ const MyTeamListTable = (props) => {
                     <td>{user.email} </td>
                     <td className="emp-status"> <Status status={user.is_active} /></td>
                     <td className="actions">
-                      { !Authenticator.checkRole('client') ? 
+                      { !Authenticator.scanLevel(["Client"]) ? 
                         <span>
-                          { Authenticator.check('supervisor', 'view_employee_dtr') &&
+                          {Authenticator.scanFeature("view_employee_dtr") &&
                             <Link to={{
                                 pathname: global.links.dtr + user.id,
                                 resetInitialState: true
@@ -253,7 +253,7 @@ const MyTeamListTable = (props) => {
                             </Link>
                           }
                           
-                          { Authenticator.check('supervisor', 'manage_schedule') &&
+                          { Authenticator.scanFeature("view_employee_schedule") &&
                             <Link to={{
                                     pathname: global.links.schedule_assign_user + user.id
                                   }}
@@ -266,7 +266,7 @@ const MyTeamListTable = (props) => {
                         : 
                         null
                       }
-                      { Authenticator.check('supervisor', ['view_employee_personal_info','view_employee_job_info','view_employee_time_off']) &&
+                      { Authenticator.scanFeature("view_employee_personal_information") &&
                         <Link to={{
                                 pathname: global.links.profile + user.id
                               }}
@@ -275,7 +275,7 @@ const MyTeamListTable = (props) => {
                           <i className="fa fa-info ev-color" aria-hidden="true"></i>
                         </Link>
                       }
-                      { (Authenticator.check('supervisor', 'view_employee_dtr') && user.has_use_multi) &&
+                      { (Authenticator.scanFeature("view_employee_dtr") && user.has_use_multi) &&
                                   <Link to={{
                                       pathname: global.links.dtr_punchlist + user.id,
                                       resetInitialState: true

@@ -52,7 +52,7 @@ import Validator from "../../../services/Validator";
     this.props.getTeamAttendanceStatus( formData  );
     this.props.getBirthdayAnniv( formData  );
 
-    if( Authenticator.checkRole('client') ){
+    if( Authenticator.scanLevel("Client") ){
       this.props.getTeamAttendanceSummary( moment().startOf('week'), moment().endOf('week'), formData  );
     }
     
@@ -60,7 +60,7 @@ import Validator from "../../../services/Validator";
 
   componentWillMount(){
 
-    if( Authenticator.checkRole('client') ){
+    if( Authenticator.scanLevel("Client") ){
       this.props.getTeamAttendanceSummary( moment().startOf('week'), moment().endOf('week'), {} );
     }
   }
@@ -111,7 +111,7 @@ import Validator from "../../../services/Validator";
               </Row>
               <Row>
                 <div className="col-lg-6 col-md-6 col-sm-12">
-                    {Authenticator.checkRole('client') ? 
+                    {Authenticator.scanLevel("Client") ? 
                           <Row>
                             <Content title="This Week's Attendance Summary" col="12">
                               { Validator.isValid(team_attendance_summary) && 
@@ -127,7 +127,7 @@ import Validator from "../../../services/Validator";
                     </Row>
                 </div>    
                 <div className="birthday-anniv col-lg-6 col-md-6 col-sm-12"> 
-                    {Authenticator.checkRole('client') ? 
+                    {Authenticator.scanLevel("Client") ? 
                           <Row>
                             <Content title="Upcoming holidays" col="12">
                               <Holiday/>

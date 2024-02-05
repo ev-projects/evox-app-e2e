@@ -102,6 +102,8 @@ class UserProfileResource extends JsonResource
                 $main_info, 
                 array('permissions' => $permissions),
                 array('roles' => $roles),
+                array('features_access' => is_valid($this->LevelId) ? $this->getFeatureAccess()->pluck("feature_name")->toArray(): []),
+                array('level' =>( is_valid( $this->LevelId) ? $this->level()->select('LevelId','Name','LevelId','IsAdmin','ISHR','IsPayRoll','CountryId','IsActive')->first()->toArray(): [] )),
                 array('departments_handled' => $departments_handled),
             );
             

@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Models;
 
+use App\EvoxLevels;
 use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\Dtr;
@@ -24,6 +25,7 @@ use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\WorkFromHome;
+use App\RoleLevelFeatures;
 use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
 use Auth;
@@ -734,5 +736,21 @@ class User extends Authenticatable implements JWTSubject
             return ($checkDefault_schedule ||  $checkTemp_schedule);
     }
 
+
+    # Fetch the User's Level
+    public function level(){
+        return $this->hasOne(EvoxLevels::class, 'LevelId', 'LevelId');
+    }
+
+    public function getFeatureAccess(){
+
+        # Fetch the Default Schedule for the current User.
+        if(is_valid($this->LevelId)){
+            return RoleLevelFeatures::where('evox_levels_id', $this->LevelId)->leftJoin("features", 'features_id', '=', 'features.id');
+            
+        }
+           
+        return [];
+    }
     ########################################################################
 }

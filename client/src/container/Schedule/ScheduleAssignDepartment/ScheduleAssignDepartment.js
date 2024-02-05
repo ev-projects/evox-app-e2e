@@ -308,7 +308,7 @@ class ScheduleAssignDepartment extends Component {
                       </h4>
                     </div>
                     <div className="body">
-                      <ScheduleHolidayPolicy showAssignButton={( Authenticator.check(['supervisor'], ['supervisor_access']) ? true : false )}/> 
+                      <ScheduleHolidayPolicy showAssignButton={(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_department_schedules") ? true : false )}/> 
                     </div>
                   </Form.Group>
                 </Col>       
@@ -320,7 +320,7 @@ class ScheduleAssignDepartment extends Component {
                       </h4>
                     </div>
                     <div className="body">
-                      <SchedulePolicy  showAssignButton={( Authenticator.check(['supervisor'], ['supervisor_access']) ? true : false )}/> 
+                      <SchedulePolicy  showAssignButton={(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_department_schedules") ? true : false )}/> 
                     </div>
                   </Form.Group>
                 </Col>
@@ -449,7 +449,7 @@ class ScheduleAssignDepartment extends Component {
                   <i className="fa fa-edit" /> Update
                   </Button>
                   &nbsp;
-                  {  Authenticator.check(['supervisor'], ['supervisor_access'])  ? 
+                  { (Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_department_schedules"))  ? 
                     <button className="btn btn-secondary" onClick={(e)=> { setFieldValue('action', 'assign'); handleSubmit(e); }}>
                       <i className="fa fa-tag" /> Assign to all employees
                     </button>

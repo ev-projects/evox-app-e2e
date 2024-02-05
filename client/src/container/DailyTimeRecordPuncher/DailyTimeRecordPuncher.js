@@ -201,20 +201,7 @@ class DailyTimeRecordPuncher extends Component {
               <Content col="12" title="Punch History" subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
               
               <BackButton style={{'float': 'right'}} {...this.props}/>
-              {/* { Authenticator.check(['supervisor', 'team_leader'], ['manage_schedule', 'team_leader_access']) && method=="approval" ? 
-                <Button type="button" className="btn-update-sched btn btn-secondary float-right">
-                  <Link to={{
-                        pathname: global.links.schedule_assign_user + this.props.params.id,
-                        previousPath: this.props.location.pathname
-                      }}
-                    title="View Schedule"
-                  >
-                  <i className="fa fa-calendar-check-o" />  Update Schedule
-                  </Link>
-                </Button>
-                : 
-                null
-              }  */}
+             
                 { this.props.dtr.isFilterLoaded? 
                     <div className="dtr-filter col-lg-12 col-md-12 col-sm-12 "> 
                       
