@@ -742,6 +742,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(EvoxLevels::class, 'LevelId', 'LevelId');
     }
 
+    # Fetch the User's Level Name
+    public function level_type(){
+        return $this->hasOne(EvoxLevels::class, 'LevelId', 'LevelId')->first()->Name;
+    }
+
     public function getFeatureAccess(){
 
         # Fetch the Default Schedule for the current User.

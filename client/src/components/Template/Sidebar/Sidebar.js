@@ -332,7 +332,7 @@ const Sidebar = (props) => {
               </li>
 
               {/* SUPERVISOR Links */}
-              {Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"])
+              {Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","HR","Payroll","Client"])
                ? (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
@@ -589,7 +589,7 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                     </li>
-                    ) : ((Authenticator.scan(["SubDepartment Head","Department Head","Board","Admin","Payroll"], "view_attendance_report")) && (
+                    ) : ((Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","Payroll"], "view_attendance_report")) && (
                       <li className="nav-item">
                       <a
                         className="nav-link"
@@ -696,6 +696,7 @@ const Sidebar = (props) => {
               )}
 
               {/* ADMIN Links */}
+              {console.log(Authenticator.scanLevel("Admin"))}
               {Authenticator.scanLevel("Admin") && (
                 <li className="admin-sidebar nav-item has-treeview ">
                   <a className="nav-link nav-link-main">

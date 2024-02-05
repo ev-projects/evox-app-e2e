@@ -212,7 +212,7 @@ class Dashboard extends Component {
         />
         <ContainerWrapper className="full-wrapper">
           <ContainerBody>
-            {Authenticator.scanLevel("Employee") ? (
+            {true ? (
               <EmployeeDashboard {...this.props} />
             ) : null}
             {/* { Authenticator.check(['supervisor', 'team_leader', 'client'], ['supervisor_access', 'team_leader_access', 'client_access']) ? 

@@ -111,19 +111,19 @@ class GenerateFeaturesToLevel extends Migration
     $view_celebrations->features_level()->attach([1,2,3,4,5,6,7]);
 
     $manage_payroll_cutoff = Features::create([ 'feature_name' =>"manage_payroll_cutoff", 'feature_label'=>"Manage Payroll Cut-off"]);
-    $manage_payroll_cutoff->features_level()->attach([0]);
+    $manage_payroll_cutoff->features_level()->attach([4]);
 
     $bhr_sync = Features::create([ 'feature_name' =>"bhr_sync", 'feature_label'=>"BHR Sync"]);
-    $bhr_sync->features_level()->attach([0]);
+    $bhr_sync->features_level()->attach([4]);
 
     $biometric_sync = Features::create([ 'feature_name' =>"biometric_sync", 'feature_label'=>"Biometrics Sync"]);
-    $biometric_sync->features_level()->attach([0]);
+    $biometric_sync->features_level()->attach([4]);
 
     $manage_users = Features::create([ 'feature_name' =>"manage_users", 'feature_label'=>"Manage Users"]);
-    $manage_users->features_level()->attach([0]);
+    $manage_users->features_level()->attach([4]);
 
     $manage_roles_and_permissions = Features::create([ 'feature_name' =>"manage_roles_and_permissions", 'feature_label'=>"Manage Roles & Permissions"]);
-    $manage_roles_and_permissions->features_level()->attach([0]);
+    $manage_roles_and_permissions->features_level()->attach([4]);
 
 
 

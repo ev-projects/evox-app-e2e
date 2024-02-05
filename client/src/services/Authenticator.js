@@ -70,9 +70,10 @@ class Authenticator {
         if( store.getState().user?.level?.Name != "" && (store.getState().user?.level?.Name != null) && (store.getState().user?.level?.Name != undefined)){
             if( level instanceof Array ) {
               // return level.some( r => store.getState().user?.roles?.includes(r) );
+              // console.log(level, store.getState().user?.level?.Name);
               return level.includes(store.getState().user?.level?.Name);
             }else {
-              return store.getState().user?.level == level;
+              return store.getState().user?.level.Name == level;
             }
          
           
