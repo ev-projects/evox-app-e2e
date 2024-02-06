@@ -38,11 +38,11 @@ class SendChangeScheduleRequestEmailJob implements ShouldQueue
         try {
             foreach( $this->change_schedule->user()->first()->user_handlers()->get() as $recepient ){
                 if(
-                    !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
+                    !( $recepient->isLevel("Admin")
                     ||
-                    $recepient->hasRole( get_constant('USER_ROLES.hr'))
+                    $recepient->isLevel("HR")
                     ||
-                    $recepient->hasRole( get_constant('USER_ROLES.payroll')))
+                    $recepient->isLevel("Payroll"))
                 ){
                     Mail::send( new ChangeScheduleRequestEmail( $recepient, $this->change_schedule ) );
                 

@@ -644,7 +644,7 @@ class ReportController extends Controller
             $new_end_date = Carbon::parse($end_date)->format('y-m-d');
             $period = CarbonPeriod::between($new_start_date,  $new_end_date);
 
-            $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date,  true, auth()->user()->hasRole( get_constant('USER_ROLES.hr') ));
+            $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date,  true, auth()->user()->isLevel("HR"));
 
 
             $override = $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
@@ -694,7 +694,7 @@ class ReportController extends Controller
         $period = CarbonPeriod::between($new_start_date,  $new_end_date);
 
 
-        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true, auth()->user()->hasRole( get_constant('USER_ROLES.hr') ));
+        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true, auth()->user()->isLevel("HR"));
         $data =  $this->report->get_team_attendance_summary_dtr($user_collection,  $start_date, $end_date);
 
         $list = (array) $data['employee_list_summary'];

@@ -120,7 +120,7 @@ class AnnouncementController extends Controller
         }
 
 
-        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') ) ||  $owner_pass ) { 
+        if(Auth::user()->isLevel("Admin") ||  $owner_pass ) { 
             $dep_announcement =  $this->announcement->show($id);
         }
         else {
@@ -152,7 +152,7 @@ class AnnouncementController extends Controller
             log_activity( trans('messages.update_department_announcement_attempt') );
             $department =  Department::find(Auth::user()->department_id);
             $check_announcement = $department->departments_announcements()->find($id);
-            if($check_announcement || Auth::user()->hasRole( get_constant('USER_ROLES.admin'))){
+            if($check_announcement || Auth::user()->isLevel("Admin")){
                 $dep_announcement = $this->announcement->update($request, $id);
             return success_response(
                 trans('messages.update_department_announcement_success'), 
@@ -322,7 +322,7 @@ class AnnouncementController extends Controller
         log_activity( trans('messages.create_department_announcement_attempt') );
 
 
-        if(Auth::user()->hasRole( get_constant('USER_ROLES.hr') )  ) { 
+        if(Auth::user()->isLevel("HR")  ) { 
             $dep_announcement = Announcement::where('category', "HR")->find($id);
         }
       

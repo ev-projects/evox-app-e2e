@@ -602,7 +602,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         log_activity(trans('messages.create_department_announcement_attempt'));
 
 
-        if (Auth::user()->hasRole(get_constant('USER_ROLES.hr'))) {
+        if (Auth::user()->isLevel("HR")) {
             $dep_announcement = Announcement::where('category', "HR")->find($id);
         }
 

@@ -207,16 +207,40 @@ class MyTeamRequests extends Component {
                       >
                   <Tab eventKey="all" title="All Requests" type="submit">
                   </Tab>
-                  <Tab eventKey="alteration" title="Alteration" type="submit">
-                  </Tab>
-                  <Tab eventKey="overtime" title="Overtime" type="submit">
-                  </Tab>
-                  <Tab eventKey="rest_day_work" title="Rest Day Work" type="submit">
-                  </Tab>
-                  <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
-                  </Tab>
-                  <Tab eventKey="alter_logs_punches" title="MultiPunch Alteration" type="submit">
-                  </Tab>
+                  {(Authenticator.scanFeature(
+                    'manage_alter_log_request' )) && ( 
+                      <Tab eventKey="alteration" title="Alteration" type="submit">
+                      </Tab>
+                    )
+                  }
+                  {(Authenticator.scanFeature(
+                    'manage_overtime_request')) && ( 
+                      <Tab eventKey="overtime" title="Overtime" type="submit">
+                      </Tab>
+                    )
+                  }
+                   {(Authenticator.scanFeature(
+                    'manage_rest_day_work_request')) && ( 
+                      <Tab eventKey="rest_day_work" title="Rest Day Work" type="submit">
+                      </Tab>
+                    )
+                  }
+                   {(Authenticator.scanFeature(
+                    'manage_change_schedules_request')) && ( 
+                      <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
+                      </Tab>
+                    )
+                  }
+                   {(Authenticator.scanFeature(
+                    'manage_alter_log_request')) && ( 
+                      <Tab eventKey="alter_logs_punches" title="MultiPunch Alteration" type="submit">
+                      </Tab>
+                    )
+                  }
+                  
+                  
+                  
+                 
                 </Tabs>
             </div>
             

@@ -634,16 +634,18 @@ class User extends Authenticatable implements JWTSubject
     public function users_handled()
     {   
         // If the User has Client Role, get all the Users from his/her departments handled.
-        if( $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
+        if( $this->isLevel("Client") ) { 
             return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
 
 
         //HR and Payroll gets all the users
-        } elseif ( 
-            $this->hasRole( get_constant('USER_ROLES.admin') ) ||
-            $this->hasRole( get_constant('USER_ROLES.hr') ) ||
-            $this->hasRole( get_constant('USER_ROLES.payroll') )
-         ) {
+        } elseif (
+                    !($this->isLevel("Admin")
+                    ||
+                   $this->isLevel("HR")
+                    ||
+                   $this->isLevel("Payroll"))
+                ) {
             return User::whereNotNull("bhr_num");//practically all users
 
         // If the User has Team Leader & Supervisor Role, get all the Users from the Department's Handled Team list AND the default users handled via users_supervivsors pivot table.
@@ -761,7 +763,11 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the User's Level Name
     public function level_type(){
-        return $this->hasOne(EvoxLevels::class, 'LevelId', 'LevelId')->first()->Name;
+        return $this->level()->first()->Name;
+    }
+
+    public function isLevel($level_role_name){
+        return $this->$level_role_name == $this->level_type()? true : false ;
     }
 
     public function getFeatureAccess(){

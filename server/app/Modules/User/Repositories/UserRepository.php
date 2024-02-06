@@ -420,27 +420,27 @@ class UserRepository implements UserRepositoryInterface{
                     $supervisor->supervisee()->syncWithoutDetaching( $user_id_array );
 
                     /**  Fetch the Supervisor Role to attach on the Supervisor  */
-                        $supervisor_role = Role::findByName( get_constant('USER_ROLES.supervisor') );
+                        // $supervisor_role = Role::findByName( get_constant('USER_ROLES.supervisor') );
 
                         // Check if the Supervisor has already a Role
-                        if( ! $supervisor->hasRole($supervisor_role) ){
+                        // if( ! $supervisor->isLevel("Supervisor") ){
 
-                            // Assign the Supervisor Role
-                            $supervisor->assignRole( $supervisor_role );
+                            // // Assign the Supervisor Role
+                            // $supervisor->assignRole( $supervisor_role );
 
-                            // Total Permissions that are not synced yet on the Supervisor
-                            $permissions_to_sync = [];
+                            // // Total Permissions that are not synced yet on the Supervisor
+                            // $permissions_to_sync = [];
 
-                            // Iterate and filter out all the Permissions that are already existing for the Supervisor.
-                            foreach( $supervisor_role->permissions()->get() as $permission ){
-                                if( ! $supervisor->hasDirectPermission( $permission ) ) {
-                                    $permissions_to_sync[] = $permission;
-                                }
-                            }
+                            // // Iterate and filter out all the Permissions that are already existing for the Supervisor.
+                            // foreach( $supervisor_role->permissions()->get() as $permission ){
+                            //     if( ! $supervisor->hasDirectPermission( $permission ) ) {
+                            //         $permissions_to_sync[] = $permission;
+                            //     }
+                            // }
 
-                            // Assign the Supervisor's Permissions
-                            $supervisor->givePermissionTo( $permissions_to_sync );
-                        }
+                            // // Assign the Supervisor's Permissions
+                            // $supervisor->givePermissionTo( $permissions_to_sync );
+                        // }
                     /** */
 
                     $result[ $supervisor->id ] = $user_id_array;
