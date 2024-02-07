@@ -182,7 +182,7 @@ class PostAnnouncements extends Component {
                               'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
                               'fullscreen','insertdatetime','media','table','help','wordcount'
                            ],
-                            toolbar: 'undo redo | casechange blocks | bold italic backcolor emoticons | ' +
+                            toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons | ' +
                             'alignleft aligncenter alignright alignjustify | ' +
                             'bullist numlist checklist outdent indent | removeformat | help',
                             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'

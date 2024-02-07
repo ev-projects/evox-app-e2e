@@ -255,7 +255,7 @@ class DtrSummaryNew extends Component {
                               <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>  OLD */}
                               <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department_new")}>Export</Dropdown.Item>
                               <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all_new")}>Export All</Dropdown.Item>
-                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "dtr_conflict")}>Export DTR Conflict</Dropdown.Item>
+                              {/* <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "dtr_conflict")}>Export DTR Conflict</Dropdown.Item> */}
                             </Dropdown.Menu>
                           </Dropdown>
                         }

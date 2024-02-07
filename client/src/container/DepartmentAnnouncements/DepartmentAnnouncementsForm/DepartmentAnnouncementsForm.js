@@ -668,7 +668,7 @@ class DepartmentAnnouncementsForm extends Component {
                             //     // replace copied text with empty string
                             //     args.content = '';
                             // },
-                                toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons media | ' +
+                                toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons media | ' +
                                 'alignleft aligncenter alignright alignjustify | link | ' +
                                 'bullist numlist checklist outdent indent | removeformat | help ',
                                 // smart_paste: false,
