@@ -2,7 +2,6 @@
 
 namespace App\Modules\Department\Resources;
 
-use App\Modules\Department\Models\Announcement;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Modules\Department\Models\Announcement;
