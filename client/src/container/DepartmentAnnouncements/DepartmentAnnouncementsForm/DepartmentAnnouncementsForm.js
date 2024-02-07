@@ -772,7 +772,7 @@ function PreviewAnnouncment(props) {
        
         <div id="myModal" className="modal-main">
           
-        <div className="modal-content modal-content-preview">
+        <div className="modal-content modal-content-preview modal-preview-announcement">
           <div className="modal-header">
             Preview
           <span className="close" onClick = {() => props.handleModalClose()}>&times;</span>

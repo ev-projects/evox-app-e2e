@@ -5,6 +5,7 @@ namespace App\Modules\Department\Resources;
 use App\Modules\Department\Models\Announcement;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use App\Modules\Department\Models\Announcement;
 use App\Modules\User\Resources\UserListResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,7 @@ class AnnouncementStrictResource extends JsonResource
      */
     public function toArray($request)
     {
-
+        
         $startDate  = Carbon::parse($this->release_date);
         $endDate = Carbon::parse($this->release_date)->addDays(3);
         $dateToCheck = Carbon::now();
