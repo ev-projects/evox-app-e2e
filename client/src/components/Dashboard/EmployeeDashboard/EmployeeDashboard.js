@@ -57,62 +57,17 @@ const EmployeeDashboard = ( props ) => {
     const payload = user.payload ? JSON.stringify(user.payload): "No Payload Yet!";
 
     return (<div className="dashboard">
-     {/* <Row className="summary"> */}
-     {/* <SummaryDashbord/> */}
-     {/* </Row> */}
-       
+   
       
-              <Row>
+            <Row>
 
-              {/* <Col> */}
-                
-                 
-
-                    {/* <Row className="dtr-teaser">
-                        <Content title="Daily Time Record" col="12">
-                          <RecentDtr/>
-                        </Content>     
-                    </Row>
-
-                    <Row className="dtr-notifications">
-                        <Content  col="12" title={<span>DTR Notifications <small>({my_dtr_notifications?.filter(data => moment().diff(moment(data.date)) > 0).length})</small></span>} subtitle={<small> Payroll Cut-off: <br /> {moment( current_payroll_cutoff?.start_date ).format("MMM D")  +" - "+ moment( current_payroll_cutoff?.end_date ).format("MMM D")} </small>}>
-                          <DtrNotifications/>
-                        </Content>       
-                    </Row>  */}
-                    
-
-                {/* </div> */}
                 <Col size="12">
-                
-                {/* { !Authenticator.scanLevel("Client")  ?
-                            <Row>
-                            <Content title="Upcoming holidays" col="12">
-                                <Holiday/>
-                                </Content>   
-                                </Row>
-                            :
-                            (null)
-                      } */}
-                  {/* <Row className="company-announcement" col="12"> */}
-                  {/* <div className="card"> */}
-                    {/* <div className="card-header">
-                        <h3 align="center" className="card-title">ANNOUNCEMENTS</h3>
-                    </div> */}
                       <div className="announcement-Container">
                             <DashboardTabs/>
                       </div> 
-                    {/* </div>  */}
-                  {/* </Row> */}
-                   
-                 
-                 
                 </Col>
-              
 
-
-                
-                                        
-              </Row>
+            </Row>
             </div>
         );
 };
