@@ -767,7 +767,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function isLevel($level_role_name){
-        return $this->$level_role_name == $this->level_type()? true : false ;
+        return $level_role_name == $this->level_type()? true : false ;
     }
 
     public function getFeatureAccess(){
