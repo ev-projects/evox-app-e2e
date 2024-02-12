@@ -187,7 +187,7 @@ class RequestRepository implements RequestRepositoryInterface{
 
         public function get_status_numbers_dashboard($data)
         {
-        
+            // dd($data->all());
             try {
                 $numbers = array(
                     "alterlogpending" => 0,
@@ -276,6 +276,89 @@ class RequestRepository implements RequestRepositoryInterface{
                 throw $e;
             }
         
+        }
+
+        public function get_status_numbers_only($user, $cutoff)
+        {
+           
+            try {
+
+                /*
+                    status type Type values
+                    pending
+                    approved
+                    declined
+                    */
+
+                /*
+                    Request Type values
+                    0 - All
+                    1 - Alteration
+                    2 - OverTime
+                    3 - Rest Day Work
+                    4 - Change Schedule
+                    5 - MultiPunch Alteration
+                    */
+                
+
+                $alter =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 1 ,$user->id]);
+                $Multi_alter =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 5 ,$user->id]);
+            
+
+                $overtime =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 2 ,$user->id]);
+            
+
+                $restdaywork =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 3 ,$user->id]);
+            
+
+                $changeschedule =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 4 ,$user->id]);
+
+
+                $my_team_alter =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"1", "pending" 
+                , null, null , 
+                0, 1, 999, 0]);
+
+                $my_team_Multi_alter =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"5", "pending" 
+                , null, null , 
+                0, 1, 999, 0
+                ]);
+                
+
+                $my_team_overtime =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"$user->LevelId", "pending" 
+                , null, null , 
+                0, 1, 999, 0
+                ]);
+
+                $my_team_restdaywork =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"3", "pending" 
+                , null, null , 
+                0, 1, 999, 0
+                ]);
+
+                $my_team_changeschedule =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"4", "pending" 
+                , null, null , 
+                0, 1, 999, 0
+                ]);
+
+                $numbers = [
+                    "alterlogpending"   => (string)(count($alter[0]) + count($Multi_alter[0])),
+                    "overtimepending"   => (string)count($overtime[0]),
+                    "restdayworkpending"    => (string)count($restdaywork[0]),
+                    "changeschedulepending" => (string)count($changeschedule[0]),
+                    "team_alterlogpending"  => (string)($my_team_alter[1][0]->TotalCount + $my_team_Multi_alter[1][0]->TotalCount) ,
+                    "team_overtimepending"  =>  $my_team_overtime[1][0]->TotalCount,
+                    "team_restdayworkpending"   =>  $my_team_restdaywork[1][0]->TotalCount,
+                    "team_changeschedulepending"    =>  $my_team_changeschedule[1][0]->TotalCount,
+                ];
+
+                return array( 'status_numbers' => $numbers  );
+
+
+            }catch (Exception $e) {
+                dump($e);
+                log_error($e);
+                throw $e;
+            }
+
         }
 
 

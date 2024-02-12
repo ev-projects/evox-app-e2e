@@ -80,37 +80,37 @@ export const myfetchStatusNumbers_dashboard = (
     setMyaltercount,setMyOvertimecount,setMyRestdayworkcount,setMyChangeschedulecount,setTaskcompletestatus1
 ) => {
   return (dispatch, getState) => {
-    var dispatch_commands;
-    dispatch_commands = "FETCH_MY_REQUEST_STATUS_NUMBERS";
+    // var dispatch_commands;
+    // dispatch_commands = "FETCH_MY_REQUEST_STATUS_NUMBERS";
 
-    API.call({
-      method: "get",
-      url: "/request/request-numbers_dashboard",
-      params: {
-        url: "my_requests",
-        status: "pending",
-        page: "1",
-        request_type: "all",
-        first_load: true,
-      },
-    })
-      .then((result) => {
-        setMyaltercount(result.data.content.status_numbers.alterlogpending);
-        setMyOvertimecount(result.data.content.status_numbers.overtimepending);
-        setMyRestdayworkcount(result.data.content.status_numbers.restdayworkpending);
-        setMyChangeschedulecount(result.data.content.status_numbers.changeschedulepending);
-        setTaskcompletestatus1(true);
-        dispatch({
-          type: "MY_ALTER_LOG_PENDING",
-          myalterrequest: result.data.content.status_numbers.alterlogpending,
-          myovertimerequest : result.data.content.status_numbers.overtimepending,
-          myrestdayrequest :result.data.content.status_numbers.restdayworkpending,
-          mychangeschedulerequest : result.data.content.status_numbers.changeschedulepending,
-        });
-      })
-      .catch((e) => {
-        dispatch(Formatter.alert_error(e));
-      });
+    // API.call({
+    //   method: "get",
+    //   url: "/request/request-numbers_dashboard",
+    //   params: {
+    //     url: "my_requests",
+    //     status: "pending",
+    //     page: "1",
+    //     request_type: "all",
+    //     first_load: true,
+    //   },
+    // })
+    //   .then((result) => {
+    //     setMyaltercount(result.data.content.status_numbers.alterlogpending);
+    //     setMyOvertimecount(result.data.content.status_numbers.overtimepending);
+    //     setMyRestdayworkcount(result.data.content.status_numbers.restdayworkpending);
+    //     setMyChangeschedulecount(result.data.content.status_numbers.changeschedulepending);
+    //     setTaskcompletestatus1(true);
+    //     dispatch({
+    //       type: "MY_ALTER_LOG_PENDING",
+    //       myalterrequest: result.data.content.status_numbers.alterlogpending,
+    //       myovertimerequest : result.data.content.status_numbers.overtimepending,
+    //       myrestdayrequest :result.data.content.status_numbers.restdayworkpending,
+    //       mychangeschedulerequest : result.data.content.status_numbers.changeschedulepending,
+    //     });
+    //   })
+    //   .catch((e) => {
+    //     dispatch(Formatter.alert_error(e));
+    //   });
   };
 };
 
@@ -198,7 +198,10 @@ return (dispatch, getState) => {
 
 // Fecth Pending AllRequest Count For Dashboard
 export const fetchStatusNumbers_dashboard = (
-    setaltercount,setOvertimecount,setRestdayworkcount,setChangeschedulecount,setTaskcompletestatus
+    setaltercount,setOvertimecount,setRestdayworkcount,setChangeschedulecount,
+    setMyaltercount,setMyOvertimecount,setMyRestdayworkcount,setMyChangeschedulecount,
+    
+    setTaskcompletestatus
 ) => {
   return (dispatch, getState) => {
     var dispatch_commands;
@@ -216,17 +219,29 @@ export const fetchStatusNumbers_dashboard = (
       },
     })
       .then((result) => {
-        setaltercount(result.data.content.status_numbers.alterlogpending);
-        setOvertimecount(result.data.content.status_numbers.overtimepending);
-        setRestdayworkcount(result.data.content.status_numbers.restdayworkpending);
-        setChangeschedulecount(result.data.content.status_numbers.changeschedulepending);
+        setaltercount(result.data.content.status_numbers.team_alterlogpending);
+        setOvertimecount(result.data.content.status_numbers.team_overtimepending);
+        setRestdayworkcount(result.data.content.status_numbers.team_restdayworkpending);
+        setChangeschedulecount(result.data.content.status_numbers.team_changeschedulepending);
+
+        setMyaltercount(result.data.content.status_numbers.alterlogpending);
+        setMyOvertimecount(result.data.content.status_numbers.overtimepending);
+        setMyRestdayworkcount(result.data.content.status_numbers.restdayworkpending);
+        setMyChangeschedulecount(result.data.content.status_numbers.changeschedulepending);
+
         setTaskcompletestatus(true);
         dispatch({
           type: "ALTER_LOG_PENDING",
-          alterrequest: result.data.content.status_numbers.alterlogpending,
-          overtimerequest : result.data.content.status_numbers.overtimepending,
-          restdayrequest :result.data.content.status_numbers.restdayworkpending,
-          changeschedulerequest : result.data.content.status_numbers.changeschedulepending,
+          alterrequest: result.data.content.status_numbers.team_alterlogpending,
+          overtimerequest : result.data.content.status_numbers.team_overtimepending,
+          restdayrequest :result.data.content.status_numbers.team_restdayworkpending,
+          changeschedulerequest : result.data.content.status_numbers.team_changeschedulepending,
+
+
+          myalterrequest: result.data.content.status_numbers.alterlogpending,
+          myovertimerequest : result.data.content.status_numbers.overtimepending,
+          myrestdayrequest :result.data.content.status_numbers.restdayworkpending,
+          mychangeschedulerequest : result.data.content.status_numbers.changeschedulepending,
         });
        console.log()
       })

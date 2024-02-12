@@ -58,19 +58,23 @@ export const SummaryDashbord = (props) => {
         setOvertimecount,
         setRestdayworkcount,
         setChangeschedulecount,
-        setTaskcompletestatus
-      )
-    );
-
-    dispatch(
-      myfetchStatusNumbers_dashboard(
         setMyaltercount,
         setMyOvertimecount,
         setMyRestdayworkcount,
         setMyChangeschedulecount,
-        setTaskcompletestatus1
+        setTaskcompletestatus
       )
     );
+
+    // dispatch(
+    //   myfetchStatusNumbers_dashboard(
+    //     setMyaltercount,
+    //     setMyOvertimecount,
+    //     setMyRestdayworkcount,
+    //     setMyChangeschedulecount,
+    //     setTaskcompletestatus1
+    //   )
+    // );
     // alert(dashboard.alterrequest)
   }, []);
   const { dashboard } = props;
