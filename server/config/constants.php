@@ -406,5 +406,13 @@ return [
         4 => 'Change Schedule',
         5 => 'MultiPunch Alteration',
     ],
+    "REQUEST_TYPE_SP_RE"=>[
+       'all' =>  '0',
+       'alteration' =>  '1',
+       'overtime' =>  '2',
+       'rest_day_work' =>  '3',
+       'change_schedule' =>  '4',
+       'alter_logs_punches' =>  '5',
+    ],
 
 ];

@@ -631,7 +631,64 @@ class User extends Authenticatable implements JWTSubject
     }
 
     # Fetch the Users Handled of the current User Instance 
+    
     public function users_handled()
+    {   
+
+        if( $this->isLevel("Client") ) { 
+            return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
+        } 
+        
+        if (
+                    ($this->isLevel("Admin")
+                    ||
+                   $this->isLevel("HR")
+                    ||
+                   $this->isLevel("Payroll"))
+                ) 
+                {
+                    return User::whereNotNull("bhr_num");
+                }
+               
+   if(
+                    ($this->isLevel("SubDepartment Head")
+                    ||
+                   $this->isLevel("Department Head")
+                    ||
+                   $this->isLevel("Board"))
+   ){
+    $response = call_sp("EH_SP_Employee_List",[
+        $this->id, 
+        is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
+        null,
+        null,
+        1, // active
+        null, // name
+        null, // job_title
+        1,
+        9999,
+        1      
+        ]
+    ); 
+    
+        $result = array(
+            "query" =>  $response ?? [],
+        );
+
+
+    if( count($result['query']) > 2){
+        $collection["data"] = $result['query'][count($result['query'])-3];
+    }
+
+$ids = array_pluck($result['query'][count($result['query'])-3], "id");
+
+return user::findMany( $ids);
+   }
+
+    return [];
+    }
+   
+    public function users_handled_old()
     {   
         // If the User has Client Role, get all the Users from his/her departments handled.
         if( $this->isLevel("Client") ) { 
@@ -767,7 +824,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function isLevel($level_role_name){
-        return $this->$level_role_name == $this->level_type()? true : false ;
+        return $level_role_name == $this->level_type()? true : false ;
     }
 
     public function getFeatureAccess(){

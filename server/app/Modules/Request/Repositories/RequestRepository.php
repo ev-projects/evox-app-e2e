@@ -22,7 +22,7 @@ class RequestRepository implements RequestRepositoryInterface{
      * @param array (Overtime Post Variables) $data
      * @return Overtime $overtime
      */
-    public function get_status_numbers($data)
+    public function get_status_numbers_old($data)
     {
         DB::beginTransaction();
         try {
@@ -175,6 +175,52 @@ class RequestRepository implements RequestRepositoryInterface{
             foreach ($status as $key => $value) {
                 $numbers[$value->{'status'}] = $value->{'COUNT(*)'};
             }
+
+            return array( 'status_numbers' => $numbers  );
+        } catch (Exception $e) {
+            DB::rollback();
+            log_error($e);
+            throw $e;
+        }
+    }
+
+
+     /**
+     *  Responsible for Storing the Overtime Request
+     * @param array (Overtime Post Variables) $data
+     * @return Overtime $overtime
+     */
+    public function get_status_numbers($data)
+    {
+        DB::beginTransaction();
+        try {
+            $numbers = array(
+                "pending" => 0,
+                "approved" => 0,
+                "decline" => 0,
+                "canceled" => 0,
+            );
+
+
+            $my_team_req =  call_sp("EH_SP_My_Team_Request", [Auth::user()->id, Auth::user()->LevelId
+            ,$data->valid_from, $data->valid_to,
+            get_constant('REQUEST_TYPE_SP_RE')[$data->request_type], 
+            $data->status 
+            , $data->department_id,
+            $data->name, 
+            0, 1, 999, 0]);
+            
+            // dd( $data->all(),$my_team_req);
+            
+            if(is_valid($my_team_req[0])){
+                $numbers = array(
+                    "pending" => $my_team_req[0][3]->statusCount,
+                    "approved" => $my_team_req[0][0]->statusCount,
+                    "decline" => $my_team_req[0][2]->statusCount,
+                    "canceled" => $my_team_req[0][1]->statusCount,
+                );
+            }
+           
 
             return array( 'status_numbers' => $numbers  );
         } catch (Exception $e) {
