@@ -203,6 +203,25 @@ if (! function_exists('datetime_to_timestamp')) {
 
 
 
+
+/*
+    Apply timezone to time and return the datetime object
+*/
+if (! function_exists('apply_timezone')) {   
+    /**
+     * This function returns a converted Timestamp to Datetime
+     *
+     * @param  timestamp timestamp
+     * @param  timezone string
+     * @return datetime
+     */
+    function apply_timezone( $timestamp, $timezone, $format = 'Y-m-d H:i:s') 
+    {
+        $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone($timezone)->format("P"));
+        return ( is_valid( $timestamp ) ) ? date($format, $timestamp + $target_date_offset) : null;
+    }
+}
+
 // if (! function_exists('timestamp_to_datetime')) {   
 //     /**
 //      * This function returns a converted Timestamp to Datetime
