@@ -98,18 +98,29 @@ class UserProfileResource extends JsonResource
             }
 
              $evox_departments_handled = [];
-             $evox_departments_handled=  $this->evox_departments_handled()->orderBy('Name', 'asc')->get()->toArray();
-            // foreach( $this->evox_departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
-            //     array_push( $departments_handled, $departments );
-            // }
+             $evox_departments_handled=  $this->evox_departments_handled()
+             ->select(
+                ["Id AS id",
+                'Name AS department_name', 
+                'HeadId',
+                'isActive',
+                'CreatedOn AS created_at',
+                'UpdatedOn AS updated_at',
+                'CreatedBy',
+                'CreatedBy',
+                'LevelId',])
+             ->orderBy('Name', 'asc')
+             ->get()
+             ->toArray();
 
 
+                // dd( $evox_departments_handled);
             return array_merge( 
                 $main_info, 
                 array('permissions' => $permissions),
                 array('roles' => $roles),
-                array('departments_handled' => $departments_handled),
-                array('evox_departments_handled' => $evox_departments_handled),
+                array('departments_handled' => $evox_departments_handled),
+                // array('evox_departments_handled' => $evox_departments_handled),
             );
             
         } else {

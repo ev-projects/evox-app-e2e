@@ -126,8 +126,8 @@ const MyTeamListFilter = (props) => {
                       style={{ display: 'block' }}
                     >
                     <option label="Select Department" value=''/>
-                    {props.props.user.evox_departments_handled.map(function(item){
-                      return <option value={item.Id} label={item.Name} />;
+                    {props.props.user.departments_handled.map(function(item){
+                      return <option value={item.id} label={item.department_name} />;
                     })}
                     </select>
                 </div>
