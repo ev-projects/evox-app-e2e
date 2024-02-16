@@ -813,7 +813,7 @@ class User extends Authenticatable implements JWTSubject
     public function getFeatureAccessWithUnconditional(){
 
         if(is_valid($this->LevelId)){
-            return UserFeatures::where('user_id', $this->id)->leftJoin("features", 'feature_id', '=', 'features.id');
+            return UserFeatures::where('user_id', $this->id)->where("has_access", true)->leftJoin("features", 'feature_id', '=', 'features.id');
             
         }
            
