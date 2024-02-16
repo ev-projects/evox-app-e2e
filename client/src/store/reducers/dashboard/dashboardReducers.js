@@ -94,6 +94,11 @@ const dashboardReducers = (state = initState, action) => {
                 overtimerequest : action.overtimerequest,
                 restdayrequest : action.restdayrequest,
                 changeschedulerequest : action.changeschedulerequest,
+
+                myalterrequest : action.myalterrequest,
+                myovertimerequest : action.myovertimerequest,
+                myrestdayrequest : action.myrestdayrequest,
+                mychangeschedulerequest : action.mychangeschedulerequest,
             }
             break;
             case "MY_ALTER_LOG_PENDING":

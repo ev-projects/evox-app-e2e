@@ -2,37 +2,38 @@
 
 namespace App\Modules\Request\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\Controller;
-use App\Modules\Email\Mail\OvertimeRequestEmail;
-use App\Modules\Email\Repositories\EmailRepositoryInterface;
-use App\Modules\Request\Http\Requests\RequestFilterRequest;
-use App\Modules\Request\Repositories\RequestRepositoryInterface;
-use App\Modules\Request\Resources\OvertimeResource;
-use App\Modules\Request\Resources\RequestResource;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 
-use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
-use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
-use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
-use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
-use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Request\Http\Requests\RequestApprovalChangeStatusRequest;
-use App\Modules\Request\Models\AlterLog;
-use App\Modules\Request\Models\ChangeSchedule;
-use App\Modules\Request\Models\Overtime;
-use App\Modules\Request\Models\RestDayWork;
-use App\Modules\Request\Repositories\AlterLogPunchRepositoryInterface;
-use App\Modules\Request\Resources\AlterLogResource;
-use App\Modules\Request\Resources\ChangeScheduleResource;
-use App\Modules\Request\Resources\RequestApprovalChangeStatusResource;
-use App\Modules\Request\Resources\RestDayWorkResource;
+use Illuminate\Http\Request;
 use App\Modules\User\Models\User;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\Overtime;
+use App\Modules\Request\Models\RestDayWork;
+use Illuminate\Database\Eloquent\Collection;
+
+use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Email\Mail\OvertimeRequestEmail;
+use App\Modules\Request\Resources\RequestResource;
+use App\Modules\Request\Resources\AlterLogResource;
+use App\Modules\Request\Resources\OvertimeResource;
+use App\Modules\Request\Resources\RestDayWorkResource;
+use App\Modules\Request\Resources\ChangeScheduleResource;
+use App\Modules\Request\Http\Requests\RequestFilterRequest;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Request\Repositories\RequestRepositoryInterface;
+use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
+use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
+use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
+use App\Modules\Request\Repositories\AlterLogPunchRepositoryInterface;
+use App\Modules\Request\Resources\RequestApprovalChangeStatusResource;
+use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
+use App\Modules\Request\Http\Requests\RequestApprovalChangeStatusRequest;
 
 class RequestController extends Controller
 {
@@ -43,7 +44,8 @@ class RequestController extends Controller
     protected $change_schedule;
     protected $work_from_home;
 
-    public function __construct(    OvertimeRepositoryInterface $overtime,
+    public function __construct(    PayrollCutoffRepositoryInterface $payroll_cutoff,
+                                    OvertimeRepositoryInterface $overtime,
                                     RequestRepositoryInterface $request,
                                     RestDayWorkRepositoryInterface $rest_day_work,
                                     AlterLogRepositoryInterface $alter_log,
@@ -51,7 +53,7 @@ class RequestController extends Controller
                                     ChangeScheduleRepositoryInterface $change_schedule,
                                     DtrRepositoryInterface $dtr,
                                     EmailRepositoryInterface $email){
-
+        $this->payroll_cutoff         = $payroll_cutoff;
         $this->overtime         = $overtime;
         $this->request          = $request;
         $this->rest_day_work    = $rest_day_work;
@@ -135,8 +137,12 @@ class RequestController extends Controller
     public function requestlistNumbers_dashboard(Request $request){
         try {
             log_activity( trans('messages.request_number_display_attempt') );
+            // return success_response(
+            //     trans('messages.request_display_success'), $this->request->get_status_numbers_dashboard( $request )
+            // );
+
             return success_response(
-                trans('messages.request_display_success'), $this->request->get_status_numbers_dashboard( $request )
+                trans('messages.request_display_success'), $this->request->get_status_numbers_only( Auth::user(),$this->payroll_cutoff->get_payroll_cutoff() )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
