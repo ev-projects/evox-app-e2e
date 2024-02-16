@@ -45,6 +45,10 @@ class OvertimeController extends Controller
 
             $this->email->sendOvertimeRequestEmail( $overtime );
 
+            // log action to audit_trail table
+            $description = 'has requested for ' . str_replace('_', '-', $request->type);
+            log_to_audit_trail(['action' => 'Overtime', 'description' => $description, 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
             return success_response(
                 trans('messages.create_overtime_success'), 
                 new OvertimeResource( $overtime ),

@@ -38,7 +38,8 @@ class AnnouncementRequest extends FormRequest
             'link' => 'required_if:on_link,true',
             'selectedDepartments' => 'required_if:set_all,0',
             'country_id' => 'required_if:set_country_all,0',
-
+            // 'thumbnail' =>  'mimes:jpeg,png,jpg,gif'
+            // 'thumbnail' => 'required|image|size:1024' 
 
             // 'inputFileWasDeleted'=> 'boolean',
         ];

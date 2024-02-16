@@ -152,7 +152,7 @@ class DashboardAnnouncementsList extends Component {
 const AnnouncementListTable = (props) => {
   {
     var showOpen = false;
-    if(props.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded){
+    if(props.props.departmentAnnouncement.isDepartmentAnnouncementListLoaded&& props.props.departmentAnnouncement.depAnnouncementlist  instanceof Array){
     console.log(props.props.departmentAnnouncement)
       if(props.props.departmentAnnouncement.depAnnouncementlist.length !== 0){
         showOpen = props.props.departmentAnnouncement.depAnnouncementlist.length > 6 ? true : false

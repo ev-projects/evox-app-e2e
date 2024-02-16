@@ -68,6 +68,7 @@ class UserProfileResource extends JsonResource
             "user_server_timestamp" => (Carbon::now()->timestamp + string_offset_to_seconds($offset)),
             "user_server_timestamp_mils" => (Carbon::now()->timestamp + string_offset_to_seconds($offset))*1000,
             'pov_timezone'=>  $this->country_zone()->country_name . " " . $this->country_zone()->country_time_zone."(".$offset .")",
+            'country'=>  $this->country_zone()->country_name ,
             'timezone'=>$this->country_zone()->country_time_zone,
             "current_offset" => $offset,
             "default_offset" => $this->country_zone()->time_difference,

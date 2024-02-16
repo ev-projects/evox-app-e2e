@@ -39,6 +39,9 @@ class RestDayWorkController extends Controller
 
             $this->email->sendRestDayWorkRequestEmail( $rest_day_work );
 
+            // log action to audit_trail table
+            log_to_audit_trail(['action' => 'Rest Day Work', 'description' => 'has requested for rest day work', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
             return success_response(
                 trans('messages.create_rest_day_work_success'), 
                 new RestDayWorkResource( $rest_day_work ),

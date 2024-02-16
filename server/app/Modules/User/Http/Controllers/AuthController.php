@@ -79,13 +79,17 @@ class AuthController extends Controller
             log_activity( trans('messages.login') );
 
             // Set the User that was fetched into Session
+            $sess_id = session()->getId();
             $result = [
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => auth()->factory()->getTTL() * 60
+                'expires_in' => auth()->factory()->getTTL() * 60,
+                'session_id' => $sess_id
             ];
 
             $result = $this->get_default_payload( $result );
+
+            log_to_audit_trail(['action' => 'Login', 'description' => 'has logged in', 'user_id' => auth()->user()->id, 'session_id' => $sess_id, 'type' => 1]);
 
             log_to_file('info', 'Success', [], 'user');
             return success_response( trans('messages.login_success'), $result );
@@ -279,6 +283,8 @@ class AuthController extends Controller
             log_activity( trans('messages.logout') );
 
             log_to_file('info', 'Success', true, 'user');
+
+            log_to_audit_trail(['action' => 'Logout', 'description' => 'has logged out', 'user_id' => auth()->user()->id, 'session_id' => request()->session_id, 'type' => 1]);
 
             auth()->logout();
 

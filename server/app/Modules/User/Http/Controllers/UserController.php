@@ -554,7 +554,7 @@ class UserController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function tick_dpa( $id ){   
+    public function tick_dpa( $id, Request $request ){
         try {
             log_activity( trans('messages.tick_dpa_attempt') );
 
@@ -565,6 +565,9 @@ class UserController extends Controller
             ]);
                
             $user = $this->user->tick_dpa( $id );
+
+            // log action to audit_trail table
+            log_to_audit_trail(['action' => 'DPA', 'description' => 'has ticked the DPA webinar', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
 
             return success_response(
                 trans('messages.tick_dpa_success'), 

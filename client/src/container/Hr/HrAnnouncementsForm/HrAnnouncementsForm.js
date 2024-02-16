@@ -274,7 +274,7 @@ class HrAnnouncementsForm extends Component {
                               'fullscreen','insertdatetime','media','table','help','wordcount'
                            ],
  
-                            toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons | ' +
+                            toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons | ' +
                             'alignleft aligncenter alignright alignjustify | link | ' +
                             'bullist numlist checklist outdent indent | removeformat | help ',
 

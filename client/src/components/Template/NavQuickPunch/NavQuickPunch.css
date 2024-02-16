@@ -3,8 +3,9 @@ span .nav-clock{
 }
 .nav-item .time-info{
     
-    padding-right: 10px !important;
+    padding-right: 15px !important;
     padding-left: 10px !important;
+    /* min-width: 20px !important;; */
     /* border: #fff;
     border-width: thin; */
   
@@ -27,9 +28,20 @@ span .nav-clock{
   
 }
 
+
+.nav-time-clock{
+    position: absolute;
+    /* padding-left: 33px !important; */
+    /* border: #fff;
+    border-width: thin; */
+  
+}
+
 .nav-date{
     font-size:0.8rem;
     color: #fff !important;
+    min-width: 120px !important;
+    min-height: 18px !important;
     /* background: #ccc;
     float: none;
     overflow: hidden; */
@@ -37,16 +49,93 @@ span .nav-clock{
     border-width: thin; */
   
 }
-
-.nav-clock-button{
-    margin-top: 4px;
-    margin-right: 3px;
+.nav-date-item{
+  float: left !important;
 }
+
+.nav-clock-button.btn{
+    /* margin-top: 4px;
+    margin-right: 3px; */
+    font-size: 11px !important;
+}
+
+.timezone-item{
+    position: absolute;
+    top: 24px;
+    right: 25px;
+    font-size: 8.5px;
+}
+
+.timezone-item-tooltip{
+    position: absolute;
+    top: 33px;
+    right: 28px;
+    font-size: 10px;
+}
+
+
+
+a[data-tool-tip] {
+    position: relative;
+  }
+  
+a[data-tool-tip]::after {
+    content: attr(data-tool-tip);
+    display: block;
+    position: absolute;
+    background-color: #78909C !important;
+    padding: 1em 3em;
+    color: white;
+    border-radius: 5px;
+    font-size: 10px;
+    top: 14px;
+    right: 1px;
+    white-space: nowrap;
+    transform: scale(0);
+    /* left: 1px; */
+    /* transition:
+      transform ease-out 150ms,
+      bottom ease-out 150ms; */
+  }
+  
+  a[data-tool-tip]:hover::after {
+    transform: scale(1);
+    /* bottom: 100%; */
+    /* top: 10px; */
+   
+  }
+
+
+
 
 /* .nav-clock-dropdown:hover .dropdown-menu{
     display: block;
 } */
 
+
+.nav-item .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+  
+.nav-item.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .nav-item .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
 
 
 

@@ -62,7 +62,10 @@ class RestDayWork extends Component {
             }
         }
     }
-    
+
+    // include session id in the post parameter
+    formData.set('session_id', localStorage.getItem('session_id'));
+
     // Checks on what action to use depending on the values.action
     switch( values.action ) { 
 
