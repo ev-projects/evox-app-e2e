@@ -90,7 +90,7 @@ class SyncController extends Controller
 
     public function syncholidays(Request $request){
         try {
-            $result = DB::select('call EV_SP_Holidays_Sync("'.$request->holidayName.'", "'.$request->holiday_date.'", "'.$request->country.'")');
+            $result = DB::select('call EV_SP_Holidays_Sync("'.$request->holidayName.'", "'.$request->holiday_date.'", "'.$request->country.'", "'.$request->holidaytype.'")');
             return $result;
             } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
