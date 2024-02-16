@@ -39,7 +39,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
     private $start;
     private $end;
-    protected $data;
+    //protected $data;
     protected $list;
     protected $total_row;
     protected $segragated_total_row;
@@ -47,26 +47,29 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
     protected $period;
     protected $count_period;
 
-    public function __construct($start = null, $end = null, $data, $list, $total_row, $segragated_total_row)
+    public function __construct($list, $stats, $start, $end)
     {
         $this->start = $start;
         $this->end = $end;
-        $this->data = $data;
-        $this->list = $list;
+        //$this->data = $data;
+        $this->list = $list ?? [];
 
-        $this->total_row = $total_row;
-        $this->segragated_total_row = $segragated_total_row;
+        $this->total_row = count($this->list);
 
-        $this->list_count = count($list);
+        $stat_vars = get_object_vars($stats);
+        $stat_vals = [];
+        foreach ($stat_vars as $key => $val) {
+            array_push($stat_vals, $val);
+        }
+        $this->segragated_total_row = $stat_vals;
+
+        $this->list_count = count($this->list);
         $parsed_start = Carbon::parse($this->start)->format('y-m-d');
         $parsed_end = Carbon::parse($this->end)->format('y-m-d');
         $this->period = CarbonPeriod::between($parsed_start,  $parsed_end);
         $this->count_period = count(CarbonPeriod::between($parsed_start,  $parsed_end));
-        
       
     }
-
-
 
 
     public function registerEvents(): array
@@ -191,12 +194,6 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
     }
     public function array(): array
     {
-
-
-
-
-
-
         $i = 1;
         $d = 1;
 
@@ -212,8 +209,17 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             // }
             $d++;
         }
-
-        $excel_employees = $this->list;
+        $employee_items = [];
+        foreach ($this->list as $item) {
+            $item_vals = [];
+            foreach(get_object_vars($item) as $key => $val) {
+                //array_push($item_vals, $val);
+                $item_vals[][] = $val;
+            }
+            //array_push($employee_items, $item_vals);
+            $employee_items[] = array_merge($item_vals);
+        }
+        $excel_employees = $employee_items;
         $excel_employees[] = $this->total_row;
 
         $excel_accounts = $this->segragated_total_row;
@@ -255,7 +261,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                 [""], //BLANK HEADERS + DAYS 
                 $datesday
             ),
-            $excel_employees,
+            array_merge($excel_employees),
 
             [""],
             [""],

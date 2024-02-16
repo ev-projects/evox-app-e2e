@@ -743,43 +743,116 @@ class ReportController extends Controller
                 'start_date' => 'date_format:Y-m-d',
                 'end_date' => 'date_format:Y-m-d',
             ]);
+            $me = Auth::user();
+            $report = array(
+                'stdd' => $start_date,
+                'eddd' => $end_date
+            );
 
+            $department_ids = $request->selectedDepartments ? implode(',', $request->selectedDepartments) : null;
+            $team_ids = $request->selectedTeams ? implode(',', $request->selectedTeams) : null;
 
-            $new_start_date = Carbon::parse($start_date)->format('y-m-d');
-            $new_end_date = Carbon::parse($end_date)->format('y-m-d');
-            $period = CarbonPeriod::between($new_start_date,  $new_end_date);
-
-            $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date,  true, auth()->user()->isLevel("HR"));
-
-
-            $override = $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-           
-            
-            $list = (array) $override['employee_list_summary'];
-
-
-
-            $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
-
-
-            $information_array = $this->info_array;
-
-            $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-
-
-            $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-
-
-            $override["attendance"]['total_percentage'] = number_format($total_row[3], 2);
-
-            $override["unplanned_leaves"]['total_percentage'] = number_format($total_row[4], 2);
-            $override["planned_leaves"]['total_percentage'] = number_format($total_row[5], 2);
-
-
-
+            $attendance = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 1]);
+            $attendance_stats = $attendance[0][0];
+            $attendance_list = $attendance[1];
+            $report['attendance'] = array(
+                'total_count' => $attendance_stats->TotalCount,
+                'total_percentage' => $attendance_stats->AttendancePercent,
+                'target_percentage' => 95,
+                'users' => array_map(fn($i) =>
+                    array(
+                        'date'=> $i->LogDate,
+                        'user_id' => $i->EmployeeNumber,
+                        'name' => $i->Name,
+                        'emp_num' => $i->EmployeeNumber,
+                        'job_title' => $i->JobTittle,
+                        'schedule' => [],
+                        'hours' => null,
+                        'status' => $i->Status
+                    )
+                , $attendance_list)
+            );
+            $pl = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 2]);
+            $pl_stats = $pl[0][0];
+            $pl_list = $pl[1];
+            $report['planned_leaves'] = array(
+                'total_count' => $pl_stats->PlannedLeaveCount,
+                'total_percentage' => $pl_stats->PlannedLeavePercent,
+                'target_percentage' => 7,
+                'users' => array_map(fn($i) =>
+                    array(
+                        'date'=> $i->LogDate,
+                        'user_id' => $i->EmployeeNumber,
+                        'name' => $i->Name,
+                        'emp_num' => $i->EmployeeNumber,
+                        'job_title' => $i->JobTittle,
+                        'schedule' => [],
+                        'hours' => null,
+                        'status' => $i->Status
+                    )
+                , $pl_list)
+            );
+            $upl = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 3]);
+            $upl_stats = $upl[0][0];
+            $upl_list = $upl[1];
+            $report['unplanned_leaves'] = array(
+                'total_count' => $upl_stats->UnplannedLeaveCount,
+                'total_percentage' => $upl_stats->UnplannedLeavePercent,
+                'target_percentage' => 3,
+                'users' => array_map(fn($i) =>
+                    array(
+                        'date'=> $i->LogDate,
+                        'user_id' => $i->EmployeeNumber,
+                        'name' => $i->Name,
+                        'emp_num' => $i->EmployeeNumber,
+                        'job_title' => $i->JobTittle,
+                        'schedule' => [],
+                        'hours' => null,
+                        'status' => $i->Status
+                    )
+                , $upl_list)
+            );
+            $rdw = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 4]);
+            $rdw_stats = $rdw[0][0];
+            $rdw_list = $rdw[1];
+            $report['total_rest_day_work'] = array(
+                'total_count' => $rdw_stats->RDWCount,
+                'total_hours' => $rdw_stats->RDWHours,
+                /*'users' => array_map(fn($i) =>
+                    array(
+                        'date'=> $i->LogDate,
+                        'user_id' => $i->EmployeeNumber,
+                        'name' => $i->Name,
+                        'emp_num' => $i->EmployeeNumber,
+                        'job_title' => $i->JobTittle,
+                        'schedule' => [],
+                        'hours' => null,
+                        'status' => $i->Status
+                    )
+                , $rdw_list)*/
+            );
+            $ot = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 5]);
+            $o_stats = $ot[0][0];
+            $ot_list = $ot[1];
+            $report['total_overtime'] = array(
+                'total_count' => $rdw_stats->OTCount,
+                'total_hours' => $rdw_stats->OTHours,
+                /*'users' => array_map(fn($i) =>
+                    array(
+                        'date'=> $i->LogDate,
+                        'user_id' => $i->EmployeeNumber,
+                        'name' => $i->Name,
+                        'emp_num' => $i->EmployeeNumber,
+                        'job_title' => $i->JobTittle,
+                        'schedule' => [],
+                        'hours' => null,
+                        'status' => $i->Status
+                    )
+                , $rdw_list)*/
+            );
             return success_response(
                 trans('messages.get_attendance_summary_success'),
-                $override
+                $report
             );
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
@@ -792,36 +865,26 @@ class ReportController extends Controller
      */
     public function export(Request $request, $start_date, $end_date)
     {
-
-
-        $new_start_date = Carbon::parse($start_date)->format('y-m-d');
-        $new_end_date = Carbon::parse($end_date)->format('y-m-d');
-        $period = CarbonPeriod::between($new_start_date,  $new_end_date);
-
-
-        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true, auth()->user()->isLevel("HR"));
-        $data =  $this->report->get_team_attendance_summary_dtr($user_collection,  $start_date, $end_date);
-
-        $list = (array) $data['employee_list_summary'];
-        
-
-
-
-        $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
-
-
-        $information_array = $this->info_array;
-
-        $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-
-
-        $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-
-        $segragated_total_row = $this->compute_account_attendance_total_row($ordered_row,  $information_array);
-
-
+        $this->validate(new Request([
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ]), [
+            'start_date' => 'date_format:Y-m-d',
+            'end_date' => 'date_format:Y-m-d',
+        ]);
+        $me = Auth::user();
+        $department_ids = $request->selectedDepartments ?? null;
+        $team_ids = $request->selectedTeams ?? null;
+        //return success_response('Test', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
+        $attendance_summary = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null])[0];
+        $attendance_stats = array_pop($attendance_summary);
+        $attendance_list = $attendance_summary;
+        /*return success_response(
+            trans('messages.get_attendance_summary_success'),
+            $date_keys
+        );*/
         $response = Excel::download(
-            new EmployeeAttendanceReportExport($start_date, $end_date, $data,  $ordered_row, $total_row, $segragated_total_row),
+            new EmployeeAttendanceReportExport($attendance_list, $attendance_stats, $start_date, $end_date),
             'attendance_rep.xlsx',
             \Maatwebsite\Excel\Excel::XLSX,
             ["sampleName" => 'sample']
