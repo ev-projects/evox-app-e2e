@@ -639,38 +639,6 @@ class ReportController extends Controller
                 'end_date' => 'date_format:Y-m-d',
             ]);
             $me = Auth::user();
-            /*$new_start_date = Carbon::parse($start_date)->format('y-m-d');
-            $new_end_date = Carbon::parse($end_date)->format('y-m-d');
-            
-            $period = CarbonPeriod::between($new_start_date,  $new_end_date);
-
-            $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date,  true, auth()->user()->hasRole( get_constant('USER_ROLES.hr') ));
-
-
-            $override = $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-           
-            
-            $list = (array) $override['employee_list_summary'];
-
-
-
-            $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
-
-
-            $information_array = $this->info_array;
-
-            $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-
-
-            $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-
-
-            $override["attendance"]['total_percentage'] = number_format($total_row[3], 2);
-
-            $override["unplanned_leaves"]['total_percentage'] = number_format($total_row[4], 2);
-            $override["planned_leaves"]['total_percentage'] = number_format($total_row[5], 2);
-
-*/
             $report = array(
                 'stdd' => $start_date,
                 'eddd' => $end_date
@@ -792,36 +760,26 @@ class ReportController extends Controller
      */
     public function export(Request $request, $start_date, $end_date)
     {
-
-
-        $new_start_date = Carbon::parse($start_date)->format('y-m-d');
-        $new_end_date = Carbon::parse($end_date)->format('y-m-d');
-        $period = CarbonPeriod::between($new_start_date,  $new_end_date);
-
-
-        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true, auth()->user()->hasRole( get_constant('USER_ROLES.hr') ));
-        $data =  $this->report->get_team_attendance_summary_dtr($user_collection,  $start_date, $end_date);
-
-        $list = (array) $data['employee_list_summary'];
-        
-
-
-
-        $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
-
-
-        $information_array = $this->info_array;
-
-        $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-
-
-        $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-
-        $segragated_total_row = $this->compute_account_attendance_total_row($ordered_row,  $information_array);
-
-
+        $this->validate(new Request([
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ]), [
+            'start_date' => 'date_format:Y-m-d',
+            'end_date' => 'date_format:Y-m-d',
+        ]);
+        $me = Auth::user();
+        $department_ids = $request->selectedDepartments ?? null;
+        $team_ids = $request->selectedTeams ?? null;
+        //return success_response('Test', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
+        $attendance_summary = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null])[0];
+        $attendance_stats = array_pop($attendance_summary);
+        $attendance_list = $attendance_summary;
+        /*return success_response(
+            trans('messages.get_attendance_summary_success'),
+            $date_keys
+        );*/
         $response = Excel::download(
-            new EmployeeAttendanceReportExport($start_date, $end_date, $data,  $ordered_row, $total_row, $segragated_total_row),
+            new EmployeeAttendanceReportExport($attendance_list, $attendance_stats, $start_date, $end_date),
             'attendance_rep.xlsx',
             \Maatwebsite\Excel\Excel::XLSX,
             ["sampleName" => 'sample']
