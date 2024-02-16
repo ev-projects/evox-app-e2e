@@ -38,6 +38,13 @@ const assignRoleReducers = (state = initState, action) => {
                 isUserRolesPermissionsLoaded : true,
             };
             break;
+        case "FETCH_USER_FEATURES":
+            return {
+                userLevel : action.userLevel,
+                userFeatures : action.userFeatures,
+                isUserRolesPermissionsLoaded : true,
+            };
+            break;
         default:
             result = state;
     }

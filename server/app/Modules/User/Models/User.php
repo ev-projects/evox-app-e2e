@@ -3,6 +3,7 @@
 namespace App\Modules\User\Models;
 
 use App\EvoxLevels;
+use App\Features;
 use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\EvoxDepartment;
@@ -27,6 +28,7 @@ use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\WorkFromHome;
 use App\RoleLevelFeatures;
+use App\UserFeatures;
 use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
 use Auth;
@@ -800,7 +802,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function getFeatureAccess(){
 
-        # Fetch the Default Schedule for the current User.
         if(is_valid($this->LevelId)){
             return RoleLevelFeatures::where('evox_levels_id', $this->LevelId)->leftJoin("features", 'features_id', '=', 'features.id');
             
@@ -808,5 +809,20 @@ class User extends Authenticatable implements JWTSubject
            
         return [];
     }
+
+    public function getFeatureAccessWithUnconditional(){
+
+        if(is_valid($this->LevelId)){
+            return UserFeatures::where('user_id', $this->id)->leftJoin("features", 'feature_id', '=', 'features.id');
+            
+        }
+           
+        return [];
+    }
+
+
+    public function features(){
+        return $this->belongsToMany(Features::class, 'user_features', "user_id","feature_id" )->withTimestamps();
+     }
     ########################################################################
 }

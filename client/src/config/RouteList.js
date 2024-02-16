@@ -51,6 +51,7 @@ import SyncBhrLeaves from "../container/Admin/SyncBhrLeaves";
 import SyncUTCAdjustment from "../container/Admin/SyncUTCAdjustment";
 import SyncUserUpdates from "../container/Admin/SyncUserUpdates"; 
 import AssignRolesPermissions from "../container/Admin/AssignRolesPermissions";
+import AssignFeature from "../container/Admin/AssignFeature";
 import AdminAnnouncementsList from "../container/Admin/AdminAnnouncementsList";
 import JobInformation from "../container/Profile/JobInformation";
 import PersonalInformation from "../container/Profile/PersonalInformation";
@@ -484,6 +485,11 @@ const RoutesList = (props) => {
           <AssignRolesPermissions  
           level={["Admin"]} 
           role={['admin']} permission={['assign_role_permission']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.assign_feature}>
+          <AssignFeature  
+          level={["Admin"]} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.register_user}>

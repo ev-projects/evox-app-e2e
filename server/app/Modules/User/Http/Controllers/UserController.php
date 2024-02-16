@@ -5,6 +5,7 @@ namespace App\Modules\User\Http\Controllers;
 use Auth;
 
 use Exception;
+use App\Features;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Exports\DpaListExport;
@@ -32,19 +33,19 @@ use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\User\Resources\LeaveCreditsListResource;
+use App\Modules\Schedule\Repositories\ScheduleRepository;
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
+
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
 use App\Modules\User\Resources\EmploymentStatusResource; 
-
 use App\Modules\User\Resources\JobInformationResource;   
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResourceCollection;
 use App\Modules\User\Resources\PersonalInformationResource;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Schedule\Repositories\ScheduleRepository;
-use App\Modules\Schedule\Resources\ScheduleResourceCollection;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
+use App\Modules\Schedule\Resources\ScheduleResourceCollection;
 use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 
@@ -507,6 +508,30 @@ class UserController extends Controller
         }
     }
 
+    public function assign_level_features( Request $request, $id ){   
+        try {
+            log_activity( trans('messages.user_assign_roles_permissions_attempt') );
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+
+            // dd($request->all());
+
+            $user = $this->user->assign_level_features( $id ,$request->get('features'), $request->get('level') );
+
+            
+            return success_response(
+                trans('messages.user_assign_roles_permissions_success'), 
+                new UserProfileResource( $user )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
 
     
 
@@ -748,6 +773,34 @@ class UserController extends Controller
     }
 
      # This function returns user role
+     public function get_user_feature( $user_id ){   
+        try {
+            $user = User::find($user_id);
+            log_activity( trans('messages.list_role_attempt') );
+
+            $feature_all_list = [];
+            if(is_valid($user->LevelId)){
+                $default = $user->getFeatureAccess()->pluck("feature_name")->toArray();
+                $conditional = $user->getFeatureAccessWithUnconditional()->get()->pluck("feature_name")->toArray();
+                $feature_all_list = array_unique(array_merge($default,$conditional));
+            }
+
+                    return success_response(
+                        trans('messages.list_role_success'),  
+                        [ 
+                            'level' => [
+                                            "level_id"=>$user->LevelId, 
+                                            "level_type"=>$user->level_type()
+                                        ],
+                            'features' => is_valid($user->LevelId) ? $feature_all_list : [],
+                        ]
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+     # This function returns user role
      public function get_user_role_feature( $user_id ){   
         try {
             $user = User::find($user_id);
@@ -772,6 +825,22 @@ class UserController extends Controller
                     return success_response(
                         trans('messages.list_role_success'),  
                         RoleResource::collection( Role::with('permissions')->get() ) 
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+      # This function returns roles
+      public function get_features( ){   
+        try {
+            log_activity( trans('messages.list_role_attempt') );
+                    return success_response(
+                        trans('messages.list_role_success'),  
+                        Features::all()->toArray()
+                            
+                        
                     );
 
         } catch(Exception $e){

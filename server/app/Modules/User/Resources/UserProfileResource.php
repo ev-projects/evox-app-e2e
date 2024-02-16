@@ -98,6 +98,7 @@ class UserProfileResource extends JsonResource
                 array_push( $departments_handled, $departments );
             }
 
+
              $evox_departments_handled = [];
              $evox_departments_handled=  $this->evox_departments_handled()
              ->select(
@@ -114,13 +115,21 @@ class UserProfileResource extends JsonResource
              ->get()
              ->toArray();
 
+            $feature_all_list = [];
+            if(is_valid($this->LevelId)){
+                $default = $this->getFeatureAccess()->pluck("feature_name")->toArray();
+                $conditional = $this->getFeatureAccessWithUnconditional()->get()->pluck("feature_name")->toArray();
+                $feature_all_list = array_unique(array_merge($default,$conditional));
+            }
+
+
 
                 // dd( $evox_departments_handled);
             return array_merge( 
                 $main_info, 
                 array('permissions' => $permissions),
                 array('roles' => $roles),
-                array('features_access' => is_valid($this->LevelId) ? $this->getFeatureAccess()->pluck("feature_name")->toArray(): []),
+                array('features_access' => is_valid($this->LevelId) ? $feature_all_list : []),
                 array('level' =>( is_valid( $this->LevelId) ? $this->level()->select('LevelId','Name','LevelId','IsAdmin','ISHR','IsPayRoll','CountryId','IsActive')->first()->toArray(): [] )),
                 //array('departments_handled' => $departments_handled),
                 array('departments_handled' => $evox_departments_handled),
