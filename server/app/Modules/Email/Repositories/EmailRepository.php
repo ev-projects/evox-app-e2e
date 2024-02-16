@@ -278,14 +278,9 @@ class EmailRepository implements EmailRepositoryInterface{
                 if( is_valid( $supervisor ) ) {
 
 
-                           
-                        $supervisor_role = Role::findByName( get_constant('USER_ROLES.supervisor') );
-
-                        if($supervisor->hasRole($supervisor_role) ){
                             $reminder = [ $supervisor , $user_array ];
                              SendSupervisorReminderOfNewUserEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
-                        }
-                 
+                        
 
 
                 } 

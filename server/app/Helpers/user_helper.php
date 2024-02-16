@@ -89,16 +89,23 @@ if (! function_exists('is_under_supervisee')) {
                 return false;
             }
 
-            // If the current user has 'admin' role and 'full_access' privilege, always return true.
-            if(  auth()->user()->roles()->pluck('name')->contains('admin') &&
-                 auth()->user()->permissions()->pluck('name')->contains('full_access') ) {
+            if(  auth()->user()->level_type() == "Admin" ) {
                 return true;
             }
-
+           
             if( $force_to_fail ) {
-                return auth()->user()->users_handled()->findOrFail( $user_id ) ? true : false;
+                $user_direct_sup =  User::findOrFail($user_id)->direct_supervisor_temp();
+                if(!is_valid( $user_direct_sup)){
+                    return false;
+                }
+                return auth()->user()->id ==  $user_direct_sup->id ? true : false;
+                // return auth()->user()->users_handled()->findOrFail( $user_id ) ? true : false;
             } else {
-                return auth()->user()->users_handled()->find( $user_id ) ? true : false;
+                $user_direct_sup =  User::find($user_id)->direct_supervisor_temp();
+                if(!is_valid( $user_direct_sup)){
+                    return false;
+                }
+                return auth()->user()->id ==  $user_direct_sup->id ? true : false;
             }
 
         }catch(Exception $e){

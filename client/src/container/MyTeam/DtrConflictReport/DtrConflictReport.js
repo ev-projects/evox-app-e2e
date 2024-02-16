@@ -127,7 +127,7 @@ class DtrConflictReport extends Component {
                       <label> </label>
                         <Button id="btn-generate" variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate & Export</Button>&nbsp;&nbsp;
                         
-                        { Authenticator.check('supervisor', 'allow_dtr_summary_export') &&
+                        { Authenticator.scanFeature("export_dtr_summary") &&
                           <Dropdown className="export-drop-down">
                             <Dropdown.Toggle variant="success" id="dropdown-basic">
                               <i className="fa fa-download" /> Export

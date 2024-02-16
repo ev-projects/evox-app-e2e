@@ -36,23 +36,32 @@ class SendAlterLogRequestEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-            foreach( $this->alter_log->user()->first()->user_handlers()->get() as $recepient ){
-                if(
-                    !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
-                    ||
-                    $recepient->hasRole( get_constant('USER_ROLES.hr'))
-                    ||
-                    $recepient->hasRole( get_constant('USER_ROLES.payroll')))
-                ){
-                    Mail::send( new AlterLogRequestEmail( $recepient, $this->alter_log ) );
+            // foreach( $this->alter_log->user()->first()->user_handlers()->get() as $recepient ){
+            //     if(
+            //         !( $recepient->hasRole( get_constant('USER_ROLES.admin'))
+            //         ||
+            //         $recepient->hasRole( get_constant('USER_ROLES.hr'))
+            //         ||
+            //         $recepient->hasRole( get_constant('USER_ROLES.payroll')))
+            //     ){
+            //         Mail::send( new AlterLogRequestEmail( $recepient, $this->alter_log ) );
                 
+            //         log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->alter_log], "emails");
+            //     }
+
+
+                $recepient  = $this->alter_log->user()->first()->direct_supervisor();
+            
+                if(is_valid($recepient)){
+                    Mail::send( new AlterLogRequestEmail( $recepient, $this->alter_log ) );
+                    
                     log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->alter_log], "emails");
                 }
              
-            }
+            // }
             
         } catch (Exception $e) {
-
+           
             log_error($e, 'emails');
             throw $e;
         }

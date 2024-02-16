@@ -104,6 +104,8 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 
     Route::get('team_list/{department_id}', 'UserController@my_team_list_under_department');//->middleware('auth.apikey');
 
+    Route::get('sub_department/{department_id}', 'UserController@sub_department_under_department');//->middleware('auth.apikey');
+
     Route::post('team_list_all/', 'UserController@my_team_list_under_selected_department');
     
     # Get the Role of the user

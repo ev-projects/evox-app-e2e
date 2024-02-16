@@ -142,7 +142,7 @@ class PayrollCutoff extends Component {
             <ContainerBody>
               <div className="payrollCutoff-content">
                 <Row>  
-                  <Content col="7" title="Payroll Cut-Off List"  subtitle={<Button type="button" className="btn btn-secondary" onClick={()=> {this.showForm(); Authenticator.check();}}><i class="fa fa-plus" /> Add</Button>} >
+                  <Content col="7" title="Payroll Cut-Off List"  subtitle={<Button type="button" className="btn btn-secondary" onClick={()=> {this.showForm();}}><i class="fa fa-plus" /> Add</Button>} >
                       <Col size="12"> 
                       
                       <DataTable

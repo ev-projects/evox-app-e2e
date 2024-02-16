@@ -668,7 +668,7 @@ class DepartmentAnnouncementsForm extends Component {
                             //     // replace copied text with empty string
                             //     args.content = '';
                             // },
-                                toolbar: 'undo redo | casechange blocks | bold italic forecolor backcolor emoticons media | ' +
+                                toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons media | ' +
                                 'alignleft aligncenter alignright alignjustify | link | ' +
                                 'bullist numlist checklist outdent indent | removeformat | help ',
                                 // smart_paste: false,
@@ -772,7 +772,7 @@ function PreviewAnnouncment(props) {
        
         <div id="myModal" className="modal-main">
           
-        <div className="modal-content modal-content-preview">
+        <div className="modal-content modal-content-preview modal-preview-announcement">
           <div className="modal-header">
             Preview
           <span className="close" onClick = {() => props.handleModalClose()}>&times;</span>

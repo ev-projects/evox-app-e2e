@@ -53,6 +53,25 @@ export const fetchTeamUnderDepartment = ( user_id, department_id) => {
         });
     }
 }
+export const fetchSubDepartmentUnderDepartment = ( user_id, department_id) => {
+    return (dispatch, getState) => {
+        
+        API.call({
+            method: "get",
+            url: "/user/" + user_id + "/sub_department/" + department_id 
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_SUB_DEPARTMENT_LIST_SUCCESS', 
+                'list'  : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 export const fetchDepartmentsTeams = ( user_id, params = null) => {
     return (dispatch, getState) => {

@@ -62,10 +62,7 @@ class DashboardTabs extends Component {
   componentWillMount() {}
 
   componentDidMount(){
-    if (Authenticator.check(
-      ["supervisor", "team_leader"],
-      ["supervisor_access", "team_leader_access"]
-    )) {
+    if (Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"])) {
       this.setState({
       summary_shown: true
     });
@@ -81,10 +78,7 @@ class DashboardTabs extends Component {
     this.props.fetchDashboardAnnouncementList(formData);
   };
   defaultTab = () => {
-    if (Authenticator.check(
-      ["supervisor", "team_leader"],
-      ["supervisor_access", "team_leader_access"]
-    )) {
+    if (Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"])) {
       return "evox-summary";
     } else {
 
@@ -112,10 +106,7 @@ class DashboardTabs extends Component {
           fill
           onSelect= { this.onTabSelect }
         >
-          {Authenticator.check(
-            ["supervisor", "team_leader"],
-            ["supervisor_access", "team_leader_access"]
-          ) && (
+          {Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]) && (
             <Tab
               eventKey="evox-summary"
               title="Summary"
@@ -124,10 +115,7 @@ class DashboardTabs extends Component {
               {this.state.summary_shown && (<SummaryDashbord />)}
             </Tab>
           )}
-          {Authenticator.check(
-            ["supervisor", "team_leader"],
-            ["supervisor_access", "team_leader_access"]
-          ) && (
+          {Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]) && (
             <Tab
               eventKey="engagement"
               title="Engagements"

@@ -244,7 +244,7 @@ class DtrSummaryNew extends Component {
                       <label> </label>
                         <Button id="btn-generate" variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
                         
-                        { Authenticator.check('supervisor', 'allow_dtr_summary_export') &&
+                        { Authenticator.scanFeature('export_dtr_summary') &&
                           <Dropdown className="export-drop-down">
                             <Dropdown.Toggle variant="success" id="dropdown-basic">
                               <i className="fa fa-download" /> Export
@@ -255,7 +255,7 @@ class DtrSummaryNew extends Component {
                               <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all")}>Export All</Dropdown.Item>  OLD */}
                               <Dropdown.Item id="btn-export-department"  as="button" type="submit" onClick={() => setFieldValue("export", "department_new")}>Export</Dropdown.Item>
                               <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "all_new")}>Export All</Dropdown.Item>
-                              <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "dtr_conflict")}>Export DTR Conflict</Dropdown.Item>
+                              {/* <Dropdown.Item id="btn-export-all"  as="button" type="submit" onClick={() => setFieldValue("export", "dtr_conflict")}>Export DTR Conflict</Dropdown.Item> */}
                             </Dropdown.Menu>
                           </Dropdown>
                         }

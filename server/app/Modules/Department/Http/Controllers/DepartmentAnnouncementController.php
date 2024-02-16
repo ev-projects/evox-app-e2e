@@ -180,7 +180,7 @@ class DepartmentAnnouncementController extends Controller
     public function show_strict($id)
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
-        if(Auth::user()->hasRole( get_constant('USER_ROLES.admin') )  ) { 
+        if(Auth::user()->isLevel("Admin")  ) { 
             $dep_announcement = Announcement::find($id);
         }
         else {
@@ -222,7 +222,7 @@ class DepartmentAnnouncementController extends Controller
             log_activity( trans('messages.update_department_announcement_attempt') );
             $department =  Department::find(Auth::user()->department_id);
             $check_announcement = $department->departments_announcements()->find($id);
-            if($check_announcement || Auth::user()->hasRole( get_constant('USER_ROLES.admin'))){
+            if($check_announcement || Auth::user()->isLevel("Admin")){
             $dep_announcement = Announcement::find($id);
 
             
@@ -443,7 +443,7 @@ class DepartmentAnnouncementController extends Controller
         log_activity( trans('messages.create_department_announcement_attempt') );
 
 
-        if(Auth::user()->hasRole( get_constant('USER_ROLES.hr') )  ) { 
+        if(Auth::user()->isLevel("HR")  ) { 
             $dep_announcement = Announcement::where('category', "HR")->find($id);
         }
       
