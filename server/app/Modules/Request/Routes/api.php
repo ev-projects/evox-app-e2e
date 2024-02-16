@@ -24,7 +24,7 @@ Route::group(['prefix' => 'request/approval', 'middleware' => ['auth.apikey']], 
 });
 
 # API Call for Requests , , 'middleware' => ['jwtauth', 'auth.apikey']
-Route::group(['prefix' => 'request'], function () {
+Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
 
     # Request List

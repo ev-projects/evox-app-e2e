@@ -77,7 +77,7 @@ class DailyTimeRecord extends Component {
 
         this.props.viewEmployeeDtr(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
 
-        this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
+        //this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
 
       this.setState({
           payrollCutoff_start:payrollCutoff.start_date,
@@ -110,7 +110,7 @@ class DailyTimeRecord extends Component {
 
       await this.props.viewEmployeeDtr(this.props.params.id , payrollCutoff.start_date, payrollCutoff.end_date);
 
-      await this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
+      //await this.props.getUserDtrSummary(this.props.params.id, payrollCutoff.start_date, payrollCutoff.end_date);
       
       await this.props.setSelectedPayrollCutoff( payrollCutoff );
       await this.setState({
@@ -538,7 +538,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchUser : () => dispatch( fetchUser() ),
     viewEmployeeDtr : (user_id,from,to) => dispatch( viewEmployeeDtr(user_id,from,to) ),
-    getUserDtrSummary : (user_id,from,to , isInitialLoad) => dispatch( getUserDtrSummary(user_id,from,to , isInitialLoad) ),
+    //getUserDtrSummary : (user_id,from,to , isInitialLoad) => dispatch( getUserDtrSummary(user_id,from,to , isInitialLoad) ),
     getFilterForDtr : (user_id) => dispatch( getFilterForDtr(user_id) ),
     setSelectedPayrollCutoff :   ( payrollCutoff ) => dispatch( setSelectedPayrollCutoff( payrollCutoff ) ),
     setRedirect           : ( link ) => dispatch( setRedirect( link ) ),

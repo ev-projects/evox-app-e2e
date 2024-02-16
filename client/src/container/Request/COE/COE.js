@@ -48,6 +48,9 @@ class COE extends Component {
             }
         }
     }
+
+    // include session id in the post parameter
+    formData.set('session_id', localStorage.getItem('session_id'));
     
     this.props.addCOE( formData );
   }

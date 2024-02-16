@@ -5,6 +5,7 @@ namespace App\Modules\User\Models;
 use App\EvoxLevels;
 use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
+use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Models\PayrollCutoff;
@@ -153,22 +154,41 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id');
     }
 
+
+    # Fetch the User's Supervisors
+    public function direct_supervisor()
+    {           
+
+      $response =  call_sp("EH_SP_Direct_Supervisor", [$this->id ]);
+          $result = array(
+              "query" =>  $response ?? [],
+          );
+
+
+          if(is_valid( $result["query"][0][0])){
+              return User::find($result["query"][0][0]->SupervisorId);
+          }
+
+        return [];
+    }
+  
     # Fetch the User's Supervisors ///NOTE ACCEPT BOTH//
     public function direct_supervisor_temp()
-    {           
-    
+    {          
+   
         $response =  call_sp("EH_SP_Direct_Supervisor", [$this->id ]);
-            $result = array(
-                "query" =>  $response ?? [],
-            );
-            
+        $result = array(
+            "query" =>  $response ?? [],
+        );
 
-            if(is_valid( $result["query"][0][0])){
-                return User::find($result["query"][0][0]->SupervisorId);
-            }
 
-            return [];
+        if(is_valid( $result["query"][0][0])){
+            return User::find($result["query"][0][0]->SupervisorId);
         }
+
+        return [];
+    }
+      
     
     # Fetch the User's Supervisee
     public function supervisee()
@@ -739,6 +759,14 @@ class User extends Authenticatable implements JWTSubject
             );
         }
         return Department::whereIn('departments.id', array_unique($departments_id_array));
+    }
+
+    
+    # Fetch the User Departments Handled
+    public function evox_departments_handled()
+    {
+      
+        return EvoxDepartment::where('HeadId', '=', $this->id);
     }
 
     public function getHasSchedule(){

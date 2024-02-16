@@ -28,6 +28,8 @@ interface UserRepositoryInterface
     public function show_via_bhr_number( $bhr_user_number );
 
     public function get_my_team_list( $id );
+    
+    public function new_get_my_team_list( $id );
 
     public function get_all_active_users();
 

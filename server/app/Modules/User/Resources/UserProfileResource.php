@@ -68,6 +68,7 @@ class UserProfileResource extends JsonResource
             "user_server_timestamp" => (Carbon::now()->timestamp + string_offset_to_seconds($offset)),
             "user_server_timestamp_mils" => (Carbon::now()->timestamp + string_offset_to_seconds($offset))*1000,
             'pov_timezone'=>  $this->country_zone()->country_name . " " . $this->country_zone()->country_time_zone."(".$offset .")",
+            'country'=>  $this->country_zone()->country_name ,
             'timezone'=>$this->country_zone()->country_time_zone,
             "current_offset" => $offset,
             "default_offset" => $this->country_zone()->time_difference,
@@ -97,14 +98,33 @@ class UserProfileResource extends JsonResource
                 array_push( $departments_handled, $departments );
             }
 
+             $evox_departments_handled = [];
+             $evox_departments_handled=  $this->evox_departments_handled()
+             ->select(
+                ["Id AS id",
+                'Name AS department_name', 
+                'HeadId',
+                'isActive',
+                'CreatedOn AS created_at',
+                'UpdatedOn AS updated_at',
+                'CreatedBy',
+                'CreatedBy',
+                'LevelId',])
+             ->orderBy('Name', 'asc')
+             ->get()
+             ->toArray();
 
+
+                // dd( $evox_departments_handled);
             return array_merge( 
                 $main_info, 
                 array('permissions' => $permissions),
                 array('roles' => $roles),
                 array('features_access' => is_valid($this->LevelId) ? $this->getFeatureAccess()->pluck("feature_name")->toArray(): []),
                 array('level' =>( is_valid( $this->LevelId) ? $this->level()->select('LevelId','Name','LevelId','IsAdmin','ISHR','IsPayRoll','CountryId','IsActive')->first()->toArray(): [] )),
-                array('departments_handled' => $departments_handled),
+                //array('departments_handled' => $departments_handled),
+                array('departments_handled' => $evox_departments_handled),
+                // array('evox_departments_handled' => $evox_departments_handled),
             );
             
         } else {

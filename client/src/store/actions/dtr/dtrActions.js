@@ -12,7 +12,17 @@ export const viewEmployeeDtr = (user_id,from,to) => {
         .then(result => {
             dispatch({
                 'type'  : 'FETCH_DTR_SUCCESS', 
-                'list'   : result.data.content
+                'list'   : result.data.content.dtr_records,
+            })
+            dispatch({
+                'type'      : 'FETCH_USER_DTR_SUMMARY_SUCCESS', 
+                'dtrSummary'  : {
+                    data : result.data.content.summary.items.data, 
+                    column : result.data.content.summary.column,
+                    column_names : result.data.content.summary.column_names
+                },
+                'employeeInfo' : result.data.content.summary.items.employee_info,
+                
             })
             dispatch({'type': 'RELOAD_END'});
         })

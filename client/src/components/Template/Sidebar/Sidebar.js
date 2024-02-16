@@ -471,12 +471,12 @@ const Sidebar = (props) => {
                         <p>DTR Summary</p>
                       </Link>
                     </li>
-                    <li className="nav-item">
+                    {/* <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_conflict}>
                         <i className="nav-icon fa fa-file-text nav-icon" />
                         <p>DTR Conflict Report</p>
                       </Link>
-                    </li>
+                     </li> */}
                     <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_logs}>
                         <i className="nav-icon fa fa-bars nav-icon" />
@@ -511,8 +511,20 @@ const Sidebar = (props) => {
                                   <p>Create Announcement</p>
                                 </Link>
                               </li>
+                              {(Authenticator.check("admin", "admin_manage_all_announcements")|| Authenticator.check("supervisor", "manage_all_announcements")) && (
+                              <li className="nav-item">
+                                  <Link
+                                    className="nav-link"
+                                    to={global.links.admin_announcement_list}
+                                  >
+                                    <i className="nav-icon fa fa-comments-o  nav-icon" />
+                                    <p>All Announcement List</p>
+                                  </Link>
+                                </li>
+                              )}
                             </ul>
                           </li>
+                    
                         </React.Fragment>
                     }
               {/* CLIENT Links */}

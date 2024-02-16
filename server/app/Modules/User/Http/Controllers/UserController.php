@@ -30,6 +30,7 @@ use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\User\Http\Requests\GenerateDtrRequest;
 use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\User\Resources\LeaveCreditsListResource;
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
@@ -339,11 +340,12 @@ class UserController extends Controller
                 'id' => 'int'
             ]);
 
-            $user_collection = $this->user->get_my_team_list( $id );
+            $user_collection = $this->user->new_get_my_team_list( $id );
 
             return success_response(
                 trans('messages.show_my_team_list'), 
-                new UserListResourceCollection( $user_collection ) 
+                // new UserListResourceCollection( $user_collection ) 
+                $user_collection
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -362,6 +364,19 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_my_team_list'), 
                 $user_collection
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+  
+    public function sub_department_under_department( $id, $department_id ){   
+        try {
+            
+            return success_response(
+                trans('messages.show_sub_department_list'), 
+                EvoxSubDepartment::where('DepartmentId', $department_id)->orderBy('Name', 'asc')->get()->toArray()
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -539,7 +554,7 @@ class UserController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function tick_dpa( $id ){   
+    public function tick_dpa( $id, Request $request ){
         try {
             log_activity( trans('messages.tick_dpa_attempt') );
 
@@ -550,6 +565,9 @@ class UserController extends Controller
             ]);
                
             $user = $this->user->tick_dpa( $id );
+
+            // log action to audit_trail table
+            log_to_audit_trail(['action' => 'DPA', 'description' => 'has ticked the DPA webinar', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
 
             return success_response(
                 trans('messages.tick_dpa_success'), 

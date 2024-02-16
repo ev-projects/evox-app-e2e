@@ -62,6 +62,9 @@ class COEController extends Controller
             $employee = (array) $employee;
             $coe = $this->coe->create($user->id, $request->purpose_index, $request->show_compensation, $employee);
 
+            // log action to audit_trail table
+            log_to_audit_trail(['action' => 'Certificate of Employment', 'description' => 'has requested for certificate of employment', 'user_id' => $user->id, 'session_id' => $request->session_id, 'type' => 1]);
+
             $pdf = PDF::loadView('pdfs.coe', compact('coe'))->setPaper('a4', 'portrait');
             return $pdf->stream('Certificate-of-Employment.pdf');
             
