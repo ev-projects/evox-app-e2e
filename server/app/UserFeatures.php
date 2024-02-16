@@ -8,4 +8,6 @@ class UserFeatures extends Model
 {
     public $timestamps = false;
     protected $table = 'user_features';
+
+    
 }

@@ -81,6 +81,7 @@
     sync_utc_adjustment             : "/app/admin/SyncUTCAdjustment/",
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
     assign_role_permission          :  "/app/admin/AssignRolePermission/",
+    assign_feature          :  "/app/admin/AssignFeature/",
     register_user                   :  "/app/admin/RegisterUser/",
     manage_change_logs              :  "/app/admin/ManageChangeLogs/",
 

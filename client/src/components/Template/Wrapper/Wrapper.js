@@ -23,22 +23,22 @@ const Wrapper = (props) => {
   
   let allow_to_show = true;
 
-  // If role and permission are to be checked, proceed on this code
-  if( Validator.isValid( role )  && Validator.isValid( permission ) ) {
+  // // If role and permission are to be checked, proceed on this code
+  // if( Validator.isValid( role )  && Validator.isValid( permission ) ) {
 
-      allow_to_show = Authenticator.check( role, permission );
+  //     allow_to_show = Authenticator.check( role, permission );
 
-  // If permission only is to be checked, proceed on this code
-  } else if( !Validator.isValid( role )  && Validator.isValid( permission ) ) {
+  // // If permission only is to be checked, proceed on this code
+  // } else if( !Validator.isValid( role )  && Validator.isValid( permission ) ) {
 
-    allow_to_show = Authenticator.checkPermission( permission );
+  //   allow_to_show = Authenticator.checkPermission( permission );
     
-  // If role only is to be checked, proceed on this code
-  }else if( Validator.isValid( role )  && !Validator.isValid( permission ) ) {
+  // // If role only is to be checked, proceed on this code
+  // }else if( Validator.isValid( role )  && !Validator.isValid( permission ) ) {
 
-    allow_to_show = Authenticator.checkRole( role );
+  //   allow_to_show = Authenticator.checkRole( role );
     
-  }
+  // }
 
 
   if( props.redirect.run == true && link != null ) {

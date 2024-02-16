@@ -16,4 +16,8 @@ class Features extends Model
     {
         return $this->belongsToMany(EvoxLevels::class, 'role_level_features');
     }
+
+    public function users(){
+        return $this->belongsToMany(User::class, 'user_features')->withTimestamps();
+     }
 }
