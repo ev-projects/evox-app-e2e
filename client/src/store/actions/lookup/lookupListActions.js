@@ -98,6 +98,27 @@ export const fetchRoleList = () => {
     }
 }
 
+// Fetch Role List
+export const fetchFeaturesList = () => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/features",
+        })
+        .then(result => {
+            // console.log(result);
+            dispatch({
+                'type'     : 'FETCH_FEATURES_LIST_SUCCESS', 
+                'list'     : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 // Fetch Department List
 export const fetchDepartmentList = () => {

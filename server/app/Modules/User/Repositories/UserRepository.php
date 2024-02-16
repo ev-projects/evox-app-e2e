@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Repositories;
 
+use App\Features;
 use Exception;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\User\Models\UtcTimelog;
+use App\UserFeatures;
 
 class UserRepository implements UserRepositoryInterface{
 
@@ -1159,6 +1161,45 @@ class UserRepository implements UserRepositoryInterface{
             }
 
             log_to_file('info', 'Success', [$id, $permissions_array], 'assign');
+            return $user;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+        /**
+     *  Responsible for assigning Features for the user.
+     * @param $id
+     * @return User $user
+     */
+    public function assign_level_features( $id, array $features_array , $level ){
+        try {
+
+           
+
+                $user =  User::findOrFail( $id );
+
+                $user_owned_features = $user->getFeatureAccess()->pluck("feature_name")->toArray();
+
+                
+                $added = array_diff($features_array,$user_owned_features);
+                $data = [];
+
+                if(is_valid($added)){
+                    $bulk_of_feature_list = Features::whereIn('feature_name', $added)->get()->pluck("id")->toArray();
+                    // dd($added,Features::whereIn('feature_name', $added)->get(),$bulk_of_feature_list);
+                    foreach($bulk_of_feature_list as $feature_id){
+                        $data[$feature_id]= ["has_access"=> true];
+                    }
+                    UserFeatures::where('user_id', $user->id)->update(["has_access"=> false]);
+                    $user->features()->syncWithoutDetaching( $data);
+                }
+                
+
+
+                // $user->syncPermissions( $features_array );
+            
+
+            // log_to_file('info', 'Success', [$id, $features_array], 'assign');
             return $user;
         } catch (Exception $e) {
             throw $e;

@@ -58,6 +58,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     # Get the user roles
     Route::get('/roles/', 'UserController@get_roles');
 
+     # Get the all features
+     Route::get('/features', 'UserController@get_features');
+
     # Register a User
     Route::post('register', 'UserController@register')->middleware('role:admin');
 
@@ -110,6 +113,8 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     
     # Get the Role of the user
     Route::get('/role_permission/', 'UserController@get_user_role_permission');
+     # Get the Role of the user
+     Route::get('/features', 'UserController@get_user_feature');
 
     # Change Password Post request
     Route::post('tick_dpa', 'UserController@tick_dpa');//->middleware('auth.apikey');
@@ -118,10 +123,12 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::post('change_password', 'UserController@change_password');//->middleware('auth.apikey');
     
     # Assign Roles & Permissions Post request
-    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions')->middleware('role:admin');
+    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions');
+
+    Route::post('/assign_level_features', 'UserController@assign_level_features');
     
     # Assign Employees Post Request
-    Route::post('/assign_employees/', 'UserController@assign_employees')->middleware('role:admin');
+    Route::post('/assign_employees/', 'UserController@assign_employees');
 
 
     #####################################################################################################
