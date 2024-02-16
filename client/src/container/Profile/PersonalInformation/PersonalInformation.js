@@ -22,7 +22,7 @@ const PersonalInformation = ( props ) => {
 
     const { profile, user } = props;
 
-    const is_disabled = (user.id === profile.details.id && Authenticator.checkRole('client') ? false : true)
+    const is_disabled = (user.id === profile.details.id && Authenticator.scanLevel("Client") ? false : true)
 
     const options = [
       { value: 1, label: 'Active' },
@@ -95,7 +95,7 @@ const PersonalInformation = ( props ) => {
                         <h4>Basic Information</h4>
 
                         { // Show Status and Employee Numbers if viewing other profiles OR viewing own profile (if not client).
-                         user.id != profile.details.id || (!Authenticator.checkRole('client')  && user.id == profile.details.id) ?
+                         user.id != profile.details.id || (!Authenticator.scanLevel("Client")  && user.id == profile.details.id) ?
                             <Row>
                                 <div className="col-lg-6 col-md-6 col-sm-12">  
                                     <label> Status: </label>    
@@ -148,7 +148,7 @@ const PersonalInformation = ( props ) => {
                         </Row>
                         
                         { // Show Birthday and Nickname if viewing other profiles OR viewing own profile (if not client).
-                         user.id != profile.details.id || (!Authenticator.checkRole('client')  && user.id == profile.details.id) ?
+                         user.id != profile.details.id || (!Authenticator.scanLevel("Client")  && user.id == profile.details.id) ?
                             <Row>  
                                 <div className="col-lg-6 col-md-6  col-sm-12">  
                                     <label> Nickname: </label>    
@@ -172,7 +172,7 @@ const PersonalInformation = ( props ) => {
                                 <h4>Contact Information</h4>
                                 <Row>  
                                     { // Show Mobile Number if the viewing own profile OR the currently logged user in has no client role.
-                                    user.id === profile.details.id || !Authenticator.checkRole('client') ?
+                                    user.id === profile.details.id || !Authenticator.scanLevel("Client") ?
                                         <div className="col-lg-6 col-md-6 col-sm-12"> 
                                             <label> Mobile Number: </label>    
                                             <InputGroup>
@@ -202,7 +202,7 @@ const PersonalInformation = ( props ) => {
                                 { // Show Buttons if viewing own profiles.
                                 user.id === profile.details.id ?
                                     <React.Fragment>
-                                        { Authenticator.checkRole('client') ? <Button type="submit" className="btn btn-primary" ><i className="fa fa-edit" /> Save</Button> : null }&nbsp;
+                                        { Authenticator.scanLevel("Client") ? <Button type="submit" className="btn btn-primary" ><i className="fa fa-edit" /> Save</Button> : null }&nbsp;
                                         <Button type="button" className="btn btn-secondary" onClick={()=> {setShowChangePasswordForm(true);   onOpenChangePasswordForm();}} ><i className="fa fa-edit" /> Change Password</Button>
                                     </React.Fragment>
                                     : 

@@ -111,9 +111,9 @@ class Profile extends Component {
     render() {
         
         const { profile, user, page,dtr } = this.props;
-        let allow_view_personal_info = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_personal_info'));
-        let allow_view_job_info = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_job_info'));
-        let allow_view_time_off = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.check('supervisor', 'view_employee_time_off'));
+        let allow_view_personal_info = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.scanFeature( 'view_employee_personal_information'));
+        let allow_view_job_info = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.scanFeature( 'view_employee_job_information'));
+        let allow_view_time_off = profile.details?.id == user.id || (profile.details?.id != user.id && Authenticator.scanFeature( 'view_employee_dtr'));
 
         return (
             <Wrapper >

@@ -72,7 +72,7 @@ class UserProfileResource extends JsonResource
             'timezone'=>$this->country_zone()->country_time_zone,
             "current_offset" => $offset,
             "default_offset" => $this->country_zone()->time_difference,
-          
+            "lvl_name" => $this->level_type(),
             "use_multi" => $this->permissions()->pluck('name')->contains('user_multi_login'),
 
             "schedule_active" => ( is_valid( $department ) ? $this->department()->first()->departments_on_schedule_is_active(): false ),
@@ -120,6 +120,9 @@ class UserProfileResource extends JsonResource
                 $main_info, 
                 array('permissions' => $permissions),
                 array('roles' => $roles),
+                array('features_access' => is_valid($this->LevelId) ? $this->getFeatureAccess()->pluck("feature_name")->toArray(): []),
+                array('level' =>( is_valid( $this->LevelId) ? $this->level()->select('LevelId','Name','LevelId','IsAdmin','ISHR','IsPayRoll','CountryId','IsActive')->first()->toArray(): [] )),
+                //array('departments_handled' => $departments_handled),
                 array('departments_handled' => $evox_departments_handled),
                 // array('evox_departments_handled' => $evox_departments_handled),
             );

@@ -747,6 +747,24 @@ class UserController extends Controller
         }
     }
 
+     # This function returns user role
+     public function get_user_role_feature( $user_id ){   
+        try {
+            $user = User::find($user_id);
+            log_activity( trans('messages.list_role_attempt') );
+                    return success_response(
+                        trans('messages.list_role_success'),  
+                        [ 
+                            'roles' => $user->roles->pluck('name'),
+                            'permissions' => $user->permissions->pluck('name'),
+                        ]
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     # This function returns roles
     public function get_roles( ){   
         try {

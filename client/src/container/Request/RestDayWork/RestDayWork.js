@@ -122,7 +122,7 @@ class RestDayWork extends Component {
     // }
 
     // Checks if the Instance is On Approval state.
-    const onApproval = this.props.instance?.is_under_supervisee && Authenticator.check('supervisor', 'manage_employee_request') ? this.props.instance.is_under_supervisee : false;
+    const onApproval = this.props.instance?.is_under_supervisee ? this.props.instance.is_under_supervisee : false;
 
     // Sets the Method of the current state.
     const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )

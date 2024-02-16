@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Models;
 
+use App\EvoxLevels;
 use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\EvoxDepartment;
@@ -25,6 +26,7 @@ use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\WorkFromHome;
+use App\RoleLevelFeatures;
 use Illuminate\Database\Eloquent\Collection;
 use Carbon\Carbon;
 use Auth;
@@ -152,22 +154,40 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id');
     }
 
-      # Fetch the User's Supervisors
-      public function direct_supervisor()
-      {           
-        
+
+    # Fetch the User's Supervisors
+    public function direct_supervisor()
+    {           
+
+      $response =  call_sp("EH_SP_Direct_Supervisor", [$this->id ]);
+          $result = array(
+              "query" =>  $response ?? [],
+          );
+
+
+          if(is_valid( $result["query"][0][0])){
+              return User::find($result["query"][0][0]->SupervisorId);
+          }
+
+        return [];
+    }
+  
+    # Fetch the User's Supervisors ///NOTE ACCEPT BOTH//
+    public function direct_supervisor_temp()
+    {          
+   
         $response =  call_sp("EH_SP_Direct_Supervisor", [$this->id ]);
-            $result = array(
-                "query" =>  $response ?? [],
-            );
-         
+        $result = array(
+            "query" =>  $response ?? [],
+        );
 
-            if(is_valid( $result["query"][0][0])){
-                return User::find($result["query"][0][0]->SupervisorId);
-            }
 
-          return [];
-      }
+        if(is_valid( $result["query"][0][0])){
+            return User::find($result["query"][0][0]->SupervisorId);
+        }
+
+        return [];
+    }
       
     
     # Fetch the User's Supervisee
@@ -634,16 +654,18 @@ class User extends Authenticatable implements JWTSubject
     public function users_handled()
     {   
         // If the User has Client Role, get all the Users from his/her departments handled.
-        if( $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
+        if( $this->isLevel("Client") ) { 
             return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
 
 
         //HR and Payroll gets all the users
-        } elseif ( 
-            $this->hasRole( get_constant('USER_ROLES.admin') ) ||
-            $this->hasRole( get_constant('USER_ROLES.hr') ) ||
-            $this->hasRole( get_constant('USER_ROLES.payroll') )
-         ) {
+        } elseif (
+                    !($this->isLevel("Admin")
+                    ||
+                   $this->isLevel("HR")
+                    ||
+                   $this->isLevel("Payroll"))
+                ) {
             return User::whereNotNull("bhr_num");//practically all users
 
         // If the User has Team Leader & Supervisor Role, get all the Users from the Department's Handled Team list AND the default users handled via users_supervivsors pivot table.
@@ -761,5 +783,30 @@ class User extends Authenticatable implements JWTSubject
             return ($checkDefault_schedule ||  $checkTemp_schedule);
     }
 
+
+    # Fetch the User's Level
+    public function level(){
+        return $this->hasOne(EvoxLevels::class, 'LevelId', 'LevelId');
+    }
+
+    # Fetch the User's Level Name
+    public function level_type(){
+        return $this->level()->first()->Name;
+    }
+
+    public function isLevel($level_role_name){
+        return $level_role_name == $this->level_type()? true : false ;
+    }
+
+    public function getFeatureAccess(){
+
+        # Fetch the Default Schedule for the current User.
+        if(is_valid($this->LevelId)){
+            return RoleLevelFeatures::where('evox_levels_id', $this->LevelId)->leftJoin("features", 'features_id', '=', 'features.id');
+            
+        }
+           
+        return [];
+    }
     ########################################################################
 }
