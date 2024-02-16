@@ -56,8 +56,7 @@
             "app/Helpers/validator_helper.php",
             "app/Helpers/pdo_helper.php",
             "app/Helpers/sql_helper.php",
-            "app/Classes/ActivityLogger.php",
-            "app/Helpers/pdo_helper.php"
+            "app/Classes/ActivityLogger.php"
 
         ]
     },
