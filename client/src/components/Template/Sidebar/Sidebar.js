@@ -70,7 +70,7 @@ const Sidebar = (props) => {
             </li> */}
 
               {/*  EMPLOYEE Links */}
-              {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]) && (
+              {Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], 'dtr_access') && (
                 <li className="nav-item">
                   <Link
                     className="nav-link"
@@ -315,7 +315,7 @@ const Sidebar = (props) => {
                 </li>
               )}
 
-              {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]) && (
+              {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]) && (
                 <li className="nav-item">
                   <Link className="nav-link" to={global.links.ev_learning}>
                     <i className="nav-icon fa fa-book nav-icon" />
@@ -465,24 +465,29 @@ const Sidebar = (props) => {
                         </p>
                       </Link>
                     </li> */}
+                    {(Authenticator.scanFeature("view_dtr_summary")) && (
+
                     <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_summary}>
                         <i className="nav-icon fa fa-file-text nav-icon" />
                         <p>DTR Summary</p>
                       </Link>
                     </li>
+                     )}
                     {/* <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_conflict}>
                         <i className="nav-icon fa fa-file-text nav-icon" />
                         <p>DTR Conflict Report</p>
                       </Link>
                      </li> */}
-                    <li className="nav-item">
-                      <Link className="nav-link" to={global.links.dtr_logs}>
-                        <i className="nav-icon fa fa-bars nav-icon" />
-                        <p>DTR Logs</p>
-                      </Link>
-                    </li>
+                      {(Authenticator.scanFeature("view_dtr_logs")) && (
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.dtr_logs}>
+                          <i className="nav-icon fa fa-bars nav-icon" />
+                          <p>DTR Logs</p>
+                        </Link>
+                      </li>
+                     )}
 
                   </ul>
                 </li>
@@ -566,7 +571,7 @@ const Sidebar = (props) => {
               )} */}
 
               {/* Report Links Links */}
-             {(Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"])) && (
+             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules'])) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-line-chart" />
@@ -682,7 +687,7 @@ const Sidebar = (props) => {
               )}
 
               {/* OPS Links */}
-              {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_department_schedules"))&& (
+              {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_ops"))&& (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-cubes" />
