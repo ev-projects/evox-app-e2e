@@ -780,9 +780,7 @@ class UserController extends Controller
 
             $feature_all_list = [];
             if(is_valid($user->LevelId)){
-                $default = $user->getFeatureAccess()->pluck("feature_name")->toArray();
-                $conditional = $user->getFeatureAccessWithUnconditional()->get()->pluck("feature_name")->toArray();
-                $feature_all_list = array_unique(array_merge($default,$conditional));
+                $feature_all_list = array_merge($user->userFeatures(), []);
             }
 
                     return success_response(

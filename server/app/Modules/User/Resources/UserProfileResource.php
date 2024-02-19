@@ -117,9 +117,8 @@ class UserProfileResource extends JsonResource
 
             $feature_all_list = [];
             if(is_valid($this->LevelId)){
-                $default = $this->getFeatureAccess()->pluck("feature_name")->toArray();
-                $conditional = $this->getFeatureAccessWithUnconditional()->get()->pluck("feature_name")->toArray();
-                $feature_all_list = array_unique(array_merge($default,$conditional));
+                
+                $feature_all_list = $this->userFeatures();
             }
 
 

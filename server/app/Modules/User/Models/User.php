@@ -533,11 +533,31 @@ class User extends Authenticatable implements JWTSubject
         if($filter['url']=='my_team_requests'){
             $id = auth()->user()->users_handled()->pluck('id')->toArray();
 
+            
             $change_schedules->whereIn('change_schedules.user_id',$id);
             $overtimes       ->whereIn('overtimes.user_id',$id);
             $rest_day_works  ->whereIn('rest_day_works.user_id',$id);
             $alter_logs      ->whereIn('alter_logs.user_id',$id);
             $alter_logs_punches ->whereIn('alter_log_punches.user_id',$id);
+
+
+            // dd($overtimes->where("`overtimes`.`updated_at`", null));
+            $features = $this->userFeatures();
+            if(!in_array("manage_alter_log_request",$features)){
+                $alter_logs      ->where("alter_logs.status", null);
+                // $alter_logs_punches ->where("`alter_logs_punches`.`user_id`", null)
+            }
+            if(!in_array("manage_change_schedules_request",$features)){
+                $change_schedules->where("change_schedules.status", null);
+            }
+            if(!in_array("manage_rest_day_work_request",$features)){
+                $rest_day_works  ->where("rest_day_works.status", null);
+            }
+            if(!in_array("manage_overtime_request",$features)){
+                $overtimes       ->where("overtimes.status", null);
+            }
+            
+
         }elseif($filter['url']=='my_requests'){
             $id = auth()->user()->id;
 
@@ -556,7 +576,7 @@ class User extends Authenticatable implements JWTSubject
             $alter_logs      ->where('alter_logs.status',$filter['status']);
             $alter_logs_punches ->where('alter_log_punches.status',$filter['status']);
         }
-
+        
          # Department Filter
          if(isset($filter['department_id'])){
             $change_schedules->where('a.department_id', $filter['department_id']);
@@ -592,6 +612,7 @@ class User extends Authenticatable implements JWTSubject
         
         if(isset($filter['request_type'])){
             if($filter['request_type']=='all'){
+                
                 $query = $alter_logs->union($change_schedules)
                 ->union($overtimes)
                 ->union($rest_day_works)
@@ -610,7 +631,7 @@ class User extends Authenticatable implements JWTSubject
             }
                
         }
-        
+        // dump("here2");
         if($filter['status']=='pending'){
             $query->orderBy('created_at','desc');
         }else{
@@ -856,6 +877,7 @@ return user::findMany( $ids);
     public function isLevel($level_role_name){
         return $level_role_name == $this->level_type()? true : false ;
     }
+    
 
     public function getFeatureAccess(){
 
@@ -870,11 +892,32 @@ return user::findMany( $ids);
     public function getFeatureAccessWithUnconditional(){
 
         if(is_valid($this->LevelId)){
-            return UserFeatures::where('user_id', $this->id)->where("has_access", true)->leftJoin("features", 'feature_id', '=', 'features.id');
+            return UserFeatures::where('user_id', $this->id)->leftJoin("features", 'feature_id', '=', 'features.id');
             
         }
            
         return [];
+    }
+
+    public function hasFeature($feature_name){
+        if(is_valid($feature_name)){
+            $feature_all_list = $this->userFeatures();
+            return in_array($feature_name, $feature_all_list) ;
+        }
+    }
+
+    public function userFeatures(){
+        
+            $default = $this->getFeatureAccess()->pluck("feature_name")->toArray();
+            $conditional = $this->getFeatureAccessWithUnconditional()->where("has_access", true)->get()->pluck("feature_name")->toArray();
+            $remove = $this->getFeatureAccessWithUnconditional()->where("has_access", false)->get()->pluck("feature_name")->toArray();
+            $feature_all_list = array_unique(array_merge($default,$conditional));
+            if(is_valid($remove)){
+                $feature_all_list = array_diff($feature_all_list, $remove);
+            }
+        
+            return $feature_all_list ;
+        
     }
 
 
