@@ -1178,11 +1178,26 @@ class UserRepository implements UserRepositoryInterface{
 
                 $user =  User::findOrFail( $id );
 
-                $user_owned_features = $user->getFeatureAccess()->pluck("feature_name")->toArray();
+                $user_owned_features = $user->userFeatures();
 
                 
                 $added = array_diff($features_array,$user_owned_features);
+                $removed =  array_diff($user_owned_features,$features_array);
+
                 $data = [];
+                $removed_data = [];
+            // dd($user_owned_features,  $added, $removed);
+              
+
+                if(is_valid($removed)){
+                    $bulk_of_feature_list = Features::whereIn('feature_name', $removed )->get()->pluck("id")->toArray();
+                    
+                    foreach($bulk_of_feature_list as $feature_id){
+                        $removed_data[$feature_id]= ["has_access"=> false];
+                    }
+                    $user->features()->syncWithoutDetaching( $removed_data);
+                }
+
 
                 if(is_valid($added)){
                     $bulk_of_feature_list = Features::whereIn('feature_name', $added)->get()->pluck("id")->toArray();
