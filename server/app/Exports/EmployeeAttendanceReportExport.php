@@ -214,13 +214,13 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             $item_vals = [];
             foreach(get_object_vars($item) as $key => $val) {
                 //array_push($item_vals, $val);
-                $item_vals[][] = $val;
+                $item_vals[] = $val;
             }
             //array_push($employee_items, $item_vals);
-            $employee_items[] = array_merge($item_vals);
+            array_push($employee_items, array_merge($item_vals));
         }
         $excel_employees = $employee_items;
-        $excel_employees[] = $this->total_row;
+        //$excel_employees[] = $this->total_row;
 
         $excel_accounts = $this->segragated_total_row;
 
@@ -261,7 +261,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                 [""], //BLANK HEADERS + DAYS 
                 $datesday
             ),
-            array_merge($excel_employees),
+            $excel_employees,
 
             [""],
             [""],
