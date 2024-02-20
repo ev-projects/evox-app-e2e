@@ -108,8 +108,8 @@ class SyncController extends Controller
                 ,'.$request->bhrNumber.', "'.$request->userName.'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'","'.$request->firstName.'", "'.$request->middleName.'"
                 ,"'.$request->lastName.'", "'.$request->nickname.'","'.$request->employmentHistoryStatus.'", "'.$request->hireDate.'"
                 ,'.$request->status.', "'.$request->jobTitle.'","'.$request->country.'", "'.$request->dateOfBirth.'"
-                ,"'.$request->terminationDate.'", "'.$request->department.'","'.$request->mobilePhone.'", '.$request->supervisorId.'"
-                ,"'.$request->Subdepartmentname.'","'.$request->subdepartmentsupervisorId.'","'.$request->division.'")');       
+                ,"'.$request->terminationDate.'", "'.$request->department.'","'.$request->mobilePhone.'", '.$request->supervisorId.'
+                ,"'.$request->Subdepartmentname.'",'.$request->subdepartmentsupervisorId.',"'.$request->division.'")');       
     
                 if(isset($result)){
                     return response()->json([
