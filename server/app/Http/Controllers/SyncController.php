@@ -109,7 +109,7 @@ class SyncController extends Controller
                 ,"'.$request->lastName.'", "'.$request->nickname.'","'.$request->employmentHistoryStatus.'", "'.$request->hireDate.'"
                 ,'.$request->status.', "'.$request->jobTitle.'","'.$request->country.'", "'.$request->dateOfBirth.'"
                 ,"'.$request->terminationDate.'", "'.$request->department.'","'.$request->mobilePhone.'", '.$request->supervisorId.'"
-                ,"'.$request->Subdepartmentname.'","'.$request->subdepartmentsupervisorId.'","'.$request->division.')');       
+                ,"'.$request->Subdepartmentname.'","'.$request->subdepartmentsupervisorId.'","'.$request->division.'")');       
     
                 if(isset($result)){
                     return response()->json([
