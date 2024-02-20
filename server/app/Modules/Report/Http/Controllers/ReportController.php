@@ -762,7 +762,7 @@ class ReportController extends Controller
                 'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->EmployeeNumber,
+                        'user_id' => $i->id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -782,7 +782,7 @@ class ReportController extends Controller
                 'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->EmployeeNumber,
+                        'user_id' => $i->id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -802,7 +802,7 @@ class ReportController extends Controller
                 'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->EmployeeNumber,
+                        'user_id' => $i->id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -821,7 +821,7 @@ class ReportController extends Controller
                 /*'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->EmployeeNumber,
+                        'user_id' => $i->id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -840,7 +840,7 @@ class ReportController extends Controller
                 /*'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->EmployeeNumber,
+                        'user_id' => $i->id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
