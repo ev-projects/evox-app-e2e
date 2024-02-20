@@ -88,6 +88,57 @@ class SyncController extends Controller
         }
     }
 
+    public function syncusers_HRIS(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                "firstName" => 'required',
+                "bestEmail" => 'required',
+                "lastName"=>'required',
+                "employeeNumber"=>'required',
+                "bhrNumber"=>'required',
+                "status"=>'required'
+            ]);
+            if ($validator->fails()) {
+              return response()->json(['errors'=>$validator->messages()]);
+            }else{
+    
+                $result = DB::select('call EH_SP_User_Sync_HRIS("'.$request->bestEmail.'", '.$request->employeeNumber.'
+                ,'.$request->bhrNumber.', "'.$request->userName.'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'","'.$request->firstName.'", "'.$request->middleName.'"
+                ,"'.$request->lastName.'", "'.$request->nickname.'","'.$request->employmentHistoryStatus.'", "'.$request->hireDate.'"
+                ,'.$request->status.', "'.$request->jobTitle.'","'.$request->country.'", "'.$request->dateOfBirth.'"
+                ,"'.$request->terminationDate.'", "'.$request->department.'","'.$request->mobilePhone.'", '.$request->supervisorId.'"
+                ,"'.$request->Subdepartmentname.'","'.$request->subdepartmentsupervisorId.'","'.$request->division.')');       
+    
+                if(isset($result)){
+                    return response()->json([
+              
+                        'status' => '200',
+                        'message' => "Insert Or Updated Successfully",
+                        'Employee Name' => $request->firstName. ($request->middleName ? " " :"").$request->middleName." ".$request->lastName,
+                        'Employee_status'=> $request->status
+            
+                   ]);
+                }else{
+                    return response()->json([
+              
+                        'status' => '202',
+                        'message' => "Insert Failed",
+                        'Employee Name' => $request->firstName. ($request->middleName ? " " :"").$request->middleName." ".$request->lastName,
+                        'Employee_status'=> $request->status
+            
+                   ]);
+                }
+               
+            }
+        // $data = $request->all();
+        // return $data;
+        } catch (Exception $e) {
+        return error_response(trans('messages.error_default'), $e);
+        }
+    }
+
     public function syncholidays(Request $request){
         try {
             $result = DB::select('call EV_SP_Holidays_Sync("'.$request->holidayName.'", "'.$request->holiday_date.'", "'.$request->country.'", "'.$request->holidaytype.'")');
