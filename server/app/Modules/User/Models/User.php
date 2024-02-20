@@ -740,7 +740,7 @@ class User extends Authenticatable implements JWTSubject
 
 $ids = array_pluck($result['query'][count($result['query'])-3], "id");
 
-return user::findMany( $ids);
+return user::whereIn('id', $ids);
    }
 
     return [];
