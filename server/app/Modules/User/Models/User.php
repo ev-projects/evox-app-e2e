@@ -7,6 +7,7 @@ use App\Features;
 use App\Modules\Team\Models\Team;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\Payroll\Models\Dtr;
 use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Payroll\Models\PayrollCutoff;
@@ -172,6 +173,20 @@ class User extends Authenticatable implements JWTSubject
           }
 
         return [];
+    }
+
+    # Fetch the User's Supervisors
+    public function direct_department_id()
+    {           
+
+        if(is_valid($this->SubDepartmentID)){
+                $sub = EvoxSubDepartment::find($this->SubDepartmentID);
+                // $sub = EvoxSubDepartment::find($this->SubDepartmentID);
+                return $sub->DepartmentId;
+        }
+  
+
+        return null;
     }
   
     # Fetch the User's Supervisors ///NOTE ACCEPT BOTH//

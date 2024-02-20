@@ -2,11 +2,12 @@
 
 namespace App\Modules\Department\Resources;
 
-use App\Modules\Department\Models\Announcement;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use App\Modules\Department\Models\Announcement;
 use App\Modules\User\Resources\UserListResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Carbon\Carbon;
+use App\Modules\Department\Models\EvoxDepartment;
 
 class AnnouncementResource extends JsonResource
 {
@@ -72,7 +73,32 @@ class AnnouncementResource extends JsonResource
                 'on_link' => $this->on_link,
                 'status' => $this->status,
                 'exposure_level' => $this->exposure_level,
-                'dep' => $this->dep_id != null? $this->department() : $this->present_department(),
+                // 'dep' => $this->dep_id != null? $this->department() : $this->present_department(),
+                'dep' => $this->dep_id != null? 
+                $department_collection = EvoxDepartment::select(
+                    ["Id AS id",
+                    'Name AS department_name', 
+                    'HeadId',
+                    'isActive',
+                    'CreatedOn AS created_at',
+                    'UpdatedOn AS updated_at',
+                    'CreatedBy',
+                    'LevelId',])
+                 ->orderBy('Name', 'asc')
+                 ->find($this->dep_id)
+                : 
+                $department_collection = EvoxDepartment::select(
+                    ["Id AS id",
+                    'Name AS department_name', 
+                    'HeadId',
+                    'isActive',
+                    'CreatedOn AS created_at',
+                    'UpdatedOn AS updated_at',
+                    'CreatedBy',
+                    'LevelId',])
+                 ->orderBy('Name', 'asc')
+                 ->find($this->present_dep_id)
+                ,
                 'set_all' => $this->set_all,
                 'set_country_all' => $this->set_country_all,
                 'country_id' => $this->country_id,
