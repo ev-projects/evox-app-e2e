@@ -56,12 +56,16 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
         $this->total_row = count($this->list);
 
-        $stat_vars = get_object_vars($stats);
-        $stat_vals = [];
-        foreach ($stat_vars as $key => $val) {
-            array_push($stat_vals, $val);
+        $stats_vals = [];
+        foreach ($stats as $stat) {
+            $stat_vars = get_object_vars($stat);
+            $stat_vals = [""];
+            foreach ($stat_vars as $key => $val) {
+                array_push($stat_vals, $val);
+            }
+            $stats_vals[] = $stat_vals;
         }
-        $this->segragated_total_row = $stat_vals;
+        $this->segragated_total_row = $stats_vals;
 
         $this->list_count = count($this->list);
         $parsed_start = Carbon::parse($this->start)->format('y-m-d');
@@ -79,21 +83,21 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             AfterSheet::class    => function (AfterSheet $event) {
 
 
-                                                                        // 12 or more number of fields like name, emp_num
+                // 12 or more number of fields like name, emp_num
                 $coordinate = $event->sheet->getCellByColumnAndRow(13 + $this->count_period, 1)->getCoordinate();
                 $month_col_coordinate = substr($coordinate, 0, -1);
              
-                $event->sheet->setNumFormatPercent('E4:E' . ($this->list_count + 4));
-                $this->addZeroPercent($event, "E", 4, $this->list_count);
+                //$event->sheet->setNumFormatPercent('E4:E' . ($this->list_count + 3));
+                $this->addZeroPercent($event, "E", 4, $this->list_count - 1);
 
-                $event->sheet->setNumFormatPercent('D4:D' . ($this->list_count + 4));
-                $this->addZeroPercent($event, "D", 4, $this->list_count);
+                //$event->sheet->setNumFormatPercent('D4:D' . ($this->list_count + 3));
+                $this->addZeroPercent($event, "D", 4, $this->list_count - 1);
 
-                // $event->sheet->setNumFormatPercent('C4:C' . ($this->list_count + 4));
+                // $event->sheet->setNumFormatPercent('C4:C' . ($this->list_count + 3));
                 // $this->addZeroPercent($event, "C", 4, $this->list_count);
 
-                $event->sheet->setNumFormatPercent('F4:F' . ($this->list_count + 4));
-                $this->addZeroPercent($event, "F", 4, $this->list_count);
+                $event->sheet->setNumFormatPercent('F4:F' . ($this->list_count + 3));
+                $this->addZeroPercent($event, "F", 4, $this->list_count - 1);
 
 
 
@@ -134,13 +138,13 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('BEBEBE');
 
-                $total_row_coordinate = (4 + $this->list_count);
+                $total_row_coordinate = (3 + $this->list_count);
                 $event->sheet->getDelegate()->getStyle("D" . $total_row_coordinate . ":M" . $total_row_coordinate)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('6184d4');
 
                     $event->sheet->styleCells(
-                        "A2:".$month_col_coordinate . (4 + $this->list_count),
+                        "A2:".$month_col_coordinate . (3 + $this->list_count),
                         [
                             'borders' => [
                                 'allBorders' => [
@@ -152,7 +156,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                     
 
                 // ACCOUNT ROWS EVENTS
-                $acc_total_row_coordinate = (4 + 5 + $this->list_count);
+                $acc_total_row_coordinate = (8 + $this->list_count);
                 $event->sheet->getDelegate()->getStyle("B" . $acc_total_row_coordinate . ":M" . $acc_total_row_coordinate)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('6184d4');

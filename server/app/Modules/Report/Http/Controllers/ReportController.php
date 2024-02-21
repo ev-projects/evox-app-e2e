@@ -762,7 +762,7 @@ class ReportController extends Controller
                 'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->id,
+                        'user_id' => $i->Id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -782,7 +782,7 @@ class ReportController extends Controller
                 'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->id,
+                        'user_id' => $i->Id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -802,7 +802,7 @@ class ReportController extends Controller
                 'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->id,
+                        'user_id' => $i->Id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -821,7 +821,7 @@ class ReportController extends Controller
                 /*'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->id,
+                        'user_id' => $i->Id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -840,7 +840,7 @@ class ReportController extends Controller
                 /*'users' => array_map(fn($i) =>
                     array(
                         'date'=> $i->LogDate,
-                        'user_id' => $i->id,
+                        'user_id' => $i->Id,
                         'name' => $i->Name,
                         'emp_num' => $i->EmployeeNumber,
                         'job_title' => $i->JobTittle,
@@ -865,34 +865,37 @@ class ReportController extends Controller
      */
     public function export(Request $request, $start_date, $end_date)
     {
-        $this->validate(new Request([
-            'start_date' => $start_date,
-            'end_date' => $end_date,
-        ]), [
-            'start_date' => 'date_format:Y-m-d',
-            'end_date' => 'date_format:Y-m-d',
-        ]);
-        $me = Auth::user();
-        $department_ids = $request->selectedDepartments ?? null;
-        $team_ids = $request->selectedTeams ?? null;
-        //return success_response('Test', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
-        $attendance_summary = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null])[0];
-        $attendance_stats = array_pop($attendance_summary);
-        $attendance_list = $attendance_summary;
-        /*return success_response(
-            trans('messages.get_attendance_summary_success'),
-            $date_keys
-        );*/
-        $response = Excel::download(
-            new EmployeeAttendanceReportExport($attendance_list, $attendance_stats, $start_date, $end_date),
-            'attendance_rep.xlsx',
-            \Maatwebsite\Excel\Excel::XLSX,
-            ["sampleName" => 'sample']
-
-        );
-        ob_end_clean();
-
-        return $response;
+        try {
+            $this->validate(new Request([
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ]), [
+                'start_date' => 'date_format:Y-m-d',
+                'end_date' => 'date_format:Y-m-d',
+            ]);
+            $me = Auth::user();
+            $department_ids = $request->selectedDepartments ?? null;
+            $team_ids = $request->selectedTeams ?? null;
+            //return success_response('Test', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
+            $attendance_summary = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
+            $attendance_list = $attendance_summary[0];
+            $attendance_stats = $attendance_summary[1];
+            $response = Excel::download(
+                new EmployeeAttendanceReportExport($attendance_list, $attendance_stats, $start_date, $end_date),
+                'attendance_rep.xlsx',
+                \Maatwebsite\Excel\Excel::XLSX,
+                ["sampleName" => 'sample']
+    
+            );
+            ob_end_clean();
+    
+            return $response;
+        } catch (Exception $e) {
+            return success_response(
+                "No report data found.",
+                []
+            );
+        }
     }
 
     // public function export_old(Request $request, $start_date, $end_date)

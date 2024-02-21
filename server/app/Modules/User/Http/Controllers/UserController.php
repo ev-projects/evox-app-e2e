@@ -387,17 +387,15 @@ class UserController extends Controller
     public function my_team_list_under_selected_department( Request $request,  $id ){   
         try {
             $dep_list = [];
-
-            
-            if( is_valid( $request->departments )  ){
-
-                        $dep_list = $request->departments ;
+            if( is_valid( $request->departments ) ) {
+                $dep_list = $request->departments ;
             }
-            $user_collection = Auth::user()->selected_departments_team( $dep_list );
+            $me = auth()->user();
+            $sub_depts = call_sp('EH_SP_Attendance_Summary', [NULL, NULL, implode(',', $dep_list), NULL, NULL, $me->id, 1, null])[0];
 
             return success_response(
                 trans('messages.show_my_team_list'), 
-                $user_collection
+                $sub_depts
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
