@@ -463,14 +463,14 @@ class DtrController extends Controller
             }
                 // dump(256,Auth::user()->department_schedule_active());
                 $date_check_formatted = $date_check->format("Y-m-d");
-            if(Auth::user()->department_schedule_active()){
+            // if(Auth::user()->department_schedule_active()){
                 
                 $result = $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection);
                 // dd( $result );
                 if(!$result){ 
                     return error_response( trans(' you need to clock in '),  );
                 }
-            }
+            // }
             // // dd($biometrix_collection);
             // $dtr_id = null;
             // if ($request->dtr_id) {

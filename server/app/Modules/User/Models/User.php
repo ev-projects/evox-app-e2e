@@ -174,6 +174,20 @@ class User extends Authenticatable implements JWTSubject
 
         return [];
     }
+
+    # Fetch the User's Supervisors
+    public function direct_department_id()
+    {           
+
+        if(is_valid($this->SubDepartmentID)){
+                $sub = EvoxSubDepartment::find($this->SubDepartmentID);
+                // $sub = EvoxSubDepartment::find($this->SubDepartmentID);
+                return $sub->DepartmentId;
+        }
+  
+
+        return null;
+    }
   
     # Fetch the User's Supervisors ///NOTE ACCEPT BOTH//
     public function direct_supervisor_temp()

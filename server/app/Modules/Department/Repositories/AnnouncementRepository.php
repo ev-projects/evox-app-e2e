@@ -46,7 +46,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             if(is_valid( request()->get('department_id') ) || $pov_user){
                 $department_id = $pov_user == null ? request()->get('department_id') : $pov_user->department_id;
             
-
+                if(is_valid(auth()->user()->SubDepartmentID)){
+                    $department_id  = auth()->user()->direct_department_id();
+                }
                 $announcements_list = Announcement::where(function($query) use (  $department_id){
                     
                     $query->where('set_all', 1);
@@ -146,9 +148,12 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         DB::beginTransaction();
         try {
             
-
+            $main_dep_id = 0;
             log_activity(trans('messages.create_department_announcement_attempt'));
-
+           
+            if(is_valid(auth()->user()->SubDepartmentID)){
+                $main_dep_id = auth()->user()->direct_department_id();
+            }
             $dep_announcement = new Announcement;
 
             $dep_announcement->title            = $request->title;
@@ -166,8 +171,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $dep_announcement->country_id       = $request->country_id != null ? $request->country_id : Auth::user()->country_id;
 
 
-            $dep_announcement->dep_id           = auth()->user()->department_id;
-            $dep_announcement->present_dep_id   = auth()->user()->department_id;
+            $dep_announcement->dep_id           = $main_dep_id;
+            $dep_announcement->present_dep_id   = $main_dep_id;
             $dep_announcement->created_by       = auth()->user()->id;
             $dep_announcement->updated_by       = auth()->user()->id;
             $dep_announcement->set_all          = $request->set_all == 1? 1:0;
@@ -265,9 +270,12 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
 
             $exist_announcement = Announcement::find($id);
-
+            $main_dep_id =  Auth::user()->department_id;
+            if(is_valid(auth()->user()->SubDepartmentID)){
+                $main_dep_id = auth()->user()->direct_department_id();
+            }
             if($exist_announcement->set_all == 0){
-                $exist_announcement = Announcement::where('announcement_id', $id)->where("present_dep_id",  Auth::user()->department_id)->first();
+                $exist_announcement = Announcement::where('announcement_id', $id)->where("present_dep_id",    $main_dep_id)->first();
             }
 
             if( $exist_announcement){
@@ -493,9 +501,12 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 //  dasdasdasd
         $date_time = Carbon::now()->toDateString();
         try {
-            $department =  Department::find(Auth::user()->department_id);
+            // $department =  Department::find(Auth::user()->department_id);
             $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
-
+            $main_dep_id =0;
+            if(is_valid(auth()->user()->SubDepartmentID)){
+                $main_dep_id = auth()->user()->direct_department_id();
+            }
         
             if($request->dep_id == "all" || $request->dep_id == null){
 
@@ -510,7 +521,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 })
                 ->get();
 
-                $list_dep = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                $list_dep = Announcement::where("present_dep_id",$main_dep_id)->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 })
@@ -521,7 +532,11 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 ->whereNotIn('id', $toExclude)
                  // only 6 but we get 7 to check if there is a next (show)
                 ->get();
-                
+                // dd($main_dep_id,  $list_dep);
+
+                if(!is_valid(auth()->user()->SubDepartmentID) || auth()->user()->department_id == null){
+                    return $announcements_list = $list_all->sortByDesc('release_date')->take(6);
+                }
 
 
                 return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date')->take(6);
@@ -567,6 +582,10 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         
 //  dasdasdasd
         $date_time = Carbon::now()->toDateString();
+        $main_dep_id =0;
+        if(is_valid(auth()->user()->SubDepartmentID)){
+            $main_dep_id = auth()->user()->direct_department_id();
+        }
         try {
             $department =  Department::find(Auth::user()->department_id);
             $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
@@ -645,11 +664,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
 
         try {
-            $department =  Department::find(Auth::user()->department_id);
-
-            $announcements_list = $department->departments_announcements()->where("category", "Department")->latest()
 
 
+            $announcements_list =   Announcement::where('dep_id', auth()->user()->direct_department_id())->where("category", "Department")->latest()
                 ->get();
 
             return $announcements_list;
