@@ -212,7 +212,7 @@ class RequestRepository implements RequestRepositoryInterface{
             , $data->department_id,
             $data->name, 
             0, 1, 999, 0]);
-          }
+         
             
             // dd( $data->all(),$my_team_req);
             
@@ -224,7 +224,7 @@ class RequestRepository implements RequestRepositoryInterface{
                     "canceled" => $my_team_req[0][1]->statusCount,
                 );
             }
-           
+        }
 
             return array( 'status_numbers' => $numbers  );
         } catch (Exception $e) {
