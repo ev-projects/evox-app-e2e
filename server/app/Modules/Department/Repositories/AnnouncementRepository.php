@@ -534,6 +534,10 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 ->get();
                 // dd($main_dep_id,  $list_dep);
 
+                if(!is_valid(auth()->user()->SubDepartmentID) || auth()->user()->department_id == null){
+                    return $announcements_list = $list_all->sortByDesc('release_date')->take(6);
+                }
+
 
                 return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date')->take(6);
 
