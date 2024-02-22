@@ -860,6 +860,18 @@ return user::whereIn('id', $ids);
     # Fetch the User Departments Handled
     public function evox_departments_handled()
     {
+          
+        if (
+            ($this->isLevel("Admin")
+            ||
+           $this->isLevel("HR")
+            ||
+           $this->isLevel("Payroll"))
+        ) 
+        {
+            $main_dep =  EvoxDepartment::where("IsActive", 1);
+        }
+
         $main_dep =  EvoxDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
         if(count( $main_dep->get())> 0){
     
