@@ -2,37 +2,37 @@
 
 namespace App\Modules\User\Models;
 
-use App\EvoxLevels;
+use Auth;
 use App\Features;
+use Carbon\Carbon;
+use App\EvoxLevels;
+use App\UserFeatures;
+use App\RoleLevelFeatures;
 use App\Modules\Team\Models\Team;
+use Illuminate\Support\Facades\DB;
+use App\Modules\Payroll\Models\Dtr;
+use Spatie\Permission\Traits\HasRoles;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\Overtime;
+use Illuminate\Notifications\Notifiable;
+use App\Modules\Schedule\Models\Schedule;
+use App\Modules\Request\Models\RestDayWork;
+use Spatie\Activitylog\Traits\LogsActivity;
+use App\Modules\Request\Models\WorkFromHome;
+
+
+use Illuminate\Database\Eloquent\Collection;
+use Spatie\Permission\Traits\HasPermissions;
 use App\Modules\Department\Models\Department;
+use App\Modules\Payroll\Models\PayrollCutoff;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Request\Models\ChangeSchedule;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Modules\Payroll\Models\DtrPunchHistory;
 use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Department\Models\EvoxSubDepartment;
-use App\Modules\Payroll\Models\Dtr;
-use App\Modules\Payroll\Models\DtrPunchHistory;
-use App\Modules\Payroll\Models\PayrollCutoff;
-use App\Modules\Schedule\Models\Schedule;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Permission\Traits\HasRoles;
-use Spatie\Permission\Traits\HasPermissions;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-
-
-use App\Modules\Request\Models\ChangeSchedule;
-use App\Modules\Request\Models\Overtime;
-use App\Modules\Request\Models\RestDayWork;
-use App\Modules\Request\Models\AlterLog;
-use App\Modules\Request\Models\WorkFromHome;
-use App\RoleLevelFeatures;
-use App\UserFeatures;
-use Illuminate\Database\Eloquent\Collection;
-use Carbon\Carbon;
-use Auth;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -860,8 +860,27 @@ return user::whereIn('id', $ids);
     # Fetch the User Departments Handled
     public function evox_departments_handled()
     {
+        $main_dep =  EvoxDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
+        if(count( $main_dep->get())> 0){
+    
+          return  $main_dep;
+        }
+    
+        $sub_main_dep =  EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
+        if(count( $sub_main_dep->get())> 0){
+            return EvoxDepartment::whereIn("Id", $sub_main_dep->get()->pluck("DepartmentId")->toArray())->where("IsActive", 1);
+        }    
+        return  EvoxDepartment::whereNull("UpdatedON");
+
+        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
+
+    }
+
+    # Fetch the User Departments Handled
+    public function evox_sub_departments_handled()
+    {
       
-        return EvoxDepartment::where('HeadId', '=', $this->id);
+        return EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
     }
 
     public function getHasSchedule(){
