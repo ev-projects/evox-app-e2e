@@ -200,8 +200,11 @@ class RequestRepository implements RequestRepositoryInterface{
                 "decline" => 0,
                 "canceled" => 0,
             );
+            if($data->url=='my_requests'){
 
-
+            }
+            // $numbers = [];
+          if($data->url=='my_team_requests'){
             $my_team_req =  call_sp("EH_SP_My_Team_Request", [Auth::user()->id, Auth::user()->LevelId
             ,$data->valid_from, $data->valid_to,
             get_constant('REQUEST_TYPE_SP_RE')[$data->request_type], 
@@ -209,6 +212,7 @@ class RequestRepository implements RequestRepositoryInterface{
             , $data->department_id,
             $data->name, 
             0, 1, 999, 0]);
+          }
             
             // dd( $data->all(),$my_team_req);
             
