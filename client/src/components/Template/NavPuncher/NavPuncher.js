@@ -202,7 +202,7 @@ class NavPuncher extends Component {
 
         <div className="div-col ">
 
-          {(Authenticator.scanFeature("multi_login")) ? <>
+          {(Authenticator.scanFeature("multi_login")) || (Authenticator.scanLevel("Client")) ? <>
             <Button type="submit" className="nav-clock-button dropdown  btn-secondary newfeature" disabled> <i className="fa fa-calendar-times-o" /> Clock In</Button>
           </>
             :

@@ -37,7 +37,7 @@ class UserProfileResource extends JsonResource
         }
         $offset = $this->country_timezone_to_offset(); 
 
-
+        
         $main_info = array(
             'id' => $this->id,
             'emp_num' => $this->emp_num,
@@ -72,7 +72,7 @@ class UserProfileResource extends JsonResource
             'timezone'=>$this->country_zone()->country_time_zone,
             "current_offset" => $offset,
             "default_offset" => $this->country_zone()->time_difference,
-            "lvl_name" => $this->level_type(),
+            "lvl_name" => is_valid( $this->LevelId) ? $this->level_type(): null,
             "use_multi" => $this->permissions()->pluck('name')->contains('user_multi_login'),
 
             "schedule_active" => ( is_valid( $department ) ? $this->department()->first()->departments_on_schedule_is_active(): false ),
@@ -98,8 +98,9 @@ class UserProfileResource extends JsonResource
                 array_push( $departments_handled, $departments );
             }
 
-
+            
              $evox_departments_handled = [];
+            //  dd("");
              $evox_departments_handled=  $this->evox_departments_handled()
              ->select(
                 ["Id AS id",
