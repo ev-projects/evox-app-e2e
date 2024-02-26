@@ -281,7 +281,7 @@ const MyTeamListTable = (props) => {
                           <i className="fa fa-info ev-color" aria-hidden="true"></i>
                         </Link>
                       }
-                      { (Authenticator.scanFeature("view_employee_dtr") && user.has_use_multi) &&
+                      { (Authenticator.scanFeature("view_employee_dtr") && user.has_use_multi == "1") &&
                                   <Link to={{
                                       pathname: global.links.dtr_punchlist + user.id,
                                       resetInitialState: true
