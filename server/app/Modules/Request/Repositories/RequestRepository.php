@@ -197,7 +197,7 @@ class RequestRepository implements RequestRepositoryInterface{
             $numbers = array(
                 "pending" => 0,
                 "approved" => 0,
-                "decline" => 0,
+                "declined" => 0,
                 "canceled" => 0,
             );
 
@@ -233,8 +233,8 @@ class RequestRepository implements RequestRepositoryInterface{
                             case 'approved':
                                 $numbers['approved'] += 1;
                                 break;
-                            case 'decline':
-                                $numbers['decline'] += 1;
+                            case 'declined':
+                                $numbers['declined'] += 1;
                                 break;
                             case 'canceled':
                                 $numbers['canceled'] += 1;
