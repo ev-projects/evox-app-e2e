@@ -861,27 +861,58 @@ return user::whereIn('id', $ids);
     public function evox_departments_handled()
     {
           
-        if (
-            ($this->isLevel("Admin")
-            ||
-           $this->isLevel("HR")
-            ||
-           $this->isLevel("Payroll"))
-        ) 
-        {
-            $main_dep =  EvoxDepartment::where("IsActive", 1);
-        }
+        // if (
+        //     ($this->isLevel("Admin")
+        //     ||
+        //    $this->isLevel("HR")
+        //     ||
+        //    $this->isLevel("Payroll"))
+        // ) 
+        // {
+        //     $main_dep =  EvoxDepartment::where("IsActive", 1);
+        // }
 
-        $main_dep =  EvoxDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
-        if(count( $main_dep->get())> 0){
+        // $main_dep =  EvoxDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
+        // if(count( $main_dep->get())> 0){
     
-          return  $main_dep;
+        //   return  $main_dep;
+        // }
+    
+        // $sub_main_dep =  EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
+        // if(count( $sub_main_dep->get())> 0){
+        //     return EvoxDepartment::whereIn("Id", $sub_main_dep->get()->pluck("DepartmentId")->toArray())->where("IsActive", 1);
+        // }    
+
+        if(is_valid($this->LevelId)){
+            if($this->LevelId != 0){
+                $perpage_count = 5;
+            $response = call_sp("EH_SP_Employee_List",
+            
+            [
+                $this->id, // vishnu this_id
+                is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
+                null,
+                 null,
+                1, // active
+                null, // name
+                null, // job_title
+                1,
+                 $perpage_count,
+                1 
+                
+                ]
+
+
+            ); 
+            
+            
+                $result =   $response ?? [];
+                $n = array_column($result[0], 'Id');
+                // dd($result[0], $n);
+                // dd( EvoxDepartment::whereIn("Id", $n)->where("IsActive", 1)->get());
+                return  EvoxDepartment::whereIn("Id", $n)->where("IsActive", 1);
+            }
         }
-    
-        $sub_main_dep =  EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
-        if(count( $sub_main_dep->get())> 0){
-            return EvoxDepartment::whereIn("Id", $sub_main_dep->get()->pluck("DepartmentId")->toArray())->where("IsActive", 1);
-        }    
         return  EvoxDepartment::whereNull("UpdatedON");
 
         // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
