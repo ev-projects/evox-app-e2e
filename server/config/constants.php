@@ -39,7 +39,9 @@ return [
         'employmentHistoryStatus',
         'supervisorEId',
         'country',
-        'lastChanged'
+        'lastChanged',
+        'division',
+        'couttry'
     ],
     
     'BHR_USER_TABLE' => [
@@ -80,6 +82,7 @@ return [
         'bestEmail',
         'status',
         'country',
+        'division',
         'lastChanged'
     ],
 
