@@ -57,6 +57,9 @@ class RequestResource extends JsonResource
 
                             $request->fourth_column =  $days;
                             $request->fifth_column =  $schedule_policies;
+                        } else {
+                          $request->fourth_column = json_decode($request->fourth_column, true);
+                          $request->fifth_column = json_decode($request->fifth_column, true);
                         }
 
                       break;
