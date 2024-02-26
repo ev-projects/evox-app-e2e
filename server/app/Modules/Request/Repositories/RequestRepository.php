@@ -212,7 +212,7 @@ class RequestRepository implements RequestRepositoryInterface{
                 ];
 
                 $values = [
-                    $data['status'],
+                    'all',
                     $data['valid_from'],
                     $data['valid_to'],
                     $request_types[$data['request_type']],
