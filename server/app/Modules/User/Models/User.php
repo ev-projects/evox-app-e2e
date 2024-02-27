@@ -1064,23 +1064,31 @@ return user::whereIn('id', $ids);
     }
 
     public function hasFeature($feature_name){
-        if(is_valid($feature_name)){
-            $feature_all_list = $this->userFeatures();
-            return in_array($feature_name, $feature_all_list) ;
+        if(is_valid($this->LevelId)){
+            if(is_valid($feature_name)){
+                $feature_all_list = $this->userFeatures();
+                return in_array($feature_name, $feature_all_list) ;
+            }
         }
+        return false;
+        
     }
 
     public function userFeatures(){
-        
-            $default = $this->getFeatureAccess()->pluck("feature_name")->toArray();
-            $conditional = $this->getFeatureAccessWithUnconditional()->where("has_access", true)->get()->pluck("feature_name")->toArray();
-            $remove = $this->getFeatureAccessWithUnconditional()->where("has_access", false)->get()->pluck("feature_name")->toArray();
-            $feature_all_list = array_unique(array_merge($default,$conditional));
-            if(is_valid($remove)){
-                $feature_all_list = array_diff($feature_all_list, $remove);
+
+            if(is_valid($this->getFeatureAccess())){
+                $default = $this->getFeatureAccess()->pluck("feature_name")->toArray();
+                $conditional = $this->getFeatureAccessWithUnconditional()->where("has_access", true)->get()->pluck("feature_name")->toArray();
+                $remove = $this->getFeatureAccessWithUnconditional()->where("has_access", false)->get()->pluck("feature_name")->toArray();
+                $feature_all_list = array_unique(array_merge($default,$conditional));
+                if(is_valid($remove)){
+                    $feature_all_list = array_diff($feature_all_list, $remove);
+                }
+            
+                return $feature_all_list ;
             }
-        
-            return $feature_all_list ;
+            return [] ;
+           
         
     }
 
