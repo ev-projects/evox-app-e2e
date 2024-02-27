@@ -197,7 +197,7 @@ class RequestRepository implements RequestRepositoryInterface{
             $numbers = array(
                 "pending" => 0,
                 "approved" => 0,
-                "decline" => 0,
+                "declined" => 0,
                 "canceled" => 0,
             );
 
@@ -206,9 +206,45 @@ class RequestRepository implements RequestRepositoryInterface{
             }
 
             if($data->url=='my_requests'){
+                $request_types = [
+                    'all'                   => 0,
+                    'alteration'            => 1,
+                    'overtime'              => 2,
+                    'rest_day_work'         => 3,
+                    'change_schedule'       => 4,
+                    'alter_logs_punches'    => 5,
+                ];
 
+                $values = [
+                    'all',
+                    $data['valid_from'],
+                    $data['valid_to'],
+                    $request_types[$data['request_type']],
+                    Auth::user()->id,
+                ];
+                $response = call_sp('EH_SP_MyRequest', $values);
+
+                if ($response[0]) {
+                    foreach ($response[0] as $value) {
+                        switch ($value->status) {
+                            case 'pending':
+                                $numbers['pending'] += 1;
+                                break;
+                            case 'approved':
+                                $numbers['approved'] += 1;
+                                break;
+                            case 'declined':
+                                $numbers['declined'] += 1;
+                                break;
+                            case 'canceled':
+                                $numbers['canceled'] += 1;
+                                break;
+                        }
+                    }
+                    return array( 'status_numbers' => $numbers  );
+                }
             }
-            // $numbers = [];
+
           if($data->url=='my_team_requests'){
             $my_team_req =  call_sp("EH_SP_My_Team_Request", [Auth::user()->id, Auth::user()->LevelId
             ,$data->valid_from, $data->valid_to,
