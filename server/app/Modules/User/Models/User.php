@@ -476,9 +476,69 @@ class User extends Authenticatable implements JWTSubject
             $result = array(
                 "query" =>  $response[0] ?? [],
             );
-
+            // dd($result);
             return $result;
-        } else {
+        }
+        else if ($filter['url'] == 'my_team_requests') {
+            $id = auth()->user()->id;
+            $request_types = [
+                'all'                   => 0,
+                'alteration'            => 1,
+                'overtime'              => 2,
+                'rest_day_work'         => 3,
+                'change_schedule'       => 4,
+                'alter_logs_punches'    => 5,
+            ];
+            $perpage_count = 10;
+            $response =  call_sp("EH_SP_My_Team_Request", [
+                $this->id,
+                $this->LevelId,
+                $filter['valid_from'],
+                $filter['valid_to'],
+                $request_types[$filter['request_type']],
+                $filter['status'],
+                $filter['department_id'],
+                $filter['name'] , 
+                0, $filter['page'], $perpage_count, 0]);
+           
+                $collection =  [];
+            $result = $response[3] ? array_map(function($item) {
+                    // dd($item);
+                    return (object) array(
+                        'id' => $item->T_id,
+                        'status' => $item->T_status,
+                        'created_at' => $item->T_created_at,
+                        'employee_note' => $item->T_employee_note,
+                        'created_by' => $item->T_created_by,
+                        'updated_by' => $item->T_updated_by,
+                        'fourth_column' => $item->T_fourth_column,
+                        'fifth_column' => $item->T_fifth_column,
+                        'date_requested' => $item->T_date_requested,
+                        'table_name' => $item->T_table_name,
+                        'UV_DepartmentName' => $item->T_userDepartmentName,
+                        'updated_at' => $item->T_updated_at,
+                    );
+                }, $response[3]): []
+            ;
+            $paginate = $response[1][0];
+                // dd($paginate);
+            $collection["data"] = [ "query" =>$result];
+            $collection["pagination"] = [
+                                            'total' => (int) $paginate->TotalCount,
+                                            'count' => count( $collection["data"]),
+                                            'per_page' =>  (int) $paginate->Total_Count_Per_Page,
+                                            'current_page' => (int) $paginate->CurrentPage,
+                                            'last_page' => round($paginate->TotalCount /  $perpage_count)
+                                        ];
+
+                                        if( ($paginate->TotalCount % $perpage_count) > 0 
+                                        && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
+                                            $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
+                                        }
+                                        // dd($collection["data"]);
+            return   $collection;
+        }
+        else {
             $column = array('id','status','created_at','created_by','updated_by');
 
             $change_schedules    =   DB::table('change_schedules')
