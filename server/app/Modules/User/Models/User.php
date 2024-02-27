@@ -779,56 +779,54 @@ class User extends Authenticatable implements JWTSubject
     
     public function users_handled()
     {   
-
-        if( $this->isLevel("Client") ) { 
-            return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
-        } 
         
-        if (
-                    ($this->isLevel("Admin")
+            if (
+                        ($this->isLevel("Admin")
+                        ||
+                    $this->isLevel("HR")
+                        ||
+                    $this->isLevel("Payroll"))
+                    ) 
+                    {
+                        return User::whereNotNull("bhr_num");
+                    }
+                
+    if(
+                        ($this->isLevel("SubDepartment Head")
+                        ||
+                    $this->isLevel("Department Head")
+                        ||
+                    $this->isLevel("Board"))
                     ||
-                   $this->isLevel("HR")
-                    ||
-                   $this->isLevel("Payroll"))
-                ) 
-                {
-                    return User::whereNotNull("bhr_num");
-                }
-               
-   if(
-                    ($this->isLevel("SubDepartment Head")
-                    ||
-                   $this->isLevel("Department Head")
-                    ||
-                   $this->isLevel("Board"))
-   ){
-    $response = call_sp("EH_SP_Employee_List",[
-        $this->id, 
-        is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
-        null,
-        null,
-        1, // active
-        null, // name
-        null, // job_title
-        1,
-        9999,
-        1      
-        ]
-    ); 
-    
-        $result = array(
-            "query" =>  $response ?? [],
-        );
+                    $this->isLevel("Client")
+    ){
+        $response = call_sp("EH_SP_Employee_List",[
+            $this->id, 
+            is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
+            null,
+            null,
+            1, // active
+            null, // name
+            null, // job_title
+            1,
+            9999,
+            1      
+            ]
+        ); 
+        
+            $result = array(
+                "query" =>  $response ?? [],
+            );
 
 
-    if( count($result['query']) > 2){
-        $collection["data"] = $result['query'][count($result['query'])-3];
+        if( count($result['query']) > 2){
+            $collection["data"] = $result['query'][count($result['query'])-3];
+        }
+
+    $ids = array_pluck($result['query'][count($result['query'])-3], "id");
+
+    return user::whereIn('id', $ids);
     }
-
-$ids = array_pluck($result['query'][count($result['query'])-3], "id");
-
-return user::whereIn('id', $ids);
-   }
 
     return [];
     }
