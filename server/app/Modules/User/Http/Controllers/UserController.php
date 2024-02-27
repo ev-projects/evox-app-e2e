@@ -669,10 +669,39 @@ class UserController extends Controller
             ]), [
                 'role' => 'exists:roles,name'
             ]);
+            $user = Auth::user();
+            $response = call_sp("EH_SP_Employee_List",
+            
+            [
+                $user->id, // vishnu user_id
+                is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
+                is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
+                is_valid( request()->get('sub_department_id') ) ? request()->get('sub_department_id'): null,
+                1, // active
+                is_valid( request()->get('name') ) ? request()->get('name'): null, // name
+                is_valid( request()->get('job_title') ) ? request()->get('job_title'): null, // job_title
+                is_valid( request()->get('page') ) ? request()->get('page'): 1,
+                 99999,
+                1 
+                
+                ]
+
+                
+            ); 
+            // dd($response[1]);
+            $result = $response[1] ? array_map(function($item) {
+                // dd($item);
+                return (object) array(
+                    'id' => $item->id,
+                    'full_name' => $item->Employee_Name,
+                   
+                );
+            }, $response[1]): []
+        ;
             
             return success_response(
                 trans('messages.list_role_success'), 
-                UserListResource::collection( $this->user->list_via_role( $role ), false )
+                $result
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
