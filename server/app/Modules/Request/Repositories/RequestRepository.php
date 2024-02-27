@@ -411,6 +411,11 @@ class RequestRepository implements RequestRepositoryInterface{
                 $my_team_restdaywork =[];
                 $my_team_overtime =[];
                 $features = $user->userFeatures();
+                $my_team_alter =[];
+                $my_team_Multi_alter =[];
+                $my_team_changeschedule =[];
+                $my_team_restdaywork =[];
+                $my_team_overtime =[];
                     if(!in_array("manage_alter_log_request",$features)){
                         $my_team_alter =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"1", "pending" 
                         , null, null , 
@@ -422,21 +427,21 @@ class RequestRepository implements RequestRepositoryInterface{
                         ]);
                     }
 
-                    if(!in_array("manage_change_schedules_request",$features)){
+                    if(in_array("manage_change_schedules_request",$features)){
                         $my_team_changeschedule =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"4", "pending" 
                         , null, null , 
                         0, 1, 999, 0
                         ]);
                     }
 
-                    if(!in_array("manage_rest_day_work_request",$features)){
+                    if(in_array("manage_rest_day_work_request",$features)){
                         $my_team_restdaywork =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"3", "pending" 
                         , null, null , 
                         0, 1, 999, 0
                         ]);
                     }
 
-                    if(!in_array("manage_overtime_request",$features)){
+                    if(in_array("manage_overtime_request",$features)){
                         $my_team_overtime =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"$user->LevelId", "pending" 
                         , null, null , 
                         0, 1, 999, 0
@@ -451,17 +456,19 @@ class RequestRepository implements RequestRepositoryInterface{
                 
                 
 
-               
+            //    dd($my_team_alter ,$my_team_Multi_alter );
 
                 $numbers = [
                     "alterlogpending"   => (string)(count($alter[0]) + count($Multi_alter[0])),
                     "overtimepending"   => (string)count($overtime[0]),
                     "restdayworkpending"    => (string)count($restdaywork[0]),
                     "changeschedulepending" => (string)count($changeschedule[0]),
-                    "team_alterlogpending"  => (string)($my_team_alter[1][0]->TotalCount + $my_team_Multi_alter[1][0]->TotalCount) ,
-                    "team_overtimepending"  =>  $my_team_overtime[1][0]->TotalCount,
-                    "team_restdayworkpending"   =>  $my_team_restdaywork[1][0]->TotalCount,
-                    "team_changeschedulepending"    =>  $my_team_changeschedule[1][0]->TotalCount,
+                    "team_alterlogpending"  => (string)(
+                        (is_valid( $my_team_alter) ? $my_team_alter[1][0]->TotalCount : 0) + 
+                        (is_valid( $my_team_Multi_alter) ? $my_team_Multi_alter[1][0]->TotalCount : 0)) ,
+                    "team_overtimepending"  =>(string)( is_valid( $my_team_overtime) ? $my_team_overtime[1][0]->TotalCount : 0),
+                    "team_restdayworkpending"   =>  (string)(is_valid( $my_team_overtime) ? $my_team_restdaywork[1][0]->TotalCount : 0),
+                    "team_changeschedulepending"    =>  (string)(is_valid( $my_team_changeschedule) ? $my_team_changeschedule[1][0]->TotalCount : 0),
                 ];
 
                 return array( 'status_numbers' => $numbers  );
