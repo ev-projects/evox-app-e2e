@@ -101,20 +101,7 @@ class UserProfileResource extends JsonResource
             
              $evox_departments_handled = [];
             //  dd("");
-             $evox_departments_handled=  $this->evox_departments_handled()
-             ->select(
-                ["Id AS id",
-                'Name AS department_name', 
-                'HeadId',
-                'isActive',
-                'CreatedOn AS created_at',
-                'UpdatedOn AS updated_at',
-                'CreatedBy',
-                'CreatedBy',
-                'LevelId',])
-             ->orderBy('Name', 'asc')
-             ->get()
-             ->toArray();
+             $evox_departments_handled=  $this->evox_departments_handled();
 
             $feature_all_list = [];
             if(is_valid($this->LevelId)){
