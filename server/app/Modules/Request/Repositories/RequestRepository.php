@@ -452,10 +452,10 @@ class RequestRepository implements RequestRepositoryInterface{
             //    dd($my_team_alter ,$my_team_Multi_alter );
 
                 $numbers = [
-                    "alterlogpending"   => (string)(count($alter[0]) + count($Multi_alter[0])),
-                    "overtimepending"   => (string)count($overtime[0]),
-                    "restdayworkpending"    => (string)count($restdaywork[0]),
-                    "changeschedulepending" => (string)count($changeschedule[0]),
+                    "alterlogpending"   => (string)(($alter[2][0]->TotalCount) + ($Multi_alter[2][0]->TotalCount)),
+                    "overtimepending"   => (string)($overtime[2][0]->TotalCount),
+                    "restdayworkpending"    => (string)($restdaywork[2][0]->TotalCount),
+                    "changeschedulepending" => (string)($changeschedule[2][0]->TotalCount),
                     "team_alterlogpending"  => (string)(
                         (is_valid( $my_team_alter) ? $my_team_alter[1][0]->TotalCount : 0) + 
                         (is_valid( $my_team_Multi_alter) ? $my_team_Multi_alter[1][0]->TotalCount : 0)) ,
@@ -468,7 +468,6 @@ class RequestRepository implements RequestRepositoryInterface{
 
 
             }catch (Exception $e) {
-                dump($e);
                 log_error($e);
                 throw $e;
             }
