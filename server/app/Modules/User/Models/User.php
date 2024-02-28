@@ -945,66 +945,70 @@ class User extends Authenticatable implements JWTSubject
     # Fetch the User Departments Handled
     public function evox_departments_handled()
     {
-          
-        // if (
-        //     ($this->isLevel("Admin")
-        //     ||
-        //    $this->isLevel("HR")
-        //     ||
-        //    $this->isLevel("Payroll"))
-        // ) 
-        // {
-        //     $main_dep =  EvoxDepartment::where("IsActive", 1);
-        // }
-
-        // $main_dep =  EvoxDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
-        // if(count( $main_dep->get())> 0){
-    
-        //   return  $main_dep;
-        // }
-    
-        // $sub_main_dep =  EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
-        // if(count( $sub_main_dep->get())> 0){
-        //     return EvoxDepartment::whereIn("Id", $sub_main_dep->get()->pluck("DepartmentId")->toArray())->where("IsActive", 1);
-        // }    
 
         if(is_valid($this->LevelId)){
             if($this->LevelId != 0){
                 $perpage_count = 5;
-            $response = call_sp("EH_SP_Employee_List",
+            
+            $response = call_sp("EH_SP_Get_Department_By_UserId",
             
             [
                 $this->id, // vishnu this_id
-                is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
-                null,
-                 null,
-                1, // active
-                null, // name
-                null, // job_title
-                1,
-                 $perpage_count,
-                1 
+                null
                 
                 ]
-
-
             ); 
-            
-            
-                $result =   $response ?? [];
-                $n = array_column($result[0], 'Id');
-                // dd($result[0], $n);
-                // dd( EvoxDepartment::whereIn("Id", $n)->where("IsActive", 1)->get());
-                return  EvoxDepartment::whereIn("Id", $n)->where("IsActive", 1);
+                $result = $response[0] ? array_map(function($item) {
+
+                    return (object) array(
+                        'id' => $item->Id,
+                        'department_name' => $item->DepartmentName,
+                    );
+                }, $response[0]): []
+            ;
+                return $result;
             }
         }
-        return  EvoxDepartment::whereNull("UpdatedON");
+        return  [];
 
         // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
 
     }
 
-    # Fetch the User Departments Handled
+    // # Fetch the User Departments Handled
+    // public function evox_sub_departments_handled()
+    // {
+
+    //     if(is_valid($this->LevelId)){
+    //         if($this->LevelId != 0){
+    //             $perpage_count = 5;
+            
+    //         $response = call_sp("EH_SP_Get_Department_By_UserId",
+            
+    //         [
+    //             $this->id, // vishnu this_id
+    //             4
+                
+    //             ]
+    //         ); 
+    //             $result = $response[0] ? array_map(function($item) {
+
+    //                 return (object) array(
+    //                     'id' => $item->Id,
+    //                     'department_name' => $item->DepartmentName,
+    //                 );
+    //             }, $response[0]): []
+    //         ;
+    //             return $result;
+    //         }
+    //     }
+    //     return  [];
+
+    //     // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
+
+    // }
+
+    // # Fetch the User Departments Handled
     public function evox_sub_departments_handled()
     {
       
