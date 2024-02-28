@@ -692,7 +692,9 @@ class UserRepository implements UserRepositoryInterface{
                     $user->id, // vishnu user_id
                     is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
                     is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
-                    is_valid( request()->get('sub_department_id') ) ? request()->get('sub_department_id'): null,
+                    (is_valid( request()->get('sub_department_id') ) 
+                        && is_valid( request()->get('department_id') ))
+                            ? request()->get('sub_department_id'): null,
                     1, // active
                     is_valid( request()->get('name') ) ? request()->get('name'): null, // name
                     is_valid( request()->get('job_title') ) ? request()->get('job_title'): null, // job_title

@@ -980,44 +980,45 @@ class User extends Authenticatable implements JWTSubject
     }
 
     // # Fetch the User Departments Handled
-    // public function evox_sub_departments_handled()
-    // {
+    public function evox_sub_departments_handled($department_id)
+    {
 
-    //     if(is_valid($this->LevelId)){
-    //         if($this->LevelId != 0){
-    //             $perpage_count = 5;
+        if(is_valid($this->LevelId)){
+            if($this->LevelId != 0){
+                $perpage_count = 5;
             
-    //         $response = call_sp("EH_SP_Get_Department_By_UserId",
+            $response = call_sp("EH_SP_Get_Department_By_UserId",
             
-    //         [
-    //             $this->id, // vishnu this_id
-    //             4
+            [
+                $this->id, // vishnu this_id
+                $department_id
                 
-    //             ]
-    //         ); 
-    //             $result = $response[0] ? array_map(function($item) {
+                ]
+            ); 
+            // dd($response[0]);
+                $result = $response[0] ? array_map(function($item) {
 
-    //                 return (object) array(
-    //                     'id' => $item->Id,
-    //                     'department_name' => $item->DepartmentName,
-    //                 );
-    //             }, $response[0]): []
-    //         ;
-    //             return $result;
-    //         }
-    //     }
-    //     return  [];
+                    return (object) array(
+                        'Id' => $item->Id,
+                        'Name' => $item->SubDepartment,
+                    );
+                }, $response[0]): []
+            ;
+                return $result;
+            }
+        }
+        return  [];
 
-    //     // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
+        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
 
-    // }
+    }
 
     // # Fetch the User Departments Handled
-    public function evox_sub_departments_handled()
-    {
+    // public function evox_sub_departments_handled()
+    // {
       
-        return EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
-    }
+    //     return EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
+    // }
 
     public function getHasSchedule(){
 

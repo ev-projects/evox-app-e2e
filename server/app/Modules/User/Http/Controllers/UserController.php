@@ -374,12 +374,14 @@ class UserController extends Controller
   
     public function sub_department_under_department( $id, $department_id ){   
         try {
-            
+
+                $user = User::find($id);
+                $sub_dep = $user->evox_sub_departments_handled($department_id);
             return success_response(
                 trans('messages.show_sub_department_list'), 
-                EvoxSubDepartment::where('DepartmentId', $department_id)->orderBy('Name', 'asc')->get()->toArray()
-            );
+                $sub_dep);
         } catch(Exception $e){
+            dd($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
