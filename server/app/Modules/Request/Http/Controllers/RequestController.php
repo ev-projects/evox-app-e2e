@@ -108,10 +108,18 @@ class RequestController extends Controller
 
         try {
             log_activity( trans('messages.request_display_attempt') );
-            return success_response(
-                trans('messages.request_display_success'), 
-                  new RequestResource( $user->requests_list('my_request',$request) ) 
-            );
+            if($request->url== 'my_requests'){
+                $response = $user->requests_list('my_request',$request);
+                $my_req_proc = (new RequestResource($response["data"]))->resolve();
+                return success_response(
+                    trans('messages.request_display_success'),
+                    [
+                        "result" => [
+                        "data" => $my_req_proc["result"],
+                        ]
+                    ]
+                    );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

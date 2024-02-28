@@ -206,6 +206,7 @@ class RequestRepository implements RequestRepositoryInterface{
             }
 
             if($data->url=='my_requests'){
+                $perpage_count = 10;
                 $request_types = [
                     'all'                   => 0,
                     'alteration'            => 1,
@@ -221,26 +222,18 @@ class RequestRepository implements RequestRepositoryInterface{
                     $data['valid_to'],
                     $request_types[$data['request_type']],
                     Auth::user()->id,
+                    $data['page'],
+                    $perpage_count,
                 ];
                 $response = call_sp('EH_SP_MyRequest', $values);
 
-                if ($response[0]) {
-                    foreach ($response[0] as $value) {
-                        switch ($value->status) {
-                            case 'pending':
-                                $numbers['pending'] += 1;
-                                break;
-                            case 'approved':
-                                $numbers['approved'] += 1;
-                                break;
-                            case 'declined':
-                                $numbers['declined'] += 1;
-                                break;
-                            case 'canceled':
-                                $numbers['canceled'] += 1;
-                                break;
-                        }
-                    }
+                if ($response[1]) {
+                    $numbers = [
+                        'approved' => $response[1][0]->statusCount,
+                        'canceled' => $response[1][1]->statusCount,
+                        'declined' => $response[1][2]->statusCount,
+                        'pending'  => $response[1][3]->statusCount,
+                    ];
                     return array( 'status_numbers' => $numbers  );
                 }
             }
