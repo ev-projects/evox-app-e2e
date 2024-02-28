@@ -479,6 +479,8 @@ class User extends Authenticatable implements JWTSubject
             $result['data'] = array(
                 "query" =>  $response[0] ?? [],
             );
+            $result['pagination'] = $response[2][0];
+
             return $result;
         }
         else if ($filter['url'] == 'my_team_requests') {
