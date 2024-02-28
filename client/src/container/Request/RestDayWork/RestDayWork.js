@@ -185,7 +185,7 @@ class RestDayWork extends Component {
                  
                    <Col size="6">
                    <div className="form-group">
-                            <h5><b>Supervisor Prespective Timezone</b> </h5>
+                            <h5><b>Supervisor Perspective Timezone</b> </h5>
                             <label>-{this.props.user?.pov_timezone}</label>
                         </div>
                    </Col>
@@ -228,7 +228,7 @@ class RestDayWork extends Component {
                         <span>
     
                         <div className="form-group">
-                            <h5><b>Employee Prespective Timezone</b> </h5>
+                            <h5><b>Employee Perspective Timezone</b> </h5>
                             <label>{values.pov_timezone}</label>
                         </div>
                         
