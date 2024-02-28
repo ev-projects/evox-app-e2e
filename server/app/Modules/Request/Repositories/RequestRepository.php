@@ -385,17 +385,17 @@ class RequestRepository implements RequestRepositoryInterface{
                     */
                     
 
-                $alter =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 1 ,$user->id]);
-                $Multi_alter =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 5 ,$user->id]);
+                $alter =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 1 ,$user->id, 1 , 99]);
+                $Multi_alter =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 5 ,$user->id, 1 , 99]);
                 
 
-                $overtime =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 2 ,$user->id]);
+                $overtime =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 2 ,$user->id, 1 , 99]);
             
 
-                $restdaywork =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 3 ,$user->id]);
+                $restdaywork =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 3 ,$user->id, 1 , 99]);
             
 
-                $changeschedule =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 4 ,$user->id]);
+                $changeschedule =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 4 ,$user->id, 1 , 99]);
 
 
                 $my_team_alter =[];
