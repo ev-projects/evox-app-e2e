@@ -479,6 +479,8 @@ class User extends Authenticatable implements JWTSubject
             $result['data'] = array(
                 "query" =>  $response[0] ?? [],
             );
+            $result['pagination'] = $response[2][0];
+
             return $result;
         } else {
             $column = array('id','status','created_at','created_by','updated_by');

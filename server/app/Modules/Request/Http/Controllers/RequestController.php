@@ -111,14 +111,24 @@ class RequestController extends Controller
             if($request->url== 'my_requests'){
                 $response = $user->requests_list('my_request',$request);
                 $my_req_proc = (new RequestResource($response["data"]))->resolve();
+
+                $result = [
+                    "data" => $my_req_proc["result"],
+                    "total" => $response["pagination"]->TotalCount ? (int) $response["pagination"]->TotalCount : 0,
+                    "count" => count($my_req_proc["result"]),
+                    "per_page" => $response["pagination"]->Total_Count_Per_Page ? (int) $response["pagination"]->Total_Count_Per_Page : 0,
+                    "current_page" => $response["pagination"]->CurrentPage ? (int) $response["pagination"]->CurrentPage : 0,
+                    "last_page" => floor($response["pagination"]->TotalCount / $response["pagination"]->Total_Count_Per_Page)
+                ];
+
+                if( ($response["pagination"]->TotalCount % $response["pagination"]->Total_Count_Per_Page) > 0
+                    && fmod($response["pagination"]->TotalCount / $response["pagination"]->Total_Count_Per_Page, 1) !== 0.00){
+                    $result['last_page'] = $result['last_page'] + 1;
+                }
+
                 return success_response(
-                    trans('messages.request_display_success'),
-                    [
-                        "result" => [
-                        "data" => $my_req_proc["result"],
-                        ]
-                    ]
-                    );
+                    trans('messages.request_display_success'), ["result" => $result]
+                );
             }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
