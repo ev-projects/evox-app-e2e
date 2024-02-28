@@ -47,7 +47,7 @@ class UserListResource extends JsonResource
             'full_name' => $this->getFullName(),
             'departments_handled' => $departments_handled,
             'supervisee' => $supervisee,
-            "has_use_multi" => $this->hasFeature("multi_login"),
+            "has_use_multi" => is_valid($this->LevelId) ?$this->hasFeature("multi_login"): false,
             // 'users_handled' => $users_handled,
         );
 

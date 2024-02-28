@@ -647,38 +647,28 @@ const Sidebar = (props) => {
               )}
 
               {/* HR Links */}
-              {(Authenticator.scanLevel("HR")) && (
+              {(Authenticator.scanLevel("Payroll")) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-cog" />
                     <p>
-                      HR Functions
+                    Payroll Functions
                       <i className="right fa fa-chevron-left" />
                     </p>
                   </a>
-                  {/* <ul className="nav nav-treeview">
-                {Authenticator.NULL("hr", "manage_hr_announcements") && (
-                      <li className="nav-item">
-                        <Link
-                          className="nav-link"
-                          to={global.links.manage_hr_announcements}
-                        >
-                          <i className="nav-icon fa fa-folder-open nav-icon" />
-                          <p style={{ fontSize: 13 }}>Announcements</p>
-                        </Link>
-                      </li>
-                    )}
-                  </ul> */}
+          
 
                   <ul className="nav nav-treeview">
-                {(Authenticator.scanLevel("HR")) && (
+                  {Authenticator.scanLevel_Feature("Payroll", 
+                            "manage_payroll_cutoff",
+                    )&& (
                       <li className="nav-item">
                         <Link
                           className="nav-link"
-                          // to={global.links.manage_hr_announcements}
+                          to={global.links.payroll_cutoff}
                         >
-                          <i  className="nav-icon fa fa-bar-chart" />
-                          <p style={{ fontSize: 13 }}>HR Attendance</p>
+                          <i className="nav-icon fa fa-table nav-icon" />
+                          <p>Payroll Cutoff</p>
                         </Link>
                       </li>
                     )}

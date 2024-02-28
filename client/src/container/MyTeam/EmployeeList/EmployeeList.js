@@ -132,18 +132,6 @@ const MyTeamListFilter = (props) => {
                     </select>
                 </div>
               </Col> 
-              <Col size="4">
-                    <select
-                    className="form-control"
-                      name="status"
-                      value={values.status}
-                      onChange={handleChange}
-                    >
-                      {/* <option label="Select Status..." /> */}
-                      <option value="1" label="Active" />
-                      <option value="0" label="Inactive" />
-                    </select>
-              </Col>
               <Col size="2"> 
                 <div className="form-group">
                     <select
@@ -161,6 +149,19 @@ const MyTeamListFilter = (props) => {
                 </div>
 
               </Col> 
+              <Col size="4">
+                    <select
+                    className="form-control"
+                      name="status"
+                      value={values.status}
+                      onChange={handleChange}
+                    >
+                      {/* <option label="Select Status..." /> */}
+                      <option value="1" label="Active" />
+                      <option value="0" label="Inactive" />
+                    </select>
+              </Col>
+              
               <Col size="2"> 
                 <div className="form-group">
                     <input type="textfield" className="form-control" variant="primary" placeholder="Enter Job Title" name="job_title" onChange={handleChange} value={values.job_title} />
