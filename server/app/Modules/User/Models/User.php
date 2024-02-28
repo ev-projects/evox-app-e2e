@@ -455,6 +455,7 @@ class User extends Authenticatable implements JWTSubject
     public function requests_list($request,$filter = array()){
         if ($filter['url'] == 'my_requests') {
             $id = auth()->user()->id;
+            $perpage_count = 10;
             $request_types = [
                 'all'                   => 0,
                 'alteration'            => 1,
@@ -470,13 +471,14 @@ class User extends Authenticatable implements JWTSubject
                 $filter['valid_to'],
                 $request_types[$filter['request_type']],
                 $id,
+                $filter['page'],
+                $perpage_count,
             ];
             $response = call_sp('EH_SP_MyRequest', $values);
 
-            $result = array(
+            $result['data'] = array(
                 "query" =>  $response[0] ?? [],
             );
-            // dd($result);
             return $result;
         }
         else if ($filter['url'] == 'my_team_requests') {
