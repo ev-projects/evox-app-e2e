@@ -73,7 +73,7 @@ class UserProfileResource extends JsonResource
             "current_offset" => $offset,
             "default_offset" => $this->country_zone()->time_difference,
             "lvl_name" => is_valid( $this->LevelId) ? $this->level_type(): null,
-            "use_multi" => $this->permissions()->pluck('name')->contains('user_multi_login'),
+            "use_multi" => is_valid( $this->LevelId) ?$this->permissions()->pluck('name')->contains('user_multi_login'): false,
 
             "schedule_active" => ( is_valid( $department ) ? $this->department()->first()->departments_on_schedule_is_active(): false ),
 
@@ -93,28 +93,15 @@ class UserProfileResource extends JsonResource
             }
 
             // Create Resource for Department Handled
-            $departments_handled = [];
-            foreach( $this->departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
-                array_push( $departments_handled, $departments );
-            }
+            // $departments_handled = [];
+            // foreach( $this->departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
+            //     array_push( $departments_handled, $departments );
+            // }
 
             
              $evox_departments_handled = [];
             //  dd("");
-             $evox_departments_handled=  $this->evox_departments_handled()
-             ->select(
-                ["Id AS id",
-                'Name AS department_name', 
-                'HeadId',
-                'isActive',
-                'CreatedOn AS created_at',
-                'UpdatedOn AS updated_at',
-                'CreatedBy',
-                'CreatedBy',
-                'LevelId',])
-             ->orderBy('Name', 'asc')
-             ->get()
-             ->toArray();
+             $evox_departments_handled=  $this->evox_departments_handled();
 
             $feature_all_list = [];
             if(is_valid($this->LevelId)){

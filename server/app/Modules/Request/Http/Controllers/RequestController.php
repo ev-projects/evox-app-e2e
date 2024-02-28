@@ -120,6 +120,28 @@ class RequestController extends Controller
                     ]
                     );
             }
+            if($request->url== 'my_team_requests'){
+                // return success_response(
+                //     trans('messages.request_display_success'), 
+                //       new RequestResource( $user->requests_list('my_request',$request) ) 
+                // );
+                $collection  = $user->requests_list('my_request',$request);
+                $DAT = (new RequestResource( $collection["data"] ))->resolve();
+                    // dd($collection["pagination"]);
+                return success_response(
+                    trans('messages.request_display_success'), 
+                    ["result" => [
+                        "data" =>       $DAT["result"],
+                       
+                        "total" => is_valid($collection["pagination"]["total"]) ? $collection["pagination"]["total"]: 0,
+                        "count" => is_valid($collection["pagination"]["count"]) ? $collection["pagination"]["count"]: 0,
+                        "per_page" => is_valid($collection["pagination"]["per_page"]) ? $collection["pagination"]["per_page"]: 0,
+                        "current_page" =>is_valid($collection["pagination"]["current_page"]) ? $collection["pagination"]["current_page"]: 0,
+                        "last_page" => is_valid($collection["pagination"]["last_page"]) ? $collection["pagination"]["last_page"]: 0,
+                    ]]
+                );
+            }
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

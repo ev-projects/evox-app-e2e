@@ -56,28 +56,28 @@ class GenerateFeaturesToLevel extends Migration
     $request_overtime->features_level()->attach([0,1,2,3,4,5,6,8]);
 
     $export_dtr_logs = Features::create([ 'feature_name' =>"export_dtr_logs", 'feature_label'=>"Export DTR Logs"]);
-    $export_dtr_logs->features_level()->attach([1,2,3,4,6,7,8]);
+    $export_dtr_logs->features_level()->attach([1,2,3,4,5,6,7,8]);
 
     $export_dtr_summary = Features::create([ 'feature_name' =>"export_dtr_summary", 'feature_label'=>"Export DTR Summary"]);
-    $export_dtr_summary->features_level()->attach([1,2,3,4,6,7,8]);
+    $export_dtr_summary->features_level()->attach([1,2,3,4,5,6,7,8]);
 
     $view_employee_dtr = Features::create([ 'feature_name' =>"view_employee_dtr", 'feature_label'=>"View Employee DTR"]);
-    $view_employee_dtr->features_level()->attach([1,2,3,4,6,7,8]);
+    $view_employee_dtr->features_level()->attach([1,2,3,4,5,6,7,8]);
 
     $view_dtr_logs = Features::create([ 'feature_name' =>"view_dtr_logs", 'feature_label'=>"View DTR Logs"]);
-    $view_dtr_logs->features_level()->attach([1,2,3,4,6,7,8]);
+    $view_dtr_logs->features_level()->attach([1,2,3,4,5,6,7,8]);
 
     $view_dtr_summary = Features::create([ 'feature_name' =>"view_dtr_summary", 'feature_label'=>"View DTR Summary"]);
-    $view_dtr_summary->features_level()->attach([1,2,3,4,6,7,8]);
+    $view_dtr_summary->features_level()->attach([1,2,3,4,5,6,7,8]);
 
     $view_employee_schedule = Features::create([ 'feature_name' =>"view_employee_schedule", 'feature_label'=>"View Employee Schedule"]);
-    $view_employee_schedule->features_level()->attach([1,2,3,4,6,7,8]);
+    $view_employee_schedule->features_level()->attach([1,2,3,4,5,6,7,8]);
 
     $change_employee_schedule = Features::create([ 'feature_name' =>"change_employee_schedule", 'feature_label'=>"Change Employee Schedule"]);
-    $change_employee_schedule->features_level()->attach([1,2,3,4,6,8]);
+    $change_employee_schedule->features_level()->attach([1,2,3,4,5,6,8]);
 
     $view_attendance_report = Features::create([ 'feature_name' =>"view_attendance_report", 'feature_label'=>"View Attendance Report"]);
-    $view_attendance_report->features_level()->attach([1,2,3,4,6,7,8]);
+    $view_attendance_report->features_level()->attach([1,2,3,4,5,6,7,8]);
 
     $view_department_list = Features::create([ 'feature_name' =>"view_department_list", 'feature_label'=>"View Department List"]);
     $view_department_list->features_level()->attach([1,2,3,4,5,6,8]);
@@ -86,19 +86,19 @@ class GenerateFeaturesToLevel extends Migration
     $manage_teams->features_level()->attach([2,8]);
 
     $manage_department_schedules = Features::create([ 'feature_name' =>"manage_department_schedules", 'feature_label'=>"Manage Department Schedules"]);
-    $manage_department_schedules->features_level()->attach([1,2,3,4,6,8]);
+    $manage_department_schedules->features_level()->attach([1,2,3,4,5,6,8]);
 
     $manage_alter_log_request = Features::create([ 'feature_name' =>"manage_alter_log_request", 'feature_label'=>"Manage Alter Log Requests"]);
-    $manage_alter_log_request->features_level()->attach([1,2,3,4,6,8]);
+    $manage_alter_log_request->features_level()->attach([1,2,3,4,5,6,8]);
 
     $manage_change_schedules_request = Features::create([ 'feature_name' =>"manage_change_schedules_request", 'feature_label'=>"Manage Change Schedule Requests"]);
-    $manage_change_schedules_request->features_level()->attach([1,2,3,4,6,8]);
+    $manage_change_schedules_request->features_level()->attach([1,2,3,4,5,6,8]);
 
     $manage_rest_day_work_request = Features::create([ 'feature_name' =>"manage_rest_day_work_request", 'feature_label'=>"Manage Rest Day Work Requests"]);
-    $manage_rest_day_work_request->features_level()->attach([1,2,3,4,6,8]);
+    $manage_rest_day_work_request->features_level()->attach([1,2,3,4,5,6,8]);
 
     $manage_overtime_request = Features::create([ 'feature_name' =>"manage_overtime_request", 'feature_label'=>"Manage Overtime Requests"]);
-    $manage_overtime_request->features_level()->attach([1,2,3,4,6,8]);
+    $manage_overtime_request->features_level()->attach([1,2,3,4,5,6,8]);
 
     $view_employee_list = Features::create([ 'feature_name' =>"view_employee_list", 'feature_label'=>"View Employee List"]);
     $view_employee_list->features_level()->attach([1,2,3,4,5,6,7,8]);
@@ -122,7 +122,7 @@ class GenerateFeaturesToLevel extends Migration
     $view_celebrations->features_level()->attach([1,2,3,4,5,6,7,8]);
 
     $manage_payroll_cutoff = Features::create([ 'feature_name' =>"manage_payroll_cutoff", 'feature_label'=>"Manage Payroll Cut-off"]);
-    $manage_payroll_cutoff->features_level()->attach([4]);
+    $manage_payroll_cutoff->features_level()->attach([4,6]);
 
     $bhr_sync = Features::create([ 'feature_name' =>"bhr_sync", 'feature_label'=>"BHR Sync"]);
     $bhr_sync->features_level()->attach([4]);

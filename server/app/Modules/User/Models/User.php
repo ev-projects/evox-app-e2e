@@ -480,7 +480,67 @@ class User extends Authenticatable implements JWTSubject
                 "query" =>  $response[0] ?? [],
             );
             return $result;
-        } else {
+        }
+        else if ($filter['url'] == 'my_team_requests') {
+            $id = auth()->user()->id;
+            $request_types = [
+                'all'                   => 0,
+                'alteration'            => 1,
+                'overtime'              => 2,
+                'rest_day_work'         => 3,
+                'change_schedule'       => 4,
+                'alter_logs_punches'    => 5,
+            ];
+            $perpage_count = 10;
+            $response =  call_sp("EH_SP_My_Team_Request", [
+                $this->id,
+                $this->LevelId,
+                $filter['valid_from'],
+                $filter['valid_to'],
+                $request_types[$filter['request_type']],
+                $filter['status'],
+                $filter['department_id'],
+                $filter['name'] , 
+                0, $filter['page'], $perpage_count, 0]);
+           
+                $collection =  [];
+            $result = $response[3] ? array_map(function($item) {
+                    // dd($item);
+                    return (object) array(
+                        'id' => $item->T_id,
+                        'status' => $item->T_status,
+                        'created_at' => $item->T_created_at,
+                        'employee_note' => $item->T_employee_note,
+                        'created_by' => $item->T_created_by,
+                        'updated_by' => $item->T_updated_by,
+                        'fourth_column' => $item->T_fourth_column,
+                        'fifth_column' => $item->T_fifth_column,
+                        'date_requested' => $item->T_date_requested,
+                        'table_name' => $item->T_table_name,
+                        'UV_DepartmentName' => $item->T_userDepartmentName,
+                        'updated_at' => $item->T_updated_at,
+                    );
+                }, $response[3]): []
+            ;
+            $paginate = $response[1][0];
+                // dd($paginate);
+            $collection["data"] = [ "query" =>$result];
+            $collection["pagination"] = [
+                                            'total' => (int) $paginate->TotalCount,
+                                            'count' => count( $collection["data"]),
+                                            'per_page' =>  (int) $paginate->Total_Count_Per_Page,
+                                            'current_page' => (int) $paginate->CurrentPage,
+                                            'last_page' => round($paginate->TotalCount /  $perpage_count)
+                                        ];
+
+                                        if( ($paginate->TotalCount % $perpage_count) > 0 
+                                        && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
+                                            $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
+                                        }
+                                        // dd($collection["data"]);
+            return   $collection;
+        }
+        else {
             $column = array('id','status','created_at','created_by','updated_by');
 
             $change_schedules    =   DB::table('change_schedules')
@@ -721,56 +781,54 @@ class User extends Authenticatable implements JWTSubject
     
     public function users_handled()
     {   
-
-        if( $this->isLevel("Client") ) { 
-            return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
-        } 
         
-        if (
-                    ($this->isLevel("Admin")
+            if (
+                        ($this->isLevel("Admin")
+                        ||
+                    $this->isLevel("HR")
+                        ||
+                    $this->isLevel("Payroll"))
+                    ) 
+                    {
+                        return User::whereNotNull("bhr_num");
+                    }
+                
+    if(
+                        ($this->isLevel("SubDepartment Head")
+                        ||
+                    $this->isLevel("Department Head")
+                        ||
+                    $this->isLevel("Board"))
                     ||
-                   $this->isLevel("HR")
-                    ||
-                   $this->isLevel("Payroll"))
-                ) 
-                {
-                    return User::whereNotNull("bhr_num");
-                }
-               
-   if(
-                    ($this->isLevel("SubDepartment Head")
-                    ||
-                   $this->isLevel("Department Head")
-                    ||
-                   $this->isLevel("Board"))
-   ){
-    $response = call_sp("EH_SP_Employee_List",[
-        $this->id, 
-        is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
-        null,
-        null,
-        1, // active
-        null, // name
-        null, // job_title
-        1,
-        9999,
-        1      
-        ]
-    ); 
-    
-        $result = array(
-            "query" =>  $response ?? [],
-        );
+                    $this->isLevel("Client")
+    ){
+        $response = call_sp("EH_SP_Employee_List",[
+            $this->id, 
+            is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
+            null,
+            null,
+            1, // active
+            null, // name
+            null, // job_title
+            1,
+            9999,
+            1      
+            ]
+        ); 
+        
+            $result = array(
+                "query" =>  $response ?? [],
+            );
 
 
-    if( count($result['query']) > 2){
-        $collection["data"] = $result['query'][count($result['query'])-3];
+        if( count($result['query']) > 2){
+            $collection["data"] = $result['query'][count($result['query'])-3];
+        }
+
+    $ids = array_pluck($result['query'][count($result['query'])-3], "id");
+
+    return user::whereIn('id', $ids);
     }
-
-$ids = array_pluck($result['query'][count($result['query'])-3], "id");
-
-return user::whereIn('id', $ids);
-   }
 
     return [];
     }
@@ -889,35 +947,70 @@ return user::whereIn('id', $ids);
     # Fetch the User Departments Handled
     public function evox_departments_handled()
     {
-          
-        if (
-            ($this->isLevel("Admin")
-            ||
-           $this->isLevel("HR")
-            ||
-           $this->isLevel("Payroll"))
-        ) 
-        {
-            $main_dep =  EvoxDepartment::where("IsActive", 1);
-        }
 
-        $main_dep =  EvoxDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
-        if(count( $main_dep->get())> 0){
-    
-          return  $main_dep;
+        if(is_valid($this->LevelId)){
+            if($this->LevelId != 0){
+                $perpage_count = 5;
+            
+            $response = call_sp("EH_SP_Get_Department_By_UserId",
+            
+            [
+                $this->id, // vishnu this_id
+                null
+                
+                ]
+            ); 
+                $result = $response[0] ? array_map(function($item) {
+
+                    return (object) array(
+                        'id' => $item->Id,
+                        'department_name' => $item->DepartmentName,
+                    );
+                }, $response[0]): []
+            ;
+                return $result;
+            }
         }
-    
-        $sub_main_dep =  EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
-        if(count( $sub_main_dep->get())> 0){
-            return EvoxDepartment::whereIn("Id", $sub_main_dep->get()->pluck("DepartmentId")->toArray())->where("IsActive", 1);
-        }    
-        return  EvoxDepartment::whereNull("UpdatedON");
+        return  [];
 
         // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
 
     }
 
-    # Fetch the User Departments Handled
+    // # Fetch the User Departments Handled
+    // public function evox_sub_departments_handled()
+    // {
+
+    //     if(is_valid($this->LevelId)){
+    //         if($this->LevelId != 0){
+    //             $perpage_count = 5;
+            
+    //         $response = call_sp("EH_SP_Get_Department_By_UserId",
+            
+    //         [
+    //             $this->id, // vishnu this_id
+    //             4
+                
+    //             ]
+    //         ); 
+    //             $result = $response[0] ? array_map(function($item) {
+
+    //                 return (object) array(
+    //                     'id' => $item->Id,
+    //                     'department_name' => $item->DepartmentName,
+    //                 );
+    //             }, $response[0]): []
+    //         ;
+    //             return $result;
+    //         }
+    //     }
+    //     return  [];
+
+    //     // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
+
+    // }
+
+    // # Fetch the User Departments Handled
     public function evox_sub_departments_handled()
     {
       
@@ -975,23 +1068,31 @@ return user::whereIn('id', $ids);
     }
 
     public function hasFeature($feature_name){
-        if(is_valid($feature_name)){
-            $feature_all_list = $this->userFeatures();
-            return in_array($feature_name, $feature_all_list) ;
+        if(is_valid($this->LevelId)){
+            if(is_valid($feature_name)){
+                $feature_all_list = $this->userFeatures();
+                return in_array($feature_name, $feature_all_list) ;
+            }
         }
+        return false;
+        
     }
 
     public function userFeatures(){
-        
-            $default = $this->getFeatureAccess()->pluck("feature_name")->toArray();
-            $conditional = $this->getFeatureAccessWithUnconditional()->where("has_access", true)->get()->pluck("feature_name")->toArray();
-            $remove = $this->getFeatureAccessWithUnconditional()->where("has_access", false)->get()->pluck("feature_name")->toArray();
-            $feature_all_list = array_unique(array_merge($default,$conditional));
-            if(is_valid($remove)){
-                $feature_all_list = array_diff($feature_all_list, $remove);
+
+            if(is_valid($this->getFeatureAccess())){
+                $default = $this->getFeatureAccess()->pluck("feature_name")->toArray();
+                $conditional = $this->getFeatureAccessWithUnconditional()->where("has_access", true)->get()->pluck("feature_name")->toArray();
+                $remove = $this->getFeatureAccessWithUnconditional()->where("has_access", false)->get()->pluck("feature_name")->toArray();
+                $feature_all_list = array_unique(array_merge($default,$conditional));
+                if(is_valid($remove)){
+                    $feature_all_list = array_diff($feature_all_list, $remove);
+                }
+            
+                return $feature_all_list ;
             }
-        
-            return $feature_all_list ;
+            return [] ;
+           
         
     }
 
