@@ -781,7 +781,7 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the Users Handled of the current User Instance 
     
-    public function users_handled()
+    public function users_handled($department_id = null, $sub_department_id = null)
     {   
         
             if (
@@ -807,8 +807,8 @@ class User extends Authenticatable implements JWTSubject
         $response = call_sp("EH_SP_Employee_List",[
             $this->id, 
             is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
-            null,
-            null,
+            $department_id,
+            $sub_department_id,
             1, // active
             null, // name
             null, // job_title

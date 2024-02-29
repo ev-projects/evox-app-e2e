@@ -921,17 +921,19 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function get_dpa_list( Request $request ){
         try {
+
+            $department_id = is_valid( $request->department_id )? $request->department_id : null;
             // Fetch the Users under the supervisee and join to their department for the sorting via Department Name
-            $user_collection = User::whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
+            $user_collection = User::whereIn('users.id', auth()->user()->users_handled($department_id)->pluck('id')->toArray())
                                     ->join('departments', 'departments.id','=','users.department_id')
                                     ->orderBy('departments.department_name','asc')
                                     ->orderBy('users.emp_num','desc')
                                     ->select('users.*');
 
             // For the Department ID Filtering
-            if( is_valid( $request->department_id ) ){
-                $user_collection->where('department_id',$request->department_id );
-            }
+            // if( is_valid( $request->department_id ) ){
+            //     $user_collection->where('department_id',$request->department_id );
+            // }
 
             // For the Employee Name filtering
             if( is_valid( $request->name ) ){
