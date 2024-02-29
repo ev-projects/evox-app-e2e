@@ -958,7 +958,7 @@ class UserRepository implements UserRepositoryInterface{
                 $user_collection->where('is_active',$request->is_active );
             }
 
-            return $user_collection->paginate(50);
+            return $user_collection->paginate(10);
 
         } catch (Exception $e) {
             throw $e;
