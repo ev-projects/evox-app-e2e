@@ -149,7 +149,7 @@ class AlterLog extends Component {
         action:             null,
         method:             method,
         id:                 this.props.instance.id != undefined ? this.props.instance.id : null, 
-        date:               this.props.instance.date != undefined ? new Date( this.props.instance.date ) : ( this.props.location.date != undefined ? target_date : null ),
+        date:               this.props.instance.date != undefined ? this.props.instance.date : ( this.props.location.date != undefined ? target_date : null ),
         user_id:            this.props.instance.user_id != undefined ? this.props.instance.user_id.toString() : this.props.user.id.toString(), 
         current_time_in:    this.props.instance.current_time_in != undefined ? new Date( this.props.instance.current_time_in ) : ( this.props.location.current_time_in != undefined ? new Date(  this.props.location.current_time_in ) : null ), 
         current_time_out:   this.props.instance.current_time_out != undefined ? new Date( this.props.instance.current_time_out ) : ( this.props.location.current_time_out != undefined ? new Date(  this.props.location.current_time_out ) : null ), 
@@ -200,7 +200,7 @@ class AlterLog extends Component {
                  
                    <Col size="6">
                    <div className="form-group">
-                            <h5><b>Supervisor Prespective Timezone</b> </h5>
+                            <h5><b>Supervisor Perspective Timezone</b> </h5>
                             <label>-{this.props.user?.pov_timezone}</label>
                         </div>
                    </Col>
@@ -244,7 +244,7 @@ class AlterLog extends Component {
                    
                     <div className="alterPOV">
                     <div className="form-group">
-                            <h5><b>Employee Prespective Timezone</b> </h5>
+                            <h5><b>Employee Perspective Timezone</b> </h5>
                             <label>{values.pov_timezone}</label>
                         </div>
                         <Row>  
