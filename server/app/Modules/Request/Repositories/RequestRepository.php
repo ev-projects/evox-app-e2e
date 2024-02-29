@@ -250,18 +250,20 @@ class RequestRepository implements RequestRepositoryInterface{
             
             // dd( $data->all(),$my_team_req);
             
-            if(is_valid($my_team_req[0])){
+            
+            if(is_valid($my_team_req[1])){
                 $numbers = array(
-                    "pending" => $my_team_req[0][3]->statusCount,
-                    "approved" => $my_team_req[0][0]->statusCount,
-                    "decline" => $my_team_req[0][2]->statusCount,
-                    "canceled" => $my_team_req[0][1]->statusCount,
+                    "pending" => $my_team_req[1][3]->statusCount,
+                    "approved" => $my_team_req[1][0]->statusCount,
+                    "decline" => $my_team_req[1][2]->statusCount,
+                    "canceled" => $my_team_req[1][1]->statusCount,
                 );
             }
         }
 
             return array( 'status_numbers' => $numbers  );
         } catch (Exception $e) {
+            // dd($e);
             DB::rollback();
             log_error($e);
             throw $e;
@@ -435,7 +437,7 @@ class RequestRepository implements RequestRepositoryInterface{
                     }
 
                     if(in_array("manage_overtime_request",$features)){
-                        $my_team_overtime =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"$user->LevelId", "pending" 
+                        $my_team_overtime =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"2", "pending" 
                         , null, null , 
                         0, 1, 999, 0
                         ]);
@@ -449,7 +451,14 @@ class RequestRepository implements RequestRepositoryInterface{
                 
                 
 
-            //    dd($my_team_alter ,$my_team_Multi_alter );
+            //    dd(
+            //     $my_team_alter,
+            //     $my_team_Multi_alter,
+            //     $my_team_overtime,
+            //     $my_team_overtime,
+            //     $my_team_changeschedule,
+
+            //     );
 
                 $numbers = [
                     "alterlogpending"   => (string)(($alter[2][0]->TotalCount) + ($Multi_alter[2][0]->TotalCount)),
@@ -457,17 +466,18 @@ class RequestRepository implements RequestRepositoryInterface{
                     "restdayworkpending"    => (string)($restdaywork[2][0]->TotalCount),
                     "changeschedulepending" => (string)($changeschedule[2][0]->TotalCount),
                     "team_alterlogpending"  => (string)(
-                        (is_valid( $my_team_alter) ? $my_team_alter[1][0]->TotalCount : 0) + 
-                        (is_valid( $my_team_Multi_alter) ? $my_team_Multi_alter[1][0]->TotalCount : 0)) ,
-                    "team_overtimepending"  =>(string)( is_valid( $my_team_overtime) ? $my_team_overtime[1][0]->TotalCount : 0),
-                    "team_restdayworkpending"   =>  (string)(is_valid( $my_team_overtime) ? $my_team_restdaywork[1][0]->TotalCount : 0),
-                    "team_changeschedulepending"    =>  (string)(is_valid( $my_team_changeschedule) ? $my_team_changeschedule[1][0]->TotalCount : 0),
+                        (is_valid( $my_team_alter) ? $my_team_alter[2][0]->TotalCount : 0) + 
+                        (is_valid( $my_team_Multi_alter) ? $my_team_Multi_alter[2][0]->TotalCount : 0)) ,
+                    "team_overtimepending"  =>(string)( is_valid( $my_team_overtime) ? $my_team_overtime[2][0]->TotalCount : 0),
+                    "team_restdayworkpending"   =>  (string)(is_valid( $my_team_overtime) ? $my_team_restdaywork[2][0]->TotalCount : 0),
+                    "team_changeschedulepending"    =>  (string)(is_valid( $my_team_changeschedule) ? $my_team_changeschedule[2][0]->TotalCount : 0),
                 ];
 
                 return array( 'status_numbers' => $numbers  );
 
 
             }catch (Exception $e) {
+                dd($e);
                 log_error($e);
                 throw $e;
             }

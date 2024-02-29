@@ -504,7 +504,7 @@ class User extends Authenticatable implements JWTSubject
                 $filter['department_id'],
                 $filter['name'] , 
                 0, $filter['page'], $perpage_count, 0]);
-           
+        //    dd($response);
                 $collection =  [];
             $result = $response[3] ? array_map(function($item) {
                     // dd($item);
@@ -524,7 +524,7 @@ class User extends Authenticatable implements JWTSubject
                     );
                 }, $response[3]): []
             ;
-            $paginate = $response[1][0];
+            $paginate = $response[2][0];
                 // dd($paginate);
             $collection["data"] = [ "query" =>$result];
             $collection["pagination"] = [
@@ -781,7 +781,8 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the Users Handled of the current User Instance 
     
-    public function users_handled($department_id = null, $sub_department_id = null)
+    public function users_handled($department_id = null, $sub_department_id = null,$is_active = 1,$name = null,$job_title = null, $page = 1, 
+                                $page_count = 9999)
     {   
         
             if (
@@ -808,12 +809,12 @@ class User extends Authenticatable implements JWTSubject
             $this->id, 
             is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
             $department_id,
-            $sub_department_id,
-            1, // active
-            null, // name
-            null, // job_title
-            1,
-            9999,
+            $department_id != null? $sub_department_id: null,
+            $is_active, // active
+            $name, // name
+            $job_title, // job_title
+            $page,
+            $page_count,
             1      
             ]
         ); 

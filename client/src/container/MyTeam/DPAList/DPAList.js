@@ -234,7 +234,8 @@ const DPAListTable = (props) => {
   return ( props.dpaList.list != null && props.dpaList.list.data.length > 0   ? 
           <div>
             {/* Record Displayed:  */}
-            { props.dpaList.list != null && props.dpaList.list.data.length > 0  ? props.dpaList.list.pagination.total : 0 }
+            total: 
+            { props.dpaList.list != null && props.dpaList.list.data.length > 0  ? props.dpaList.list.pagination.count : 0 } of { props.dpaList.list != null && props.dpaList.list.data.length > 0  ? props.dpaList.list.pagination.total : 0 }
             <Table striped bordered hover>
               <thead>
                 <tr>
