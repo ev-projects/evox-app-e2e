@@ -109,11 +109,43 @@ class syncBhrUsers extends Command
 
                     $bhr_status = $bhr_user->status == "Active"? 1: 0;
                     $termination_date = $bhr_user->terminationDate == "0000-00-00"? null: $bhr_user->terminationDate ;
-                    $result = DB::select('call EH_SP_User_sync("'.$bhr_user->bestEmail.'", '.$bhr_user->employeeNumber.'
-                        ,'.$bhr_user->id.', "'.generate_username( $bhr_user ).'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'","'.$bhr_user->firstName.'", "'.$bhr_user->middleName.'"
-                        ,"'.$bhr_user->lastName.'", "'.$bhr_user->nickname.'","'.$bhr_user->employmentHistoryStatus.'", "'.$bhr_user->hireDate.'"
-                        ,'.$bhr_status.', "'.$bhr_user->jobTitle.'","'.$bhr_user->country.'", "'.$bhr_user->dateOfBirth.'"
-                        ,"'. $termination_date.'", "'.$bhr_user->department.'","'.$bhr_user->mobilePhone.'", '.$bhr_user->supervisorEId.',"'.$bhr_user->division.'")');    
+                    $SUP_id = $bhr_user->supervisorEId == null? null: $bhr_user->supervisorEId ;
+
+                    // error_log($bhr_user);
+                    // dd($bhr_user);
+
+                    $result =  call_sp("EH_SP_User_sync", 
+                        [
+                            $bhr_user->bestEmail, 
+                            $bhr_user->employeeNumber,
+                            $bhr_user->id,
+                            generate_username( $bhr_user ),
+                            Hash::make( get_constant('DEFAULT_PASSWORD') ),
+                            $bhr_user->firstName,
+                            $bhr_user->middleName,
+                            $bhr_user->lastName,
+                            $bhr_user->nickname,
+                            $bhr_user->employmentHistoryStatus,
+                            $bhr_user->hireDate,
+                            $bhr_status,
+                            $bhr_user->jobTitle,
+                            $bhr_user->country,
+                            $bhr_user->dateOfBirth,
+                            $termination_date,
+                            $bhr_user->department,
+                            $bhr_user->mobilePhone,
+                            $SUP_id,
+                            $bhr_user->division,
+                    
+                
+                ]);
+                
+                    // $result = DB::select('call EH_SP_User_sync("'.$bhr_user->bestEmail.'", '.$bhr_user->employeeNumber.'
+                    //     ,'.$bhr_user->id.', "'.generate_username( $bhr_user ).'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'"
+                    //     ,"'.$bhr_user->firstName.'", "'.$bhr_user->middleName.'"
+                    //     ,"'.$bhr_user->lastName.'", "'.$bhr_user->nickname.'","'.$bhr_user->employmentHistoryStatus.'", "'.$bhr_user->hireDate.'"
+                    //     ,'.$bhr_status.', "'.$bhr_user->jobTitle.'","'.$bhr_user->country.'", "'.$bhr_user->dateOfBirth.'"
+                    //     ,"'. $termination_date.'", "'.$bhr_user->department.'","'.$bhr_user->mobilePhone.'", '.$SUP_id.',"'.$bhr_user->division.'")');    
 
                         if(!isset($result)){
                             break;
