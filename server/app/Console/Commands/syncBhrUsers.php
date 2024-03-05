@@ -108,12 +108,16 @@ class syncBhrUsers extends Command
                     if(is_valid($bhr_user)){
 
                     $bhr_status = $bhr_user->status == "Active"? 1: 0;
-
-                        DB::select('call EV_SP_User_sync("'.$bhr_user->bestEmail.'", '.$bhr_user->employeeNumber.'
+                    $termination_date = $bhr_user->terminationDate == "0000-00-00"? null: $bhr_user->terminationDate ;
+                    $result = DB::select('call EH_SP_User_sync("'.$bhr_user->bestEmail.'", '.$bhr_user->employeeNumber.'
                         ,'.$bhr_user->id.', "'.generate_username( $bhr_user ).'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'","'.$bhr_user->firstName.'", "'.$bhr_user->middleName.'"
                         ,"'.$bhr_user->lastName.'", "'.$bhr_user->nickname.'","'.$bhr_user->employmentHistoryStatus.'", "'.$bhr_user->hireDate.'"
                         ,'.$bhr_status.', "'.$bhr_user->jobTitle.'","'.$bhr_user->country.'", "'.$bhr_user->dateOfBirth.'"
-                        ,"'.$bhr_user->terminationDate.'", "'.$bhr_user->department.'","'.$bhr_user->mobilePhone.'", '.$bhr_user->supervisorEId.',"'.$bhr_user->division.'")');    
+                        ,"'. $termination_date.'", "'.$bhr_user->department.'","'.$bhr_user->mobilePhone.'", '.$bhr_user->supervisorEId.',"'.$bhr_user->division.'")');    
+
+                        if(!isset($result)){
+                            break;
+                        }
 
                             $new_timestamp = (new Carbon($bhr_user->lastChanged))->getTimestamp();
                             if ($new_timestamp > $user_since_date_sync_ts) {
