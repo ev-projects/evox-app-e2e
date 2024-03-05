@@ -85,7 +85,7 @@ class AssignFeature extends Component {
 		        <Wrapper {...this.props} >
               <ContainerWrapper>
                   <ContainerBody>
-                      <Content col="6" title="Assign Roles/Permissions to a User" >
+                      <Content col="6" title="Manage Features of a User" >
 					  	<Col> 
 							<div className="form-group">
 								<label>Search Name:</label>
