@@ -77,7 +77,7 @@ class syncBhrUsers extends Command
 
             $since_date_to_sync = $dt_since->toAtomString();
 
-            log_to_file('info', '[SINCE DATE DEFAULT ' . $since_date_to_sync . ']' . __FUNCTION__, [], "sync_bhr_user");
+            log_to_file('info', 'SINCE DATE DEFAULT', [$since_date_to_sync, __FUNCTION__], "sync_bhr_user");
 
             # 1.
             # Fetches all the recently changed BHr Users ( grouped by Inserted and Updated )
@@ -155,11 +155,11 @@ class syncBhrUsers extends Command
                             if ($new_timestamp > $user_since_date_sync_ts) {
                                 $user_since_date_sync_ts = $new_timestamp;
                                 Cache::put('user_since_date_sync_ts', $user_since_date_sync_ts, 80);
-                                log_to_file('info', '[NEW START DATE ' . $bhr_user->lastChanged. ']' . __FUNCTION__, [], "sync_bhr_user");
+                                log_to_file('info', "SYNC SUCCESS", [$bhr_user_number , $bhr_user->lastChanged,  __FUNCTION__], "sync_bhr_user");
                             }
                         }
                 } catch (Exception $e) {
-                    log_to_file('info', '[RECORD ERROR: BHRID - ' . $bhr_user_number . ' ' . __FUNCTION__, [$e], "sync_bhr_user");
+                    log_to_file('info', 'SYNC ERROR' . [$bhr_user_number,$e, __FUNCTION__], "sync_bhr_user");
 
                     break;
                     // continue; // break if SP ERROR
