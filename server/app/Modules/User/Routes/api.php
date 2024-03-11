@@ -68,6 +68,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('get_dpa_list', 'UserController@get_dpa_list');
 
     Route::get('export_dpa_list', 'UserController@export_dpa_list');
+
+    Route::get('sub_department_list', 'UserController@sub_department_list');
 });
 #####################################################################################################
 
@@ -108,6 +110,7 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::get('team_list/{department_id}', 'UserController@my_team_list_under_department');//->middleware('auth.apikey');
 
     Route::get('sub_department/{department_id}', 'UserController@sub_department_under_department');//->middleware('auth.apikey');
+    
 
     Route::post('team_list_all/', 'UserController@my_team_list_under_selected_department');
     
@@ -129,6 +132,10 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     
     # Assign Employees Post Request
     Route::post('/assign_employees/', 'UserController@assign_employees');
+
+    Route::get('/sub_department', 'UserController@get_user_sub_department_handled');
+
+    Route::post('sub_department_allocate', 'UserController@sub_department_allocate');
 
 
     #####################################################################################################

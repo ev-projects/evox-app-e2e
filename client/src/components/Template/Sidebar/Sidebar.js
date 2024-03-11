@@ -812,6 +812,18 @@ const Sidebar = (props) => {
                                 </p>
                               </Link>
                             </li>
+
+                            <li className="nav-item">
+                              <Link
+                                className="nav-link"
+                                to={global.links.assign_sub_department}
+                              >
+                                <i className="nav-icon fa fa-users nav-icon" />
+                                <p style={{ fontSize: 13 }}>
+                                 Assign Sub-Department
+                                </p>
+                              </Link>
+                            </li>
                         
                           {Authenticator.scanLevel_Feature("Admin", 
                             "manage_roles_and_permissions",

@@ -24,18 +24,19 @@ use App\Modules\User\Resources\HolidayResource;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\LeavesListResource;
 use App\Modules\User\Resources\DpaUserListResource;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\Schedule\Resources\ScheduleResource;
 use App\Modules\User\Resources\UserProfileResource; 
 use App\Modules\User\Resources\AnniversaryResources; 
+use App\Modules\User\Resources\UserListBasicResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\User\Http\Requests\GenerateDtrRequest;
 use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
-use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\User\Resources\LeaveCreditsListResource;
 use App\Modules\Schedule\Repositories\ScheduleRepository;
-use App\Modules\User\Http\Requests\ChangePasswordRequest;
 
+use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
 use App\Modules\User\Resources\EmploymentStatusResource; 
 use App\Modules\User\Resources\JobInformationResource;   
@@ -381,10 +382,78 @@ class UserController extends Controller
                 trans('messages.show_sub_department_list'), 
                 $sub_dep);
         } catch(Exception $e){
-            dd($e);
+        
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+    public function sub_department_list(  ){   
+        try {
+
+                    $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+                    [
+                        Null, NULL, 1, NULL
+                    ]
+                );
+
+            // dd($sub_depts);
+            return success_response(
+                trans('messages.show_sub_department_list'), 
+                $sub_depts[0]);
+        } catch(Exception $e){
+        
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function sub_department_allocate( $user_id , Request $request){   
+        try {
+            // dd( $user_id,$request->all());
+
+            $action = $request->sp_action == "enable"? 0 : 1;
+            
+            $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+                    [
+                        $user_id, $request->department_id, 3,  $action
+                    ]
+                );
+
+                $updated_sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+                [
+                    $user_id, NULL, 4, NULL
+                ]
+            );
+
+            // dd($sub_depts);
+            // dd($updated_sub_depts);
+            return success_response(
+                "Allocation Department to user", 
+                $updated_sub_depts[0]);
+        } catch(Exception $e){
+        
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    // public function sub_department_is_handled($user_id, $sub_dep_id){   
+    //     try {
+
+    //                 $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+    //                 [
+    //                     $user_id, NULL, 4, NULL
+    //                 ]
+    //             );
+
+
+    //         // dd($sub_depts);
+    //         return success_response(
+    //             trans('messages.show_sub_department_list'), 
+    //             $sub_depts[0]);
+    //     } catch(Exception $e){
+        
+    //         return error_response( trans('messages.error_default'), $e );
+    //     }
+    // }
 
     public function my_team_list_under_selected_department( Request $request,  $id ){   
         try {
@@ -666,6 +735,14 @@ class UserController extends Controller
         try {
             log_activity( trans('messages.list_role_attempt') );
             
+            if($role == "supervisor"){
+                $user = User::whereNotNull("LevelId")->whereIn("LevelId",[1,2,3,4,5,6,7,8])->where("is_active", 1)->with("department")->get()->sortBy('first_name');
+                return success_response(
+                    trans('messages.list_role_success'), 
+                    UserListBasicResource::collection( $user, false )
+                );
+            }
+
             $this->validate(new Request([
                 'role' => $role
             ]), [
@@ -794,6 +871,31 @@ class UserController extends Controller
                             'roles' => $user->roles->pluck('name'),
                             'permissions' => $user->permissions->pluck('name'),
                         ]
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+      # This function returns user role
+      public function get_user_sub_department_handled( $user_id ){   
+        try {
+            $user = User::find($user_id);
+            
+
+            $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+                                    [
+                                        $user->id, NULL, 4, NULL
+                                    ]
+                                );
+
+                // dd($sub_depts);
+
+            log_activity( trans('messages.list_role_attempt') );
+                    return success_response(
+                        trans('messages.list_role_success'),  
+                        $sub_depts[0]
                     );
 
         } catch(Exception $e){

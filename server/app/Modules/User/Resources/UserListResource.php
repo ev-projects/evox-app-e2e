@@ -18,15 +18,16 @@ class UserListResource extends JsonResource
 
         // Create Resource for Department Handled
         $departments_handled = [];
-        foreach( $this->departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
-            array_push( $departments_handled, $departments );
-        }
+        // foreach( $this->departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
+        //     array_push( $departments_handled, $departments );
+        // }
+        $evox_departments_handled=  $this->evox_departments_handled();
 
         // Create Resource for Supervisee
-        $supervisee = [];
-        foreach( $this->supervisee()->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get()  as $user){
-            array_push( $supervisee, $user );
-        }
+        // $supervisee = [];
+        // foreach( $this->supervisee()->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get()  as $user){
+        //     array_push( $supervisee, $user );
+        // }
 
         // Create Resource for Users Handled
         // $users_handled = [];
@@ -45,8 +46,8 @@ class UserListResource extends JsonResource
             'job_title' => $this->job_title,
             'email' => $this->email,
             'full_name' => $this->getFullName(),
-            'departments_handled' => $departments_handled,
-            'supervisee' => $supervisee,
+            'departments_handled' => $evox_departments_handled,
+            // 'supervisee' => $supervisee,
             "has_use_multi" => is_valid($this->LevelId) ?$this->hasFeature("multi_login"): false,
             // 'users_handled' => $users_handled,
         );
