@@ -104,14 +104,52 @@ class SyncController extends Controller
               return response()->json(['errors'=>$validator->messages()]);
             }else{
     
-                $result = DB::select('call EH_SP_User_Sync_HRIS("'.$request->bestEmail.'", '.$request->employeeNumber.'
-                ,'.$request->bhrNumber.', "'.$request->userName.'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'","'.$request->firstName.'", "'.$request->middleName.'"
-                ,"'.$request->lastName.'", "'.$request->nickname.'","'.$request->employmentHistoryStatus.'", "'.$request->hireDate.'"
-                ,'.$request->status.', "'.$request->jobTitle.'","'.$request->country.'", "'.$request->dateOfBirth.'"
-                ,"'.$request->terminationDate.'", "'.$request->department.'","'.$request->mobilePhone.'", '.$request->supervisorId.'
-                ,"'.$request->Subdepartmentname.'",'.$request->subdepartmentsupervisorId.',"'.$request->division.'")');       
+                // $result = DB::select('call EH_SP_User_Sync_HRIS("'.$request->bestEmail.'", '.$request->employeeNumber.'
+                // ,'.$request->bhrNumber.', "'.$request->userName.'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'","'.$request->firstName.'", "'.$request->middleName.'"
+                // ,"'.$request->lastName.'", "'.$request->nickname.'","'.$request->employmentHistoryStatus.'", "'.$request->hireDate.'"
+                // ,'.$request->status.', "'.$request->jobTitle.'","'.$request->country.'", "'.$request->dateOfBirth.'"
+                // ,"'.is_valid($request->terminationDate)?? "NULL".'", "'.$request->department.'","'.$request->mobilePhone.'", '.$request->supervisorId.'
+                // ,"'.$request->Subdepartmentname.'",'.$request->subdepartmentsupervisorId.',"'.$request->division.'")');    
+                
+            
+                    $termination_date = $request->terminationDate == "0000-00-00" 
+                            || 
+                            $request->terminationDate == "None"
+                            || 
+                            $request->terminationDate == null
+                            ? 
+                            null: $request->terminationDate ;
+              
+                
+                $result =  call_sp("EH_SP_User_Sync_HRIS", 
+                [
+                    $request->bestEmail, 
+                    $request->employeeNumber,
+                    $request->bhrNumber,
+                    $request->userName,
+                    Hash::make( get_constant('DEFAULT_PASSWORD') ),
+                    $request->firstName,
+                    $request->middleName,
+                    $request->lastName,
+                    $request->nickname,
+                    $request->employmentHistoryStatus,
+                    $request->hireDate,
+                    $request->status,
+                    $request->jobTitle,
+                    $request->country,
+                    $request->dateOfBirth,
+                    $termination_date,
+                    $request->department,
+                    $request->mobilePhone,
+                    $request->supervisorId,
+                    $request->Subdepartmentname,
+                    $request->subdepartmentsupervisorId,
+                    $request->division,
+            
+        
+        ]);
     
-                if(isset($result)){
+                if(isset($result[0])){
                     return response()->json([
               
                         'status' => '200',
