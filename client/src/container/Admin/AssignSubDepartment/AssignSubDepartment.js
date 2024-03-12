@@ -72,7 +72,17 @@ class AssignSubDepartment extends Component {
             }
         }
     }
-    console.log(formData,this.state);
+   
+
+    // if(this.props.sub_departments_handled.some(
+    //   (item_array)=>{ return item_array.id ===  values["department_id"]}
+    //   )){
+
+    //     formData["sp_action"] = "disable"
+
+    //   }
+
+      console.log(formData,this.state);
 
     // If action is NULL, it means it's either store/update
     if (window.confirm("Are you sure you want to assign these Employees on the selected Supervisor?")) {
@@ -80,10 +90,9 @@ class AssignSubDepartment extends Component {
         
         await this.props.assignSubDepartment( values.supervisor_id, formData );
 
-        // await this.setState({
-        //   reloadingSupervisorList: false,
-        //   selectedSupervisor: values.supervisor_id
-        // });
+        await this.setState({
+          sp_action : this.state.sp_action == "enable"? "disable": "enable" 
+      });
     }
   }
 
