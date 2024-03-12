@@ -55,6 +55,67 @@ export const fetchTeamsHandledList = ( id ) => {
     }
 }
 
+// Fetch the Teams Handled via User ID
+export const fetchSubDepartmentHandledList = ( id ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/" + id + "/sub_department"
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_SUB_DEP_HANDLED_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const fetchAllSubDepartment = () => {
+    return (dispatch, getState) => {
+        
+        API.call({
+            method: "get",
+            url: "/user/sub_department_list/"
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_SUB_DEPARTMENT_LIST_SUCCESS', 
+                'list'  : result.data.content
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+export const assignSubDepartment = ( user_id, post_data) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/user/" + user_id + "/sub_department_allocate",
+            data: post_data
+        })
+        .then(result => {
+            
+            dispatch({
+                'type'      : 'FETCH_SUB_DEP_HANDLED_LIST_SUCCESS',
+                'list'      : result.data.content,
+            })
+
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 
 // Fetch the Teams Details via ID
