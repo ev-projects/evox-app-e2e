@@ -40,13 +40,21 @@ class Announcement extends Model
         return Department::find($this->present_dep_id);
     }
 
-    public function announcement_clones_departments()
+    public function announcement_clones_departments($not = true )
     {
 
 
          $dep_collection = Announcement::where('announcement_id', $this->id)->pluck('present_dep_id')->toArray();
 
-         return Department::whereIn('id',$dep_collection)->get();
+         if($not){
+            return Department::whereIn('id',$dep_collection)->get();
+         }
+
+         if(!$not){
+            return Department::whereNotIn('id',$dep_collection)->get();
+         }
+
+        return [];
     }
 
     public function is_expired(){
