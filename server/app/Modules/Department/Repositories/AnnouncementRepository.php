@@ -139,6 +139,13 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             if(gettype($dep_ids) === "string"){
                 $dep_ids = preg_split("/\,/", $dep_ids );
             }
+            
+            if($request->set_exclude =="1" && $request->set_all == "0"){
+                $dep_ids = Department::whereNotIn("id",$dep_ids )->pluck('id')->toArray();
+            }
+            else{
+                $dep_ids = Department::whereIn("id",$dep_ids )->pluck('id')->toArray();
+            }
          
         }   
 
@@ -303,15 +310,25 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
      */
     public function update($request, $id)
     {
-
+        // dd($request->all());
         $dep_ids = null;
         if( is_valid( $request->selectedDepartments ) &&  $request->set_all == 0  ){
             $dep_ids = $request->selectedDepartments;
             if(gettype($dep_ids) === "string"){
                 $dep_ids = preg_split("/\,/", $dep_ids );
             }
+
+            // $department_collection = Department::where('id' ,'>' ,0)->pluck('id')->toArray();
+            if($request->set_exclude =="1" && $request->set_all == "0"){
+                $dep_ids = Department::whereNotIn("id",$dep_ids )->pluck('id')->toArray();
+            }
+            else{
+                $dep_ids = Department::whereIn("id",$dep_ids )->pluck('id')->toArray();
+            }
          
-        }   
+        } 
+
+        
         DB::beginTransaction();
         try {
             // dd($request->content, gettype($request->content));
@@ -344,6 +361,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 $dep_announcement->updated_by       = auth()->user()->id;
 
                 $dep_announcement->set_all          = $request->set_all == 1? 1:0;
+                $dep_announcement->set_exclude          = $request->set_exclude == 1? 1:0;
                 $dep_announcement->set_country_all  = $request->set_country_all == 1? 1:0;
 
                 $dep_announcement->update();
