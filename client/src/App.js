@@ -42,6 +42,20 @@ class App extends Component {
 
   render() {
 
+    if (process.env.NODE_ENV === "production") {
+      if (window.console && console) {
+        for (let c in console) {
+          if (typeof console[c] === 'function') {
+            const cx = console[c]
+            console[c] = function () {
+                //do nothing
+                //cx.apply(this, ["Logger supressed"])
+            }
+          }
+        }
+      }
+    }
+
     // If there's an Existing Access Token, fetch the Users and render it on Redux.
     if (localStorage.getItem("access_token") != null) {
       this.props.fetchUser();
