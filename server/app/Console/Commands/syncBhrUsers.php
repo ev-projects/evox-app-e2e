@@ -66,11 +66,11 @@ class syncBhrUsers extends Command
     public function handle()
     {
         try {
-            
+
             $dt_since = Carbon::today()->subDays(1);
             if (Cache::has('user_since_date_sync_ts')) {
                 $user_since_date_sync_ts = Cache::get('user_since_date_sync_ts');
-                $dt_since = Carbon::createFromTimestamp($user_since_date_sync_ts)->subMinute(1);
+                $dt_since = Carbon::createFromTimestamp($user_since_date_sync_ts);
             } else {
                 $user_since_date_sync_ts = $dt_since->getTimestamp();
             }
@@ -93,6 +93,15 @@ class syncBhrUsers extends Command
             } else {
                 $bhr_user_number_array = $this->bhr->get_changed_users($since_date_to_sync);
             }
+            #Fetched last updated BHR Numbers
+            #log_to_file('info', "BHR NUM", $bhr_user_number_array, "sync_bhr_user");
+
+            $failed_bhr_num =  call_sp("EH_SP_User_Logs", [0, null])[0];
+            foreach ($failed_bhr_num as $fbhr_num) {
+                $bhr_user_number_array["$fbhr_num->bhr_num"] = "$fbhr_num->bhr_num";
+            }
+            #Merged with failed BHR Numbe
+            #log_to_file('info', "BHR NUM", $bhr_user_number_array, "sync_bhr_user");
 
             # 2.
             # Iterate the actual BHR User Numbers array
@@ -105,61 +114,61 @@ class syncBhrUsers extends Command
 
                     # Fetch the BHr User Details
                     $bhr_user = $this->bhr->get_user($bhr_user_number, true);
-                    if(is_valid($bhr_user)){
+                    if (is_valid($bhr_user)) {
 
-                    $bhr_status = $bhr_user->status == "Active"? 1: 0;
-                    $termination_date = $bhr_user->terminationDate == "0000-00-00"? null: $bhr_user->terminationDate ;
-                    $SUP_id = $bhr_user->supervisorEId == null? null: $bhr_user->supervisorEId ;
+                        $bhr_status = $bhr_user->status == "Active" ? 1 : 0;
+                        $termination_date = $bhr_user->terminationDate == "0000-00-00" ? null : $bhr_user->terminationDate;
+                        $SUP_id = $bhr_user->supervisorEId == null ? null : $bhr_user->supervisorEId;
 
-                    // error_log($bhr_user);
-                    // dd($bhr_user);
+                        // error_log($bhr_user);
+                        // dd($bhr_user);
 
-                    $result =  call_sp("EH_SP_User_sync", 
-                        [
-                            $bhr_user->bestEmail, 
-                            $bhr_user->employeeNumber,
-                            $bhr_user->id,
-                            generate_username( $bhr_user ),
-                            Hash::make( get_constant('DEFAULT_PASSWORD') ),
-                            $bhr_user->firstName,
-                            $bhr_user->middleName,
-                            $bhr_user->lastName,
-                            $bhr_user->nickname,
-                            $bhr_user->employmentHistoryStatus,
-                            $bhr_user->hireDate,
-                            $bhr_status,
-                            $bhr_user->jobTitle,
-                            $bhr_user->country,
-                            $bhr_user->dateOfBirth,
-                            $termination_date,
-                            $bhr_user->department,
-                            $bhr_user->mobilePhone,
-                            $SUP_id,
-                            $bhr_user->division,
-                    
-                
-                ]);
-                
-                    // $result = DB::select('call EH_SP_User_sync("'.$bhr_user->bestEmail.'", '.$bhr_user->employeeNumber.'
-                    //     ,'.$bhr_user->id.', "'.generate_username( $bhr_user ).'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'"
-                    //     ,"'.$bhr_user->firstName.'", "'.$bhr_user->middleName.'"
-                    //     ,"'.$bhr_user->lastName.'", "'.$bhr_user->nickname.'","'.$bhr_user->employmentHistoryStatus.'", "'.$bhr_user->hireDate.'"
-                    //     ,'.$bhr_status.', "'.$bhr_user->jobTitle.'","'.$bhr_user->country.'", "'.$bhr_user->dateOfBirth.'"
-                    //     ,"'. $termination_date.'", "'.$bhr_user->department.'","'.$bhr_user->mobilePhone.'", '.$SUP_id.',"'.$bhr_user->division.'")');    
+                        $result =  call_sp(
+                            "EH_SP_User_sync",
+                            [
+                                $bhr_user->bestEmail,
+                                $bhr_user->employeeNumber,
+                                $bhr_user->id,
+                                generate_username($bhr_user),
+                                Hash::make(get_constant('DEFAULT_PASSWORD')),
+                                $bhr_user->firstName,
+                                $bhr_user->middleName,
+                                $bhr_user->lastName,
+                                $bhr_user->nickname,
+                                $bhr_user->employmentHistoryStatus,
+                                $bhr_user->hireDate,
+                                $bhr_status,
+                                $bhr_user->jobTitle,
+                                $bhr_user->country,
+                                $bhr_user->dateOfBirth,
+                                $termination_date,
+                                $bhr_user->department,
+                                $bhr_user->mobilePhone,
+                                $SUP_id,
+                                $bhr_user->division,
+                                (new Carbon($bhr_user->lastChanged))->format("")
+                            ]
+                        );
 
-                        if(!isset($result)){
-                            break;
+
+                        // $result = DB::select('call EH_SP_User_sync("'.$bhr_user->bestEmail.'", '.$bhr_user->employeeNumber.'
+                        //     ,'.$bhr_user->id.', "'.generate_username( $bhr_user ).'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'"
+                        //     ,"'.$bhr_user->firstName.'", "'.$bhr_user->middleName.'"
+                        //     ,"'.$bhr_user->lastName.'", "'.$bhr_user->nickname.'","'.$bhr_user->employmentHistoryStatus.'", "'.$bhr_user->hireDate.'"
+                        //     ,'.$bhr_status.', "'.$bhr_user->jobTitle.'","'.$bhr_user->country.'", "'.$bhr_user->dateOfBirth.'"
+                        //     ,"'. $termination_date.'", "'.$bhr_user->department.'","'.$bhr_user->mobilePhone.'", '.$SUP_id.',"'.$bhr_user->division.'")');    
+
+
+                        $new_timestamp = (new Carbon($bhr_user->lastChanged))->getTimestamp();
+                        if ($new_timestamp > $user_since_date_sync_ts) {
+                            $user_since_date_sync_ts = $new_timestamp;
+                            Cache::put('user_since_date_sync_ts', $user_since_date_sync_ts, 80);
+                            log_to_file('info', "NEW START TIME", [$user_since_date_sync_ts,  __FUNCTION__], "sync_bhr_user");
                         }
-
-                            $new_timestamp = (new Carbon($bhr_user->lastChanged))->getTimestamp();
-                            if ($new_timestamp > $user_since_date_sync_ts) {
-                                $user_since_date_sync_ts = $new_timestamp;
-                                Cache::put('user_since_date_sync_ts', $user_since_date_sync_ts, 80);
-                                log_to_file('info', "SYNC SUCCESS", [$bhr_user_number , $bhr_user->lastChanged,  __FUNCTION__], "sync_bhr_user");
-                            }
-                        }
+                        log_to_file('info', "SYNC SUCCESS", [$bhr_user_number, $bhr_user->lastChanged,  __FUNCTION__], "sync_bhr_user");
+                    }
                 } catch (Exception $e) {
-                    log_to_file('info', 'SYNC ERROR' . [$bhr_user_number,$e, __FUNCTION__], "sync_bhr_user");
+                    log_to_file('info', 'SYNC ERROR' . [$bhr_user_number, $e, __FUNCTION__], "sync_bhr_user");
 
                     break;
                     // continue; // break if SP ERROR

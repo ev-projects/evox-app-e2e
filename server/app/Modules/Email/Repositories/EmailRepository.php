@@ -344,4 +344,27 @@ class EmailRepository implements EmailRepositoryInterface{
             throw $e;
         }
     }
+
+    public function sendFailedBHRUserSyncNotice( $user){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendSupervisorReminderInvalidCheckInsEmailJob::dispatch( $user )->delay( Carbon::now()->addSeconds(2) );
+
+
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            
+            
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
+            throw $e;
+        }
+    }
 }
