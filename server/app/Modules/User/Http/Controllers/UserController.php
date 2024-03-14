@@ -392,7 +392,7 @@ class UserController extends Controller
 
                     $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
                     [
-                        Null, NULL, 1, NULL
+                        Null, NULL, 1, NULL, Null
                     ]
                 );
 
@@ -414,13 +414,13 @@ class UserController extends Controller
             
             $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
                     [
-                        $user_id, $request->department_id, 3,  $action
+                        $user_id, $request->department_id, 3,  $action, Auth::user()->id
                     ]
                 );
 
                 $updated_sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
                 [
-                    $user_id, NULL, 4, NULL
+                    $user_id, NULL, 4, NULL, null
                 ]
             );
 
@@ -886,7 +886,7 @@ class UserController extends Controller
 
             $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
                                     [
-                                        $user->id, NULL, 4, NULL
+                                        $user->id, NULL, 4, NULL , null
                                     ]
                                 );
 
