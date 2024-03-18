@@ -52,8 +52,8 @@ const dashboardReducers = (state = initState, action) => {
         case "FETCH_RECENT_DTR":
             result = {
                 ...state,
-                recent_dtr : action.data.content,
-                nav_recent_dtr : action.data.content,
+                recent_dtr : action.recent_dtr,
+                nav_recent_dtr : action.recent_dtr,
                 isNavDtrLoaded : true,
             }
             break;     
