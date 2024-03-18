@@ -26,8 +26,8 @@ class DpaListExport implements FromCollection,WithHeadings
             # General Information
             $row = array();
             $row['emp_num'] = $dpa->emp_num;
-            $row['name'] =  $dpa->getFullName( 3 );
-            $row['department'] = $dpa->department()->first()->getCompleteName();
+            $row['name'] =  $dpa->full_name;
+            $row['department'] = $dpa->department;
             $row['dpa_ticked_at'] = date($dpa->dpa_ticked_at);
             $row['is_active'] = $dpa->is_active == 1?'Active':'Inactive';
             $summary->push(  $row );

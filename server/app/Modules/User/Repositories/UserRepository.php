@@ -922,43 +922,66 @@ class UserRepository implements UserRepositoryInterface{
     public function get_dpa_list( Request $request ){
         try {
 
-            $department_id = is_valid( $request->department_id )? $request->department_id : null;
-            // Fetch the Users under the supervisee and join to their department for the sorting via Department Name
-            $user_collection = User::whereIn('users.id', auth()->user()->users_handled($department_id)->pluck('id')->toArray())
-                                    ->join('departments', 'departments.id','=','users.department_id')
-                                    ->orderBy('departments.department_name','asc')
-                                    ->orderBy('users.emp_num','desc')
-                                    ->select('users.*');
-
-            // For the Department ID Filtering
-            // if( is_valid( $request->department_id ) ){
-            //     $user_collection->where('department_id',$request->department_id );
-            // }
-
-            // For the Employee Name filtering
-            if( is_valid( $request->name ) ){
-                $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
+           
+            $perpage_count = 10;
+            if( $request->export == "all"){
+                $perpage_count = 99999;
             }
+            // dd( $request ->all());
+            $user = Auth::user();
 
-            // For DPA data filtering.
-            if( !is_null( $request->submitted_dpa ) ){
+            $response = call_sp("EH_SP_Employee_DPA_List",
+              
+            [
+                $user->id, // vishnu user_id
+                is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
+                is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
+                is_valid( request()->get('is_active') ) ? request()->get('is_active'): null, // active
+                is_valid( request()->get('name') ) ? request()->get('name'): null, // name
+                is_valid( request()->get('submitted_dpa') ) ? request()->get('submitted_dpa'): null, // submitted_dpa
+                is_valid( request()->get('page') ) ? request()->get('page'): 1,
+                 $perpage_count,
+                null
+                
+                ]
 
-                //  If true, fetch all the dpa_ticked_at that's not NULL
-                if( $request->submitted_dpa == 1 ){
-                    $user_collection->whereNotNull('dpa_ticked_at');
 
-                //  If true, fetch all the dpa_ticked_at that's NULL
-                } else {
-                    $user_collection->whereNull('dpa_ticked_at');
-                }
+            ); 
+            // dd()
+                $result = array(
+                    "query" =>  $response ?? [],
+                );
+
+       
+            if( count($result['query']) > 2){
+                $paginate = $result['query'][count($result['query'])-2][0];
+                
+                $collection["data"] = $result['query'][count($result['query'])-3];
+
+                $collection["data"]  = $collection["data"] ? array_map(function($item) {
+                    // dd($item);
+                    return (object) array(
+                        'id' => $item->id,
+                        'emp_num' => $item->Employee_Number,
+                        'department' => ( is_valid(  $item->Name ) ?  $item->Name : null ),
+                        'is_active' => (int)$item->is_active,
+                        'full_name' => $item->Employee_Name,
+                        'dpa_ticked_at' =>  $item->Status
+                    );
+                }, $collection["data"]): [];
+                $collection["pagination"] = [
+                                                'total' => (int) $paginate->TotalCount,
+                                                'count' => count( $collection["data"]),
+                                                'per_page' =>  (int) $paginate->PerPage,
+                                                'current_page' => (int) $paginate->CurrentPage,
+                                                'last_page' => ((ceil($paginate->TotalCount /  $perpage_count)) ) 
+                                            ];
+
             }
-
-            // For Active User filtering
-            if( !is_null( $request->is_active ) ){
-                $user_collection->where('is_active',$request->is_active );
-            }
-
-            return $user_collection->paginate(10);
+ 
+        
+        // dd($collection);
+            return  $collection;
 
         } catch (Exception $e) {
             throw $e;
