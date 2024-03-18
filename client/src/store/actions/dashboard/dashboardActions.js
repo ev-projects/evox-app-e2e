@@ -98,7 +98,7 @@ export const getRecentDtr = ( user_id, from ,to ) => {
         .then(result => {
             dispatch({
                 'type'      : 'FETCH_RECENT_DTR', 
-                'data'      : result.data,
+                'recent_dtr'      : result.data.content.dtr_records,
             })
         })
         .catch(e => {
