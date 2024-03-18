@@ -73,7 +73,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     ]);
                 }
             }
-
+           
             foreach( array_chunk( $dtr_insert_array, 5000 ) as $dtr_insert_array_chunk ){
                 # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
                 $dtr_insert_query = "INSERT INTO dtrs (
@@ -89,7 +89,10 @@ class DtrRepository implements DtrRepositoryInterface{
                                         updated_at              = VALUES(updated_at)";
 
                 # Executes the Batch Insert Query
+
+                
                 DB::insert($dtr_insert_query);
+                
             }
 
 

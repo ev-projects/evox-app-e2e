@@ -511,7 +511,9 @@ class UserController extends Controller
             $user_collection = $this->user->get_dpa_list( $request );
             return success_response(
                 trans('messages.get_dpa_list_success'), 
-                new DpaUserListResourceCollection( $user_collection )
+                // new DpaUserListResourceCollection( $user_collection ),
+
+                $user_collection
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -538,8 +540,9 @@ class UserController extends Controller
     public function export_dpa_list( Request $request ){
 
         $result = $this->dpa_list($request);
+        // dd( $result[0] );
 
-        $this->dpa_list_export->data = $result ;
+        $this->dpa_list_export->data = $result["data"] ;
          return Excel::download( $this->dpa_list_export , 'dtrlogs.csv');
     
     }
