@@ -2,6 +2,7 @@
 
 namespace App\Modules\Email\Repositories;
 
+use App\Jobs\SendFailedBHRSyncNoticeJob;
 use Exception;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
@@ -349,7 +350,7 @@ class EmailRepository implements EmailRepositoryInterface{
         try {
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
 
-            SendSupervisorReminderInvalidCheckInsEmailJob::dispatch( $user )->delay( Carbon::now()->addSeconds(2) );
+            SendFailedBHRSyncNoticeJob::dispatch( $user )->delay( Carbon::now()->addSeconds(2) );
 
 
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
