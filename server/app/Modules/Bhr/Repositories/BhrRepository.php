@@ -27,20 +27,21 @@ class BhrRepository implements BhrRepositoryInterface{
      * @return array $bhr_user_number_array { inserted && changed }
      */
     public function get_changed_users( $since_date_to_sync ){
-       
+        #print_r($since_date_to_sync);
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
 
-            $since_date_to_sync = date('Y-m-d', strtotime($since_date_to_sync)) . 'T00:00:00-00:00';
+            //$since_date_to_sync = date('Y-m-d', strtotime($since_date_to_sync)) . 'T00:00:00-00:00';
 
             // Define the End Point for the API.
-            $end_point = 'employees/changed?since=' . $since_date_to_sync;
+            $end_point = 'employees/changed?since=' . urlencode($since_date_to_sync);
             
             $last_changed_collection = collect([]);
-          
+            $bhr_employees = ( bhr_api_call('GET', $end_point) )->employees;
+            //log_to_file('info', "BHR Emp", [$bhr_employees,  __FUNCTION__], "sync_bhr_user");
             // Iterate the BHr Call Result
-            foreach( ( bhr_api_call('GET', $end_point) )->employees as $employee_sub_details ) {
-                $last_changed_collection->push(['id' => $employee_sub_details->id, 'lastChanged' => (new Carbon($employee_sub_details->lastChanged))->getTimestamp()]);
+            foreach( $bhr_employees as $employee_sub_details ) {
+                $last_changed_collection->push(['id' => $employee_sub_details->id, 'lastChanged' => (new Carbon($employee_sub_details->lastChanged, "UTC"))->getTimestamp()]);
             }
 
             #log_to_file( 'info', 'BHR Response Collection' . __FUNCTION__ , $last_changed_collection->values(), "bhrlog");
