@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\Announcement;
 use App\Modules\Department\Models\AnnouncementDepartment;
+use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Department\Resources\AnnouncementResource;
 
 class AnnouncementRepository implements AnnouncementRepositoryInterface
@@ -141,9 +142,16 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             if(gettype($dep_ids) === "string"){
                 $dep_ids = preg_split("/\,/", $dep_ids );
             }
+            
+            if($request->set_exclude =="1" && $request->set_all == "0"){
+                $dep_ids = EvoxDepartment::whereNotIn("id",$dep_ids )->pluck('id')->toArray();
+            }
+            else{
+                $dep_ids = EvoxDepartment::whereIn("id",$dep_ids )->pluck('id')->toArray();
+            }
          
         }   
-
+        // dd($dep_ids);
     
         DB::beginTransaction();
         try {
@@ -176,6 +184,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $dep_announcement->created_by       = auth()->user()->id;
             $dep_announcement->updated_by       = auth()->user()->id;
             $dep_announcement->set_all          = $request->set_all == 1? 1:0;
+            $dep_announcement->set_exclude          = $request->set_exclude == 1? 1:0;
             $dep_announcement->set_country_all  = $request->set_country_all == 1? 1:0;
 
             $dep_announcement->save();
@@ -225,7 +234,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
                     $dep_announcement->created_by       = auth()->user()->id;
                     $dep_announcement->updated_by       = auth()->user()->id;
-
+                    // dump($dep_id);
                     $dep_announcement->save();
                 }
             }
@@ -266,7 +275,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
      */
     public function show_strict($id)
     {
-            $department =  Department::find(Auth::user()->department_id);
+            $department =  EvoxDepartment::find(Auth::user()->department_id);
             // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
 
             $exist_announcement = Announcement::find($id);
@@ -318,6 +327,12 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             if(gettype($dep_ids) === "string"){
                 $dep_ids = preg_split("/\,/", $dep_ids );
             }
+            if($request->set_exclude =="1" && $request->set_all == "0"){
+                $dep_ids = EvoxDepartment::whereNotIn("id",$dep_ids )->pluck('id')->toArray();
+            }
+            else{
+                $dep_ids = EvoxDepartment::whereIn("id",$dep_ids )->pluck('id')->toArray();
+            }
          
         }   
         DB::beginTransaction();
@@ -352,6 +367,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 $dep_announcement->updated_by       = auth()->user()->id;
 
                 $dep_announcement->set_all          = $request->set_all == 1? 1:0;
+                $dep_announcement->set_exclude          = $request->set_exclude == 1? 1:0;
                 $dep_announcement->set_country_all  = $request->set_country_all == 1? 1:0;
 
                 $dep_announcement->update();
@@ -545,8 +561,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             }
 
             if( $request->dep_id != null  && is_numeric($request->dep_id)){
-                $department =  Department::find($request->dep_id);
-                $announcements_list = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                // $department =  EvoxDepartment::find($request->dep_id);
+                $announcements_list =  Announcement::where("present_dep_id",$request->dep_id)->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 })
@@ -587,7 +603,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $main_dep_id = auth()->user()->direct_department_id();
         }
         try {
-            $department =  Department::find(Auth::user()->department_id);
+            $department =  EvoxDepartment::find(Auth::user()->department_id);
             $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
 
         
@@ -624,8 +640,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             }
 
             if( $request->dep_id != null  && is_numeric($request->dep_id)){
-                $department =  Department::find($request->dep_id);
-                $announcements_list = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                // $department =  Department::find($request->dep_id);
+                $announcements_list = Announcement::where("present_dep_id",$request->dep_id)->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 })

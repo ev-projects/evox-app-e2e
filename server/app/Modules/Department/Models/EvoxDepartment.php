@@ -22,6 +22,14 @@ class EvoxDepartment extends Model
 
     protected $table = 'EVOX_DEPARTMENT';
 
-    
+    public function departments_announcements()
+    {
+
+        return $this->hasMany(Announcement::class, 'dep_id', 'Id');
+    }
+public function departments_announcements_presented()
+    {
+        return $this->hasMany(Announcement::class, 'present_dep_id', 'Id');
+    }
 
 }

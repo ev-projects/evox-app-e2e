@@ -77,12 +77,11 @@ class Department extends Model
         return $this->belongsToMany(User::class, 'department_handlers', 'department_id', 'user_id');
     }
 
-    public function departments_announcements()
-    {
-        // return $this->belongsToMany(Announcement::class, 'departments_announcements', 'department_id', 'announcement_id');
+    // public function departments_announcements()
+    // {
 
-        return $this->hasMany(Announcement::class, 'dep_id', 'id');
-    }
+    //     return $this->hasMany(Announcement::class, 'dep_id', 'id');
+    // }
 
     #check if the department is allowed to use schedule
     public function departments_on_schedule()
@@ -104,10 +103,10 @@ class Department extends Model
         return false ;
     }
 
-    public function departments_announcements_presented()
-    {
-        return $this->hasMany(Announcement::class, 'present_dep_id', 'id');
-    }
+    // public function departments_announcements_presented()
+    // {
+    //     return $this->hasMany(Announcement::class, 'present_dep_id', 'id');
+    // }
 
     // public function departments_announcement_by_json()
     // {
