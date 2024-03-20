@@ -14,13 +14,14 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\Announcement;
 // use App\Modules\Department\Resources\DepartmentListResource;
+use App\Modules\Department\Models\EvoxDepartment;
+
 use App\Modules\Department\Resources\AnnouncementResource;
+
 
 use App\Modules\Department\Http\Requests\AnnouncementRequest;
 
-
 use App\Modules\Department\Resources\AnnouncementStrictResource;
-
 use App\Modules\Department\Resources\AnnouncementResourceCollection;
 use App\Modules\Department\Repositories\AnnouncementRepositoryInterface;
 
@@ -157,7 +158,7 @@ class AnnouncementController extends Controller
     // dd($request->all(),$id);
         try {
             log_activity( trans('messages.update_department_announcement_attempt') );
-            $department =  Department::find(Auth::user()->department_id);
+            $department =  EvoxDepartment::find(Auth::user()->department_id);
             $check_announcement = $department->departments_announcements()->find($id);
             if($check_announcement || Auth::user()->isLevel("Admin")){
                 $dep_announcement = $this->announcement->update($request, $id);

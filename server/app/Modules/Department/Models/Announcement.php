@@ -35,18 +35,67 @@ class Announcement extends Model
        
     }
 
-    public function present_department()
-    {
-        return Department::find($this->present_dep_id);
-    }
+    // public function present_department()
+    // {
+    //     return Department::find($this->present_dep_id);
+    // }
 
-    public function announcement_clones_departments()
+    public function announcement_clones_departments_old($not = true )
     {
 
 
          $dep_collection = Announcement::where('announcement_id', $this->id)->pluck('present_dep_id')->toArray();
 
-         return Department::whereIn('id',$dep_collection)->get();
+         if($not){
+            return Department::whereIn('id',$dep_collection)->get();
+         }
+
+         if(!$not){
+            return Department::whereNotIn('id',$dep_collection)->get();
+         }
+
+        return [];
+    }
+
+    public function announcement_clones_departments($not = true )
+    {
+        // dd("here");
+
+         $dep_collection = Announcement::where('announcement_id', $this->id)->pluck('present_dep_id')->toArray();
+
+         if($not){
+
+            return EvoxDepartment::select(
+                ["Id AS id",
+                'Name AS department_name', 
+                'HeadId',
+                'isActive',
+                'CreatedOn AS created_at',
+                'UpdatedOn AS updated_at',
+                'CreatedBy',
+                'LevelId',])
+                ->whereIn('Id',$dep_collection)
+                ->orderBy('Name', 'asc')
+                ->get();
+         }
+
+         if(!$not){
+
+            return EvoxDepartment::select(
+                ["Id AS id",
+                'Name AS department_name', 
+                'HeadId',
+                'isActive',
+                'CreatedOn AS created_at',
+                'UpdatedOn AS updated_at',
+                'CreatedBy',
+                'LevelId',])
+                ->whereNotIn('Id',$dep_collection)
+                ->orderBy('Name', 'asc')
+                ->get();
+         }
+
+        return [];
     }
 
     public function is_expired(){

@@ -46,11 +46,17 @@ class AnnouncementStrictResource extends JsonResource
             ];
         }
 
-                $depList = NULL;
-                $depList = $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments()): null;
-                if($this->set_all == 0 && $this->present_dep_id != null&& $this->announcement_id != null){
+                $depList = [];
+                if($this->set_all == 0 &&  $this->set_exclude == 0 && $this->present_dep_id != null&& $this->announcement_id != null){
                     $depList = DepartmentLabelResource::collection( Announcement::find($this->announcement_id)->announcement_clones_departments());
 
+                }
+                if($this->set_all == 0 &&  $this->set_exclude == 1 && $this->present_dep_id != null && $this->announcement_id != null ){
+                    $depList = DepartmentLabelResource::collection( Announcement::find($this->announcement_id)->announcement_clones_departments(false));
+                }
+
+                if($this->set_all == 0 &&  $this->set_exclude == 1 && $this->dep_id != null ){
+                    $depList = DepartmentLabelResource::collection( Announcement::find($this->id)->announcement_clones_departments(false));
                 }
 
             $result = null;
@@ -97,6 +103,8 @@ class AnnouncementStrictResource extends JsonResource
                  ->find($this->present_dep_id)
                 ,
                 'set_all' => $this->set_all,
+                'set_exclude' => (string)$this->set_exclude,
+                
                 'set_country_all' => $this->set_country_all,
                 'country_id' => $this->country_id,
                 'selectedDepartments'=>  $depList,

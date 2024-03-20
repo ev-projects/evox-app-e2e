@@ -102,6 +102,7 @@ class DepartmentAnnouncementsForm extends Component {
         on_link : false,
 
         set_all : false,
+        set_exclude : false,
         run:  pre_run,
         steps: joyride_steps,
         
@@ -132,12 +133,27 @@ class DepartmentAnnouncementsForm extends Component {
           case "log_date":
             formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
             break;
-            case "release_date":
-              formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
+          case "release_date":
+            formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
+            break;
+          case "expiry_date":
+            formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
+            break;
+          case "set_all":
+            values['set_all'] = values['set_all'] != null && values['set_all'] != undefined ?values['set_all'] : false;
+            formData.set('set_all', values['set_all'] == true ? 1: 0);
+            break;
+          case "set_exclude":
+              values['set_exclude'] = values['set_exclude'] != null && values['set_exclude'] != undefined ?values['set_exclude'] : false;
+              formData.set('set_exclude', values['set_exclude'] == true ? 1: 0);
+
               break;
-              case "expiry_date":
-                formData.set(key, moment( values[key] ).format("YYYY-MM-DD"));
-                break;
+          case "set_selected":
+            values['set_selected'] = values['set_selected'] != null && values['set_selected'] != undefined ?values['set_selected'] : false;
+            formData.set('set_selected', values['set_selected'] == true ? 1: 0);
+
+            break;
+
           default:
             formData.set(key, values[key]);
             break;
@@ -151,14 +167,12 @@ class DepartmentAnnouncementsForm extends Component {
     formData.set('inputFileWasDeleted', false);
     formData.set('on_link', this.state.on_link);
     formData.set('content', this.state.content != null ? this.state.content : null);
-    values['set_all'] = values['set_all'] != null && values['set_all'] != undefined ?values['set_all'] : false;
+   
     values['set_country_all'] = values['set_country_all'] != null && values['set_country_all'] != undefined ?values['set_country_all'] : false;
 
-    formData.set('set_all', values['set_all'] == true ? 1: 0);
-    // console.log(values["set_all"] ,values["set_all"] == false ,values["set_all"] == 0,values["set_all"] == "0");
-        if(values["set_all"] == false || values["set_all"] == 0 || values["set_all"] == "0"){
-          formData.set('selectedDepartments', this.state.selectedDepartments!= null?(Formatter.array_to_getvalue(this.state.selectedDepartments)).toString(): (Formatter.array_to_getvalue(values['selectedDepartments'])));
-        }
+    if(values["set_all"] == false || values["set_all"] == 0 || values["set_all"] == "0"){
+      formData.set('selectedDepartments', this.state.selectedDepartments!= null?(Formatter.array_to_getvalue(this.state.selectedDepartments)).toString(): (Formatter.array_to_getvalue(values['selectedDepartments'])));
+    }
     formData.set('set_country_all', values['set_country_all'] == true ? 1: 0);
     // console.log(values["set_country_all"] ,values["set_country_all"] == false ,values["set_country_all"] == 0,values["set_country_all"] == "0");
         // if(values["set_country_all"] == false || values["set_country_all"] == 0 || values["set_country_all"] == "0"){
@@ -352,7 +366,8 @@ class DepartmentAnnouncementsForm extends Component {
     const method = (this.props.params.id != undefined) ? 'update' : 'store'
 
     var today = new Date();
-    console.log(method)
+    console.log(method, this.props.instance?.set_exclude != undefined, this.props.instance?.set_exclude)
+    console.log(method, this.props.instance?.set_all != undefined, this.props.instance?.set_all, typeof this.props.instance?.set_all)
     const initialValue = {
         action:             null,
         method:             method,
@@ -367,7 +382,10 @@ class DepartmentAnnouncementsForm extends Component {
         content:            this.props.instance?.content != undefined  && method == "update" ? this.props.instance.content : null,
         category:           this.props.instance?.category != undefined  && method == "update" ? this.props.instance.category : null,
         selectedDepartments:           this.props.instance?.selectedDepartments != undefined  && method == "update" ? this.props.instance.selectedDepartments : null,
-        set_all:            this.props.instance?.set_all != undefined  && method == "update" ? this.props.instance.set_all == 1? true : false : false,
+        set_all:            this.props.instance?.set_all != undefined  && method == "update" ? this.props.instance.set_exclude == 0 && this.props.instance.set_all == 1? true : false : false,
+        set_exclude:        this.props.instance?.set_exclude != undefined  && method == "update" ? this.props.instance.set_exclude == 1 && this.props.instance.set_all == 0? true : false : false,
+        set_selected:      this.props.instance?.set_all != undefined  && method == "update" ?this.props.instance.set_exclude == 0 && this.props.instance.set_all == 0? true : false : false,
+        
         set_country_all:            this.props.instance?.set_country_all != undefined  && method == "update" ? this.props.instance.set_country_all == 1? true : false : true,
         country_id:           this.props.instance?.country_id != undefined  && method == "update" ? this.props.instance.country_id : null,
 
@@ -494,15 +512,49 @@ class DepartmentAnnouncementsForm extends Component {
 
 
 
-                      <label>
+                      {/* <label>
                         <input 
                           type="checkbox"
                           checked={values.set_all}
                           onChange={() =>  setFieldValue('set_all',values.set_all==1?0:1)}
                         />
                        <span className="for-all"> For All Departments</span>  
-                       {/* <a href="#" data-tool-tip="tooltip" ><i className="fa  fa-question-circle "/></a>&nbsp; */}
-                      </label>
+                       
+                      </label> */}
+                      <label>          
+                      <input 
+                        type="radio"
+                        checked={values.set_all}
+                        onChange={() => {
+                          setFieldValue('set_all',1)
+                          setFieldValue('set_exclude',0)
+                          setFieldValue('set_selected',0)
+                        }}
+                      /> 
+                    All Departments &nbsp;</label>
+                    <label>
+                      <input 
+                        type="radio"
+                        checked={values.set_exclude == true }
+                        onChange={() => { 
+
+                          setFieldValue('set_all',0)
+                          setFieldValue('set_exclude',1)
+                          setFieldValue('set_selected',0)
+                        }}
+                      /> 
+                    All departments except &nbsp;</label> 
+                    <label>
+                      <input 
+                        type="radio"
+                        checked={values.set_selected}
+                        onChange={() => { 
+                          setFieldValue('set_all',0)
+                          setFieldValue('set_exclude',0)
+                          setFieldValue('set_selected',1)
+                        }}
+                      /> 
+                    Only selected departments &nbsp;</label> 
                       <br/>
                         <label className ="dep-announcement-label">By Selected Departments:{values.set_all ?  "(disabled)" : null}</label>
                           <MultiSelect
