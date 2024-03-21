@@ -801,6 +801,10 @@ class User extends Authenticatable implements JWTSubject
                         ||
                     $this->isLevel("Department Head")
                         ||
+                    $this->isLevel("Division Head")
+                    ||
+                    $this->isLevel("DivisionHead")
+                    ||
                     $this->isLevel("Board"))
                     ||
                     $this->isLevel("Client")

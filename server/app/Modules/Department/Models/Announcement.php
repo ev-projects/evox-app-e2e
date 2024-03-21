@@ -30,7 +30,14 @@ class Announcement extends Model
     public function creator()
     {
       if($this->created_by != 0){
-        return User::find($this->created_by);
+        $user = User::find($this->created_by);
+        if($user !=null){
+          return $user; 
+        }
+        if($user ==null){
+            return User::where("id",$this->created_by )->whereNotNull('deleted_at') 
+            ->withTrashed()->first(); 
+          }
       }
        
     }

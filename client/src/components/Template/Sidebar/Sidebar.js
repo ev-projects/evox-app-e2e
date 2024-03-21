@@ -70,7 +70,7 @@ const Sidebar = (props) => {
             </li> */}
 
               {/*  EMPLOYEE Links */}
-              {Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], 'dtr_access') && (
+              {Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], 'dtr_access') && (
                 <li className="nav-item">
                   <Link
                     className="nav-link"
@@ -83,7 +83,7 @@ const Sidebar = (props) => {
               )}
 
                      {/*  EMPLOYEE Links */}
-                      {Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "multi_login")&& (
+                      {Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "multi_login")&& (
                      
                 <>
                 <li className="nav-item">
@@ -110,7 +110,7 @@ const Sidebar = (props) => {
                   </>
               )}
 
-              {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]) && (
+              {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-list-alt" />
@@ -154,7 +154,7 @@ const Sidebar = (props) => {
                     </li>
                   )}
                   {Authenticator.scanFeature('request_alter_logs')&&(<>
-                    {(Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "multi_login")) && (
+                    {(Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "multi_login")) && (
                       <li className="nav-item">
                       <Link
                         className="nav-link"
@@ -297,7 +297,7 @@ const Sidebar = (props) => {
                     </Link>
                   </li> */}
 
-                {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]) && (
+                {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]) && (
                 <li className="nav-item">
                   <Link className="nav-link" to={global.links.my_request}>
                     <i className="nav-icon fa fa-inbox" aria-hidden="true"></i>
@@ -306,7 +306,7 @@ const Sidebar = (props) => {
                 </li>
               )}
 
-                {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]) && (
+                {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]) && (
                 <li className="nav-item">
                   <Link className="nav-link" to={global.links.dpa}>
                     <i className="nav-icon fa fa-play-circle nav-icon" />
@@ -315,7 +315,7 @@ const Sidebar = (props) => {
                 </li>
               )}
 
-              {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"]) && (
+              {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]) && (
                 <li className="nav-item">
                   <Link className="nav-link" to={global.links.ev_learning}>
                     <i className="nav-icon fa fa-book nav-icon" />
@@ -332,7 +332,7 @@ const Sidebar = (props) => {
               </li>
 
               {/* SUPERVISOR Links */}
-              {Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","HR","Payroll","Client"])
+              {Authenticator.scanLevel(["SubDepartment Head","Department Head","DivisionHead","Board","HR","Payroll","Client"])
                ? (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
@@ -357,7 +357,7 @@ const Sidebar = (props) => {
                         </Link>
                       </li>
                     )} */}
-                    {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_department_schedules")) && (
+                    {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "manage_department_schedules")) && (
                       <li className="nav-item has-treeview ">
                         <a className="nav-link ">
                           <i className="nav-icon fa fa-calendar-o" />
@@ -399,7 +399,7 @@ const Sidebar = (props) => {
                         </ul>
                       </li>
                     )}
-                     {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll","Client"], "view_employee_list")) && (
+                     {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"], "view_employee_list")) && (
                     <>
                     <li className="nav-item">
                       <Link
@@ -415,7 +415,7 @@ const Sidebar = (props) => {
                     </li>
                       </>
                     )}
-                      {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "view_employee_list")) && (
+                      {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "view_employee_list")) && (
                     <>
                     <li className="nav-item">
                       <Link className="nav-link" to={global.links.dpa_list}>
@@ -492,7 +492,7 @@ const Sidebar = (props) => {
                   </ul>
                 </li>
               ) : null}
-               {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_announcement"))  &&
+               {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "manage_announcement"))  &&
                           
                           <React.Fragment>
                           <li className="nav-item has-treeview newfeature_announcements">
@@ -606,7 +606,7 @@ const Sidebar = (props) => {
                         </p>
                       </a>
                     </li>
-                    ) : ((Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","Payroll"], "view_attendance_report")) && (
+                    ) : ((Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","Payroll"], "view_attendance_report")) && (
                       <li className="nav-item">
                       <a
                         className="nav-link"
@@ -628,7 +628,7 @@ const Sidebar = (props) => {
                     )
                     
                     )}
-                    {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_department_schedules")) ? (
+                    {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "manage_department_schedules")) ? (
                       <li className="nav-item">
                         <Link
                           className="nav-link"
@@ -677,7 +677,7 @@ const Sidebar = (props) => {
               )}
 
               {/* OPS Links */}
-              {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"], "manage_ops"))&& (
+              {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "manage_ops"))&& (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link">
                     <i className="nav-icon fa fa-cubes" />
