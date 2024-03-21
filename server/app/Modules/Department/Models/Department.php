@@ -35,7 +35,8 @@ class Department extends Model
      */
     public function getCompleteName()
     {
-        return  $this->department_name;
+        // return  $this->department_name;
+        return EvoxDepartment::where("Id", $this->id)->first()->Name;
     }
     
     public function country_timezone_to_offset() // this should not exist but we give it UTC
