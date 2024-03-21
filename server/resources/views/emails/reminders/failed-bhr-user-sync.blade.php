@@ -6,14 +6,14 @@
       </div>
       <div style="padding: 0px 25px 10px 25px;">
         <p>Hi,</p>
-        <p>We experienced an issue when importing data for <strong>{{ $user->first_name }} {{ $user->last_name }}</strong> from Bamboo HR to EVOX.</p>
+        <p>We experienced an issue when importing data for <strong>{{ $user->first_name }} {{ $user->last_name }}</strong> with <strong>BHR #{{ $user->bhr_num }}</strong> from Bamboo HR to EVOX.</p>
         <p>Please make sure the following information are assigned to the user.</p>
         <ul>
           <li>Division</li>
           <li>Department</li>
           <li>Supervisor</li>
         </ul>
-        <p>Kindly ignore this message if no data correction is needed.</p>
+        <p>If the data has already been input and/or no corrections are required, kindly disregard this message.</p>
       </div>
       <div style="height: 30px; margin: 10px 0px;"><img style="float: right; height: 30px; width: 180px;" src="{{url('/images/powered-by-evox-logo.png')}}" /></div>
     </div>
