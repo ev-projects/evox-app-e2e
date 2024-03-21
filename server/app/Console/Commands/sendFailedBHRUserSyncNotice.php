@@ -45,7 +45,7 @@ class sendFailedBHRUserSyncNotice extends Command
             try {
                 $this->email->sendFailedBHRUserSyncNotice($user);
                 //least priority
-                $failed_bhr_users =  call_sp("EH_SP_User_Logs", [1, $user->id]);
+                $failed_bhr_users =  call_sp("EH_SP_User_Logs", [2, $user->id]);
             } catch (Exception $e) { }
         }
     }

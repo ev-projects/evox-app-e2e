@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Modules\Email\Jobs;
 
-use App\Mail\FailedBHRSyncNoticeEmail;
+use App\Modules\Email\Mail\FailedBHRSyncNoticeEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -24,6 +24,7 @@ class SendFailedBHRSyncNoticeJob implements ShouldQueue
     public function __construct($user)
     {
         $this->user = $user;
+        //log_to_file('info', "New SendFailedBHRSyncNoticeJob", [$user,  __FUNCTION__], "emails");
     }
 
     /**

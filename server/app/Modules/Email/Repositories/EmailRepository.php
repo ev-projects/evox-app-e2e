@@ -2,7 +2,7 @@
 
 namespace App\Modules\Email\Repositories;
 
-use App\Jobs\SendFailedBHRSyncNoticeJob;
+use App\Modules\Email\Jobs\SendFailedBHRSyncNoticeJob;
 use Exception;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
