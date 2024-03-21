@@ -41,7 +41,7 @@ class Dashboard extends Component {
 
   state = {
     run: false,
-    steps: (Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]))
+    steps: (Authenticator.scanLevel(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]))
       ? [
           {
             target: ".newfeatureq",
