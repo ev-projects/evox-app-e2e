@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace  App\Modules\Email\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -13,6 +13,7 @@ class FailedBHRSyncNoticeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $recepient;
     public $user;
     /**
      * Create a new message instance.
@@ -22,6 +23,7 @@ class FailedBHRSyncNoticeEmail extends Mailable
     public function __construct($user)
     {
         $this->user = $user;
+        //log_to_file('info', "New FailedBHRSyncNoticeEmail", [$user,  __FUNCTION__], "emails");
         # If the App is on Production, send on the actual recepient email
         if( App::environment('production') ) {
             #$this->to($this->recepient->email );
