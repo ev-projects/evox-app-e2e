@@ -48,7 +48,7 @@ class ScheduleAssignDepartment extends Component {
     // Format the data that will be past on the API
     values.schedule_details = Formatter.format_schedule_details(values);
     values.valid_from = values.from.toISOString().substring(0, 10);
-    values.valid_to = values.to.toISOString().substring(0, 10);
+    values.valid_to = values.to?.toISOString().substring(0, 10);
     var confirm_msg  = "h";
     switch (values.action) {
       case "update":

@@ -380,7 +380,7 @@ class DtrController extends Controller
     public function quickpunch(Request $request){    
         try { 
 
-        //    dd( $request->all(), Auth::user()->department_schedule_active());
+        //    dd( $request->all(), Auth::user()->depPPPartment_schedule_active());
             $biometrix_collection = Collection::make();
             $biometrics = new Biometrics();
     
@@ -428,7 +428,7 @@ class DtrController extends Controller
     public function quickpunch_multi(Request $request){    
         try { 
 
-        //    dd( $request->all(), Auth::user()->department_schedule_active());
+        //    dd( $request->all(), Auth::user()->depPPPartment_schedule_active());
             $biometrix_collection = Collection::make();
             $biometrics = new Biometrics();
     
@@ -461,9 +461,9 @@ class DtrController extends Controller
                 ->startOfDay()
                 ->subDay(1);
             }
-                // dump(256,Auth::user()->department_schedule_active());
+                // dump(256,Auth::user()->depPPPartment_schedule_active());
                 $date_check_formatted = $date_check->format("Y-m-d");
-            // if(Auth::user()->department_schedule_active()){
+            // if(Auth::user()->depPPPartment_schedule_active()){
                 
                 $result = $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection);
                 // dd( $result );

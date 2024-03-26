@@ -190,7 +190,7 @@ class ScheduleController extends Controller
     public function templates() {
         try {
             log_activity( trans('messages.fetch_templates_schedule_attempt') );
-
+            // dd("here");
             $schedule_collection = $this->schedule->get_template_schedules();
 
             return success_response(

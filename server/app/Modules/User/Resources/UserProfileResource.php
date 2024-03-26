@@ -75,7 +75,7 @@ class UserProfileResource extends JsonResource
             "lvl_name" => is_valid( $this->LevelId) ? $this->level_type(): null,
             "use_multi" => is_valid( $this->LevelId) ?$this->permissions()->pluck('name')->contains('user_multi_login'): false,
 
-            "schedule_active" => ( is_valid( $department ) ? $this->department()->first()->departments_on_schedule_is_active(): false ),
+            // "schedule_active" => ( is_valid( $department ) ? $this->department()->first()->departments_on_schedule_is_active(): false ),
 
             );
         if( $this->show_full_info ) {

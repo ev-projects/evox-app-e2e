@@ -264,10 +264,10 @@ class User extends Authenticatable implements JWTSubject
         return $offset_string->format('P');
     }
 
-    public function department_schedule_active()
-    {
-        return $this->department()->first()->departments_on_schedule_is_active();
-    }
+    // public function deparPPtment_schedule_active()
+    // {
+    //     return $this->department()->first()->departments_on_schedule_is_active();
+    // }
 
 
      # Fetch  all of the User's Schedule 

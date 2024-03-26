@@ -32,4 +32,20 @@ public function departments_announcements_presented()
         return $this->hasMany(Announcement::class, 'present_dep_id', 'Id');
     }
 
+    public function defaultSchedule(){
+        return Schedule::where([
+            'bind_id' => $this->Id,
+            'bind_to' => 'department',
+            'source_type' => 'default'
+        ]);
+    }
+
+    public function country_timezone_to_offset() // this should not exist but we give it UTC
+    {
+
+        $offset_string = Carbon::now();
+    
+
+        return $offset_string->format('P');
+    }
 }
