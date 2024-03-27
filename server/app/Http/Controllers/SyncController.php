@@ -9,6 +9,8 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\temp_user;
+use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 class SyncController extends Controller
 {
@@ -188,45 +190,37 @@ class SyncController extends Controller
 
     public function syncleaves(Request $request){
         try {
-      
-            $validator = Validator::make($request->all(), [
-                "date" => 'required',
-                "userId" => 'required',
-                "typeofLeave"=>'required',
-                "status"=>'required',
-                "amount"=>'required',
-                
-            ]);
-            if ($validator->fails()) {
-              return response()->json(['errors'=>$validator->messages()]);
-            }else{
-            $result = DB::select('call EV_SP_Leave_Sync(
-                  "'.$request->date.'"
-                , "'.$request->userId.'"
-                , "'.$request->typeofLeave.'"
-                , "'.$request->status.'"
-                , "'.$request->amount.'"
-                , "'.$request->employeeNote.'"
-                , "'.$request->managerNote.'"
-                , "'.$request->updatedBy.'")');
-        if(isset($result)){
+            $data = $request->isJson() ? ($request->json()->all()) : [];
+            log_to_file('info', 'Posted Leaves', [$data], 'dtr_leaves');
+            $failed_sync = [];
+            $leave_items = [];
+            foreach($data as $d) {
+                array_push($leave_items, $d);
+                $validator = Validator::make($d, [
+                    "date" => 'required',
+                    "userId" => 'required',
+                    "typeofLeave"=>'required',
+                    "status"=>'required',
+                    "amount"=>'required',
+                ]);
+                if ($validator->fails()) {
+                    array_push($failed_sync, array_merge($d, ['error' => $validator->messages()]));
+                } else {
+                    try {
+                        $result = call_sp('EV_SP_Leave_Sync', [$d['date'], $d['userId'], $d['typeofLeave'], $d['status'], $d['amount'], $d['employeeNote'], $d['managerNote'], $d['updatedBy']]);
+                        log_to_file('info', 'Sync Leave', [$result], 'dtr_leaves');
+                    } catch (Exception $e) {
+                        array_push($failed_sync, array_merge($d, ['error' => $e->getMessage()]));
+                    }
+                }
+            }
             return response()->json([
-      
                 'status' => '200',
                 'message' => "Leave Insert Or Updated Successfully",
-    
-           ]);
-        }else{
-            return response()->json([
-      
-                'status' => '202',
-                'message' => "Insert Failed",
-    
-           ]);
-        }
-    }
-    } catch (Exception $e) {
-        return error_response(trans('messages.error_default'), $e);
+                'failed_sync' => $failed_sync
+            ]);
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
         }
     }
 
