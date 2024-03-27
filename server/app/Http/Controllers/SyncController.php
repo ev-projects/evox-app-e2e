@@ -204,19 +204,19 @@ class SyncController extends Controller
                     "amount"=>'required',
                 ]);
                 if ($validator->fails()) {
-                    array_push($failed_sync, array_merge($d, ['error' => $validator->messages()]));
+                    array_push($failed_sync, $d['id']);
                 } else {
                     try {
                         $result = call_sp('EV_SP_Leave_Sync', [$d['date'], $d['userId'], $d['typeofLeave'], $d['status'], $d['amount'], $d['employeeNote'], $d['managerNote'], $d['updatedBy']]);
                         log_to_file('info', 'Sync Leave', [$result], 'dtr_leaves');
                     } catch (Exception $e) {
-                        array_push($failed_sync, array_merge($d, ['error' => $e->getMessage()]));
+                        array_push($failed_sync, $d['id']);
                     }
                 }
             }
             return response()->json([
-                'status' => '200',
-                'message' => "Leave Insert Or Updated Successfully",
+                'status' => count($failed_sync) > 0 ? '500' : '200',
+                'message' => count($failed_sync) > 0 ? "Some items could not be synced" : "Leave Insert Or Updated Successfully",
                 'failed_sync' => $failed_sync
             ]);
         } catch (Exception $e) {
