@@ -40,10 +40,10 @@ Route::get('Gettodayleaves', 'BookingController@get_today_leave_list')->middlewa
 Route::get('Gettommorowleaves', 'BookingController@get_tommorow_leave_list')->middleware('jwtauth', 'auth.apikey');
 Route::get('Getitrequirement', 'BookingController@get_itrequirement_roomlist')->middleware('jwtauth', 'auth.apikey');
 Route::post('insert_users', 'BookingController@insert_user_details');
-Route::post('sync_users', 'SyncController@syncusers');
-Route::post('sync_users_hris', 'SyncController@syncusers_HRIS');
-Route::post('sync_holidays', 'SyncController@syncholidays');
-Route::post('sync_leaves', 'SyncController@syncleaves');
+Route::post('sync_users', 'SyncController@syncusers')->middleware('auth.apikey');
+Route::post('sync_users_hris', 'SyncController@syncusers_HRIS')->middleware('auth.apikey');
+Route::post('sync_holidays', 'SyncController@syncholidays')->middleware('auth.apikey');
+Route::post('sync_leaves', 'SyncController@syncleaves')->middleware('auth.apikey');
 // Route::get('sendemail', 'BookingController@sendemail');
 
 
