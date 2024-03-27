@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Exports\DtrSummaryExport;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Modules\Payroll\Models\Dtr;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -19,15 +20,15 @@ use App\Modules\Payroll\Models\Biometrics;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
-use App\Modules\Payroll\Resources\DtrPunchHistoryLogResources;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
+use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Payroll\Resources\DtrPunchResource;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Payroll\Resources\DtrPunchHistoryLogResources;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
-use Illuminate\Support\Facades\DB;
 
 class DtrController extends Controller
 {    
@@ -86,7 +87,7 @@ class DtrController extends Controller
                     'employee_info' => array(
                         'employee_id'=> $owner->emp_num,
                         'name'=> $owner->first_name .' '. $owner->last_name,
-                        'department'=> (isset($owner->department_id)) ? $owner->department()->get()[0]->department_name : "" ,
+                        'department'=> ( is_valid( $owner->department_id ) ? EvoxDepartment::where("Id", $owner->department_id)->first()->Name : null ), 
                         'status'=> $owner->employment_status,
                         'timezone'=> $owner->country_zone()->country_time_zone,
                     ),

@@ -30,12 +30,10 @@ class AnnouncementStrictResource extends JsonResource
         if($this->created_by !=0){
             $user = $this->creator();
 
-            $department = $user->department()->first();
-
             $owner = [
                 'id' => $user->id,
                 'emp_num' => $user->emp_num,
-                'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
+                'department' => ( is_valid( $user->department_id ) ? EvoxDepartment::where("Id", $user->department_id)->first()->Name : null ),
                 'first_name' => $user->first_name,
                 'middle_name' => $user->middle_name,
                 'last_name' => $user->last_name,
@@ -76,7 +74,6 @@ class AnnouncementStrictResource extends JsonResource
                 'on_link' => $this->on_link,
                 'status' => $this->status,
                 'exposure_level' => $this->exposure_level,
-                // 'dep' => $this->dep_id != null? $this->department() : $this->present_department(),
                 'dep' => $this->dep_id != null? 
                 $department_collection = EvoxDepartment::select(
                     ["Id AS id",
