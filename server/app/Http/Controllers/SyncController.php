@@ -215,10 +215,9 @@ class SyncController extends Controller
                 }
             }
             return response()->json([
-                'status' => count($failed_sync) > 0 ? '500' : '200',
-                'message' => count($failed_sync) > 0 ? "Some items could not be synced" : "Leave Insert Or Updated Successfully",
+                'message' => count($failed_sync) > 0 ? "Some items could not be synced" : "Leave sync success",
                 'failed_sync' => $failed_sync
-            ]);
+            ], count($failed_sync) > 0 ? '500' : '200');
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
         }
