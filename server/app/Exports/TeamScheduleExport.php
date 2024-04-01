@@ -21,7 +21,7 @@ class TeamScheduleExport implements FromCollection,WithHeadings
             $row = array();
             $row['id'] = $dtr->user()->first()->id;
             $row['name'] =  $dtr->user()->first()->getFullName( 3 );
-            $row['department'] = EvoxDepartment::where("Id", $dtr->user()->first()->department_id)->first()->Name;
+            $row['department'] = EvoxSubDepartment::where("Id", $dtr->user()->first()->SubDepartmentID)->first()->Name;
             $row['date'] = $dtr->date;
             $row['on_duty'] = '';
             $row['off_duty'] = ''; 

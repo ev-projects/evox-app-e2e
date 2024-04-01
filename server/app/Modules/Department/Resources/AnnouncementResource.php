@@ -8,6 +8,7 @@ use App\Modules\Department\Models\Announcement;
 use App\Modules\User\Resources\UserListResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 class AnnouncementResource extends JsonResource
 {
@@ -37,7 +38,7 @@ class AnnouncementResource extends JsonResource
                 $owner = [
                     'id' => $user->id,
                     'emp_num' => $user->emp_num,
-                    'department' => ( is_valid( $user->department_id ) ? EvoxDepartment::where("Id", $user->department_id)->first()->Name : null ),
+                    'department' => ( is_valid( $user->departmSubDepartmentIDent_id ) ? EvoxSubDepartment::where("Id", $user->SubDepartmentID)->first()->Name : null ),
                     'first_name' => $user->first_name,
                     'middle_name' => $user->middle_name,
                     'last_name' => $user->last_name,

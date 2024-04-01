@@ -19,9 +19,10 @@ use App\Modules\Payroll\Models\DtrSummary;
 use App\Modules\Payroll\Models\Computation;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
-use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Payroll\Models\PayrollCutoff;
 use App\Modules\Payroll\Models\DtrSummaryReport;
+use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\Payroll\Models\TeamAttendanceSummary;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Report\Repositories\ReportRepositoryInterface;
@@ -250,7 +251,7 @@ class ReportRepository implements ReportRepositoryInterface{
                     'employee_info' => array(   
                                                 'employee_id'=> $user->emp_num,
                                                 'name'=> $user->first_name .' '. $user->last_name,
-                                                'department'=> (isset($user->department_id)) ? EvoxDepartment::where("Id", $user->department_id)->first()->Name : "" ,
+                                                'department'=> (isset($user->department_id)) ? EvoxSubDepartment::where("Id", $user->department_id)->first()->Name : "" ,
                                                 'status'=> $user->employment_status,
                                                 'timezone'=> $user->country_zone()->country_time_zone,
                                                 
@@ -372,7 +373,7 @@ class ReportRepository implements ReportRepositoryInterface{
                     'employee_info' => array(   
                                                 'employee_id'=> $user->emp_num,
                                                 'name'=> $user->first_name .' '. $user->last_name,
-                                                'department'=> (isset($user->department_id)) ?  EvoxDepartment::where("Id", $user->department_id)->first()->Name : "" ,
+                                                'department'=> (isset($user->SubDepartmentID)) ?  EvoxSubDepartment::where("Id", $user->SubDepartmentID)->first()->Name : "" ,
                                                 'status'=> $user->employment_status,
                                                 'timezone'=> $user->country_zone()->country_time_zone,
                                             ), 

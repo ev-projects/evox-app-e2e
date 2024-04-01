@@ -5,6 +5,7 @@ use App\Modules\User\Models\User;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 if (! function_exists('create_work_day_rule')) {   
     /**
@@ -102,7 +103,9 @@ if (! function_exists('generate_schedule_name')) {
                     if( in_array( $data['source_type'], array('default') ) ) {
                         
                         // $department = Department::findOrFail( $data['bind_id'] );
-                        $department = EvoxDepartment::where("Id", $data['bind_id']->department_id)->first();
+                        // $department = EvoxDepartment::where("Id", $data['bind_id']->department_id)->first();
+                        $department = EvoxSubDepartment::where("Id", $data['bind_id']->department_id)->first();
+                        
 
                         // Generate a Default Format: [{source_type}]  - {Department Name} ({id})
                         $schedule_name = '['.strtoupper($data['source_type']) . '] - '. $department->Name . ' ('. $department->Id .')';

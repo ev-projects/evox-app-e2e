@@ -5,6 +5,7 @@ namespace App\Modules\User\Resources;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 
 class UserProfileResource extends JsonResource
@@ -37,12 +38,11 @@ class UserProfileResource extends JsonResource
         }
         $offset = $this->country_timezone_to_offset(); 
 
-        
         $main_info = array(
             'id' => $this->id,
             'emp_num' => $this->emp_num,
             'bhr_num' => $this->bhr_num,
-            'department' => ( is_valid( $this->department_id ) ? EvoxDepartment::where("Id", $this->department_id)->first()->Name : null ),
+            'department' => ( is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
             'department_id' => $this->department_id,
             'email' => $this->email,
             'username' => $this->username,

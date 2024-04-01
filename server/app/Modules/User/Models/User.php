@@ -124,7 +124,7 @@ class User extends Authenticatable implements JWTSubject
     {               $offset = $this->country_timezone_to_offset();
         return [    "full_name" => $this->getFullName() , 
         
-                    "department" =>  (is_valid( $this->department_id ) ? EvoxDepartment::where("Id", $this->department_id)->first()->Name : null ),
+                    "department" =>  (is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
 
 
                     /// SEPARATE

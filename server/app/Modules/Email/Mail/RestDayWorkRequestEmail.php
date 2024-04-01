@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Modules\Request\Models\RestDayWork;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 class RestDayWorkRequestEmail extends Mailable
 {
@@ -32,7 +33,7 @@ class RestDayWorkRequestEmail extends Mailable
         $this->recepient     = $recepient;
         $this->rest_day_work = $rest_day_work;
         $this->user          = $rest_day_work->user()->first();
-        $this->department    = EvoxDepartment::where("Id", $this->user->department_id)->first();
+        $this->department    = EvoxSubDepartment::where("Id", $this->user->SubDepartmentID)->first();
         $this->approval_link = env('FRONT_END_URL') . 'request/approval/'.parse_request_to_hash_code( $this->rest_day_work, $this->recepient );
 
         # If the App is on Production, send on the actual recepient email

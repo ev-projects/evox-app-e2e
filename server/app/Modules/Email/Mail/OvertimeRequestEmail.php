@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Modules\Request\Models\Overtime;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 class OvertimeRequestEmail extends Mailable
 {
@@ -32,7 +33,7 @@ class OvertimeRequestEmail extends Mailable
         $this->recepient     = $recepient;
         $this->overtime      = $overtime;
         $this->user          = $overtime->user()->first();
-        $this->department    = EvoxDepartment::where("Id", $this->user->department_id)->first();
+        $this->department    = EvoxSubDepartment::where("Id", $this->user->SubDepartmentID)->first();
         $this->approval_link = env('FRONT_END_URL') . 'request/approval/'.parse_request_to_hash_code( $this->overtime, $this->recepient );
 
         # If the App is on Production, send on the actual recepient email

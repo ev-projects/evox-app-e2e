@@ -24,6 +24,7 @@ use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
 use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Payroll\Resources\DtrPunchResource;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
@@ -87,7 +88,7 @@ class DtrController extends Controller
                     'employee_info' => array(
                         'employee_id'=> $owner->emp_num,
                         'name'=> $owner->first_name .' '. $owner->last_name,
-                        'department'=> ( is_valid( $owner->department_id ) ? EvoxDepartment::where("Id", $owner->department_id)->first()->Name : null ), 
+                        'department'=> ( is_valid( $owner->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $owner->SubDepartmentID)->first()->Name : null ), 
                         'status'=> $owner->employment_status,
                         'timezone'=> $owner->country_zone()->country_time_zone,
                     ),

@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\Request\Resources\ChangeScheduleResource;
 
 class ChangeScheduleRequestEmail extends Mailable
@@ -41,7 +42,7 @@ class ChangeScheduleRequestEmail extends Mailable
             $this->schedule_details[ $schedule_detail->day ] = $schedule_detail->getFormattedDetail();
         }
         
-        $this->department       = EvoxDepartment::where("Id", $this->user->department_id)->first();
+        $this->department       = EvoxSubDepartment::where("Id", $this->user->SubDepartmentID)->first();
         $this->approval_link    = env('FRONT_END_URL') . 'request/approval/'.parse_request_to_hash_code( $this->change_schedule, $this->recepient );
 
         # If the App is on Production, send on the actual recepient email
