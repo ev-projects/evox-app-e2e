@@ -2,8 +2,11 @@
 
 namespace App\Modules\Payroll\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
+
 class DtrLogResource extends JsonResource
 {
     /**
@@ -21,7 +24,7 @@ class DtrLogResource extends JsonResource
             $user = $this->user()->first();
 
             // Fetch the Department related from the User
-            $department = $user->department()->first();
+
             
             # Create Resource for Payroll Items
             $payroll_items = [];
@@ -97,7 +100,7 @@ class DtrLogResource extends JsonResource
                 'end_flexy_datetime' => timestamp_to_time( $this->end_flexy_datetime ),
                 'break_time' => is_valid( $this->break_time ) && $this->break_time > 0 ? seconds_to_time( $this->break_time ) : null,
                 'is_rest_day' => $this->is_rest_day,
-                'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
+                'department' => ( is_valid( $user->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $user->SubDepartmentID)->first()->Name : null ),
                 'full_name' => $user->getFullName(),
                 'payroll_items' => $payroll_items,
                 'timezone' =>  $user->country_zone()->country_time_zone,

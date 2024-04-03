@@ -256,7 +256,7 @@ class TeamAttendanceSummary extends Component {
   const mapDispatchToProps = (dispatch) => {
 	  return {
       getTeamAttendanceSummary  : ( start_date, end_date, params ) => dispatch( getTeamAttendanceSummary( start_date, end_date, params ) ),
-      //fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
+
       exportAttendanceSummary : (start_date, end_date, params) => dispatch(exportAttendanceSummary(start_date, end_date, params)),
       fetchDepartmentsTeams : ( user_id, params ) => dispatch( fetchDepartmentsTeams( user_id, params ) ),
 	  }

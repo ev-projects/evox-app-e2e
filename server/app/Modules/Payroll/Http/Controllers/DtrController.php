@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Exports\DtrSummaryExport;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Modules\Payroll\Models\Dtr;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -19,15 +20,16 @@ use App\Modules\Payroll\Models\Biometrics;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
-use App\Modules\Payroll\Resources\DtrPunchHistoryLogResources;
 use App\Modules\Payroll\Resources\DtrResource;
 use App\Modules\Schedule\Models\SchedulePolicy;
+use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Payroll\Resources\DtrPunchResource;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Payroll\Resources\DtrPunchHistoryLogResources;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
-use Illuminate\Support\Facades\DB;
 
 class DtrController extends Controller
 {    
@@ -86,7 +88,7 @@ class DtrController extends Controller
                     'employee_info' => array(
                         'employee_id'=> $owner->emp_num,
                         'name'=> $owner->first_name .' '. $owner->last_name,
-                        'department'=> (isset($owner->department_id)) ? $owner->department()->get()[0]->department_name : "" ,
+                        'department'=> ( is_valid( $owner->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $owner->SubDepartmentID)->first()->Name : null ), 
                         'status'=> $owner->employment_status,
                         'timezone'=> $owner->country_zone()->country_time_zone,
                     ),
@@ -380,7 +382,7 @@ class DtrController extends Controller
     public function quickpunch(Request $request){    
         try { 
 
-        //    dd( $request->all(), Auth::user()->department_schedule_active());
+        //    dd( $request->all(), Auth::user()->depPPPartment_schedule_active());
             $biometrix_collection = Collection::make();
             $biometrics = new Biometrics();
     
@@ -428,7 +430,7 @@ class DtrController extends Controller
     public function quickpunch_multi(Request $request){    
         try { 
 
-        //    dd( $request->all(), Auth::user()->department_schedule_active());
+        //    dd( $request->all(), Auth::user()->depPPPartment_schedule_active());
             $biometrix_collection = Collection::make();
             $biometrics = new Biometrics();
     
@@ -461,9 +463,9 @@ class DtrController extends Controller
                 ->startOfDay()
                 ->subDay(1);
             }
-                // dump(256,Auth::user()->department_schedule_active());
+                // dump(256,Auth::user()->depPPPartment_schedule_active());
                 $date_check_formatted = $date_check->format("Y-m-d");
-            // if(Auth::user()->department_schedule_active()){
+            // if(Auth::user()->depPPPartment_schedule_active()){
                 
                 $result = $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection);
                 // dd( $result );

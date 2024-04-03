@@ -92,7 +92,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function find($id)
     {
         try {
-            $department = Department::find($id);
+            $department = EvoxDepartment::find($id);
             log_to_file('info', 'Success', [$department]);
             return $department;
 

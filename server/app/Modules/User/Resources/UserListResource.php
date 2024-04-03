@@ -3,6 +3,8 @@
 namespace App\Modules\User\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 class UserListResource extends JsonResource
 {
@@ -14,7 +16,7 @@ class UserListResource extends JsonResource
      */
     public function toArray($request)
     {
-        $department = $this->department()->first();
+
 
         // Create Resource for Department Handled
         $departments_handled = [];
@@ -38,7 +40,7 @@ class UserListResource extends JsonResource
         $main_info = array(
             'id' => $this->id,
             'emp_num' => $this->emp_num,
-            'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
+            'department' => ( is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
             'first_name' => $this->first_name,
             'middle_name' => $this->middle_name,
             'last_name' => $this->last_name,

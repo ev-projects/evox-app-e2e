@@ -2,8 +2,10 @@
 
 namespace App\Modules\User\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
+use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 
 class UserProfileResource extends JsonResource
@@ -27,7 +29,6 @@ class UserProfileResource extends JsonResource
      */
     public function toArray($request){    
 
-        $department = $this->department()->first();
         
         if($this->birthdate!=null){
             $birthdate = new Carbon($this->birthdate);
@@ -37,12 +38,11 @@ class UserProfileResource extends JsonResource
         }
         $offset = $this->country_timezone_to_offset(); 
 
-        
         $main_info = array(
             'id' => $this->id,
             'emp_num' => $this->emp_num,
             'bhr_num' => $this->bhr_num,
-            'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
+            'department' => ( is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
             'department_id' => $this->department_id,
             'email' => $this->email,
             'username' => $this->username,
@@ -75,8 +75,6 @@ class UserProfileResource extends JsonResource
             "lvl_name" => is_valid( $this->LevelId) ? $this->level_type(): null,
             "use_multi" => is_valid( $this->LevelId) ?$this->permissions()->pluck('name')->contains('user_multi_login'): false,
 
-            "schedule_active" => ( is_valid( $department ) ? $this->department()->first()->departments_on_schedule_is_active(): false ),
-
             );
         if( $this->show_full_info ) {
 
@@ -92,11 +90,6 @@ class UserProfileResource extends JsonResource
                 array_push( $roles, $role->name );
             }
 
-            // Create Resource for Department Handled
-            // $departments_handled = [];
-            // foreach( $this->departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
-            //     array_push( $departments_handled, $departments );
-            // }
 
             
              $evox_departments_handled = [];
@@ -118,9 +111,9 @@ class UserProfileResource extends JsonResource
                 array('roles' => $roles),
                 array('features_access' => is_valid($this->LevelId) ? $feature_all_list : []),
                 array('level' =>( is_valid( $this->LevelId) ? $this->level()->select('LevelId','Name','LevelId','IsAdmin','ISHR','IsPayRoll','CountryId','IsActive')->first()->toArray(): [] )),
-                //array('departments_handled' => $departments_handled),
+            
                 array('departments_handled' => $evox_departments_handled),
-                // array('evox_departments_handled' => $evox_departments_handled),
+
             );
             
         } else {

@@ -5,6 +5,7 @@ namespace App\Modules\Department\Http\Controllers;
 use Exception;
 
 use Illuminate\Http\Request;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Modules\Department\Models\Department;
@@ -134,14 +135,15 @@ class DepartmentController extends Controller
      */
     public function department_handlers($id){
         try {
-            $user_collection = $this->department->find( $id )->department_supervisors()
-                                                             ->orderBy('first_name', 'asc')
-                                                             ->orderBy('last_name', 'asc')
-                                                             ->get();
+            // $user_collection = $this->department->find( $id )->department_supervisors()
+            //                                                  ->orderBy('first_name', 'asc')
+            //                                                  ->orderBy('last_name', 'asc')
+            //                                                  ->get();
 
             return success_response(
                 trans('messages.fetch_department_handlers_success'), 
-                UserListResource::collection( $user_collection ) 
+                // UserListResource::collection( $user_collection ) 
+                []
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -155,7 +157,7 @@ class DepartmentController extends Controller
      */
     public function users($id){
         try {
-            $user_collection = $this->department->find( $id )->users()
+            $user_collection = User::where("department_id", $id)
                                                              ->where('is_active', 1)
                                                              ->orderBy('first_name', 'asc')
                                                              ->orderBy('last_name', 'asc')
@@ -177,6 +179,7 @@ class DepartmentController extends Controller
      */
     public function default_schedule($id){
         try {
+            // dd("here");
             $schedule = $this->department->find( $id )->defaultSchedule()->first();
 
             return success_response(

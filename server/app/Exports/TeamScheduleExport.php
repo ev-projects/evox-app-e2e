@@ -3,9 +3,10 @@
 namespace App\Exports;
 
 use App\Modules\User\Models\User;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Database\Eloquent\Collection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Modules\Department\Models\EvoxDepartment;
 
 class TeamScheduleExport implements FromCollection,WithHeadings
 {
@@ -20,7 +21,7 @@ class TeamScheduleExport implements FromCollection,WithHeadings
             $row = array();
             $row['id'] = $dtr->user()->first()->id;
             $row['name'] =  $dtr->user()->first()->getFullName( 3 );
-            $row['department'] = $dtr->user()->first()->department()->first()->getCompleteName();
+            $row['department'] = EvoxSubDepartment::where("Id", $dtr->user()->first()->SubDepartmentID)->first()->Name;
             $row['date'] = $dtr->date;
             $row['on_duty'] = '';
             $row['off_duty'] = ''; 

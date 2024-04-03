@@ -109,16 +109,7 @@ class User extends Authenticatable implements JWTSubject
         return "20".$this->emp_num;
     }
     
-    public function personal(){
-        return [    
-            "first_name" => $this->first_name , 
-            "middle_name" => $this->middle_name , 
-            "last_name" => $this->last_name , 
-            "emp_num" => $this->emp_num , 
-            "email" => $this->email , 
-            "department" => $this->department()->first()->department_name   
-        ];
-    }
+ 
 
     public function job_description(){
         return [    
@@ -132,7 +123,8 @@ class User extends Authenticatable implements JWTSubject
     public function getUserInfo()
     {               $offset = $this->country_timezone_to_offset();
         return [    "full_name" => $this->getFullName() , 
-                    "department" => $this->department()->first()->department_name ?? '',
+        
+                    "department" =>  (is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
 
 
                     /// SEPARATE
@@ -264,10 +256,10 @@ class User extends Authenticatable implements JWTSubject
         return $offset_string->format('P');
     }
 
-    public function department_schedule_active()
-    {
-        return $this->department()->first()->departments_on_schedule_is_active();
-    }
+    // public function deparPPtment_schedule_active()
+    // {
+    //     return $this->department->first()->departments_on_schedule_is_active();
+    // }
 
 
      # Fetch  all of the User's Schedule 
@@ -941,12 +933,12 @@ class User extends Authenticatable implements JWTSubject
             2. Departments of the Teams you are handling via 'team_handlers' 
         */
         $departments_id_array = $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id')->pluck('id')->toArray();
-        foreach( $this->teams_handled()->get() as $team) {
-            $departments_id_array = array_merge( 
-                $departments_id_array, 
-                $team->department()->pluck('id')->toArray() 
-            );
-        }
+        // foreach( $this->teams_handled()->get() as $team) {
+        //     $departments_id_array = array_merge( 
+        //         $departments_id_array, 
+        //         $team->deppppppppppartment()->pluck('id')->toArray() 
+        //     );
+        // }
         return Department::whereIn('departments.id', array_unique($departments_id_array));
     }
 
