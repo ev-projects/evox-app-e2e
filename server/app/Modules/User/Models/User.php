@@ -960,10 +960,16 @@ class User extends Authenticatable implements JWTSubject
                 ]
             ); 
                 $result = $response[0] ? array_map(function($item) {
-
+                    $dep_name = null;
+                    if(isset($item->Name)){
+                        $dep_name = $item->Name;
+                    }
+                    if(isset($item->DepartmentName)){
+                        $dep_name = $item->DepartmentName;
+                    }
                     return (object) array(
                         'id' => $item->Id,
-                        'department_name' => $item->Name,
+                        'department_name' => $dep_name,
                     );
                 }, $response[0]): []
             ;

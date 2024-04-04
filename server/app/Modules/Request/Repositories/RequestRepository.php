@@ -190,7 +190,7 @@ class RequestRepository implements RequestRepositoryInterface{
      * @param array (Overtime Post Variables) $data
      * @return Overtime $overtime
      */
-    public function get_status_numbers($data)
+    public function get_status_numbers($data,  $cutoff)
     {
         DB::beginTransaction();
         try {
@@ -238,9 +238,20 @@ class RequestRepository implements RequestRepositoryInterface{
                 }
             }
 
+            $start =null;
+            $end = null;
+            if(isset($data->valid_from)){
+                $start =$data->valid_from;
+                $end = $data->valid_to;
+            }else{
+                $start =$cutoff->start_date;
+                $end = $cutoff->end_date;
+            }
+
+
           if($data->url=='my_team_requests'){
             $my_team_req =  call_sp("EH_SP_My_Team_Request", [Auth::user()->id, Auth::user()->LevelId
-            ,$data->valid_from, $data->valid_to,
+            ,$start,$end,
             get_constant('REQUEST_TYPE_SP_RE')[$data->request_type], 
             $data->status 
             , $data->department_id,
@@ -248,7 +259,7 @@ class RequestRepository implements RequestRepositoryInterface{
             0, 1, 999, 0]);
          
             
-            // dd( $data->all(),$my_team_req);
+            // dd( $data->all(),$my_team_req,$my_team_req[1], $my_team_req[1][3]->statusCount);
             
             
             if(is_valid($my_team_req[1])){
@@ -259,6 +270,8 @@ class RequestRepository implements RequestRepositoryInterface{
                     "canceled" => $my_team_req[1][1]->statusCount,
                 );
             }
+            // dd($numbers);
+            return array( 'status_numbers' => $numbers  );
         }
 
             return array( 'status_numbers' => $numbers  );
@@ -444,27 +457,25 @@ class RequestRepository implements RequestRepositoryInterface{
 
                     }
 
-
-                
-                
-
-                
-                
-
-            //    dd(
-            //     $my_team_alter,
-            //     $my_team_Multi_alter,
-            //     $my_team_overtime,
-            //     $my_team_overtime,
-            //     $my_team_changeschedule,
-
-            //     );
-
+// dd(
+//    "my_team_alter",
+//     $my_team_alter,
+//    "my_team_Multi_alter",
+//     $my_team_Multi_alter,
+//    "my_team_changeschedule",
+//                 $my_team_changeschedule,
+//    "my_team_restdaywork",
+//                 $my_team_restdaywork,
+//    "my_team_overtime",
+//                 $my_team_overtime,
+// );
                 $numbers = [
                     "alterlogpending"   => (string)(($alter[2][0]->TotalCount) + ($Multi_alter[2][0]->TotalCount)),
                     "overtimepending"   => (string)($overtime[2][0]->TotalCount),
                     "restdayworkpending"    => (string)($restdaywork[2][0]->TotalCount),
                     "changeschedulepending" => (string)($changeschedule[2][0]->TotalCount),
+
+
                     "team_alterlogpending"  => (string)(
                         (is_valid( $my_team_alter) ? $my_team_alter[2][0]->TotalCount : 0) + 
                         (is_valid( $my_team_Multi_alter) ? $my_team_Multi_alter[2][0]->TotalCount : 0)) ,
