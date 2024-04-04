@@ -332,7 +332,7 @@ const Sidebar = (props) => {
               </li>
 
               {/* SUPERVISOR Links */}
-              {Authenticator.scanLevel(["SubDepartment Head","Department Head","DivisionHead","Board","HR","Payroll","Client"])
+              {Authenticator.scanLevel(["SubDepartment Head","Department Head","DivisionHead","Admin","Board","HR","Payroll","Client"])
                ? (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
