@@ -201,8 +201,8 @@ class RequestRepository implements RequestRepositoryInterface{
                 "canceled" => 0,
             );
 
-            if(Auth::user()->LevelId == null){
-                return $numbers;
+            if(Auth::user()->LevelId === null){
+                return array( 'status_numbers' => $numbers  );
             }
 
             if($data->url=='my_requests'){
