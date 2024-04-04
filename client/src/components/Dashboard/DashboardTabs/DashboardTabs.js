@@ -106,7 +106,7 @@ class DashboardTabs extends Component {
           fill
           onSelect= { this.onTabSelect }
         >
-          {Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]) && (
+          {Authenticator.scanLevel(["SubDepartment Head","DivisionHead","Department Head","Board","Admin","HR","Payroll"]) && (
             <Tab
               eventKey="evox-summary"
               title="Summary"
@@ -115,7 +115,7 @@ class DashboardTabs extends Component {
               {this.state.summary_shown && (<SummaryDashbord />)}
             </Tab>
           )}
-          {Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"]) && (
+          {Authenticator.scanLevel(["SubDepartment Head","DivisionHead","Department Head","Board","Admin","HR","Payroll"]) && (
             <Tab
               eventKey="engagement"
               title="Engagements"
