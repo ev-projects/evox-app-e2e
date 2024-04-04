@@ -778,11 +778,7 @@ class User extends Authenticatable implements JWTSubject
     {   
         
             if (
-                        ($this->isLevel("Admin")
-                        ||
-                    $this->isLevel("HR")
-                        ||
-                    $this->isLevel("Payroll"))
+                        ($this->isLevel("Admin"))
                     ) 
                     {
                         return User::whereNotNull("bhr_num");
@@ -800,6 +796,10 @@ class User extends Authenticatable implements JWTSubject
                     $this->isLevel("Board"))
                     ||
                     $this->isLevel("Client")
+                    ||
+                    $this->isLevel("HR")
+                        ||
+                    $this->isLevel("Payroll")
     ){
         $response = call_sp("EH_SP_Employee_List",[
             $this->id, 
@@ -963,7 +963,7 @@ class User extends Authenticatable implements JWTSubject
 
                     return (object) array(
                         'id' => $item->Id,
-                        'department_name' => $item->DepartmentName,
+                        'department_name' => $item->Name,
                     );
                 }, $response[0]): []
             ;
@@ -1039,7 +1039,16 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the User's Level Name
     public function level_type(){
-        return $this->level()->first()->Name;
+            $type = $this->level()->first()->Name;
+
+            if (stristr($type, "HR") !== false){
+                return "HR";
+            }
+            if (stristr($type, "Payroll") !== false){
+                return "Payroll";
+            }
+
+            return $type;
     }
 
     public function isLevel($level_role_name){
@@ -1050,7 +1059,14 @@ class User extends Authenticatable implements JWTSubject
     public function getFeatureAccess(){
 
         if(is_valid($this->LevelId)){
-            return RoleLevelFeatures::where('evox_levels_id', $this->LevelId)->leftJoin("features", 'features_id', '=', 'features.id');
+            $level_id = $this->LevelId;
+            $type = $this->level_type();
+
+            if($type == "Payroll" || $type == "HR"){
+                $level_id =EvoxLevels::where("Name", $type)->first()->Id; //
+            }
+            
+            return RoleLevelFeatures::where('evox_levels_id', $level_id)->leftJoin("features", 'features_id', '=', 'features.id');
             
         }
            
