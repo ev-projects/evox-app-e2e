@@ -101,16 +101,18 @@ class UserProfileResource extends JsonResource
                 
                 $feature_all_list = $this->userFeatures();
             }
-
-
-
+            $level_item =  [];
+            if(is_valid( $this->LevelId)){
+                $level_item = $this->level()->select('LevelId','Name','LevelId','IsAdmin','ISHR','IsPayRoll','CountryId','IsActive')->first()->toArray();
+                $level_item["Name"] = $this->level_type();
+            }
                 // dd( $evox_departments_handled);
             return array_merge( 
                 $main_info, 
                 array('permissions' => $permissions),
                 array('roles' => $roles),
                 array('features_access' => is_valid($this->LevelId) ? $feature_all_list : []),
-                array('level' =>( is_valid( $this->LevelId) ? $this->level()->select('LevelId','Name','LevelId','IsAdmin','ISHR','IsPayRoll','CountryId','IsActive')->first()->toArray(): [] )),
+                array('level' =>(  $level_item )),
             
                 array('departments_handled' => $evox_departments_handled),
 
