@@ -49,10 +49,10 @@ class SendOvertimeRequestEmailJob implements ShouldQueue
             //         log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->overtime], "emails");
             //     }
             
-            // }
+            // }         
             $recepient  = $this->overtime->user()->first()->direct_supervisor();
-            error_log( $recepient->id,$recepient->email);
-            if(is_valid($recepient)){
+            
+   if(is_valid($recepient)){
                 Mail::send( new OvertimeRequestEmail( $recepient, $this->overtime ) );
                 
                 log_to_file( 'info', get_constant('LOG_SENT_SUCCESS').$recepient->email, [$this->overtime], "emails");
