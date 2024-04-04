@@ -679,7 +679,6 @@ class UserRepository implements UserRepositoryInterface{
     public function new_get_my_team_list( $id ){
         try {
 
-            // dd(request()->all(),request()->get('page'));
             $collection = [];
             if( get_authenticated_user( $id )  ) {
                 
@@ -695,7 +694,7 @@ class UserRepository implements UserRepositoryInterface{
                     (is_valid( request()->get('sub_department_id') ) 
                         && is_valid( request()->get('department_id') ))
                             ? request()->get('sub_department_id'): null,
-                    1, // active
+                        is_valid( request()->get('status') ) ? (int)request()->get('status'): 1, // active
                     is_valid( request()->get('name') ) ? request()->get('name'): null, // name
                     is_valid( request()->get('job_title') ) ? request()->get('job_title'): null, // job_title
                     is_valid( request()->get('page') ) ? request()->get('page'): 1,
