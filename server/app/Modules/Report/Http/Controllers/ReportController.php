@@ -755,6 +755,13 @@ class ReportController extends Controller
             $attendance = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 1]);
             $attendance_stats = $attendance[0][0];
             $attendance_list = $attendance[1];
+            $user_ids = [];
+            foreach($attendance_list as $i) {
+                if(!in_array($i->Id, $user_ids, true)){
+                    array_push($user_ids, $i->Id);
+                }
+            }
+            $report['total_headcount'] = count($user_ids);
             $report['attendance'] = array(
                 'total_count' => $attendance_stats->TotalCount,
                 'total_percentage' => $attendance_stats->AttendancePercent,
