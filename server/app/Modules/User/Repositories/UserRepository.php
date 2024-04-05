@@ -720,13 +720,13 @@ class UserRepository implements UserRepositoryInterface{
                                                     'count' => count( $collection["data"]),
                                                     'per_page' =>  (int) $paginate->PerPage,
                                                     'current_page' => (int) $paginate->CurrentPage,
-                                                    'last_page' => round($paginate->TotalCount /  $perpage_count)
+                                                    'last_page' => ((ceil($paginate->TotalCount /  $perpage_count)) ) 
                                                 ];
 
-                                                if( ($paginate->TotalCount % $perpage_count) > 0 
-                                                && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
-                                                    $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
-                                                }
+                                                // if( ($paginate->TotalCount % $perpage_count) > 0 
+                                                // && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
+                                                //     $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
+                                                // }
                 }
      
             }
