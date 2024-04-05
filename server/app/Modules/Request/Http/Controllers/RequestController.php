@@ -108,6 +108,13 @@ class RequestController extends Controller
 
         try {
             log_activity( trans('messages.request_display_attempt') );
+
+            if(!isset($request->valid_from)){
+                $cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+                $request->merge(['valid_from' => $cutoff->start_date]);
+                $request->merge(['valid_to' => $cutoff->end_date]);
+            }
+
             if($request->url== 'my_requests'){
                 $response = $user->requests_list('my_request',$request);
                 $my_req_proc = (new RequestResource($response["data"]))->resolve();
@@ -135,12 +142,6 @@ class RequestController extends Controller
                 //     trans('messages.request_display_success'), 
                 //       new RequestResource( $user->requests_list('my_request',$request) ) 
                 // );
-               
-                if(!isset($request->valid_from)){
-                    $cutoff = $this->payroll_cutoff->get_payroll_cutoff();
-                    $request->merge(['valid_from' => $cutoff->start_date]);
-                    $request->merge(['valid_to' =>$cutoff->end_date]);
-                }
                 $collection  = $user->requests_list('my_request',$request);
                 $DAT = (new RequestResource( $collection["data"] ))->resolve();
                     // dd($collection["pagination"]);
