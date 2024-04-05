@@ -524,13 +524,13 @@ class User extends Authenticatable implements JWTSubject
                                             'count' => count( $collection["data"]),
                                             'per_page' =>  (int) $paginate->Total_Count_Per_Page,
                                             'current_page' => (int) $paginate->CurrentPage,
-                                            'last_page' => round($paginate->TotalCount /  $perpage_count)
+                                            'last_page' => ceil($paginate->TotalCount /  $perpage_count)
                                         ];
 
-                                        if( ($paginate->TotalCount % $perpage_count) > 0 
-                                        && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
-                                            $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
-                                        }
+                                        // if( ($paginate->TotalCount % $perpage_count) > 0 
+                                        // && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
+                                        //     $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
+                                        // }
                                         // dd($collection["data"]);
             return   $collection;
         }
@@ -999,11 +999,19 @@ class User extends Authenticatable implements JWTSubject
                 ]
             ); 
             // dd($response[0]);
-                $result = $response[0] ? array_map(function($item) {
 
+         
+                $result = $response[0] ? array_map(function($item) {
+                    $dep_name = null;
+                    if(isset($item->SubDepartment)){
+                        $dep_name = $item->SubDepartment;
+                    }
+                    if(isset($item->SubDepartmentName)){
+                        $dep_name = $item->SubDepartmentName;
+                    }
                     return (object) array(
                         'Id' => $item->Id,
-                        'Name' => $item->SubDepartment,
+                        'Name' => $dep_name,
                     );
                 }, $response[0]): []
             ;
