@@ -218,8 +218,8 @@ class RequestRepository implements RequestRepositoryInterface{
 
                 $values = [
                     'all',
-                    $data['valid_from'],
-                    $data['valid_to'],
+                    $data['valid_from'] ?? $cutoff->start_date,
+                    $data['valid_to'] ?? $cutoff->end_date,
                     $request_types[$data['request_type']],
                     Auth::user()->id,
                     $data['page'],
