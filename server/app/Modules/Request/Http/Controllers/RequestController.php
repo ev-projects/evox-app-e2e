@@ -144,6 +144,8 @@ class RequestController extends Controller
                 $collection  = $user->requests_list('my_request',$request);
                 $DAT = (new RequestResource( $collection["data"] ))->resolve();
                     // dd($collection["pagination"]);
+                    $last_page = is_valid($collection["pagination"]["last_page"]) ? (ceil($collection["pagination"]["total"]) /  
+                    is_valid($collection["pagination"]["per_page"])): 0;
                 return success_response(
                     trans('messages.request_display_success'), 
                     ["result" => [
@@ -153,7 +155,7 @@ class RequestController extends Controller
                         "count" => is_valid($collection["pagination"]["count"]) ? $collection["pagination"]["count"]: 0,
                         "per_page" => is_valid($collection["pagination"]["per_page"]) ? $collection["pagination"]["per_page"]: 0,
                         "current_page" =>is_valid($collection["pagination"]["current_page"]) ? $collection["pagination"]["current_page"]: 0,
-                        "last_page" => is_valid($collection["pagination"]["last_page"]) ? $collection["pagination"]["last_page"]: 0,
+                        "last_page" => $last_page,
                     ]]
                 );
             }
