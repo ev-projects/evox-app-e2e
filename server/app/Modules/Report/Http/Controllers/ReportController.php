@@ -750,8 +750,8 @@ class ReportController extends Controller
             );
 
             $department_ids = $request->selectedDepartments ? implode(',', $request->selectedDepartments) : null;
-            if ($department_ids == null) {
-                throw new Exception("Please select at least one department.");
+            if ($department_ids === null) {
+                return response()->json(['error' => ['message' => "Please selecte at least one department", 'content' => "No department selected"]], 400);
             }
             $team_ids = $request->selectedTeams ? implode(',', $request->selectedTeams) : null;
 
@@ -885,8 +885,8 @@ class ReportController extends Controller
             ]);
             $me = Auth::user();
             $department_ids = $request->selectedDepartments ?? null;
-            if ($department_ids == null) {
-                throw new Exception("Please select at least one department.");
+            if ($department_ids === null) {
+                return response()->json(['error' => ['message' => "Please selecte at least one department", 'content' => "No department selected"]], 400);
             }
             $team_ids = $request->selectedTeams ?? null;
             //return success_response('Test', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
