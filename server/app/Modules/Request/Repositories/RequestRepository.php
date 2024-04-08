@@ -218,8 +218,8 @@ class RequestRepository implements RequestRepositoryInterface{
 
                 $values = [
                     'all',
-                    $data['valid_from'] ?? $cutoff->start_date,
-                    $data['valid_to'] ?? $cutoff->end_date,
+                    $data['valid_from'] ?? null,
+                    $data['valid_to'] ?? null,
                     $request_types[$data['request_type']],
                     Auth::user()->id,
                     $data['page'],
@@ -240,26 +240,34 @@ class RequestRepository implements RequestRepositoryInterface{
 
             $start =null;
             $end = null;
+            $team_request_sp =  "EH_SP_My_Team_Request";
+            
+
+          if($data->url=='my_team_requests'){
+
             if(isset($data->valid_from)){
                 $start =$data->valid_from;
                 $end = $data->valid_to;
+
+                $my_team_req =  call_sp( $team_request_sp, [Auth::user()->id, Auth::user()->LevelId
+                ,$start,$end,
+                get_constant('REQUEST_TYPE_SP_RE')[$data->request_type], 
+                $data->status 
+                , $data->department_id,
+                $data->name, 
+                0, 1, 999, 0]);
             }else{
-                $start =$cutoff->start_date;
-                $end = $cutoff->end_date;
+                $start =null;
+                $end = null;
+                $team_request_sp =  "EH_SP_overall_My_Team_Request";
+
+                $my_team_req =  call_sp( $team_request_sp, [Auth::user()->id, Auth::user()->LevelId,
+                get_constant('REQUEST_TYPE_SP_RE')[$data->request_type], 
+                $data->status 
+                , $data->department_id,
+                $data->name, 
+                0, 1, 999, 0]);
             }
-
-
-          if($data->url=='my_team_requests'){
-            $my_team_req =  call_sp("EH_SP_My_Team_Request", [Auth::user()->id, Auth::user()->LevelId
-            ,$start,$end,
-            get_constant('REQUEST_TYPE_SP_RE')[$data->request_type], 
-            $data->status 
-            , $data->department_id,
-            $data->name, 
-            0, 1, 999, 0]);
-         
-            
-            // dd( $data->all(),$my_team_req,$my_team_req[1], $my_team_req[1][3]->statusCount);
             
             
             if(is_valid($my_team_req[1])){
@@ -382,106 +390,22 @@ class RequestRepository implements RequestRepositoryInterface{
            
             try {
 
-                /*
-                    status type Type values
-                    pending
-                    approved
-                    declined
-                    */
 
-                /*
-                    Request Type values
-                    0 - All
-                    1 - Alteration
-                    2 - OverTime
-                    3 - Rest Day Work
-                    4 - Change Schedule
-                    5 - MultiPunch Alteration
-                    */
                     
-
-                $alter =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 1 ,$user->id, 1 , 99]);
-                $Multi_alter =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 5 ,$user->id, 1 , 99]);
-                
-
-                $overtime =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 2 ,$user->id, 1 , 99]);
-            
-
-                $restdaywork =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 3 ,$user->id, 1 , 99]);
-            
-
-                $changeschedule =  call_sp("EH_SP_MyRequest", ["pending",$cutoff->start_date, $cutoff->end_date, 4 ,$user->id, 1 , 99]);
-
-
-                $my_team_alter =[];
-                $my_team_Multi_alter =[];
-                $my_team_changeschedule =[];
-                $my_team_restdaywork =[];
-                $my_team_overtime =[];
-                $features = $user->userFeatures();
-                $my_team_alter =[];
-                $my_team_Multi_alter =[];
-                $my_team_changeschedule =[];
-                $my_team_restdaywork =[];
-                $my_team_overtime =[];
-                    if(!in_array("manage_alter_log_request",$features)){
-                        $my_team_alter =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"1", "pending" 
-                        , null, null , 
-                        0, 1, 999, 0]);
-        
-                        $my_team_Multi_alter =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"5", "pending" 
-                        , null, null , 
-                        0, 1, 999, 0
-                        ]);
-                    }
-
-                    if(in_array("manage_change_schedules_request",$features)){
-                        $my_team_changeschedule =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"4", "pending" 
-                        , null, null , 
-                        0, 1, 999, 0
-                        ]);
-                    }
-
-                    if(in_array("manage_rest_day_work_request",$features)){
-                        $my_team_restdaywork =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"3", "pending" 
-                        , null, null , 
-                        0, 1, 999, 0
-                        ]);
-                    }
-
-                    if(in_array("manage_overtime_request",$features)){
-                        $my_team_overtime =  call_sp("EH_SP_My_Team_Request", [$user->id, $user->LevelId,$cutoff->start_date, $cutoff->end_date,"2", "pending" 
-                        , null, null , 
-                        0, 1, 999, 0
-                        ]);
-
-                    }
-
-// dd(
-//    "my_team_alter",
-//     $my_team_alter,
-//    "my_team_Multi_alter",
-//     $my_team_Multi_alter,
-//    "my_team_changeschedule",
-//                 $my_team_changeschedule,
-//    "my_team_restdaywork",
-//                 $my_team_restdaywork,
-//    "my_team_overtime",
-//                 $my_team_overtime,
-// );
+                $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,1]);
+                    // dd($EH_SP_Dashboard);
                 $numbers = [
-                    "alterlogpending"   => (string)(($alter[2][0]->TotalCount) + ($Multi_alter[2][0]->TotalCount)),
-                    "overtimepending"   => (string)($overtime[2][0]->TotalCount),
-                    "restdayworkpending"    => (string)($restdaywork[2][0]->TotalCount),
-                    "changeschedulepending" => (string)($changeschedule[2][0]->TotalCount),
+                    "alterlogpending"   => (string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[3][0]->requestCount : $EH_SP_Dashboard[2][0]->requestCount), 
+                    "overtimepending"   => (string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[3][1]->requestCount : $EH_SP_Dashboard[2][1]->requestCount),
+                    "restdayworkpending"    => (string)(isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ? $EH_SP_Dashboard[3][2]->requestCount : $EH_SP_Dashboard[2][2]->requestCount),
+                    "changeschedulepending" =>  (string)(isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ? $EH_SP_Dashboard[3][3]->requestCount : $EH_SP_Dashboard[2][3]->requestCount),
 
 
-                    "team_alterlogpending"  => (string)(
-                        (is_valid( $my_team_alter) ? $my_team_alter[2][0]->TotalCount : 0) + 
-                        (is_valid( $my_team_Multi_alter) ? $my_team_Multi_alter[2][0]->TotalCount : 0)) ,
-                    "team_overtimepending"  =>(string)( is_valid( $my_team_overtime) ? $my_team_overtime[2][0]->TotalCount : 0),
-                    "team_restdayworkpending"   =>  (string)(is_valid( $my_team_overtime) ? $my_team_restdaywork[2][0]->TotalCount : 0),
-                    "team_changeschedulepending"    =>  (string)(is_valid( $my_team_changeschedule) ? $my_team_changeschedule[2][0]->TotalCount : 0),
+                   
+                    "team_alterlogpending" =>(string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[2][0]->requestCount : 0), 
+                    "team_overtimepending"  =>(string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[2][1]->requestCount : 0),
+                    "team_restdayworkpending"   =>  (string)(isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ? $EH_SP_Dashboard[2][2]->requestCount : 0),
+                    "team_changeschedulepending"    =>  (string)(isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ? $EH_SP_Dashboard[2][3]->requestCount : 0),
                 ];
 
                 return array( 'status_numbers' => $numbers  );

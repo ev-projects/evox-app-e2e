@@ -486,17 +486,34 @@ class User extends Authenticatable implements JWTSubject
                 'alter_logs_punches'    => 5,
             ];
             $perpage_count = 10;
-            $response =  call_sp("EH_SP_My_Team_Request", [
-                $this->id,
-                $this->LevelId,
-                $filter['valid_from'],
-                $filter['valid_to'],
-                $request_types[$filter['request_type']],
-                $filter['status'],
-                $filter['department_id'],
-                $filter['name'] , 
-                0, $filter['page'], $perpage_count, 0]);
-        //    dd($response);
+            if(isset($filter['valid_from'])){
+                $response =  call_sp("EH_SP_My_Team_Request", [
+                    $this->id,
+                    $this->LevelId,
+                    $filter['valid_from'],
+                    $filter['valid_to'],
+                    $request_types[$filter['request_type']],
+                    $filter['status'],
+                    $filter['department_id'],
+                    $filter['name'] , 
+                    0, $filter['page'], $perpage_count, 0]);
+    
+            }else{
+                $response =  call_sp("EH_SP_overall_My_Team_Request", [
+                    $this->id,
+                    $this->LevelId,
+                    $request_types[$filter['request_type']],
+                    $filter['status'],
+                    $filter['department_id'],
+                    $filter['name'] , 
+                    0, // change to 1
+                    2, $perpage_count, 
+                    0
+                ]);
+            }
+
+                
+         
                 $collection =  [];
             $result = $response[3] ? array_map(function($item) {
                     // dd($item);
@@ -516,6 +533,7 @@ class User extends Authenticatable implements JWTSubject
                     );
                 }, $response[3]): []
             ;
+            // dd($result ,$response[0],$response[2],$response[3]);
             $paginate = $response[2][0];
                 // dd($paginate);
             $collection["data"] = [ "query" =>$result];

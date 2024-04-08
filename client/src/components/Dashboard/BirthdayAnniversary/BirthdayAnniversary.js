@@ -42,10 +42,10 @@ class BirthdayAnniversary extends Component {
                   {birthday_and_anniv.map(function (data, i) {
                     var icon = ''
                     switch(data.type) {
-                      case "birthdate":
+                      case "birthday":
                         icon = <i class="fa fa-birthday-cake" style={{color:"#575a89"}}></i>
                         break;
-                      case "anniversary":
+                      case "Anniversary":
                         icon = <i class="fa fa-calendar-check-o" style={{color:"#0097a7"}}></i>
                         break;
                       case "regularization":
@@ -53,7 +53,7 @@ class BirthdayAnniversary extends Component {
                         break;
                     }
                           return  (<tr>
-                          <td>{data.name}</td>
+                          <td>{data.last_name}, {data.first_name}</td>
                           <td>{data.date}</td>
                           <td>{icon}  {data.display}</td>
                   

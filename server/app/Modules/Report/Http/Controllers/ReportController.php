@@ -577,69 +577,21 @@ class ReportController extends Controller
 
             $bhr_holidays_array = [];
 
-            $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
+            // $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
 
-     // Define the End Point for the API.
-        //     $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
-       
-        //     // Iterate the BHr Call Result
-        //     $user = $this->user->show(Auth::user()->id);
-
-        //     // if ($user->country_id == 2) {
-        //         // BHR API CALL For Fecthing Philippines Holiday
-        //         foreach( bhr_api_call('GET', $end_point) as $row ) {
-
-        //             // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-        //             if( $row->type == 'holiday' ) {
-        //                 $bhr_holidays_array[] = $row;
-        //             }
-        //         }
-        //     // } else if ($user->country_id == 1) {
-        //         // BHR API CALL For Fecthing Indian Holiday
-        //         foreach( bhr_api_call_india('GET', $end_point) as $row ) {
-
-        //             // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-        //             if( $row->type == 'holiday' ) {
-
-        //                 // Check Holidays Already Exist ion Array
-        //                 if(in_array($row, $bhr_holidays_array)) {
-        //                 }  else {
-        //                 $bhr_holidays_array[] = $row;
-        //                 }
-        //             }
-        //         // }
-        //     }
-
-        //       // BHR API CALL For Fecthing bulgaria Holiday
-        //     foreach( bhr_api_call_bulgaria('GET', $end_point) as $row ) {
-
-        //         // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-        //         if( $row->type == 'holiday' ) {
-
-        //             // Check Holidays Already Exist ion Array
-        //             if(in_array($row, $bhr_holidays_array)) {
-        //             }  else {
-        //             $bhr_holidays_array[] = $row;
-        //             }
-
-        //         }
-        //     // }
-        //     }
-        //     // Sort Holiday By Date And ID
-        //     usort($bhr_holidays_array, function($a, $b) {
-        //         return [$a->start,$a->id] <=> [$b->start,$b->id];
-        //    });
+            $user = Auth::user();
+            $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,1]);
             
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_holidays_array, "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
-
-            return $bhr_holidays_array;
-            return success_response(
-                trans('messages.get_holidays_success'),
-                $bhr_holidays_array
-            );
+            // dd($bhr_holidays_array);
+            return $EH_SP_Dashboard[1];
+            // return success_response(
+            //     trans('messages.get_holidays_success'),
+            //     $EH_SP_Dashboard[1]
+            // );
         } catch (Exception $e) {
-            DB::rollback();
+            // DB::rollback();
             
             log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
@@ -690,11 +642,13 @@ class ReportController extends Controller
     {
         try {
             log_activity(trans('messages.get_anniversary_birthday_attempt'));
-
+            $user = Auth::user();
+            $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,2]);
+            // dd( $EH_SP_Dashboard);
             return success_response(
                 trans('messages.get_anniversary_birthday_success'),
                 // new AnniversaryResources($this->report->get_team_birthday_anniversary())
-                new AnniversaryResources($this->report->get_team_birthday_anniversary_last_twodays()) 
+                $EH_SP_Dashboard[0]
             );
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
