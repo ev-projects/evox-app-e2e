@@ -266,7 +266,7 @@ class RequestRepository implements RequestRepositoryInterface{
                 $numbers = array(
                     "pending" => $my_team_req[1][3]->statusCount,
                     "approved" => $my_team_req[1][0]->statusCount,
-                    "decline" => $my_team_req[1][2]->statusCount,
+                    "declined" => $my_team_req[1][2]->statusCount,
                     "canceled" => $my_team_req[1][1]->statusCount,
                 );
             }
