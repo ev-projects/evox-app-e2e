@@ -506,9 +506,9 @@ class User extends Authenticatable implements JWTSubject
                     $filter['status'],
                     $filter['department_id'],
                     $filter['name'] , 
-                    0, // change to 1
-                    2, $perpage_count, 
-                    0
+                    1, // change to 1
+                    $filter['page'], $perpage_count, 
+                    1
                 ]);
             }
 
