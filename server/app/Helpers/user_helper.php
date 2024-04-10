@@ -88,8 +88,9 @@ if (! function_exists('is_under_supervisee')) {
             if( !is_valid( auth()->user() )){
                 return false;
             }
-
-            if(  auth()->user()->level_type() == "Admin" ) {
+            $level_type = auth()->user()->level_type();
+            // dd( $level_type, $level_type == "DivisionHead");
+            if(   $level_type == "Admin" || $level_type == "DivisionHead" || $level_type == "Department Head") {
                 return true;
             }
            
