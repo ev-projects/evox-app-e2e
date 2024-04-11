@@ -216,16 +216,28 @@ class RequestRepository implements RequestRepositoryInterface{
                     'alter_logs_punches'    => 5,
                 ];
 
-                $values = [
-                    'all',
-                    $data['valid_from'] ?? null,
-                    $data['valid_to'] ?? null,
-                    $request_types[$data['request_type']],
-                    Auth::user()->id,
-                    $data['page'],
-                    $perpage_count,
-                ];
-                $response = call_sp('EH_SP_MyRequest', $values);
+                if (isset($data['valid_from'])) {
+                    $values = [
+                        'all',
+                        $data['valid_from'] ?? null,
+                        $data['valid_to'] ?? null,
+                        $request_types[$data['request_type']],
+                        Auth::user()->id,
+                        $data['page'],
+                        $perpage_count,
+                    ];
+                    $sp_name = 'EH_SP_MyRequest';
+                } else {
+                    $values = [
+                        'all',
+                        $request_types[$data['request_type']],
+                        Auth::user()->id,
+                        $data['page'],
+                        $perpage_count,
+                    ];
+                    $sp_name = 'EH_SP_OverAll_MyRequest';
+                }
+                $response = call_sp($sp_name, $values);
 
                 if ($response[1]) {
                     $numbers = [
