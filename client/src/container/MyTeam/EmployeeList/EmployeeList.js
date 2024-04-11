@@ -307,7 +307,7 @@ const MyTeamListTable = (props) => {
 // Component for the Status Badge
 const Status = (props) => {
     let status = [];
-    switch( props.status ) { 
+    switch( parseInt(props.status) ) { 
       case 1:
           status.push( <Badge variant="success">Active</Badge>);
           break;
