@@ -130,13 +130,17 @@ class DtrLogs extends Component {
                       <label> </label>
                         <Button variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
                         <Button variant="secondary" onClick={() => setFieldValue("export", true)} type="submit">Export</Button>
+                      </div>
+                    </Col>
+                    </Row>
+                    <Row className="filters filter-dtr">
+                      <Col className="btns filter-button">
                         <Button className="toggle-outlook-dtr"
                               onClick={() => this.setState({
                                 toggle_pov: !this.state.toggle_pov
                               })}> <i class={"fa "+(this.state.toggle_pov ? "fa-eye":"fa-eye-slash")  } aria-hidden="true"></i> Toggle Outlook {this.state.toggle_pov}</Button>
-                      </div>
-                    </Col>
-                    </Row>       
+                      </Col>
+                    </Row>
 				  <div className="content-table">
 			
 
