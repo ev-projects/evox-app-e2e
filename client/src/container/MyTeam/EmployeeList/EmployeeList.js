@@ -14,6 +14,7 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
+import Formatter from '../../../services/Formatter'
 import { fetchMyTeamList, fetchTeamUnderDepartment, fetchSubDepartmentUnderDepartment } from '../../../store/actions/filters/myTeamActions';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import Validator from "../../../services/Validator";
@@ -114,10 +115,10 @@ class EmployeeList extends Component {
 const MyTeamListFilter = (props) => {
   const { values, handleChange, setFieldValue,handleSubmit } = useFormikContext();
   const { team_list, sub_department } = props.props.myTeamList;
-
+  let dep_list = Formatter.array_to_multiselect_array(props.props.user?.departments_handled, 'department_name', 'id');
     return <React.Fragment> <Row className="filters filter-dtr">  
               <Col size="2"> 
-                <div className="form-group">
+                {/* <div className="form-group">
                     <select
                     className="form-control" 
                       name="department_id"
@@ -130,7 +131,37 @@ const MyTeamListFilter = (props) => {
                       return <option value={item.id} label={item.department_name} />;
                     })}
                     </select>
+                </div> */}
+
+                <div className="form-group">
+                <Select className="department-filter"
+                        name="department_id"
+                        options={dep_list}
+                        // value={values.employee}
+                        onChange={(e) => {  
+                          // console.log(e,e != null, e.value);
+                          // e != null ? setFieldValue('employee', e.value):setFieldValue('employee', null) ;
+                          // e != null ? props.toggleOtherFields(true):props.toggleOtherFields( false) ;
+                          // setFieldValue('department_id', e.value);  
+                          // setFieldValue('sub_department_id', '');  
+                          // props.departmentSelectedforSub(e.value)
+                          // e != null ?? 
+                          // e != null ?? 
+                          // e != null ?? 
+                          if(e != null){
+                            setFieldValue('department_id', e.value);
+                            props.departmentSelectedforSub(e.value);
+                          }
+                          setFieldValue('sub_department_id', '');
+                          
+                          
+                        
+                        }}
+                        placeholder = "Select Department"
+                        isClearable
+                      />
                 </div>
+              
               </Col> 
               <Col size="2"> 
                 <div className="form-group">
