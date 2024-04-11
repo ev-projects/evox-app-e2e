@@ -457,16 +457,28 @@ class User extends Authenticatable implements JWTSubject
                 'alter_logs_punches'    => 5,
             ];
 
-            $values = [
-                $filter['status'],
-                $filter['valid_from'],
-                $filter['valid_to'],
-                $request_types[$filter['request_type']],
-                $id,
-                $filter['page'],
-                $perpage_count,
-            ];
-            $response = call_sp('EH_SP_MyRequest', $values);
+            if (isset($filter['valid_from'])) {
+                $values = [
+                    $filter['status'],
+                    $filter['valid_from'],
+                    $filter['valid_to'],
+                    $request_types[$filter['request_type']],
+                    $id,
+                    $filter['page'],
+                    $perpage_count,
+                ];
+                $sp_name = 'EH_SP_MyRequest';
+            } else {
+                $values = [
+                    $filter['status'],
+                    $request_types[$filter['request_type']],
+                    $id,
+                    $filter['page'],
+                    $perpage_count,
+                ];
+                $sp_name = 'EH_SP_OverAll_MyRequest';
+            }
+            $response = call_sp($sp_name, $values);
 
             $result['data'] = array(
                 "query" =>  $response[0] ?? [],
