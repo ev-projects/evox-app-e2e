@@ -142,7 +142,7 @@ class RequestController extends Controller
                 //     trans('messages.request_display_success'), 
                 //       new RequestResource( $user->requests_list('my_request',$request) ) 
                 // );
-                $collection  = $user->requests_list('my_request',$request);
+                $collection  = $user->requests_list('my_team_requests',$request);
                 $DAT = (new RequestResource( $collection["data"] ))->resolve();
                     // dd($collection["pagination"]);
                 return success_response(
@@ -160,6 +160,7 @@ class RequestController extends Controller
             }
 
         } catch(Exception $e){
+            // dump($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }

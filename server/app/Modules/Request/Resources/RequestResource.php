@@ -8,6 +8,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\AlterLogPunch;
+use Carbon\Carbon;
+
 class RequestResource extends JsonResource
 {
     /**
@@ -35,9 +37,9 @@ class RequestResource extends JsonResource
 
                       # Update the date if date from is greater than date to
                       if($from>$to){
-                        $to += get_constant("TIMESTAMP.day");
+                        // get_constant("TIMESTAMP.day")
+                        $to = Carbon::parse($to)->addSeconds(get_constant("TIMESTAMP.day"))->format("Y-m-d H:i:00");
                       }
-
                         // $request->fourth_column =timestamp_to_datetime( $from );
                         // $request->fifth_column =  timestamp_to_datetime( $to );
 
