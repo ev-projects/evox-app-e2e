@@ -683,8 +683,8 @@ class UserRepository implements UserRepositoryInterface{
             if( get_authenticated_user( $id )  ) {
                 
                 $user = Auth::user();
-             
-                $perpage_count = 15;
+                $original_perpage_count =   15;
+                $perpage_count =    !is_valid( request()->get('order_by') ) ? 15 : 99999;
                 $response = call_sp("EH_SP_Employee_List",
                 
                 [
@@ -697,7 +697,10 @@ class UserRepository implements UserRepositoryInterface{
                         is_valid( request()->get('status') ) ? (int)request()->get('status'): 1, // active
                     is_valid( request()->get('name') ) ? request()->get('name'): null, // name
                     is_valid( request()->get('job_title') ) ? request()->get('job_title'): null, // job_title
-                    is_valid( request()->get('page') ) ? request()->get('page'): 1,
+                    !is_valid( request()->get('order_by') ) ?
+                                (is_valid( request()->get('page') ) ? request()->get('page'): 1)
+                                :
+                                1,
                      $perpage_count,
                     1 
                     
@@ -705,22 +708,63 @@ class UserRepository implements UserRepositoryInterface{
 
 
                 ); 
+                // dd(request()->all(), is_valid( request()->get('order_by') ), $response);
+
+                // dd($response);
                 
                     $result = array(
                         "query" =>  $response ?? [],
                     );
+                    
 
+                
+                    $arr = null;
+                    if( is_valid( request()->get('order_by') ) ) {
+                        $arr =  $result['query'][count($result['query'])-3];
+                        $order = explode(":", request()->get('order_by'));
+    // dd($order[0]);
+                        switch ($order[0]) {
+                            case "name":
+                                if( $order[1] ==  "asc"){
+                                    usort( $arr,function($first,$second){
+                                        return $first->Employee_Name > $second->Employee_Name;
+                                    });
+                                }
+                                if( $order[1] ==  "desc"){
+                                    usort( $arr,function($first,$second){
+                                        return $first->Employee_Name < $second->Employee_Name;
+                                    });
+                                }
+                                break;
+                            case "job_title":
+                                if( $order[1] ==  "asc"){
+                                    usort( $arr,function($first,$second){
+                                        return $first->job_title > $second->job_title;
+                                    });
+                                }
+                                if( $order[1] ==  "desc"){
+                                    usort( $arr,function($first,$second){
+                                        return $first->job_title < $second->job_title;
+                                    });
+                                }
+                          }
+                          $arr =   array_chunk($arr, 15)
+                                [is_valid( request()->get('page') ) ? ((int)request()->get('page')) - 1: 0];
            
+                    }
+
+            
+                  
                 if( count($result['query']) > 2){
                     $paginate = $result['query'][count($result['query'])-2][0];
                     
-                    $collection["data"] = $result['query'][count($result['query'])-3];
+                    $collection["data"] = !is_valid($arr)? $result['query'][count($result['query'])-3] : $arr;
                     $collection["pagination"] = [
                                                     'total' => (int) $paginate->TotalCount,
                                                     'count' => count( $collection["data"]),
-                                                    'per_page' =>  (int) $paginate->PerPage,
-                                                    'current_page' => (int) $paginate->CurrentPage,
-                                                    'last_page' => ((ceil($paginate->TotalCount /  $perpage_count)) ) 
+                                                    'per_page' =>  (int)  $original_perpage_count,
+                                                    'current_page' => !is_valid($arr)?((int) $paginate->CurrentPage) : (is_valid( request()->get('page') ) ? ((int)request()->get('page')): 1),
+                                                    'last_page' => ((ceil($paginate->TotalCount /   $original_perpage_count)) ) 
                                                 ];
 
                                                 // if( ($paginate->TotalCount % $perpage_count) > 0 
@@ -736,6 +780,7 @@ class UserRepository implements UserRepositoryInterface{
             return $collection;
         } catch (Exception $e) {
             log_error($e);
+            // dd($e);
             throw $e;
         }
     }

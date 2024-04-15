@@ -344,6 +344,7 @@ class UserController extends Controller
 
             $user_collection = $this->user->new_get_my_team_list( $id );
 
+
             return success_response(
                 trans('messages.show_my_team_list'), 
                 // new UserListResourceCollection( $user_collection ) 
