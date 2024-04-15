@@ -718,8 +718,8 @@ class UserRepository implements UserRepositoryInterface{
                     
 
                 
-                    $arr = null;
-                    if( is_valid( request()->get('order_by') ) ) {
+                    $arr = [];
+                    if( is_valid( request()->get('order_by') ) && is_valid($result['query'][count($result['query'])-3])  ) {
                         $arr =  $result['query'][count($result['query'])-3];
                         $order = explode(":", request()->get('order_by'));
     // dd($order[0]);
@@ -748,6 +748,7 @@ class UserRepository implements UserRepositoryInterface{
                                     });
                                 }
                           }
+                        //   dd($arr, $result['query'][count($result['query'])-3]);
                           $arr =   array_chunk($arr, 15)
                                 [is_valid( request()->get('page') ) ? ((int)request()->get('page')) - 1: 0];
            
