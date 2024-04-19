@@ -26,6 +26,7 @@
     my_request                      :  "/app/account/MyRequests",
     my_overall_request              :  "/app/account/MyOverallRequests",
     ev_learning                     :  "/app/EVLearning",
+    ev_learning_secure_coding       :  "/app/EVLearning/Secure_Coding",
     ops_schedule                    :  "/app/OpsSchedule",
 
     // Request Links
