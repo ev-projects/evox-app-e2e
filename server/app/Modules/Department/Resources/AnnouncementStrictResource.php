@@ -46,6 +46,9 @@ class AnnouncementStrictResource extends JsonResource
         }
 
                 $depList = [];
+                if($this->set_all == 0 &&  $this->set_exclude == 0 && $this->dep_id != null ){
+                    $depList = DepartmentLabelResource::collection( Announcement::find($this->id)->announcement_clones_departments());
+                }
                 if($this->set_all == 0 &&  $this->set_exclude == 0 && $this->present_dep_id != null&& $this->announcement_id != null){
                     $depList = DepartmentLabelResource::collection( Announcement::find($this->announcement_id)->announcement_clones_departments());
 
