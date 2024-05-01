@@ -986,7 +986,8 @@ class User extends Authenticatable implements JWTSubject
             
             [
                 $this->id, // vishnu this_id
-                null
+                null,
+                0
                 
                 ]
             ); 
@@ -1026,7 +1027,7 @@ class User extends Authenticatable implements JWTSubject
             [
                 $this->id, // vishnu this_id
                 $department_id
-                
+                ,0
                 ]
             ); 
             // dd($response[0]);
