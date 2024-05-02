@@ -1014,6 +1014,46 @@ class User extends Authenticatable implements JWTSubject
 
     }
 
+    # Fetch the User Departments Handled
+    public function evox_departments_handled_strict()
+    {
+
+        if(is_valid($this->LevelId)){
+            if($this->LevelId != 0){
+                $perpage_count = 5;
+            
+            $response = call_sp("EH_SP_Get_Department_By_UserId",
+            
+            [
+                $this->id, // vishnu this_id
+                null,
+                1
+                
+                ]
+            ); 
+                $result = $response[0] ? array_map(function($item) {
+                    $dep_name = null;
+                    if(isset($item->Name)){
+                        $dep_name = $item->Name;
+                    }
+                    if(isset($item->DepartmentName)){
+                        $dep_name = $item->DepartmentName;
+                    }
+                    return (object) array(
+                        'id' => $item->Id,
+                        'department_name' => $dep_name,
+                    );
+                }, $response[0]): []
+            ;
+                return $result;
+            }
+        }
+        return  [];
+
+        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
+
+    }
+
     // # Fetch the User Departments Handled
     public function evox_sub_departments_handled($department_id)
     {

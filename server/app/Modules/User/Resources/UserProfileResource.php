@@ -96,6 +96,9 @@ class UserProfileResource extends JsonResource
             //  dd("");
              $evox_departments_handled=  $this->evox_departments_handled();
 
+             $evox_departments_handled_strict = [];
+             $evox_departments_handled_strict =$this->evox_departments_handled_strict();
+
             $feature_all_list = [];
             if(is_valid($this->LevelId)){
                 
@@ -115,6 +118,7 @@ class UserProfileResource extends JsonResource
                 array('level' =>(  $level_item )),
             
                 array('departments_handled' => $evox_departments_handled),
+                array('departments_handled_strict' => $evox_departments_handled_strict),
 
             );
             
