@@ -175,9 +175,16 @@ class SyncController extends Controller
         // $data = $request->all();
         // return $data;
         } catch (Exception $e) {
-        return error_response(trans('messages.error_default'), $e);
+            return response()->json([
+                                
+                'status' => '405',
+                'message' => "Insert Failed = " . $e->getMessage(),
+    
+        ]);
         }
     }
+
+   
 
     public function syncholidays(Request $request){
         try {
