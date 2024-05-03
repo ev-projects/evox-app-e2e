@@ -103,7 +103,8 @@ class SyncController extends Controller
                 "status"=>'required'
             ]);
             if ($validator->fails()) {
-              return response()->json(['errors'=>$validator->messages()]);
+            //   return response()->json(['errors'=>$validator->messages()]);
+              return error_response(trans('messages.error_default'), $validator->messages());
             }else{
     
                 // $result = DB::select('call EH_SP_User_Sync_HRIS("'.$request->bestEmail.'", '.$request->employeeNumber.'
