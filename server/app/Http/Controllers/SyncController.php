@@ -181,8 +181,8 @@ class SyncController extends Controller
         //         'message' => "Insert Failed = " . $e->getMessage(),
     
         // ]);
-        return error_response(trans('messages.error_default'), $e);
-    }
+         return error_response(trans('messages.error_default'), $e);
+        
         }
     }
 
