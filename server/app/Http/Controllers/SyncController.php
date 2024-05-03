@@ -96,7 +96,7 @@ class SyncController extends Controller
 
             $validator = Validator::make($request->all(), [
                 "firstName" => 'required',
-                "bestEmail" => 'required',
+                // "bestEmail" => 'required',
                 "lastName"=>'required',
                 "employeeNumber"=>'required',
                 "bhrNumber"=>'required',
