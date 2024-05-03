@@ -175,12 +175,14 @@ class SyncController extends Controller
         // $data = $request->all();
         // return $data;
         } catch (Exception $e) {
-            return response()->json([
+        //     return response()->json([
                                 
-                'status' => '405',
-                'message' => "Insert Failed = " . $e->getMessage(),
+        //         'status' => '405',
+        //         'message' => "Insert Failed = " . $e->getMessage(),
     
-        ]);
+        // ]);
+        return error_response(trans('messages.error_default'), $e);
+    }
         }
     }
 
