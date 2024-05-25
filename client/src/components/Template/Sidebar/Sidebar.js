@@ -306,10 +306,12 @@ const Sidebar = (props) => {
 
               {Authenticator.check("employee", "employee_access") && (
                 <li className="nav-item">
-                  <Link className="nav-link" to={global.links.ev_learning}>
+                  {/* <Link className="nav-link" to={global.links.ev_learning}> */}
+                  <a className="nav-link" target="_blank" href="https://lms.eastvantage.com/">
                     <i className="nav-icon fa fa-book nav-icon" />
-                    <p>EV Learning</p>
-                  </Link>
+                    <p>EV Academy</p>
+                  </a>
+                  {/* </Link> */}
                 </li>
               )}
 
