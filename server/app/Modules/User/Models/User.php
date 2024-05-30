@@ -711,6 +711,13 @@ class User extends Authenticatable implements JWTSubject
             2. Departments of the Teams you are handling via 'team_handlers' 
         */
         $departments_id_array = $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id')->pluck('id')->toArray();
+        foreach ($departments_id_array as $key => $department) {
+            $users = User::where('department_id', $department)->where('is_active', 1)->get();
+            if (count($users) <= 0) {
+                unset($departments_id_array[$key]);
+            }
+        }
+
         foreach( $this->teams_handled()->get() as $team) {
             $departments_id_array = array_merge( 
                 $departments_id_array, 
