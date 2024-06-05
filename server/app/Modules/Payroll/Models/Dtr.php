@@ -723,7 +723,8 @@ class Dtr extends Model
                 if($this->isUnplanned()){
                     $acronym = "UL";
                 }else{
-                    $acronym = "VL";
+                    // $acronym = "VL";
+                    $acronym = $this->leaves()->get()->first()->type;
                 }
                 
             }
