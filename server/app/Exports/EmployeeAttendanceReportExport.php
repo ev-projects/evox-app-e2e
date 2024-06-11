@@ -108,7 +108,9 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                 $this->colorFillStatusMonth($event, 'UL', 'cf6969'); // unpaid leave
                 $this->colorFillStatusMonth($event, 'RD', 'BEBEBE'); // rest day
                 $this->colorFillStatusMonth($event, 'SL', 'dca4ed'); // leave
+                $this->colorFillStatusMonth($event, 'SL(HD)', 'dca4ed'); // leave half-day
                 $this->colorFillStatusMonth($event, 'VL', '72eddb'); // leave
+                $this->colorFillStatusMonth($event, 'VL(HD)', '72eddb'); // leave half-day
                 $this->colorFillStatusMonth($event, 'X', 'fcf6e1'); // no schedule or dtr
                 $this->colorFillStatusMonth($event, 'X', 'fcf6e1');
                 // $this->colorFillStatusMonth($event, 'XH', 'fcf6e1'); // no shedule holiday
