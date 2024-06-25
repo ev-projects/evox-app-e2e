@@ -757,9 +757,12 @@ class UserRepository implements UserRepositoryInterface{
             
                   
                 if( count($result['query']) > 2){
-                    $paginate = $result['query'][count($result['query'])-2][0];
+                    // $paginate = $result['query'][count($result['query'])-2][0];
                     
-                    $collection["data"] = !is_valid($arr)? $result['query'][count($result['query'])-3] : $arr;
+                    // $collection["data"] = !is_valid($arr)? $result['query'][count($result['query'])-3] : $arr;
+
+                    $paginate = $result['query'][count($result['query'])-1][0];
+                    $collection["data"] = !is_valid($arr)? $result['query'][count($result['query'])-2] : $arr; 
                     $collection["pagination"] = [
                                                     'total' => (int) $paginate->TotalCount,
                                                     'count' => count( $collection["data"]),
@@ -999,9 +1002,15 @@ class UserRepository implements UserRepositoryInterface{
 
        
             if( count($result['query']) > 2){
-                $paginate = $result['query'][count($result['query'])-2][0];
+                // $paginate = $result['query'][count($result['query'])-2][0];
                 
-                $collection["data"] = $result['query'][count($result['query'])-3];
+                // $collection["data"] = $result['query'][count($result['query'])-2];
+
+                // $collection["data"]  = $collection["data"] ? array_map(function($item) {
+
+                $paginate = $result['query'][2][0];
+
+                $collection["data"] = $result['query'][count($result['query'])-2];
 
                 $collection["data"]  = $collection["data"] ? array_map(function($item) {
                     // dd($item);
