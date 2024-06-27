@@ -9,12 +9,16 @@ use Illuminate\Support\Facades\DB;
 class MyDtrNotificationsResource extends JsonResource
 {
 
+    private $my_dtr_notifications = [];
+    private $dtr_leaves = [];
+    private $dtr_requests = [];
     public function __construct($resource)
     {
         // Ensure you call the parent constructor
         parent::__construct($resource);
-        $this->my_dtr_notifications = $resource;
-        
+        $this->my_dtr_notifications = $resource[0];
+        $this->dtr_leaves = $resource[1];
+        $this->dtr_requests = $resource[2];
     }
     /**
      * Transform the resource into an array.
@@ -29,124 +33,77 @@ class MyDtrNotificationsResource extends JsonResource
             
             // Declare the 2 variables to be needed for this iteration
             $status = "";
+            if ($dtr->attendance_status == 'Absent') $status = $dtr->attendance_status;
             $details = "";
-            $late=0;
-            $undertime=0;
+            $late = floatval($dtr->late);
+            $undertime = floatval($dtr->undertime);
 
-            // Fetch the Data from Dtr Summary Report
-            $result = DB::table('drt_summary_report')
-            ->select(DB::raw("reg_late as late,reg_undertime as undertime"))
-                ->where('login_date', '=' , $dtr->date )
-                ->where('user_id','=',$dtr->user_id)->get();
-     
-            foreach( $result as  $key => $value){
-                $late = $value->late;
-                $undertime = $value->undertime;
-            }
-            // Group the Payroll Items and compute the total on the payroll_items array.
-            $payroll_items = [];
-            foreach( $dtr->payroll_items()->get() as  $key => $payroll_item){
-                
-                if(isset($payroll_items[ $payroll_item->item ])){
-                    $payroll_items[ $payroll_item->item ] += $payroll_item->value;
-                }else{
-                    $payroll_items[ $payroll_item->item] = $payroll_item->value;
-                }
-            }
-
-            // dump($late. " ". $undertime. " Date : ". $dtr->date);
-            
-            // Fetch the leave connected to the DTR.
-            $leave = $dtr->leaves()->first();
-            
-            // Fetch the DTR type 
-            $dtr_type = $dtr->getDtrType();
-
-            // If the DTR has Schedule
-            if( $dtr->hasSchedule() ){
-
-                // If the DTR has Complete Time In and Time Out Logs
-                if( $dtr->hasCompleteTimelogs() ) {
-                   // Check if there is an existing computed for Late and Undertime
-                    if($late > 0 && $undertime > 0){
+            // If the DTR has Complete Time In and Time Out Logs
+            if( $dtr->time_in && $dtr->time_out ) {
+                // Check if there is an existing computed for Late and Undertime
+                 if($late > 0 && $undertime > 0){
                     $status = "Late & Undertime";
-                    $details = seconds_to_time(round($late * 3600),true) . " & " . seconds_to_time(round($undertime * 3600),true);
-                    // Check if there is an existing computed for Late
-                    }else if($late > 0){
-                        $status = "Late";
-                        $details = seconds_to_time(round($late * 3600),true);
-                    // Check if there is an existing computed for Undertime
-                    }else if($undertime > 0){
-                        $status = "Undertime";
-                        $details = seconds_to_time(round($undertime * 3600),true);
-                    }
+                     $details = seconds_to_time(round($late * 3600),true) . " & " . seconds_to_time(round($undertime * 3600),true);
+                 // Check if there is an existing computed for Late
+                 }else if($late > 0){
+                     $status = "Late";
+                     $details = seconds_to_time(round($late * 3600),true);
+                 // Check if there is an existing computed for Undertime
+                 }else if($undertime > 0){
+                     $status = "Undertime";
+                     $details = seconds_to_time(round($undertime * 3600),true);
+                 }
+                 
+             // If the DTR has no Complete Time In and Time Out Logs
+             } else {
+                 
+                /* // If the DTR Type is Regular, set the status to "Absent"
+                 if( $dtr_type == get_constant('DTR_TYPE.regular') ) {
+                    $status = "Absent";
 
-                    // Check if there is an existing computed for Late and Undertime
-                    // if( isset( $payroll_items['late'] ) && is_valid( $payroll_items['late'] ) &&
-                    //     isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
-                    //     $status = "Late & Undertime";
-                    //     $details = seconds_to_time($payroll_items['late'],true) . " & " . seconds_to_time($payroll_items['undertime'],true);
+                // If the DTR Source Type Tagging is Rest Day Work, set the status to "RDW Incomplete"
+                } elseif( $dtr->source_type_tagging == "rest_day_work" ) {
+                    $status = "RDW Incomplete";
+                }*/
 
-                    // Check if there is an existing computed for Late
-                    // } elseif( isset( $payroll_items['late'] ) && is_valid( $payroll_items['late'] ) ) {
-                    //     $status = "Late";
-                    //     $details = seconds_to_time($payroll_items['late'],true);
+                // If DTR has no clock out
+                if ( is_valid( $dtr->time_in ) && !is_valid( $dtr->time_out ) ){
+                    $details = "No clock out";
 
-                    // Check if there is an existing computed for Undertime
-                    // } elseif( isset( $payroll_items['undertime'] ) && is_valid( $payroll_items['undertime'] ) ) {
-                    //     $status = "Undertime";
-                    //     $details = seconds_to_time($payroll_items['undertime'],true);
-                    // }
-                    
-                // If the DTR has no Complete Time In and Time Out Logs
-                } else {
-                    
-                    // If the DTR Type is Regular ( Not Rest Day or Holiday ) OR if the DTR Source Type tagging is "Rest Day Work"
-                    if( $dtr_type == get_constant('DTR_TYPE.regular') || $dtr->source_type_tagging == "rest_day_work" ){
+                // If DTR has no clock in
+                } elseif ( !is_valid( $dtr->time_in ) && is_valid( $dtr->time_out ) ){
+                    $details = "No clock in";
 
-                        // If the DTR Type is Regular, set the status to "Absent"
-                        if( $dtr_type == get_constant('DTR_TYPE.regular') ) {
-                            $status = "Absent";
+                // If DTR has no time logs
+                } elseif ( !is_valid( $dtr->time_in ) && !is_valid( $dtr->time_out ) ){
+                    $details = "No timelogs";
+                }
 
-                        // If the DTR Source Type Tagging is Rest Day Work, set the status to "RDW Incomplete"
-                        } elseif( $dtr->source_type_tagging == "rest_day_work" ) {
-                            $status = "RDW Incomplete";
-                        }
-                        
-                        // If there is an existing leave and it is "Unpaid Leave" OR If its any other leave type and the status is still "requested"
-                        if( is_valid( $leave ) && ($leave->type == 'Unpaid Leave' ||  $leave->status == "requested"   )) {
+                foreach( $this->dtr_leaves as $leave) {
+                    if ($dtr->dtr_id == $leave->dtr_id) {
+                        if ($leave->status == "requested") {
                             $details = $leave->type . " - " . ( $leave->status == "requested" ? "Pending" : $leave->status);
-
-                        // If there is an existing leave and its status is "approved", Just set the $details as empty ( so it wouldnt be included on the list )
-                        }elseif( is_valid( $leave ) && $leave->status == "approved"  ) {
+                        } elseif ($leave->status == "approved") {
                             $details = "";
-
-                        // If DTR has no clock out
-                        }elseif( is_valid( $dtr->time_in ) && !is_valid( $dtr->time_out ) ){
-                            $details = "No clock out";
-
-                        // If DTR has no clock in
-                        }elseif( !is_valid( $dtr->time_in ) && is_valid( $dtr->time_out ) ){
-                            $details = "No clock in";
-
-                        // If DTR has no time logs
-                        }elseif( !is_valid( $dtr->time_in ) && !is_valid( $dtr->time_out ) ){
-                            $details = "No timelogs";
                         }
                     }
                 }
-                
-            // If the DTR has NO Schedule
-            } else {
-                $status = "No Schedule";
-                $details = "";
-            }
+             }
           
             // If the $status & $details are valid ( not "" ), add it on the final list. 
             if( is_valid( $status ) && is_valid( $details ) ){
                 $requests = [];
-                foreach( $dtr->alter_log()->get() as $alter_log){
+                /*foreach( $dtr->alter_log()->get() as $alter_log){
                     $requests[] = new AlterLogResource( $alter_log );
+                }*/
+                foreach ($this->dtr_requests as $dtr_request) {
+                    if ($dtr->dtr_id == $dtr_request->dtr_id) {
+                        $requests[] = [
+                            'id' => $dtr_request->id,
+                            'request_type'  => $dtr_request->type,
+                            'status'  => $dtr_request->status
+                        ];
+                    }
                 }
                 array_push( $array, 
                 [

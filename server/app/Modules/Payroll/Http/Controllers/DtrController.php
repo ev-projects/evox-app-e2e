@@ -65,7 +65,7 @@ class DtrController extends Controller
                 'end_date' => 'date_format:Y-m-d',
             ]);
             
-            $user = get_authenticated_user( $user_id );
+            //$user = get_authenticated_user( $user_id );
             $owner = User::findOrFail($user_id);
 
             /* 
@@ -386,10 +386,15 @@ class DtrController extends Controller
     
             if($request->quickpunch=='in'){
                 $biometrics->CheckType = 'I';
+                $action = 'Clockin';
+                $description = 'has clocked in';
             }elseif($request->quickpunch=='out'){
                 $biometrics->CheckType = 'O';
+                $action = 'Clockout';
+                $description = 'has clocked out';
             }else{
-                return error_response( trans('messages.error_default'), $e );
+                throw new Exception("Unknown time log action.");
+                #return error_response( trans('messages.error_default'), $e );
             }
 
             $biometrics->Userid          = '20'.Auth::user()->emp_num;
@@ -400,7 +405,9 @@ class DtrController extends Controller
             if ($request->dtr_id) {
                 $dtr_id = $request->dtr_id;
             }
-            
+
+            log_to_audit_trail(['action' => $action, 'description' => $description, 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
             return success_response(
                 trans('messages.quickpunch_'.$request->quickpunch.'_success'), 
                 DtrResource::collection( $this->dtr->sync_biometrics_to_dtr( $biometrix_collection, $dtr_id ) )
