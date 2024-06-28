@@ -53,9 +53,14 @@ class ReportRepository implements ReportRepositoryInterface{
      */
     public function get_my_dtr_notifications( $start_date, $end_date ){
         try {
-            
-            $dtr_collection = auth()->user()->dtr( $start_date, $end_date )->get();
-            return $dtr_collection;
+            //$dtr_collection = auth()->user()->dtr( $start_date, $end_date )->get();
+            $me = auth()->user();
+            $dtr_sets = call_sp('SP_DTR_By_UserId', [$me->id, $start_date, $end_date]);
+
+            $dtr_records = $dtr_sets[0];
+            $dtr_leaves = $dtr_sets[3];
+            $dtr_requests = $dtr_sets[4];
+            return [$dtr_records, $dtr_leaves, $dtr_requests];
 
         } catch (Exception $e) {
             throw $e;
