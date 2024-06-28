@@ -32,7 +32,7 @@ if (! function_exists('call_sp')) {
         } while ($stmt->nextRowset());
 
 
-        if (1 === count($results)) return $results[0];
+        // if (1 === count($results)) return $results[0];
         return $results;
     }
 }
