@@ -715,106 +715,86 @@ class ReportController extends Controller
             $attendance_stats = $attendance[0][0];
             $attendance_list = $attendance[1];
             $user_ids = [];
+            $attendance_list_items = [];
             foreach($attendance_list as $i) {
                 if(!in_array($i->Id, $user_ids, true)){
                     array_push($user_ids, $i->Id);
                 }
+                array_push($attendance_list_items, array(
+                    'date'=> $i->LogDate,
+                    'user_id' => $i->Id,
+                    'name' => $i->Name,
+                    'emp_num' => $i->EmployeeNumber,
+                    'job_title' => $i->JobTittle,
+                    'schedule' => [],
+                    'hours' => null,
+                    'status' => $i->Status
+                ));
             }
             $report['total_headcount'] = count($user_ids);
             $report['attendance'] = array(
                 'total_count' => $attendance_stats->TotalCount,
                 'total_percentage' => $attendance_stats->AttendancePercent,
                 'target_percentage' => 95,
-                'users' => array_map(fn($i) =>
-                    array(
-                        'date'=> $i->LogDate,
-                        'user_id' => $i->Id,
-                        'name' => $i->Name,
-                        'emp_num' => $i->EmployeeNumber,
-                        'job_title' => $i->JobTittle,
-                        'schedule' => [],
-                        'hours' => null,
-                        'status' => $i->Status
-                    )
-                , $attendance_list)
+                'users' => $attendance_list_items
             );
             $pl = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 2]);
             $pl_stats = $pl[0][0];
             $pl_list = $pl[1];
+            $pl_list_items = [];
+            foreach($pl_list as $i) {
+                array_push($pl_list_items, array(
+                    'date'=> $i->LogDate,
+                    'user_id' => $i->Id,
+                    'name' => $i->Name,
+                    'emp_num' => $i->EmployeeNumber,
+                    'job_title' => $i->JobTittle,
+                    'schedule' => [],
+                    'hours' => null,
+                    'status' => $i->Status
+                ));
+            }
             $report['planned_leaves'] = array(
                 'total_count' => $pl_stats->PlannedLeaveCount,
                 'total_percentage' => $pl_stats->PlannedLeavePercent,
                 'target_percentage' => 7,
-                'users' => array_map(fn($i) =>
-                    array(
-                        'date'=> $i->LogDate,
-                        'user_id' => $i->Id,
-                        'name' => $i->Name,
-                        'emp_num' => $i->EmployeeNumber,
-                        'job_title' => $i->JobTittle,
-                        'schedule' => [],
-                        'hours' => null,
-                        'status' => $i->Status
-                    )
-                , $pl_list)
+                'users' => $pl_list_items
             );
             $upl = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 3]);
             $upl_stats = $upl[0][0];
             $upl_list = $upl[1];
+            $upl_list_items = [];
+            foreach($upl_list as $i) {
+                array_push($upl_list_items, array(
+                    'date'=> $i->LogDate,
+                    'user_id' => $i->Id,
+                    'name' => $i->Name,
+                    'emp_num' => $i->EmployeeNumber,
+                    'job_title' => $i->JobTittle,
+                    'schedule' => [],
+                    'hours' => null,
+                    'status' => $i->Status
+                ));
+            }
             $report['unplanned_leaves'] = array(
                 'total_count' => $upl_stats->UnplannedLeaveCount,
                 'total_percentage' => $upl_stats->UnplannedLeavePercent,
                 'target_percentage' => 3,
-                'users' => array_map(fn($i) =>
-                    array(
-                        'date'=> $i->LogDate,
-                        'user_id' => $i->Id,
-                        'name' => $i->Name,
-                        'emp_num' => $i->EmployeeNumber,
-                        'job_title' => $i->JobTittle,
-                        'schedule' => [],
-                        'hours' => null,
-                        'status' => $i->Status
-                    )
-                , $upl_list)
+                'users' => $upl_list_items
             );
             $rdw = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 4]);
             $rdw_stats = $rdw[0][0];
             $rdw_list = $rdw[1];
             $report['total_rest_day_work'] = array(
                 'total_count' => $rdw_stats->RDWCount,
-                'total_hours' => $rdw_stats->RDWHours,
-                /*'users' => array_map(fn($i) =>
-                    array(
-                        'date'=> $i->LogDate,
-                        'user_id' => $i->Id,
-                        'name' => $i->Name,
-                        'emp_num' => $i->EmployeeNumber,
-                        'job_title' => $i->JobTittle,
-                        'schedule' => [],
-                        'hours' => null,
-                        'status' => $i->Status
-                    )
-                , $rdw_list)*/
+                'total_hours' => $rdw_stats->RDWHours
             );
             $ot = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 5]);
             $o_stats = $ot[0][0];
             $ot_list = $ot[1];
             $report['total_overtime'] = array(
                 'total_count' => $rdw_stats->OTCount,
-                'total_hours' => $rdw_stats->OTHours,
-                /*'users' => array_map(fn($i) =>
-                    array(
-                        'date'=> $i->LogDate,
-                        'user_id' => $i->Id,
-                        'name' => $i->Name,
-                        'emp_num' => $i->EmployeeNumber,
-                        'job_title' => $i->JobTittle,
-                        'schedule' => [],
-                        'hours' => null,
-                        'status' => $i->Status
-                    )
-                , $rdw_list)*/
+                'total_hours' => $rdw_stats->OTHours
             );
             return success_response(
                 trans('messages.get_attendance_summary_success'),
