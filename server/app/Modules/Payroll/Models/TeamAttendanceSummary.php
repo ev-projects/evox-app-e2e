@@ -612,7 +612,7 @@ class TeamAttendanceSummary
 
             return $this->result;
         } catch (Exception $e) {
-            log_to_file('info', $e->getMessage(), [], "summary_errors");
+            log_to_file('info', $e->getMessage(), [$e], "summary_errors");
             return error_response(trans('messages.error_default'), $e);
         }
     }

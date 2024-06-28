@@ -364,6 +364,7 @@ class ReportController extends Controller
                 //new DtrLogResourceCollection($this->logs_list($request))
             );
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr");
             return error_response(trans('messages.error_default'), $e);
         }
     }
@@ -627,6 +628,7 @@ class ReportController extends Controller
                 new MyDtrNotificationsResource($this->report->get_my_dtr_notifications($start_date, $end_date))
             );
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr");
             return error_response(trans('messages.error_default'), $e);
         }
     }
@@ -819,6 +821,7 @@ class ReportController extends Controller
                 $report
             );
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "summary_errors");
             return error_response(trans('messages.error_default'), $e);
         }
     }
@@ -858,6 +861,7 @@ class ReportController extends Controller
     
             return $response;
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "summary_errors");
             return success_response(
                 "No report data found.",
                 []
@@ -1416,6 +1420,7 @@ class ReportController extends Controller
 
      
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
             return error_response(trans('messages.error_default'), $e);
         }
     }
@@ -1485,6 +1490,7 @@ class ReportController extends Controller
 
      
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
             return error_response(trans('messages.error_default'), $e);
         }
     }

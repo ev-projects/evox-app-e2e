@@ -275,6 +275,7 @@ class DtrController extends Controller
                 array('summary' => $dtr_summary_res, 'dtr_records' => $result)
             );
         } catch(Exception $e){
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr");
             return error_response( trans('messages.error_default'), $e );
         }
     }
