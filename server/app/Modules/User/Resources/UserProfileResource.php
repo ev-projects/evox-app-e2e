@@ -118,7 +118,7 @@ class UserProfileResource extends JsonResource
                 array('level' =>(  $level_item )),
             
                 array('departments_handled' => $evox_departments_handled),
-                array('departments_handled_strict' => $evox_departments_handled_strict),
+                array('departments_handled_strict' =>  count($evox_departments_handled_strict) === 0? $evox_departments_handled : $evox_departments_handled_strict),
 
             );
             

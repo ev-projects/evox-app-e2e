@@ -137,18 +137,13 @@ const MyTeamListFilter = (props) => {
                 <Select className="department-filter"
                         name="department_id"
                         options={dep_list}
-                        // value={values.employee}
+                        
                         onChange={(e) => {  
-                          // console.log(e,e != null, e.value);
-                          // e != null ? setFieldValue('employee', e.value):setFieldValue('employee', null) ;
-                          // e != null ? props.toggleOtherFields(true):props.toggleOtherFields( false) ;
-                          // setFieldValue('department_id', e.value);  
-                          // setFieldValue('sub_department_id', '');  
-                          // props.departmentSelectedforSub(e.value)
-                          // e != null ?? 
-                          // e != null ?? 
-                          // e != null ?? 
                           if(e != null){
+                            setFieldValue('department_id', e.value);
+                            props.departmentSelectedforSub(e.value);
+                          }else
+                          {
                             setFieldValue('department_id', e.value);
                             props.departmentSelectedforSub(e.value);
                           }
