@@ -144,7 +144,6 @@ const MyTeamListFilter = (props) => {
                             props.departmentSelectedforSub(e.value);
                           }else
                           {
-                            setFieldValue('department_id', e.value);
                             props.departmentSelectedforSub(e.value);
                           }
                           setFieldValue('sub_department_id', '');
