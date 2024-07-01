@@ -27,7 +27,7 @@ class TeamAttendanceSummary extends Component {
           // team_id:          "",
           name:             "",
           scope_type:       "week",
-          selectedDepartments:    (Formatter.array_to_multiselect_array( [ this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0] : ""], 'department_name', 'id')),
+          selectedDepartments: [],//    (Formatter.array_to_multiselect_array( [ this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0] : ""], 'department_name', 'id')),
           selectedTeams:    []
         }
         this.state = this.initialState;
@@ -151,7 +151,7 @@ class TeamAttendanceSummary extends Component {
   
       const department_list = this.props.user.departments_handled.length > 0 ?(Formatter.array_to_multiselect_array( this.props.user.departments_handled, 'department_name', 'id')): [];;
 
-      const  team_list =  this.props?.myDepartmentsTeamsList?.team_list.length > 0 ?  (Formatter.array_to_multiselect_array( this.props?.myDepartmentsTeamsList?.team_list, 'SubDepartment', 'Id')): [];
+      const  team_list =  this.props?.myDepartmentsTeamsList?.team_list.length > 0 ?  (Formatter.array_to_multiselect_array( this.props?.myDepartmentsTeamsList?.team_list, 'SubDepartmentName', 'Id')): [];
 
      
       
