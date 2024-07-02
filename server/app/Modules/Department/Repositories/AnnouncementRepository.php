@@ -275,35 +275,53 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
      */
     public function show_strict($id)
     {
-            $department =  EvoxDepartment::find(Auth::user()->department_id);
+            $logged_user = Auth::user();
+            $department =  EvoxDepartment::find( $logged_user->department_id);
             // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
 
             $exist_announcement = Announcement::find($id);
-            $main_dep_id =  Auth::user()->department_id;
+            $main_dep_id =   $logged_user->department_id;
             if(is_valid(auth()->user()->SubDepartmentID)){
-                $main_dep_id = auth()->user()->direct_department_id();
+                $main_dep_id = Auth::user()->direct_department_id();
             }
             if($exist_announcement->set_all == 0){
                 $exist_announcement = Announcement::where('announcement_id', $id)->where("present_dep_id",    $main_dep_id)->first();
             }
 
             if( $exist_announcement){
-                // if( ($exist_announcement->set_all == 1 && $exist_announcement->set_country_all == 1)|| ( $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)
-                    
-                // ){
-                //     return  $exist_announcement;
-                // }
 
-                // if($exist_announcement->set_all == 0 && $exist_announcement->department_id == Auth::user()->department_id  
-                // && ($exist_announcement->set_country_all == 1||  $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)){
-                //     return  $exist_announcement;
-                // }
-
-
-                   if(($exist_announcement->set_all == 1 || ($exist_announcement->set_all == 0&& $exist_announcement->present_dep_id == Auth::user()->department_id))  
-                && ($exist_announcement->set_country_all == 1||  ($exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id))){
+                   if(($exist_announcement->set_all == 1 || ($exist_announcement->set_all == 0&& $exist_announcement->present_dep_id ==  $logged_user->department_id))  
+                && ($exist_announcement->set_country_all == 1||  ($exist_announcement->set_country_all == 0 && $exist_announcement->country_id ==  $logged_user->country_id))){
                     return  $exist_announcement;
                 }
+            }
+
+            dd("not passed");
+            if( $exist_announcement){ // checks if in dashbaord
+
+                        $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
+                        $list_all = Announcement::latest()->where('set_all',1)
+                        
+                        ->where(function ($query)  {
+                            $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                            // $query;
+                        })
+                        ->get();
+
+                        $list_dep = Announcement::where("present_dep_id",$main_dep_id)->latest()
+                        ->where(function ($query)  {
+                            $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                            // $query;
+                        })
+                        ->whereNotIn('id', $toExclude)
+
+                        ->get();
+                       
+
+                        if(!is_valid(auth()->user()->SubDepartmentID) || auth()->user()->department_id == null){
+                             $announcements_list = $list_all->sortByDesc('release_date');
+                        }
+                        $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');
             }
             $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
         return  $dep_announcement;
