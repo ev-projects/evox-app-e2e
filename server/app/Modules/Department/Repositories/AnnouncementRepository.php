@@ -322,7 +322,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                              $announcements_list = $list_all->sortByDesc('release_date');
                         }
                         $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');
-                        dd($announcements_list);
+                        dd($announcements_list->contains('id', $exist_announcement->id));
             }
             $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
         return  $dep_announcement;
