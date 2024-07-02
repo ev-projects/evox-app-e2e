@@ -296,7 +296,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 }
             }
 
-            dd("not passed");
+            // dd("not passed");
             if( $exist_announcement){ // checks if in dashbaord
 
                         $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
@@ -322,6 +322,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                              $announcements_list = $list_all->sortByDesc('release_date');
                         }
                         $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');
+                        dd($announcements_list);
             }
             $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
         return  $dep_announcement;
