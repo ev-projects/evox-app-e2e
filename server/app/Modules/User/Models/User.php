@@ -542,6 +542,7 @@ class User extends Authenticatable implements JWTSubject
                         'date_requested' => $item->T_date_requested,
                         'table_name' => $item->T_table_name,
                         'UV_DepartmentName' => $item->T_userDepartmentName,
+                        'department_name' => $item->T_userDepartmentName,
                         'updated_at' => $item->T_updated_at,
                     );
                 }, $response[3]): []
@@ -998,7 +999,7 @@ class User extends Authenticatable implements JWTSubject
                     }
                     if(isset($item->DepartmentName)){
                         $dep_name = $item->DepartmentName;
-                    }
+                    }   
                     return (object) array(
                         'id' => $item->Id,
                         'department_name' => $dep_name,
