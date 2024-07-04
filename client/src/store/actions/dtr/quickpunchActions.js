@@ -24,7 +24,7 @@ export const biometrixLog = ( post_data, id ) => {
             .then(result => {
                 dispatch({
                     'type'      : 'FETCH_RECENT_DTR', 
-                    'data'      : result.data,
+                    'data'      : result.data.content.dtr_records,
                 })
             })
             .catch(e => {
