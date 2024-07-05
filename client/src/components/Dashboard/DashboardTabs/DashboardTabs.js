@@ -62,7 +62,7 @@ class DashboardTabs extends Component {
   componentWillMount() {}
 
   componentDidMount(){
-    if (Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"])) {
+    if (Authenticator.scanLevel(["SubDepartment Head","Department Head","Division Head","DivisionHead","Board","Admin","HR","Payroll"])) {
       this.setState({
       summary_shown: true
     });
