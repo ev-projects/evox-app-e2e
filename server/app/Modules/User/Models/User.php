@@ -1150,11 +1150,11 @@ class User extends Authenticatable implements JWTSubject
             $type = $this->level_type();
 
             if($type == "Payroll" || $type == "HR"){
-                $level_id =EvoxLevels::where("Name", $type)->first()->Id; //
+                $level_id =EvoxLevels::where("Name", $type)->first()->LevelId; //
             }else if(stripos($type, 'payroll')!== false){
-                $level_id =EvoxLevels::where("Name", "Payroll")->first()->Id;
+                $level_id =EvoxLevels::where("Name", "Payroll")->first()->LevelId;
             }else if(stripos($type, 'hr')!== false){
-                $level_id =EvoxLevels::where("Name", "HR")->first()->Id;
+                $level_id =EvoxLevels::where("Name", "HR")->first()->LevelId;
             }
             
             return RoleLevelFeatures::where('evox_levels_id', $level_id)->leftJoin("features", 'features_id', '=', 'features.id');
