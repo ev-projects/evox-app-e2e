@@ -971,6 +971,13 @@ class User extends Authenticatable implements JWTSubject
         //         $team->deppppppppppartment()->pluck('id')->toArray() 
         //     );
         // }
+        foreach ($departments_id_array as $key => $department) {
+            $users = User::where('department_id', $department)->where('is_active', 1)->get();
+            if (count($users) <= 0) {
+                unset($departments_id_array[$key]);
+            }
+        }
+
         return Department::whereIn('departments.id', array_unique($departments_id_array));
     }
 
