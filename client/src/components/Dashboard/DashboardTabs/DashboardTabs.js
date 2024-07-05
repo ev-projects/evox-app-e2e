@@ -78,7 +78,7 @@ class DashboardTabs extends Component {
     this.props.fetchDashboardAnnouncementList(formData);
   };
   defaultTab = () => {
-    if (Authenticator.scanLevel(["SubDepartment Head","Department Head","Board","Admin","HR","Payroll"])) {
+    if (Authenticator.scanLevel(["SubDepartment Head","Department Head","Division Head","DivisionHead","Board","Admin","HR","Payroll"])) {
       return "evox-summary";
     } else {
 
@@ -138,13 +138,13 @@ class DashboardTabs extends Component {
           >
             {this.state.jobs_shown && (<JobOpenings />)}
           </Tab>
-          <Tab
+          {/* <Tab
             eventKey="evox-updates"
             title="EVOX Updates"
             tabClassName="newfeature3"
           >
             {this.state.updates_shown && (<ChangeLogs />)}
-          </Tab>
+          </Tab> */}
 
           {/* <Tab eventKey="contact" title="Contact" disabled>
                 
