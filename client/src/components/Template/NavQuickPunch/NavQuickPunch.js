@@ -87,7 +87,7 @@ class NavQuickPunch extends Component {
       quickpunch : null
     }
 
-  const { recent_dtr } = this.props.dashboard;
+  const { recent_dtr, my_dtr_notifications } = this.props.dashboard;
     
   let showErr =  recent_dtr.length > 0  ? 
                     recent_dtr[1]?.start_datetime === null &  recent_dtr[1]?.time_in !== null &  recent_dtr[1]?.is_rest_day  === 0? true : 
@@ -101,13 +101,19 @@ class NavQuickPunch extends Component {
     if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
       this.props.getRecentDtr(this.props.user.id, from , to );
       this.props.getMyDtrNotifications( this.props?.user?.id );
-      this.props.getIncompleteDtr();
+      //this.props.getIncompleteDtr();
 
       this.state.NavHasLoaded = true
      
     }
 
-    var logsLabel = (this.props.incompletedtr.length > 0) ? "Incomplete Timelogs: " + this.props.incompletedtr.length : "";
+    var incompleteDtrCount = 0;
+    if (my_dtr_notifications.length > 0) {
+      my_dtr_notifications.map(function (data, i) {
+        if (!data.time_in || !data.time_out) incompleteDtrCount++;
+      });
+    }
+    var logsLabel = (incompleteDtrCount > 0) ? "Incomplete Timelogs: " + incompleteDtrCount : "";
 
     return (
       <>
