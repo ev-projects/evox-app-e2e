@@ -458,13 +458,21 @@ class UserController extends Controller
 
     public function my_team_list_under_selected_department( Request $request,  $id ){   
         try {
-            $dep_list = [];
+            $dept_ids = [];
             if( is_valid( $request->departments ) ) {
-                $dep_list = $request->departments ;
+                $dept_ids = $request->departments ;
             }
             $me = auth()->user();
-            $sub_depts = call_sp('EH_SP_Attendance_Summary', [NULL, NULL, implode(',', $dep_list), NULL, NULL, $me->id, 1, null])[0];
 
+            //$sub_depts = call_sp('EH_SP_Attendance_Summary', [NULL, NULL, implode(',', $dept_ids), NULL, NULL, $me->id, 1, null])[0];
+            $sub_depts = [];
+            if (is_array($dept_ids)) {
+                foreach ($dept_ids as $depat_id) {
+                    $sub_depts = array_merge($sub_depts, $me->evox_sub_departments_handled($depat_id));
+                }
+            } elseif (is_numeric($dept_ids)) {
+                $sub_depts = $me->evox_sub_departments_handled($depat_id);
+            }
             return success_response(
                 trans('messages.show_my_team_list'), 
                 $sub_depts
