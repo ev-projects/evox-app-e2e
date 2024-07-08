@@ -159,7 +159,8 @@ const Sidebar = (props) => {
                     </li>
                     )}
                     
-                    {country.toLowerCase() == "philippines" && (
+                    {/* Temporarily disabled COE feature */}
+                    {/* {country.toLowerCase() == "philippines" && (
                       <li className="nav-item">
                         <Link
                           className="nav-link"
@@ -172,7 +173,7 @@ const Sidebar = (props) => {
                           <p>Certificate Of Employment</p>
                         </Link>
                       </li>
-                    )}
+                    )} */}
                   </ul>
                 </li>
               )}
