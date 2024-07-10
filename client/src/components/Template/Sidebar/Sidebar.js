@@ -317,10 +317,12 @@ const Sidebar = (props) => {
 
               {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]) && (
                 <li className="nav-item">
-                  <Link className="nav-link" to={global.links.ev_learning}>
+                  {/* <Link className="nav-link" to={global.links.ev_learning}> */}
+                  <a className="nav-link" target="_blank" href="https://lms.eastvantage.com/">
                     <i className="nav-icon fa fa-book nav-icon" />
-                    <p>EV Learning</p>
-                  </Link>
+                    <p>EV Academy</p>
+                  </a>
+                  {/* </Link> */}
                 </li>
               )}
 
