@@ -100,7 +100,7 @@ class Login extends Component {
                                   )}
                               </Formik>
                               <div className="banner">
-                                  <img src="https://eastvantage.com/evox/covidvac_banner.jpg" />
+                                  {/* <img src="https://eastvantage.com/evox/covidvac_banner.jpg" /> */}
                                   <p>Get your covid vaccine!</p>
                                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe6fott4pDTudcBWCg0mX9u1CepNkQrhah7Ok19vJClxUGnSA/viewform" target="_blank" className="btn-primary small">Register here</a>
                               </div>

@@ -11,6 +11,7 @@ import ShowMore from 'react-show-more-list';
 import { connect } from 'react-redux';
 import { Container,Row,Col,Table,Image, Spinner,Button,Card,Tabs,Tab,Badge  } from 'react-bootstrap';
 import PageLoading from "../../../container/PageLoading/PageLoading";
+import { getDashboardOverall } from '../../../store/actions/dashboard/dashboardActions';
 class DashboardAnnouncementsList extends Component {
 
   constructor(props, context) {
@@ -30,12 +31,14 @@ class DashboardAnnouncementsList extends Component {
   }
   componentWillMount  = async() =>{ 
     await this.props.clearDepartmentAnnouncementListInstance();
-    await this.props.fetchDashboardAnnouncementList( );
-    await this.props.fetchDepartmentListWithAnnouncements();
+    // await this.props.fetchDashboardAnnouncementList( );
+    // await this.props.fetchDepartmentListWithAnnouncements();
+    await this.props.getDashboardOverall(3);
 	}
 
   handleSelectDepartmentAnnouncement = async (event) => {
     var formData = {};
+    console.log(event.target)
     formData["dep_id"] = event.target.value;
     // console.log(formData)
     // var formData = {};
@@ -48,13 +51,15 @@ class DashboardAnnouncementsList extends Component {
         dep_id:  item_id
       }
     }));
-    this.props.fetchDashboardAnnouncementList(formData );
+    // this.props.fetchDashboardAnnouncementList(formData );
+    this.props.getDashboardOverall(3, formData );
 
   }
   handleSelect = (values) => {
     var formData = {};
     formData["category"] = values;
-    this.props.fetchDashboardAnnouncementList(formData );
+    // this.props.fetchDashboardAnnouncementList(formData );
+    this.props.getDashboardOverall(3, formData );
   }
 
   handleIncrement = (values) => {
@@ -62,7 +67,8 @@ class DashboardAnnouncementsList extends Component {
     formData["page"] =this.state.filters.page ;
      formData["dep_id"] =this.state.filters.dep_id ;
     console.log(this.state.filters);
-     this.props.incrementDashboardAnnouncementList(this.state.filters );
+    //  this.props.incrementDashboardAnnouncementList(this.state.filters );
+    this.props.getDashboardOverall(3, this.state.filters );
      this.setState(prevState => ({
       filters: {
         ...prevState.filters,
@@ -116,9 +122,9 @@ class DashboardAnnouncementsList extends Component {
                       this.props.department.map((value, index) => {
 
                           return <option 
-                                  value={value.id} 
+                                  value={value.Id} 
                                   >
-                                    {value.department_name}
+                                    {value.Name}
                                   </option>;
                       })
                     :
@@ -211,62 +217,7 @@ const AnnouncementListTable = (props) => {
     </>
 }
 
-{/* 
-            <ShowMore
-                items={props.departmentAnnouncement.depAnnouncementlist.slice(3, props.departmentAnnouncement.depAnnouncementlist.length)}
-                by={3}
-              >
-                {({
-                  current,
-                  onMore,
-                }) => (
-                  <React.Fragment>
-                   
-                      {current.map((announcement, index)=> (
-                      <Col  md={4} className="announcement-list-content dashbaord-content card-content">
 
-
-                             
-                  {announcement.on_link == 1 ? 
-                    
-                    <a  href={  announcement.link.startsWith("http://") || announcement.link.startsWith("https://") ?
-                    announcement.link
-                    : `http://${announcement.link}`}  target="_blank">
-                      <AnnouncementItem {...announcement}/>
-                    </a>
-
-                    :  
-                    
-                    <Link to={{
-                              pathname: global.links.announcement_page + announcement.id
-                              }}
-                                  title="View Announcement" 
-                              >
-
-                        <AnnouncementItem {...announcement}/>
-                      </Link>
-                      
-                    }
-                    
-                      </Col>
-                      ))}
-                    
-                    <Col  md={12} align="center">
-                     {props.departmentAnnouncement.depAnnouncementlist.length > 6?  <Button
-                        disabled={!onMore}
-                        onClick={() => { if (!!onMore) onMore(); }}
-
-                        className="show-more-dashboard"
-                      >
-                        Show More
-                      </Button> 
-                    :
-                    null  
-                    }
-                    </Col>
-                  </React.Fragment>
-                )}
-              </ShowMore> */}
         </Row>
           
       
@@ -291,6 +242,9 @@ const AnnouncementListTable = (props) => {
 
 const AnnouncementItem = (announcement) => {
 
+  const dateCreated = new Date(announcement.release_date);
+  const currentDate = new Date();
+  const threeDaysAgo = currentDate.getTime() - 3 * 24 * 60 * 60 * 1000;
   return < >
   <div  className="announcement-list-item">
                           <Card className="announcement-list-card">
@@ -308,8 +262,9 @@ const AnnouncementItem = (announcement) => {
                               </Card>
                               <div className="card-text-black ">
                                 <div  className="card-bottom-content"> 
-                                <Badge className="tag-badge">{announcement.dep.department_name}</Badge>
-                                {announcement.is_new == true ? <Badge className="new-badge">NEW ANNOUNCEMENT</Badge> : <></>}
+                                {/* <Badge className="tag-badge">{announcement.dep.department_name}</Badge> */}
+                                <Badge className="tag-badge">{announcement.Department_name}</Badge>
+                                {dateCreated.getTime() > threeDaysAgo ? <Badge className="new-badge">NEW ANNOUNCEMENT</Badge> : <></>}
                                 {/* {console.log(announcement.dep)} */}
                                 <br/>
                                 <> Posted on: {announcement.release_date}</> 
@@ -339,6 +294,10 @@ const mapDispatchToProps = (dispatch) => {
     fetchDashboardAnnouncementList : (data) => dispatch( fetchDashboardAnnouncementList(data) ),
     incrementDashboardAnnouncementList : () => dispatch( incrementDashboardAnnouncementList() ),
     incrementDashboardAnnouncementList : (data) => dispatch( incrementDashboardAnnouncementList(data) ),
+    getDashboardOverall: (page_type) =>
+      dispatch(getDashboardOverall(page_type)),
+    getDashboardOverall: (page_type, $params) =>
+      dispatch(getDashboardOverall(page_type, $params)),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardAnnouncementsList);

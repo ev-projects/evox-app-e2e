@@ -7,11 +7,12 @@ import Formatter from "../../../services/Formatter";
 
 
 
-export const getDashboardOverall = (page_type) => {
+export const getDashboardOverall = (page_type,params = null) => { 
     return (dispatch, getState) => {
         API.call({
             method: "get",
             url: "/get_dashboard_all/"+page_type,
+            params: params,
         })
         .then(result => {
             console.log(result);
@@ -62,14 +63,23 @@ export const getDashboardOverall = (page_type) => {
                 })
             }
             if(page_type == 3){
-                dispatch({
-                    'type'      : 'FETCH_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS',
-                    'list'      : result.data.data.announcements,
-                })
-                dispatch({
-                    'type'      : 'FETCH_DEPARTMENT_LIST_SUCCESS',
-                    'list'      : result.data.data.departments,
-                })
+                console.log(params);
+                if (params !== null && params.page !== undefined && params.page !== null) {
+                    dispatch({
+                        'type'      : 'INCREMENT_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS',
+                        'list'      : result.data.data.announcements,
+                    })
+                  }else{
+                    dispatch({
+                        'type'      : 'FETCH_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS',
+                        'list'      : result.data.data.announcements,
+                    })
+                    dispatch({
+                        'type'      : 'FETCH_DEPARTMENT_LIST_SUCCESS',
+                        'list'      : result.data.data.departments,
+                    })
+                  }
+               
             }
         })
         .catch(e => {

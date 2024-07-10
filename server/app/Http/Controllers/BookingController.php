@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Mail;
+use Exception;
 use App\Booking;
 use App\itrequirement;
 use Illuminate\Http\Request;
@@ -370,80 +371,101 @@ class BookingController extends Controller
      }
      }
 
-     public function get_dashboard_all($page_type){
+     public function get_dashboard_all($page_type,  Request $request){
         
-        try {
+            try {
+                $user = Auth::user();
 
-            // dd($page_type);
-            $user = Auth::user();
-            $response =  call_sp("EH_SP_Dashboard", [   $user->LevelId, 
+                $parameter = [   $user->LevelId, 
+                                $user->id ,  
+                                null,
+                                $user->country_id,
+                                $page_type,
+                                null,
+                                null
+                            ];
+
+                            if($page_type == 3){
+                                    $department_id = ($request->dep_id == "all" || $request->dep_id == null) ? null : $request->dep_id;
+                                    $parameter =  [     $user->LevelId, 
                                                         $user->id ,  
-                                                        null,// $user->department_id,
+                                                        $department_id,                            
                                                         $user->country_id,
-                                                        $page_type
-                                                    ]
+                                                        $page_type,
+                                                        ($request->page != null)? ($request->page) :1,
+                                                        ($request->page != null)? 3 :6
+                                    ];
+                            }
+                            
 
-                                                    );
-            $result = array(
-                "query" =>  $response ?? [],
-            );
-            $summarized_response = [];
-            if($page_type == 1){ //summary
-                // $summarized_response = [];
-
-                $seg_result = array_reduce( $response[0], function ($carry, $item) {
-                    // dd($carry, $item);
-                    if (!isset($carry[$item->leave_day])) {
-                        $carry[$item->leave_day] = [];
-                    }
-                    $carry[$item->leave_day][] = $item;
-                    return $carry;
-                }, []);
-                $summarized_response["todayleaves"] = isset($seg_result['Today']) ? $seg_result["Today"]: [];
-
-                $summarized_response["tommorowleaves"] = []; // i added this reason if this was spellchecked in the future
-                if(isset($seg_result['Tomorrow'])){
-                    $summarized_response["tommorowleaves"] =  $seg_result["Tomorrow"];
-                }
-                if(isset($seg_result['Tomorow'])){
-                    $summarized_response["tommorowleaves"] =  $seg_result["Tomorow"];
-                }
-                $summarized_response["dashboardholiday"] = $response[1];
-                $summarized_response["status_numbers"] =
-                 [
-                    "alterlogpending"   => (string)( isset($response[3][0]->MyRequest) ?$response[3][0]->requestCount : 0), 
-                    "overtimepending"   => (string)( isset($response[3][0]->MyRequest) ?$response[3][1]->requestCount : 0),
-                    "restdayworkpending"    => (string)(isset($response[3][0]->MyRequest) ? $response[3][2]->requestCount : 0),
-                    "changeschedulepending" =>  (string)(isset($response[3][0]->MyRequest) ? $response[3][3]->requestCount : 0),
-
-
-                   
-                    "team_alterlogpending" =>(string)( isset($response[2][1]->MyTeamRequest) ?$response[2][0]->requestCount : 0), 
-                    "team_overtimepending"  =>(string)( isset($response[2][1]->MyTeamRequest) ?$response[2][1]->requestCount : 0),
-                    "team_restdayworkpending"   =>  (string)(isset($response[2][1]->MyTeamRequest) ? $response[2][2]->requestCount : 0),
-                    "team_changeschedulepending"    =>  (string)(isset($response[2][1]->MyTeamRequest) ? $response[2][3]->requestCount : 0),
-                ];
-            }
-            if($page_type == 2){
-                $summarized_response["team_birthday"] = $response[0];
-            }
-            if($page_type == 3){
-                $summarized_response["departments"] = $response[0];
-                $summarized_response["announcements"] = $response[1];
-            }
-            if($page_type == 4){
                 
-            }
+                $response =  call_sp("EH_SP_Dashboard", $parameter);
+             
+                $summarized_response = [];
+               
+                if($page_type == 1){ 
 
-         return [
-            'data' => $summarized_response,
-            
-        ];
 
-     } catch (Exception $e) {
-         return error_response(trans('messages.error_default'), $e);
+                    $seg_result = array_reduce( $response[0], function ($carry, $item) {
+
+                        if (!isset($carry[$item->leave_day])) {
+                            $carry[$item->leave_day] = [];
+                        }
+                        $carry[$item->leave_day][] = $item;
+                        return $carry;
+                    }, []);
+                    $summarized_response["todayleaves"] = isset($seg_result['Today']) ? $seg_result["Today"]: [];
+
+                    $summarized_response["tommorowleaves"] = []; // i added this reason if this was spellchecked in the future
+                    if(isset($seg_result['Tomorrow'])){
+                        $summarized_response["tommorowleaves"] =  $seg_result["Tomorrow"];
+                    }
+                    if(isset($seg_result['Tomorow'])){
+                        $summarized_response["tommorowleaves"] =  $seg_result["Tomorow"];
+                    }
+                    $summarized_response["dashboardholiday"] = $response[1];
+                    $summarized_response["status_numbers"] =
+                    [
+                        "alterlogpending"   => (string)( isset($response[3][0]->MyRequest) ?$response[3][0]->requestCount : 0), 
+                        "overtimepending"   => (string)( isset($response[3][0]->MyRequest) ?$response[3][1]->requestCount : 0),
+                        "restdayworkpending"    => (string)(isset($response[3][0]->MyRequest) ? $response[3][2]->requestCount : 0),
+                        "changeschedulepending" =>  (string)(isset($response[3][0]->MyRequest) ? $response[3][3]->requestCount : 0),
+
+
+                    
+                        "team_alterlogpending" =>(string)( isset($response[2][1]->MyTeamRequest) ?$response[2][0]->requestCount : 0), 
+                        "team_overtimepending"  =>(string)( isset($response[2][1]->MyTeamRequest) ?$response[2][1]->requestCount : 0),
+                        "team_restdayworkpending"   =>  (string)(isset($response[2][1]->MyTeamRequest) ? $response[2][2]->requestCount : 0),
+                        "team_changeschedulepending"    =>  (string)(isset($response[2][1]->MyTeamRequest) ? $response[2][3]->requestCount : 0),
+                    ];
+                }
+                if($page_type == 2){
+                    $summarized_response["team_birthday"] = $response[0];
+                }
+                if($page_type == 3){
+                    $summarized_response["departments"] = $response[0];
+
+
+                    $summarized_response["announcements"] = $response[1];
+
+                    if(!($request->dep_id == "all" || $request->dep_id == null)){
+                        $summarized_response["announcements"] = $response[2];
+                    }
+                }
+                if($page_type == 4){
+                    //evoxupdate here hut removed
+                }
+
+            return [
+                'data' => $summarized_response,
+                
+            ];
+
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        }
      }
-     }
+
      public function get_tommorow_leave_list(){
         
         try {
