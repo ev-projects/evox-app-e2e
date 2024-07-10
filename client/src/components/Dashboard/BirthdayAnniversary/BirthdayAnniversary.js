@@ -9,6 +9,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { getBirthdayAnniv } from '../../../store/actions/dashboard/dashboardActions'
 import * as Yup from 'yup';
+import { getDashboardOverall } from '../../../store/actions/dashboard/dashboardActions';
 
 
 class BirthdayAnniversary extends Component {
@@ -21,7 +22,8 @@ class BirthdayAnniversary extends Component {
 	}
 
     componentWillMount(){
-		this.props.getBirthdayAnniv( this.props.user.id );
+		// this.props.getBirthdayAnniv( this.props.user.id );
+    this.props.getDashboardOverall(2);
 	}
 	
     componentWillUnmount(){
@@ -87,6 +89,8 @@ class BirthdayAnniversary extends Component {
   const mapDispatchToProps = (dispatch) => {
 	  return {
       getBirthdayAnniv         : ( id ) => dispatch( getBirthdayAnniv( id ) ),
+      getDashboardOverall: (page_type) =>
+        dispatch(getDashboardOverall(page_type)),
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(BirthdayAnniversary);

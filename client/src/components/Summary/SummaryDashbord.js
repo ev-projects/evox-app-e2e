@@ -22,11 +22,16 @@ import {
   get_tommrow_leaves,
   get_dashboard_holiday,
 } from "../../store/actions/filters/requestListActions";
+import { getDashboardOverall } from '../../store/actions/dashboard/dashboardActions';
+
+
 import { format, getDate } from "date-fns";
 import PageLoading from "../../container/PageLoading/PageLoading.js";
 import PageLoadingCard from "../../container/PageLoadingCard.js/PageLoadingCard.js";
 import Holiday from "../Dashboard/Holiday/Holiday.js";
 import moment from "moment";
+
+
 export const SummaryDashbord = (props) => {
   let history = useHistory();
   const dispatch = useDispatch();
@@ -43,28 +48,32 @@ export const SummaryDashbord = (props) => {
   const [taskcompletestatus, setTaskcompletestatus] = useState(false);
   const [taskcompletestatus1, setTaskcompletestatus1] = useState(false);
   const [holiday, setHoliday] = useState([]);
+  
   useEffect(() => {
     var currentdate = moment().format("YYYY-MM-DD");
     var enddate = moment().format("YYYY") + '-12-31';
 
     // API CALL 
-    dispatch(get_today_leaves(setTodayleaves));
-    dispatch(get_tommrow_leaves(setTommrowleaves));
-    dispatch(get_dashboard_holiday(setHoliday,currentdate,enddate));
+    // dispatch(get_today_leaves(setTodayleaves));
+    // dispatch(get_tommrow_leaves(setTommrowleaves));
+    // dispatch(get_dashboard_holiday(setHoliday,currentdate,enddate));
+    
+    
 
-    dispatch(
-      fetchStatusNumbers_dashboard(
-        setaltercount,
-        setOvertimecount,
-        setRestdayworkcount,
-        setChangeschedulecount,
-        setMyaltercount,
-        setMyOvertimecount,
-        setMyRestdayworkcount,
-        setMyChangeschedulecount,
-        setTaskcompletestatus
-      )
-    );
+    // dispatch(
+    //   fetchStatusNumbers_dashboard(
+    //     setaltercount,
+    //     setOvertimecount,
+    //     setRestdayworkcount,
+    //     setChangeschedulecount,
+    //     setMyaltercount,
+    //     setMyOvertimecount,
+    //     setMyRestdayworkcount,
+    //     setMyChangeschedulecount,
+    //     setTaskcompletestatus
+    //   )
+    // );
+    dispatch(getDashboardOverall(1));
 
     // dispatch(
     //   myfetchStatusNumbers_dashboard(
@@ -77,6 +86,9 @@ export const SummaryDashbord = (props) => {
     // );
     // alert(dashboard.alterrequest)
   }, []);
+  console.log(props)
+  // this.props.getDashboardOverall(1);
+
   const { dashboard } = props;
 
   const onHandelClick = async (e) => {
@@ -378,7 +390,7 @@ export const SummaryDashbord = (props) => {
                         dashboard.todayleaves.map((data, pos) => (
                           <tr>
                             <td>
-                              {data.user_name} <br></br>
+                              {data.name} <br></br>
                               <span className="leave_type">{data.type}</span>
                             </td>
                           </tr>
@@ -408,7 +420,7 @@ export const SummaryDashbord = (props) => {
                         dashboard.tommorowleaves.map((data, pos) => (
                           <tr>
                             <td>
-                              {data.user_name} <br></br>
+                              {data.name} <br></br>
                               <span className="leave_type">{data.type}</span>
                             </td>
                           </tr>
@@ -472,4 +484,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(SummaryDashbord);
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+   
+    getDashboardOverall: (page_type) =>
+      dispatch(getDashboardOverall(page_type)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(SummaryDashbord);

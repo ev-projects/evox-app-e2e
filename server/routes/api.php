@@ -47,3 +47,7 @@ Route::post('sync_leaves', 'SyncController@syncleaves')->middleware('auth.apikey
 // Route::get('sendemail', 'BookingController@sendemail');
 
 
+Route::get('get_dashboard_all/{page_type}', 'BookingController@get_dashboard_all')->middleware('jwtauth', 'auth.apikey');
+
+
+

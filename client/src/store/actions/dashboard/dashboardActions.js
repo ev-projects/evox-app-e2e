@@ -7,6 +7,77 @@ import Formatter from "../../../services/Formatter";
 
 
 
+export const getDashboardOverall = (page_type) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/get_dashboard_all/"+page_type,
+        })
+        .then(result => {
+            console.log(result);
+            console.log(result.data);
+            console.log(result.data.data);
+
+                if(page_type == 1){
+
+
+                dispatch({
+                        type: "DASHBOARD_HOLIDAY",
+                        dashboardholiday: result.data.data.dashboardholiday,
+                    });
+                
+    
+                    console.log(result.data.data.todayleaves)
+                    dispatch({
+                        type: "TODAY_LEAVES",
+                        todayleaves: result.data.data.todayleaves,
+                    });
+                
+        
+                    console.log(result.data.data.tommorowleaves)
+                    dispatch({
+                        type: "TOMMOROW_LEAVES",
+                        tommorowleaves: result.data.data.tommorowleaves,
+                    });
+                
+
+                        dispatch({
+                        type: "ALTER_LOG_PENDING",
+                        alterrequest: result.data.data.status_numbers.team_alterlogpending,
+                        overtimerequest : result.data.data.status_numbers.team_overtimepending,
+                        restdayrequest :result.data.data.status_numbers.team_restdayworkpending,
+                        changeschedulerequest : result.data.data.status_numbers.team_changeschedulepending,
+                
+                
+                        myalterrequest: result.data.data.status_numbers.alterlogpending,
+                        myovertimerequest : result.data.data.status_numbers.overtimepending,
+                        myrestdayrequest :result.data.data.status_numbers.restdayworkpending,
+                        mychangeschedulerequest : result.data.data.status_numbers.changeschedulepending,
+                        });
+                    }
+            if(page_type == 2){
+                dispatch({
+                    'type'  : 'FETCH_BIRTHDAY_ANNIVERSARY', 
+                    'data'   : result.data.data.team_birthday
+                })
+            }
+            if(page_type == 3){
+                dispatch({
+                    'type'      : 'FETCH_DEPARTMENT_ANNOUNCEMENT_INDEX_LOAD_SUCCESS',
+                    'list'      : result.data.data.announcements,
+                })
+                dispatch({
+                    'type'      : 'FETCH_DEPARTMENT_LIST_SUCCESS',
+                    'list'      : result.data.data.departments,
+                })
+            }
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 // BIRTHDAY ANNIV
 export const getMyDtrNotifications = () => {

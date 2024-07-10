@@ -48,9 +48,9 @@ class DashboardTabs extends Component {
               <Tab eventKey="job-openings" title="Job Openings">
                 
               </Tab>
-              <Tab eventKey="evox-updates" title="EVOX Updates">
+              {/* <Tab eventKey="evox-updates" title="EVOX Updates">
                 
-              </Tab>
+              </Tab> */}
               {/* <Tab eventKey="contact" title="Contact" disabled>
                 
               </Tab> */}

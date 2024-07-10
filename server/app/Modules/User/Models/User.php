@@ -806,7 +806,7 @@ class User extends Authenticatable implements JWTSubject
     # Fetch the Users Handled of the current User Instance 
     
     public function users_handled($department_id = null, $sub_department_id = null,$is_active = 1,$name = null,$job_title = null, $page = 1, 
-                                $page_count = 9999)
+                                $page_count = 99999)
     {   
         
             if (
