@@ -538,7 +538,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     public function dashboard_index($request)
     {
 
-//  dasdasdasd
+
         $date_time = Carbon::now()->toDateString();
         try {
             // $department =  Department::find(Auth::user()->department_id);
@@ -599,12 +599,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
 
 
-            // if ($request->category == "hr") {
-            //     $announcements_list->where("category", "HR");
-            // }
-            // if ($request->category == "department") {
-            //     $announcements_list->where("category", "Department");
-            // }
+           
 
             $announcements_list = $announcements_list->get()->sortByDesc('release_date')->take(6) ;
 
@@ -615,6 +610,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         }
     }
 
+    
 
     public function increment_dashboard_index($request)
     {

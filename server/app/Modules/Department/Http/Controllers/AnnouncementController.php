@@ -262,23 +262,47 @@ class AnnouncementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function dashboard_index(Request $request)
-    {
-        // error_log("hererrrrr" . implode(" ", $request->all()));
+    // public function dashboard_index(Request $request)
+    // {
+    //     // error_log("hererrrrr" . implode(" ", $request->all()));
         
        
-        try {
-            $announcements_list = $this->announcement->dashboard_index($request);
-        return success_response(
-            trans('got the dashboard items'), 
-            AnnouncementStrictResource::collection($announcements_list)
-        );
+    //     try {
+    //         $announcements_list = $this->announcement->dashboard_index($request);
+    //     return success_response(
+    //         trans('got the dashboard items'), 
+    //         AnnouncementStrictResource::collection($announcements_list)
+    //     );
 
         
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
-        }
+    //     } catch(Exception $e){
+    //         return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+    //     }
+    // }
+
+    public function dashboard_index(Request $request){
+                try {
+                    $user = Auth::user();
+                $parameter =    [   $user->LevelId, 
+                                    $user->id ,  
+                                    null,                            
+                                    $user->country_id,
+                                    3,
+                                    1,
+                                    4
+                                ];
+            $response =  call_sp("EH_SP_Dashboard", $parameter);
+            return success_response(
+                        trans('got the dashboard items'), 
+                        $response[1]
+                    );
+
+            }
+            catch(Exception $e){
+                return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+            }
     }
+
 
     public function increment_dashboard_index(Request $request)
     {
