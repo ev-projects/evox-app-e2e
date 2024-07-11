@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Announcement extends Model
 {
     use SoftDeletes;
-    protected $table = "announcements";
+    protected $table = "announcements_test";
 
 
     public function announcements_departments()
