@@ -117,18 +117,39 @@ class AnnouncementController extends Controller
     public function show_strict($id)
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
+        $user = Auth::user();
         $owner_pass= false;
         $manager_pass = false;
         $called_announcement = Announcement::find($id);
         if($called_announcement){
-           $owner_pass=  $called_announcement->created_by ==Auth::user()->id;
+           $owner_pass=  $called_announcement->created_by ==$user->id;
         }
-        if(Auth::user()->permissions()->pluck('name')->contains('admin_manage_all_announcements') || Auth::user()->permissions()->pluck('name')->contains('manage_all_announcements')){
-            $manager_pass= true;
-        }
+       
+        // if(Auth::user()->permissions()->pluck('name')->contains('admin_manage_all_announcements') || Auth::user()->permissions()->pluck('name')->contains('manage_all_announcements')){
+        //     $manager_pass= true;
+        // }
 
+        // dd(Announcement::find($id));
 
-        if(Auth::user()->isLevel("Admin") ||  $owner_pass ) { 
+        $parameter =  [     $user->LevelId, 
+                                                        $user->id ,  
+                                                        null,                            
+                                                        $user->country_id,
+                                                        3,
+                                                        1,
+                                                        999
+                                    ];
+                                    $response =  call_sp("EH_SP_Dashboard", $parameter);
+        
+                                    $check_all = (array_filter($response[1], function($object) use ($called_announcement) { return $object->id == $called_announcement->id; }));
+                                    if(count($check_all) > 0){
+                                        return success_response(
+                                            trans('messages.create_department_announcement_success'), 
+                                            new AnnouncementResource(  $called_announcement) 
+                                        );
+                                    }
+                                //    dd("here");
+        if($user->isLevel("Admin") ||  $owner_pass ) { 
             $dep_announcement =  $this->announcement->show($id);
         }
         else {
