@@ -779,15 +779,15 @@ class UserController extends Controller
 
                 
             ); 
-            // dd($response[1]);
-            $result = $response[1] ? array_map(function($item) {
+            // dd($response);
+            $result = $response[2] ? array_map(function($item) {
                 // dd($item);
                 return (object) array(
                     'id' => $item->id,
                     'full_name' => $item->Employee_Name,
                    
                 );
-            }, $response[1]): []
+            }, $response[2]): []
         ;
             
             return success_response(
@@ -795,6 +795,7 @@ class UserController extends Controller
                 $result
             );
         } catch(Exception $e){
+            dd($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
