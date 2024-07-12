@@ -72,7 +72,7 @@ class AnnouncementResource extends JsonResource
                 'title' => $this->title,
                 'headline' => $this->headline,
                 'thumbnail' => $this->thumbnail != null ? env('ASSET_URL').Storage::url($this->thumbnail): null,
-                'content' => $this->content == "<p>null</p>" ?"":$this->content,
+                'content' => $this->content == "<p>null</p>" || $this->content == "null"?"":$this->content,
                 'category' => $this->category,
                 'log_date' => $this->log_date,
                 'release_date' => $this->release_date,
