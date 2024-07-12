@@ -116,6 +116,8 @@ class AnnouncementController extends Controller
      */
     public function show_strict($id)
     {
+
+        try {
         log_activity( trans('messages.create_department_announcement_attempt') );
         $user = Auth::user();
         $owner_pass= false;
@@ -140,7 +142,7 @@ class AnnouncementController extends Controller
                                                         999
                                     ];
                                     $response =  call_sp("EH_SP_Dashboard", $parameter);
-        
+                                    // dd($id,$called_announcement);
                                     $check_all = (array_filter($response[1], function($object) use ($called_announcement) { return $object->id == $called_announcement->id; }));
                                     if(count($check_all) > 0){
                                         return success_response(
@@ -164,6 +166,10 @@ class AnnouncementController extends Controller
             trans('messages.create_department_announcement_success'), 
             new AnnouncementResource(  $dep_announcement ) 
         );
+    } catch(Exception $e){
+        dd($e);
+        return error_response( trans('messages.error_default'), $e );
+    }
     }
 
     /**
