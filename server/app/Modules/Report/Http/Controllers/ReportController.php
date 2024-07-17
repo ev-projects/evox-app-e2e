@@ -365,7 +365,7 @@ class ReportController extends Controller
             );
         } catch (Exception $e) {
             log_to_file( 'error', $e->getMessage(), [$e], "dtr");
-            return error_response(trans('messages.error_default'), $e);
+            return error_response(trans('messages.error_default'));
         }
     }
 
