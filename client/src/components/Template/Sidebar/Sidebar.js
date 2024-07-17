@@ -827,7 +827,7 @@ const Sidebar = (props) => {
                               </Link>
                             </li>
                         
-                          {Authenticator.scanLevel_Feature("Admin", 
+                          {/* {Authenticator.scanLevel_Feature("Admin", 
                             "manage_roles_and_permissions",
                           ) && (
                             <li className="nav-item">
@@ -841,7 +841,7 @@ const Sidebar = (props) => {
                                 </p>
                               </Link>
                             </li>
-                          )}
+                          )} */}
 
                         {Authenticator.scanLevel_Feature("Admin", 
                             "manage_roles_and_permissions",
