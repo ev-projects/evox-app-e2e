@@ -790,7 +790,7 @@ const Sidebar = (props) => {
                         </a>
                         <ul className="nav nav-treeview">
                           
-                            <li className="nav-item">
+                            {/* <li className="nav-item">
                               <Link
                                 className="nav-link"
                                 to={global.links.assign_department_handlers}
@@ -813,7 +813,7 @@ const Sidebar = (props) => {
                                   Employee Supervisors
                                 </p>
                               </Link>
-                            </li>
+                            </li> */}
 
                             <li className="nav-item">
                               <Link
