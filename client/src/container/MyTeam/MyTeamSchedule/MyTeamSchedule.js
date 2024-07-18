@@ -7,7 +7,7 @@ import Wrapper from "../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import * as Yup from 'yup';
 import { fetchTeamSchedule } from '../../../store/actions/filters/myTeamActions';
-import { fetchTeamUnderDepartment } from '../../../store/actions/filters/myTeamActions';
+import { fetchTeamUnderDepartment , fetchSubDepartmentUnderDepartment} from '../../../store/actions/filters/myTeamActions';
 import moment from 'moment';
 import ReportNavigator from "../../../components/Template/ReportNavigator/ReportNavigator.js";
 
@@ -22,6 +22,7 @@ class MyTeamSchedule extends Component {
           department_id : this.props.user.departments_handled.length > 0?  this.props.user.departments_handled[0].id : null,  
           name : this.props.team.filters?.name ?? null,  
           team_id :this.props.team.filters?.team_id ?? null,  
+          sub_department_id:        this.props.myTeamList?.filters?.sub_department_id,
           scope_type :  "day",  
           show_more: false
       }
@@ -160,8 +161,9 @@ class MyTeamSchedule extends Component {
     this.clearState();
     if( department_id != '' ) {
       this.state.department_id = department_id;
-      this.props.fetchTeamUnderDepartment(this.props.user.id, department_id);
-    }
+      // this.props.fetchTeamUnderDepartment(this.props.user.id, department_id);
+
+      this.props.fetchSubDepartmentUnderDepartment(this.props.user.id, department_id);    }
   }
 
 
@@ -176,6 +178,7 @@ class MyTeamSchedule extends Component {
   render = () => {  
   var scope_type = this.state.scope_type;
   var { team_list } = this.props.team;
+  const {  sub_department } = this.props.myTeamList;
   var {  team_schedule } = this.props.team;
   var { user } = this.props; 
   return(
@@ -213,14 +216,14 @@ class MyTeamSchedule extends Component {
                   <div className="form-group">
                             <select
                             className="form-control" 
-                              name="team_id"
-                              value={this.state.team_id}
+                              name="sub_department_id"
+                              value={this.state.sub_department_id}
                               onChange={this.handleFilterChange}
                               style={{ display: 'block' }}
                             >
                             <option label="Select Team" value="" />
-                            {team_list.length > 0 && team_list.map(function(item){
-                              return <option value={item.id} label={item.name} />;
+                            {sub_department.length > 0 && sub_department.map(function(item){
+                              return <option value={item.Id} label={item.Name} />;
                             })}
                             </select>
                         </div>
@@ -529,12 +532,14 @@ class MyTeamSchedule extends Component {
     return {
       user : state.user,
       team : state.myTeamSchedule,
+      myTeamList  : state.myTeamList
     }
   }
   const mapDispatchToProps = (dispatch) => {
     return {
       fetchTeamSchedule : ( params  ) => dispatch( fetchTeamSchedule( params ) ),
       fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
+      fetchSubDepartmentUnderDepartment: ( user_id, department_id ) => dispatch( fetchSubDepartmentUnderDepartment( user_id, department_id ) ),
     }
   }
   

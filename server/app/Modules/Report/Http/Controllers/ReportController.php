@@ -3,12 +3,16 @@
 namespace App\Modules\Report\Http\Controllers;
 
 use Exception;
+use LDAP\Result;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use App\Exports\ExportDTRLog;
 use App\Exports\DtrSummaryExport;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
+use App\Exports\ExportDTRMismatch;
 use Illuminate\Support\Facades\DB;
 use App\Exports\TeamScheduleExport;
 use App\Modules\Payroll\Models\Dtr;
@@ -22,28 +26,26 @@ use Spatie\Permission\Models\Permission;
 use App\Exports\TeamSummaryAttendanceExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
-use App\Exports\ExportDTRLog;
+use App\Modules\Payroll\Resources\DtrLogResource;
 use App\Modules\Payroll\Resources\HolidayResource;
+use App\Modules\Payroll\Resources\DtrHalfDayMismacth;
 use App\Exports\TeamSummaryAttendanceMultiSheetExport;
 use App\Modules\Payroll\Resources\AnniversaryResources;
 use App\Modules\Report\Resources\DailyScheduleReources;
+use App\Modules\Report\Resources\NewDtrSummaryResource;
 use App\Modules\Report\Resources\TeamScheduleResources;
+
 use App\Modules\Report\Resources\WeeklyScheduleResources;
 use App\Modules\Payroll\Resources\TeamAttendanceResources;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Resources\MyDtrNotificationsResource;
-
 use App\Modules\Report\Repositories\ReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\HolidayRepositoryInterface;
 use App\Modules\Payroll\Resources\TeamAttendanceSummaryResource;
 use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
-use App\Modules\Payroll\Resources\DtrLogResource;
-use App\Modules\Report\Resources\NewDtrSummaryResource;
-use App\Exports\ExportDTRMismatch;
-use App\Modules\Payroll\Resources\DtrHalfDayMismacth;
 
 class ReportController extends Controller
 {
@@ -447,19 +449,48 @@ class ReportController extends Controller
     public function team_schedule(Request $request)
     {
         // try {
+            // dd($request->all());
         $date_from = Carbon::now();
-        $user_list = auth()->user()->users_handled();
+        $logged_user = auth()->user();
+        
+
+
+                                $response = call_sp("EH_SP_Employee_List",[
+                                    $logged_user->id, 
+                                    is_valid(  $logged_user->LevelId ) ?  $logged_user->LevelId: null, // level
+                                    $request->department_id,
+                                    $request->department_id != null? $sub_department_id = $request->sub_department_id: null,
+                                    1, // active
+                                    $request->name, // name
+                                    null, // job_title
+                                    1,
+                                    999,
+                                    1      
+                                    ]
+                                ); 
+
+                                $result = array(
+                                    "query" =>  $response ?? [],
+                                );
+                                $empArrays = array_filter($result['query'], function($array) {
+
+                       
+
+                                    if(isset($array[0])){
+                                
+                                        return property_exists($array[0], 'Employee_Name');
+                                
+                                    }
+                                
+                                });
+                                $empKeys = array_keys($empArrays);
+                                $user_list = is_valid($empKeys)? $result['query'][$empKeys[0]] : [];
+                       
+                                $user_list =  User::whereIn('id', collect($user_list)->pluck('id')->all());
+                                // dd($user_list);
         $no_user_limit = get_constant("TEAM_SCHEDULE.records_per_date");
 
-        // Team Filter
-        if (is_valid(request()->get('team_id'))) {
-            $user_list->join('team_users', 'team_users.user_id', '=', 'users.id')->where('team_id', '=', request()->get('team_id'));
-        } else {
-            // Department Filter
-            if (is_valid(request()->get('department_id'))) {
-                $user_list->where('department_id', '=', request()->get('department_id'));
-            }
-        }
+
 
         // Filter by name string
         if (is_valid(request()->get('name'))) {

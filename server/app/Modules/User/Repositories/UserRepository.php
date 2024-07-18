@@ -717,9 +717,38 @@ class UserRepository implements UserRepositoryInterface{
                     );
                     
 
+                    $perPageArrays = array_filter($result['query'], function($array) {
+
+                        if(isset($array[0])){
+                    
+                            return property_exists($array[0], 'PerPage');
+                    
+                        }
+
+                       
+                    
+                    });
+
+                    $empArrays = array_filter($result['query'], function($array) {
+
+                       
+
+                        if(isset($array[0])){
+                    
+                            return property_exists($array[0], 'Employee_Name');
+                    
+                        }
+                    
+                    });
+
+            
+                    
+                    $perPageKeys = array_keys($perPageArrays);
+                    $empKeys = array_keys($empArrays);
+                        // dd($result['query'][count($result['query'])-3]);
                 
                     $arr = [];
-                    if( is_valid( request()->get('order_by') ) && is_valid($result['query'][count($result['query'])-3])  ) {
+                    if( is_valid( request()->get('order_by') ) && is_valid($empKeys) && is_valid($result['query'][$empKeys[0]])  ) {
                         $arr =  $result['query'][count($result['query'])-3];
                         $order = explode(":", request()->get('order_by'));
     // dd($order[0]);
@@ -755,14 +784,23 @@ class UserRepository implements UserRepositoryInterface{
                     }
 
             
+                 
+                  
+                   
+                    
+
+                // dd($result['query'],   $perPageKeys[0], $empKeys) ;
+
                   
                 if( count($result['query']) > 2){
                     // $paginate = $result['query'][count($result['query'])-2][0];
                     
                     // $collection["data"] = !is_valid($arr)? $result['query'][count($result['query'])-3] : $arr;
+// dd($result['query'], $empKeys, isset($empKeys), is_valid($empKeys));
+                    // dd($result['query'],$result['query'][$empKeys[0]]);
 
-                    $paginate = $result['query'][count($result['query'])-1][0];
-                    $collection["data"] = !is_valid($arr)? $result['query'][count($result['query'])-2] : $arr; 
+                    $paginate = $result['query'][$perPageKeys[0]][0];
+                    $collection["data"] = !is_valid($arr)? (is_valid($empKeys) ?$result['query'][$empKeys[0]] : []) : $arr; 
                     $collection["pagination"] = [
                                                     'total' => (int) $paginate->TotalCount,
                                                     'count' => count( $collection["data"]),
