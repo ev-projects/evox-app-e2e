@@ -245,10 +245,14 @@ const AnnouncementItem = (announcement) => {
   const dateCreated = new Date(announcement.release_date);
   const currentDate = new Date();
   const threeDaysAgo = currentDate.getTime() - 3 * 24 * 60 * 60 * 1000;
+
+  const originalUrl = announcement.thumbnail;
+const transformedUrl = originalUrl.replace("/public", "https://evox2.eastvantage.com/server/storage");
+// console.log(transformedUrl);
   return < >
   <div  className="announcement-list-item">
                           <Card className="announcement-list-card">
-                          {announcement.thumbnail!=null? <Card.Img variant="top" src={announcement.thumbnail} className="announcement-list-img"/> :
+                          {announcement.thumbnail!=null? <Card.Img variant="top" src={transformedUrl} className="announcement-list-img"/> :
                             <Card.Img variant="top" src="https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80https://images.unsplash.com/photo-1462396240927-52058a6a84ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1073&q=80" className="announcement-list-img"/>
                             }
                                 <Card.ImgOverlay className={"mask-"+announcement.category} >
