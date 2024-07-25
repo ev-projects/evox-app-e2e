@@ -22,10 +22,10 @@ Route::post('/forgot_password_request', 'UserController@forgot_password_request'
 Route::group(['prefix' => 'auth'], function () {
 
     # Login
-    Route::post('login', 'AuthController@login')->middleware('auth.apikey');
+    Route::post('login', 'AuthController@login')->middleware('auth.apikey', 'api.calctime');
 
     # Login Mobile
-    Route::post('login-mobile', 'AuthController@loginMobile')->middleware('auth.apikey');
+    Route::post('login-mobile', 'AuthController@loginMobile')->middleware('auth.apikey', 'api.calctime');
 
     # Logout (Checks as well if there's a valid token before logging out.)
     Route::post('logout', 'AuthController@logout')->middleware('jwtauth', 'auth.apikey');
