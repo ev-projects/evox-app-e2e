@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 // Route::get('/test_send_mail', 'RequestController@test_send_mail'); 
 
 # API Call for Request Approval
-Route::group(['prefix' => 'request/approval', 'middleware' => ['auth.apikey', 'jwtauth']], function () {
+Route::group(['prefix' => 'request/approval', 'middleware' => ['auth.apikey']], function () {
 
         # Change Status of the Request
         Route::post('/', 'RequestController@change_request_status_via_hash_code'); //->middleware('permission:update_overtime')
@@ -24,7 +24,7 @@ Route::group(['prefix' => 'request/approval', 'middleware' => ['auth.apikey', 'j
 });
 
 # API Call for Requests , , 'middleware' => ['jwtauth', 'auth.apikey']
-Route::middleware(['jwtauth'])->group(['prefix' => 'request'], function () {
+Route::group(['prefix' => 'request'], function () {
 
 
     # Request List
