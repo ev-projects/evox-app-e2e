@@ -44,6 +44,11 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             'bindings',
         ],
+
+        'jwtauth' => [
+            \App\Modules\User\Http\Middleware\JWTAuthentication::class,
+            \App\Http\Middleware\ComputeAPIProcessTime::class
+        ],
     ];
 
     /**
@@ -67,9 +72,10 @@ class Kernel extends HttpKernel
         /**
          * Add the Custom Middlewares below
          */
-        'jwtauth' => \App\Modules\User\Http\Middleware\JWTAuthentication::class,
+        //'jwtauth' => \App\Modules\User\Http\Middleware\JWTAuthentication::class,
         'permission' => \App\Http\Middleware\PermissionMiddleware::class,
         'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+        'api.calctime' => \App\Http\Middleware\ComputeAPIProcessTime::class,
 
         /**
      * 
