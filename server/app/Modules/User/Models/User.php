@@ -159,10 +159,11 @@ class User extends Authenticatable implements JWTSubject
               "query" =>  $response ?? [],
           );
 
-
-          if(is_valid( $result["query"][0][0])){
-              return User::find($result["query"][0][0]->SupervisorId);
-          }
+        if(is_valid( $result["query"][0])){
+            if(is_valid( $result["query"][0][0])){
+                return User::find($result["query"][0][0]->SupervisorId);
+            }
+        }
 
         return [];
     }
@@ -190,9 +191,10 @@ class User extends Authenticatable implements JWTSubject
             "query" =>  $response ?? [],
         );
 
-
-        if(is_valid( $result["query"][0][0])){
-            return User::find($result["query"][0][0]->SupervisorId);
+        if(is_valid( $result["query"][0])){
+            if(is_valid( $result["query"][0][0])){
+                return User::find($result["query"][0][0]->SupervisorId);
+            }
         }
 
         return [];

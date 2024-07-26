@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Modules\Payroll\Models\Dtr;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Modules\Request\Resources\RestDayWorkResource;
 use App\Modules\Request\Http\Requests\RestDayWorkRequest;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
