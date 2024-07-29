@@ -437,12 +437,12 @@ class User extends Authenticatable implements JWTSubject
 
         if( is_valid( $start_date )){
 
-            return $this->hasMany(DtrPunchHistory::class)->select('dtr_collective_punch_history.date as date', 'dtr_collective_punch_history.user_id as user_id',
-            'dtr_collective_punch_history.time_in', 
-            'dtr_collective_punch_history.time_out', 'dtr_collective_punch_history.log_in_type', 'dtr_collective_punch_history.log_out_type', 
-            'dtr_collective_punch.duration')
-            ->join('dtr_collective_punch','dtr_collective_punch_history.id','=','dtr_collective_punch.dtr_collective_punch_history_id')
-            ->where('dtr_collective_punch_history.date','=',$start_date);
+            return $this->hasMany(DtrPunchHistory::class)->select('dtr_collective_punch_history_new.date as date', 'dtr_collective_punch_history_new.user_id as user_id',
+            'dtr_collective_punch_history_new.time_in', 
+            'dtr_collective_punch_history_new.time_out', 'dtr_collective_punch_history_new.log_in_type', 'dtr_collective_punch_history_new.log_out_type', 
+            'dtr_collective_punch_new.duration', 'dtr_collective_punch_history_new.project_name', 'dtr_collective_punch_history_new.remarks' )
+            ->join('dtr_collective_punch_new','dtr_collective_punch_history_new.id','=','dtr_collective_punch_new.dtr_collective_punch_history_id')
+            ->where('dtr_collective_punch_history_new.date','=',$start_date);
         }
        }
 

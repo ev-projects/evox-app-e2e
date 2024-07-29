@@ -82,9 +82,9 @@ class MultiQuickpunch extends Component {
 			}
 		}
 
-		formData.set("remark", this.state.remark);
+		formData.set("remarks", this.state.remarks);
 		formData.set("project_name", this.state.project_name);
-		console.log(values, this.state.remark,this.state.project_name, )
+		console.log(values, this.state.remarks,this.state.project_name, )
 
 		
 		if( values['on_date'] == true){
@@ -105,7 +105,7 @@ class MultiQuickpunch extends Component {
 	  };
 
 	  handleRemarkChange = (value) => {
-		this.setState({ remark: value });
+		this.setState({ remarks: value });
 	  };
 
 	  handleProjectNameChange = (value) => {
@@ -337,7 +337,7 @@ class MultiQuickpunch extends Component {
 	<ConfirmSubmissionModal
           show={this.state.showModal}
           onHide={this.handleModalClose}
-          remark={this.state.remark}
+          remarks={this.state.remarks}
           onRemarkChange={this.handleRemarkChange}
 		  onProjectNameChange={this.handleProjectNameChange}
           onSubmit={this.handleModalSubmit}
@@ -374,7 +374,7 @@ class MultiQuickpunch extends Component {
 const ConfirmSubmissionModal = ({
 	show,
 	onHide,
-	remark,
+	remarks,
 	onRemarkChange,
 	onProjectNameChange,
 	onSubmit,
