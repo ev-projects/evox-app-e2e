@@ -8,7 +8,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class DtrPunch extends Model
 {
 
-    protected $table = 'dtr_collective_punch';
+    protected $table = 'dtr_collective_punch_new';
     protected $guarded = [];
     
 

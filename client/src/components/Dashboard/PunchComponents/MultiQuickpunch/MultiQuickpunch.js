@@ -1,6 +1,7 @@
 import React, { Component, useState, useEffect  } from "react";
 import DatePicker from "react-datepicker";
-import { Container,Row,Col,Table,Image, Spinner,Button, Badge  } from 'react-bootstrap';
+import { Container,Row,Col,Table,Image, Spinner,Button, Badge, Modal, ModalHeader, ModalBody, ModalFooter,Form, Group, Label, Control } from 'react-bootstrap';
+
 import "./MultiQuickpunch.css";
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
@@ -12,17 +13,64 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 class MultiQuickpunch extends Component {
 	constructor(props){
+
+		
     	super(props);
         this.timer = 0;
     	this.state = {
-        	time: new Date()
+        	time: new Date(),
+			showModal: false,
+			project_name: '',
+			remarks: '',
+			temp_values_formdata: '',
         };
 	}
 	
 	onSubmitHandler = (values) => {
 		// Setting of Form Data to be passed in the submission
 		var formData = new FormData();
+		if(values.quickpunch == "in" || values.quickpunch == "continue"){
+			for (var key in values) {
 	
+				if( values[key] != null ) {
+					switch( key ) {
+						default:
+							formData.set(key, values[key]);
+							break;
+					}
+				}
+			}
+			
+			if( values['on_date'] == true){
+				if (window.confirm("Are you sure you want Update or create record on seleceted date")) {
+	
+					this.props.biometrixLogMulti(  formData , this.props.user.id );
+				  }
+			}else{
+					this.props.biometrixLogMulti(  formData , this.props.user.id );
+	
+			}
+		}else{
+			console.log(values );
+			this.setState({ temp_values_formdata: values });
+			this.setState({ showModal: true });
+		}
+	
+
+	
+		
+	}
+	addSeconds(date, seconds) {
+		date.setSeconds(date.getSeconds() + seconds);
+		return date;
+	  }
+	  
+
+	  ////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////
+
+	  handleModalSubmit = () => {
+		var formData = new FormData();
+		const values = this.state.temp_values_formdata;
 		for (var key in values) {
 	
 			if( values[key] != null ) {
@@ -33,7 +81,12 @@ class MultiQuickpunch extends Component {
 				}
 			}
 		}
-	
+
+		formData.set("remark", this.state.remark);
+		formData.set("project_name", this.state.project_name);
+		console.log(values, this.state.remark,this.state.project_name, )
+
+		
 		if( values['on_date'] == true){
 			if (window.confirm("Are you sure you want Update or create record on seleceted date")) {
 
@@ -43,11 +96,24 @@ class MultiQuickpunch extends Component {
 				this.props.biometrixLogMulti(  formData , this.props.user.id );
 
 		}
-	}
-	addSeconds(date, seconds) {
-		date.setSeconds(date.getSeconds() + seconds);
-		return date;
-	  }
+	
+		this.handleModalClose();
+	  };
+
+	  handleModalClose = () => {
+		this.setState({ showModal: false });
+	  };
+
+	  handleRemarkChange = (value) => {
+		this.setState({ remark: value });
+	  };
+
+	  handleProjectNameChange = (value) => {
+		this.setState({ project_name: value });
+	  };
+
+	  //////////////////////////////////////////////////////// ////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////
+	
     componentWillMount(){
 		const date = new Date();
 		// const { user, constant, dashboard } = this.props;
@@ -192,7 +258,9 @@ class MultiQuickpunch extends Component {
 	
 
 	console.log(isLogIn , disable_day, !isLogIn || disable_day);
-    return(<Formik 
+    return(
+		<div>
+	<Formik 
 		enableReinitialize
 		onSubmit={this.onSubmitHandler} 
 		validationSchema={validationSchema} 
@@ -251,9 +319,7 @@ class MultiQuickpunch extends Component {
 					</>
 				
 				:<></>}
-{/* 
-<Button onClick={(e)=> { setFieldValue('quickpunch','pause');   }}  type="submit" >--Pause</Button>:
-					<Button onClick={(e)=> { setFieldValue('quickpunch','continue');   }}  type="submit" >--Continue</Button> */}
+
 
 				<Button disabled={!islogOut}  onClick={(e)=> { setFieldValue('quickpunch','out');   }}  type="submit"  ><i className="fa fa-history" /> Clock Out</Button>
 				</>:<></>
@@ -266,12 +332,85 @@ class MultiQuickpunch extends Component {
 	</form>
 	)}
   
-	</Formik>);
+	</Formik>
+
+	<ConfirmSubmissionModal
+          show={this.state.showModal}
+          onHide={this.handleModalClose}
+          remark={this.state.remark}
+          onRemarkChange={this.handleRemarkChange}
+		  onProjectNameChange={this.handleProjectNameChange}
+          onSubmit={this.handleModalSubmit}
+        />
+	</div>
+	
+);
 	}
   }
 
 
+//   const RemarkModal = ({ isOpen, toggle, onConfirm }) => {
+// 	return (
+// 	  <Modal isOpen={isOpen} toggle={toggle}>
+// 		<ModalHeader toggle={toggle}>Confirm Pause</ModalHeader>
+// 		<ModalBody>Are you sure you want to pause your work?</ModalBody>
+// 		<ModalFooter>
+// 		  <Button color="primary" onClick={onConfirm}>
+// 			Yes
+// 		  </Button>
+// 		  <Button color="secondary" onClick={toggle}>
+// 			No
+// 		  </Button>
+// 		</ModalFooter>
+// 	  </Modal>
+// 	);
+//   };
 
+
+// const handleModalClose = () => {
+//     setShowModal(false);
+//   };
+
+const ConfirmSubmissionModal = ({
+	show,
+	onHide,
+	remark,
+	onRemarkChange,
+	onProjectNameChange,
+	onSubmit,
+  }) => (
+	<Modal show={show} onHide={onHide}>
+	  <Modal.Header closeButton>
+		<Modal.Title>Confirm Submission</Modal.Title>
+	  </Modal.Header>
+	  <Modal.Body>
+		<p>Are you sure you want to submit this?</p>
+		<Form>
+      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+        <Form.Label>Project name</Form.Label>
+        <Form.Control type="textarea" placeholder="Project Name"  required onChange={(e) =>  onProjectNameChange(e.target.value) }/>
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+        <Form.Label>Remarks</Form.Label>
+        <Form.Control as="textarea" rows={3}  required onChange={(e) => onRemarkChange(e.target.value) }/>
+      </Form.Group>
+	  {/* <BootstrapForm.Control
+			type="text"
+			value={remark}
+			onChange={(e) => onRemarkChange(e.target.value)}
+		  /> */}
+    </Form>
+	  </Modal.Body>
+	  <Modal.Footer>
+		<Button variant="secondary" onClick={onHide}>
+		  Cancel
+		</Button>
+		<Button variant="primary" onClick={onSubmit}>
+		  Submit
+		</Button>
+	  </Modal.Footer>
+	</Modal>
+  );
 
   const validationSchema = Yup.object().shape({});
   
