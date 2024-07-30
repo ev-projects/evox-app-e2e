@@ -1510,12 +1510,11 @@ class ReportController extends Controller
     {
    
         try {    
-            $me = Auth::user();       
-            $user_sup_id = $me->id; // basically user id
-            if($request->sup_id){
-                $user_sup_id = $request->sup_id;
+            $me = Auth::user();
+            if (!is_valid($request->department_id)) {
+                return error_response("Please select a department", array());
             }
-            $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id]);
+            $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id, $me->LevelId, $me->id]);
             $user_dtr = $result_sets[1];
             $report = [];
             foreach($user_dtr as $dtr) {
@@ -1553,11 +1552,10 @@ class ReportController extends Controller
       
         try {
             $me = Auth::user();
-            $user_sup_id = $me->id; // basically user id
-            if($request->sup_id){
-                $user_sup_id = $request->sup_id;
+            if (!is_valid($request->department_id)) {
+                return error_response("Please select a department", array());
             }
-            $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id]);
+            $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id, $me->LevelId, $me->id]);
             $user_dtr = $result_sets[1];
             $report = [];
             foreach($user_dtr as $dtr) {
