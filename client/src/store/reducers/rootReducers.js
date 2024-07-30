@@ -36,6 +36,7 @@ import lookupListReducers from "./lookup/lookupListReducers"
 import dtrReducer from "./dtr/dtrReducers";
 import dtrConflict from "./dtr/dtrConflictReducer";
 import dtrSummaryReducers from "./dtr/dtrSummaryReducers";
+import dtrMultiLogsSummaryReducers from "./dtr/dtrMultiLogsSummaryReducers"
 import dtrLogsReducers from "./dtr/dtrLogsReducers";
 
 import myRequestListReducers from "./filters/myRequestListReducers";
@@ -97,6 +98,7 @@ const rootReducer = combineReducers({
     
 
     dtrSummary: dtrSummaryReducers,
+    dtrMultiLogsSummary: dtrMultiLogsSummaryReducers,
     dtrConflict:dtrConflict,
     dtrLogs: dtrLogsReducers,
 
