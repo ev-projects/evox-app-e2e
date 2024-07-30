@@ -26,6 +26,7 @@ use Spatie\Permission\Models\Permission;
 use App\Exports\TeamSummaryAttendanceExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
+use App\Exports\ExportDTRMultiLogsSummary;
 use App\Modules\Payroll\Resources\DtrLogResource;
 use App\Modules\Payroll\Resources\HolidayResource;
 use App\Modules\Payroll\Resources\DtrHalfDayMismacth;
@@ -1515,7 +1516,7 @@ class ReportController extends Controller
                 return error_response("Please select a department", array());
             }
             $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id, $me->LevelId, $me->id]);
-            $user_dtr = $result_sets[1];
+            $user_dtr = $result_sets[0];
             $report = [];
             foreach($user_dtr as $dtr) {
                 $report[] = array(
@@ -1556,7 +1557,7 @@ class ReportController extends Controller
                 return error_response("Please select a department", array());
             }
             $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id, $me->LevelId, $me->id]);
-            $user_dtr = $result_sets[1];
+            $user_dtr = $result_sets[0];
             $report = [];
             foreach($user_dtr as $dtr) {
                 $report[] = array(
@@ -1570,7 +1571,7 @@ class ReportController extends Controller
                     "Project_Name" => $dtr->project_name
                 );
             }
-            return Excel::download(new NewExportDTRSummary($report), 'dtrmultilogssummary.csv');
+            return Excel::download(new  ExportDTRMultiLogsSummary($report), 'dtrmultilogssummary.csv');
 
      
         } catch (Exception $e) {

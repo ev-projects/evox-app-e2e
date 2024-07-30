@@ -182,7 +182,7 @@ class DtrMultiLogsSummary extends Component {
                         <Button id="btn-generate" variant="primary" type="submit" onClick={() => setFieldValue("export", false)}><i className="fa fa-newspaper-o" /> Generate</Button>&nbsp;&nbsp;
                         
                         { Authenticator.scanFeature('export_dtr_summary') &&
-                          <Button id="btn-generate" variant="primary" type="submit" onClick={() => setFieldValue("export", "all_new")}><i className="fa fa-download" /> Export</Button>
+                          <Button id="btn-generate" variant="primary" type="submit" onClick={() => setFieldValue("export", "department_new")}><i className="fa fa-download" /> Export</Button>
                         }
                       </div>
 
