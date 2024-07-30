@@ -144,7 +144,7 @@ class DtrMultiLogsSummary extends Component {
 		<form onSubmit={handleSubmit}>
 		<Wrapper {...this.props} >
 			  <ContainerWrapper>  
-        <h2 className="page-title">DTR MULTI-LOGS SUMMARY </h2>
+        <h2 className="page-title">DTR MULTI-CLOCK IN SUMMARY </h2>
         <Row className="filters filter-dtr"> 
               <Col className="date-range"> 
                       <div className="form-group">
