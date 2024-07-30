@@ -102,6 +102,7 @@ import OverallRequest from "../container/MyTeam/OverallRequest";
 import OpsScheduleForm from "../container/OpsSchedule/OpsScheduleForm";
 import OpsScheduleList from "../container/OpsSchedule/OpsScheduleList";
 import JobOpeningsUpdate from "../container/Admin/JobOpeningsUpdate/JobOpeningsUpdate";
+import DtrMultiLogsSummary from "../container/MyTeam/DtrMultiLogsSummary";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -331,6 +332,15 @@ const RoutesList = (props) => {
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
           role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
           <DtrSummaryNew 
+         feature={['view_dtr_summary'] }
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_multi_logs_summary}>
+          {/* <DtrSummary 
+          level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
+          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
+          <DtrMultiLogsSummary 
          feature={['view_dtr_summary'] }
           role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>

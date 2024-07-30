@@ -468,13 +468,20 @@ const Sidebar = (props) => {
                       </Link>
                     </li> */}
                     {(Authenticator.scanFeature("view_dtr_summary")) && (
-
-                    <li className="nav-item">
-                      <Link className="nav-link" to={global.links.dtr_summary}>
-                        <i className="nav-icon fa fa-file-text nav-icon" />
-                        <p>DTR Summary</p>
-                      </Link>
-                    </li>
+                    <>
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.dtr_summary}>
+                          <i className="nav-icon fa fa-file-text nav-icon" />
+                          <p>DTR Summary</p>
+                        </Link>
+                      </li>
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.dtr_multi_logs_summary}>
+                          <i className="nav-icon fa fa-file-text nav-icon" />
+                          <p>DTR Multi-logs Summary</p>
+                        </Link>
+                      </li>
+                    </>
                      )}
                     {/* <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_conflict}>

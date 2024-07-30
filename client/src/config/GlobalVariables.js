@@ -46,6 +46,7 @@
     overallrequest                :    "/app/team/overallrequest",
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
+    dtr_multi_logs_summary          :  "/app/team/DtrMultiLogsSummary",
     dtr_conflict                    :  "/app/team/DtrConflict",
     dtr_summary_new                 :  "/app/team/DtrSummaryTemp",
     dtr_logs                        :  "/app/team/DtrLogs", 
