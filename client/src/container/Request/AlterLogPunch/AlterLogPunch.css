@@ -8,3 +8,26 @@
     
     padding-top: 28px;
 }
+
+
+
+.alter-punch-rows {
+
+    padding-left: 10px !important;
+
+  }
+.alter-punch-rows:nth-child(even) {
+
+
+    /* padding-left: 20px !important; */
+    background: linear-gradient(to left, #ffffff00, #26c6d81a);
+    border-radius: 6px;
+  
+  
+  }
+
+  .alter-punch-rows label {
+
+    font-weight: bold !important;
+  
+  }

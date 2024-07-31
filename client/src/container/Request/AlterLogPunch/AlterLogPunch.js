@@ -355,7 +355,7 @@ showOriginalHandler = (user,date) => {
           
         
             <Row>
-            <Content col="6" title={title} subtitle={<RequestSubtitle method={method}  />}>
+            <Content col="8" title={title} subtitle={<RequestSubtitle method={method}   user={this.props.instance.user}/>}>
         
         <Row>  
           <Col size="4">  
@@ -401,6 +401,7 @@ showOriginalHandler = (user,date) => {
                       <th className="dtr-log">Clock Out</th>
                       <th className="dtr-log">Hour Count</th>
                       <th className="dtr-log">Punch Status</th>
+                      <th className="dtr-log">Project</th>
                 </tr>
             </thead>
             <tbody>
@@ -424,6 +425,7 @@ showOriginalHandler = (user,date) => {
                            
                           <b>{ ((punch.log_out_type == "Log_out" && punch.log_in_type == "Continue") || (punch.log_out_type == "Log_out" && punch.log_in_type == "Log_in")? "Logout" : punch.log_out_type == "Pause" ? "Pause" : punch.log_in_type == "rest_day_work" ? "Rest Day Work" : "" )}</b>
                             </div></td>
+                            <td className="dtr-log"> { (punch.project_name)}</td>
                         </tr>
               })}
               </tbody>
@@ -466,10 +468,10 @@ showOriginalHandler = (user,date) => {
           null 
         }
 
-        <RequestButtons method={method} {...this} />
+        
         
       </Content>
-      <Content col="5" title={"EDIT"} subtitle={<RequestSubtitle method={method} user={this.props.instance.user} />}>
+      <Content col="8" title={"EDIT"} subtitle={<RequestSubtitle method={method} />}>
 
     {values.date !== null ? 
       <>
@@ -484,69 +486,73 @@ showOriginalHandler = (user,date) => {
         {/* <Button className="btn btn-primary-2" ><i className="fa  is-green fa-car" /> </Button> &nbsp; */}
  
         {this.state.records?.map((item,index)=>{
-                    return <Row>  
-               <Col>
-                <Row>
-                <Col size="5">   
-                      <div className="form-group">
-                        <label>On Duty {index+1}: </label>
-                        <InputDateTimeIndex name="start_time"   popperPlacement="right-start"  value={values.date} minDate={values.date} maxDate={index != 0 ?DateFormatter.add_day_to_datetime( values.date, 1 ):values.date } type="indexing" indexid={index}/>
-                      </div>
-                    </Col> 
-                    <Col size="5"> 
-                    <div className="form-group">
-                        <label>Off Duty: </label>
-                        <InputDateTimeIndex name="end_time"   popperPlacement="right-start"  value={values.date} minDate={values.date} maxDate={DateFormatter.add_day_to_datetime( values.date, 1 )} type="indexing" indexid={index}/>
-                      </div> 
-                    </Col> 
-                    <Col size="1" >
-                      <div className="rmv-records-btn">
-                      <Button className="btn btn-primary-2 "  onClick={(e) => {this.minusSelectedHandler(values,index);}} ><i className="fa   fa-times" /> </Button>
-                      </div>
-                       
-                    </Col>
-                </Row>
-                <Row>
-                {/* <Col size="5">   
-                      <div className="form-group">
-                        <label>Project Name </label>
-                        <Form.Control type="text" name="project_name" value={values.project_name} />                
-                         </div>
-                    </Col> 
-                    <Col size="7"> 
-                    <div className="form-group">
-                        <label>Remarks </label>
-                            <Form.Control type="text" name="remarks" value={values.Remarks} />        
-                          </div> 
-                    </Col>  */}
+                    return <div className="alter-punch-rows">
 
-              <Col size="5">   
-                  <div className="form-group">
-                    <label>Project Name: </label>
-                    <Form.Control 
-                      type="text" 
-                      name={`new_punch.${index}.project_name`} 
-                      value={values.new_punch && values.new_punch[index] && values.new_punch[index].project_name} 
-                      onChange={handleChange}
-                    />
-                  </div>
-                </Col> 
-                <Col size="7"> 
-                  <div className="form-group">
-                    <label>Remarks: </label>
-                    <Form.Control 
-                      type="text" 
-                      name={`new_punch.${index}.remarks`} 
-                      value={values.new_punch && values.new_punch[index] && values.new_punch[index].remarks} 
-                      onChange={handleChange}
-                    />
-                  </div> 
-                </Col> 
-                
-                </Row>
-               </Col>
+<Row >  
+                <Col size="12">
+                  <Row>
+                  <Col size="4">   
+                        <div className="form-group">
+                          <label>On Duty {index+1}: </label>
+                          <InputDateTimeIndex name="start_time"   popperPlacement="right-start"  value={values.date} minDate={values.date} maxDate={index != 0 ?DateFormatter.add_day_to_datetime( values.date, 1 ):values.date } type="indexing" indexid={index}/>
+                        </div>
+                      </Col> 
+                      <Col size="4"> 
+                      <div className="form-group">
+                          <label>Off Duty: </label>
+                          <InputDateTimeIndex name="end_time"   popperPlacement="right-start"  value={values.date} minDate={values.date} maxDate={DateFormatter.add_day_to_datetime( values.date, 1 )} type="indexing" indexid={index}/>
+                        </div> 
+                      </Col> 
+                      {/* <Col size="3" >
+
+                      </Col> */}
+                      <Col size="1" >
+                        <div className="rmv-records-btn">
+                        <Button className="btn btn-primary-2 "  onClick={(e) => {this.minusSelectedHandler(values,index);}} ><i className="fa   fa-times" /> </Button>
+                        </div>
+                        
+                      </Col>
+                  </Row>
+                  <Row>
+        
+
+                <Col size="3">   
+                    <div className="form-group">
+                      <label>Project Name: </label>
+                      <Form.Control 
+                        as="select"
+                        name={`new_punch.${index}.project_name`} 
+                        value={values.new_punch && values.new_punch[index] && values.new_punch[index].project_name} 
+                        onChange={handleChange}
+                      >
+
+                      {/* <Form.Control  as="select" required onChange={(e) => onProjectNameChange(e.target.value)}> */}
+                              <option value="">Select a project</option>
+                            
+                              <option value="EVOX">EVOX</option>
+                              <option value="ODOO">ODOO</option>
+                              <option value="LMS">LMS</option>
+                          <option value="OPTIMY">OPTIMY</option>
+                            </Form.Control >
+                    </div>
+                  </Col> 
+                  <Col size="9"> 
+                    <div className="form-group">
+                      <label>Remarks: </label>
+                      <Form.Control 
+                        type="text" 
+                        name={`new_punch.${index}.remarks`} 
+                        value={values.new_punch && values.new_punch[index] && values.new_punch[index].remarks} 
+                        onChange={handleChange}
+                      />
+                    </div> 
+                  </Col> 
                   
-                  </Row>;
+                  </Row>
+                </Col>
+                    
+                  </Row>
+                   </div>
                 })}
                 </>:
                   
@@ -555,7 +561,9 @@ showOriginalHandler = (user,date) => {
                 </>
      
     }
-        
+    <br/>
+    {(this.state.records.length > 0 || method == 'approval')&&<> <RequestButtons method={method} {...this} /></>}
+       
       </Content>
             </Row>
           </ContainerBody>
@@ -583,11 +591,13 @@ const validationSchema = Yup.object().shape({
                         start_time:  Yup.date().required("This field is required").nullable().max( Yup.ref('end_time') , 'Please select a valid Time-In.')
                         ,
                         end_time:  Yup.date().required("This field is required").nullable().min( Yup.ref('start_time') , 'Please select a valid Time-out.'),
+                        project_name: Yup.string().required("Project worked should be stated"),
+                        remarks: Yup.string().required("Remarks are required"),
                       })
                      
                     ) .test(
                       "date_optimize",
-                      "One of the time logs conflict with another.",
+                      "One of the time logs conflict with another or your missing a project name and remarks.",
                       (value) => {
                         for (var key in value){
                         
