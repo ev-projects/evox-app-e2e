@@ -2224,6 +2224,8 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 $dtr_punch->time_in         =   $punch->start_time;
                 $dtr_punch->time_out        =   $punch->end_time;
+                $dtr_punch->remarks         =   $punch->remarks;
+                $dtr_punch->project_name    =   $punch->project_name;
                 $dtr_punch->user_id         =   $alter_punch_log->user_id;
                 $dtr_punch->date            =   $alter_punch_log->date;
                

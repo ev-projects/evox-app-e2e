@@ -30,7 +30,7 @@ class MyTeamRequests extends Component {
           valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : 
                               Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
                               new Date(this.props.settings.current_payroll_cutoff.end_date) : null,
-          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? this.props.user.departments_handled_strict[0].id : null,
+          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled.length == 1 ? this.props.user.departments_handled[0].id : null,
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
           checkedList:      this.props.filters?.checkedList ?? [],
@@ -329,7 +329,7 @@ class MyTeamRequests extends Component {
                             style={{ display: 'block' }}
                           >
                           <option    label="- Department -" />
-                          {this.props.user.departments_handled_strict.map(function(item){
+                          {this.props.user.departments_handled.map(function(item){
                             return <option value={item.id} label={item.department_name} />;
                           })}
                           </select>

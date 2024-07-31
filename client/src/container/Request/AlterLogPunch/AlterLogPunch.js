@@ -153,10 +153,12 @@ showOriginalHandler = (user,date) => {
                
                 if(values["new_punch"].length > 0) {
                   for(var item in values["new_punch"]){
-                   
+                   console.log(values);
                     new_punch_data[item] ={
                         start_time : moment( values.new_punch[item].start_time ).format("YYYY-MM-DD HH:mm:ss"),
-                        end_time : moment( values.new_punch[item].end_time ).format("YYYY-MM-DD HH:mm:ss")
+                        end_time : moment( values.new_punch[item].end_time ).format("YYYY-MM-DD HH:mm:ss"),
+                        project_name : values.new_punch[item].project_name,
+                        remarks : values.new_punch[item].remarks
                       }
               
                   }
@@ -171,7 +173,7 @@ showOriginalHandler = (user,date) => {
             }
         }
     }
-    // console.log(new_punch_data,formData);
+    console.log(new_punch_data,formData);
     // this.props.addAlterLogPunch( formData );
 
     // Checks on what action to use depending on the values.action
@@ -227,6 +229,8 @@ showOriginalHandler = (user,date) => {
           new_punch_data[item] ={
               start_time :nextProps.instance.new_punch[item].start_time != undefined ? new Date( nextProps.instance.new_punch[item].start_time ) : ( nextProps.location.start_time != undefined ? new Date(  nextProps.location.start_time ) : null ), 
               end_time : nextProps.instance.new_punch[item].end_time != undefined ? new Date( nextProps.instance.new_punch[item].end_time ) : ( nextProps.location.end_time != undefined ? new Date(  nextProps.location.end_time ) : null ), 
+              project_name :nextProps.instance.new_punch[item].project_name != undefined ? nextProps.instance.new_punch[item].project_name : ( nextProps.location.project_name != undefined ? nextProps.instance.new_punch[item].project_name : null ), 
+              remarks : nextProps.instance.new_punch[item].remarks != undefined ?nextProps.instance.new_punch[item].remarks : ( nextProps.location.end_time != undefined ? nextProps.instance.new_punch[item].remarks: null ), 
             }
     
         }
@@ -247,7 +251,9 @@ showOriginalHandler = (user,date) => {
           console.log(nextProps.dtr.single_punch_list[item].date_time_in);
           new_punch_data[item] ={
               start_time :nextProps.dtr.single_punch_list[item].date_time_in != undefined ? new Date( nextProps.dtr.single_punch_list[item].date_time_in ) : ( nextProps.location.start_time != undefined ? new Date(  nextProps.location.start_time ) : null ), 
-              end_time : nextProps.dtr.single_punch_list[item].date_time_out != undefined ? new Date( nextProps.dtr.single_punch_list[item].date_time_out ) : ( nextProps.location.end_time != undefined ? new Date(  nextProps.location.end_time ) : null ), 
+              end_time : nextProps.dtr.single_punch_list[item].date_time_out != undefined ? new Date( nextProps.dtr.single_punch_list[item].date_time_out ) : ( nextProps.location.end_time != undefined ? new Date(  nextProps.location.end_time ) : null ),
+              project_name : nextProps.dtr.single_punch_list[item].project_name != undefined ? ( nextProps.dtr.single_punch_list[item].project_name ) : ( nextProps.location.end_time != undefined ? (  nextProps.location.project_name ) : null ), 
+              remarks :  nextProps.dtr.single_punch_list[item].remarks != undefined ? ( nextProps.dtr.single_punch_list[item].remarks ) : ( nextProps.location.end_time != undefined ? (  nextProps.location.remarks ) : null ),
             }
         }
        
@@ -479,7 +485,9 @@ showOriginalHandler = (user,date) => {
  
         {this.state.records?.map((item,index)=>{
                     return <Row>  
-                    <Col size="5">   
+               <Col>
+                <Row>
+                <Col size="5">   
                       <div className="form-group">
                         <label>On Duty {index+1}: </label>
                         <InputDateTimeIndex name="start_time"   popperPlacement="right-start"  value={values.date} minDate={values.date} maxDate={index != 0 ?DateFormatter.add_day_to_datetime( values.date, 1 ):values.date } type="indexing" indexid={index}/>
@@ -497,6 +505,46 @@ showOriginalHandler = (user,date) => {
                       </div>
                        
                     </Col>
+                </Row>
+                <Row>
+                {/* <Col size="5">   
+                      <div className="form-group">
+                        <label>Project Name </label>
+                        <Form.Control type="text" name="project_name" value={values.project_name} />                
+                         </div>
+                    </Col> 
+                    <Col size="7"> 
+                    <div className="form-group">
+                        <label>Remarks </label>
+                            <Form.Control type="text" name="remarks" value={values.Remarks} />        
+                          </div> 
+                    </Col>  */}
+
+              <Col size="5">   
+                  <div className="form-group">
+                    <label>Project Name: </label>
+                    <Form.Control 
+                      type="text" 
+                      name={`new_punch.${index}.project_name`} 
+                      value={values.new_punch && values.new_punch[index] && values.new_punch[index].project_name} 
+                      onChange={handleChange}
+                    />
+                  </div>
+                </Col> 
+                <Col size="7"> 
+                  <div className="form-group">
+                    <label>Remarks: </label>
+                    <Form.Control 
+                      type="text" 
+                      name={`new_punch.${index}.remarks`} 
+                      value={values.new_punch && values.new_punch[index] && values.new_punch[index].remarks} 
+                      onChange={handleChange}
+                    />
+                  </div> 
+                </Col> 
+                
+                </Row>
+               </Col>
                   
                   </Row>;
                 })}
