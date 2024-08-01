@@ -382,7 +382,7 @@ const ConfirmSubmissionModal = ({
         <option value="EVOX">EVOX</option>
         <option value="ODOO">ODOO</option>
         <option value="LMS">LMS</option>
-		<option value="OPTIMY">OPTIMY</option>
+		{/* <option value="OPTIMY">OPTIMY</option> */}
       </Form.Control >
     
       </Form.Group>
