@@ -460,14 +460,14 @@ class MyTeamRequests extends Component {
                                 const json_data_old = JSON.parse(item.fourth_column)
                                 const old_times = json_data_old.map(item => ({
 
-                                  start_time: new Date(item.start_time * 1000)?.toLocaleTimeString('en-GB', {
+                                  start_time: new Date(item.time_in * 1000)?.toLocaleTimeString('en-GB', {
                                                                                   hour: '2-digit',
                                                                                   minute: '2-digit',
                                                                                   second: '2-digit',
                                                                                   hour12: false
                                                                                 }) ?? 'N/A',
                                 
-                                  end_time: new Date(item.end_time * 1000)?.toLocaleTimeString('en-GB', {
+                                  end_time: new Date(item.time_out * 1000)?.toLocaleTimeString('en-GB', {
                                                                                 hour: '2-digit',
                                                                                 minute: '2-digit',
                                                                                 second: '2-digit',
