@@ -439,18 +439,61 @@ class MyTeamRequests extends Component {
                               link =  global.links.alter_log + item.id.toString();
                               break;
                               case "alter_log_punches":
+                                const json_data_new = JSON.parse(item.fifth_column);
+                                const new_times = json_data_new.map(item => ({
+
+                                  start_time: new Date(item.start_time * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                  hour: '2-digit',
+                                                                                  minute: '2-digit',
+                                                                                  second: '2-digit',
+                                                                                  hour12: false
+                                                                                }) ?? 'N/A',
+                                
+                                  end_time: new Date(item.end_time * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit',
+                                                                                second: '2-digit',
+                                                                                hour12: false
+                                                                              }) ?? 'N/A'
+                                
+                                }));
+                                const json_data_old = JSON.parse(item.fourth_column)
+                                const old_times = json_data_old.map(item => ({
+
+                                  start_time: new Date(item.start_time * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                  hour: '2-digit',
+                                                                                  minute: '2-digit',
+                                                                                  second: '2-digit',
+                                                                                  hour12: false
+                                                                                }) ?? 'N/A',
+                                
+                                  end_time: new Date(item.end_time * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit',
+                                                                                second: '2-digit',
+                                                                                hour12: false
+                                                                              }) ?? 'N/A'
+                                
+                                }));
+                                console.log(json_data_new,new_times,json_data_old);
                                 fourthColumn.push(
                                   <div>
                                     <span className="alter-logs-new">New</span>
-                                    <p>
-                                      Timelog:  {item.fifth_column}
-                                    </p>
+                                   {new_times.map(function(item) {
+
+                                        return <p>{item.start_time}-{item.end_time}</p>;
+
+                                        })}
                                   </div>
                                 );
                                 fifthColumn.push(
                                   <div>
                                     <span className="alter-logs-old">Old</span>
-                                    <p>Timelog: {item.fourth_column}</p>
+                                    {old_times.map(function(item) {
+
+                                          return <p>{item.start_time}-{item.end_time}</p>;
+
+                                          })}
                                   </div>
                                 );
                                 link =  global.links.alter_log_punch + item.id.toString();

@@ -481,7 +481,7 @@ showOriginalHandler = (user,date) => {
         </div>
     
               <Form.Control.Feedback type="invalid">
-                <ErrorMessage component="div" name="new_punch"className="input-feedback">{msg => <div>{"One of the time logs conflict with another or it is not optimized."}</div>}</ErrorMessage> 
+                <ErrorMessage component="div" name="new_punch"className="input-feedback">{msg => <div>{"One of the time logs conflict with another or it is not optimized or missing a remakrs and prject name."}</div>}</ErrorMessage> 
               </Form.Control.Feedback> 
         {/* <Button className="btn btn-primary-2" ><i className="fa  is-green fa-car" /> </Button> &nbsp; */}
  
