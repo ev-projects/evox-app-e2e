@@ -1038,7 +1038,7 @@ class UserRepository implements UserRepositoryInterface{
                     "query" =>  $response ?? [],
                 );
 
-       
+                // dd($result['query'][0]);
             if( count($result['query']) > 2){
                 // $paginate = $result['query'][count($result['query'])-2][0];
                 
@@ -1051,9 +1051,9 @@ class UserRepository implements UserRepositoryInterface{
                 $collection["data"] = $result['query'][count($result['query'])-2];
 
                 $collection["data"]  = $collection["data"] ? array_map(function($item) {
-                    // dd($item);
+                    
                     return (object) array(
-                        'id' => $item->id,
+                        'id' => isset($item->id) ? $item->id : $item->UserId,
                         'emp_num' => $item->Employee_Number,
                         'department' => ( is_valid(  $item->Name ) ?  $item->Name : null ),
                         'is_active' => (int)$item->is_active,
@@ -1076,6 +1076,7 @@ class UserRepository implements UserRepositoryInterface{
             return  $collection;
 
         } catch (Exception $e) {
+            dump ($e);
             throw $e;
         }
     }
