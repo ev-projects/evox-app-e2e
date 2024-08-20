@@ -1039,16 +1039,16 @@ class UserRepository implements UserRepositoryInterface{
                 );
 
                 // dd($result['query'][0]);
-            if( count($result['query']) > 2){
+            if( count($result['query']) > 1){
                 // $paginate = $result['query'][count($result['query'])-2][0];
                 
                 // $collection["data"] = $result['query'][count($result['query'])-2];
 
                 // $collection["data"]  = $collection["data"] ? array_map(function($item) {
 
-                $paginate = $result['query'][2][0];
+                $paginate = $result['query'][1][0];
 
-                $collection["data"] = $result['query'][1];
+                $collection["data"] = $result['query'][0];
 
                 $collection["data"]  = $collection["data"] ? array_map(function($item) {
                     
