@@ -1048,7 +1048,7 @@ class UserRepository implements UserRepositoryInterface{
 
                 $paginate = $result['query'][2][0];
 
-                $collection["data"] = $result['query'][count($result['query'])-2];
+                $collection["data"] = $result['query'][1];
 
                 $collection["data"]  = $collection["data"] ? array_map(function($item) {
                     
@@ -1076,7 +1076,7 @@ class UserRepository implements UserRepositoryInterface{
             return  $collection;
 
         } catch (Exception $e) {
-            dump ($e);
+            // dump ($e);
             throw $e;
         }
     }
