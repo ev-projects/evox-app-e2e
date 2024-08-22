@@ -70,7 +70,7 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
         try {
             $result = [];
 
-            $user = get_authenticated_user( $user_id );
+            // $user = get_authenticated_user( $user_id );
 
             // Gets all the Payroll Cutoff that started after the User's Date Hired
             $payroll_cutoff_collection = PayrollCutoff::whereRaw("( end_date >= '". $user->date_hired ."' )")->get();
