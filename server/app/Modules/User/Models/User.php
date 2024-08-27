@@ -510,7 +510,7 @@ class User extends Authenticatable implements JWTSubject
                     $filter['status'],
                     $filter['department_id'],
                     $filter['name'] , 
-                    0, $filter['page'], $perpage_count, 0]);
+                    0, $filter['page'], $perpage_count, $filter['departmentselect'],$filter['showall']]);
     
             }else{
                 $response =  call_sp("EH_SP_overall_My_Team_Request", [
@@ -523,15 +523,14 @@ class User extends Authenticatable implements JWTSubject
                     1, // change to 1
                     $filter['page'], 
                     $perpage_count, 
-                    0
+                    $filter['departmentselect'],$filter['showall']
                 ]);
             }
 
-                
+            
          
                 $collection =  [];
-            $result = $response[3] ? array_map(function($item) {
-                    // dd($item);
+            $result = ($filter['departmentselect'] == 1 ? $response[4] : $response[3]) ? array_map(function($item) {
                     return (object) array(
                         'id' => $item->T_id,
                         'status' => $item->T_status,
@@ -547,12 +546,47 @@ class User extends Authenticatable implements JWTSubject
                         'department_name' => $item->T_userDepartmentName,
                         'updated_at' => $item->T_updated_at,
                     );
-                }, $response[3]): []
-            ;
-            // dd($result ,$response[0],$response[2],$response[3]);
-            $paginate = $response[2][0];
-                // dd($paginate);
+                },  $filter['departmentselect'] == 1 ? $response[4] : $response[3]): [];
+
+            if($filter['departmentselect'] == 1){
+                $resultdepartment = $response[0] ? array_map(function($item) {
+
+                    return (object) array(
+                        'id' => $item->Id,
+                        'DepartmentName' => $item->DepartmentName,
+                    );
+                }, $response[0]): [];
+            }
+            
+            // $resultstatus =  ($filter['departmentselect'] == 1 ? $response[2] : $response[1]) ? array_map(function($item) {
+           
+            //     return (object) array(
+            //         'status' => $item->status,
+            //         'count' => $item->statusCount,
+            //     );
+
+            // }, $filter['departmentselect'] == 1 ? $response[2] : $response[1]): [];
+
+            if ($filter['departmentselect'] == 1 ? $response[2] : $response[1]) {
+                $numbers = [
+                    'approved' => $filter['departmentselect'] == 1 ? $response[2][0]->statusCount : $response[1][0]->statusCount,
+                    'canceled' => $filter['departmentselect'] == 1 ? $response[2][1]->statusCount : $response[1][1]->statusCount,
+                    'declined' => $filter['departmentselect'] == 1 ? $response[2][2]->statusCount : $response[1][2]->statusCount,
+                    'pending'  => $filter['departmentselect'] == 1 ? $response[2][3]->statusCount : $response[1][3]->statusCount,
+                ];
+            }
+                       // dd($result ,$response[0],$response[2],$response[3]);
+            $paginate =  $filter['departmentselect'] == 1 ? $response[3][0] : $response[2][0];
+       
             $collection["data"] = [ "query" =>$result];
+            if($filter['departmentselect'] == 1){
+                $collection["Department"] = $resultdepartment;
+            }else{
+                $collection["Department"] = [];
+            }
+
+            $collection["numbers"] = $numbers;
+
             $collection["pagination"] = [
                                             'total' => (int) $paginate->TotalCount,
                                             'count' => count( $collection["data"]),
@@ -560,6 +594,7 @@ class User extends Authenticatable implements JWTSubject
                                             'current_page' => (int) $paginate->CurrentPage,
                                             'last_page' => ceil($paginate->TotalCount /  $perpage_count)
                                         ];
+            
 
                                         // if( ($paginate->TotalCount % $perpage_count) > 0 
                                         // && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
@@ -997,8 +1032,8 @@ class User extends Authenticatable implements JWTSubject
             [
                 $this->id, // vishnu this_id
                 null,
-                0
-                
+                0,
+                1
                 ]
             ); 
                 $result = $response[0] ? array_map(function($item) {
@@ -1037,8 +1072,8 @@ class User extends Authenticatable implements JWTSubject
             [
                 $this->id, // vishnu this_id
                 null,
-                1
-                
+                1,
+                1                
                 ]
             ); 
                 $result = $response[0] ? array_map(function($item) {
@@ -1077,7 +1112,7 @@ class User extends Authenticatable implements JWTSubject
             [
                 $this->id, // vishnu this_id
                 $department_id
-                ,0
+                ,0,1
                 ]
             ); 
             // dd($response[0]);
