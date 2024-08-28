@@ -7,7 +7,7 @@ import Formatter from "../../../services/Formatter";
 export const fetchRequestList = (params = null) => {
   return (dispatch, getState) => {
     var dispatch_commands = {};
-
+    var dispatch_commands2;
     if (params.url == "my_team_requests") {
       dispatch_commands = {
         set_filters: "SET_MY_TEAM_REQUEST_LIST_FILTERS",
@@ -18,6 +18,12 @@ export const fetchRequestList = (params = null) => {
         set_filters: "SET_MY_REQUEST_LIST_FILTERS",
         fetch_list: "FETCH_MY_REQUEST_LIST_SUCCESS",
       };
+    }
+
+    if (params.url == "my_team_requests") {
+      dispatch_commands2 = "FETCH_MY_TEAM_REQUEST_STATUS_NUMBERS";
+    } else {
+      dispatch_commands2 = "FETCH_MY_REQUEST_STATUS_NUMBERS";
     }
 
     dispatch({
@@ -31,13 +37,28 @@ export const fetchRequestList = (params = null) => {
       params: params,
     })
       .then((result) => {
+
+        console.log();
         dispatch({
           type: dispatch_commands.fetch_list,
           requestList: result.data.content,
         });
+
+        if (params.url == "my_team_requests") {
+          dispatch({
+            type: "FETCH_MY_TEAM_REFRESH_DEP_LIST",
+            content: result.data.content,
+          });
+        }
+        
+
+        dispatch({
+          type: dispatch_commands2,
+          statusNumbers: result.data.content.result.status_numbers,
+        });
       })
       .catch((e) => {
-        dispatch(Formatter.alert_error(e));
+        dispatch(Formatter.alert_error(e));  
       });
   };
 };

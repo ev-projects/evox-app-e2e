@@ -501,23 +501,11 @@ class User extends Authenticatable implements JWTSubject
             ];
             $perpage_count = 10;
 
-            if( $filter['use_filter'] == 1 && $filter['departmentselect'] == 1){
-                $filter['departmentselect'] = 0;
-            }
-
-            // dd(
-
-            //     $this->id,
-            //     $this->LevelId,
-            //     $filter['valid_from'],
-            //     $filter['valid_to'],
-            //     $request_types[$filter['request_type']],
-            //     $filter['status'],
-            //     $filter['department_id'],
-            //     $filter['name'] , 
-            //     0, $filter['page'], $perpage_count, $filter['departmentselect'],$filter['showall']
-
-            // );
+            // if( $filter['use_filter'] == 1 && $filter['departmentselect'] == 1){
+            //     $filter['departmentselect'] = 0;
+            // }
+            // dump($filter['departmentselect']);
+          
             if(isset($filter['valid_from'])){
                 $response =  call_sp("EH_SP_My_Team_Request", [
                     $this->id,
@@ -528,7 +516,7 @@ class User extends Authenticatable implements JWTSubject
                     $filter['status'],
                     $filter['department_id'],
                     $filter['name'] , 
-                    0, $filter['page'], $perpage_count, $filter['departmentselect'],$filter['showall']]);
+                    0, $filter['page'], $perpage_count, $filter['departmentselect']!= null  ? $filter['departmentselect'] : 0,$filter['showall']!= null  ? $filter['showall'] : 0]);
     
             }else{
                 $response =  call_sp("EH_SP_overall_My_Team_Request", [
@@ -541,7 +529,7 @@ class User extends Authenticatable implements JWTSubject
                     1, // change to 1
                     $filter['page'], 
                     $perpage_count, 
-                    $filter['departmentselect'],$filter['showall']
+                    $filter['departmentselect']!= null  ? $filter['departmentselect'] : 0,$filter['showall']!= null  ? $filter['showall'] : 0
                 ]);
             }
 

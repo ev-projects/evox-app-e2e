@@ -282,12 +282,14 @@ class RequestRepository implements RequestRepositoryInterface{
             }
             
             // dd( $my_team_req);
-            if(is_valid($my_team_req[1])){
+            $target = 1;
+            if(count($my_team_req) == 6){$target = 2;}
+            if(is_valid($my_team_req[$target])){
                 $numbers = array(
-                    "pending" => $my_team_req[2][3]->statusCount,
-                    "approved" => $my_team_req[2][0]->statusCount,
-                    "declined" => $my_team_req[2][2]->statusCount,
-                    "canceled" => $my_team_req[2][1]->statusCount,
+                    "pending" => $my_team_req[$target][3]->statusCount,
+                    "approved" => $my_team_req[$target][0]->statusCount,
+                    "declined" => $my_team_req[$target][2]->statusCount,
+                    "canceled" => $my_team_req[$target][1]->statusCount,
                 );
             }
             // dd($numbers);

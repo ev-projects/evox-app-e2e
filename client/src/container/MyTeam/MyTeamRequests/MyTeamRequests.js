@@ -35,7 +35,7 @@ class MyTeamRequests extends Component {
 
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
-          use_filter:                                          this.props.filters?.use_filter ? this.props.filters?.use_filter :  1,
+          use_filter:                                          this.props.filters?.use_filter ? this.props.filters?.use_filter :  0,
           showall:                                          this.props.filters?.showall ? this.props.filters?.showall :  0,
           departmentselect:                                 this.props.filters?.departmentselect ? this.props.filters?.departmentselect :  1,
           checkedList:      this.props.filters?.checkedList ?? [],
@@ -46,6 +46,8 @@ class MyTeamRequests extends Component {
           first_load:      this.props.filters?.first_load ?? true,
           url:              'my_team_requests'
       }
+      ,
+      store_departments : [],
     }
     this.state = this.initialState; 
 
@@ -76,7 +78,7 @@ class MyTeamRequests extends Component {
         break;
     default:
         for (var key in values) {
-          console.log(key,values[key]);
+       
           if( values[key] != null && values[key] != ""  ) {
               switch( key ) {
                 case "valid_from":
@@ -93,7 +95,7 @@ class MyTeamRequests extends Component {
       }
     }
     this.props.fetchRequestList( formData );
-    this.props.fetchStatusNumbers( formData );
+    // this.props.fetchStatusNumbers( formData );
   }
 
 
@@ -107,36 +109,51 @@ class MyTeamRequests extends Component {
 
     };
 
-    // if(Validator.isValid(this.state.filters.first_load)){
-    //   filters =this.state.filters.first_load == true ? {
-    //     ...this.state.filters,
-    //     valid_from: Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
-    // new Date(this.props.settings.current_payroll_cutoff.start_date).toISOString().substring(0, 10) : null,
-    //     valid_to  : Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
-    // new Date ( this.props.settings.current_payroll_cutoff.end_date).toISOString().substring(0, 10) : null,
+    if(Validator.isValid(this.state.filters.first_load)){
+      filters =this.state.filters.first_load == true ? {
+        ...this.state.filters,
+        valid_from: Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
+    new Date(this.props.settings.current_payroll_cutoff.start_date).toISOString().substring(0, 10) : null,
+        valid_to  : Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
+    new Date ( this.props.settings.current_payroll_cutoff.end_date).toISOString().substring(0, 10) : null,
   
-    //   } : filters;
+      } : filters;
 
-    // }
+    }
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
 
     // alert(this.props.isListLoaded);
-    // if( ! this.props.isListLoaded ) {
+    if( ! this.props.isListLoaded ) {
       this.props.fetchRequestList( filters );
-    // }
+    }
+
 
     // if( ! this.props.isNumbersLoaded ) {
-      this.props.fetchStatusNumbers( filters );
+      // this.props.fetchStatusNumbers( filters );
     // }
    
   }
 
  
-  componentDidUpdate(){
+  componentDidUpdate(prevProps) {
 
-  }
-
+    const { requestList } = this.props;
   
+    const { store_departments } = this.state;
+  
+    if (requestList.result && requestList.result.department) {
+  
+      const departments = requestList.result.department;
+  
+      if (departments.length > 0 && departments !== store_departments) {
+  
+        this.setState({ store_departments: departments });
+  
+      }
+  
+    }
+  
+  }
 
   render = () => {  
 
@@ -149,6 +166,20 @@ class MyTeamRequests extends Component {
     // };
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
+
+    // console.log(this.props.stored_departments)
+  var request_list_department = this.props.requestList?.result?.department;
+    
+console.log(this.state.store_departments);
+  var request_list_department = [];
+
+      request_list_department = this.state.store_departments;
+      // this.setState({store_departments: request_list_department});
+
+  // console.log(this.state.store_departments);
+  // var request_list_department = this.state.store_departments;
+
+  // console.log(this.props.requestList, this.props.requestList?.department);
 
   const required_field = "This field is required";
   const validationSchema = Yup.object().shape({
@@ -336,8 +367,11 @@ class MyTeamRequests extends Component {
                             style={{ display: 'block' }}
                           >
                           <option    label="- Department -" />
-                          {this.props.user.departments_handled_strict.map(function(item){
+                          {/* {this.props.user.departments_handled_strict.map(function(item){
                             return <option value={item.id} label={item.department_name} />;
+                          })} */}
+                          {request_list_department?.map(function(item){
+                            return <option value={item.id} label={item.DepartmentName} />;
                           })}
                           </select>
                       </div>
@@ -352,15 +386,33 @@ class MyTeamRequests extends Component {
                     <div className="form-group">
                        <Row>
                         <Col>
-                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", ""); setFieldValue("use_filter", 1);}} >
+                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", ""); setFieldValue("use_filter", 1); setFieldValue("departmentselect", 0);}} >
                           <i className="fa fa-filter" /> Filter
                         </Button>
                         </Col>
-                        <Col>
-                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", ""); setFieldValue("use_filter", 0); setFieldValue("showall", 1); setFieldValue("departmentselect", 1);}} >
-                          <i className="fa fa-filter" /> Show All
-                        </Button>
-                        </Col>
+                        {Authenticator.scanLevel(["DivisionHead"]) && (
+
+                                          <Col>
+                                          <Button 
+                                            className="display-block" 
+                                            variant="primary" 
+                                            type="submit" 
+                                            onClick={() => {
+                                              // Toggle the 'showall' field value
+                                              setFieldValue("showall", values.showall === 0 ? 1 : 0);
+                                              setFieldValue("departmentselect", 1);
+
+                                              setFieldValue("page", 1);
+                                              setFieldValue("action", "");
+
+                                            }}
+                                            >
+                                            <i className="fa fa-filter" /> {values.showall === 0 ? 'Show All' : 'OFF'}
+                                          </Button>
+                                          </Col>
+
+                        )}
+                     
                        </Row>
                        
                     </div>
@@ -572,6 +624,7 @@ class MyTeamRequests extends Component {
 
   const mapStateToProps = (state) => {
     return {
+      stored_departments  : state.myTeamRequestList.stored_departments,
       requestList     : state.myTeamRequestList.instance,
       isListLoaded    : state.myTeamRequestList.isListLoaded,
       isNumbersLoaded : state.myTeamRequestList.isNumbersLoaded,
