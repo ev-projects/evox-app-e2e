@@ -5,6 +5,7 @@ import "./MyTeamRequests.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
+import Authenticator from "../../../services/Authenticator";
 import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 import { Link } from "react-router-dom"; 
@@ -29,9 +30,12 @@ class MyTeamAllRequests extends Component {
           status:           this.props.filters?.status ?? "pending",
           valid_from:       null,
           valid_to:         null,
-          department_id:    null,
+          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? null : null,
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
+          use_filter:       this.props.filters?.use_filter ? this.props.filters?.use_filter :  0,
+          showall:          this.props.filters?.showall ? this.props.filters?.showall :  0,
+          departmentselect: this.props.filters?.departmentselect ? this.props.filters?.departmentselect :  1,
           checkedList:      this.props.filters?.checkedList ?? [],
           isAll:            this.props.filters?.isAll ?? false,
           action:           this.props.filters?.action ?? null,
@@ -85,7 +89,7 @@ class MyTeamAllRequests extends Component {
       }
     }
     this.props.fetchRequestList( formData );
-    this.props.fetchStatusNumbers( formData );
+    // this.props.fetchStatusNumbers( formData );
   }
 
 
@@ -112,6 +116,9 @@ class MyTeamAllRequests extends Component {
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
 
     // alert(this.props.isListLoaded);
+    if( ! this.props.isListLoaded ) {
+      this.props.fetchRequestList( filters );
+    }
     // if( ! this.props.isListLoaded ) {
       this.props.fetchRequestList( filters );
     // }
@@ -121,8 +128,24 @@ class MyTeamAllRequests extends Component {
     // }
   }
 
-  componentDidUpdate(){
+  componentDidUpdate(prevProps) {
 
+    const { requestList } = this.props;
+  
+    const { store_departments } = this.state;
+  
+    if (requestList.result && requestList.result.department) {
+  
+      const departments = requestList.result.department;
+  
+      if (departments.length > 0 && departments !== store_departments) {
+  
+        this.setState({ store_departments: departments });
+  
+      }
+  
+    }
+  
   }
 
   render = () => {  
@@ -130,7 +153,12 @@ class MyTeamAllRequests extends Component {
 
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
+  var request_list_department = this.props.requestList?.result?.department;
+    
+  // console.log(this.state.store_departments);
+  var request_list_department = [];
 
+      request_list_department = this.state.store_departments;
   const required_field = "This field is required";
   const validationSchema = Yup.object().shape({
     checkedList: Yup.string().nullable().when('action', {
@@ -293,8 +321,11 @@ class MyTeamAllRequests extends Component {
                             style={{ display: 'block' }}
                           >
                           <option    label="- Department -" />
-                          {this.props.user.departments_handled.map(function(item){
+                          {/* {this.props.user.departments_handled.map(function(item){
                             return <option value={item.id} label={item.department_name} />;
+                          })} */}
+                           {request_list_department?.map(function(item){
+                            return <option value={item.id} label={item.DepartmentName} />;
                           })}
                           </select>
                       </div>
@@ -307,9 +338,36 @@ class MyTeamAllRequests extends Component {
                     </Col> 
                     <Col className="filter-button">
                     <div className="form-group">
+                      <Row>
+                        <Col>
                         <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
                           <i className="fa fa-filter" /> Filter
                         </Button>
+                        </Col>
+                        {Authenticator.scanLevel(["DivisionHead", "Division Head"]) && (
+
+                        <Col>
+                        <Button 
+                        className="display-block" 
+                        variant="primary" 
+                        type="submit" 
+                        onClick={() => {
+                        // Toggle the 'showall' field value
+                        setFieldValue("showall", values.showall === 0 ? 1 : 0);
+                        setFieldValue("departmentselect", 1);
+
+                        setFieldValue("page", 1);
+                        setFieldValue("action", "");
+
+                        }}
+                        >
+                       <i className= {values.showall === 0 ? "fa fa-filter" : "fa fa-power-off"} /> {values.showall === 0 ? 'Show All' : 'OFF'}
+                        </Button>
+                        </Col>
+
+                        )}
+                      </Row>
+                      
                     </div>
                     </Col>
                     </Row>
@@ -519,12 +577,13 @@ class MyTeamAllRequests extends Component {
 
   const mapStateToProps = (state) => {
     return {
+      stored_departments  : state.myTeamRequestList.stored_departments,
       requestList     : state.myTeamRequestList.instance,
       isListLoaded    : state.myTeamRequestList.isListLoaded,
       isNumbersLoaded : state.myTeamRequestList.isNumbersLoaded,
       statusNumbers   : state.myTeamRequestList.statusNumbers,
       filters         : state.myTeamRequestList.filters,
-      requesttype     : state.myTeamRequestList.requesttype,
+      // requesttype     : state.myTeamRequestList.requesttype,
       settings        : state.settings
     }
   }

@@ -31,7 +31,7 @@ class MyTeamRequests extends Component {
                               Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
                               new Date(this.props.settings.current_payroll_cutoff.end_date) : null,
           // department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? this.props.user.departments_handled_strict[0].id : null,
-                    department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? null : null,
+          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? null : null,
 
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
@@ -407,7 +407,7 @@ console.log(this.state.store_departments);
 
                                             }}
                                             >
-                                            <i className="fa fa-filter" /> {values.showall === 0 ? 'Show All' : 'OFF'}
+                                            <i className= {values.showall === 0 ? "fa fa-filter" : "fa fa-power-off"} /> {values.showall === 0 ? 'Show All' : 'OFF'}
                                           </Button>
                                           </Col>
 
