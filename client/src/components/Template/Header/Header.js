@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import DropDownMenu from "../DropDownMenu/DropDownMenu";
 import NavQuickPunch from "../NavQuickPunch/NavQuickPunch";
+import NotificationMenu from "../NotificationMenu/NotificationMenu";
 
 
 const Header = (props) => {
@@ -26,6 +27,12 @@ const Header = (props) => {
             
               <NavQuickPunch/> 
             
+
+              <li className="nav-item">
+                {/* <i className="fa fa-bell"></i> */}
+              <NotificationMenu/>
+            
+            </li>
             <li className="nav-item">
               <DropDownMenu/>
             

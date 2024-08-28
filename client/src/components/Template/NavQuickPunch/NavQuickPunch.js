@@ -61,26 +61,6 @@ class NavQuickPunch extends Component {
       
       
   }
-  /*componentWillMount= async () => {
-    // $(document).on('click', 'nav-clock-dropdown .dropdown .dropdown-menu', function (e) { // SAVE FOR LATER
-    //   e.stopPropagation();
-    // });
-    // this.props.clearRecentDtrInstance();
-
-    // var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
-    // var to = moment().format("YYYY-MM-DD");
-  
-    // if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
-    //   this.props.getRecentDtr(this.props.user.id, from , to );
-    //   this.props.getMyDtrNotifications( this.props?.user?.id );
-
-    //   this.state.NavHasLoaded = true
-     
-    // }
-  }
-
-  componentWillUnmount() {
-  }*/
 
   render = () => {
     const initialValue = {
@@ -118,34 +98,6 @@ class NavQuickPunch extends Component {
     return (
       <>
 
-{/* 
-      <li className="nav-item nav-clock-dropdown">
-        <div className=" dropdown" data-toggle="dropdown" >
-
-          <NavPuncher/>  
-          </div>
-            <div  className="dropdown-menu " >     
-                 
-                <div className="card" >
-                  <Tabs
-                      defaultActiveKey="recent"
-                      transition={false}
-                      className="mb-3"
-                    >
-                    <Tab className="tabbish" eventKey="recent" title="RECENT DTR">
-                      <RecentDtrNav/> 
-                    </Tab>
-                    <Tab eventKey="notifications" title="DTR NOTIFICATIONS">
-                      <DtrNotifications/>
-                    </Tab>
-              
-                  </Tabs>       
-                               
-                </div>     
-            </div>
-`
-            
-      </li> */}
 
 
 
