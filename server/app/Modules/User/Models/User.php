@@ -501,9 +501,23 @@ class User extends Authenticatable implements JWTSubject
             ];
             $perpage_count = 10;
 
-            if( $filter['onfilter'] == 1 && $filter['departmentselect'] == 1){
+            if( $filter['use_filter'] == 1 && $filter['departmentselect'] == 1){
                 $filter['departmentselect'] = 0;
             }
+
+            // dd(
+
+            //     $this->id,
+            //     $this->LevelId,
+            //     $filter['valid_from'],
+            //     $filter['valid_to'],
+            //     $request_types[$filter['request_type']],
+            //     $filter['status'],
+            //     $filter['department_id'],
+            //     $filter['name'] , 
+            //     0, $filter['page'], $perpage_count, $filter['departmentselect'],$filter['showall']
+
+            // );
             if(isset($filter['valid_from'])){
                 $response =  call_sp("EH_SP_My_Team_Request", [
                     $this->id,

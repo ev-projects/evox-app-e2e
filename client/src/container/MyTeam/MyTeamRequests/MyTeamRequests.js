@@ -35,7 +35,7 @@ class MyTeamRequests extends Component {
 
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
-          onfilter:                                          this.props.filters?.onfilter ? this.props.filters?.onfilter :  1,
+          use_filter:                                          this.props.filters?.use_filter ? this.props.filters?.use_filter :  1,
           showall:                                          this.props.filters?.showall ? this.props.filters?.showall :  0,
           departmentselect:                                 this.props.filters?.departmentselect ? this.props.filters?.departmentselect :  1,
           checkedList:      this.props.filters?.checkedList ?? [],
@@ -57,6 +57,7 @@ class MyTeamRequests extends Component {
     switch(values.action) {
       case "bulk_action":
         for (var key in values) {
+          console.log(values[key]);
             if( values[key] != null && values[key] != ""  ) {
                 switch( key ) {
                   case "valid_from":
@@ -75,6 +76,7 @@ class MyTeamRequests extends Component {
         break;
     default:
         for (var key in values) {
+          console.log(key,values[key]);
           if( values[key] != null && values[key] != ""  ) {
               switch( key ) {
                 case "valid_from":
@@ -350,12 +352,12 @@ class MyTeamRequests extends Component {
                     <div className="form-group">
                        <Row>
                         <Col>
-                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
+                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", ""); setFieldValue("use_filter", 1);}} >
                           <i className="fa fa-filter" /> Filter
                         </Button>
                         </Col>
                         <Col>
-                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", ""); setFieldValue("showall", 1); setFieldValue("departmentselect", 1);}} >
+                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", ""); setFieldValue("use_filter", 0); setFieldValue("showall", 1); setFieldValue("departmentselect", 1);}} >
                           <i className="fa fa-filter" /> Show All
                         </Button>
                         </Col>

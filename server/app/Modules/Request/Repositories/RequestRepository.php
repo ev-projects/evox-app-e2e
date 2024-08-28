@@ -281,13 +281,13 @@ class RequestRepository implements RequestRepositoryInterface{
                 0, 1, 999, $data->departmentselect, $data->showall]);
             }
             
-            
+            // dd( $my_team_req);
             if(is_valid($my_team_req[1])){
                 $numbers = array(
-                    "pending" => $my_team_req[1][3]->statusCount,
-                    "approved" => $my_team_req[1][0]->statusCount,
-                    "declined" => $my_team_req[1][2]->statusCount,
-                    "canceled" => $my_team_req[1][1]->statusCount,
+                    "pending" => $my_team_req[2][3]->statusCount,
+                    "approved" => $my_team_req[2][0]->statusCount,
+                    "declined" => $my_team_req[2][2]->statusCount,
+                    "canceled" => $my_team_req[2][1]->statusCount,
                 );
             }
             // dd($numbers);
@@ -299,6 +299,7 @@ class RequestRepository implements RequestRepositoryInterface{
             // dd($e);
             DB::rollback();
             log_error($e);
+            dd($e);
             throw $e;
         }
     }
