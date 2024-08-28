@@ -30,9 +30,14 @@ class MyTeamRequests extends Component {
           valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : 
                               Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
                               new Date(this.props.settings.current_payroll_cutoff.end_date) : null,
-          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? this.props.user.departments_handled_strict[0].id : null,
+          // department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? this.props.user.departments_handled_strict[0].id : null,
+                    department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? null : null,
+
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
+          onfilter:                                          this.props.filters?.onfilter ? this.props.filters?.onfilter :  1,
+          showall:                                          this.props.filters?.showall ? this.props.filters?.showall :  0,
+          departmentselect:                                 this.props.filters?.departmentselect ? this.props.filters?.departmentselect :  1,
           checkedList:      this.props.filters?.checkedList ?? [],
           isAll:            this.props.filters?.isAll ?? false,
           action:           this.props.filters?.action ?? null,
@@ -343,9 +348,19 @@ class MyTeamRequests extends Component {
                     </Col> 
                     <Col className="filter-button">
                     <div className="form-group">
+                       <Row>
+                        <Col>
                         <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
                           <i className="fa fa-filter" /> Filter
                         </Button>
+                        </Col>
+                        <Col>
+                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", ""); setFieldValue("showall", 1); setFieldValue("departmentselect", 1);}} >
+                          <i className="fa fa-filter" /> Show All
+                        </Button>
+                        </Col>
+                       </Row>
+                       
                     </div>
                     </Col>
                     </Row>

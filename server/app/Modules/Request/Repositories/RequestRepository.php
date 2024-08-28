@@ -267,7 +267,7 @@ class RequestRepository implements RequestRepositoryInterface{
                 $data->status 
                 , $data->department_id,
                 $data->name, 
-                0, 1, 999, 0]);
+                0, 1, 999, $data->departmentselect, $data->showall]);
             }else{
                 $start =null;
                 $end = null;
@@ -278,7 +278,7 @@ class RequestRepository implements RequestRepositoryInterface{
                 $data->status 
                 , $data->department_id,
                 $data->name, 
-                0, 1, 999, 0]);
+                0, 1, 999, $data->departmentselect, $data->showall]);
             }
             
             

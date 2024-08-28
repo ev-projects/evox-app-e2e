@@ -500,6 +500,10 @@ class User extends Authenticatable implements JWTSubject
                 'alter_logs_punches'    => 5,
             ];
             $perpage_count = 10;
+
+            if( $filter['onfilter'] == 1 && $filter['departmentselect'] == 1){
+                $filter['departmentselect'] = 0;
+            }
             if(isset($filter['valid_from'])){
                 $response =  call_sp("EH_SP_My_Team_Request", [
                     $this->id,
@@ -1112,7 +1116,8 @@ class User extends Authenticatable implements JWTSubject
             [
                 $this->id, // vishnu this_id
                 $department_id
-                ,0,1
+                ,0
+                ,1
                 ]
             ); 
             // dd($response[0]);
