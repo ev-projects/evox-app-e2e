@@ -1,13 +1,9 @@
 import React, { Component } from "react";
-import { DocumentStore } from 'ravendb';
-import { URL } from 'url';
 import "./DPAForm.css";
 import { Row,Button,Form  } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { tickDpa } from '../../store/actions/profile/profileActions' ;
 import { showAlert } from '../../store/actions/settings/alertActions'
-
-import axios from 'axios';
 
 import {Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../components/Template/Wrapper";
@@ -43,54 +39,10 @@ class DPAForm extends Component {
           width: '100%',
           height: '350px',
           showSubmitForm : false,
-          confirm: false,
-          categories: null,
+          confirm: false
       } 
     }
-
-    fetchCategoriesFromRavenDB = () => {
-
-
-    
-      // const session = store.openSession();
-      // let item =  session.load('categories/1-A');
-      // console.log(item)
-      const store = new DocumentStore('http://localhost:8088', 'Northwind');
-
-store.initialize();
-
-
-const session = store.openSession();
-
-const categories = session.query({ index: 'categories' }).all();
-
-console.log(categories);
-// session.load('categories/1-A').then(category => {
-
-//   console.log(category);
-
-// });
-    //   const categoriesQuery = session.query({ index: 'categories' }).all();
-    
-    // console.log(categoriesQuery);
-      // categoriesQuery.execute().then(result => {
-    
-      //   const categories = result.results;
-    
-    
-      //   // Do something with the categories data, e.g., update the state
-    
-    
-      //   this.setState({ categories });
-    
-      // });
-    
-    }
-    componentDidMount() {
-
-      this.fetchCategoriesFromRavenDB();
   
-    }
     // Tracks every second being runned on the player
     handleProgress = state => {
       // Show the form if the Video is already played beyond 23:15 seconds and if the showSubmitForm is 'false'
@@ -124,14 +76,14 @@ console.log(categories);
 
       const { width, height, url, playing, controls, light, volume, muted, config, loop, playbackRate, pip, showSubmitForm } = this.state
       const { user } = this.props;
-      console.log(this.state.categories)
+
         return (
             <Wrapper {...this.props} >
                <ContainerWrapper>
                   <ContainerBody>
                     <Content col="12" title="Webinar: Data Privacy"  >
                         <Row>
-                        <div className="col-lg-12 col-md-12 col-sm-12">
+                          <div className="col-lg-12 col-md-12 col-sm-12">
                             <h2></h2>
                             <p>
                               All employees are required to watch the Data Privacy webinar below. Please tick the checkbox that will appear once the video ends to confirm your attendance. <br/>
@@ -206,22 +158,6 @@ console.log(categories);
                             )}
                           </Formik>
                           </div>
-                        </Row>
-
-                        <Row>
-                                {this.state.categories && (
-
-                                        <ul>
-
-                                          {this.state.categories.map(category => (
-
-                                            <li key={category.Id}>{category.Name}</li>
-
-                                          ))}
-
-                                        </ul>
-
-                                        )}
                         </Row>
            
                     </Content>
