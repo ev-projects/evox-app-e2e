@@ -50,20 +50,6 @@ class NotificationMenu extends Component {
 
     const { my_dtr_notifications } = this.props.dashboard;
     // const notificationCount = my_dtr_notifications?.length || 0; 
-    const notificationCount = 51;
-    if (this.props.user != null && this.props.user.id != null && this.state.NavHasLoaded == false) {
-      this.props.getMyDtrNotifications(this.props?.user?.id);
-      this.state.NavHasLoaded = true
-    }
-
-    let circleClass;
-    if (notificationCount > 90) {
-      circleClass = 'icon-stack-red';
-    } else if (notificationCount <= 90 && notificationCount > 50) {
-      circleClass = 'icon-stack-yellow';
-    } else {
-      circleClass = 'icon-stack-green'; 
-    }
 
     const notifications = [
 
@@ -78,6 +64,11 @@ class NotificationMenu extends Component {
         summary: "Date from Aug 8 has no clock in",
 
         date_created: "2023-03-01",
+                
+        CountryId: "2",
+
+        DepartmentId: "23",
+
 
         read: false,
 
@@ -96,6 +87,11 @@ class NotificationMenu extends Component {
         summary: "Nearing Payroll Deadline",
 
         date_created: "2023-03-01",
+                
+        CountryId: "2",
+
+        DepartmentId: "23",
+
 
         read: false,
 
@@ -113,6 +109,11 @@ class NotificationMenu extends Component {
         summary: "You have requested a leave on March 15, 2023",
 
         date_created: "2023-03-05",
+                
+        CountryId: "2",
+
+        DepartmentId: "23",
+
 
         read: false,
 
@@ -131,6 +132,11 @@ class NotificationMenu extends Component {
         summary: "Wishing John Doe a happy birthday!",
 
         date_created: "2023-03-07",
+                
+        CountryId: "2",
+
+        DepartmentId: "23",
+
 
         read: true,
 
@@ -150,6 +156,10 @@ class NotificationMenu extends Component {
 
         date_created: "2023-03-01",
 
+        CountryId: "2",
+        
+        DepartmentId: "23",
+        
         read: false,
 
         user_id: 198
@@ -167,6 +177,11 @@ class NotificationMenu extends Component {
         summary: "You have requested overtime on March 10, 2023",
 
         date_created: "2023-03-08",
+                
+        CountryId: "2",
+
+        DepartmentId: "23",
+
 
         read: false,
 
@@ -185,6 +200,12 @@ class NotificationMenu extends Component {
         summary: "Please review the new company policy on attendance",
 
         date_created: "2023-03-12",
+                
+        CountryId: "2",
+
+        DepartmentId: "23",
+
+
 
         read: false,
 
@@ -193,6 +214,24 @@ class NotificationMenu extends Component {
       }
 
     ];
+    const unreadNotifications = notifications.filter(notification => !notification.read);
+    // console.log(unreadNotifications.length);
+    const notificationCount = unreadNotifications.length;
+    if (this.props.user != null && this.props.user.id != null && this.state.NavHasLoaded == false) {
+      this.props.getMyDtrNotifications(this.props?.user?.id);
+      this.state.NavHasLoaded = true
+    }
+
+    let circleClass;
+    if (notificationCount > 90) {
+      circleClass = 'icon-stack-red';
+    } else if (notificationCount <= 90 && notificationCount > 50) {
+      circleClass = 'icon-stack-yellow';
+    } else {
+      circleClass = 'icon-stack-green'; 
+    }
+
+   
 
 
     return (
