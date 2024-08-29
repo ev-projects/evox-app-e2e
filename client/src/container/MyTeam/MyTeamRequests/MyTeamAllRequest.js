@@ -100,7 +100,19 @@ class MyTeamAllRequests extends Component {
       valid_to  : Validator.isValid(this.state.filters.valid_to) ?  new Date(this.state.filters.valid_to).toISOString().substring(0, 10) : null,
       request_type : this.state.filters.request_type,
     };
+    console.log(this.props.settings)
+    if(Validator.isValid(this.props.settings?.current_payroll_cutoff?.start_date)){
+      if(Validator.isValid(this.props.settings.current_payroll_cutoff.start_date) && !Validator.isValid(this.state.filters.valid_from)){
 
+        var filters = {
+          ...this.state.filters,
+          valid_from: Validator.isValid(this.props.settings.current_payroll_cutoff.start_date) ?  new Date(this.props.settings.current_payroll_cutoff.start_date).toISOString().substring(0, 10) : null,
+          valid_to  : Validator.isValid(this.props.settings.current_payroll_cutoff.end_date) ?  new Date(this.props.settings.current_payroll_cutoff.end_date).toISOString().substring(0, 10) : null,
+          request_type : this.state.filters.request_type,
+        };
+   }
+    }
+  
  
     // if(Validator.isValid(this.state.filters.first_load)){
     //   filters =this.state.filters.first_load == true ? {
@@ -116,15 +128,15 @@ class MyTeamAllRequests extends Component {
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
 
     // alert(this.props.isListLoaded);
-    if( ! this.props.isListLoaded ) {
-      this.props.fetchRequestList( filters );
-    }
+    // if( ! this.props.isListLoaded ) {
+    //   this.props.fetchRequestList( filters );
+    // }
     // if( ! this.props.isListLoaded ) {
       this.props.fetchRequestList( filters );
     // }
 
     // if( ! this.props.isNumbersLoaded ) {
-      this.props.fetchStatusNumbers( filters );
+      // this.props.fetchStatusNumbers( filters );
     // }
   }
 
@@ -150,7 +162,7 @@ class MyTeamAllRequests extends Component {
 
   render = () => {  
 
-
+    console.log( this.props);
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
   var request_list_department = this.props.requestList?.result?.department;
