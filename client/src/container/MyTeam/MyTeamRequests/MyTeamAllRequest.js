@@ -100,18 +100,18 @@ class MyTeamAllRequests extends Component {
       valid_to  : Validator.isValid(this.state.filters.valid_to) ?  new Date(this.state.filters.valid_to).toISOString().substring(0, 10) : null,
       request_type : this.state.filters.request_type,
     };
-    console.log(this.props.settings)
-    if(Validator.isValid(this.props.settings?.current_payroll_cutoff?.start_date)){
-      if(Validator.isValid(this.props.settings.current_payroll_cutoff.start_date) && !Validator.isValid(this.state.filters.valid_from)){
+  //   console.log(this.props.settings)
+  //   if(Validator.isValid(this.props.settings?.current_payroll_cutoff?.start_date)){
+  //     if(Validator.isValid(this.props.settings.current_payroll_cutoff.start_date) && !Validator.isValid(this.state.filters.valid_from)){
 
-        var filters = {
-          ...this.state.filters,
-          valid_from: Validator.isValid(this.props.settings.current_payroll_cutoff.start_date) ?  new Date(this.props.settings.current_payroll_cutoff.start_date).toISOString().substring(0, 10) : null,
-          valid_to  : Validator.isValid(this.props.settings.current_payroll_cutoff.end_date) ?  new Date(this.props.settings.current_payroll_cutoff.end_date).toISOString().substring(0, 10) : null,
-          request_type : this.state.filters.request_type,
-        };
-   }
-    }
+  //       var filters = {
+  //         ...this.state.filters,
+  //         valid_from: Validator.isValid(this.props.settings.current_payroll_cutoff.start_date) ?  new Date(this.props.settings.current_payroll_cutoff.start_date).toISOString().substring(0, 10) : null,
+  //         valid_to  : Validator.isValid(this.props.settings.current_payroll_cutoff.end_date) ?  new Date(this.props.settings.current_payroll_cutoff.end_date).toISOString().substring(0, 10) : null,
+  //         request_type : this.state.filters.request_type,
+  //       };
+  //  }
+  //   }
   
  
     // if(Validator.isValid(this.state.filters.first_load)){
