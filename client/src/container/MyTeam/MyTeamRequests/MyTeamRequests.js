@@ -409,8 +409,8 @@ console.log(this.state.store_departments);
                                             >
                                             <i className= {values.showall === 0 ? "fa fa-filter" : "fa fa-power-off"} /> {values.showall === 0 ? 'Show All' : 'OFF'}
                                           </Button> */}
-                                                <label>
-          <input 
+                                                <label className="Showall">
+          <input className="showall_checkbox"
             type="checkbox"
             checked={values.showall ==1}
             onClick={() => {
@@ -423,7 +423,7 @@ console.log(this.state.store_departments);
             }}
 
           />
-          ShowAll &nbsp;
+            <span className="showall_text">ShowAll</span>
         </label>
 
 
