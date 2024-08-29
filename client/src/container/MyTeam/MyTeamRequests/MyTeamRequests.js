@@ -393,7 +393,7 @@ console.log(this.state.store_departments);
                         {Authenticator.scanLevel(["DivisionHead", "Division Head"]) && (
 
                                           <Col>
-                                          <Button 
+                                          {/* <Button 
                                             className="display-block" 
                                             variant="primary" 
                                             type="submit" 
@@ -408,7 +408,25 @@ console.log(this.state.store_departments);
                                             }}
                                             >
                                             <i className= {values.showall === 0 ? "fa fa-filter" : "fa fa-power-off"} /> {values.showall === 0 ? 'Show All' : 'OFF'}
-                                          </Button>
+                                          </Button> */}
+                                                <label>
+          <input 
+            type="checkbox"
+            checked={values.showall ==1}
+            onClick={() => {
+              setFieldValue("showall", values.showall === 0 ? 1 : 0);
+              setFieldValue("departmentselect", 1);
+              setFieldValue("department_id",null)
+              setFieldValue("page", 1);
+              setFieldValue("action", "");
+              handleSubmit();
+            }}
+
+          />
+          ShowAll &nbsp;
+        </label>
+
+
                                           </Col>
 
                         )}
