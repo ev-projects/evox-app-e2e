@@ -235,7 +235,7 @@ class SyncController extends Controller
 
 
 
-    public function timeoff_allocation_HRIS(Request $request)
+    public function timeoff_allocation_HRIS_New(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
@@ -288,15 +288,13 @@ class SyncController extends Controller
     }
 
 
-    public function timeoff_allocation_HRIS_New(Request $request)
+    public function timeoff_allocation_HRIS(Request $request)
     {
         try {
             $data = $request->isJson() ? ($request->json()->all()) : [];
             log_to_file('info', 'Posted Timeoff', [$data], 'sync_timeoff');
             $failed_sync = [];
-            $leave_items = [];
             foreach($data as $d) {
-                array_push($leave_items, $d);
                 $validator = Validator::make($d, [
                     "bhrNumber" => 'required',
                     "timeoffType" => 'required',
@@ -315,6 +313,48 @@ class SyncController extends Controller
             }
             return response()->json([
                 'message' => count($failed_sync) > 0 ? "Some items could not be synced" : "timeoff sync success",
+                'failed_sync' => $failed_sync
+            ], count($failed_sync) > 0 ? '500' : '200');
+
+        } catch (Exception $e) {
+
+         return error_response(trans('messages.error_default'), $e);
+        
+        }
+    }
+
+
+    
+    public function timeoff_allocation_HRIS_fail_sync(Request $request)
+    {
+        try {
+            $data = $request->isJson() ? ($request->json()->all()) : [];
+            log_to_file('info', 'Posted Timeoff', [$data], 'sync_timeoff');
+            $failed_sync = [];
+            $success_sync = [];
+            foreach($data as $d) {
+                $validator = Validator::make($d, [
+                    "bhrNumber" => 'required',
+                    "timeoffType" => 'required',
+                    "validFrom"=>'required',
+                ]);
+                if ($validator->fails()) {
+                    array_push($failed_sync, $d['id']);
+                } else {
+                    try {
+                        $result = call_sp('EV_SP_Timeoff_Allocation', [$d['bhrNumber'], $d['timeoffType'], $d['description'], $d['duration'], $d['validFrom'], $d['validTo'], $d['remainingDays'], $d['allocationType']]);
+                        log_to_file('info', 'Sync Timeoff', [$result], 'sync_timeoff');
+                        if(isset($result[0])){
+                            array_push($success_sync, $d['id']);
+                        }                       
+                    } catch (Exception $e) {
+                        array_push($failed_sync, $d['id']);
+                    }
+                }
+            }
+            return response()->json([
+                'message' => count($failed_sync) > 0 ? "Some items could not be synced" : "timeoff sync success",
+                'success_sync' => $success_sync,
                 'failed_sync' => $failed_sync
             ], count($failed_sync) > 0 ? '500' : '200');
 

@@ -46,6 +46,7 @@ Route::post('sync_holidays', 'SyncController@syncholidays')->middleware('auth.ap
 Route::post('sync_leaves', 'SyncController@syncleaves')->middleware('auth.apikey');
 Route::post('sync_timeoff_allocation', 'SyncController@timeoff_allocation_HRIS')->middleware('auth.apikey');
 Route::post('sync_timeoff_allocation_new', 'SyncController@timeoff_allocation_HRIS_New')->middleware('auth.apikey');
+Route::post('sync_timeoff_allocation_fail_sync', 'SyncController@timeoff_allocation_HRIS_fail_sync')->middleware('auth.apikey');
 // Route::get('sendemail', 'BookingController@sendemail');
 Route::get('get_dashboard_all/{page_type}', 'BookingController@get_dashboard_all')->middleware('jwtauth', 'auth.apikey');
 
