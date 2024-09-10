@@ -158,8 +158,8 @@ const Sidebar = (props) => {
 
                 <li className="nav-item">
                 <Link className="nav-link" to={global.links.view_report}>
-                  <i className="nav-icon fa fa-dashboard " />
-                  <p className="blue"> viewreport</p>
+                  <i className="nav-icon fa fa-clock-o" />
+                  <p className="blue"> TimeOff Allocation</p>
                 </Link>
                 </li>
 
