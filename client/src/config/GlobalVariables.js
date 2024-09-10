@@ -112,6 +112,9 @@
     // OPS Links
     ops_schedule_form               :  "/app/ops/ManageOpsSchedules/",
     ops_schedule_list               :  "/app/ops/ManageOpsSchedulesList/",
+
+    // Report
+    view_report                     :   "/app/viewreport/"
    
 };
 

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use App\Exports\TeamScheduleExport;
 use App\Modules\Payroll\Models\Dtr;
 use App\Exports\NewExportDTRSummary;
+use App\Exports\TimeoffAllocationExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -1552,6 +1553,50 @@ class ReportController extends Controller
 
      
         } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        }
+    }
+
+
+    public function timeoff_allocation_report(Request $request)
+    {
+   
+        try {    
+           
+            $result_sets = call_sp('EV_SP_Timeoff_Allocation_Report', [$request->timeoff_year, $request->timeoff_month]);
+            $user_timeoff = $result_sets[0];
+            $report = [];
+            foreach($user_timeoff as $timeoff) {
+                $report[] = array(
+                    "Employee_Name" => $timeoff->EmployeeName,
+                    "Employee_Number" => $timeoff->EmployeeNumber,
+                    "Timeoff_Type" => $timeoff->Type,
+                    "Description" =>$timeoff->description,
+                    "Duration" => $timeoff->duration,
+                    "ValidFrom" => $timeoff->valid_from,
+                    "ValidTo" => $timeoff->valid_to,
+                    "RemainingDays" => $timeoff->remaining_days,
+                    "AllocationType" => $timeoff->allocation_type
+                );
+            }
+
+            if($request->export == 1){
+                return Excel::download(new TimeoffAllocationExport($report), 'TimeoffAllocation.csv');
+            }else{
+                $response = [];
+                $response['timeoffItems'] =  $report;
+    
+                return success_response(
+                    trans('messages.' . __FUNCTION__ . '_success'),
+                    $response
+                );
+            }
+          
+            
+
+     
+        } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
             return error_response(trans('messages.error_default'), $e);
         }
     }

@@ -1,0 +1,7 @@
+.lab {
+    float: left;
+    font-size: 10px;
+    padding: 9px 24px 8px;
+    text-transform: uppercase;
+    background: #ccc;
+}

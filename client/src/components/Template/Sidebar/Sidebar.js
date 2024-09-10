@@ -62,6 +62,8 @@ const Sidebar = (props) => {
                   <p className="blue"> Dashboard</p>
                 </Link>
               </li>
+
+             
               {/* <li className="nav-item">
               <Link className="nav-link" to={global.links.profile + user.id}>
                 <i className="nav-icon fa fa-user" />
@@ -153,6 +155,14 @@ const Sidebar = (props) => {
                       </Link>
                     </li>
                   )}
+
+                <li className="nav-item">
+                <Link className="nav-link" to={global.links.view_report}>
+                  <i className="nav-icon fa fa-dashboard " />
+                  <p className="blue"> viewreport</p>
+                </Link>
+                </li>
+
                   {Authenticator.scanFeature('request_alter_logs')&&(<>
                     {(Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "multi_login")) && (
                       <li className="nav-item">

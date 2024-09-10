@@ -150,7 +150,7 @@ class SyncController extends Controller
                     $request->division,
             
         
-        ]);
+                ]);
     
                 if(isset($result[0])){
                     return response()->json([
@@ -230,6 +230,98 @@ class SyncController extends Controller
             ], count($failed_sync) > 0 ? '500' : '200');
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
+        }
+    }
+
+
+
+    public function timeoff_allocation_HRIS(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                "bhrNumber"=>'required',
+                "timeoffType" => 'required',
+                "validFrom"=>'required',
+            ]);
+            if ($validator->fails()) {
+              return error_response(trans('messages.error_default'), $validator->messages());
+            }else{
+              
+                
+                $result =  call_sp("EV_SP_Timeoff_Allocation", 
+                [
+                    $request->bhrNumber, 
+                    $request->timeoffType,
+                    $request->description,
+                    $request->duration,
+                    $request->validFrom,
+                    $request->validTo,
+                    $request->remainingDays,
+                    $request->allocationType,       
+                ]);
+    
+                if(isset($result[0])){
+                    return response()->json([
+              
+                        'status' => '200',
+                        'message' => "Insert Or Updated Successfully",
+                        'BhrNumber'=> $request->bhrNumber
+            
+                   ]);
+                }else{
+                    return response()->json([
+              
+                        'status' => '202',
+                        'message' => "Insert Failed",
+                        'BhrNumber'=> $request->bhrNumber
+            
+                   ]);
+                }
+               
+            }
+
+        } catch (Exception $e) {
+
+         return error_response(trans('messages.error_default'), $e);
+        
+        }
+    }
+
+
+    public function timeoff_allocation_HRIS_New(Request $request)
+    {
+        try {
+            $data = $request->isJson() ? ($request->json()->all()) : [];
+            log_to_file('info', 'Posted Timeoff', [$data], 'sync_timeoff');
+            $failed_sync = [];
+            $leave_items = [];
+            foreach($data as $d) {
+                array_push($leave_items, $d);
+                $validator = Validator::make($d, [
+                    "bhrNumber" => 'required',
+                    "timeoffType" => 'required',
+                    "validFrom"=>'required',
+                ]);
+                if ($validator->fails()) {
+                    array_push($failed_sync, $d['id']);
+                } else {
+                    try {
+                        $result = call_sp('EV_SP_Timeoff_Allocation', [$d['bhrNumber'], $d['timeoffType'], $d['description'], $d['duration'], $d['validFrom'], $d['validTo'], $d['remainingDays'], $d['allocationType']]);
+                        log_to_file('info', 'Sync Timeoff', [$result], 'sync_timeoff');
+                    } catch (Exception $e) {
+                        array_push($failed_sync, $d['id']);
+                    }
+                }
+            }
+            return response()->json([
+                'message' => count($failed_sync) > 0 ? "Some items could not be synced" : "timeoff sync success",
+                'failed_sync' => $failed_sync
+            ], count($failed_sync) > 0 ? '500' : '200');
+
+        } catch (Exception $e) {
+
+         return error_response(trans('messages.error_default'), $e);
+        
         }
     }
 
