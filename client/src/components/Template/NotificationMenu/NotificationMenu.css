@@ -11,22 +11,21 @@
 
   .bell-toggle {
 
-    color: #fff !important; /* white font color */
+    color: #fff !important;
   
-    background-color: transparent !important; /* remove the btn-success background color */
+    background-color: transparent !important; 
+    border: none !important;
   
-    border: none !important; /* remove the btn-success border */
-  
-    padding: 0 !important; /* remove the btn-success padding */
+    padding: 0 !important; 
   
   }
   
     
   .bell-toggle:hover {
   
-    background-color: transparent !important; /* remove the hover background color */
+    background-color: transparent !important; 
   
-    color: #fff !important; /* keep the white font color on hover */
+    color: #fff !important; 
   
   }
 
@@ -38,18 +37,18 @@
 
   .notification-item {
 
-    background-color: #f7f7f7; /* optional, adds a light gray background */
+    background-color: #f7f7f7; 
   
-    border-radius: 5px; /* adds a 10px radius to the corners */
+    border-radius: 5px; 
   
-    padding: 5px; /* adds some padding inside the box */
+    padding: 5px; 
   
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* adds a subtle shadow */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
 
-    margin-top: 1px; /* adds 5px space above each item */
+    margin-top: 1px; 
   
-    margin-bottom: 2px; /* adds 5px space below each item */
+    margin-bottom: 2px; 
     margin-left: 3  px;
     margin-right: 6px;
   }
@@ -60,7 +59,7 @@
 
   font-weight: bold;
 
-  margin-top: 0; /* remove default margin */
+  margin-top: 0; 
 
 }
 
@@ -69,25 +68,25 @@
 
   font-size: 10px; /* summary */
 
-  margin-bottom: 0px; /* add some space before the date */
+  margin-bottom: 0px; 
 
 }
 
 
 .notification-item small {
 
-  font-size: 10px; /* date created */
+  font-size: 10px; 
 
-  color: #666; /* slightly darker gray */
+  color: #666; 
 
 }
 
 
-.notification-item span { /* read/unread status */
+.notification-item span { 
 
   font-size: 12px;
 
-  color: #999; /* light gray */
+  color: #999; 
 
   font-weight: bold;
 
