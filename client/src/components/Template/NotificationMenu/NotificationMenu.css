@@ -111,3 +111,41 @@
     background-color: #f02a2a21
   
   }
+
+  .scrollable-notifications {
+
+    max-height: 360px !important;
+  
+    overflow-y: scroll !important;
+
+    /* background-color: #666; */
+    
+  
+  }
+  
+  
+  .scrollable-notifications::-webkit-scrollbar {
+  
+    width: 10px;
+  
+    height: 10px;
+  
+  }
+  
+  
+  .scrollable-notifications::-webkit-scrollbar-thumb {
+  
+    background-color: #ccc;
+  
+    border-radius: 10px;
+  
+  }
+  
+  
+  .scrollable-notifications::-webkit-scrollbar-track {
+  
+    background-color: #f0f0f0;
+  
+    border-radius: 10px;
+  
+  }

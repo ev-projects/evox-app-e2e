@@ -15,6 +15,7 @@ class NotificationMenu extends Component {
     super(props);
     this.state = {
       NavHasLoaded: false,
+      setNumNotificationsToShow: 5,
     };
   }
 
@@ -182,6 +183,8 @@ class NotificationMenu extends Component {
 
         DepartmentId: "23",
 
+        souce_id: "8888", 
+
 
         read: false,
 
@@ -243,7 +246,7 @@ class NotificationMenu extends Component {
               <i class={`fa fa-circle icon-stack-1x icon-stack-1x-BL ${circleClass}`} ></i>
             </span>
           </Dropdown.Toggle>
-          <Dropdown.Menu className="nav-notification-bell-dropdown nav-notification-bell-dropdown-menu">
+          <Dropdown.Menu className="nav-notification-bell-dropdown nav-notification-bell-dropdown-menu  ">
             <div className="card">
               <Tabs
                 defaultActiveKey="all"
@@ -266,20 +269,38 @@ class NotificationMenu extends Component {
               </Tabs>
               <Button variant="" className="mark-read"/*onClick={() => this.props.markAllAsRead(this.props.user.id)}*/>Mark all as read</Button>
 
-              {notifications.map((notification, index) => (
+             
 
-              <div key={index} className={`notification-item ${notification.tag}`}>
+                  <div className="scrollable-notifications">
 
-                <h4>{notification.title}</h4>
+                  {notifications.slice(0, this.state.setNumNotificationsToShow).map((notification, index) => (
 
-                <p>{notification.summary}</p>
-                <small>{notification.date_created}</small>
+                    <div key={index} className={`notification-item ${notification.tag}`}>
+
+                      <h4>{notification.title}</h4>
+
+                      <p>{notification.summary}</p>
+
+                      <small>{notification.date_created}</small>
 
                       {/* {notification.read ? <span>Read</span> : <span>Unread</span>} */}
 
                     </div>
 
                   ))}
+
+                  </div>
+
+                 
+                  {this.state.setNumNotificationsToShow < notifications.length && (
+
+                    <Button variant="" onClick={() => this.setState({ setNumNotificationsToShow: this.state.setNumNotificationsToShow + 5 })}>
+
+                      Show more
+
+                    </Button>
+
+                    )}
             </div>
           </Dropdown.Menu>
         </Dropdown>
