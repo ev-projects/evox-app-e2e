@@ -12,6 +12,11 @@ import { clearOpsScheduleInstance } from "../../store/actions/opsschedule/opsSch
 const ViewReport = () => {
     const [month, setMonth] = useState("");
     const [year, setYear] = useState("");
+    const [noofdays, setNoofdays] = useState("");
+    const [currentmonth, setCurrentmonth] = useState("");
+    const [text, settext] = useState("");
+    const [text1, settext1] = useState("");
+    const [newrow, setNewrow] = useState(false);
     const [datayear, setDatayear] = useState([]);
     const [validmonth, setvalidmonth] = useState(false);
     const [validyear, setvalidyear] = useState(false);
@@ -25,9 +30,21 @@ const ViewReport = () => {
       }
       setDatayear(yearsArray); 
     }, []);
+    const getMonthName = (monthNumber) => {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sepr', 'Oct', 'Nov', 'Dec'
+  ];
+  return months[monthNumber - 1];
+};
+
+const getDaysInMonth = (year, month) => {
+  return new Date(year, month + 1, 0).getDate();
+};
 
     const handlesave = async (e) => {
-      console.log("test");
+      settext(currentmonth + " 01 - " + currentmonth + " " + getDaysInMonth(year,month));
+      settext1(((month - 1) == 0 ? getMonthName(12) + " 21 - " + currentmonth + " 20" : getMonthName(month - 1) + " 21 - " + currentmonth + " 20"));
       if (year == "" && month == "") {
         setvalidyear(true);
         setvalidmonth(true);
@@ -70,14 +87,21 @@ const ViewReport = () => {
           url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&export=1`,
         })
           .then((result) => {
-console.log(result);
-            var fileURL = window.URL.createObjectURL(new Blob([result.data]));
-                var fileLink = document.createElement('a');
-                fileLink.href = fileURL;
-                fileLink.setAttribute('download', 'TimeoffAllocationExport.csv');
-                document.body.appendChild(fileLink);
-                fileLink.click();
-                document.body.removeChild(fileLink);
+
+            const url = window.URL.createObjectURL(new Blob([result.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'TimeoffAllocation.csv');
+            document.body.appendChild(link);
+            link.click();
+
+            // var fileURL = window.URL.createObjectURL(new Blob([result.data]));
+            //     var fileLink = document.createElement('a');
+            //     fileLink.href = fileURL;
+            //     fileLink.setAttribute('download', 'Timeoff_report.xlsx');
+            //     document.body.appendChild(fileLink);
+            //     fileLink.click();
+            //     document.body.removeChild(fileLink);
           })
           .catch((e) => {
             dispatch(Formatter.alert_error(e));
@@ -108,6 +132,7 @@ console.log(result);
                           setvalidmonth(true);
                         } else {
                           setvalidmonth(false);
+                          setCurrentmonth(getMonthName(e.target.value));
                         }
                       }}
                     >
@@ -185,30 +210,38 @@ console.log(result);
             <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>EmployeeNo</th>
-                    <th>Name</th>
-                    <th>TimeOff Type</th>
-                    <th>Description</th>
-                    <th>Duration</th>
-                    <th>ValidFrom</th>
-                    <th>ValidTo</th>
-                    <th>RemainingDays</th>
-                    <th>AllocationType</th>
+                    <th rowspan="2">Employee Name</th>
+                    <th rowspan="2">Employment Status</th>
+                    <th rowspan="2">Account</th>
+                    <th rowspan="2">Start Date</th>
+                    <th rowspan="2">Present Days <br></br> {text1}</th>
+                    <th colspan="2">No of Lv availed <br></br> {text}</th>
+                    <th rowspan="2">Max Lv Eligible</th>
+                    <th colspan="2">Prev. Used</th>
+                    <th rowspan="2">Clos. Bal</th>
+                  </tr>
+                  <tr>  
+                  <th>Paid</th>
+                  <th>LWP</th>
+                  <th>Paid</th>
+                  <th>LWP</th>
                   </tr>
                 </thead>
                 <tbody>
                
                   {datatimeoff.map((timeoff, pos) => (
                     <tr>
-                      <td>{timeoff.Employee_Number}</td>
                       <td>{timeoff.Employee_Name}</td>
-                      <td>{timeoff.Timeoff_Type}</td>
-                      <td>{timeoff.Description} </td>
-                      <td>{timeoff.Duration + " Days"} </td>
-                      <td>{timeoff.ValidFrom}</td>
-                      <td>{timeoff.ValidTo}</td>
-                      <td>{timeoff.RemainingDays}</td>
-                      <td>{timeoff.AllocationType} </td>
+                      <td>{timeoff.Employee_status}</td>
+                      <td>{timeoff.Account}</td>
+                      <td>{timeoff.startdate}</td>
+                      <td>{timeoff.presentdays} </td>
+                      <td>{timeoff.AvaiPaid} </td>
+                      <td>{timeoff.AvaiLWP}</td>
+                      <td>{timeoff.MaxLv}</td>
+                      <td>{timeoff.PrePais}</td>
+                      <td>{timeoff.PreLWP} </td>
+                      <td>{timeoff.CloseBal} </td>
                     </tr>
                   ))}
 
