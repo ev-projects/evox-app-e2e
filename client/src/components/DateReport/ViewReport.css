@@ -5,3 +5,10 @@
     text-transform: uppercase;
     background: #ccc;
 }
+
+.tableheader{
+    text-align: center;
+    vertical-align: middle !important;
+    background: #82af13 !important;
+    color: #fff !important;
+}

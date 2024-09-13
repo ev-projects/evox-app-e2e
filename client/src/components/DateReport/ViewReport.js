@@ -207,24 +207,24 @@ const getDaysInMonth = (year, month) => {
                  </div>  
 
             <div className="mt-4 mb-3">
-            <Table striped bordered hover>
+            <Table striped bordered hover tableheader>
                 <thead>
                   <tr>
-                    <th rowspan="2">Employee Name</th>
-                    <th rowspan="2">Employment Status</th>
-                    <th rowspan="2">Account</th>
-                    <th rowspan="2">Start Date</th>
-                    <th rowspan="2">Present Days <br></br> {text1}</th>
-                    <th colspan="2">No of Lv availed <br></br> {text}</th>
-                    <th rowspan="2">Max Lv Eligible</th>
-                    <th colspan="2">Prev. Used</th>
-                    <th rowspan="2">Clos. Bal</th>
+                    <th className="tableheader" rowspan="2">Employee Name</th>
+                    <th className="tableheader" rowspan="2">Employment Status</th>
+                    <th className="tableheader" rowspan="2">Account</th>
+                    <th className="tableheader" rowspan="2">Start Date</th>
+                    <th className="tableheader" rowspan="2">Present Days <br></br> {text1}</th>
+                    <th className="tableheader" colspan="2">No of Lv availed <br></br> {text}</th>
+                    <th className="tableheader" rowspan="2">Max Lv Eligible</th>
+                    <th className="tableheader" colspan="2">Prev. Used</th>
+                    <th className="tableheader" rowspan="2">Clos. Bal</th>
                   </tr>
                   <tr>  
-                  <th>Paid</th>
-                  <th>LWP</th>
-                  <th>Paid</th>
-                  <th>LWP</th>
+                  <th className="tableheader">Paid</th>
+                  <th className="tableheader">LWP</th>
+                  <th className="tableheader">Paid</th>
+                  <th className="tableheader">LWP</th>
                   </tr>
                 </thead>
                 <tbody>
