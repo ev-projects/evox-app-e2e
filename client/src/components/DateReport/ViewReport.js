@@ -21,6 +21,7 @@ const ViewReport = () => {
     const [validmonth, setvalidmonth] = useState(false);
     const [validyear, setvalidyear] = useState(false);
     const [datatimeoff,Setdatatimeoff] = useState([]);
+    const [datatimeoffnew,Setdatatimeoffnew] = useState([]);
     const dispatch = useDispatch();
     useEffect(() => {
       const currentYear = new Date().getFullYear();
@@ -39,7 +40,7 @@ const ViewReport = () => {
 };
 
 const getDaysInMonth = (year, month) => {
-  return new Date(year, month + 1, 0).getDate();
+  return new Date(year, month, 0).getDate();
 };
 
     const handlesave = async (e) => {
@@ -65,6 +66,8 @@ const getDaysInMonth = (year, month) => {
                 timeoffItems);
               Setdatatimeoff(result.data.content.
                 timeoffItems)
+                Setdatatimeoffnew(result.data.content.
+                  timeoffItemsnew)
             }
           })
           .catch((e) => {
@@ -108,6 +111,8 @@ const getDaysInMonth = (year, month) => {
           });
       }
     }
+
+    
 
   return (
  
@@ -228,8 +233,35 @@ const getDaysInMonth = (year, month) => {
                   </tr>
                 </thead>
                 <tbody>
-               
+              
                   {datatimeoff.map((timeoff, pos) => (
+                    <tr>
+                      <td>{timeoff.Employee_Name}</td>
+                      <td>{timeoff.Employee_status}</td>
+                      <td>{timeoff.Account}</td>
+                      <td>{timeoff.startdate}</td>
+                      <td>{timeoff.presentdays} </td>
+                      <td>{timeoff.AvaiPaid} </td>
+                      <td>{timeoff.AvaiLWP}</td>
+                      <td>{timeoff.MaxLv}</td>
+                      <td>{timeoff.PrePais}</td>
+                      <td>{timeoff.PreLWP} </td>
+                      <td>{timeoff.CloseBal} </td>
+                    </tr>
+                  ))}
+                  {datatimeoffnew.length > 0 ?
+                  <tr>
+                  <td colspan="3" className="newhire">
+
+                  NEW HIRE ({text1})
+
+                  </td>
+                 
+
+                </tr>
+                : ""
+                  }
+                {datatimeoffnew.map((timeoff, pos) => (
                     <tr>
                       <td>{timeoff.Employee_Name}</td>
                       <td>{timeoff.Employee_status}</td>

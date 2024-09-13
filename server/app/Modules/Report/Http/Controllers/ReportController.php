@@ -1631,8 +1631,8 @@ class ReportController extends Controller
                 $final_report = array_merge($report,$report1);
 
                 $response = [];
-                $response['timeoffItems'] =  $final_report ;
-    
+                $response['timeoffItems'] =  $report ;
+                $response['timeoffItemsnew'] = $report1;
                 return success_response(
                     trans('messages.' . __FUNCTION__ . '_success'),
                     $response
