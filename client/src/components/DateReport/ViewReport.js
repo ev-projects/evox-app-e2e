@@ -219,8 +219,8 @@ const getDaysInMonth = (year, month) => {
                     <th className="tableheader" rowspan="2">Employment Status</th>
                     <th className="tableheader" rowspan="2">Account</th>
                     <th className="tableheader" rowspan="2">Start Date</th>
-                    <th className="tableheader" rowspan="2">Present Days <br></br> {text1}</th>
-                    <th className="tableheader" colspan="2">No of Lv availed <br></br> {text}</th>
+                    <th className="tableheader" rowspan="2">Present Days <br></br> {text}</th>
+                    <th className="tableheader" colspan="2">No of Lv availed <br></br> {text1}</th>
                     <th className="tableheader" rowspan="2">Max Lv Eligible</th>
                     <th className="tableheader" colspan="2">Prev. Used</th>
                     <th className="tableheader" rowspan="2">Clos. Bal</th>

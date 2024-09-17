@@ -78,8 +78,9 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 $sheet->mergeCells('F3:G3');
                 $sheet->setCellValue('F3', "No of Lv availed");
                 $sheet->mergeCells('F4:G4');
-                $sheet->setCellValue('F4', $this->current_period);
-                $sheet->setCellValue('E6', "(".$this->pre_mon." 21 - ".$this->cur_mon." 20)");
+                $sheet->setCellValue('F4', "(".$this->cur_mon." 21 - ".$this->cur_mon." 20)");
+                $sheet->setCellValue('E6', $this->current_period );
+                
           }
 
         ];
