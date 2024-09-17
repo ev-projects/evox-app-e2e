@@ -653,7 +653,7 @@ const Sidebar = (props) => {
                 <li className="nav-item">
                 <Link className="nav-link" to={global.links.view_report}>
                   <i className="nav-icon fa fa-clock-o" />
-                  <p className="blue"> TimeOff Allocation</p>
+                  <p className="blue"> Payroll Report</p>
                 </Link>
                 </li>
                   </ul>

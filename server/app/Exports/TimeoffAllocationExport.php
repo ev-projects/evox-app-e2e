@@ -114,7 +114,7 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
         $excel = [];
         array_push(
             $excel,
-            ["TIMEOFF ALLOCATION REPORT"],
+            [""],
             array_merge(
                 [""],
                 [""],
