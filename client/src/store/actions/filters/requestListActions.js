@@ -51,11 +51,13 @@ export const fetchRequestList = (params = null) => {
           });
         }
         
-
-        dispatch({
-          type: dispatch_commands2,
-          statusNumbers: result.data.content.result.status_numbers,
-        });
+        if(params.url == "my_team_requests"){
+          dispatch({
+            type: dispatch_commands2,
+            statusNumbers: result.data.content.result.status_numbers,
+          });
+        }
+      
       })
       .catch((e) => {
         dispatch(Formatter.alert_error(e));  
