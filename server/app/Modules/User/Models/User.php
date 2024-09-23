@@ -898,9 +898,18 @@ class User extends Authenticatable implements JWTSubject
         if( count($result['query']) ==5 ){
            $minus_e = 3;
         }
+        $id = [];
+        $count = count($result['query']);
+        $index = $count - $minus_e;
 
-    $ids = array_pluck($result['query'][count($result['query'])-  $minus_e], "id");
-        // dd($ids, count($result['query']));
+       
+        if(isset($result['query'][$index][0]->CurrentPage)){
+            $ids = array_pluck($result['query'][$index-1], "id");
+        }
+        else {
+            $ids = array_pluck($result['query'][$index], "id");
+        }
+    
     return user::whereIn('id', $ids);
     }
 
