@@ -21,7 +21,6 @@ class MyTeamAllRequests extends Component {
 
   constructor(props){
   
-
     super(props);
   
     this.initialState = {
@@ -224,7 +223,7 @@ class MyTeamAllRequests extends Component {
       <Wrapper {...this.props} >
             <ContainerWrapper>
             <h3>My Team Overall Request</h3> 
-            <div className="request-tab"><Tabs defaultActiveKey="home" 
+            <div className="request-tab"><Tabs
                       id="uncontrolled-tab-example"
                       defaultActiveKey={values.request_type}
                       onSelect={(key) =>  {
@@ -611,7 +610,7 @@ class MyTeamAllRequests extends Component {
       isNumbersLoaded : state.myTeamRequestList.isNumbersLoaded,
       statusNumbers   : state.myTeamRequestList.statusNumbers,
       filters         : state.myTeamRequestList.filters,
-      // requesttype     : state.myTeamRequestList.requesttype,
+      requesttype     : state.myTeamRequestList.requesttype,
       settings        : state.settings
     }
   }

@@ -292,7 +292,6 @@ export const bulkRequest = (post_data) => {
 
 export const eventclick = (requesttype) => {
 
-
   return (dispatch, getState) => {
     
       dispatch({
@@ -303,3 +302,17 @@ export const eventclick = (requesttype) => {
      
   }
 }
+
+export const eventclick1 = (requesttype) => {
+
+
+    return (dispatch, getState) => {
+      
+        dispatch({
+            type      : 'EVENT_CLICK', 
+            requesttype   :  requesttype,
+        })
+  
+       
+    }
+  }

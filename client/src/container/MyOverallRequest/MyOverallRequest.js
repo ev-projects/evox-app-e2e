@@ -18,8 +18,8 @@ import Formatter from "../../services/Formatter";
 class MyRequests extends Component {
 
   constructor(props){
+    
     super(props);
-
     this.initialState = {
         filters: {
           status:           this.props.filters?.status ?? "pending",

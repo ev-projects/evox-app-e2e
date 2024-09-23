@@ -1594,6 +1594,7 @@ class ReportController extends Controller
             $newrow = 0;
             foreach($user_timeoff as $timeoff) {
                 $report[] = array(
+                    "Sno" => $timeoff->Sno,
                     "Employee_Name" => $timeoff->Employee_Name,
                     "Employee_status" => $timeoff->Employment_Status,
                     "Account" => $timeoff->Account,
@@ -1612,6 +1613,7 @@ class ReportController extends Controller
                 $newhire = 1;
                 $newrow  == 0 ? $newhire = 1 : $newhire = 0;
                 $report1[] = array(
+                    "Sno" => $timeoff->Sno,
                     "Employee_Name" => $timeoff->Employee_Name,
                     "Employee_status" => $timeoff->Employment_Status,
                     "Account" => $timeoff->Account,

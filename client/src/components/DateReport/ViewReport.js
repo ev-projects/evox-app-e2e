@@ -26,9 +26,10 @@ const ViewReport = () => {
     useEffect(() => {
       const currentYear = new Date().getFullYear();
       const yearsArray = [];
-      for (let year = 2011; year <= currentYear; year++) {
+      for (let year = 2024; year <= currentYear; year++) {
         yearsArray.push(year);
       }
+      yearsArray.sort((a, b) => b - a);
       setDatayear(yearsArray); 
     }, []);
     const getMonthName = (monthNumber) => {
@@ -60,7 +61,7 @@ const getDaysInMonth = (year, month) => {
         })
           .then((result) => {
             console.log(result);
-            dispatch(Formatter.alert_success(result, 3000));
+            // dispatch(Formatter.alert_success(result, 3000));
             if (result.status == 200) {
               console.log(result.data.content.
                 timeoffItems);
@@ -215,6 +216,7 @@ const getDaysInMonth = (year, month) => {
             <Table striped bordered hover tableheader>
                 <thead>
                   <tr>
+                    <th className="tableheader" rowspan="2">Sno</th>
                     <th className="tableheader" rowspan="2">Employee Name</th>
                     <th className="tableheader" rowspan="2">Employment Status</th>
                     <th className="tableheader" rowspan="2">Account</th>
@@ -236,6 +238,7 @@ const getDaysInMonth = (year, month) => {
               
                   {datatimeoff.map((timeoff, pos) => (
                     <tr>
+                      <td>{timeoff.Sno}</td>
                       <td>{timeoff.Employee_Name}</td>
                       <td>{timeoff.Employee_status}</td>
                       <td>{timeoff.Account}</td>
@@ -263,6 +266,7 @@ const getDaysInMonth = (year, month) => {
                   }
                 {datatimeoffnew.map((timeoff, pos) => (
                     <tr>
+                      <td>{timeoff.Sno}</td>
                       <td>{timeoff.Employee_Name}</td>
                       <td>{timeoff.Employee_status}</td>
                       <td>{timeoff.Account}</td>

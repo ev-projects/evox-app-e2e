@@ -64,22 +64,22 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
             AfterSheet::class    => function (AfterSheet $event) {
                 $sheet = $event->sheet;
 
-                $sheet->mergeCells('D1:G1');
-                $sheet->setCellValue('F1', "Month of ".$this->cur_mon);
+                $sheet->mergeCells('D1:H1');
+                $sheet->setCellValue('G1', "Month of ".$this->cur_mon);
 
-                $sheet->mergeCells('I4:J4');
-                $sheet->setCellValue('I4', "Prev. Used");
+                $sheet->mergeCells('J4:K4');
+                $sheet->setCellValue('J4', "Prev. Used");
                
                 $columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
             foreach ($columns as $column) {
                 $event->sheet->getColumnDimension($column)->setAutoSize(true);
             }
 
-                $sheet->mergeCells('F3:G3');
-                $sheet->setCellValue('F3', "No of Lv availed");
-                $sheet->mergeCells('F4:G4');
-                $sheet->setCellValue('F4', "(".$this->pre_mon." 21 - ".$this->cur_mon." 20)");
-                $sheet->setCellValue('E6', $this->current_period );
+                $sheet->mergeCells('G3:H3');
+                $sheet->setCellValue('G3', "No of Lv availed");
+                $sheet->mergeCells('G4:H4');
+                $sheet->setCellValue('G4', "(".$this->pre_mon." 21 - ".$this->cur_mon." 20)");
+                $sheet->setCellValue('F6', $this->current_period );
                 
           }
 
@@ -128,21 +128,24 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 [""],
                 [""],
                 [""],
-            ),
-            array_merge(
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
-                [""],
                 [""],
             ),
             array_merge(
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+            ),
+            array_merge(
+                ["Sno"],
                 ["Employee Number"],
                 ["Employment Status"],
                 ["Account"],
@@ -167,9 +170,11 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 [""],
                 [""],
                 [""],
+                [""],
             ),
             $employee_items,
             array_merge(
+                [""],
                 [""],
                 [""],
                 [""],
