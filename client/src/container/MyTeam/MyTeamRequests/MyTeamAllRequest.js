@@ -48,6 +48,8 @@ class MyTeamAllRequests extends Component {
 
   }
 
+
+
   onSubmitHandler = (values) => {
     var formData = { url: "my_team_requests"  };
     // console.log(values)
@@ -160,7 +162,7 @@ class MyTeamAllRequests extends Component {
   }
 
   render = () => {  
-
+    const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
     console.log( this.props);
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
@@ -464,8 +466,8 @@ class MyTeamAllRequests extends Component {
                             }
                             fifthColumn.push(
                               <div>
-                              <p> Rest Days: {item.fourth_column?.rest_day?.join()}</p>
-                              <p> Work Days: {item.fourth_column?.work_days?.join()}</p>
+                              <p> Rest Days: {days.filter(day => !Array.from(new Set(item.fourth_column?.work_days)).join(', ').includes(day)).join(', ')}</p>
+                              <p> Work Days: {Array.from(new Set(item.fourth_column?.work_days)).join(', ')}</p>
                               </div>
                             ); 
                             link =  global.links.change_schedule + item.id.toString();

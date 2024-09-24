@@ -164,6 +164,7 @@ class MyTeamRequests extends Component {
     //     return <li>${item.start_time} ${item.end_time}</li>
     //   })
     // };
+  const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
 
@@ -502,8 +503,8 @@ console.log(this.state.store_departments);
                             }
                             fifthColumn.push(
                               <div>
-                              <p> Rest Days: {item.fourth_column?.rest_day?.join()}</p>
-                              <p> Work Days: {item.fourth_column?.work_days?.join()}</p>
+                              <p> Rest Days: {days.filter(day => !Array.from(new Set(item.fourth_column?.work_days)).join(', ').includes(day)).join(', ')}</p>
+                              <p> Work Days: {Array.from(new Set(item.fourth_column?.work_days)).join(', ')}</p>
                               </div>
                             ); 
                             link =  global.links.change_schedule + item.id.toString();
