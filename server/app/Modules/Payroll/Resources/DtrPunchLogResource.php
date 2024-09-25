@@ -27,10 +27,13 @@ class DtrPunchLogResource extends JsonResource
                 'log_in_type'=>$this->log_in_type,
                 'log_out_type'=>$this->log_out_type,
                 'duration'=>seconds_to_time($this->duration,true),
+                'remarks' =>$this->remarks,
+                'project_name' =>$this->project_name,
                 'owner_POV' => [
 
                     'time_in' => timestamp_to_time( $this->time_in , true ,  $owner),
                     'time_out' => timestamp_to_time( $this->time_out , true ,  $owner),
+                   
                    
                 ],
             );

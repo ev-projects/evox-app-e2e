@@ -94,7 +94,7 @@ const Sidebar = (props) => {
                     to={global.links.dtr_punch_history}
                   >
                     <i className="nav-icon fa fa-hand-rock-o nav-icon" />
-                    <p> Punch</p>
+                    <p> Multi Clock-in</p>
                   </Link>
                 </li>
                     <li className="nav-item">
@@ -106,7 +106,7 @@ const Sidebar = (props) => {
                         <i class="fa fa-calendar-o icon-stack-3x"></i>
                         <i class="fa fa-hand-rock-o icon-stack-1x"></i>
                       </span>
-                      <p> Punch History</p>
+                      <p> Multi Clock-in History</p>
                     </Link>
                   </li>
                   </>
@@ -473,13 +473,20 @@ const Sidebar = (props) => {
                       </Link>
                     </li> */}
                     {(Authenticator.scanFeature("view_dtr_summary")) && (
-
-                    <li className="nav-item">
-                      <Link className="nav-link" to={global.links.dtr_summary}>
-                        <i className="nav-icon fa fa-file-text nav-icon" />
-                        <p>DTR Summary</p>
-                      </Link>
-                    </li>
+                    <>
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.dtr_summary}>
+                          <i className="nav-icon fa fa-file-text nav-icon" />
+                          <p>DTR Summary</p>
+                        </Link>
+                      </li>
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.dtr_multi_logs_summary}>
+                          <i className="nav-icon fa fa-file-text nav-icon" />
+                          <p>DTR Multi-clock in Summary</p>
+                        </Link>
+                      </li>
+                    </>
                      )}
                     {/* <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_conflict}>

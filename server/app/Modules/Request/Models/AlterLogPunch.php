@@ -14,7 +14,7 @@ class AlterLogPunch extends Model
 {
     use ApprovalTrait, LogsActivity;
 
-    protected $table = "alter_log_punches";
+    protected $table = "alter_log_punches_new";
     protected $guarded = [];
     
     // protected static $logAttributes = ['user_id','date','current_time_in', 'current_time_out','new_time_in', 'new_time_out', 'employee_note' , 'approver_note', 'status'];

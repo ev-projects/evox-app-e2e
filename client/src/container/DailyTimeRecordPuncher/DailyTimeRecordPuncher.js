@@ -286,6 +286,7 @@ class DailyTimeRecordPuncher extends Component {
                             <th className="dtr-item">NSD</th>
                             <th className="dtr-item">OT</th>
                             <th className="dtr-item">OTND</th>
+                            <th className="dtr-item">Projects and Remarks</th>
                            
                         </tr>
                     </thead>
@@ -344,6 +345,17 @@ class DailyTimeRecordPuncher extends Component {
                                     <td className="punch-item">{punch?.payroll_items?.night_diff}</td>
                                   <td className="punch-item">{punch?.payroll_items?.overtime}</td>
                                   <td className="punch-item">{punch?.payroll_items?.overtime_night_diff}</td>
+
+                                  <td className="punch-item"><ul className='punch-bullet'>
+                                          {punch?.time_log.map((log, index) => {
+                                            return(
+                                              <li>
+                                                {/* {punch?.payroll_items?.project_name} -  {punch?.payroll_items?.project_name} */}
+                                                {log.project_name} -{log.remarks}
+                                              </li>)
+
+                                          })}
+                                        </ul></td>
                                  
                                    
                                 </tr>

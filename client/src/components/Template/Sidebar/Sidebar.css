@@ -162,3 +162,35 @@ padding-left: 10px !important;
   /* text-align: left !important; */
   font-size: .7rem !important;
 }
+
+.icon-stack-1x-BL {
+
+  position: absolute;
+
+  left: -9px;
+
+  right: 0;
+
+  top: 1px;
+
+}
+
+.icon-stack-green {
+
+  color: green;
+
+}
+
+
+.icon-stack-yellow {
+
+  color: yellow;
+
+}
+
+
+.icon-stack-red {
+
+  color: red;
+
+}
