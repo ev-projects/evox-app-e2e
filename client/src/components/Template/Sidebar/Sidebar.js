@@ -62,6 +62,8 @@ const Sidebar = (props) => {
                   <p className="blue"> Dashboard</p>
                 </Link>
               </li>
+
+             
               {/* <li className="nav-item">
               <Link className="nav-link" to={global.links.profile + user.id}>
                 <i className="nav-icon fa fa-user" />
@@ -153,6 +155,9 @@ const Sidebar = (props) => {
                       </Link>
                     </li>
                   )}
+
+              
+
                   {Authenticator.scanFeature('request_alter_logs')&&(<>
                     {(Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "multi_login")) && (
                       <li className="nav-item">
@@ -651,6 +656,13 @@ const Sidebar = (props) => {
                         </Link>
                       </li>
                     ) : null}
+
+                <li className="nav-item">
+                <Link className="nav-link" to={global.links.view_report}>
+                  <i className="nav-icon fa fa-clock-o" />
+                  <p className="blue"> Payroll Report</p>
+                </Link>
+                </li>
                   </ul>
                 </li>
               )}

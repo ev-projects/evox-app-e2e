@@ -267,7 +267,7 @@ class RequestRepository implements RequestRepositoryInterface{
                 $data->status 
                 , $data->department_id,
                 $data->name, 
-                0, 1, 999, 0]);
+                0, 1, 999, $data->departmentselect, $data->showall]);
             }else{
                 $start =null;
                 $end = null;
@@ -278,16 +278,18 @@ class RequestRepository implements RequestRepositoryInterface{
                 $data->status 
                 , $data->department_id,
                 $data->name, 
-                0, 1, 999, 0]);
+                0, 1, 999, $data->departmentselect, $data->showall]);
             }
             
-            
-            if(is_valid($my_team_req[1])){
+            // dd( $my_team_req);
+            $target = 1;
+            if(count($my_team_req) == 6){$target = 2;}
+            if(is_valid($my_team_req[$target])){
                 $numbers = array(
-                    "pending" => $my_team_req[1][3]->statusCount,
-                    "approved" => $my_team_req[1][0]->statusCount,
-                    "declined" => $my_team_req[1][2]->statusCount,
-                    "canceled" => $my_team_req[1][1]->statusCount,
+                    "pending" => $my_team_req[$target][3]->statusCount,
+                    "approved" => $my_team_req[$target][0]->statusCount,
+                    "declined" => $my_team_req[$target][2]->statusCount,
+                    "canceled" => $my_team_req[$target][1]->statusCount,
                 );
             }
             // dd($numbers);
@@ -299,6 +301,7 @@ class RequestRepository implements RequestRepositoryInterface{
             // dd($e);
             DB::rollback();
             log_error($e);
+            dd($e);
             throw $e;
         }
     }

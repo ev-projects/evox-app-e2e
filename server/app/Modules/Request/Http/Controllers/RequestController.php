@@ -144,12 +144,13 @@ class RequestController extends Controller
                 // );
                 $collection  = $user->requests_list('my_team_requests',$request);
                 $DAT = (new RequestResource( $collection["data"] ))->resolve();
-                    // dd($collection["pagination"]);
+        
                 return success_response(
                     trans('messages.request_display_success'), 
                     ["result" => [
                         "data" =>       $DAT["result"],
-                       
+                        "department" => $collection["Department"],
+                        "status_numbers" => $collection["numbers"],
                         "total" => is_valid($collection["pagination"]["total"]) ? $collection["pagination"]["total"]: 0,
                         "count" => is_valid($collection["pagination"]["count"]) ? $collection["pagination"]["count"]: 0,
                         "per_page" => is_valid($collection["pagination"]["per_page"]) ? $collection["pagination"]["per_page"]: 0,

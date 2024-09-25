@@ -500,6 +500,12 @@ class User extends Authenticatable implements JWTSubject
                 'alter_logs_punches'    => 5,
             ];
             $perpage_count = 10;
+
+            // if( $filter['use_filter'] == 1 && $filter['departmentselect'] == 1){
+            //     $filter['departmentselect'] = 0;
+            // }
+            // dump($filter['departmentselect']);
+          
             if(isset($filter['valid_from'])){
                 $response =  call_sp("EH_SP_My_Team_Request", [
                     $this->id,
@@ -510,7 +516,7 @@ class User extends Authenticatable implements JWTSubject
                     $filter['status'],
                     $filter['department_id'],
                     $filter['name'] , 
-                    0, $filter['page'], $perpage_count, 0]);
+                    0, $filter['page'], $perpage_count, $filter['departmentselect']!= null  ? $filter['departmentselect'] : 0,$filter['showall']!= null  ? $filter['showall'] : 0]);
     
             }else{
                 $response =  call_sp("EH_SP_overall_My_Team_Request", [
@@ -523,15 +529,14 @@ class User extends Authenticatable implements JWTSubject
                     1, // change to 1
                     $filter['page'], 
                     $perpage_count, 
-                    0
+                    $filter['departmentselect']!= null  ? $filter['departmentselect'] : 0,$filter['showall']!= null  ? $filter['showall'] : 0
                 ]);
             }
 
-                
+            
          
                 $collection =  [];
-            $result = $response[3] ? array_map(function($item) {
-                    // dd($item);
+            $result = ($filter['departmentselect'] == 1 ? $response[4] : $response[3]) ? array_map(function($item) {
                     return (object) array(
                         'id' => $item->T_id,
                         'status' => $item->T_status,
@@ -547,12 +552,47 @@ class User extends Authenticatable implements JWTSubject
                         'department_name' => $item->T_userDepartmentName,
                         'updated_at' => $item->T_updated_at,
                     );
-                }, $response[3]): []
-            ;
-            // dd($result ,$response[0],$response[2],$response[3]);
-            $paginate = $response[2][0];
-                // dd($paginate);
+                },  $filter['departmentselect'] == 1 ? $response[4] : $response[3]): [];
+
+            if($filter['departmentselect'] == 1){
+                $resultdepartment = $response[0] ? array_map(function($item) {
+
+                    return (object) array(
+                        'id' => $item->Id,
+                        'DepartmentName' => $item->DepartmentName,
+                    );
+                }, $response[0]): [];
+            }
+            
+            // $resultstatus =  ($filter['departmentselect'] == 1 ? $response[2] : $response[1]) ? array_map(function($item) {
+           
+            //     return (object) array(
+            //         'status' => $item->status,
+            //         'count' => $item->statusCount,
+            //     );
+
+            // }, $filter['departmentselect'] == 1 ? $response[2] : $response[1]): [];
+
+            if ($filter['departmentselect'] == 1 ? $response[2] : $response[1]) {
+                $numbers = [
+                    'approved' => $filter['departmentselect'] == 1 ? $response[2][0]->statusCount : $response[1][0]->statusCount,
+                    'canceled' => $filter['departmentselect'] == 1 ? $response[2][1]->statusCount : $response[1][1]->statusCount,
+                    'declined' => $filter['departmentselect'] == 1 ? $response[2][2]->statusCount : $response[1][2]->statusCount,
+                    'pending'  => $filter['departmentselect'] == 1 ? $response[2][3]->statusCount : $response[1][3]->statusCount,
+                ];
+            }
+                       // dd($result ,$response[0],$response[2],$response[3]);
+            $paginate =  $filter['departmentselect'] == 1 ? $response[3][0] : $response[2][0];
+       
             $collection["data"] = [ "query" =>$result];
+            if($filter['departmentselect'] == 1){
+                $collection["Department"] = $resultdepartment;
+            }else{
+                $collection["Department"] = [];
+            }
+
+            $collection["numbers"] = $numbers;
+
             $collection["pagination"] = [
                                             'total' => (int) $paginate->TotalCount,
                                             'count' => count( $collection["data"]),
@@ -560,6 +600,7 @@ class User extends Authenticatable implements JWTSubject
                                             'current_page' => (int) $paginate->CurrentPage,
                                             'last_page' => ceil($paginate->TotalCount /  $perpage_count)
                                         ];
+            
 
                                         // if( ($paginate->TotalCount % $perpage_count) > 0 
                                         // && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
@@ -853,13 +894,27 @@ class User extends Authenticatable implements JWTSubject
                 "query" =>  $response ?? [],
             );
 
+        //     $minus_e = 2;
+        // if( count($result['query']) ==5 ){
+        //    $minus_e = 3;
+        // }
+        $id = [];
+        // $count = count($result['query']);
+        // $index = $count - $minus_e;
 
-        if( count($result['query']) > 2){
-            $collection["data"] = $result['query'][count($result['query'])-3];
+        for ($i = 0; $i < count($result["query"]); $i++) {
+
+            if (isset($result["query"][$i][0]->CurrentPage)) {
+                $ids = array_pluck($result["query"][$i-1], "id");
+        
+                break;
+        
+            }
+        
         }
 
-    $ids = array_pluck($result['query'][count($result['query'])-3], "id");
-
+        
+    
     return user::whereIn('id', $ids);
     }
 
@@ -997,8 +1052,8 @@ class User extends Authenticatable implements JWTSubject
             [
                 $this->id, // vishnu this_id
                 null,
-                0
-                
+                0,
+                1
                 ]
             ); 
                 $result = $response[0] ? array_map(function($item) {
@@ -1037,8 +1092,8 @@ class User extends Authenticatable implements JWTSubject
             [
                 $this->id, // vishnu this_id
                 null,
-                1
-                
+                1,
+                1                
                 ]
             ); 
                 $result = $response[0] ? array_map(function($item) {
@@ -1078,6 +1133,7 @@ class User extends Authenticatable implements JWTSubject
                 $this->id, // vishnu this_id
                 $department_id
                 ,0
+                ,1
                 ]
             ); 
             // dd($response[0]);

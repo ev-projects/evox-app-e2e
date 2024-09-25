@@ -175,4 +175,16 @@
     width: 38px;
     overflow:hidden;
 }
+
+}
+
+.showall_checkbox{
+    margin: 4px 0 0;
+    line-height: normal;
+    width: 20px;
+    height: 20px;
+    }
+.showall_text{
+    font-size: 15px;
+    font-weight:500;
 }

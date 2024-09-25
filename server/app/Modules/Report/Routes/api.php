@@ -77,9 +77,10 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
 
         Route::get('export', 'ReportController@export_team_dtr_logs');
     });
-
+    Route::get('timeoff_allocation', 'ReportController@timeoff_allocation_report');
 });
 
 Route::get('summaryreport1', 'ReportController@team_dtr_summaryreportnew');
 
 Route::get('exportsummaryreport1', 'ReportController@newdtrsummaryreportcsvexport');
+

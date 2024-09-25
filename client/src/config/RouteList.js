@@ -102,7 +102,11 @@ import OverallRequest from "../container/MyTeam/OverallRequest";
 import OpsScheduleForm from "../container/OpsSchedule/OpsScheduleForm";
 import OpsScheduleList from "../container/OpsSchedule/OpsScheduleList";
 import JobOpeningsUpdate from "../container/Admin/JobOpeningsUpdate/JobOpeningsUpdate";
+
 import DtrMultiLogsSummary from "../container/MyTeam/DtrMultiLogsSummary";
+
+
+import ViewReport from "../components/DateReport/ViewReport";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -582,7 +586,10 @@ const RoutesList = (props) => {
           level={["Admin"]} 
           role={['admin']} permission={['full_access']}/>
         </ProtectedRoute>
-        
+
+        <ProtectedRoute exact path={global.links.view_report}>
+    <ViewReport></ViewReport>
+          </ProtectedRoute> 
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
         <Route exact path={["/", global.links.email_not_found ]} component={EmailNotFound} />

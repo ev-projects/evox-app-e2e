@@ -18,6 +18,7 @@ import {
   fetchStatusNumbers_dashboard,
   myfetchStatusNumbers_dashboard,
   eventclick,
+  eventclick1,
   get_today_leaves,
   get_tommrow_leaves,
   get_dashboard_holiday,
@@ -92,22 +93,22 @@ export const SummaryDashbord = (props) => {
   const { dashboard } = props;
 
   const onHandelClick = async (e) => {
-    await dispatch(eventclick("alteration"));
+    await dispatch(eventclick1("alteration"));
     history.push(global.links.my_team_all_requests);
   };
 
   const onHandelClick1 = async (e) => {
-    await dispatch(eventclick("overtime"));
+    await dispatch(eventclick1("overtime"));
     history.push(global.links.my_team_all_requests);
   };
 
   const onHandelClick2 = async (e) => {
-    await dispatch(eventclick("rest_day_work"));
+    await dispatch(eventclick1("rest_day_work"));
     history.push(global.links.my_team_all_requests);
   };
 
   const onHandelClick3 = async (e) => {
-    await dispatch(eventclick("change_schedule"));
+    await dispatch(eventclick1("change_schedule"));
     history.push(global.links.my_team_all_requests);
   };
 
