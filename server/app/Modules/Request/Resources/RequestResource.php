@@ -45,7 +45,7 @@ class RequestResource extends JsonResource
 
                       break;
                     case 'change_schedules':
-                        $schedule = Schedule::find($request->fourth_column);
+                        /*$schedule = Schedule::find($request->fourth_column);
                         
                         if($schedule!=null){
                             # Create Resource for Schedule Policies
@@ -62,7 +62,10 @@ class RequestResource extends JsonResource
                         } else {
                           $request->fourth_column = json_decode($request->fourth_column, true);
                           $request->fifth_column = json_decode($request->fifth_column, true);
-                        }
+                        }*/
+
+                        $request->fourth_column = json_decode($request->fourth_column, true);
+                        $request->fifth_column = json_decode($request->fifth_column, true);
 
                       break;
                       case 'alter_log_punches':
