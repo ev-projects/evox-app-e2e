@@ -1,324 +1,233 @@
-import React, { Component,useState, useEffect } from "react";
-import axios from 'axios';
-import "./NotificationMenu.css";
+import React, { Component } from "react";
 import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
-import Validator from "../../../services/Validator";
 import { Link } from "react-router-dom";
-import { logOut } from '../../../store/actions/userActions'
-import { Container, Row, Col, Table, Image, Spinner, Button, Badge, Tab, Tabs, Dropdown } from 'react-bootstrap';
-import $ from 'jquery';
-import { getMyDtrNotifications } from '../../../store/actions/dashboard/dashboardActions'
-// import { DocumentStore } from 'ravendb';
+import { Dropdown, Tabs, Tab, Button } from 'react-bootstrap';
+import { getMyNotifications } from '../../../store/actions/dashboard/dashboardActions';
+import "./NotificationMenu.css";
+
 class NotificationMenu extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      NavHasLoaded: false,
       setNumNotificationsToShow: 5,
+      selectedTag: 'all',
+      notificaion_list: [],
     };
   }
 
+  mergeNotifications = (selecttag, data) => {
+    const notifications = [];
+    const addNotifications = (items, type, isCelebration = false) => {
+      items.forEach(item => {
+        notifications.push({
+          id: item.id,
+          requestID: item.requestID || "",
+          type: item.requestID ? "DTR" : isCelebration ? 'celebration' : type,
+          title: item.title || item.eventType || (item.requestType ? item.title : "Request Status") ,
+          description: item.description || (isCelebration ? `Celebrating a ${item.eventType}` : "") || item.actionStatus,
+          timestamp: item.timestamp || item.eventDate,
+          pagetype: item.requestType ? item.requestType : ""
+        });
+      });
+    };
+
+    if (selecttag === 'all') {
+      addNotifications(data.requestsForApproval, 'request');
+      addNotifications(data.requestStatus, 'status');
+      addNotifications(data.announcements, 'announcement');
+      addNotifications(data.celebrations, 'celebration', true);
+      addNotifications(data.missedDtr, 'missedDTR');
+    } else if (selecttag === 'DTR') {
+      addNotifications(data.missedDtr, 'missedDTR');
+    } else if (selecttag === 'announcements') {
+      addNotifications(data.announcements, 'announcement');
+    } else if (selecttag === 'birthday') {
+      addNotifications(data.celebrations, 'celebration', true);
+    } else if (selecttag === 'request') {
+      addNotifications(data.requestsForApproval, 'request');
+      addNotifications(data.requestStatus, 'status');
+    }
+    console.log(notifications);
+    this.setState({ notificaion_list: notifications });
+  };
+
+  handleTabSelect = (key) => {
+    this.setState({ selectedTag: key, notificaion_list: [] }, () => {
+      this.mergeNotifications(key, this.props.notificationCenter);
+    });
+  };
+
   componentDidMount() {
-
-    // const store = new DocumentStore('http://localhost:8080', 'Northwind');
-
-    // store.initialize();
-    
-    
-    // const session = store.openSession();
-
-    
-    // const id = 'products/77-A';
-    // console.log("here2")
-    // session.load(id)
-    //   .then(document => {
-    //     console.log("here2")
-
-    //     console.log(document);
-    
-    //   })
-    
-    //   .catch(error => {
-    
-    //     console.error(error);
-    
-    //   });
-
+    const { user } = this.props;
+    if (user && user.id) {
+      this.props.getMyNotifications(user.id);
+    } else {
+      console.error("User ID is not defined.");
+    }
   }
 
-  render = () => {
-
-    const { my_dtr_notifications } = this.props.dashboard;
-    // const notificationCount = my_dtr_notifications?.length || 0; 
-
-    const notifications = [
-
-      {
-
-        id: 1,
-
-        tag: "DTR",
-
-        title: "DTR",
-
-        summary: "Date from Aug 8 has no clock in",
-
-        date_created: "2023-03-01",
-                
-        CountryId: "2",
-
-        DepartmentId: "23",
-
-
-        read: false,
-
-        user_id: 142
-
-      },
-
-      {
-
-        id: 1,
-
-        tag: "warning",
-
-        title: "Payroll Deadline",
-
-        summary: "Nearing Payroll Deadline",
-
-        date_created: "2023-03-01",
-                
-        CountryId: "2",
-
-        DepartmentId: "23",
-
-
-        read: false,
-
-        user_id: null
-
-      },
-      {
-
-        id: 2,
-
-        tag: "request",
-
-        title: "Leave Request",
-
-        summary: "You have requested a leave on March 15, 2023",
-
-        date_created: "2023-03-05",
-                
-        CountryId: "2",
-
-        DepartmentId: "23",
-
-
-        read: false,
-
-        user_id: 301
-
-      },
-
-      {
-
-        id: 3,
-
-        tag: "announcements",
-
-        title: "Happy Birthday!",
-
-        summary: "Wishing John Doe a happy birthday!",
-
-        date_created: "2023-03-07",
-                
-        CountryId: "2",
-
-        DepartmentId: "23",
-
-
-        read: true,
-
-        user_id: 27
-
-      },
-
-      {
-
-        id: 4,
-
-        tag: "DTR",
-
-        title: "DTR incomplete",
-
-        summary: "Date from Aug 9 has no clock out",
-
-        date_created: "2023-03-01",
-
-        CountryId: "2",
-        
-        DepartmentId: "23",
-        
-        read: false,
-
-        user_id: 198
-
-      },
-
-      {
-
-        id: 5,
-
-        tag: "request",
-
-        title: "Overtime Request",
-
-        summary: "You have requested overtime on March 10, 2023",
-
-        date_created: "2023-03-08",
-                
-        CountryId: "2",
-
-        DepartmentId: "23",
-
-        souce_id: "8888", 
-
-
-        read: false,
-
-        user_id: 391
-
-      },
-
-      {
-
-        id: 6,
-
-        tag: "announcements",
-
-        title: "New Policy Announcement",
-
-        summary: "Please review the new company policy on attendance",
-
-        date_created: "2023-03-12",
-                
-        CountryId: "2",
-
-        DepartmentId: "23",
-
-
-
-        read: false,
-
-        user_id: 219
-
-      }
-
-    ];
-    const unreadNotifications = notifications.filter(notification => !notification.read);
-    // console.log(unreadNotifications.length);
-    const notificationCount = unreadNotifications.length;
-    if (this.props.user != null && this.props.user.id != null && this.state.NavHasLoaded == false) {
-      this.props.getMyDtrNotifications(this.props?.user?.id);
-      this.state.NavHasLoaded = true
+  componentDidUpdate(prevProps) {
+    const { user, notificationCenter, approval, announcement, celebration, missingdtr } = this.props;
+
+    // Update notifications when notificationCenter changes
+    if (prevProps.notificationCenter !== notificationCenter) {
+      this.mergeNotifications(this.state.selectedTag, notificationCenter);
     }
 
-    let circleClass;
-    if (notificationCount > 90) {
-      circleClass = 'icon-stack-red';
-    } else if (notificationCount <= 90 && notificationCount > 50) {
-      circleClass = 'icon-stack-yellow';
-    } else {
-      circleClass = 'icon-stack-green'; 
+    // Update the state if approval or other props change
+    if (prevProps.approval !== approval || 
+        prevProps.announcement !== announcement || 
+        prevProps.celebration !== celebration || 
+        prevProps.missingdtr !== missingdtr) {
+      this.setState({
+        approval,
+        announcement,
+        celebration,
+        missingdtr
+      });
     }
 
-   
+    // Refresh notifications when user ID changes
+    if (prevProps.user.id !== user.id && user.id) {
+      this.props.getMyNotifications(user.id);
+    }
+  }
 
-
+  render() {
+    const { setNumNotificationsToShow, selectedTag, notificaion_list } = this.state;
+    const { alldata, approval, announcement, celebration, missingdtr,user } = this.props; // Use props directly instead of state
+    console.log(alldata);
     return (
       <li className="nav-item">
-        <Dropdown className="nav-notification-bell-dropdown">
-          <Dropdown.Toggle variant="" className="bell-toggle" id="dropdown-basic">
-            <span class="icon-stack">
-              <i class="fa fa-bell icon-stack-3x" ></i>
-              <i class={`fa fa-circle icon-stack-1x icon-stack-1x-BL ${circleClass}`} ></i>
-            </span>
-          </Dropdown.Toggle>
-          <Dropdown.Menu className="nav-notification-bell-dropdown nav-notification-bell-dropdown-menu  ">
-            <div className="card">
+        {alldata > 0 ? (
+          <Dropdown className="nav-notification-bell-dropdown notificationnn">
+            <Dropdown.Toggle variant="" className="bell-toggle" id="dropdown-basic">
+              <span className="icon-stack">
+                <i className="fa fa-bell-o icon-stack-3x"></i>
+              </span>
+            </Dropdown.Toggle>
+            <Dropdown.Menu className="notification-content msnhp-style">
+              <div className="notification-header">
+                <div className="notification-header-title">
+                  <i className="fa fa-bell" aria-hidden="true"></i> Notifications
+                </div>
+              </div>
+
               <Tabs
                 defaultActiveKey="all"
                 transition={false}
-                className="mb-3"
+                className="mb-3 tabing"
+                activeKey={selectedTag}
+                onSelect={this.handleTabSelect}
               >
-                <Tab eventKey="all" title="All">
-                  {/* Request tab content */}
-                </Tab>
-                <Tab eventKey="dtr" title="DTR">
-                  {/* Priority tab content */}
-                </Tab>
-                <Tab eventKey="request" title="Request">
-                  {/* Important tab content */}
-                </Tab>
-                {/* <Tab eventKey="request" title="others">
-                
-                </Tab> */}
-              
+                <Tab eventKey="all" title="All Notification" />
+                { approval > 0 ?
+                <Tab eventKey="request" title="Approval" />
+                :""}
+                {announcement > 0 ?
+                <Tab eventKey="announcements" title="Announcements" />
+                : ""}
+                {celebration > 0 ?
+                <Tab eventKey="birthday" title="Celebrations" />
+                :""}
+                {missingdtr > 0?
+                <Tab eventKey="DTR" title="Missed DTR" />
+                :""}
               </Tabs>
-              <Button variant="" className="mark-read"/*onClick={() => this.props.markAllAsRead(this.props.user.id)}*/>Mark all as read</Button>
 
-             
-
-                  <div className="scrollable-notifications">
-
-                  {notifications.slice(0, this.state.setNumNotificationsToShow).map((notification, index) => (
-
-                    <div key={index} className={`notification-item ${notification.tag}`}>
-
-                      <h4>{notification.title}</h4>
-
-                      <p>{notification.summary}</p>
-
-                      <small>{notification.date_created}</small>
-
-                      {/* {notification.read ? <span>Read</span> : <span>Unread</span>} */}
-
-                    </div>
-
-                  ))}
-
-                  </div>
-
-                 
-                  {this.state.setNumNotificationsToShow < notifications.length && (
-
-                    <Button variant="" onClick={() => this.setState({ setNumNotificationsToShow: this.state.setNumNotificationsToShow + 5 })}>
-
-                      Show more
-
-                    </Button>
-
-                    )}
+              <div className="scrollable-notifications">
+              {notificaion_list.length > 0 ? (
+  notificaion_list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, setNumNotificationsToShow).map(item => {
+    let link = '';
+    switch (item.pagetype) {
+      case "change_schedules":
+        link = global.links.change_schedule;
+        break;
+      case "alter_logs":
+        link = global.links.alter_log;
+        break;
+      case "rest_day_works":
+        link = global.links.rest_day_work;
+        break;
+      case "overtimes":
+        link = global.links.overtime;
+        break;
+      default:
+        link = ''; // Handle the default case if needed
+    }
+    return ( // Return the JSX here
+      <div key={item.id} className="notification-item">
+        {item.type === "DTR" ? (
+          <div className="row titleDTR">
+            <div className="col">
+              <h2>
+                <i className="nav-icon fa fa-bars nav-icon" />
+                <span>{item.title ? item.title : item.description}</span>
+              </h2>
             </div>
-          </Dropdown.Menu>
-        </Dropdown>
+            <div className="col">
+              <Link className="nav-link" to={`${link}${item.requestID}`}>
+                <i className="nav-icon fa fa-arrow-right" />
+              </Link>
+            </div>
+          </div>
+        ) : item.type === "missedDTR" ? (
+          <div className="row titleDTR">
+            <div className="col">
+              <h2>
+                <i className="nav-icon fa fa-bars nav-icon" />
+                <span>{item.title ? item.title : item.description}</span>
+              </h2>
+            </div>
+            <div className="col">
+              <Link className="nav-link" to={`${global.links.dtr}${user.id}`}>
+                <i className="nav-icon fa fa-arrow-right" />
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <h2>
+            <i className="nav-icon fa fa-bars nav-icon" />
+            <span>{item.title ? item.title : item.description}</span>
+          </h2>
+        )}
+        <div className="notification-item_content">{item.description}</div>
+        <small>{item.timestamp}</small>
+      </div>
+    );
+  })
+) : (
+  <div className="no_notifi">No Notifications Available.</div>
+)}
+
+                <div className="showmore_div">
+                  {setNumNotificationsToShow < notificaion_list.length && (
+                    <Button variant="" onClick={() => this.setState({ setNumNotificationsToShow: setNumNotificationsToShow + 5 })}>
+                      Show more
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Dropdown.Menu>
+          </Dropdown>
+        ) : "" }
       </li>
     );
-  };
+  }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-    dashboard: state.dashboard,
-  };
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getMyDtrNotifications: (id) => dispatch(getMyDtrNotifications(id)),
-  };
-};
+const mapStateToProps = (state) => ({
+  user: state.user,
+  notificationCenter: state.dashboard.my_notifications,
+  approval: state.dashboard.approval,
+  announcement: state.dashboard.announcement,
+  celebration: state.dashboard.celebration,
+  missingdtr: state.dashboard.missingdtr,
+  alldata: state.dashboard.alldata,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  getMyNotifications: (id) => dispatch(getMyNotifications(id)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationMenu);
