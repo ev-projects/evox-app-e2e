@@ -64,7 +64,7 @@ export const biometrixLogMulti = ( post_data, id ) => {
                 console.log(e.data);
                 dispatch( Formatter.alert_error( e ) ) 
             });
-            dispatch( Formatter.alert_success( result ));
+            // dispatch( Formatter.alert_success( result ));
         })
         .catch(e => {
 

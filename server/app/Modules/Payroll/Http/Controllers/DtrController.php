@@ -431,7 +431,7 @@ class DtrController extends Controller
      */
     public function quickpunch_multi(Request $request){    
         try { 
-
+           
         //    dd( $request->all(), Auth::user()->depPPPartment_schedule_active());
             $biometrix_collection = Collection::make();
             $biometrics = new Biometrics();
@@ -458,6 +458,7 @@ class DtrController extends Controller
                             ->startOfDay();
 
                             // dd($request->all(), $request->on_date == true);
+                            
             if($request->date == "yesterday" && $request->on_date == true){
 
                 $date_check =   Carbon::now()
@@ -468,8 +469,8 @@ class DtrController extends Controller
                 // dump(256,Auth::user()->depPPPartment_schedule_active());
                 $date_check_formatted = $date_check->format("Y-m-d");
             // if(Auth::user()->depPPPartment_schedule_active()){
-                
-                $result = $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection);
+                // dd($request->all(),$date_check_formatted,Auth::user()->id, $biometrix_collection);
+                $result = $this->dtr->apply_punch_to_history($date_check_formatted,Auth::user()->id, $biometrix_collection,$request);
                 // dd( $result );
                 if(!$result){ 
                     return error_response( trans(' you need to clock in '),  );

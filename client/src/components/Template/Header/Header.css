@@ -3,6 +3,7 @@ body:not(.sidebar-mini-md) .content-wrapper, body:not(.sidebar-mini-md) .main-fo
   padding-bottom: 1px;
   z-index: 100 !important;
 }
+
 .navbar {
   background-color: #07335e !important;
   /* background-color: #ffffff !important; */
@@ -51,6 +52,7 @@ label:not(.form-check-label):not(.custom-file-label) {
   font-weight: normal;
   padding-right: 3%;
 }
+
 input[type=checkbox], input[type=radio] {
   box-sizing: border-box;
   padding: 0;
@@ -68,6 +70,7 @@ button[type=submit].btn-secondary{
   background-color: #545b62;
   border-color: #4e555b;
 }
+
 .nav-sidebar .nav-item>.nav-link {
   position: relative;
   cursor: pointer;
@@ -75,3 +78,10 @@ button[type=submit].btn-secondary{
 }
 
 .has-treeview.menu-open{background: rgba(255,255,255,.1) !important}
+
+.notifi{ 
+
+  margin-top: 5px !important;
+  margin-right: 10px !important;
+
+}

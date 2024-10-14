@@ -40,6 +40,8 @@ class AlterLogPunchResource extends JsonResource
                 $new_punch_formatted[ $key ] =  (object) [
                     'start_time' => ( $punch->start_time!=null)?date("Y-m-d H:i", $punch->start_time+ $offset_seconds ):null,
                     'end_time' =>   ( $punch->end_time!=null)?date("Y-m-d H:i", $punch->end_time+ $offset_seconds ):null,
+                    'project_name' =>   ( $punch->project_name!=null)?( $punch->project_name ):null,
+                    'remarks' =>   ( $punch->remarks!=null)?( $punch->remarks ):null
                 ];
                 $pov_new_punch_formatted[ $key ] =  (object) [
                     'start_time' => ( $punch->start_time!=null)?date("Y-m-d H:i", $punch->start_time+ $owner_offset_seconds ):null,

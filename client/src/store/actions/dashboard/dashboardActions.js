@@ -1,5 +1,6 @@
 import axios from "axios";
 import API from "../../../services/API";
+import APICALL from "../../../services/APICALL";
 import { trackPromise } from "react-promise-tracker";
 import Formatter from "../../../services/Formatter";
 
@@ -259,6 +260,78 @@ export const clearRecentDtrInstance = () => {
         dispatch({
             'type'      : 'CLEAR_RECENT_DTR_INSTANCE'
         })
+    }
+}
+
+// BIRTHDAY ANNIV
+export const getMyNotifications = (user_id) => {
+    return (dispatch, getState) => {
+
+       
+        axios({
+            method: 'get',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            url: `http://10.10.4.24:8080/api/Cache/${user_id}`, // Using template literals for clarity
+          })
+            .then(result => {
+              dispatch({
+                type: 'FETCH_MY_NOTIFICATIONS',
+                data: result.data, // Ensure you're dispatching the correct data structure
+              });
+              let approvalcount = result.data.requestsForApproval.length;
+              let requestcount = result.data.requestStatus.length;
+              let announcementcount = result.data.announcements.length
+              let celebrationcount = result.data.celebrations.length
+              let missingdtr = result.data.missedDtr.length
+
+              dispatch({
+                type: 'FETCH_MY_NOTIFICATIONS_COUNT',
+                approval: approvalcount + requestcount,
+                announcement: announcementcount,
+                celebration: celebrationcount,
+                missingdtr: missingdtr,
+                alldata: (approvalcount + requestcount + announcementcount + celebrationcount + missingdtr),
+              });
+            })
+            .catch(error => {
+              if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                if (error.response.status === 404) {
+                    dispatch({
+                        type: 'FETCH_MY_NOTIFICATIONS',
+                        data:  {
+
+                            "requestsForApproval": [],
+                        
+                            "requestStatus": [],
+                        
+                            "announcements": [],
+                        
+                            "celebrations": [],
+                        
+                            "missedDtr": []
+                        
+                        }
+                         , // Ensure you're dispatching the correct data structure
+                      });
+                   
+                  console.log("Resource not found (404):", error.response.data);
+                //   dispatch(Formatter.alert_error("Resource not found!"));
+                } else {
+                  console.log("Error:", error.response.data);
+                //   dispatch(Formatter.alert_error("An error occurred while fetching notifications."));
+                }
+              } else if (error.request) {
+                // The request was made but no response was received
+                console.log("No response received:", error.request);
+                // dispatch(Formatter.alert_error("No response from server."));
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log("Error setting up request:", error.message);
+                // dispatch(Formatter.alert_error("Error in request setup."));
+              }
+            });
     }
 }
 

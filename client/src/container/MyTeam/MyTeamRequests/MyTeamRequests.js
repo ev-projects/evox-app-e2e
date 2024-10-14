@@ -30,6 +30,7 @@ class MyTeamRequests extends Component {
           valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : 
                               Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
                               new Date(this.props.settings.current_payroll_cutoff.end_date) : null,
+
           // department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? this.props.user.departments_handled_strict[0].id : null,
           department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? null : null,
 
@@ -368,7 +369,9 @@ console.log(this.state.store_departments);
                             style={{ display: 'block' }}
                           >
                           <option    label="- Department -" />
+
                           {/* {this.props.user.departments_handled_strict.map(function(item){
+
                             return <option value={item.id} label={item.department_name} />;
                           })} */}
                           {request_list_department?.map(function(item){
@@ -527,18 +530,61 @@ console.log(this.state.store_departments);
                               link =  global.links.alter_log + item.id.toString();
                               break;
                               case "alter_log_punches":
+                                const json_data_new = JSON.parse(item.fifth_column);
+                                const new_times = json_data_new.map(item => ({
+
+                                  start_time: new Date(item.start_time * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                  hour: '2-digit',
+                                                                                  minute: '2-digit',
+                                                                                  second: '2-digit',
+                                                                                  hour12: false
+                                                                                }) ?? 'N/A',
+                                
+                                  end_time: new Date(item.end_time * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit',
+                                                                                second: '2-digit',
+                                                                                hour12: false
+                                                                              }) ?? 'N/A'
+                                
+                                }));
+                                const json_data_old = JSON.parse(item.fourth_column)
+                                const old_times = json_data_old.map(item => ({
+
+                                  start_time: new Date(item.time_in * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                  hour: '2-digit',
+                                                                                  minute: '2-digit',
+                                                                                  second: '2-digit',
+                                                                                  hour12: false
+                                                                                }) ?? 'N/A',
+                                
+                                  end_time: new Date(item.time_out * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit',
+                                                                                second: '2-digit',
+                                                                                hour12: false
+                                                                              }) ?? 'N/A'
+                                
+                                }));
+                                console.log(json_data_new,new_times,json_data_old);
                                 fourthColumn.push(
                                   <div>
                                     <span className="alter-logs-new">New</span>
-                                    <p>
-                                      Timelog:  {item.fifth_column}
-                                    </p>
+                                   {new_times.map(function(item) {
+
+                                        return <p>{item.start_time}-{item.end_time}</p>;
+
+                                        })}
                                   </div>
                                 );
                                 fifthColumn.push(
                                   <div>
                                     <span className="alter-logs-old">Old</span>
-                                    <p>Timelog: {item.fourth_column}</p>
+                                    {old_times.map(function(item) {
+
+                                          return <p>{item.start_time}-{item.end_time}</p>;
+
+                                          })}
                                   </div>
                                 );
                                 link =  global.links.alter_log_punch + item.id.toString();

@@ -29,6 +29,7 @@ use Spatie\Permission\Models\Permission;
 use App\Exports\TeamSummaryAttendanceExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
+use App\Exports\ExportDTRMultiLogsSummary;
 use App\Modules\Payroll\Resources\DtrLogResource;
 use App\Modules\Payroll\Resources\HolidayResource;
 use App\Modules\Payroll\Resources\DtrHalfDayMismacth;
@@ -1501,6 +1502,79 @@ class ReportController extends Controller
                 $response
             );
             
+
+     
+        } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
+            return error_response(trans('messages.error_default'), $e);
+        }
+    }
+
+    public function dtr_multi_logs_summary_report(Request $request)
+    {
+   
+        try {    
+            $me = Auth::user();
+            if (!is_valid($request->department_id)) {
+                return error_response("Please select a department", array());
+            }
+            $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id, $me->LevelId, $me->id]);
+            $user_dtr = $result_sets[0];
+            $report = [];
+            foreach($user_dtr as $dtr) {
+                $report[] = array(
+                    "Employee_Name" => $dtr->Employee_Name,
+                    "Employee_Number" => $dtr->Employee_Number,
+                    "Department" => $dtr->Department_Name,
+                    "Date" => $dtr->date,
+                    "Total_Hours" => $dtr->duration_hr,
+                    "Rendered_Hr" => $dtr->render_hr,
+                    "Night_Diff" => $dtr->night_diff_hr,
+                    "Project_Name" => $dtr->project_name
+                );
+            }
+            $response = [];
+            $response['current_page'] = 1;
+            $response['last_page'] = 1;
+            $response['has_next_page'] = false;
+            $response['dtrItems'] =  $report;
+
+            return success_response(
+                trans('messages.' . __FUNCTION__ . '_success'),
+                $response
+            );
+            
+
+     
+        } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
+            return error_response(trans('messages.error_default'), $e);
+        }
+    }public function dtr_multi_logs_summary_report_csv_export(Request $request)
+    {
+
+      
+        try {
+            $me = Auth::user();
+            if (!is_valid($request->department_id)) {
+                return error_response("Please select a department", array());
+            }
+            $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id, $me->LevelId, $me->id]);
+            $user_dtr = $result_sets[0];
+            $report = [];
+            foreach($user_dtr as $dtr) {
+                $report[] = array(
+                    "Employee_Name" => $dtr->Employee_Name,
+                    "Employee_Number" => $dtr->Employee_Number,
+                    "Department" => $dtr->Department_Name,
+                    "Date" => $dtr->date,
+                    "Total_Hours" => $dtr->duration_hr,
+                    "Render_Hr" => $dtr->render_hr,
+                    "Night_Diff" => $dtr->night_diff_hr,
+                    "Project_Name" => $dtr->project_name
+                );
+            }
+            return Excel::download(new  ExportDTRMultiLogsSummary($report), 'dtrmultilogssummary.csv');
 
      
         } catch (Exception $e) {

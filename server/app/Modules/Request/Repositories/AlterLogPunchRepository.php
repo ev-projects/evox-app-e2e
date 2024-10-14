@@ -52,6 +52,8 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
                             (object) [
                                 'start_time' =>  ( isset( $item->start_time ) && is_valid( $item->start_time ) ) ? strtotime($item->start_time) - $auth_user_offset: null ,
                                 'end_time' =>  ( isset( $item->end_time ) && is_valid( $item->end_time ) ) ? strtotime($item->end_time) - $auth_user_offset: null ,
+                                'project_name' =>  ( isset( $item->project_name ) && is_valid( $item->project_name ) ) ? $item->project_name : null ,
+                                'remarks' =>  ( isset( $item->remarks ) && is_valid( $item->remarks ) ) ? $item->remarks : null ,
                             ];
             }
 
@@ -103,12 +105,15 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
                                             (object) [
                                                 'start_time' =>  ( isset( $item->start_time ) && is_valid( $item->start_time ) ) ? strtotime($item->start_time) - $auth_user_offset: null ,
                                                 'end_time' =>  ( isset( $item->end_time ) && is_valid( $item->end_time ) ) ? strtotime($item->end_time) - $auth_user_offset: null ,
+                                                'project_name' =>  ( isset( $item->project_name ) && is_valid( $item->project_name ) ) ? $item->project_name : null ,
+                                                'remarks' =>  ( isset( $item->remarks ) && is_valid( $item->remarks ) ) ? $item->remarks : null ,
                                             ];
                             }
 
                 $alter_log_punch->old_punch           = json_encode($old_punch->get()->toArray()) ;
                 $alter_log_punch->new_punch           =  json_encode($new_punch_formatted) ;
                 $alter_log_punch->employee_note       = ( isset( $data['employee_note'] ) && is_valid( $data['employee_note'] ) ) ? $data['employee_note'] : $alter_log_punch->employee_note ;
+                $alter_log_punch->approver_note       = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $alter_log_punch->approver_note ;
                 $alter_log_punch->approver_note       = ( isset( $data['approver_note'] ) && is_valid( $data['approver_note'] ) ) ? $data['approver_note'] : $alter_log_punch->approver_note ;
                 $alter_log_punch->updated_by          = auth()->user()->id;
                 $alter_log_punch->update();

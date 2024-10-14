@@ -120,11 +120,12 @@ class DtrPunch extends Component {
         <Wrapper {...this.props} >
           <ContainerWrapper>
           <ContainerBody className="dtr-wrapper">
-              <Content col="12" title="Punch for DTR" subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
+              {/* <Content col="12" title="Punch for DTR" subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} > */}
+              <Content col="12" title="Multi Clock in" subtitle={<RequestSubtitle method={method} user={this.props.dtr.employeeInfo} />} >
               
                 
                 <Row>
-                  <Col size="6">
+                  <Col size="5">
                       <MultiQuickpunch />
                   </Col>
                   <Col size="7">
