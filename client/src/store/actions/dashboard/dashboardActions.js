@@ -271,7 +271,7 @@ export const getMyNotifications = (user_id) => {
         axios({
             method: 'get',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            url: `http://10.10.4.24:8080/api/Cache/${user_id}`, // Using template literals for clarity
+            url: process.env.REACT_APP_NC_API_BASE_URL+`/Cache/${user_id}`, // Using template literals for clarity
           })
             .then(result => {
               dispatch({

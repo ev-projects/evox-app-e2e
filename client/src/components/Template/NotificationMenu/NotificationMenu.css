@@ -136,6 +136,8 @@
   
     overflow-y: scroll !important;
 
+    overflow-x: hidden !important;
+
     /* background-color: #666; */
     
   
