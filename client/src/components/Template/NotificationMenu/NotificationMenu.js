@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Dropdown, Tabs, Tab, Button } from 'react-bootstrap';
 import { getMyNotifications } from '../../../store/actions/dashboard/dashboardActions';
 import "./NotificationMenu.css";
+import "./NotificationMenunew.css";
 
 class NotificationMenu extends Component {
   constructor(props) {
@@ -24,9 +25,11 @@ class NotificationMenu extends Component {
           requestID: item.requestID || "",
           type: item.requestID ? "DTR" : isCelebration ? 'celebration' : type,
           title: item.title || item.eventType || (item.requestType ? item.title : "Request Status") ,
-          description: item.description || (isCelebration ? `Celebrating a ${item.eventType}` : "") || item.actionStatus,
+          description: item.description || (isCelebration ? ` ${item.eventType}` : "") || item.actionStatus,
           timestamp: item.timestamp || item.eventDate,
-          pagetype: item.requestType ? item.requestType : ""
+          pagetype: item.requestType ? item.requestType : "",
+          announcementId: item.announcementId ? item.announcementId : "",
+          celebrations: isCelebration ? "Celebrating ":""
         });
       });
     };
@@ -106,7 +109,8 @@ class NotificationMenu extends Component {
                 <i className="fa fa-bell-o icon-stack-3x"></i>
               </span>
             </Dropdown.Toggle>
-            <Dropdown.Menu className="notification-content msnhp-style">
+            <Dropdown.Menu className="notification-content notification-panel msnhp-style">
+            {/* <Dropdown.Menu className="notification-content notification-panel msnhp-style"> */}
               <div className="notification-header">
                 <div className="notification-header-title">
                   <i className="fa fa-bell" aria-hidden="true"></i> Notifications
@@ -134,8 +138,137 @@ class NotificationMenu extends Component {
                 <Tab eventKey="DTR" title="Missed DTR" />
                 :""}
               </Tabs>
+              {/* <div className="scrollable-notifications">
+              <div class="notification unread" id="notification">
+      <img src="/images/Carmela_Garcia.jpg" alt="Mark Webber"></img>
+      <div class="not">
+        <p class="utitle"><span>Mark Webber</span> reacted to your recent post <span class="st dark">My first tournament today!</span></p>
+        <p>1m ago</p>
+      </div>
+    </div>
+    <div class="notification unread" id="notification">
+    <img src="/images/Carmela_Garcia.jpg" alt="Mark Webber"></img>
+      <div class="not">
+        <p class="utitle"><span>Mark Webber</span> reacted to your recent post <span class="st dark">My first tournament today!</span></p>
+        <p>1m ago</p>
+      </div>
+    </div>
+    <div class="notification unread" id="notification">
+    <img src="/images/Carmela_Garcia.jpg" alt="Mark Webber"></img>
+      <div class="not">
+        <p class="utitle"><span>Mark Webber</span> reacted to your recent post <span class="st dark">My first tournament today!</span></p>
+        <p>1m ago</p>
+      </div>
+    </div>
+</div> */}
 
-              <div className="scrollable-notifications">
+
+<div className="scrollable-notifications">
+              {notificaion_list.length > 0 ? (
+  notificaion_list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, setNumNotificationsToShow).map(item => {
+    let link = '';
+    let imglink = '';
+    let time_in = 1712115000;
+    switch (item.pagetype) {
+      case "change_schedules":
+        link = global.links.change_schedule;
+        break;
+      case "alter_logs":
+        link = global.links.alter_log;
+        break;
+      case "rest_day_works":
+        link = global.links.rest_day_work;
+        break;
+      case "overtimes":
+        link = global.links.overtime;
+        break;
+      default:
+        link = ''; // Handle the default case if needed
+    }
+    switch (item.type) {
+      case "DTR":
+        imglink = '/images/img1.webp';
+        break;
+      case "status":
+        imglink = '/images/img1.webp';
+        break;
+      case "missedDTR":
+        imglink = "/images/img2.png";
+        break;
+      case "announcement":
+        imglink = "/images/img3.jpg";
+        break;
+      default:
+        imglink = '/images/Carmela_Garcia.jpg'; // Handle the default case if needed
+    }
+    return ( // Return the JSX here
+      <div key={item.id} className="notification unread" id="notification">
+
+      <img src={imglink} alt="Mark Webber"></img>
+        {item.type === "DTR" ? (
+
+        <div class="not">
+        <p class="utitle"> {item.description} <span class="st dark">
+        <Link className="nav-link app-link-height" to={`${link}${item.requestID}`}>
+        <span className="app-link">Go To Approval!</span> 
+        </Link></span></p>
+        <p>1m ago</p>
+        </div>
+        ) : item.type === "missedDTR" ? (
+
+        <div class="not">
+        <p class="utitle"> {item.title} <span class="st dark">
+        <Link className="nav-link app-link-height" to={{
+                                                pathname: global.links.base +'request/AlterLog/',
+                                                date: '2024-06-01',
+                                                current_time_in: '2024-10-08 09:00:00',
+                                                current_time_out: '2024-10-08 18:00:00'
+                                              }}>
+        <span className="app-link">Go To AlterLogs!</span> 
+        </Link></span></p>
+        <p>1m ago</p>
+        </div>
+        ) : item.type === "announcement" ? (
+
+          <div class="not">
+          <p class="utitle"> {item.description} <span class="st dark">
+          <Link className="nav-link app-link-height" to={`${global.links.announcement_page}${item.announcementId}`}>
+          <span className="app-link">Go To Announcement!</span> 
+          </Link></span></p>
+          <p>1m ago</p>
+          </div>
+        ):(
+          <div class="not">
+          <p class="utitle"> 
+            {item.celebrations ?<span>{ item.celebrations}</span>: ""} {item.description} <span class="st dark"></span></p>
+          <p>1m ago</p>
+          </div>
+        )}
+        {/* <div className="notification-item_content">{item.description}</div>
+        <small>{item.timestamp}</small> */}
+      </div>
+    );
+  })
+) : (
+  <div className="no_notifi">No Notifications Available.</div>
+)}
+
+                <div className="showmore_div">
+                  {setNumNotificationsToShow < notificaion_list.length && (
+                    <Button variant="" onClick={() => this.setState({ setNumNotificationsToShow: setNumNotificationsToShow + 5 })}>
+                      Show more
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+
+
+
+
+
+
+              {/* <div className="scrollable-notifications">
               {notificaion_list.length > 0 ? (
   notificaion_list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, setNumNotificationsToShow).map(item => {
     let link = '';
@@ -185,7 +318,21 @@ class NotificationMenu extends Component {
               </Link>
             </div>
           </div>
-        ) : (
+        ) : item.type === "announcement" ? (
+          <div className="row titleDTR">
+            <div className="col-10">
+              <h2>
+                <i className="nav-icon fa fa-bars nav-icon" />
+                <span>{item.title ? item.title : item.description}</span>
+              </h2>
+            </div>
+            <div className="col">
+              <Link className="nav-link" to={`${global.links.announcement_page}${item.announcementId}`}>
+                <i className="nav-icon fa fa-arrow-right" />
+              </Link>
+            </div>
+          </div>
+        ):(
           <h2>
             <i className="nav-icon fa fa-bars nav-icon" />
             <span>{item.title ? item.title : item.description}</span>
@@ -207,7 +354,7 @@ class NotificationMenu extends Component {
                     </Button>
                   )}
                 </div>
-              </div>
+              </div> */}
             </Dropdown.Menu>
           </Dropdown>
         ) : "" }
@@ -224,6 +371,7 @@ const mapStateToProps = (state) => ({
   celebration: state.dashboard.celebration,
   missingdtr: state.dashboard.missingdtr,
   alldata: state.dashboard.alldata,
+  settings: state.settings
 });
 
 const mapDispatchToProps = (dispatch) => ({

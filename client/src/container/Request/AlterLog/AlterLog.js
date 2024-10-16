@@ -127,6 +127,8 @@ class AlterLog extends Component {
 
   render = () => {  
 
+    console.log(this.props.instance.current_time_out);
+    console.log(new Date(  this.props.location.current_time_out ));
     // If there's an existing instance and it's status is Canceled/Declined, reset the Alter Log instance but retain the ID to reuse the existing record.
     // if( this.props.instance.id != undefined && ['canceled', 'declined'].includes( this.props.instance.status ) ) {
     //   this.props.resetAlterLogInstance();
