@@ -15,6 +15,18 @@ class RedisController extends Controller
                             ->returnResponseObject()
                             ->get();
 
-        return $response->content;
+        if ($response->status == 200) {
+            return $response->content;
+        } else if ($response->status == 404) {
+            $content = [
+                'requestsForApproval' => [],
+                'requestStatus' => [],
+                'announcements' => [],
+                'celebrations' => [],
+                'missedDtr' => []
+            ];
+
+            return json_encode($content);
+        }
     }
 }
