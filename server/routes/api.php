@@ -49,6 +49,6 @@ Route::post('sync_timeoff_allocation_new', 'SyncController@timeoff_allocation_HR
 Route::post('sync_timeoff_allocation_fail_sync', 'SyncController@timeoff_allocation_HRIS_fail_sync')->middleware('auth.apikey');
 // Route::get('sendemail', 'BookingController@sendemail');
 Route::get('get_dashboard_all/{page_type}', 'BookingController@get_dashboard_all')->middleware('jwtauth', 'auth.apikey');
-
+Route::get('get_redis_notifications/{user_id}', 'RedisController@get_redis_notifications')->middleware('jwtauth', 'auth.apikey');
 
 
