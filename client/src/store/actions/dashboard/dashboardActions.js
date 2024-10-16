@@ -274,7 +274,21 @@ export const getMyNotifications = (user_id) => {
             dispatch({
                 'type'  : 'FETCH_MY_NOTIFICATIONS',
                 'data'   : result.data
-            })
+            });
+            let approvalcount = result.data.requestsForApproval.length;
+            let requestcount = result.data.requestStatus.length;
+            let announcementcount = result.data.announcements.length
+            let celebrationcount = result.data.celebrations.length
+            let missingdtr = result.data.missedDtr.length
+
+            dispatch({
+              type: 'FETCH_MY_NOTIFICATIONS_COUNT',
+              approval: approvalcount + requestcount,
+              announcement: announcementcount,
+              celebration: celebrationcount,
+              missingdtr: missingdtr,
+              alldata: (approvalcount + requestcount + announcementcount + celebrationcount + missingdtr),
+            });
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) )
