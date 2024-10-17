@@ -237,8 +237,8 @@
 
 .notificationnn .dropdown-menu {
   --elevation: 11;
-  transform: translate(-572.667px, 41px);
-  width: 600px;
+  transform: translate(-513.667px, 41px) !important;
+  width: 550px;
   border-radius: 3px;
   position: absolute;
   top: 40px;

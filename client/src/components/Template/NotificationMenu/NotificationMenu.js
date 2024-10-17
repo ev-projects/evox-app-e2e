@@ -29,7 +29,7 @@ class NotificationMenu extends Component {
           timestamp: item.timestamp || item.eventDate,
           pagetype: item.requestType ? item.requestType : "",
           announcementId: item.announcementId ? item.announcementId : "",
-          celebrations: isCelebration ? "Celebrating ":""
+          celebrations: isCelebration ? "It's ":""
         });
       });
     };
@@ -207,41 +207,26 @@ class NotificationMenu extends Component {
       <img src={imglink} alt="Mark Webber"></img>
         {item.type === "DTR" ? (
 
-        <div class="not">
-        <p class="utitle"> {item.description} <span class="st dark">
-        <Link className="nav-link app-link-height" to={`${link}${item.requestID}`}>
-        <span className="app-link">Go To Approval!</span> 
-        </Link></span></p>
-        <p>1m ago</p>
-        </div>
+        <Link className="not utitle" to={`${link}${item.requestID}`}>
+        <p class="utitle"> {item.description} </p>
+        </Link>
         ) : item.type === "missedDTR" ? (
-
-        <div class="not">
-        <p class="utitle"> {item.title} <span class="st dark">
-        <Link className="nav-link app-link-height" to={{
-                                                pathname: global.links.base +'request/AlterLog/',
-                                                date: '2024-06-01',
-                                                current_time_in: '2024-10-08 09:00:00',
-                                                current_time_out: '2024-10-08 18:00:00'
-                                              }}>
-        <span className="app-link">Go To AlterLogs!</span> 
-        </Link></span></p>
-        <p>1m ago</p>
-        </div>
+          <Link className="not utitle" to={{
+            pathname: global.links.base +'request/AlterLog/',
+            date: '2024-06-01',
+            current_time_in: '2024-10-08 09:00:00',
+            current_time_out: '2024-10-08 18:00:00'
+          }}>
+          <p class="utitle"> {item.title} </p>
+          </Link>
         ) : item.type === "announcement" ? (
-
-          <div class="not">
-          <p class="utitle"> {item.description} <span class="st dark">
-          <Link className="nav-link app-link-height" to={`${global.links.announcement_page}${item.announcementId}`}>
-          <span className="app-link">Go To Announcement!</span> 
-          </Link></span></p>
-          <p>1m ago</p>
-          </div>
+          <Link className="not utitle" to={`${global.links.announcement_page}${item.announcementId}`}>
+          <p class="utitle"> {item.description} </p>
+          </Link>
         ):(
           <div class="not">
           <p class="utitle"> 
             {item.celebrations ?<span>{ item.celebrations}</span>: ""} {item.description} <span class="st dark"></span></p>
-          <p>1m ago</p>
           </div>
         )}
         {/* <div className="notification-item_content">{item.description}</div>
