@@ -139,6 +139,8 @@
 
     overflow-x: hidden !important;
 
+    margin-top: 1em !important;
+
     /* background-color: #666; */
     
   
@@ -237,8 +239,9 @@
 
 .notificationnn .dropdown-menu {
   --elevation: 11;
-  transform: translate(-572.667px, 41px);
-  width: 600px;
+  transform: translate(-23em, 3em) !important;
+  /* transform: translate(-513.667px, 41px) !important; */
+  width: 30em;
   border-radius: 3px;
   position: absolute;
   top: 40px;

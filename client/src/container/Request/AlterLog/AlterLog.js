@@ -125,6 +125,22 @@ class AlterLog extends Component {
       }
   }
 
+componentDidUpdate(prevProps){
+if(this.props.params.id && this.props.params.id !== prevProps.params.id){
+  console.log( this.props.params);
+  // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+  this.props.clearAlterLogInstance();
+
+  // If the ID is defined, load the Overtime Instance base on the ID Parameter in Route.
+    this.props.fetchAlterLog( this.props.params.id )
+}
+if(this.props.params.id === undefined && this.props.params.id !== prevProps.params.id){
+  console.log( this.props.params);
+  // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+  this.props.clearAlterLogInstance();
+}
+}
+
   render = () => {  
 
     console.log(this.props.instance.current_time_out);
