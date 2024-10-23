@@ -19,6 +19,20 @@ class NotificationMenu extends Component {
     };
   }
 
+   convertDate(dateString) {
+    // Parse the date string
+    const [datePart] = dateString.split(' '); // Get the date part
+    const [month, day, year] = datePart.split('/'); // Split into month, day, year
+  
+    // Create a new date object
+    const date = new Date(year, month - 1, day); // Month is 0-indexed
+  
+    // Format to YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0];
+  
+    return formattedDate;
+  }
+
   mergeNotifications = (selecttag, data) => {
     const notifications = [];
     const notification_photo = [];
@@ -35,9 +49,9 @@ class NotificationMenu extends Component {
           announcementId: item.announcementId ? item.announcementId : "",
           celebrations: isCelebration ? "It's ":"",
           userId: isCelebration ? item.celebrationID : item.userId ? item.userId : item.approverId ? item.approverId : "",
-          timeIn: item.TimeIn ? item.TimeIn : "",
-          timeOut: item.TimeOut ? item.TimeOut : "",
-          dtrDate: item.DtrDate ? item.DtrDate : ""
+          timeIn: item.TimeIn ? item.TimeIn : null,
+          timeOut: item.TimeOut ? item.TimeOut : null,
+          dtrDate: item.DtrDate ? this.convertDate(item.DtrDate) : ""
           });
       });
     };
@@ -263,7 +277,7 @@ class NotificationMenu extends Component {
           <div className="col-lg-2 " >
              <Link className="not utitle link-line" to={{
             pathname: global.links.base +'request/AlterLog/',
-            date: item.dtrDate,
+            date: "2024-10-21",
             current_time_in: item.timeIn,
             current_time_out: item.timeOut
           }} onClick={this.handleLinkClick}>
