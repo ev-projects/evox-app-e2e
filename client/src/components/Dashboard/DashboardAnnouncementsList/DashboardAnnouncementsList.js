@@ -247,7 +247,7 @@ const AnnouncementItem = (announcement) => {
   const threeDaysAgo = currentDate.getTime() - 3 * 24 * 60 * 60 * 1000;
 
   const originalUrl = announcement.thumbnail;
-const transformedUrl = originalUrl.replace("public", "https://evox2.eastvantage.com/server/storage");
+const transformedUrl = originalUrl?.replace("public", "https://evox2.eastvantage.com/server/storage");
 console.log(transformedUrl);
   return < >
   <div  className="announcement-list-item">
