@@ -317,7 +317,7 @@ class NotificationMenu extends Component {
           <p class="utitle"> {item.description} </p>
           </div>
           <div className="col-lg-2 " >
-          <Link className="not utitle link-line" to={`${link}${item.requestID}`} onClick={this.handleLinkClick}>
+          <Link className="not utitle link-line" to={ {pathname: `${link}${item.requestID}`, previousPath:  global.links.base.dashboard}} onClick={this.handleLinkClick}>
           <i className="fa fa-arrow-right fa-sm" aria-hidden="true" style={{"padding": "1em 1em 1em 6em","font-size": "12px"}}></i>
           </Link>
           </div>
@@ -347,7 +347,7 @@ class NotificationMenu extends Component {
          
           </div>
           <div className="col-lg-2 " >
-          <Link className="not utitle link-line" to={`${global.links.announcement_page}${item.announcementId}`} onClick={this.handleLinkClick}>
+          <Link className="not utitle link-line" to={`${global.links.announcement_page}${item.announcementId}` } onClick={this.handleLinkClick}>
           <i className="fa fa-arrow-right fa-sm" aria-hidden="true" style={{"padding": "1em 1em 1em 6em","font-size": "12px"}}></i>
           </Link>
           </div>
