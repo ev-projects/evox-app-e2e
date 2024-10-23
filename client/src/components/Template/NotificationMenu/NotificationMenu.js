@@ -11,7 +11,7 @@ class NotificationMenu extends Component {
     super(props);
     this.state = {
       setNumNotificationsToShow: 5,
-      selectedTag: 'request',
+      selectedTag: "request",
       notificaion_list: [],
       notificaion_list1: [],
       photo_list:[],
@@ -19,21 +19,38 @@ class NotificationMenu extends Component {
     };
   }
 
-   convertDate(dateString) {
+  
+  convertDate = (dateString) => {
+
+    console.log(dateString,"Date Test Converter");
+
+    if (dateString) {
+      const [datePart] = dateString.split(' '); // Get the date part
+      const [month, day, year] = datePart.split('/'); // Split into month, day, year
+    
+      // Create a new date object
+      const date = new Date(year, month - 1, day); // Month is 0-indexed
+      console.log(date);
+      // Format to YYYY-MM-DD
+      const formattedDate = date.toLocaleDateString('en-CA');
+      console.log(formattedDate);
+      return formattedDate;
+    }else{
+
+      return "";
+    }
     // Parse the date string
-    const [datePart] = dateString.split(' '); // Get the date part
-    const [month, day, year] = datePart.split('/'); // Split into month, day, year
+
   
-    // Create a new date object
-    const date = new Date(year, month - 1, day); // Month is 0-indexed
-  
-    // Format to YYYY-MM-DD
-    const formattedDate = date.toISOString().split('T')[0];
-  
-    return formattedDate;
+   
   }
 
+ 
+
   mergeNotifications = (selecttag, data) => {
+
+
+    
     const notifications = [];
     const notification_photo = [];
     const addNotifications = (items, type, isCelebration = false) => {
@@ -47,12 +64,13 @@ class NotificationMenu extends Component {
           timestamp: item.timestamp || item.eventDate,
           pagetype: item.requestType ? item.requestType : "",
           announcementId: item.announcementId ? item.announcementId : "",
-          celebrations: isCelebration ? "It's ":"",
+          celebrations: isCelebration ? "It's " : "",
           userId: isCelebration ? item.celebrationID : item.userId ? item.userId : item.approverId ? item.approverId : "",
           timeIn: item.TimeIn ? item.TimeIn : null,
           timeOut: item.TimeOut ? item.TimeOut : null,
-          dtrDate: item.DtrDate ? this.convertDate(item.DtrDate) : ""
+          dtrDate: item.dtrDate ? item.dtrDate : ""
           });
+          
       });
     };
 
@@ -84,10 +102,12 @@ class NotificationMenu extends Component {
 
     addPhoto(data.profilePhotos);
 
-    console.log(notifications);
-
     this.setState({ notificaion_list: notifications, photo_list:notification_photo });
   };
+
+  handleTabSelect1 = (key) => {
+    this.setState({ selectedTag: key });
+  }
 
   handleTabSelect = (key) => {
     this.setState({ selectedTag: key, notificaion_list: [] }, () => {
@@ -105,12 +125,38 @@ class NotificationMenu extends Component {
     this.setState({ dropdownOpen: isOpen });
   };
 
+  initializeNotificationState = () => {
+    const { approval, announcement, celebration, missingdtr } = this.props;
+    
+    if (approval > 0) {
+      this.setState({ selectedTag: "request" });
+      this.handleTabSelect("request");
+    } else if (announcement > 0) {
+      this.setState({ selectedTag: "announcements" });
+      this.handleTabSelect("announcements");
+    } else if (celebration > 0) {
+      this.setState({ selectedTag: "birthday" });
+      this.handleTabSelect("birthday");
+    } else {
+      this.setState({ selectedTag: "DTR" });
+      this.handleTabSelect("DTR");
+    }
+    
+  }
+
   componentDidMount() {
-    const { user } = this.props;
+    const { user, notificationCenter, approval, announcement, celebration, missingdtr, } = this.props;
     if (user && user.id) {
       this.props.getMyNotifications(user.id);
+      this.setState({
+        approval,
+        announcement,
+        celebration,
+        missingdtr
+      });
+      this.initializeNotificationState();
     } else {
-      console.error("User ID is not defined.");
+      // console.error("User ID is not defined.");
     }
   }
 
@@ -127,6 +173,9 @@ class NotificationMenu extends Component {
         prevProps.announcement !== announcement || 
         prevProps.celebration !== celebration || 
         prevProps.missingdtr !== missingdtr) {
+          this.initializeNotificationState();
+  
+       
       this.setState({
         approval,
         announcement,
@@ -138,13 +187,19 @@ class NotificationMenu extends Component {
     // Refresh notifications when user ID changes
     if (prevProps.user.id !== user.id && user.id) {
       this.props.getMyNotifications(user.id);
+      this.setState({
+        approval,
+        announcement,
+        celebration,
+        missingdtr
+      });
     }
   }
 
   render() {
     const { setNumNotificationsToShow, selectedTag, notificaion_list, dropdownOpen, photo_list  } = this.state;
     const { alldata, approval, announcement, celebration, missingdtr,user } = this.props; // Use props directly instead of state
-    
+
     return (
       <li className="nav-item">
         {alldata > 0 ? (
@@ -277,7 +332,7 @@ class NotificationMenu extends Component {
           <div className="col-lg-2 " >
              <Link className="not utitle link-line" to={{
             pathname: global.links.base +'request/AlterLog/',
-            date: "2024-10-21",
+            date: this.convertDate(item.dtrDate) ,
             current_time_in: item.timeIn,
             current_time_out: item.timeOut
           }} onClick={this.handleLinkClick}>
@@ -297,10 +352,15 @@ class NotificationMenu extends Component {
           </Link>
           </div>
           </div>
+        ):item.type == "status" ?(
+          <div class="not">
+          <p class="utitle"> 
+            {item.description} <span class="st dark"></span></p>
+          </div>
         ):(
           <div class="not">
           <p class="utitle"> 
-            It's {item.description} <span class="st dark"></span></p>
+              It's {item.description} <span class="st dark"></span></p>
           </div>
         )}
         {/* <div className="notification-item_content">{item.description}</div>
@@ -309,7 +369,8 @@ class NotificationMenu extends Component {
     );
   })
 ) : (
-  <div className="no_notifi">No Notifications Available.</div>
+  ""
+  // <div className="no_notifi">No Notifications Available.</div>
 )}
 
                 <div className="showmore_div">
