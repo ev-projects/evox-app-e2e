@@ -128,7 +128,8 @@ class syncBhrUsers extends Command
                     if (is_valid($bhr_user)) {
                         #print_r(["Fetched User", $bhr_user]);
                         $bhr_status = $bhr_user->status == "Active" ? 1 : 0;
-                        $termination_date = $bhr_user->terminationDate == "0000-00-00" ? null : $bhr_user->terminationDate;
+			$hire_date = $bhr_user->hireDate == "0000-00-00" ? null : $bhr_user->hireDate;
+			$termination_date = $bhr_user->terminationDate == "0000-00-00" ? null : $bhr_user->terminationDate;
                         $SUP_id = $bhr_user->supervisorEId == null ? null : $bhr_user->supervisorEId;
                         // error_log($bhr_user);
                         // dd($bhr_user);
@@ -168,7 +169,7 @@ class syncBhrUsers extends Command
                                 $bhr_user->lastName,
                                 $bhr_user->nickname,
                                 $bhr_user->employmentHistoryStatus,
-                                $bhr_user->hireDate,
+                                $hire_date,
                                 $bhr_status,
                                 $bhr_user->jobTitle,
                                 $bhr_user->country,
@@ -211,6 +212,7 @@ class syncBhrUsers extends Command
                         print_r("\n");
                     }
                 } catch (Exception $e) {
+print_r($e->getMessage());
                     log_to_file('info', 'SYNC ERROR' . [$bhr_user_number, $e, __FUNCTION__], "sync_bhr_user");
 
                     break;

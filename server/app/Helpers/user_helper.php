@@ -12,25 +12,28 @@ if (! function_exists('get_authenticated_user')) {
     function get_authenticated_user( $user_id ) 
     {
         try {
-
+$ne = 0;
             // If the current user has 'admin' role and 'full_access' privilege, always return true.
             if(  auth()->user()->roles()->pluck('name')->contains('admin') &&
                  auth()->user()->permissions()->pluck('name')->contains('full_access') ) {
-                return User::findOrFail( $user_id );
+               $ne = 1;
+                 return User::findOrFail( $user_id ); 
+
+
             } 
             
             # If the User being requested is the current user being logged in, fetch the current User Instance.
             if( auth()->user()->id == $user_id ) {
-               return auth()->user();
+               $ne = 2; return auth()->user(); 
 
             # If not, fetch the User Instance from the currently logged in's supervisee list.
-            } else {
-               return auth()->user()->users_handled()->findOrFail( $user_id );
+           } else {
+              $ne = 3; return auth()->user()->users_handled()->findOrFail( $user_id );
             }
 
         }catch(Exception $e){
-            
-            throw new Exception( trans('messages.user_not_authorized') );
+           
+            throw new Exception( trans('messages.user_not_authorized') . $ne . $user_id);
         }
     }
 }
@@ -163,3 +166,4 @@ if (! function_exists('generate_username')) {
         }
     }
 }
+
