@@ -3,16 +3,23 @@
 namespace App\Modules\Report\Http\Controllers;
 
 use Exception;
+use LDAP\Result;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use App\Exports\ExportDTRLog;
 use App\Exports\DtrSummaryExport;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
+use App\Exports\ExportDTRMismatch;
 use Illuminate\Support\Facades\DB;
 use App\Exports\TeamScheduleExport;
 use App\Modules\Payroll\Models\Dtr;
 use App\Exports\NewExportDTRSummary;
+use App\Exports\TimeoffAllocationExport;
+use App\Exports\TimeoffAllocationExportNew;
+use App\Exports\TimeoffAllocationExportN;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -22,28 +29,27 @@ use Spatie\Permission\Models\Permission;
 use App\Exports\TeamSummaryAttendanceExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
-use App\Exports\ExportDTRLog;
+use App\Exports\ExportDTRMultiLogsSummary;
+use App\Modules\Payroll\Resources\DtrLogResource;
 use App\Modules\Payroll\Resources\HolidayResource;
+use App\Modules\Payroll\Resources\DtrHalfDayMismacth;
 use App\Exports\TeamSummaryAttendanceMultiSheetExport;
 use App\Modules\Payroll\Resources\AnniversaryResources;
 use App\Modules\Report\Resources\DailyScheduleReources;
+use App\Modules\Report\Resources\NewDtrSummaryResource;
 use App\Modules\Report\Resources\TeamScheduleResources;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use App\Modules\Report\Resources\WeeklyScheduleResources;
 use App\Modules\Payroll\Resources\TeamAttendanceResources;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Payroll\Resources\DtrLogResourceCollection;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Resources\MyDtrNotificationsResource;
-
 use App\Modules\Report\Repositories\ReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\HolidayRepositoryInterface;
 use App\Modules\Payroll\Resources\TeamAttendanceSummaryResource;
 use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
-use App\Modules\Payroll\Resources\DtrLogResource;
-use App\Modules\Report\Resources\NewDtrSummaryResource;
-use App\Exports\ExportDTRMismatch;
-use App\Modules\Payroll\Resources\DtrHalfDayMismacth;
 
 class ReportController extends Controller
 {
@@ -306,13 +312,66 @@ class ReportController extends Controller
     public function team_dtr_logs(Request $request)
     {
         try {
+            $me = auth()->user();
+            $my_timezone = $me->country_timezone_name();
+
+            $result_sets = call_sp('EH_SP_DTR_Logs', [2, $me->id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
+            $dtr_logs = $result_sets[0];
+            $dtr_holidays = $result_sets[1];
+            $results = [];
+            foreach ($dtr_logs as $dtr_log) {
+                $pov_timezone = $dtr_log->timezone;
+                $holidays = [];
+                foreach(array_filter($dtr_holidays, function($h) use ($dtr_log) {
+                    return $h->dtr_id == $dtr_log->dtr_id;
+                }) as $fh) {
+                    array_push($holidays, array('name' => $fh->name, 'type' => $fh->type));
+                }
+                $results[] = array(
+                    'id' => $dtr_log->dtr_id,
+                    'emp_num' => $dtr_log->Employee_Number,
+                    'user_id' => $dtr_log->user_id,
+                    'date' => $dtr_log->date,
+                    'time_in' => apply_timezone($dtr_log->time_in, $my_timezone, 'H:i:s'),
+                    'time_out' => apply_timezone($dtr_log->time_out, $my_timezone, 'H:i:s'),
+                    'start_datetime' => apply_timezone($dtr_log->start_datetime, $my_timezone, 'H:i:s'),
+                    'end_datetime' => apply_timezone($dtr_log->end_datetime, $my_timezone, 'H:i:s'),
+                    'start_flexy_datetime' => apply_timezone($dtr_log->start_flexy_datetime, $my_timezone, 'H:i:s'),
+                    'end_flexy_datetime' => apply_timezone($dtr_log->end_flexy_datetime, $my_timezone, 'H:i:s'),
+                    'break_time' => is_valid( $dtr_log->break_time ) && $dtr_log->break_time > 0 ? seconds_to_time( $dtr_log->break_time ) : null,
+                    'is_rest_day' => $dtr_log->is_rest_day,
+                    'department' => $dtr_log->Department_Name,
+                    'full_name' => $dtr_log->Employee_Name,
+                    'payroll_items' => array(
+                        'late' => $dtr_log->late > 0 ? seconds_to_time(round($dtr_log->late * 3600),true):"",
+                        'undertime' => $dtr_log->undertime > 0 ? seconds_to_time(round($dtr_log->undertime * 3600),true):"",
+                        'overtime' => $dtr_log->overtime > 0 ? seconds_to_time(round($dtr_log->overtime * 3600),true):"",
+                        'overtime_night_diff' => $dtr_log->overtime_night_diff > 0 ? seconds_to_time(round($dtr_log->overtime_night_diff * 3600),true):"",
+                        'night_diff' => $dtr_log->night_diff > 0 ? seconds_to_time(round($dtr_log->night_diff * 3600),true):"",
+                        'ul' => $dtr_log->ul > 0 ? round($dtr_log->ul):"",
+                        'rendered_hours' => $dtr_log->rendered_hours > 0 ? seconds_to_time(round($dtr_log->rendered_hours * 3600),true):""
+                    ),
+                    'timezone' => $dtr_log->country_time_zone,
+                    'holidays' => $holidays,
+                    'user_POV' => array(
+                        'time_in' => apply_timezone($dtr_log->time_in, $pov_timezone, 'H:i:s'),
+                        'time_out' => apply_timezone($dtr_log->time_out, $pov_timezone, 'H:i:s'),
+                        'start_datetime' => apply_timezone($dtr_log->start_datetime, $pov_timezone, 'H:i:s'),
+                        'end_datetime' => apply_timezone($dtr_log->end_datetime, $pov_timezone, 'H:i:s'),
+                        'start_flexy_datetime' => apply_timezone($dtr_log->start_flexy_datetime, $pov_timezone, 'H:i:s'),
+                        'end_flexy_datetime' => apply_timezone($dtr_log->end_flexy_datetime, $pov_timezone, 'H:i:s'),
+                    )
+                );
+            }
 
             return success_response(
                 trans('messages.' . __FUNCTION__ . '_success'),
-                new DtrLogResourceCollection($this->logs_list($request))
+                ['data' => $results]
+                //new DtrLogResourceCollection($this->logs_list($request))
             );
         } catch (Exception $e) {
-            return error_response(trans('messages.error_default'), $e);
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr");
+            return error_response(trans('messages.error_default'));
         }
     }
 
@@ -322,15 +381,68 @@ class ReportController extends Controller
      */
     public function export_team_dtr_logs(Request $request)
     {
-        
-
+        $me = auth()->user();
+        $my_timezone = $me->country_timezone_name();
+        $result_sets = call_sp('EH_SP_DTR_Logs', [2, $me->id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
         $toggle_POV = !($request->toggle_pov == null);
-        $result = $this->logs_list($request);
+        $dtr_logs = $result_sets[0];
+        $dtr_holidays = $result_sets[1];
+        $results = [];
+        foreach ($dtr_logs as $dtr_log) {
+            $pov_timezone = $dtr_log->timezone;
+            $holidays = [];
+            foreach(array_filter($dtr_holidays, function($h) use ($dtr_log) {
+                return $h->dtr_id == $dtr_log->dtr_id;
+            }) as $fh) {
+                array_push($holidays, array('name' => $fh->name, 'type' => $fh->type));
+            }
+            $results[] = array(
+                'id' => $dtr_log->dtr_id,
+                'emp_num' => $dtr_log->Employee_Number,
+                'user_id' => $dtr_log->user_id,
+                'date' => $dtr_log->date,
+                'time_in' => apply_timezone($dtr_log->time_in, $my_timezone, 'H:i:s'),
+                'time_out' => apply_timezone($dtr_log->time_out, $my_timezone, 'H:i:s'),
+                'start_datetime' => apply_timezone($dtr_log->start_datetime, $my_timezone, 'H:i:s'),
+                'end_datetime' => apply_timezone($dtr_log->end_datetime, $my_timezone, 'H:i:s'),
+                'start_flexy_datetime' => apply_timezone($dtr_log->start_flexy_datetime, $my_timezone, 'H:i:s'),
+                'end_flexy_datetime' => apply_timezone($dtr_log->end_flexy_datetime, $my_timezone, 'H:i:s'),
+                'break_time' => is_valid( $dtr_log->break_time ) && $dtr_log->break_time > 0 ? seconds_to_time( $dtr_log->break_time ) : null,
+                'is_rest_day' => $dtr_log->is_rest_day,
+                'department' => $dtr_log->Department_Name,
+                'full_name' => $dtr_log->Employee_Name,
+                'payroll_items' => array(
+                    'late' => $dtr_log->late > 0 ? seconds_to_time(round($dtr_log->late * 3600),true):"",
+                    'undertime' => $dtr_log->undertime > 0 ? seconds_to_time(round($dtr_log->undertime * 3600),true):"",
+                    'overtime' => $dtr_log->overtime > 0 ? seconds_to_time(round($dtr_log->overtime * 3600),true):"",
+                    'overtime_night_diff' => $dtr_log->overtime_night_diff > 0 ? seconds_to_time(round($dtr_log->overtime_night_diff * 3600),true):"",
+                    'night_diff' => $dtr_log->night_diff > 0 ? seconds_to_time(round($dtr_log->night_diff * 3600),true):"",
+                    'ul' => $dtr_log->ul > 0 ? round($dtr_log->ul):"",
+                    'rendered_hours' => $dtr_log->rendered_hours > 0 ? seconds_to_time(round($dtr_log->rendered_hours * 3600),true):""
+                ),
+                'timezone' => $pov_timezone,
+                'holidays' => $holidays,
+                'user_POV' => array(
+                    'time_in' => apply_timezone($dtr_log->time_in, $pov_timezone, 'H:i:s'),
+                    'time_out' => apply_timezone($dtr_log->time_out, $pov_timezone, 'H:i:s'),
+                    'start_datetime' => apply_timezone($dtr_log->start_datetime, $pov_timezone, 'H:i:s'),
+                    'end_datetime' => apply_timezone($dtr_log->end_datetime, $pov_timezone, 'H:i:s'),
+                    'start_flexy_datetime' => apply_timezone($dtr_log->start_flexy_datetime, $pov_timezone, 'H:i:s'),
+                    'end_flexy_datetime' => apply_timezone($dtr_log->end_flexy_datetime, $pov_timezone, 'H:i:s'),
+                )
+            );
+        }
+        /*$result = $this->logs_list($request);
        
         $result = [
             'data' =>  $result
-        ];
-        return Excel::download( new ExportDTRLog(DtrLogResource::collection( $this->logs_list($request)), $toggle_POV), 'dtr_log.csv');
+        ];*/
+        /*return success_response(
+            trans('messages.' . __FUNCTION__ . '_success'),
+            new ExportDTRLog($results, $toggle_POV, $my_timezone)
+            //new DtrLogResourceCollection($this->logs_list($request))
+        );*/
+        return Excel::download( new ExportDTRLog($results, $toggle_POV, $my_timezone), 'dtr_log.csv');
     }
 
 
@@ -341,19 +453,48 @@ class ReportController extends Controller
     public function team_schedule(Request $request)
     {
         // try {
+            // dd($request->all());
         $date_from = Carbon::now();
-        $user_list = auth()->user()->users_handled();
+        $logged_user = auth()->user();
+        
+
+
+                                $response = call_sp("EH_SP_Employee_List",[
+                                    $logged_user->id, 
+                                    is_valid(  $logged_user->LevelId ) ?  $logged_user->LevelId: null, // level
+                                    $request->department_id,
+                                    $request->department_id != null? $sub_department_id = $request->sub_department_id: null,
+                                    1, // active
+                                    $request->name, // name
+                                    null, // job_title
+                                    1,
+                                    999,
+                                    1      
+                                    ]
+                                ); 
+
+                                $result = array(
+                                    "query" =>  $response ?? [],
+                                );
+                                $empArrays = array_filter($result['query'], function($array) {
+
+                       
+
+                                    if(isset($array[0])){
+                                
+                                        return property_exists($array[0], 'Employee_Name');
+                                
+                                    }
+                                
+                                });
+                                $empKeys = array_keys($empArrays);
+                                $user_list = is_valid($empKeys)? $result['query'][$empKeys[0]] : [];
+                       
+                                $user_list =  User::whereIn('id', collect($user_list)->pluck('id')->all());
+                                // dd($user_list);
         $no_user_limit = get_constant("TEAM_SCHEDULE.records_per_date");
 
-        // Team Filter
-        if (is_valid(request()->get('team_id'))) {
-            $user_list->join('team_users', 'team_users.user_id', '=', 'users.id')->where('team_id', '=', request()->get('team_id'));
-        } else {
-            // Department Filter
-            if (is_valid(request()->get('department_id'))) {
-                $user_list->where('department_id', '=', request()->get('department_id'));
-            }
-        }
+
 
         // Filter by name string
         if (is_valid(request()->get('name'))) {
@@ -472,69 +613,21 @@ class ReportController extends Controller
 
             $bhr_holidays_array = [];
 
-            $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
+            // $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
 
-     // Define the End Point for the API.
-        //     $end_point = 'time_off/whos_out/?start='.$request->start_date.'&end='.$request->end_date;
-       
-        //     // Iterate the BHr Call Result
-        //     $user = $this->user->show(Auth::user()->id);
-
-        //     // if ($user->country_id == 2) {
-        //         // BHR API CALL For Fecthing Philippines Holiday
-        //         foreach( bhr_api_call('GET', $end_point) as $row ) {
-
-        //             // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-        //             if( $row->type == 'holiday' ) {
-        //                 $bhr_holidays_array[] = $row;
-        //             }
-        //         }
-        //     // } else if ($user->country_id == 1) {
-        //         // BHR API CALL For Fecthing Indian Holiday
-        //         foreach( bhr_api_call_india('GET', $end_point) as $row ) {
-
-        //             // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-        //             if( $row->type == 'holiday' ) {
-
-        //                 // Check Holidays Already Exist ion Array
-        //                 if(in_array($row, $bhr_holidays_array)) {
-        //                 }  else {
-        //                 $bhr_holidays_array[] = $row;
-        //                 }
-        //             }
-        //         // }
-        //     }
-
-        //       // BHR API CALL For Fecthing bulgaria Holiday
-        //     foreach( bhr_api_call_bulgaria('GET', $end_point) as $row ) {
-
-        //         // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
-        //         if( $row->type == 'holiday' ) {
-
-        //             // Check Holidays Already Exist ion Array
-        //             if(in_array($row, $bhr_holidays_array)) {
-        //             }  else {
-        //             $bhr_holidays_array[] = $row;
-        //             }
-
-        //         }
-        //     // }
-        //     }
-        //     // Sort Holiday By Date And ID
-        //     usort($bhr_holidays_array, function($a, $b) {
-        //         return [$a->start,$a->id] <=> [$b->start,$b->id];
-        //    });
+            $user = Auth::user();
+            $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,1]);
             
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_holidays_array, "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
-
-            return $bhr_holidays_array;
-            return success_response(
-                trans('messages.get_holidays_success'),
-                $bhr_holidays_array
-            );
+            // dd($bhr_holidays_array);
+            return $EH_SP_Dashboard[1];
+            // return success_response(
+            //     trans('messages.get_holidays_success'),
+            //     $EH_SP_Dashboard[1]
+            // );
         } catch (Exception $e) {
-            DB::rollback();
+            // DB::rollback();
             
             log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
@@ -570,6 +663,7 @@ class ReportController extends Controller
                 new MyDtrNotificationsResource($this->report->get_my_dtr_notifications($start_date, $end_date))
             );
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr");
             return error_response(trans('messages.error_default'), $e);
         }
     }
@@ -585,11 +679,13 @@ class ReportController extends Controller
     {
         try {
             log_activity(trans('messages.get_anniversary_birthday_attempt'));
-
+            $user = Auth::user();
+            $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,2]);
+            // dd( $EH_SP_Dashboard);
             return success_response(
                 trans('messages.get_anniversary_birthday_success'),
                 // new AnniversaryResources($this->report->get_team_birthday_anniversary())
-                new AnniversaryResources($this->report->get_team_birthday_anniversary_last_twodays()) 
+                $EH_SP_Dashboard[0]
             );
         } catch (Exception $e) {
             return error_response(trans('messages.error_default'), $e);
@@ -638,45 +734,109 @@ class ReportController extends Controller
                 'start_date' => 'date_format:Y-m-d',
                 'end_date' => 'date_format:Y-m-d',
             ]);
+            $me = Auth::user();
+            $report = array(
+                'stdd' => $start_date,
+                'eddd' => $end_date
+            );
 
+            $department_ids = $request->selectedDepartments ? implode(',', $request->selectedDepartments) : null;
+            if ($department_ids === null) {
+                return response()->json(['error' => ['message' => "Please selecte at least one department.", 'content' => "No department selected"]], 400);
+            }
+            $team_ids = $request->selectedTeams ? implode(',', $request->selectedTeams) : null;
 
-            $new_start_date = Carbon::parse($start_date)->format('y-m-d');
-            $new_end_date = Carbon::parse($end_date)->format('y-m-d');
-            $period = CarbonPeriod::between($new_start_date,  $new_end_date);
-
-            $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date,  true, auth()->user()->hasRole( get_constant('USER_ROLES.hr') ));
-
-
-            $override = $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-           
-            
-            $list = (array) $override['employee_list_summary'];
-
-
-
-            $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
-
-
-            $information_array = $this->info_array;
-
-            $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-
-
-            $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-
-
-            $override["attendance"]['total_percentage'] = number_format($total_row[3], 2);
-
-            $override["unplanned_leaves"]['total_percentage'] = number_format($total_row[4], 2);
-            $override["planned_leaves"]['total_percentage'] = number_format($total_row[5], 2);
-
-
-
+            $attendance = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 1]);
+            $attendance_stats = $attendance[0][0];
+            $attendance_list = $attendance[1];
+            //$user_ids = [];
+            $attendance_list_items = [];
+            foreach($attendance_list as $i) {
+                /*if(!in_array($i->Id, $user_ids, true)){
+                    array_push($user_ids, $i->Id);
+                }*/
+                array_push($attendance_list_items, array(
+                    'date'=> $i->LogDate,
+                    'user_id' => $i->Id,
+                    'name' => $i->Name,
+                    'emp_num' => $i->EmployeeNumber,
+                    'job_title' => $i->JobTittle,
+                    'schedule' => [],
+                    'hours' => null,
+                    'status' => $i->Status
+                ));
+            }
+            $report['total_headcount'] = $attendance_stats->TotalCount;
+            $report['attendance'] = array(
+                'total_count' => $attendance_stats->TotalCount,
+                'total_percentage' => $attendance_stats->AttendancePercent,
+                'target_percentage' => 95,
+                'users' => $attendance_list_items
+            );
+            $pl = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 2]);
+            $pl_stats = $pl[0][0];
+            $pl_list = $pl[1];
+            $pl_list_items = [];
+            foreach($pl_list as $i) {
+                array_push($pl_list_items, array(
+                    'date'=> $i->LogDate,
+                    'user_id' => $i->Id,
+                    'name' => $i->Name,
+                    'emp_num' => $i->EmployeeNumber,
+                    'job_title' => $i->JobTittle,
+                    'schedule' => [],
+                    'hours' => null,
+                    'status' => $i->Status
+                ));
+            }
+            $report['planned_leaves'] = array(
+                'total_count' => $pl_stats->PlannedLeaveCount,
+                'total_percentage' => $pl_stats->PlannedLeavePercent,
+                'target_percentage' => 7,
+                'users' => $pl_list_items
+            );
+            $upl = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 3]);
+            $upl_stats = $upl[0][0];
+            $upl_list = $upl[1];
+            $upl_list_items = [];
+            foreach($upl_list as $i) {
+                array_push($upl_list_items, array(
+                    'date'=> $i->LogDate,
+                    'user_id' => $i->Id,
+                    'name' => $i->Name,
+                    'emp_num' => $i->EmployeeNumber,
+                    'job_title' => $i->JobTittle,
+                    'schedule' => [],
+                    'hours' => null,
+                    'status' => $i->Status
+                ));
+            }
+            $report['unplanned_leaves'] = array(
+                'total_count' => $upl_stats->UnplannedLeaveCount,
+                'total_percentage' => $upl_stats->UnplannedLeavePercent,
+                'target_percentage' => 3,
+                'users' => $upl_list_items
+            );
+            $rdw = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 4]);
+            $rdw_stats = $rdw[0][0];
+            $rdw_list = $rdw[1];
+            $report['total_rest_day_work'] = array(
+                'total_count' => $rdw_stats->RDWCount,
+                'total_hours' => $rdw_stats->RDWHours
+            );
+            $ot = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 5]);
+            $o_stats = $ot[0][0];
+            $ot_list = $ot[1];
+            $report['total_overtime'] = array(
+                'total_count' => $rdw_stats->OTCount,
+                'total_hours' => $rdw_stats->OTHours
+            );
             return success_response(
                 trans('messages.get_attendance_summary_success'),
-                $override
+                $report
             );
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "summary_errors");
             return error_response(trans('messages.error_default'), $e);
         }
     }
@@ -687,44 +847,41 @@ class ReportController extends Controller
      */
     public function export(Request $request, $start_date, $end_date)
     {
-
-
-        $new_start_date = Carbon::parse($start_date)->format('y-m-d');
-        $new_end_date = Carbon::parse($end_date)->format('y-m-d');
-        $period = CarbonPeriod::between($new_start_date,  $new_end_date);
-
-
-        $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date, true, auth()->user()->hasRole( get_constant('USER_ROLES.hr') ));
-        $data =  $this->report->get_team_attendance_summary_dtr($user_collection,  $start_date, $end_date);
-
-        $list = (array) $data['employee_list_summary'];
-        
-
-
-
-        $excel_employees = $this->ammendDetailsOfSummaryForExcel($list, $period, $user_collection);
-
-
-        $information_array = $this->info_array;
-
-        $ordered_row =  $this->attendance_order_row($excel_employees,  $information_array, $start_date, $end_date);
-
-
-        $total_row = $this->compute_attendance_total_row($ordered_row,  $information_array);
-
-        $segragated_total_row = $this->compute_account_attendance_total_row($ordered_row,  $information_array);
-
-
-        $response = Excel::download(
-            new EmployeeAttendanceReportExport($start_date, $end_date, $data,  $ordered_row, $total_row, $segragated_total_row),
-            'attendance_rep.xlsx',
-            \Maatwebsite\Excel\Excel::XLSX,
-            ["sampleName" => 'sample']
-
-        );
-        ob_end_clean();
-
-        return $response;
+        try {
+            $this->validate(new Request([
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ]), [
+                'start_date' => 'date_format:Y-m-d',
+                'end_date' => 'date_format:Y-m-d',
+            ]);
+            $me = Auth::user();
+            $department_ids = $request->selectedDepartments ?? null;
+            if ($department_ids === null) {
+                return response()->json(['error' => ['message' => "Please selecte at least one department.", 'content' => "No department selected"]], 400);
+            }
+            $team_ids = $request->selectedTeams ?? null;
+            //return success_response('Test', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
+            $attendance_summary = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
+            $attendance_list = $attendance_summary[0];
+            $attendance_stats = $attendance_summary[1];
+            $response = Excel::download(
+                new EmployeeAttendanceReportExport($attendance_list, $attendance_stats, $start_date, $end_date),
+                'attendance_rep.xlsx',
+                \Maatwebsite\Excel\Excel::XLSX,
+                ["sampleName" => 'sample']
+    
+            );
+            ob_end_clean();
+    
+            return $response;
+        } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "summary_errors");
+            return success_response(
+                "No report data found.",
+                []
+            );
+        }
     }
 
     // public function export_old(Request $request, $start_date, $end_date)
@@ -1226,88 +1383,59 @@ class ReportController extends Controller
     {
 
       
-        try {           
-            $user_sup_id = Auth::user()->id; // basically user id
+        try {
+            $me = Auth::user();
+            $user_sup_id = $me->id; // basically user id
             if($request->sup_id){
                 $user_sup_id = $request->sup_id;
             }
-             $user_collection_paginated = [];
-             $result = DB::table('drt_summary_report')
-->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS Employee_Name"),'users.emp_num as Employee_Number','departments.department_name as Department', 
-DB::raw("sum(drt_summary_report.unpaid_leave) as UL"), DB::raw("sum(drt_summary_report.on_leave) as Leaves"), 
-DB::raw("round(sum(drt_summary_report.reg_late),2) as Late"), DB::raw("round(sum(drt_summary_report.reg_undertime),2) as Under_Time"), 
-DB::raw("round(sum(drt_summary_report.reg_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.reg_rendered_hours_overlapp,0)) -sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)),2) as Render_Hr"), 
-DB::raw("round(sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)),2) as Night_Diff"), 
-DB::raw("round(sum(drt_summary_report.reg_overtime),2) as OverTime"), DB::raw("round(sum(drt_summary_report.reg_overtime_night_diff),2) as OT_ND"), 
-DB::raw("round(sum(drt_summary_report.rd_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.rd_rendered_hours_overlapp,0)) - sum(drt_summary_report.rd_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.rd_night_diff_overlapp,0)),2) as RD_Render_HR"), 
-DB::raw("round(sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp),2) as RD_ND"), 
-DB::raw("round(sum(drt_summary_report.rd_overtime),2) as RD_OT"), DB::raw("round(sum(drt_summary_report.rd_overtime_night_diff),2) as RD_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) -sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)),2) as LH_Render_HR"), 
-DB::raw("round(sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)),2) as LH_ND"), 
-DB::raw("round(sum(drt_summary_report.lh_overtime),2) as LH_OT"), DB::raw("round(sum(drt_summary_report.lh_overtime_night_diff),2) as LH_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.sh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.sh_rendered_hours_overlapp,0)) -sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)),2) as SH_Render_Hr"), 
-DB::raw("round(sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)),2) as SH_ND"), 
-DB::raw("round(sum(drt_summary_report.sh_overtime),2) as SH_OT"), DB::raw("round(sum(drt_summary_report.sh_overtime_night_diff),2) as SH_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.dsh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dsh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)),2) as DSH_Render_HR"),
-DB::raw("round(sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)),2) as DSH_ND"), 
-DB::raw("round(sum(drt_summary_report.dsh_overtime),2) as DSH_OT"), DB::raw("round(sum(drt_summary_report.dsh_overtime_night_diff),2) as DSH_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.dlh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dlh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)),2) as DLH_Render_HR"), 
-DB::raw("round(sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)),2) as DLH_ND"), 
-DB::raw("round(sum(drt_summary_report.dlh_overtime),2) as DLH_OT"), DB::raw("round(sum(drt_summary_report.dlh_overtime_night_diff),2) as DLH_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.slh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.slh_rendered_hours_overlapp,0)) -sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)),2) as SLH_Render_HR"), 
-DB::raw("round(sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)),2) as SLH_ND"), 
-DB::raw("round(sum(drt_summary_report.slh_overtime),2) as SLH_OT"), DB::raw("round(sum(drt_summary_report.slh_overtime_night_diff),2) as SLH_OT_ND")) ->join('users','users.id','=','drt_summary_report.user_id')
-             ->join('departments', 'users.department_id', '=', 'departments.id');
-             if( is_valid( $user_sup_id ) ){
-		        $result->join('users_supervisors','users_supervisors.user_id','=','drt_summary_report.user_id');
-                $result->where('users_supervisors.supervisor_id','=',$user_sup_id);
-             }
-             $result->whereBetween('drt_summary_report.login_date', [$request->valid_from, $request->valid_to]);
-             
-              
-             
-            if( is_valid( $request->department_id ) ){
-                $result->where('users.department_id','=' ,$request->department_id );
-            } else {
-                $result->whereRaw('users.department_id IS NOT NULL');
+            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
+            $user_dtr = $result_sets[1];
+            $report = [];
+            foreach($user_dtr as $dtr) {
+                $report[] = array(
+                    "Employee_Name" => $dtr->Employee_Name,
+                    "Employee_Number" => $dtr->Employee_Number,
+                    "Department" => $dtr->Department_Name,
+                    "UL" => $dtr->UL,
+                    "Leaves" => $dtr->Leaves,
+                    "Late" => $dtr->Late,
+                    "Under_Time" => $dtr->Under_Time,
+                    "Render_Hr" => $dtr->Render_Hr,
+                    "Night_Diff" => $dtr->Night_Diff,
+                    "OverTime" => $dtr->OverTime,
+                    "OT_ND" => $dtr->OT_ND,
+                    "RD_Render_HR" => $dtr->RD_Render_HR,
+                    "RD_ND" => $dtr->RD_ND,
+                    "RD_OT" => $dtr->RD_OT,
+                    "RD_OT_ND" => $dtr->RD_OT_ND,
+                    "LH_Render_HR" => $dtr->LH_Render_HR,
+                    "LH_ND" => $dtr->LH_ND,
+                    "LH_OT" => $dtr->LH_OT,
+                    "LH_OT_ND" => $dtr->LH_OT_ND,
+                    "SH_Render_Hr" => $dtr->SH_Render_Hr,
+                    "SH_ND" => $dtr->SH_ND,
+                    "SH_OT" => $dtr->SH_OT,
+                    "SH_OT_ND" => $dtr->SH_OT_ND,
+                    "DSH_Render_HR" => $dtr->DSH_Render_HR,
+                    "DSH_ND" => $dtr->DSH_ND,
+                    "DSH_OT" => $dtr->DSH_OT,
+                    "DSH_OT_ND" => $dtr->DSH_OT_ND,
+                    "DLH_Render_HR" => $dtr->DLH_Render_HR,
+                    "DLH_ND" => $dtr->DLH_ND,
+                    "DLH_OT" => $dtr->DLH_OT,
+                    "DLH_OT_ND" => $dtr->DLH_OT_ND,
+                    "SLH_Render_HR" => $dtr->SLH_Render_HR,
+                    "SLH_ND" => $dtr->SLH_ND,
+                    "SLH_OT" => $dtr->SLH_OT,
+                    "SLH_OT_ND" => $dtr->SLH_OT_ND
+                );
             }
-
-            if( is_valid( $request->name ) ){
-                $result->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
-            }
-           $result->whereRaw('(is_active = ' . (is_valid($request->is_active) ? $request->is_active : '1') .' or termination_date BETWEEN "'. $request->valid_from .'" AND "'. $request->valid_to .'")')
-            ->groupBy('users.first_name','users.middle_name','users.last_name','users.emp_num','users.email','users.username','users.id');
-            if (is_valid($request->page)) {
-                $result1= $result->orderBy('departments.department_name')->orderby('users.date_hired', 'DESC')->orderBy('users.last_name', 'asc')->orderBy('users.first_name', 'asc')->get();
-            }else{
-                $result1= $result->orderBy('departments.department_name')->orderby('users.date_hired', 'DESC')->orderBy('users.last_name', 'asc')->orderBy('users.first_name', 'asc');
-            }
-
-            // $jsonAllDecoded = json_decode($result1, true);
-
-            // //here simple add our CSV file a (pakainfo.csv)name.
-            // $csvFileName = 'sm/summaryreport.csv';
-
-            // //simple PHP File Open file pointer.
-            // $fp = fopen($csvFileName, 'w');
-            // fputcsv($fp, array_keys($jsonAllDecoded[0]));
-            // //PHP Loop through the associative an array.
-            // foreach($jsonAllDecoded as $row){
-            // //Write the json row all the data to the CSV file.
-            // fputcsv($fp, $row);
-            // }
-
-            // //last step here, close the file pointer.
-            // fclose($fp);
-
-            // $fileName = 'summaryreport.csv';
-            // $path = public_path('sm/summaryreport.csv');
-
-            // return Response::download($path, $fileName , ['Content-Type: application/csv']);
-            return Excel::download(new NewExportDTRSummary($result1), 'newdtrsummary.csv');
+            return Excel::download(new NewExportDTRSummary($report), 'newdtrsummary.csv');
 
      
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
             return error_response(trans('messages.error_default'), $e);
         }
     }
@@ -1315,88 +1443,59 @@ DB::raw("round(sum(drt_summary_report.slh_overtime),2) as SLH_OT"), DB::raw("rou
     public function new_dtr_summary_report(Request $request)
     {
    
-        try {           
-            $user_sup_id = Auth::user()->id; // basically user id
+        try {    
+            $me = Auth::user();       
+            $user_sup_id = $me->id; // basically user id
             if($request->sup_id){
                 $user_sup_id = $request->sup_id;
             }
-             $user_collection_paginated = [];
-             $result = DB::table('drt_summary_report')
-->select(DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS Employee_Name"),'users.emp_num as Employee_Number','departments.department_name as Department', DB::raw("sum(drt_summary_report.unpaid_leave) as UL"), DB::raw("sum(drt_summary_report.on_leave) as Leaves"), 
-DB::raw("round(sum(drt_summary_report.reg_late),2) as Late"), DB::raw("round(sum(drt_summary_report.reg_undertime),2) as Under_Time"), 
-DB::raw("round(sum(drt_summary_report.reg_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.reg_rendered_hours_overlapp,0)) -sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)), 2) as Render_Hr"), 
-DB::raw("round(sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)),2) as Night_Diff"),
-DB::raw("round(sum(drt_summary_report.reg_overtime),2) as OverTime"), DB::raw("round(sum(drt_summary_report.reg_overtime_night_diff),2) as OT_ND"),
-DB::raw("round(sum(drt_summary_report.rd_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.rd_rendered_hours_overlapp,0)) - sum(drt_summary_report.rd_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.rd_night_diff_overlapp,0)),2) as RD_Render_HR"),
-DB::raw("round(sum(drt_summary_report.rd_night_diff + drt_summary_report.rd_night_diff_overlapp),2) as RD_ND"),
-DB::raw("round(sum(drt_summary_report.rd_overtime),2) as RD_OT"),DB::raw("round(sum(drt_summary_report.rd_overtime_night_diff),2) as RD_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) -sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)),2) as LH_Render_HR"),
-DB::raw("round(sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)),2) as LH_ND"),
-DB::raw("round(sum(drt_summary_report.lh_overtime),2) as LH_OT"), DB::raw("round(sum(drt_summary_report.lh_overtime_night_diff),2) as LH_OT_ND"),
-DB::raw("round(sum(drt_summary_report.sh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.sh_rendered_hours_overlapp,0)) -sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)),2) as SH_Render_Hr"), 
-DB::raw("round(sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)),2) as SH_ND"), 
-DB::raw("round(sum(drt_summary_report.sh_overtime),2) as SH_OT"), DB::raw("round(sum(drt_summary_report.sh_overtime_night_diff),2) as SH_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.dsh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dsh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)),2) as DSH_Render_HR"), 
-DB::raw("round(sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)),2) as DSH_ND"), 
-DB::raw("round(sum(drt_summary_report.dsh_overtime),2) as DSH_OT"), DB::raw("round(sum(drt_summary_report.dsh_overtime_night_diff),2) as DSH_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.dlh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dlh_rendered_hours_overlapp,0)) -sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)),2) as DLH_Render_HR"), 
-DB::raw("round(sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)),2) as DLH_ND"), 
-DB::raw("round(sum(drt_summary_report.dlh_overtime),2) as DLH_OT"), 
-DB::raw("round(sum(drt_summary_report.dlh_overtime_night_diff),2) as DLH_OT_ND"), 
-DB::raw("round(sum(drt_summary_report.slh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.slh_rendered_hours_overlapp,0)) -sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)),2) as SLH_Render_HR"), 
-DB::raw("round(sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)),2) as SLH_ND"), 
-DB::raw("round(sum(drt_summary_report.slh_overtime),2) as SLH_OT"), DB::raw("round(sum(drt_summary_report.slh_overtime_night_diff),2) as SLH_OT_ND")) ->join('users','users.id','=','drt_summary_report.user_id')
-             ->join('departments', 'users.department_id', '=', 'departments.id');
-             if( is_valid( $user_sup_id ) ){
-		        $result->join('users_supervisors','users_supervisors.user_id','=','drt_summary_report.user_id');
-                $result->where('users_supervisors.supervisor_id','=',$user_sup_id);
-             }
-             $result->whereBetween('drt_summary_report.login_date', [$request->valid_from, $request->valid_to]);
-             
-              
-             
-            if( is_valid( $request->department_id ) ){
-                $result->where('users.department_id','=' ,$request->department_id );
-            } else {
-                $result->whereRaw('users.department_id IS NOT NULL');
+            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
+            $user_dtr = $result_sets[1];
+            $report = [];
+            foreach($user_dtr as $dtr) {
+                $report[] = array(
+                    "Employee_Name" => $dtr->Employee_Name,
+                    "Employee_Number" => $dtr->Employee_Number,
+                    "Department" => $dtr->Department_Name,
+                    "UL" => $dtr->UL,
+                    "Leaves" => $dtr->Leaves,
+                    "Late" => $dtr->Late,
+                    "Under_Time" => $dtr->Under_Time,
+                    "Render_Hr" => $dtr->Render_Hr,
+                    "Night_Diff" => $dtr->Night_Diff,
+                    "OverTime" => $dtr->OverTime,
+                    "OT_ND" => $dtr->OT_ND,
+                    "RD_Render_HR" => $dtr->RD_Render_HR,
+                    "RD_ND" => $dtr->RD_ND,
+                    "RD_OT" => $dtr->RD_OT,
+                    "RD_OT_ND" => $dtr->RD_OT_ND,
+                    "LH_Render_HR" => $dtr->LH_Render_HR,
+                    "LH_ND" => $dtr->LH_ND,
+                    "LH_OT" => $dtr->LH_OT,
+                    "LH_OT_ND" => $dtr->LH_OT_ND,
+                    "SH_Render_Hr" => $dtr->SH_Render_Hr,
+                    "SH_ND" => $dtr->SH_ND,
+                    "SH_OT" => $dtr->SH_OT,
+                    "SH_OT_ND" => $dtr->SH_OT_ND,
+                    "DSH_Render_HR" => $dtr->DSH_Render_HR,
+                    "DSH_ND" => $dtr->DSH_ND,
+                    "DSH_OT" => $dtr->DSH_OT,
+                    "DSH_OT_ND" => $dtr->DSH_OT_ND,
+                    "DLH_Render_HR" => $dtr->DLH_Render_HR,
+                    "DLH_ND" => $dtr->DLH_ND,
+                    "DLH_OT" => $dtr->DLH_OT,
+                    "DLH_OT_ND" => $dtr->DLH_OT_ND,
+                    "SLH_Render_HR" => $dtr->SLH_Render_HR,
+                    "SLH_ND" => $dtr->SLH_ND,
+                    "SLH_OT" => $dtr->SLH_OT,
+                    "SLH_OT_ND" => $dtr->SLH_OT_ND
+                );
             }
-
-            if( is_valid( $request->name ) ){
-                $result->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
-            }
-           $result->whereRaw('(is_active = ' . (is_valid($request->is_active) ? $request->is_active : '1') .' or termination_date BETWEEN "'. $request->valid_from .'" AND "'. $request->valid_to .'")')
-            ->groupBy('users.first_name','users.middle_name','users.last_name','users.emp_num','users.email','users.username','users.id');
-         
-
-
-
-            if (is_valid($request->page)) {
-                // $result_to_page= $result->orderBy('departments.department_name')->orderby('users.date_hired', 'DESC')->orderBy('users.last_name', 'asc')->orderBy('users.first_name', 'asc')->paginate(100);
-                $result_to_page= $result->orderBy('departments.department_name')->orderby('users.date_hired', 'DESC')->orderBy('users.last_name', 'asc')->orderBy('users.first_name', 'asc')->get();
-
-            }else{
-                $result_to_page= $result->orderBy('departments.department_name')->orderby('users.date_hired', 'DESC')->orderBy('users.last_name', 'asc')->orderBy('users.first_name', 'asc');
-            }
-         
-   
-        
-            //  $current_page = $result_to_page->currentPage();
-            //  $last_page = $result_to_page->lastPage();
-             $current_page = 1;
-             $last_page = 1;
-             foreach($result_to_page as $user) {
-                array_push($user_collection_paginated, $user);
-            }
-           
-            $report = $user_collection_paginated;
-             if($report == NULL || empty($report)) {
-                return response()->json(["message" => "Not Found"],404);                
-             }
-             $response = [];
-             $response['current_page'] = $current_page;
-             $response['last_page'] = $last_page;
-             $response['has_next_page'] = $current_page < $last_page;
-             $response['dtrItems'] =  $report;
+            $response = [];
+            $response['current_page'] = 1;
+            $response['last_page'] = 1;
+            $response['has_next_page'] = false;
+            $response['dtrItems'] =  $report;
 
             return success_response(
                 trans('messages.' . __FUNCTION__ . '_success'),
@@ -1406,6 +1505,80 @@ DB::raw("round(sum(drt_summary_report.slh_overtime),2) as SLH_OT"), DB::raw("rou
 
      
         } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
+            return error_response(trans('messages.error_default'), $e);
+        }
+    }
+
+    public function dtr_multi_logs_summary_report(Request $request)
+    {
+   
+        try {    
+            $me = Auth::user();
+            if (!is_valid($request->department_id)) {
+                return error_response("Please select a department", array());
+            }
+            $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id, $me->LevelId, $me->id]);
+            $user_dtr = $result_sets[0];
+            $report = [];
+            foreach($user_dtr as $dtr) {
+                $report[] = array(
+                    "Employee_Name" => $dtr->Employee_Name,
+                    "Employee_Number" => $dtr->Employee_Number,
+                    "Department" => $dtr->Department_Name,
+                    "Date" => $dtr->date,
+                    "Total_Hours" => $dtr->duration_hr,
+                    "Rendered_Hr" => $dtr->render_hr,
+                    "Night_Diff" => $dtr->night_diff_hr,
+                    "Project_Name" => $dtr->project_name
+                );
+            }
+            $response = [];
+            $response['current_page'] = 1;
+            $response['last_page'] = 1;
+            $response['has_next_page'] = false;
+            $response['dtrItems'] =  $report;
+
+            return success_response(
+                trans('messages.' . __FUNCTION__ . '_success'),
+                $response
+            );
+            
+
+     
+        } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
+            return error_response(trans('messages.error_default'), $e);
+        }
+    }public function dtr_multi_logs_summary_report_csv_export(Request $request)
+    {
+
+      
+        try {
+            $me = Auth::user();
+            if (!is_valid($request->department_id)) {
+                return error_response("Please select a department", array());
+            }
+            $result_sets = call_sp('EV_SP_Multi_Quick_Punch_Report', [$request->valid_from, $request->valid_to, $request->department_id, $me->LevelId, $me->id]);
+            $user_dtr = $result_sets[0];
+            $report = [];
+            foreach($user_dtr as $dtr) {
+                $report[] = array(
+                    "Employee_Name" => $dtr->Employee_Name,
+                    "Employee_Number" => $dtr->Employee_Number,
+                    "Department" => $dtr->Department_Name,
+                    "Date" => $dtr->date,
+                    "Total_Hours" => $dtr->duration_hr,
+                    "Render_Hr" => $dtr->render_hr,
+                    "Night_Diff" => $dtr->night_diff_hr,
+                    "Project_Name" => $dtr->project_name
+                );
+            }
+            return Excel::download(new  ExportDTRMultiLogsSummary($report), 'dtrmultilogssummary.csv');
+
+     
+        } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
             return error_response(trans('messages.error_default'), $e);
         }
     }
@@ -1456,6 +1629,97 @@ DB::raw("round(sum(drt_summary_report.slh_overtime),2) as SLH_OT"), DB::raw("rou
 
      
         } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        }
+    }
+
+
+    public function timeoff_allocation_report(Request $request)
+    {
+   
+        try {    
+           
+            $result_sets = call_sp('EVOX_PAYROLL_REPORT', [$request->timeoff_month,$request->timeoff_year]);
+            $user_timeoff = $result_sets[0];
+            $user_timeoff_new = $result_sets[1];
+           
+
+            
+            if($request->export == 1){
+                if($request->timeoff_month - 1 == 0){
+                    $previous_mon = 12;
+                }else{
+                    $previous_mon = $request->timeoff_month - 1;
+                }
+               
+                $current_mon = $request->timeoff_month;
+                $previous_mon_name = date('M', strtotime("2000-".$previous_mon."-01"));
+                $current_mon_name = date('M', strtotime("2000-".$current_mon."-01"));
+                $date = Carbon::create($request->timeoff_year, $request->timeoff_month, 1);
+                $daysInMonth = $date->daysInMonth;
+                $response =  Excel::download(
+                    new TimeoffAllocationExport($result_sets[0],$result_sets[1],$previous_mon_name,$current_mon_name,$daysInMonth),
+                    'TimeoffAllocation.csv'
+                );
+               return $response;
+            }else{
+            $report = [];
+            $report1 = [];
+            $newrow = 0;
+            foreach($user_timeoff as $timeoff) {
+                $report[] = array(
+                    "Sno" => $timeoff->Sno,
+                    "Employee_Name" => $timeoff->Employee_Name,
+                    "Employee_status" => $timeoff->Employment_Status,
+                    "Account" => $timeoff->Account,
+                    "startdate" =>$timeoff->HireDate,
+                    "presentdays" =>$timeoff->PresentDays,
+                    "AvaiPaid" => $timeoff->Paid_Leave,
+                    "AvaiLWP" => $timeoff->LWP_Leave,
+                    "MaxLv" => $timeoff->Max_Leave_Eligible,
+                    "PrePais" => $timeoff->Pre_LWP_Leave,
+                    "PreLWP" => $timeoff->Pre_LWP_Leave,
+                    "CloseBal"=> $timeoff->Close_Leave_Balance,
+                    "NewHire" => 0,
+                );
+            }
+            foreach($user_timeoff_new as $timeoff) {
+                $newhire = 1;
+                $newrow  == 0 ? $newhire = 1 : $newhire = 0;
+                $report1[] = array(
+                    "Sno" => $timeoff->Sno,
+                    "Employee_Name" => $timeoff->Employee_Name,
+                    "Employee_status" => $timeoff->Employment_Status,
+                    "Account" => $timeoff->Account,
+                    "startdate" =>$timeoff->HireDate,
+                    "presentdays" =>$timeoff->PrsentDays,
+                    "AvaiPaid" => $timeoff->Paid_Leave,
+                    "AvaiLWP" => $timeoff->LWP_Leave,
+                    "MaxLv" => $timeoff->Max_Leave_Eligible,
+                    "PrePais" => $timeoff->Pre_LWP_Leave,
+                    "PreLWP" => $timeoff->Pre_LWP_Leave,
+                    "CloseBal"=> $timeoff->Close_Leave_Balance,
+                    "NewHire" => $newhire,
+                );
+                $newrow = 1;
+            }
+
+                $final_report = array_merge($report,$report1);
+
+                $response = [];
+                $response['timeoffItems'] =  $report ;
+                $response['timeoffItemsnew'] = $report1;
+                return success_response(
+                    trans('messages.' . __FUNCTION__ . '_success'),
+                    $response
+                );
+            }
+          
+            
+
+     
+        } catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
             return error_response(trans('messages.error_default'), $e);
         }
     }

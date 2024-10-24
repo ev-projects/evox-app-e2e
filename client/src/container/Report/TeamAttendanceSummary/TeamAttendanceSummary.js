@@ -9,7 +9,7 @@ import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { exportAttendanceSummary, getTeamAttendanceSummary } from '../../../store/actions/report/reportActions'
-import { fetchTeamUnderDepartment , fetchDepartmentsTeams} from '../../../store/actions/filters/myTeamActions';
+import { fetchDepartmentsTeams} from '../../../store/actions/filters/myTeamActions';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import ReportNavigatorShort from "../../../components/Template/ReportNavigatorShort/ReportNavigatorShort.js";
@@ -27,7 +27,7 @@ class TeamAttendanceSummary extends Component {
           // team_id:          "",
           name:             "",
           scope_type:       "week",
-          selectedDepartments:    (Formatter.array_to_multiselect_array( [ this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0] : ""], 'department_name', 'id')),
+          selectedDepartments: [],//    (Formatter.array_to_multiselect_array( [ this.props.user.departments_handled.length > 0 ? this.props.user.departments_handled[0] : ""], 'department_name', 'id')),
           selectedTeams:    []
         }
         this.state = this.initialState;
@@ -125,14 +125,14 @@ class TeamAttendanceSummary extends Component {
     }
 
 
-    handleSelectDepartment = (department_id) => {
+    /*handleSelectDepartment = (department_id) => {
       if( department_id != '' ) {
         this.setState({
           department_id : department_id
         });
         this.props.fetchTeamUnderDepartment(this.props.user.id, department_id);
       }
-    }
+    }*/
 
     handleFilterChange = (e) => {
       this.setState({ [e.target.name]: e.target.value })
@@ -151,7 +151,7 @@ class TeamAttendanceSummary extends Component {
   
       const department_list = this.props.user.departments_handled.length > 0 ?(Formatter.array_to_multiselect_array( this.props.user.departments_handled, 'department_name', 'id')): [];;
 
-      const  team_list =  this.props?.myDepartmentsTeamsList?.team_list.length > 0 ?  (Formatter.array_to_multiselect_array( this.props?.myDepartmentsTeamsList?.team_list, 'name', 'id')): [];
+      const  team_list =  this.props?.myDepartmentsTeamsList?.team_list.length > 0 ?  (Formatter.array_to_multiselect_array( this.props?.myDepartmentsTeamsList?.team_list, 'Name', 'Id')): [];
 
      
       
@@ -212,7 +212,7 @@ class TeamAttendanceSummary extends Component {
                                           options={team_list}
                                           value={this.state.selectedTeams}
                                           onChange={this.setSelectedTeams}
-                                          labelledBy={"Select Teams"}
+                                          labelledBy={"Select Sub-department"}
                             />
                       </Col> 
                       <Col size="2"> 
@@ -256,7 +256,7 @@ class TeamAttendanceSummary extends Component {
   const mapDispatchToProps = (dispatch) => {
 	  return {
       getTeamAttendanceSummary  : ( start_date, end_date, params ) => dispatch( getTeamAttendanceSummary( start_date, end_date, params ) ),
-      fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
+
       exportAttendanceSummary : (start_date, end_date, params) => dispatch(exportAttendanceSummary(start_date, end_date, params)),
       fetchDepartmentsTeams : ( user_id, params ) => dispatch( fetchDepartmentsTeams( user_id, params ) ),
 	  }

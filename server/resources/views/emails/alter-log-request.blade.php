@@ -8,7 +8,7 @@
           <div style="width:50%;padding-top:10px;padding-left:10px;">
             <strong>{{ $user->getFullName() }}</strong> <br/>
             #{{ $user->emp_num }} <br/>
-            <strong>{{ $department->getCompleteName() }}</strong>
+            <strong>{{ $department->Name }}</strong>
           </div>
           <div style="width:50%;">
             <a target="_blank" style="background:#AC3232;padding: 5px 10px 5px 10px;margin: 25px 15px 36.5px 0px;border-radius: 0px;color: #fff;cursor: pointer;font-size: 14px;float:right;text-decoration:none;text-align:center;" href="{{ $approval_link .'/declined' }}">Decline</a>

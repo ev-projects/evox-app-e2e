@@ -24,6 +24,11 @@ const initState = {
     mychangeschedulerequest:null,
     worktour:true,
     isRecentPunchLoaded: false,
+    approval:null,
+    announcement:null,
+    celebration:null,
+    missingdtr:null,
+    alldata:null,
 }
 
 const dashboardReducers = (state = initState, action) => {
@@ -35,6 +40,12 @@ const dashboardReducers = (state = initState, action) => {
             result = {
                 ...state,
                 my_dtr_notifications : action.data,
+            }
+            break;
+            case "FETCH_MY_NOTIFICATIONS":
+            result = {
+                ...state,
+                my_notifications : action.data,
             }
             break;
         case "FETCH_BIRTHDAY_ANNIVERSARY":
@@ -52,8 +63,8 @@ const dashboardReducers = (state = initState, action) => {
         case "FETCH_RECENT_DTR":
             result = {
                 ...state,
-                recent_dtr : action.data.content,
-                nav_recent_dtr : action.data.content,
+                recent_dtr : action.recent_dtr,
+                nav_recent_dtr : action.recent_dtr,
                 isNavDtrLoaded : true,
             }
             break;     
@@ -94,6 +105,11 @@ const dashboardReducers = (state = initState, action) => {
                 overtimerequest : action.overtimerequest,
                 restdayrequest : action.restdayrequest,
                 changeschedulerequest : action.changeschedulerequest,
+
+                myalterrequest : action.myalterrequest,
+                myovertimerequest : action.myovertimerequest,
+                myrestdayrequest : action.myrestdayrequest,
+                mychangeschedulerequest : action.mychangeschedulerequest,
             }
             break;
             case "MY_ALTER_LOG_PENDING":
@@ -129,6 +145,16 @@ const dashboardReducers = (state = initState, action) => {
                                 dashboardholiday : action.dashboardholiday,
                             }
                             break;
+                            case "FETCH_MY_NOTIFICATIONS_COUNT":
+                                result = {
+                                    ...state,
+                                    approval : action.approval,
+                                    announcement : action.announcement,
+                                    celebration : action.celebration,
+                                    missingdtr : action.missingdtr,
+                                    alldata : action.alldata,
+                                }
+                                break;
             
         default:
             result = state;

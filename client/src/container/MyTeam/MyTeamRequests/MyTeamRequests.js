@@ -5,6 +5,7 @@ import "./MyTeamRequests.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
+import Authenticator from "../../../services/Authenticator";
 import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 import { Link } from "react-router-dom"; 
@@ -29,9 +30,15 @@ class MyTeamRequests extends Component {
           valid_to:         this.props.filters?.valid_to ? new Date( this.props.filters?.valid_to ) : 
                               Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
                               new Date(this.props.settings.current_payroll_cutoff.end_date) : null,
-          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled.length == 1 ? this.props.user.departments_handled[0].id : null,
+
+          // department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? this.props.user.departments_handled_strict[0].id : null,
+          department_id:    this.props.filters?.department_id ?? this.props.user.departments_handled_strict.length == 1 ? null : null,
+
           name:             this.props.filters?.name ?? null,
           page:             this.props.filters?.page ?? 1,
+          use_filter:                                          this.props.filters?.use_filter ? this.props.filters?.use_filter :  0,
+          showall:                                          this.props.filters?.showall ? this.props.filters?.showall :  0,
+          departmentselect:                                 this.props.filters?.departmentselect ? this.props.filters?.departmentselect :  1,
           checkedList:      this.props.filters?.checkedList ?? [],
           isAll:            this.props.filters?.isAll ?? false,
           action:           this.props.filters?.action ?? null,
@@ -40,6 +47,8 @@ class MyTeamRequests extends Component {
           first_load:      this.props.filters?.first_load ?? true,
           url:              'my_team_requests'
       }
+      ,
+      store_departments : [],
     }
     this.state = this.initialState; 
 
@@ -51,6 +60,7 @@ class MyTeamRequests extends Component {
     switch(values.action) {
       case "bulk_action":
         for (var key in values) {
+          console.log(values[key]);
             if( values[key] != null && values[key] != ""  ) {
                 switch( key ) {
                   case "valid_from":
@@ -69,6 +79,7 @@ class MyTeamRequests extends Component {
         break;
     default:
         for (var key in values) {
+       
           if( values[key] != null && values[key] != ""  ) {
               switch( key ) {
                 case "valid_from":
@@ -85,7 +96,7 @@ class MyTeamRequests extends Component {
       }
     }
     this.props.fetchRequestList( formData );
-    this.props.fetchStatusNumbers( formData );
+    // this.props.fetchStatusNumbers( formData );
   }
 
 
@@ -99,36 +110,51 @@ class MyTeamRequests extends Component {
 
     };
 
-    // if(Validator.isValid(this.state.filters.first_load)){
-    //   filters =this.state.filters.first_load == true ? {
-    //     ...this.state.filters,
-    //     valid_from: Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
-    // new Date(this.props.settings.current_payroll_cutoff.start_date).toISOString().substring(0, 10) : null,
-    //     valid_to  : Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
-    // new Date ( this.props.settings.current_payroll_cutoff.end_date).toISOString().substring(0, 10) : null,
+    if(Validator.isValid(this.state.filters.first_load)){
+      filters =this.state.filters.first_load == true ? {
+        ...this.state.filters,
+        valid_from: Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
+    new Date(this.props.settings.current_payroll_cutoff.start_date).toISOString().substring(0, 10) : null,
+        valid_to  : Validator.isValid(this.props.settings?.current_payroll_cutoff) ? 
+    new Date ( this.props.settings.current_payroll_cutoff.end_date).toISOString().substring(0, 10) : null,
   
-    //   } : filters;
+      } : filters;
 
-    // }
+    }
     // Fetch the my Team Request list upon mounting of the component if the My Team Request List is not yet initially loaded.
 
     // alert(this.props.isListLoaded);
-    // if( ! this.props.isListLoaded ) {
+    if( ! this.props.isListLoaded ) {
       this.props.fetchRequestList( filters );
-    // }
+    }
+
 
     // if( ! this.props.isNumbersLoaded ) {
-      this.props.fetchStatusNumbers( filters );
+      // this.props.fetchStatusNumbers( filters );
     // }
    
   }
 
  
-  componentDidUpdate(){
+  componentDidUpdate(prevProps) {
 
-  }
-
+    const { requestList } = this.props;
   
+    const { store_departments } = this.state;
+  
+    if (requestList.result && requestList.result.department) {
+  
+      const departments = requestList.result.department;
+  
+      if (departments.length > 0 && departments !== store_departments) {
+  
+        this.setState({ store_departments: departments });
+  
+      }
+  
+    }
+  
+  }
 
   render = () => {  
 
@@ -139,8 +165,23 @@ class MyTeamRequests extends Component {
     //     return <li>${item.start_time} ${item.end_time}</li>
     //   })
     // };
+  const days = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
   var request_list = this.props.requestList.result;
   var record_number = this.props.requestList.record_number;
+
+    // console.log(this.props.stored_departments)
+  var request_list_department = this.props.requestList?.result?.department;
+    
+console.log(this.state.store_departments);
+  var request_list_department = [];
+
+      request_list_department = this.state.store_departments;
+      // this.setState({store_departments: request_list_department});
+
+  // console.log(this.state.store_departments);
+  // var request_list_department = this.state.store_departments;
+
+  // console.log(this.props.requestList, this.props.requestList?.department);
 
   const required_field = "This field is required";
   const validationSchema = Yup.object().shape({
@@ -207,16 +248,40 @@ class MyTeamRequests extends Component {
                       >
                   <Tab eventKey="all" title="All Requests" type="submit">
                   </Tab>
-                  <Tab eventKey="alteration" title="Alteration" type="submit">
-                  </Tab>
-                  <Tab eventKey="overtime" title="Overtime" type="submit">
-                  </Tab>
-                  <Tab eventKey="rest_day_work" title="Rest Day Work" type="submit">
-                  </Tab>
-                  <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
-                  </Tab>
-                  <Tab eventKey="alter_logs_punches" title="MultiPunch Alteration" type="submit">
-                  </Tab>
+                  {(Authenticator.scanFeature(
+                    'manage_alter_log_request' )) && ( 
+                      <Tab eventKey="alteration" title="Alteration" type="submit">
+                      </Tab>
+                    )
+                  }
+                  {(Authenticator.scanFeature(
+                    'manage_overtime_request')) && ( 
+                      <Tab eventKey="overtime" title="Overtime" type="submit">
+                      </Tab>
+                    )
+                  }
+                   {(Authenticator.scanFeature(
+                    'manage_rest_day_work_request')) && ( 
+                      <Tab eventKey="rest_day_work" title="Rest Day Work" type="submit">
+                      </Tab>
+                    )
+                  }
+                   {(Authenticator.scanFeature(
+                    'manage_change_schedules_request')) && ( 
+                      <Tab eventKey="change_schedule" title="Change Schedule" type="submit">
+                      </Tab>
+                    )
+                  }
+                   {(Authenticator.scanFeature(
+                    'manage_alter_log_request')) && ( 
+                      <Tab eventKey="alter_logs_punches" title="MultiPunch Alteration" type="submit">
+                      </Tab>
+                    )
+                  }
+                  
+                  
+                  
+                 
                 </Tabs>
             </div>
             
@@ -241,7 +306,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="pending"}
-                      onClick={() =>  { setFieldValue("status", "pending"); handleSubmit();}}
+                      onClick={() =>  { setFieldValue("status", "pending"); setFieldValue("page", 1); handleSubmit();}}
                     >
                       {/* <Badge className="pending" variant="light">{pending}</Badge> */}
                       <i class="fa fa-circle request_i request_list_i-pending" aria-hidden="true"></i>Pending &nbsp;<Badge className="counter-request" variant="light">{pending}</Badge>
@@ -253,7 +318,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="approved"}
-                      onClick={() =>{ setFieldValue("status", "approved"); handleSubmit();}}
+                      onClick={() =>{ setFieldValue("status", "approved"); setFieldValue("page", 1); handleSubmit();}}
                     >
                       {/* <Badge className="approved" variant="light">{approved}</Badge> */}
                       <i class="fa fa-circle request_i request_list_i-approved" aria-hidden="true"></i>Approved &nbsp;<Badge className="counter-request" variant="light">{approved}</Badge>
@@ -265,7 +330,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="canceled"}
-                      onClick={() =>  { setFieldValue("status", "canceled"); handleSubmit();}}
+                      onClick={() =>  { setFieldValue("status", "canceled"); setFieldValue("page", 1); handleSubmit();}}
                     >
                       {/* <Badge className="canceled" variant="light">{canceled}</Badge> */}
                       <i class="fa fa-circle request_i request_list_i-cancelled" aria-hidden="true"></i>Cancelled &nbsp;<Badge className="counter-request" variant="light">{canceled}</Badge>
@@ -277,7 +342,7 @@ class MyTeamRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="declined"}
-                      onClick={() => { setFieldValue("status", "declined"); handleSubmit();}}
+                      onClick={() => { setFieldValue("status", "declined"); setFieldValue("page", 1); handleSubmit();}}
                     >
                       {/* <Badge className="denied" variant="light">{declined}</Badge> */}
                       <i class="fa fa-circle request_i request_list_i-declined" aria-hidden="true"></i>Declined &nbsp;<Badge className="counter-request" variant="light">{declined}</Badge>
@@ -304,8 +369,13 @@ class MyTeamRequests extends Component {
                             style={{ display: 'block' }}
                           >
                           <option    label="- Department -" />
-                          {this.props.user.departments_handled.map(function(item){
+
+                          {/* {this.props.user.departments_handled_strict.map(function(item){
+
                             return <option value={item.id} label={item.department_name} />;
+                          })} */}
+                          {request_list_department?.map(function(item){
+                            return <option value={item.id} label={item.DepartmentName} />;
                           })}
                           </select>
                       </div>
@@ -318,9 +388,55 @@ class MyTeamRequests extends Component {
                     </Col> 
                     <Col className="filter-button">
                     <div className="form-group">
-                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", "");}} >
+                       <Row>
+                        <Col>
+                        <Button className="display-block" variant="primary" type="submit" onClick={() => {setFieldValue("page", 1); setFieldValue("action", ""); setFieldValue("use_filter", 1); setFieldValue("departmentselect", 0);}} >
                           <i className="fa fa-filter" /> Filter
                         </Button>
+                        </Col>
+                        {Authenticator.scanLevel(["DivisionHead", "Division Head"]) && (
+
+                                          <Col>
+                                          {/* <Button 
+                                            className="display-block" 
+                                            variant="primary" 
+                                            type="submit" 
+                                            onClick={() => {
+                                              // Toggle the 'showall' field value
+                                              setFieldValue("showall", values.showall === 0 ? 1 : 0);
+                                              setFieldValue("departmentselect", 1);
+
+                                              setFieldValue("page", 1);
+                                              setFieldValue("action", "");
+
+                                            }}
+                                            >
+                                            <i className= {values.showall === 0 ? "fa fa-filter" : "fa fa-power-off"} /> {values.showall === 0 ? 'Show All' : 'OFF'}
+                                          </Button> */}
+                                                <label className="Showall">
+          <input className="showall_checkbox"
+            type="checkbox"
+            checked={values.showall ==1}
+            onClick={() => {
+              setFieldValue("showall", values.showall === 0 ? 1 : 0);
+              setFieldValue("departmentselect", 1);
+              setFieldValue("department_id",null)
+              setFieldValue("page", 1);
+              setFieldValue("action", "");
+              handleSubmit();
+            }}
+
+          />
+            <span className="showall_text">ShowAll</span>
+        </label>
+
+
+                                          </Col>
+
+                        )}
+                     
+                       </Row>
+                       
                     </div>
                     </Col>
                     </Row>
@@ -390,8 +506,8 @@ class MyTeamRequests extends Component {
                             }
                             fifthColumn.push(
                               <div>
-                              <p> Rest Days: {item.fourth_column?.rest_day?.join()}</p>
-                              <p> Work Days: {item.fourth_column?.work_days?.join()}</p>
+                              <p> Rest Days: {days.filter(day => !Array.from(new Set(item.fourth_column?.work_days)).join(', ').includes(day)).join(', ')}</p>
+                              <p> Work Days: {Array.from(new Set(item.fourth_column?.work_days)).join(', ')}</p>
                               </div>
                             ); 
                             link =  global.links.change_schedule + item.id.toString();
@@ -414,18 +530,61 @@ class MyTeamRequests extends Component {
                               link =  global.links.alter_log + item.id.toString();
                               break;
                               case "alter_log_punches":
+                                const json_data_new = JSON.parse(item.fifth_column);
+                                const new_times = json_data_new.map(item => ({
+
+                                  start_time: new Date(item.start_time * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                  hour: '2-digit',
+                                                                                  minute: '2-digit',
+                                                                                  second: '2-digit',
+                                                                                  hour12: false
+                                                                                }) ?? 'N/A',
+                                
+                                  end_time: new Date(item.end_time * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit',
+                                                                                second: '2-digit',
+                                                                                hour12: false
+                                                                              }) ?? 'N/A'
+                                
+                                }));
+                                const json_data_old = JSON.parse(item.fourth_column)
+                                const old_times = json_data_old.map(item => ({
+
+                                  start_time: new Date(item.time_in * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                  hour: '2-digit',
+                                                                                  minute: '2-digit',
+                                                                                  second: '2-digit',
+                                                                                  hour12: false
+                                                                                }) ?? 'N/A',
+                                
+                                  end_time: new Date(item.time_out * 1000)?.toLocaleTimeString('en-GB', {
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit',
+                                                                                second: '2-digit',
+                                                                                hour12: false
+                                                                              }) ?? 'N/A'
+                                
+                                }));
+                                console.log(json_data_new,new_times,json_data_old);
                                 fourthColumn.push(
                                   <div>
                                     <span className="alter-logs-new">New</span>
-                                    <p>
-                                      Timelog:  {item.fifth_column}
-                                    </p>
+                                   {new_times.map(function(item) {
+
+                                        return <p>{item.start_time}-{item.end_time}</p>;
+
+                                        })}
                                   </div>
                                 );
                                 fifthColumn.push(
                                   <div>
                                     <span className="alter-logs-old">Old</span>
-                                    <p>Timelog: {item.fourth_column}</p>
+                                    {old_times.map(function(item) {
+
+                                          return <p>{item.start_time}-{item.end_time}</p>;
+
+                                          })}
                                   </div>
                                 );
                                 link =  global.links.alter_log_punch + item.id.toString();
@@ -530,6 +689,7 @@ class MyTeamRequests extends Component {
 
   const mapStateToProps = (state) => {
     return {
+      stored_departments  : state.myTeamRequestList.stored_departments,
       requestList     : state.myTeamRequestList.instance,
       isListLoaded    : state.myTeamRequestList.isListLoaded,
       isNumbersLoaded : state.myTeamRequestList.isNumbersLoaded,

@@ -39,7 +39,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
 
     private $start;
     private $end;
-    protected $data;
+    //protected $data;
     protected $list;
     protected $total_row;
     protected $segragated_total_row;
@@ -47,26 +47,33 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
     protected $period;
     protected $count_period;
 
-    public function __construct($start = null, $end = null, $data, $list, $total_row, $segragated_total_row)
+    public function __construct($list, $stats, $start, $end)
     {
         $this->start = $start;
         $this->end = $end;
-        $this->data = $data;
-        $this->list = $list;
+        //$this->data = $data;
+        $this->list = $list ?? [];
 
-        $this->total_row = $total_row;
-        $this->segragated_total_row = $segragated_total_row;
+        $this->total_row = count($this->list);
 
-        $this->list_count = count($list);
+        $stats_vals = [];
+        foreach ($stats as $stat) {
+            $stat_vars = get_object_vars($stat);
+            $stat_vals = [""];
+            foreach ($stat_vars as $key => $val) {
+                array_push($stat_vals, $val);
+            }
+            $stats_vals[] = $stat_vals;
+        }
+        $this->segragated_total_row = $stats_vals;
+
+        $this->list_count = count($this->list);
         $parsed_start = Carbon::parse($this->start)->format('y-m-d');
         $parsed_end = Carbon::parse($this->end)->format('y-m-d');
         $this->period = CarbonPeriod::between($parsed_start,  $parsed_end);
         $this->count_period = count(CarbonPeriod::between($parsed_start,  $parsed_end));
-        
       
     }
-
-
 
 
     public function registerEvents(): array
@@ -76,21 +83,21 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             AfterSheet::class    => function (AfterSheet $event) {
 
 
-                                                                        // 12 or more number of fields like name, emp_num
+                // 12 or more number of fields like name, emp_num
                 $coordinate = $event->sheet->getCellByColumnAndRow(13 + $this->count_period, 1)->getCoordinate();
                 $month_col_coordinate = substr($coordinate, 0, -1);
              
-                $event->sheet->setNumFormatPercent('E4:E' . ($this->list_count + 4));
-                $this->addZeroPercent($event, "E", 4, $this->list_count);
+                //$event->sheet->setNumFormatPercent('E4:E' . ($this->list_count + 3));
+                $this->addZeroPercent($event, "E", 4, $this->list_count - 1);
 
-                $event->sheet->setNumFormatPercent('D4:D' . ($this->list_count + 4));
-                $this->addZeroPercent($event, "D", 4, $this->list_count);
+                //$event->sheet->setNumFormatPercent('D4:D' . ($this->list_count + 3));
+                $this->addZeroPercent($event, "D", 4, $this->list_count - 1);
 
-                // $event->sheet->setNumFormatPercent('C4:C' . ($this->list_count + 4));
+                // $event->sheet->setNumFormatPercent('C4:C' . ($this->list_count + 3));
                 // $this->addZeroPercent($event, "C", 4, $this->list_count);
 
-                $event->sheet->setNumFormatPercent('F4:F' . ($this->list_count + 4));
-                $this->addZeroPercent($event, "F", 4, $this->list_count);
+                $event->sheet->setNumFormatPercent('F4:F' . ($this->list_count + 3));
+                $this->addZeroPercent($event, "F", 4, $this->list_count - 1);
 
 
 
@@ -101,9 +108,11 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                 $this->colorFillStatusMonth($event, 'UL', 'cf6969'); // unpaid leave
                 $this->colorFillStatusMonth($event, 'RD', 'BEBEBE'); // rest day
                 $this->colorFillStatusMonth($event, 'SL', 'dca4ed'); // leave
+                $this->colorFillStatusMonth($event, 'SL(HD)', 'dca4ed'); // leave half-day
                 $this->colorFillStatusMonth($event, 'VL', '72eddb'); // leave
+                $this->colorFillStatusMonth($event, 'VL(HD)', '72eddb'); // leave half-day
                 $this->colorFillStatusMonth($event, 'Paid Leaves', '72eddb'); // leave
-                $this->colorFillStatusMonth($event, 'IN: Casual Leaves', '72eddb'); // leave
+                $this->colorFillStatusMonth($event, 'IN: Casual Leaves', '72eddb'); // India leave
                 $this->colorFillStatusMonth($event, 'IN: Earned Leaves', '72eddb'); // leave
                 $this->colorFillStatusMonth($event, 'IN: Maternity Leave', '72eddb'); // leave
                 $this->colorFillStatusMonth($event, 'IN: Optional Holiday Leave', '72eddb'); // leave
@@ -112,7 +121,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                 $this->colorFillStatusMonth($event, 'IN: Unpaid Leaves', '72eddb'); // leave
                 $this->colorFillStatusMonth($event, 'IN:Election Day', '72eddb'); // leave
                 $this->colorFillStatusMonth($event, 'X', 'fcf6e1'); // no schedule or dtr
-                $this->colorFillStatusMonth($event, 'X', 'fcf6e1');
+                //$this->colorFillStatusMonth($event, 'X', 'fcf6e1');
                 // $this->colorFillStatusMonth($event, 'XH', 'fcf6e1'); // no shedule holiday
                 $this->colorFillStatusMonth($event, 'TBD', 'dcfce4'); // to be determined with in the date
                 $this->setMonthWidth($event);
@@ -140,13 +149,13 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('BEBEBE');
 
-                $total_row_coordinate = (4 + $this->list_count);
+                $total_row_coordinate = (3 + $this->list_count);
                 $event->sheet->getDelegate()->getStyle("D" . $total_row_coordinate . ":M" . $total_row_coordinate)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('6184d4');
 
                     $event->sheet->styleCells(
-                        "A2:".$month_col_coordinate . (4 + $this->list_count),
+                        "A2:".$month_col_coordinate . (3 + $this->list_count),
                         [
                             'borders' => [
                                 'allBorders' => [
@@ -158,7 +167,7 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
                     
 
                 // ACCOUNT ROWS EVENTS
-                $acc_total_row_coordinate = (4 + 5 + $this->list_count);
+                $acc_total_row_coordinate = (8 + $this->list_count);
                 $event->sheet->getDelegate()->getStyle("B" . $acc_total_row_coordinate . ":M" . $acc_total_row_coordinate)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('6184d4');
@@ -200,12 +209,6 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
     }
     public function array(): array
     {
-
-
-
-
-
-
         $i = 1;
         $d = 1;
 
@@ -221,9 +224,18 @@ class EmployeeAttendanceReportExport implements FromArray, ShouldAutoSize, WithE
             // }
             $d++;
         }
-
-        $excel_employees = $this->list;
-        $excel_employees[] = $this->total_row;
+        $employee_items = [];
+        foreach ($this->list as $item) {
+            $item_vals = [];
+            foreach(get_object_vars($item) as $key => $val) {
+                //array_push($item_vals, $val);
+                $item_vals[] = $val;
+            }
+            //array_push($employee_items, $item_vals);
+            array_push($employee_items, array_merge($item_vals));
+        }
+        $excel_employees = $employee_items;
+        //$excel_employees[] = $this->total_row;
 
         $excel_accounts = $this->segragated_total_row;
 

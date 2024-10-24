@@ -3,6 +3,8 @@
 namespace App\Modules\User\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 class UserListResource extends JsonResource
 {
@@ -14,19 +16,20 @@ class UserListResource extends JsonResource
      */
     public function toArray($request)
     {
-        $department = $this->department()->first();
+
 
         // Create Resource for Department Handled
         $departments_handled = [];
-        foreach( $this->departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
-            array_push( $departments_handled, $departments );
-        }
+        // foreach( $this->departments_handled()->orderBy('department_name', 'asc')->get()  as $departments){
+        //     array_push( $departments_handled, $departments );
+        // }
+        $evox_departments_handled=  $this->evox_departments_handled();
 
         // Create Resource for Supervisee
-        $supervisee = [];
-        foreach( $this->supervisee()->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get()  as $user){
-            array_push( $supervisee, $user );
-        }
+        // $supervisee = [];
+        // foreach( $this->supervisee()->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get()  as $user){
+        //     array_push( $supervisee, $user );
+        // }
 
         // Create Resource for Users Handled
         // $users_handled = [];
@@ -37,7 +40,7 @@ class UserListResource extends JsonResource
         $main_info = array(
             'id' => $this->id,
             'emp_num' => $this->emp_num,
-            'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
+            'department' => ( is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
             'first_name' => $this->first_name,
             'middle_name' => $this->middle_name,
             'last_name' => $this->last_name,
@@ -45,9 +48,9 @@ class UserListResource extends JsonResource
             'job_title' => $this->job_title,
             'email' => $this->email,
             'full_name' => $this->getFullName(),
-            'departments_handled' => $departments_handled,
-            'supervisee' => $supervisee,
-            "has_use_multi" => $this->permissions()->pluck('name')->contains('user_multi_login'),
+            'departments_handled' => $evox_departments_handled,
+            // 'supervisee' => $supervisee,
+            "has_use_multi" => is_valid($this->LevelId) ?$this->hasFeature("multi_login"): false,
             // 'users_handled' => $users_handled,
         );
 

@@ -22,10 +22,10 @@ Route::post('/forgot_password_request', 'UserController@forgot_password_request'
 Route::group(['prefix' => 'auth'], function () {
 
     # Login
-    Route::post('login', 'AuthController@login')->middleware('auth.apikey');
+    Route::post('login', 'AuthController@login')->middleware('auth.apikey', 'api.calctime');
 
     # Login Mobile
-    Route::post('login-mobile', 'AuthController@loginMobile')->middleware('auth.apikey');
+    Route::post('login-mobile', 'AuthController@loginMobile')->middleware('auth.apikey', 'api.calctime');
 
     # Logout (Checks as well if there's a valid token before logging out.)
     Route::post('logout', 'AuthController@logout')->middleware('jwtauth', 'auth.apikey');
@@ -58,6 +58,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     # Get the user roles
     Route::get('/roles/', 'UserController@get_roles');
 
+     # Get the all features
+     Route::get('/features', 'UserController@get_features');
+
     # Register a User
     Route::post('register', 'UserController@register')->middleware('role:admin');
 
@@ -65,6 +68,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('get_dpa_list', 'UserController@get_dpa_list');
 
     Route::get('export_dpa_list', 'UserController@export_dpa_list');
+
+    Route::get('sub_department_list', 'UserController@sub_department_list');
 });
 #####################################################################################################
 
@@ -104,10 +109,15 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 
     Route::get('team_list/{department_id}', 'UserController@my_team_list_under_department');//->middleware('auth.apikey');
 
+    Route::get('sub_department/{department_id}', 'UserController@sub_department_under_department');//->middleware('auth.apikey');
+    
+
     Route::post('team_list_all/', 'UserController@my_team_list_under_selected_department');
     
     # Get the Role of the user
     Route::get('/role_permission/', 'UserController@get_user_role_permission');
+     # Get the Role of the user
+     Route::get('/features', 'UserController@get_user_feature');
 
     # Change Password Post request
     Route::post('tick_dpa', 'UserController@tick_dpa');//->middleware('auth.apikey');
@@ -116,10 +126,16 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     Route::post('change_password', 'UserController@change_password');//->middleware('auth.apikey');
     
     # Assign Roles & Permissions Post request
-    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions')->middleware('role:admin');
+    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions');
+
+    Route::post('/assign_level_features', 'UserController@assign_level_features');
     
     # Assign Employees Post Request
-    Route::post('/assign_employees/', 'UserController@assign_employees')->middleware('role:admin');
+    Route::post('/assign_employees/', 'UserController@assign_employees');
+
+    Route::get('/sub_department', 'UserController@get_user_sub_department_handled');
+
+    Route::post('sub_department_allocate', 'UserController@sub_department_allocate');
 
 
     #####################################################################################################

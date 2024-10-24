@@ -36,10 +36,17 @@ return [
 
         'database' => [
             'driver' => 'database',
-            'table' => 'jobs',
+            'table' => 'jobs_backup_20240724',
             'queue' => 'default',
             'retry_after' => 90,
         ],
+
+        // 'sub_jobs' => [
+        //     'driver' => 'database',
+        //     'table' => 'sub_jobs',
+        //     'queue' => 'sub_jobs',
+        //     'retry_after' => 90,
+        // ],
 
         'beanstalkd' => [
             'driver' => 'beanstalkd',

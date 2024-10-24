@@ -114,6 +114,22 @@ class RestDayWork extends Component {
       }
   }
 
+  componentDidUpdate(prevProps){
+    if(this.props.params.id && this.props.params.id !== prevProps.params.id){
+      console.log( this.props.params);
+      // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+      this.props.clearRestDayWorkInstance();
+    
+      // If the ID is defined, load the Overtime Instance base on the ID Parameter in Route.
+        this.props.fetchRestDayWork( this.props.params.id )
+    }
+    if(this.props.params.id === undefined && this.props.params.id !== prevProps.params.id){
+      console.log( this.props.params);
+      // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+      this.props.clearRestDayWorkInstance();
+    }
+  }
+
   render = () => {  
 
     // If there's an existing instance and it's status is Canceled/Declined, reset the Rest Day Work instance but retain the ID to reuse the existing record.
@@ -122,7 +138,7 @@ class RestDayWork extends Component {
     // }
 
     // Checks if the Instance is On Approval state.
-    const onApproval = this.props.instance?.is_under_supervisee && Authenticator.check('supervisor', 'manage_employee_request') ? this.props.instance.is_under_supervisee : false;
+    const onApproval = this.props.instance?.is_under_supervisee ? this.props.instance.is_under_supervisee : false;
 
     // Sets the Method of the current state.
     const method = (( onApproval ) ? 'approval' : ((this.props.params.id != undefined) ? 'update' : 'store') )

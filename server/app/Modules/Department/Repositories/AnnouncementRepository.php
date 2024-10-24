@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\Announcement;
 use App\Modules\Department\Models\AnnouncementDepartment;
+use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Department\Resources\AnnouncementResource;
 
 class AnnouncementRepository implements AnnouncementRepositoryInterface
@@ -46,7 +47,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             if(is_valid( request()->get('department_id') ) || $pov_user){
                 $department_id = $pov_user == null ? request()->get('department_id') : $pov_user->department_id;
             
-
+                if(is_valid(auth()->user()->SubDepartmentID)){
+                    $department_id  = auth()->user()->direct_department_id();
+                }
                 $announcements_list = Announcement::where(function($query) use (  $department_id){
                     
                     $query->where('set_all', 1);
@@ -141,21 +144,24 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             }
             
             if($request->set_exclude =="1" && $request->set_all == "0"){
-                $dep_ids = Department::whereNotIn("id",$dep_ids )->pluck('id')->toArray();
+                $dep_ids = EvoxDepartment::whereNotIn("id",$dep_ids )->pluck('id')->toArray();
             }
             else{
-                $dep_ids = Department::whereIn("id",$dep_ids )->pluck('id')->toArray();
+                $dep_ids = EvoxDepartment::whereIn("id",$dep_ids )->pluck('id')->toArray();
             }
          
         }   
-
+        // dd($dep_ids);
     
         DB::beginTransaction();
         try {
             
-
+            $main_dep_id = 0;
             log_activity(trans('messages.create_department_announcement_attempt'));
-
+           
+            if(is_valid(auth()->user()->SubDepartmentID)){
+                $main_dep_id = auth()->user()->direct_department_id();
+            }
             $dep_announcement = new Announcement;
 
             $dep_announcement->title            = $request->title;
@@ -173,11 +179,12 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             $dep_announcement->country_id       = $request->country_id != null ? $request->country_id : Auth::user()->country_id;
 
 
-            $dep_announcement->dep_id           = auth()->user()->department_id;
-            $dep_announcement->present_dep_id   = auth()->user()->department_id;
+            $dep_announcement->dep_id           = $main_dep_id;
+            $dep_announcement->present_dep_id   = $main_dep_id;
             $dep_announcement->created_by       = auth()->user()->id;
             $dep_announcement->updated_by       = auth()->user()->id;
             $dep_announcement->set_all          = $request->set_all == 1? 1:0;
+            $dep_announcement->set_exclude          = $request->set_exclude == 1? 1:0;
             $dep_announcement->set_country_all  = $request->set_country_all == 1? 1:0;
 
             $dep_announcement->save();
@@ -227,7 +234,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
                     $dep_announcement->created_by       = auth()->user()->id;
                     $dep_announcement->updated_by       = auth()->user()->id;
-
+                    // dump($dep_id);
                     $dep_announcement->save();
                 }
             }
@@ -268,32 +275,59 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
      */
     public function show_strict($id)
     {
-            $department =  Department::find(Auth::user()->department_id);
+            $logged_user = Auth::user();
+            $department =  EvoxDepartment::find( $logged_user->department_id);
             // $announcements_list = Announcement::orderBy('created_at', 'desc')->take(8)->get();
 
             $exist_announcement = Announcement::find($id);
-
+            $main_dep_id =   $logged_user->department_id;
+            if(is_valid(auth()->user()->SubDepartmentID)){
+                $main_dep_id = Auth::user()->direct_department_id();
+            }
             if($exist_announcement->set_all == 0){
-                $exist_announcement = Announcement::where('announcement_id', $id)->where("present_dep_id",  Auth::user()->department_id)->first();
+                $exist_announcement = Announcement::where('announcement_id', $id)->where("present_dep_id",    $main_dep_id)->first();
             }
 
             if( $exist_announcement){
-                // if( ($exist_announcement->set_all == 1 && $exist_announcement->set_country_all == 1)|| ( $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)
-                    
-                // ){
-                //     return  $exist_announcement;
-                // }
 
-                // if($exist_announcement->set_all == 0 && $exist_announcement->department_id == Auth::user()->department_id  
-                // && ($exist_announcement->set_country_all == 1||  $exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id)){
-                //     return  $exist_announcement;
-                // }
-
-
-                   if(($exist_announcement->set_all == 1 || ($exist_announcement->set_all == 0&& $exist_announcement->present_dep_id == Auth::user()->department_id))  
-                && ($exist_announcement->set_country_all == 1||  ($exist_announcement->set_country_all == 0 && $exist_announcement->country_id == Auth::user()->country_id))){
+                   if(($exist_announcement->set_all == 1 || ($exist_announcement->set_all == 0&& $exist_announcement->present_dep_id ==  $logged_user->department_id))  
+                && ($exist_announcement->set_country_all == 1||  ($exist_announcement->set_country_all == 0 && $exist_announcement->country_id ==  $logged_user->country_id))){
                     return  $exist_announcement;
                 }
+            }
+
+            // ("not passed");
+            if( $exist_announcement){ // checks if in dashbaord
+
+                        $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
+                        $list_all = Announcement::latest()->where('set_all',1)
+                        
+                        ->where(function ($query)  {
+                            $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                            // $query;
+                        })
+                        ->get();
+
+                        $list_dep = Announcement::where("present_dep_id",$main_dep_id)->latest()
+                        ->where(function ($query)  {
+                            $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                            // $query;
+                        })
+                        ->whereNotIn('id', $toExclude)
+
+                        ->get();
+                       
+
+                        if(!is_valid(auth()->user()->SubDepartmentID) || auth()->user()->department_id == null){
+                             $announcements_list = $list_all->sortByDesc('release_date');
+                             if($announcements_list->contains('id', $exist_announcement->id)){
+                                return $exist_announcement;
+                            }
+                        }
+                        $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date');
+                        if($announcements_list->contains('id', $exist_announcement->id)){
+                            return $exist_announcement;
+                        }
             }
             $dep_announcement = $department->departments_announcements()->where("category", "Department")->find($id);
         return  $dep_announcement;
@@ -317,13 +351,11 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             if(gettype($dep_ids) === "string"){
                 $dep_ids = preg_split("/\,/", $dep_ids );
             }
-
-            // $department_collection = Department::where('id' ,'>' ,0)->pluck('id')->toArray();
             if($request->set_exclude =="1" && $request->set_all == "0"){
-                $dep_ids = Department::whereNotIn("id",$dep_ids )->pluck('id')->toArray();
+                $dep_ids = EvoxDepartment::whereNotIn("id",$dep_ids )->pluck('id')->toArray();
             }
             else{
-                $dep_ids = Department::whereIn("id",$dep_ids )->pluck('id')->toArray();
+                $dep_ids = EvoxDepartment::whereIn("id",$dep_ids )->pluck('id')->toArray();
             }
          
         } 
@@ -508,12 +540,15 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     public function dashboard_index($request)
     {
 
-//  dasdasdasd
+
         $date_time = Carbon::now()->toDateString();
         try {
-            $department =  Department::find(Auth::user()->department_id);
+            // $department =  Department::find(Auth::user()->department_id);
             $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
-
+            $main_dep_id =0;
+            if(is_valid(auth()->user()->SubDepartmentID)){
+                $main_dep_id = auth()->user()->direct_department_id();
+            }
         
             if($request->dep_id == "all" || $request->dep_id == null){
 
@@ -528,7 +563,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 })
                 ->get();
 
-                $list_dep = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                $list_dep = Announcement::where("present_dep_id",$main_dep_id)->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 })
@@ -539,7 +574,11 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 ->whereNotIn('id', $toExclude)
                  // only 6 but we get 7 to check if there is a next (show)
                 ->get();
-                
+                // dd($main_dep_id,  $list_dep);
+
+                if(!is_valid(auth()->user()->SubDepartmentID) || auth()->user()->department_id == null){
+                    return $announcements_list = $list_all->sortByDesc('release_date')->take(6);
+                }
 
 
                 return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date')->take(6);
@@ -548,8 +587,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             }
 
             if( $request->dep_id != null  && is_numeric($request->dep_id)){
-                $department =  Department::find($request->dep_id);
-                $announcements_list = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                // $department =  EvoxDepartment::find($request->dep_id);
+                $announcements_list =  Announcement::where("present_dep_id",$request->dep_id)->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 })
@@ -562,12 +601,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
 
 
-            // if ($request->category == "hr") {
-            //     $announcements_list->where("category", "HR");
-            // }
-            // if ($request->category == "department") {
-            //     $announcements_list->where("category", "Department");
-            // }
+           
 
             $announcements_list = $announcements_list->get()->sortByDesc('release_date')->take(6) ;
 
@@ -578,6 +612,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         }
     }
 
+    
 
     public function increment_dashboard_index($request)
     {
@@ -585,8 +620,12 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         
 //  dasdasdasd
         $date_time = Carbon::now()->toDateString();
+        $main_dep_id =0;
+        if(is_valid(auth()->user()->SubDepartmentID)){
+            $main_dep_id = auth()->user()->direct_department_id();
+        }
         try {
-            $department =  Department::find(Auth::user()->department_id);
+            $department =  EvoxDepartment::find(Auth::user()->department_id);
             $toExclude = Announcement::where('announcement_id' ,'!=' ,null)->pluck('announcement_id')->toArray();
 
         
@@ -623,8 +662,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
             }
 
             if( $request->dep_id != null  && is_numeric($request->dep_id)){
-                $department =  Department::find($request->dep_id);
-                $announcements_list = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                // $department =  Department::find($request->dep_id);
+                $announcements_list = Announcement::where("present_dep_id",$request->dep_id)->latest()->where(function ($query) use ($date_time) {
                     $query->where('release_date', '<=', $date_time);
                     $query->where('expiry_date', '>', $date_time);
                 })
@@ -663,11 +702,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     {
 
         try {
-            $department =  Department::find(Auth::user()->department_id);
-
-            $announcements_list = $department->departments_announcements()->where("category", "Department")->latest()
 
 
+            $announcements_list =   Announcement::where('dep_id', auth()->user()->direct_department_id())->where("category", "Department")->latest()
                 ->get();
 
             return $announcements_list;
@@ -700,7 +737,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
         log_activity(trans('messages.create_department_announcement_attempt'));
 
 
-        if (Auth::user()->hasRole(get_constant('USER_ROLES.hr'))) {
+        if (Auth::user()->isLevel("HR")) {
             $dep_announcement = Announcement::where('category', "HR")->find($id);
         }
 

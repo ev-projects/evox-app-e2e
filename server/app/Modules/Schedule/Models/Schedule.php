@@ -3,6 +3,7 @@
 namespace App\Modules\Schedule\Models;
 
 use App\Modules\Department\Models\Department;
+use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -175,7 +176,8 @@ class Schedule extends Model{
                 return $this->hasOne(User::class, 'id', 'bind_id');
                 break;
             case "department":
-                return $this->hasOne(Department::class, 'id', 'bind_id');
+                // return $this->hasOne(EvoxDepartment::class, 'id', 'bind_id');
+                return EvoxDepartment::find($this->bind_id )->first();
                 break;
             
         }

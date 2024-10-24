@@ -123,11 +123,27 @@ class Overtime extends Component {
       }
   }
 
+  componentDidUpdate(prevProps){
+    if(this.props.params.id && this.props.params.id !== prevProps.params.id){
+      console.log( this.props.params);
+      // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+      this.props.clearOvertimeInstance();
+    
+      // If the ID is defined, load the Overtime Instance base on the ID Parameter in Route.
+        this.props.fetchOvertime( this.props.params.id )
+    }
+    if(this.props.params.id === undefined && this.props.params.id !== prevProps.params.id){
+      console.log( this.props.params);
+      // Clear the Instance of Alter Log before rendering new Instance (If applicable)
+      this.props.clearOvertimeInstance();
+    }
+  }
+
   
   render = () => {  
     // console.log(this.props.user);
     // Checks if the Instance is On Approval state.
-    const onApproval = this.props.instance?.is_under_supervisee && Authenticator.check('supervisor', 'manage_employee_request') ? this.props.instance.is_under_supervisee : false;
+    const onApproval = this.props.instance?.is_under_supervisee ? this.props.instance.is_under_supervisee : false;
 
     const isManager = this.props.instance?.is_under_supervisee;
     // Sets the Method of the current state.

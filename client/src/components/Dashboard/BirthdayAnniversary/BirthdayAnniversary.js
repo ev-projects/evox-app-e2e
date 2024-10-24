@@ -9,6 +9,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { getBirthdayAnniv } from '../../../store/actions/dashboard/dashboardActions'
 import * as Yup from 'yup';
+import { getDashboardOverall } from '../../../store/actions/dashboard/dashboardActions';
 
 
 class BirthdayAnniversary extends Component {
@@ -21,7 +22,8 @@ class BirthdayAnniversary extends Component {
 	}
 
     componentWillMount(){
-		this.props.getBirthdayAnniv( this.props.user.id );
+		// this.props.getBirthdayAnniv( this.props.user.id );
+    this.props.getDashboardOverall(2);
 	}
 	
     componentWillUnmount(){
@@ -42,10 +44,10 @@ class BirthdayAnniversary extends Component {
                   {birthday_and_anniv.map(function (data, i) {
                     var icon = ''
                     switch(data.type) {
-                      case "birthdate":
+                      case "birthday":
                         icon = <i class="fa fa-birthday-cake" style={{color:"#575a89"}}></i>
                         break;
-                      case "anniversary":
+                      case "Anniversary":
                         icon = <i class="fa fa-calendar-check-o" style={{color:"#0097a7"}}></i>
                         break;
                       case "regularization":
@@ -53,7 +55,7 @@ class BirthdayAnniversary extends Component {
                         break;
                     }
                           return  (<tr>
-                          <td>{data.name}</td>
+                          <td>{data.last_name}, {data.first_name}</td>
                           <td>{data.date}</td>
                           <td>{icon}  {data.display}</td>
                   
@@ -87,6 +89,8 @@ class BirthdayAnniversary extends Component {
   const mapDispatchToProps = (dispatch) => {
 	  return {
       getBirthdayAnniv         : ( id ) => dispatch( getBirthdayAnniv( id ) ),
+      getDashboardOverall: (page_type) =>
+        dispatch(getDashboardOverall(page_type)),
 	  }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(BirthdayAnniversary);

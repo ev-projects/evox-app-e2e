@@ -108,7 +108,7 @@ const HRTeamAttendanceSummaryPanel = (props) => {
               return (
                 <tr >
                   
-                  <td><Link to={Authenticator.checkRole('supervisor')? global.links.dtr + item.user_id : global.links.profile + item.user_id}>{item.name} </Link> </td>
+                  <td><Link to={Authenticator.scanLevel("HR")? global.links.dtr + item.user_id : global.links.profile + item.user_id}>{item.name} </Link> </td>
                   <td>{item.emp_num}</td>
                   <td>{item.job_title}</td>
                   <td>{moment(item.date).format("MMM D")}</td>

@@ -73,7 +73,7 @@ class DtrRepository implements DtrRepositoryInterface{
                     ]);
                 }
             }
-
+           
             foreach( array_chunk( $dtr_insert_array, 5000 ) as $dtr_insert_array_chunk ){
                 # Creates the Customized Query for Batch inserting the To-be-generated DTRs.
                 $dtr_insert_query = "INSERT INTO dtrs (
@@ -89,7 +89,10 @@ class DtrRepository implements DtrRepositoryInterface{
                                         updated_at              = VALUES(updated_at)";
 
                 # Executes the Batch Insert Query
+
+                
                 DB::insert($dtr_insert_query);
+                
             }
 
 
@@ -2036,8 +2039,9 @@ class DtrRepository implements DtrRepositoryInterface{
      * @param Collection $dtr_collection
      * 
      */
-    public function apply_punch_to_history(string $date, int $user_id, Collection $biometrics_collection)
+    public function apply_punch_to_history(string $date, int $user_id, Collection $biometrics_collection, $request)
     {
+        // dd();
         try {
             DB::beginTransaction();
 
@@ -2078,6 +2082,9 @@ class DtrRepository implements DtrRepositoryInterface{
                             $dtr_punch = $dtr_punch_check;
                             $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
                             $dtr_punch->user_id =  $user_id;
+
+                            $dtr_punch->project_name =  $request->project_name;
+                            $dtr_punch->remarks =  $request->remarks;
                             // $dtr_punch->date =  $date;
                             $dtr_punch->log_action =  $biometrics->getTimeType();
                             $dtr_punch->log_out_type = $biometrics->getLogType();
@@ -2092,6 +2099,10 @@ class DtrRepository implements DtrRepositoryInterface{
                             $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
                             $dtr_punch->user_id =  $user_id;
                             $dtr_punch->date =  $date;
+
+                            $dtr_punch->project_name =  $request->project_name;
+                            $dtr_punch->remarks =  $request->remarks;
+
                             $dtr_punch->log_action =  $biometrics->getTimeType();
                             $dtr_punch->log_in_type = $biometrics->getLogType();
 
@@ -2114,6 +2125,10 @@ class DtrRepository implements DtrRepositoryInterface{
                             $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
                             $dtr_punch->user_id =  $user_id;
                             $dtr_punch->date =  $date;
+
+                            $dtr_punch->project_name =  $request->project_name;
+                            $dtr_punch->remarks =  $request->remarks;
+
                             $dtr_punch->log_action =  $biometrics->getTimeType();
                             $dtr_punch->log_in_type = $biometrics->getLogType();
 
@@ -2135,6 +2150,10 @@ class DtrRepository implements DtrRepositoryInterface{
     
                                     $dtr_punch->user_id =  $user_id;
                                     $dtr_punch->date =  $check_paused->date;
+
+                                    $dtr_punch->project_name =  $request->project_name;
+                                    $dtr_punch->remarks =  $request->remarks;
+
                                     $dtr_punch->log_action =  $biometrics->getTimeType();
                                     $dtr_punch->log_in_type = $biometrics->getLogType();
                                     if ($dtr_punch->time_in != null) {
@@ -2149,6 +2168,10 @@ class DtrRepository implements DtrRepositoryInterface{
                                 $dtr_punch->{$biometrics->getTimeType()} = datetime_to_timestamp($biometrics->CheckTime);
                                 $dtr_punch->user_id =  $user_id;
                                 $dtr_punch->date =  $date;
+
+                                $dtr_punch->project_name =  $request->project_name;
+                                $dtr_punch->remarks =  $request->remarks; 
+
                                 $dtr_punch->log_action =  $biometrics->getTimeType();
                                 $dtr_punch->log_in_type = $biometrics->getLogType();
     
@@ -2201,6 +2224,8 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 $dtr_punch->time_in         =   $punch->start_time;
                 $dtr_punch->time_out        =   $punch->end_time;
+                $dtr_punch->remarks         =   $punch->remarks;
+                $dtr_punch->project_name    =   $punch->project_name;
                 $dtr_punch->user_id         =   $alter_punch_log->user_id;
                 $dtr_punch->date            =   $alter_punch_log->date;
                

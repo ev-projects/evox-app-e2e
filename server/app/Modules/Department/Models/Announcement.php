@@ -30,17 +30,21 @@ class Announcement extends Model
     public function creator()
     {
       if($this->created_by != 0){
-        return User::find($this->created_by);
+        $user = User::find($this->created_by);
+        if($user !=null){
+          return $user; 
+        }
+        if($user ==null){
+            return User::where("id",$this->created_by )->whereNotNull('deleted_at') 
+            ->withTrashed()->first(); 
+          }
       }
        
     }
 
-    public function present_department()
-    {
-        return Department::find($this->present_dep_id);
-    }
 
-    public function announcement_clones_departments($not = true )
+
+    public function announcement_clones_departments_old($not = true )
     {
 
 
@@ -52,6 +56,47 @@ class Announcement extends Model
 
          if(!$not){
             return Department::whereNotIn('id',$dep_collection)->get();
+         }
+
+        return [];
+    }
+
+    public function announcement_clones_departments($not = true )
+    {
+        // dd("here");
+
+         $dep_collection = Announcement::where('announcement_id', $this->id)->pluck('present_dep_id')->toArray();
+
+         if($not){
+
+            return EvoxDepartment::select(
+                ["Id AS id",
+                'Name AS department_name', 
+                'HeadId',
+                'isActive',
+                'CreatedOn AS created_at',
+                'UpdatedOn AS updated_at',
+                'CreatedBy',
+                'LevelId',])
+                ->whereIn('Id',$dep_collection)
+                ->orderBy('Name', 'asc')
+                ->get();
+         }
+
+         if(!$not){
+
+            return EvoxDepartment::select(
+                ["Id AS id",
+                'Name AS department_name', 
+                'HeadId',
+                'isActive',
+                'CreatedOn AS created_at',
+                'UpdatedOn AS updated_at',
+                'CreatedBy',
+                'LevelId',])
+                ->whereNotIn('Id',$dep_collection)
+                ->orderBy('Name', 'asc')
+                ->get();
          }
 
         return [];

@@ -54,8 +54,10 @@
             "app/Helpers/summary_helper.php",
             "app/Helpers/user_helper.php",
             "app/Helpers/validator_helper.php",
+            "app/Helpers/pdo_helper.php",
             "app/Helpers/sql_helper.php",
             "app/Classes/ActivityLogger.php"
+
         ]
     },
     "autoload-dev": {

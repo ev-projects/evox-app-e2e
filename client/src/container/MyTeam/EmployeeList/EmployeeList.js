@@ -14,7 +14,8 @@ import * as Yup from 'yup';
 import PageLoading from "../../PageLoading";
 import { Link } from "react-router-dom"; 
 import moment from 'moment';
-import { fetchMyTeamList, fetchTeamUnderDepartment } from '../../../store/actions/filters/myTeamActions';
+import Formatter from '../../../services/Formatter'
+import { fetchMyTeamList, fetchTeamUnderDepartment, fetchSubDepartmentUnderDepartment } from '../../../store/actions/filters/myTeamActions';
 import { InputDate,InputTime   } from '../../../components/DatePickerComponent/DatePicker.js';
 import Validator from "../../../services/Validator";
 import Authenticator from "../../../services/Authenticator";
@@ -29,7 +30,7 @@ class EmployeeList extends Component {
           filters: {
             status:         1,
             department_id:  this.props.myTeamList?.filters?.department_id,
-            team_id:        this.props.myTeamList?.filters?.team_id,
+            sub_department_id:        this.props.myTeamList?.filters?.sub_department_id,
             job_title:      this.props.myTeamList?.filters?.job_title,
             name:           this.props.myTeamList?.filters?.name,
             page:           this.props.myTeamList?.filters?.page,
@@ -72,6 +73,12 @@ class EmployeeList extends Component {
       this.props.fetchTeamUnderDepartment(this.props.user.id, departmentId);
     }
   }
+
+  departmentSelectedforSub = (departmentId) => {
+    if( departmentId != '' ) {
+      this.props.fetchSubDepartmentUnderDepartment(this.props.user.id, departmentId);
+    }
+  }
   
   render = () => {  
 
@@ -107,16 +114,16 @@ class EmployeeList extends Component {
 
 const MyTeamListFilter = (props) => {
   const { values, handleChange, setFieldValue,handleSubmit } = useFormikContext();
-  const { team_list } = props.props.myTeamList;
-
+  const { team_list, sub_department } = props.props.myTeamList;
+  let dep_list = Formatter.array_to_multiselect_array(props.props.user?.departments_handled, 'department_name', 'id');
     return <React.Fragment> <Row className="filters filter-dtr">  
               <Col size="2"> 
-                <div className="form-group">
+                {/* <div className="form-group">
                     <select
                     className="form-control" 
                       name="department_id"
                       value={values.department_id}
-                      onChange={(e) => { setFieldValue('department_id', e.target.value);  setFieldValue('team_id', '');  props.departmentSelected(e.target.value)}}
+                      onChange={(e) => { setFieldValue('department_id', e.target.value);  setFieldValue('sub_department_id', '');  props.departmentSelectedforSub(e.target.value)}}
                       style={{ display: 'block' }}
                     >
                     <option label="Select Department" value=''/>
@@ -124,7 +131,49 @@ const MyTeamListFilter = (props) => {
                       return <option value={item.id} label={item.department_name} />;
                     })}
                     </select>
+                </div> */}
+
+                <div className="form-group">
+                <Select className="department-filter"
+                        name="department_id"
+                        options={dep_list}
+                        
+                        onChange={(e) => {  
+                          if(e != null){
+                            setFieldValue('department_id', e.value);
+                            props.departmentSelectedforSub(e.value);
+                          }else
+                          {
+                            // props.departmentSelectedforSub('');
+                            setFieldValue('department_id', null);
+                          }
+                          setFieldValue('sub_department_id', '');
+                          
+                          
+                        
+                        }}
+                        placeholder = "Select Department"
+                        isClearable
+                      />
                 </div>
+              
+              </Col> 
+              <Col size="2"> 
+                <div className="form-group">
+                    <select
+                    className="form-control" 
+                      name="sub_department_id"
+                      value={values.sub_department_id}
+                      onChange={handleChange}
+                      style={{ display: 'block' }}
+                    >
+                    <option label="Select Sub Department "/>
+                    {sub_department.map(function(item){
+                      return <option value={item.Id} label={item.Name} />;
+                    })}
+                    </select>
+                </div>
+
               </Col> 
               <Col size="4">
                     <select
@@ -133,28 +182,12 @@ const MyTeamListFilter = (props) => {
                       value={values.status}
                       onChange={handleChange}
                     >
-                      <option label="Select Status..." />
+                      {/* <option label="Select Status..." /> */}
                       <option value="1" label="Active" />
                       <option value="0" label="Inactive" />
                     </select>
               </Col>
-              <Col size="2"> 
-                <div className="form-group">
-                    <select
-                    className="form-control" 
-                      name="team_id"
-                      value={values.team_id}
-                      onChange={handleChange}
-                      style={{ display: 'block' }}
-                    >
-                    <option label="Select Team" />
-                    {team_list.map(function(item){
-                      return <option value={item.id} label={item.name} />;
-                    })}
-                    </select>
-                </div>
-
-              </Col> 
+              
               <Col size="2"> 
                 <div className="form-group">
                     <input type="textfield" className="form-control" variant="primary" placeholder="Enter Job Title" name="job_title" onChange={handleChange} value={values.job_title} />
@@ -233,16 +266,16 @@ const MyTeamListTable = (props) => {
               <tbody>
                 { list.data.map((user) => {
                     return <tr>
-                    <td>{user.emp_num}</td>
-                    <td>{user.full_name}</td>
+                    <td>{user.Employee_Number}</td>
+                    <td>{user.Employee_Name}</td>
                     <td>{user.job_title} </td>
-                    <td>{user.department} </td>
+                    <td>{user.Name} </td> 
                     <td>{user.email} </td>
                     <td className="emp-status"> <Status status={user.is_active} /></td>
                     <td className="actions">
-                      { !Authenticator.checkRole('client') ? 
+                      { !Authenticator.scanLevel(["Client"]) ? 
                         <span>
-                          { Authenticator.check('supervisor', 'view_employee_dtr') &&
+                          {Authenticator.scanFeature("view_employee_dtr") &&
                             <Link to={{
                                 pathname: global.links.dtr + user.id,
                                 resetInitialState: true
@@ -253,7 +286,7 @@ const MyTeamListTable = (props) => {
                             </Link>
                           }
                           
-                          { Authenticator.check('supervisor', 'manage_schedule') &&
+                          { Authenticator.scanFeature("view_employee_schedule") &&
                             <Link to={{
                                     pathname: global.links.schedule_assign_user + user.id
                                   }}
@@ -266,7 +299,7 @@ const MyTeamListTable = (props) => {
                         : 
                         null
                       }
-                      { Authenticator.check('supervisor', ['view_employee_personal_info','view_employee_job_info','view_employee_time_off']) &&
+                      { Authenticator.scanFeature("view_employee_personal_information") &&
                         <Link to={{
                                 pathname: global.links.profile + user.id
                               }}
@@ -275,7 +308,7 @@ const MyTeamListTable = (props) => {
                           <i className="fa fa-info ev-color" aria-hidden="true"></i>
                         </Link>
                       }
-                      { (Authenticator.check('supervisor', 'view_employee_dtr') && user.has_use_multi) &&
+                      { (Authenticator.scanFeature("view_employee_dtr") && user.has_use_multi == "1") &&
                                   <Link to={{
                                       pathname: global.links.dtr_punchlist + user.id,
                                       resetInitialState: true
@@ -300,7 +333,7 @@ const MyTeamListTable = (props) => {
 // Component for the Status Badge
 const Status = (props) => {
     let status = [];
-    switch( props.status ) { 
+    switch( parseInt(props.status) ) { 
       case 1:
           status.push( <Badge variant="success">Active</Badge>);
           break;
@@ -324,6 +357,7 @@ const Status = (props) => {
     return { 
       fetchMyTeamList : ( user_id, params ) => dispatch( fetchMyTeamList( user_id, params ) ),
       fetchTeamUnderDepartment : ( user_id, department_id ) => dispatch( fetchTeamUnderDepartment( user_id, department_id ) ),
+      fetchSubDepartmentUnderDepartment: ( user_id, department_id ) => dispatch( fetchSubDepartmentUnderDepartment( user_id, department_id ) ),
     }
   }
   export default connect(mapStateToProps, mapDispatchToProps)(EmployeeList);

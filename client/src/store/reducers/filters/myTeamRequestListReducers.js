@@ -5,6 +5,7 @@
 const initState = {
     isListLoaded: false,
     isNumbersLoaded: false,
+    stored_departments:{},
     instance: {},
     statusNumbers: null,
     filters : {},
@@ -25,9 +26,27 @@ const myTeamRequestListReducers = (state = initState, action) => {
             return {
                 ...state,
                 instance : action.requestList,
+                // stored_departments : action.requestList.result?.department
                 isListLoaded : true
             };
+
+            
+       
+            
             break;
+            case "FETCH_MY_TEAM_REFRESH_DEP_LIST":
+                // console.log(action.content );
+                    return action.content.result.department.length > 0 ?{
+                        ...state,
+                        // instance : action.content,
+                        stored_departments : action.content.result.department
+                        // isListLoaded : true
+                    }: { ...state };
+    
+                
+           
+                
+                break;
         case "FETCH_MY_TEAM_REQUEST_STATUS_NUMBERS":
             return {
                 ...state,

@@ -22,7 +22,7 @@ class RequestRepository implements RequestRepositoryInterface{
      * @param array (Overtime Post Variables) $data
      * @return Overtime $overtime
      */
-    public function get_status_numbers($data)
+    public function get_status_numbers_old($data)
     {
         DB::beginTransaction();
         try {
@@ -185,9 +185,131 @@ class RequestRepository implements RequestRepositoryInterface{
     }
 
 
+     /**
+     *  Responsible for Storing the Overtime Request
+     * @param array (Overtime Post Variables) $data
+     * @return Overtime $overtime
+     */
+    public function get_status_numbers($data,  $cutoff)
+    {
+        DB::beginTransaction();
+        try {
+            $numbers = array(
+                "pending" => 0,
+                "approved" => 0,
+                "declined" => 0,
+                "canceled" => 0,
+            );
+
+            if(Auth::user()->LevelId === null){
+                return array( 'status_numbers' => $numbers  );
+            }
+
+            if($data->url=='my_requests'){
+                $perpage_count = 10;
+                $request_types = [
+                    'all'                   => 0,
+                    'alteration'            => 1,
+                    'overtime'              => 2,
+                    'rest_day_work'         => 3,
+                    'change_schedule'       => 4,
+                    'alter_logs_punches'    => 5,
+                ];
+
+                if (isset($data['valid_from'])) {
+                    $values = [
+                        'all',
+                        $data['valid_from'] ?? null,
+                        $data['valid_to'] ?? null,
+                        $request_types[$data['request_type']],
+                        Auth::user()->id,
+                        $data['page'],
+                        $perpage_count,
+                    ];
+                    $sp_name = 'EH_SP_MyRequest';
+                } else {
+                    $values = [
+                        'all',
+                        $request_types[$data['request_type']],
+                        Auth::user()->id,
+                        $data['page'],
+                        $perpage_count,
+                    ];
+                    $sp_name = 'EH_SP_OverAll_MyRequest';
+                }
+                $response = call_sp($sp_name, $values);
+
+                if ($response[1]) {
+                    $numbers = [
+                        'approved' => $response[1][0]->statusCount,
+                        'canceled' => $response[1][1]->statusCount,
+                        'declined' => $response[1][2]->statusCount,
+                        'pending'  => $response[1][3]->statusCount,
+                    ];
+                    return array( 'status_numbers' => $numbers  );
+                }
+            }
+
+            $start =null;
+            $end = null;
+            $team_request_sp =  "EH_SP_My_Team_Request";
+            
+
+          if($data->url=='my_team_requests'){
+
+            if(isset($data->valid_from)){
+                $start =$data->valid_from;
+                $end = $data->valid_to;
+
+                $my_team_req =  call_sp( $team_request_sp, [Auth::user()->id, Auth::user()->LevelId
+                ,$start,$end,
+                get_constant('REQUEST_TYPE_SP_RE')[$data->request_type], 
+                $data->status 
+                , $data->department_id,
+                $data->name, 
+                0, 1, 999, $data->departmentselect, $data->showall]);
+            }else{
+                $start =null;
+                $end = null;
+                $team_request_sp =  "EH_SP_overall_My_Team_Request";
+
+                $my_team_req =  call_sp( $team_request_sp, [Auth::user()->id, Auth::user()->LevelId,
+                get_constant('REQUEST_TYPE_SP_RE')[$data->request_type], 
+                $data->status 
+                , $data->department_id,
+                $data->name, 
+                0, 1, 999, $data->departmentselect, $data->showall]);
+            }
+            
+            // dd( $my_team_req);
+            $target = 1;
+            if(count($my_team_req) == 6){$target = 2;}
+            if(is_valid($my_team_req[$target])){
+                $numbers = array(
+                    "pending" => $my_team_req[$target][3]->statusCount,
+                    "approved" => $my_team_req[$target][0]->statusCount,
+                    "declined" => $my_team_req[$target][2]->statusCount,
+                    "canceled" => $my_team_req[$target][1]->statusCount,
+                );
+            }
+            // dd($numbers);
+            return array( 'status_numbers' => $numbers  );
+        }
+
+            return array( 'status_numbers' => $numbers  );
+        } catch (Exception $e) {
+            // dd($e);
+            DB::rollback();
+            log_error($e);
+            dd($e);
+            throw $e;
+        }
+    }
+
+
         public function get_status_numbers_dashboard($data)
         {
-        
+            // dd($data->all());
             try {
                 $numbers = array(
                     "alterlogpending" => 0,
@@ -276,6 +398,40 @@ class RequestRepository implements RequestRepositoryInterface{
                 throw $e;
             }
         
+        }
+
+        public function get_status_numbers_only($user, $cutoff)
+        {
+           
+            try {
+
+
+                    
+                $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,1]);
+                    // dd($EH_SP_Dashboard);
+                $numbers = [
+                    "alterlogpending"   => (string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[3][0]->requestCount : $EH_SP_Dashboard[2][0]->requestCount), 
+                    "overtimepending"   => (string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[3][1]->requestCount : $EH_SP_Dashboard[2][1]->requestCount),
+                    "restdayworkpending"    => (string)(isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ? $EH_SP_Dashboard[3][2]->requestCount : $EH_SP_Dashboard[2][2]->requestCount),
+                    "changeschedulepending" =>  (string)(isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ? $EH_SP_Dashboard[3][3]->requestCount : $EH_SP_Dashboard[2][3]->requestCount),
+
+
+                   
+                    "team_alterlogpending" =>(string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[2][0]->requestCount : 0), 
+                    "team_overtimepending"  =>(string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[2][1]->requestCount : 0),
+                    "team_restdayworkpending"   =>  (string)(isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ? $EH_SP_Dashboard[2][2]->requestCount : 0),
+                    "team_changeschedulepending"    =>  (string)(isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ? $EH_SP_Dashboard[2][3]->requestCount : 0),
+                ];
+
+                return array( 'status_numbers' => $numbers  );
+
+
+            }catch (Exception $e) {
+                dd($e);
+                log_error($e);
+                throw $e;
+            }
+
         }
 
 

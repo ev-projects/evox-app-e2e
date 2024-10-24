@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Modules\Department\Models\Announcement;
 use App\Modules\User\Resources\UserListResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 class AnnouncementStrictResource extends JsonResource
 {
@@ -29,12 +31,10 @@ class AnnouncementStrictResource extends JsonResource
         if($this->created_by !=0){
             $user = $this->creator();
 
-            $department = $user->department()->first();
-
             $owner = [
                 'id' => $user->id,
                 'emp_num' => $user->emp_num,
-                'department' => ( is_valid( $department ) ? $department->getCompleteName() : null ),
+                'department' => ( is_valid( $user->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $user->SubDepartmentID)->first()->Name : null ),
                 'first_name' => $user->first_name,
                 'middle_name' => $user->middle_name,
                 'last_name' => $user->last_name,
@@ -44,15 +44,21 @@ class AnnouncementStrictResource extends JsonResource
                 'full_name' => $user->getFullName(),
             ];
         }
-                
-                $depList = NULL;
-                $depList = $this->set_all == 0 ? DepartmentLabelResource::collection( $this->announcement_clones_departments(!($this->set_exclude == 1))): null;
+
+                $depList = [];
+                if($this->set_all == 0 &&  $this->set_exclude == 0 && $this->dep_id != null ){
+                    $depList = DepartmentLabelResource::collection( Announcement::find($this->id)->announcement_clones_departments());
+                }
                 if($this->set_all == 0 &&  $this->set_exclude == 0 && $this->present_dep_id != null&& $this->announcement_id != null){
                     $depList = DepartmentLabelResource::collection( Announcement::find($this->announcement_id)->announcement_clones_departments());
 
                 }
-                if($this->set_all == 0 &&  $this->set_exclude == 1 && $this->present_dep_id != null && $this->announcement_id != null){
+                if($this->set_all == 0 &&  $this->set_exclude == 1 && $this->present_dep_id != null && $this->announcement_id != null ){
                     $depList = DepartmentLabelResource::collection( Announcement::find($this->announcement_id)->announcement_clones_departments(false));
+                }
+
+                if($this->set_all == 0 &&  $this->set_exclude == 1 && $this->dep_id != null ){
+                    $depList = DepartmentLabelResource::collection( Announcement::find($this->id)->announcement_clones_departments(false));
                 }
 
             $result = null;
@@ -72,10 +78,34 @@ class AnnouncementStrictResource extends JsonResource
                 'on_link' => $this->on_link,
                 'status' => $this->status,
                 'exposure_level' => $this->exposure_level,
-                'dep' => $this->dep_id != null? $this->department() : $this->present_department(),
+                'dep' => $this->dep_id != null? 
+                $department_collection = EvoxDepartment::select(
+                    ["Id AS id",
+                    'Name AS department_name', 
+                    'HeadId',
+                    'isActive',
+                    'CreatedOn AS created_at',
+                    'UpdatedOn AS updated_at',
+                    'CreatedBy',
+                    'LevelId',])
+                 ->orderBy('Name', 'asc')
+                 ->find($this->dep_id)
+                : 
+                $department_collection = EvoxDepartment::select(
+                    ["Id AS id",
+                    'Name AS department_name', 
+                    'HeadId',
+                    'isActive',
+                    'CreatedOn AS created_at',
+                    'UpdatedOn AS updated_at',
+                    'CreatedBy',
+                    'LevelId',])
+                 ->orderBy('Name', 'asc')
+                 ->find($this->present_dep_id)
+                ,
                 'set_all' => $this->set_all,
-                'set_all' => (string)$this->set_all,
                 'set_exclude' => (string)$this->set_exclude,
+                
                 'set_country_all' => $this->set_country_all,
                 'country_id' => $this->country_id,
                 'selectedDepartments'=>  $depList,

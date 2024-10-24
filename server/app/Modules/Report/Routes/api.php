@@ -60,6 +60,10 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
 
         Route::get('new_export', 'ReportController@new_dtr_summary_report_csv_export');
 
+        Route::get('multi_logs', 'ReportController@dtr_multi_logs_summary_report');
+
+        Route::get('multi_logs_export', 'ReportController@dtr_multi_logs_summary_report_csv_export');
+
         Route::get('export_dtr_conflict', 'ReportController@dtr_half_day_mismatch');
 
         Route::get('dtr_conflict', 'ReportController@dtr_conflict_report');
@@ -73,9 +77,10 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
 
         Route::get('export', 'ReportController@export_team_dtr_logs');
     });
-
+    Route::get('timeoff_allocation', 'ReportController@timeoff_allocation_report');
 });
 
 Route::get('summaryreport1', 'ReportController@team_dtr_summaryreportnew');
 
 Route::get('exportsummaryreport1', 'ReportController@newdtrsummaryreportcsvexport');
+

@@ -2,16 +2,18 @@
 
 namespace App\Modules\Request\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Exception;
 
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Modules\Payroll\Models\Dtr;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Modules\Request\Resources\RestDayWorkResource;
+use App\Modules\Request\Http\Requests\RestDayWorkRequest;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Request\Http\Requests\RestDayWorkRequest;
 use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
-use App\Modules\Request\Resources\RestDayWorkResource;
-use Exception;
-use Illuminate\Http\JsonResponse;
 
 class RestDayWorkController extends Controller
 {   
@@ -34,6 +36,14 @@ class RestDayWorkController extends Controller
     public function store(RestDayWorkRequest $request){
         try {
             log_activity( trans('messages.create_rest_day_work_attempt') );
+
+             $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
+
+            if( $dtr_check!= null){
+                if($dtr_check->is_rest_day == 0){
+                    return error_response( "The Date requested/targeted is not a restday, if its a work day make an alter log instead." );
+                }
+            }
             
             $rest_day_work = $this->rest_day_work->store( $request->all() );
 

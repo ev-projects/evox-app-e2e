@@ -2,19 +2,21 @@
 
 namespace App\Modules\Department\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\Controller;
-use App\Modules\Department\Http\Requests\AssignDepartmentHandlersRequest;
-use App\Modules\Department\Models\Department;
-use App\Modules\Department\Resources\DepartmentResource;
-use App\Modules\Department\Repositories\DepartmentRepositoryInterface;
-use App\Modules\Department\Resources\DepartmentListResource;
-use App\Modules\Schedule\Resources\ScheduleResource;
-use App\Modules\User\Repositories\UserRepositoryInterface;
-use App\Modules\User\Resources\UserListResource;
 use Exception;
+
+use Illuminate\Http\Request;
+use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use App\Modules\Department\Models\Department;
+use App\Modules\User\Resources\UserListResource;
+use App\Modules\Schedule\Resources\ScheduleResource;
+use App\Modules\Department\Resources\DepartmentResource;
+use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Modules\Department\Resources\DepartmentListResource;
+use App\Modules\Department\Resources\EvoxDepartmentListResource;
+use App\Modules\Department\Repositories\DepartmentRepositoryInterface;
+use App\Modules\Department\Http\Requests\AssignDepartmentHandlersRequest;
 
 class DepartmentController extends Controller
 {
@@ -36,7 +38,7 @@ class DepartmentController extends Controller
 
             return success_response(
                 trans('messages.all_department_success'), 
-                DepartmentListResource::collection( $department_collection ) 
+                EvoxDepartmentListResource::collection( $department_collection ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -53,7 +55,7 @@ class DepartmentController extends Controller
 
             return success_response(
                 trans('messages.all_department_success'), 
-                DepartmentListResource::collection( $department_collection ) 
+                EvoxDepartmentListResource::collection( $department_collection ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -133,14 +135,15 @@ class DepartmentController extends Controller
      */
     public function department_handlers($id){
         try {
-            $user_collection = $this->department->find( $id )->department_supervisors()
-                                                             ->orderBy('first_name', 'asc')
-                                                             ->orderBy('last_name', 'asc')
-                                                             ->get();
+            // $user_collection = $this->department->find( $id )->department_supervisors()
+            //                                                  ->orderBy('first_name', 'asc')
+            //                                                  ->orderBy('last_name', 'asc')
+            //                                                  ->get();
 
             return success_response(
                 trans('messages.fetch_department_handlers_success'), 
-                UserListResource::collection( $user_collection ) 
+                // UserListResource::collection( $user_collection ) 
+                []
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -154,7 +157,7 @@ class DepartmentController extends Controller
      */
     public function users($id){
         try {
-            $user_collection = $this->department->find( $id )->users()
+            $user_collection = User::where("department_id", $id)
                                                              ->where('is_active', 1)
                                                              ->orderBy('first_name', 'asc')
                                                              ->orderBy('last_name', 'asc')
@@ -176,6 +179,7 @@ class DepartmentController extends Controller
      */
     public function default_schedule($id){
         try {
+            // dd("here");
             $schedule = $this->department->find( $id )->defaultSchedule()->first();
 
             return success_response(

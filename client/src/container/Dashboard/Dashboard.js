@@ -41,10 +41,7 @@ class Dashboard extends Component {
 
   state = {
     run: false,
-    steps: Authenticator.check(
-      ["supervisor", "team_leader"],
-      ["supervisor_access", "team_leader_access"]
-    )
+    steps: (Authenticator.scanLevel(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]))
       ? [
           {
             target: ".newfeatureq",
@@ -215,7 +212,7 @@ class Dashboard extends Component {
         />
         <ContainerWrapper className="full-wrapper">
           <ContainerBody>
-            {Authenticator.check(["employee"], ["employee_access"]) ? (
+            {true ? (
               <EmployeeDashboard {...this.props} />
             ) : null}
             {/* { Authenticator.check(['supervisor', 'team_leader', 'client'], ['supervisor_access', 'team_leader_access', 'client_access']) ? 

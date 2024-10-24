@@ -73,6 +73,14 @@ const lookupListReducers = (state = initState, action) => {
             }
             break
 
+        case "FETCH_FEATURES_LIST_SUCCESS":
+            // console.log(action,action.list)
+            result = {
+                ...state,
+                features  : action.list
+            }
+            break
+
         // Apply the List that was recently fetched
         case "FETCH_TEAMS_HANDLED_LIST_SUCCESS":
             result = {
@@ -80,6 +88,24 @@ const lookupListReducers = (state = initState, action) => {
                 teams_handled  : action.list
             }
             break
+
+        case "FETCH_SUB_DEP_HANDLED_LIST_SUCCESS":
+            // console.log(action);
+            result = {
+                ...state,
+                sub_departments_handled  : action.list
+            }
+            break
+
+            case "FETCH_SUB_DEPARTMENT_LIST_SUCCESS":
+            // console.log(action);
+            result = {
+                ...state,
+                sub_departments_list  : action.list
+            }
+            break
+
+            
 
         // Apply the Team that was recently fetched
         case "FETCH_TEAM_SUCCESS":

@@ -61,33 +61,13 @@ class NavQuickPunch extends Component {
       
       
   }
-  /*componentWillMount= async () => {
-    // $(document).on('click', 'nav-clock-dropdown .dropdown .dropdown-menu', function (e) { // SAVE FOR LATER
-    //   e.stopPropagation();
-    // });
-    // this.props.clearRecentDtrInstance();
-
-    // var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
-    // var to = moment().format("YYYY-MM-DD");
-  
-    // if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
-    //   this.props.getRecentDtr(this.props.user.id, from , to );
-    //   this.props.getMyDtrNotifications( this.props?.user?.id );
-
-    //   this.state.NavHasLoaded = true
-     
-    // }
-  }
-
-  componentWillUnmount() {
-  }*/
 
   render = () => {
     const initialValue = {
       quickpunch : null
     }
 
-  const { recent_dtr } = this.props.dashboard;
+  const { recent_dtr, my_dtr_notifications } = this.props.dashboard;
     
   let showErr =  recent_dtr.length > 0  ? 
                     recent_dtr[1]?.start_datetime === null &  recent_dtr[1]?.time_in !== null &  recent_dtr[1]?.is_rest_day  === 0? true : 
@@ -101,45 +81,23 @@ class NavQuickPunch extends Component {
     if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
       this.props.getRecentDtr(this.props.user.id, from , to );
       this.props.getMyDtrNotifications( this.props?.user?.id );
-      this.props.getIncompleteDtr();
+      //this.props.getIncompleteDtr();
 
       this.state.NavHasLoaded = true
      
     }
 
-    var logsLabel = (this.props.incompletedtr.length > 0) ? "Incomplete Timelogs: " + this.props.incompletedtr.length : "";
+    var incompleteDtrCount = 0;
+    if (my_dtr_notifications.length > 0) {
+      my_dtr_notifications.map(function (data, i) {
+        if (!data.time_in || !data.time_out) incompleteDtrCount++;
+      });
+    }
+    var logsLabel = (incompleteDtrCount > 0) ? "Incomplete Timelogs: " + incompleteDtrCount : "";
 
     return (
       <>
 
-{/* 
-      <li className="nav-item nav-clock-dropdown">
-        <div className=" dropdown" data-toggle="dropdown" >
-
-          <NavPuncher/>  
-          </div>
-            <div  className="dropdown-menu " >     
-                 
-                <div className="card" >
-                  <Tabs
-                      defaultActiveKey="recent"
-                      transition={false}
-                      className="mb-3"
-                    >
-                    <Tab className="tabbish" eventKey="recent" title="RECENT DTR">
-                      <RecentDtrNav/> 
-                    </Tab>
-                    <Tab eventKey="notifications" title="DTR NOTIFICATIONS">
-                      <DtrNotifications/>
-                    </Tab>
-              
-                  </Tabs>       
-                               
-                </div>     
-            </div>
-`
-            
-      </li> */}
 
 
 

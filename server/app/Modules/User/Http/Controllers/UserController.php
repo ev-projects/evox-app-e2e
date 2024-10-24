@@ -5,6 +5,7 @@ namespace App\Modules\User\Http\Controllers;
 use Auth;
 
 use Exception;
+use App\Features;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Exports\DpaListExport;
@@ -23,27 +24,29 @@ use App\Modules\User\Resources\HolidayResource;
 use App\Modules\User\Resources\UserListResource;
 use App\Modules\User\Resources\LeavesListResource;
 use App\Modules\User\Resources\DpaUserListResource;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\Schedule\Resources\ScheduleResource;
 use App\Modules\User\Resources\UserProfileResource; 
 use App\Modules\User\Resources\AnniversaryResources; 
+use App\Modules\User\Resources\UserListBasicResource;
 use App\Modules\Schedule\Resources\ScheduleCollection;
 use App\Modules\User\Http\Requests\GenerateDtrRequest;
 use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\User\Resources\LeaveCreditsListResource;
+use App\Modules\Schedule\Repositories\ScheduleRepository;
+
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
 use App\Modules\User\Resources\EmploymentStatusResource; 
-
 use App\Modules\User\Resources\JobInformationResource;   
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Resources\UserListResourceCollection;
 use App\Modules\User\Resources\PersonalInformationResource;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Schedule\Repositories\ScheduleRepository;
-use App\Modules\Schedule\Resources\ScheduleResourceCollection;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
+use App\Modules\Schedule\Resources\ScheduleResourceCollection;
 use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
 use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
 
@@ -339,11 +342,13 @@ class UserController extends Controller
                 'id' => 'int'
             ]);
 
-            $user_collection = $this->user->get_my_team_list( $id );
+            $user_collection = $this->user->new_get_my_team_list( $id );
+
 
             return success_response(
                 trans('messages.show_my_team_list'), 
-                new UserListResourceCollection( $user_collection ) 
+                // new UserListResourceCollection( $user_collection ) 
+                $user_collection
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -368,20 +373,109 @@ class UserController extends Controller
         }
     }
 
+  
+    public function sub_department_under_department( $id, $department_id ){   
+        try {
+
+                $user = User::find($id);
+                $sub_dep = $user->evox_sub_departments_handled($department_id);
+            return success_response(
+                trans('messages.show_sub_department_list'), 
+                $sub_dep);
+        } catch(Exception $e){
+        
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function sub_department_list(  ){   
+        try {
+
+                    $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+                    [
+                        Null, NULL, 1, NULL, Null
+                    ]
+                );
+
+            // dd($sub_depts);
+            return success_response(
+                trans('messages.show_sub_department_list'), 
+                $sub_depts[0]);
+        } catch(Exception $e){
+        
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function sub_department_allocate( $user_id , Request $request){   
+        try {
+            // dd( $user_id,$request->all());
+
+            $action = $request->sp_action == "enable"? 0 : 1;
+            
+            $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+                    [
+                        $user_id, $request->department_id, 3,  $action, Auth::user()->id
+                    ]
+                );
+
+                $updated_sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+                [
+                    $user_id, NULL, 4, NULL, null
+                ]
+            );
+
+            // dd($sub_depts);
+            // dd($updated_sub_depts);
+            return success_response(
+                "Allocation Department to user", 
+                $updated_sub_depts[0]);
+        } catch(Exception $e){
+        
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    // public function sub_department_is_handled($user_id, $sub_dep_id){   
+    //     try {
+
+    //                 $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+    //                 [
+    //                     $user_id, NULL, 4, NULL
+    //                 ]
+    //             );
+
+
+    //         // dd($sub_depts);
+    //         return success_response(
+    //             trans('messages.show_sub_department_list'), 
+    //             $sub_depts[0]);
+    //     } catch(Exception $e){
+        
+    //         return error_response( trans('messages.error_default'), $e );
+    //     }
+    // }
+
     public function my_team_list_under_selected_department( Request $request,  $id ){   
         try {
-            $dep_list = [];
-
-            
-            if( is_valid( $request->departments )  ){
-
-                        $dep_list = $request->departments ;
+            $dept_ids = [];
+            if( is_valid( $request->departments ) ) {
+                $dept_ids = $request->departments ;
             }
-            $user_collection = Auth::user()->selected_departments_team( $dep_list );
+            $me = auth()->user();
 
+            //$sub_depts = call_sp('EH_SP_Attendance_Summary', [NULL, NULL, implode(',', $dept_ids), NULL, NULL, $me->id, 1, null])[0];
+            $sub_depts = [];
+            if (is_array($dept_ids)) {
+                foreach ($dept_ids as $depat_id) {
+                    $sub_depts = array_merge($sub_depts, $me->evox_sub_departments_handled($depat_id));
+                }
+            } elseif (is_numeric($dept_ids)) {
+                $sub_depts = $me->evox_sub_departments_handled($depat_id);
+            }
             return success_response(
                 trans('messages.show_my_team_list'), 
-                $user_collection
+                $sub_depts
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -426,7 +520,9 @@ class UserController extends Controller
             $user_collection = $this->user->get_dpa_list( $request );
             return success_response(
                 trans('messages.get_dpa_list_success'), 
-                new DpaUserListResourceCollection( $user_collection )
+                // new DpaUserListResourceCollection( $user_collection ),
+
+                $user_collection
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -453,8 +549,9 @@ class UserController extends Controller
     public function export_dpa_list( Request $request ){
 
         $result = $this->dpa_list($request);
+        // dd( $result[0] );
 
-        $this->dpa_list_export->data = $result ;
+        $this->dpa_list_export->data = $result["data"] ;
          return Excel::download( $this->dpa_list_export , 'dtrlogs.csv');
     
     }
@@ -481,6 +578,30 @@ class UserController extends Controller
             $this->user->assign_roles_to_user( $id , $request->get('roles'), );
 
             $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions'), $request->get('roles') );
+
+            
+            return success_response(
+                trans('messages.user_assign_roles_permissions_success'), 
+                new UserProfileResource( $user )
+            );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function assign_level_features( Request $request, $id ){   
+        try {
+            log_activity( trans('messages.user_assign_roles_permissions_attempt') );
+            
+            $this->validate(new Request([
+                'id' => $id
+            ]), [
+                'id' => 'int'
+            ]);
+
+            // dd($request->all());
+
+            $user = $this->user->assign_level_features( $id ,$request->get('features'), $request->get('level') );
 
             
             return success_response(
@@ -626,17 +747,55 @@ class UserController extends Controller
         try {
             log_activity( trans('messages.list_role_attempt') );
             
+            if($role == "supervisor"){
+                $user = User::whereNotNull("LevelId")->whereIn("LevelId",[1,2,3,4,5,6,7,8])->where("is_active", 1)->with("department")->get()->sortBy('first_name');
+                return success_response(
+                    trans('messages.list_role_success'), 
+                    UserListBasicResource::collection( $user, false )
+                );
+            }
+
             $this->validate(new Request([
                 'role' => $role
             ]), [
                 'role' => 'exists:roles,name'
             ]);
+            $user = Auth::user();
+            $response = call_sp("EH_SP_Employee_List",
+            
+            [
+                $user->id, // vishnu user_id
+                is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
+                is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
+                is_valid( request()->get('sub_department_id') ) ? request()->get('sub_department_id'): null,
+                1, // active
+                is_valid( request()->get('name') ) ? request()->get('name'): null, // name
+                is_valid( request()->get('job_title') ) ? request()->get('job_title'): null, // job_title
+                is_valid( request()->get('page') ) ? request()->get('page'): 1,
+                 99999,
+                1 
+                
+                ]
+
+                
+            ); 
+            // dd($response);
+            $result = $response[2] ? array_map(function($item) {
+                // dd($item);
+                return (object) array(
+                    'id' => $item->id,
+                    'full_name' => $item->Employee_Name,
+                   
+                );
+            }, $response[2]): []
+        ;
             
             return success_response(
                 trans('messages.list_role_success'), 
-                UserListResource::collection( $this->user->list_via_role( $role ), false )
+                $result
             );
         } catch(Exception $e){
+            dd($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
@@ -732,6 +891,75 @@ class UserController extends Controller
         }
     }
 
+      # This function returns user role
+      public function get_user_sub_department_handled( $user_id ){   
+        try {
+            $user = User::find($user_id);
+            
+
+            $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
+                                    [
+                                        $user->id, NULL, 4, NULL , null
+                                    ]
+                                );
+
+                // dd($sub_depts);
+
+            log_activity( trans('messages.list_role_attempt') );
+                    return success_response(
+                        trans('messages.list_role_success'),  
+                        $sub_depts[0]
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+     # This function returns user role
+     public function get_user_feature( $user_id ){   
+        try {
+            $user = User::find($user_id);
+            log_activity( trans('messages.list_role_attempt') );
+
+            $feature_all_list = [];
+            if(is_valid($user->LevelId)){
+                $feature_all_list = array_merge($user->userFeatures(), []);
+            }
+
+                    return success_response(
+                        trans('messages.list_role_success'),  
+                        [ 
+                            'level' => [
+                                            "level_id"=>$user->LevelId, 
+                                            "level_type"=>$user->level_type()
+                                        ],
+                            'features' => is_valid($user->LevelId) ? $feature_all_list : [],
+                        ]
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+     # This function returns user role
+     public function get_user_role_feature( $user_id ){   
+        try {
+            $user = User::find($user_id);
+            log_activity( trans('messages.list_role_attempt') );
+                    return success_response(
+                        trans('messages.list_role_success'),  
+                        [ 
+                            'roles' => $user->roles->pluck('name'),
+                            'permissions' => $user->permissions->pluck('name'),
+                        ]
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     # This function returns roles
     public function get_roles( ){   
         try {
@@ -739,6 +967,22 @@ class UserController extends Controller
                     return success_response(
                         trans('messages.list_role_success'),  
                         RoleResource::collection( Role::with('permissions')->get() ) 
+                    );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+      # This function returns roles
+      public function get_features( ){   
+        try {
+            log_activity( trans('messages.list_role_attempt') );
+                    return success_response(
+                        trans('messages.list_role_success'),  
+                        Features::all()->toArray()
+                            
+                        
                     );
 
         } catch(Exception $e){

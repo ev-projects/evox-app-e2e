@@ -47,6 +47,7 @@
     overallrequest                :    "/app/team/overallrequest",
     team_list                       :  "/app/team/TeamList",
     dtr_summary                     :  "/app/team/DtrSummary",
+    dtr_multi_logs_summary          :  "/app/team/DtrMultiLogsSummary",
     dtr_conflict                    :  "/app/team/DtrConflict",
     dtr_summary_new                 :  "/app/team/DtrSummaryTemp",
     dtr_logs                        :  "/app/team/DtrLogs", 
@@ -77,11 +78,13 @@
     assign_department_handlers      :  "/app/admin/AssignDepartmentHandlers/",
     assign_employees_client          :  "/app/admin/AssignClientHandlers/",
     assign_employee_supervisors     :  "/app/admin/AssignEmployeeSupervisors/",
+    assign_sub_department           :  "/app/admin/AssignSubDepartment/",
     sync_biometrics                 :  "/app/admin/SyncBiometrics/",
     sync_bhr_leaves                 :  "/app/admin/SyncBhrLeaves/",
     sync_utc_adjustment             : "/app/admin/SyncUTCAdjustment/",
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
     assign_role_permission          :  "/app/admin/AssignRolePermission/",
+    assign_feature          :  "/app/admin/AssignFeature/",
     register_user                   :  "/app/admin/RegisterUser/",
     manage_change_logs              :  "/app/admin/ManageChangeLogs/",
 
@@ -111,6 +114,9 @@
     // OPS Links
     ops_schedule_form               :  "/app/ops/ManageOpsSchedules/",
     ops_schedule_list               :  "/app/ops/ManageOpsSchedulesList/",
+
+    // Report
+    view_report                     :   "/app/viewreport/"
    
 };
 

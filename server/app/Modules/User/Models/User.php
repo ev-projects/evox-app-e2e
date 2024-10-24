@@ -2,31 +2,37 @@
 
 namespace App\Modules\User\Models;
 
-use App\Modules\Team\Models\Team;
-use App\Modules\Department\Models\Department;
-use App\Modules\Payroll\Models\Dtr;
-use App\Modules\Payroll\Models\DtrPunchHistory;
-use App\Modules\Payroll\Models\PayrollCutoff;
-use App\Modules\Schedule\Models\Schedule;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Permission\Traits\HasRoles;
-use Spatie\Permission\Traits\HasPermissions;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-
-
-use App\Modules\Request\Models\ChangeSchedule;
-use App\Modules\Request\Models\Overtime;
-use App\Modules\Request\Models\RestDayWork;
-use App\Modules\Request\Models\AlterLog;
-use App\Modules\Request\Models\WorkFromHome;
-use Illuminate\Database\Eloquent\Collection;
-use Carbon\Carbon;
 use Auth;
+use App\Features;
+use Carbon\Carbon;
+use App\EvoxLevels;
+use App\UserFeatures;
+use App\RoleLevelFeatures;
+use App\Modules\Team\Models\Team;
+use Illuminate\Support\Facades\DB;
+use App\Modules\Payroll\Models\Dtr;
+use Spatie\Permission\Traits\HasRoles;
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\Overtime;
+use Illuminate\Notifications\Notifiable;
+use App\Modules\Schedule\Models\Schedule;
+use App\Modules\Request\Models\RestDayWork;
+use Spatie\Activitylog\Traits\LogsActivity;
+use App\Modules\Request\Models\WorkFromHome;
+
+
+use Illuminate\Database\Eloquent\Collection;
+use Spatie\Permission\Traits\HasPermissions;
+use App\Modules\Department\Models\Department;
+use App\Modules\Payroll\Models\PayrollCutoff;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Request\Models\ChangeSchedule;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Modules\Payroll\Models\DtrPunchHistory;
+use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -103,16 +109,7 @@ class User extends Authenticatable implements JWTSubject
         return "20".$this->emp_num;
     }
     
-    public function personal(){
-        return [    
-            "first_name" => $this->first_name , 
-            "middle_name" => $this->middle_name , 
-            "last_name" => $this->last_name , 
-            "emp_num" => $this->emp_num , 
-            "email" => $this->email , 
-            "department" => $this->department()->first()->department_name   
-        ];
-    }
+ 
 
     public function job_description(){
         return [    
@@ -126,7 +123,8 @@ class User extends Authenticatable implements JWTSubject
     public function getUserInfo()
     {               $offset = $this->country_timezone_to_offset();
         return [    "full_name" => $this->getFullName() , 
-                    "department" => $this->department()->first()->department_name ?? '',
+        
+                    "department" =>  (is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
 
 
                     /// SEPARATE
@@ -150,6 +148,58 @@ class User extends Authenticatable implements JWTSubject
     {            
         return $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id');
     }
+
+
+    # Fetch the User's Supervisors
+    public function direct_supervisor()
+    {           
+
+      $response =  call_sp("EH_SP_Direct_Supervisor", [$this->id ]);
+          $result = array(
+              "query" =>  $response ?? [],
+          );
+
+        if(is_valid( $result["query"][0])){
+            if(is_valid( $result["query"][0][0])){
+                return User::find($result["query"][0][0]->SupervisorId);
+            }
+        }
+
+        return [];
+    }
+
+    # Fetch the User's Supervisors
+    public function direct_department_id()
+    {           
+
+        if(is_valid($this->SubDepartmentID)){
+                $sub = EvoxSubDepartment::find($this->SubDepartmentID);
+                // $sub = EvoxSubDepartment::find($this->SubDepartmentID);
+                return $sub->DepartmentId;
+        }
+  
+
+        return null;
+    }
+  
+    # Fetch the User's Supervisors ///NOTE ACCEPT BOTH//
+    public function direct_supervisor_temp()
+    {          
+   
+        $response =  call_sp("EH_SP_Direct_Supervisor", [$this->id ]);
+        $result = array(
+            "query" =>  $response ?? [],
+        );
+
+        if(is_valid( $result["query"][0])){
+            if(is_valid( $result["query"][0][0])){
+                return User::find($result["query"][0][0]->SupervisorId);
+            }
+        }
+
+        return [];
+    }
+      
     
     # Fetch the User's Supervisee
     public function supervisee()
@@ -208,10 +258,10 @@ class User extends Authenticatable implements JWTSubject
         return $offset_string->format('P');
     }
 
-    public function department_schedule_active()
-    {
-        return $this->department()->first()->departments_on_schedule_is_active();
-    }
+    // public function deparPPtment_schedule_active()
+    // {
+    //     return $this->department->first()->departments_on_schedule_is_active();
+    // }
 
 
      # Fetch  all of the User's Schedule 
@@ -387,201 +437,386 @@ class User extends Authenticatable implements JWTSubject
 
         if( is_valid( $start_date )){
 
-            return $this->hasMany(DtrPunchHistory::class)->select('dtr_collective_punch_history.date as date', 'dtr_collective_punch_history.user_id as user_id',
-            'dtr_collective_punch_history.time_in', 
-            'dtr_collective_punch_history.time_out', 'dtr_collective_punch_history.log_in_type', 'dtr_collective_punch_history.log_out_type', 
-            'dtr_collective_punch.duration')
-            ->join('dtr_collective_punch','dtr_collective_punch_history.id','=','dtr_collective_punch.dtr_collective_punch_history_id')
-            ->where('dtr_collective_punch_history.date','=',$start_date);
+            return $this->hasMany(DtrPunchHistory::class)->select('dtr_collective_punch_history_new.date as date', 'dtr_collective_punch_history_new.user_id as user_id',
+            'dtr_collective_punch_history_new.time_in', 
+            'dtr_collective_punch_history_new.time_out', 'dtr_collective_punch_history_new.log_in_type', 'dtr_collective_punch_history_new.log_out_type', 
+            'dtr_collective_punch_new.duration', 'dtr_collective_punch_history_new.project_name', 'dtr_collective_punch_history_new.remarks' )
+            ->join('dtr_collective_punch_new','dtr_collective_punch_history_new.id','=','dtr_collective_punch_new.dtr_collective_punch_history_id')
+            ->where('dtr_collective_punch_history_new.date','=',$start_date);
         }
        }
 
     public function requests_list($request,$filter = array()){
-        $column = array('id','status','created_at','created_by','updated_by');
-
-        $change_schedules    =   DB::table('change_schedules')
-        ->Leftjoin('users as a', 'a.id', '=', 'change_schedules.user_id')
-        ->Leftjoin('users as b', 'b.id', '=', 'change_schedules.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
-        ->select(  
-                    'change_schedules.id',
-                    'change_schedules.status',
-                    'change_schedules.created_at',
-                    'change_schedules.employee_note',
-                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
-                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'),
-                    'change_schedules.schedule_id as fourth_column',
-                    DB::raw('NULL fifth_column'),
-                    DB::raw('CONCAT(valid_from," ", valid_to) As date_requested '),
-                    DB::raw('"change_schedules" as table_name'),
-                    'c.department_name',
-                    'change_schedules.updated_at');
-
-        $overtimes    =   DB::table('overtimes')
-        ->Leftjoin('users as a', 'a.id', '=', 'overtimes.user_id')
-        ->Leftjoin('users as b', 'b.id', '=', 'overtimes.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
-        ->select(  
-                    'overtimes.id',
-                    'overtimes.status',
-                    'overtimes.created_at',
-                    'overtimes.employee_note',
-                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'),  
-                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
-                    'overtimes.amount as fourth_column',
-                    DB::raw('overtimes.type fifth_column'),
-                    DB::raw('overtimes.date As date_requested'),
-                    DB::raw('"overtimes"  as table_name'),
-                    'c.department_name',
-                    'overtimes.updated_at');
-
-        $rest_day_works    =   DB::table('rest_day_works')
-        ->Leftjoin('users as a', 'a.id', '=', 'rest_day_works.user_id')
-        ->Leftjoin('users as b', 'b.id', '=', 'rest_day_works.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
-        ->select(  
-                    'rest_day_works.id',
-                    'rest_day_works.status',
-                    'rest_day_works.created_at',
-                    'rest_day_works.employee_note',
-                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
-                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
-                    'rest_day_works.start_time as fourth_column',
-                    DB::raw('rest_day_works.end_time fifth_column'),
-                    DB::raw('rest_day_works.date As date_requested'),
-                    DB::raw('"rest_day_works"  as table_name'),
-                    'c.department_name',
-                    'rest_day_works.updated_at');
-
-        $alter_logs    =   DB::table('alter_logs')
-        ->Leftjoin('users as a', 'a.id', '=', 'alter_logs.user_id')
-        ->Leftjoin('users as b', 'b.id', '=', 'alter_logs.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
-        ->select(  
-                    'alter_logs.id',
-                    'alter_logs.status',
-                    'alter_logs.created_at',
-                    'alter_logs.employee_note',
-                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
-                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
-                    'alter_logs.id As fourth_column',
-                    DB::raw('NULL fifth_column'),
-                    DB::raw('alter_logs.date As date_requested'),
-                    DB::raw('"alter_logs"  as table_name'),
-                    'c.department_name',
-                    'alter_logs.updated_at');
-                    $alter_logs_punches    =   DB::table('alter_log_punches')
-        ->Leftjoin('users as a', 'a.id', '=', 'alter_log_punches.user_id')
-        ->Leftjoin('users as b', 'b.id', '=', 'alter_log_punches.updated_by')
-        ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
-        ->select(  
-                    'alter_log_punches.id',
-                    'alter_log_punches.status',
-                    'alter_log_punches.created_at',
-                    'alter_log_punches.employee_note',
-                    DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
-                    DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
-                    'alter_log_punches.id As fourth_column',
-                    DB::raw('NULL fifth_column'),
-                    DB::raw('alter_log_punches.date As date_requested'),
-                    DB::raw('"alter_log_punches"  as table_name'),
-                    'c.department_name',
-                    'alter_log_punches.updated_at');
-
-        #Team or Individual Request
-        if($filter['url']=='my_team_requests'){
-            $id = auth()->user()->users_handled()->pluck('id')->toArray();
-
-            $change_schedules->whereIn('change_schedules.user_id',$id);
-            $overtimes       ->whereIn('overtimes.user_id',$id);
-            $rest_day_works  ->whereIn('rest_day_works.user_id',$id);
-            $alter_logs      ->whereIn('alter_logs.user_id',$id);
-            $alter_logs_punches ->whereIn('alter_log_punches.user_id',$id);
-        }elseif($filter['url']=='my_requests'){
+        if ($filter['url'] == 'my_requests') {
             $id = auth()->user()->id;
+            $perpage_count = 10;
+            $request_types = [
+                'all'                   => 0,
+                'alteration'            => 1,
+                'overtime'              => 2,
+                'rest_day_work'         => 3,
+                'change_schedule'       => 4,
+                'alter_logs_punches'    => 5,
+            ];
 
-            $change_schedules->where('change_schedules.user_id',$id);
-            $overtimes       ->where('overtimes.user_id',$id);
-            $rest_day_works  ->where('rest_day_works.user_id',$id);
-            $alter_logs      ->where('alter_logs.user_id',$id);
-            $alter_logs_punches ->where('alter_log_punches.user_id',$id);
-        }
-        
-        # Status
-        if(isset($filter['status'])){
-            $change_schedules->where('change_schedules.status',$filter['status']);
-            $overtimes       ->where('overtimes.status',$filter['status']);
-            $rest_day_works  ->where('rest_day_works.status',$filter['status']);
-            $alter_logs      ->where('alter_logs.status',$filter['status']);
-            $alter_logs_punches ->where('alter_log_punches.status',$filter['status']);
-        }
-
-         # Department Filter
-         if(isset($filter['department_id'])){
-            $change_schedules->where('a.department_id', $filter['department_id']);
-            $overtimes       ->where('a.department_id', $filter['department_id']);
-            $rest_day_works  ->where('a.department_id', $filter['department_id']);
-            $alter_logs      ->where('a.department_id', $filter['department_id']);
-            $alter_logs_punches ->where('a.department_id', $filter['department_id']);
-        }
-
-        # Name Filter
-        if(isset($filter['name'])){
-            $change_schedules->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
-            $overtimes       ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
-            $rest_day_works  ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
-            $alter_logs      ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
-            $alter_logs_punches ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
-        }
-        
-        
-
-        # Date Filter
-        if(isset($filter['valid_from'])&&isset($filter['valid_to'])){
-            $change_schedules->where(function($query) use ($filter) {
-                $query->whereBetween("valid_from", array($filter['valid_from'], $filter['valid_to'])); 
-                $query->orwhereBetween("valid_to", array($filter['valid_from'], $filter['valid_to'])); 
-            }); 
-
-            $rest_day_works ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
-            $overtimes      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
-            $alter_logs     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
-            $alter_logs_punches     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
-        }
-        
-        if(isset($filter['request_type'])){
-            if($filter['request_type']=='all'){
-                $query = $alter_logs->union($change_schedules)
-                ->union($overtimes)
-                ->union($rest_day_works)
-                ->union($alter_logs_punches)
-                ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
-            }elseif($filter['request_type']=='alteration'){
-                $query = $alter_logs->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
-            }elseif($filter['request_type']=='overtime'){
-                $query = $overtimes->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
-            }elseif($filter['request_type']=='rest_day_work'){
-                $query = $rest_day_works->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
-            }elseif($filter['request_type']=='change_schedule'){
-                $query = $change_schedules->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
-            }elseif($filter['request_type']=='alter_logs_punches'){
-                $query = $alter_logs_punches->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+            if (isset($filter['valid_from'])) {
+                $values = [
+                    $filter['status'],
+                    $filter['valid_from'],
+                    $filter['valid_to'],
+                    $request_types[$filter['request_type']],
+                    $id,
+                    $filter['page'],
+                    $perpage_count,
+                ];
+                $sp_name = 'EH_SP_MyRequest';
+            } else {
+                $values = [
+                    $filter['status'],
+                    $request_types[$filter['request_type']],
+                    $id,
+                    $filter['page'],
+                    $perpage_count,
+                ];
+                $sp_name = 'EH_SP_OverAll_MyRequest';
             }
-               
+            $response = call_sp($sp_name, $values);
+
+            $result['data'] = array(
+                "query" =>  $response[0] ?? [],
+            );
+            $result['pagination'] = $response[2][0];
+
+            return $result;
         }
+        else if ($filter['url'] == 'my_team_requests') {
+            $id = auth()->user()->id;
+            $request_types = [
+                'all'                   => 0,
+                'alteration'            => 1,
+                'overtime'              => 2,
+                'rest_day_work'         => 3,
+                'change_schedule'       => 4,
+                'alter_logs_punches'    => 5,
+            ];
+            $perpage_count = 10;
+
+            // if( $filter['use_filter'] == 1 && $filter['departmentselect'] == 1){
+            //     $filter['departmentselect'] = 0;
+            // }
+            // dump($filter['departmentselect']);
+          
+            if(isset($filter['valid_from'])){
+                $response =  call_sp("EH_SP_My_Team_Request", [
+                    $this->id,
+                    $this->LevelId,
+                    $filter['valid_from'],
+                    $filter['valid_to'],
+                    $request_types[$filter['request_type']],
+                    $filter['status'],
+                    $filter['department_id'],
+                    $filter['name'] , 
+                    0, $filter['page'], $perpage_count, $filter['departmentselect']!= null  ? $filter['departmentselect'] : 0,$filter['showall']!= null  ? $filter['showall'] : 0]);
+    
+            }else{
+                $response =  call_sp("EH_SP_overall_My_Team_Request", [
+                    $this->id,
+                    $this->LevelId,
+                    $request_types[$filter['request_type']],
+                    $filter['status'],
+                    $filter['department_id'],
+                    $filter['name'] , 
+                    1, // change to 1
+                    $filter['page'], 
+                    $perpage_count, 
+                    $filter['departmentselect']!= null  ? $filter['departmentselect'] : 0,$filter['showall']!= null  ? $filter['showall'] : 0
+                ]);
+            }
+
+            
+         
+                $collection =  [];
+            $result = ($filter['departmentselect'] == 1 ? $response[4] : $response[3]) ? array_map(function($item) {
+                    return (object) array(
+                        'id' => $item->T_id,
+                        'status' => $item->T_status,
+                        'created_at' => $item->T_created_at,
+                        'employee_note' => $item->T_employee_note,
+                        'created_by' => $item->T_created_by,
+                        'updated_by' => $item->T_updated_by,
+                        'fourth_column' => $item->T_fourth_column,
+                        'fifth_column' => $item->T_fifth_column,
+                        'date_requested' => $item->T_date_requested,
+                        'table_name' => $item->T_table_name,
+                        'UV_DepartmentName' => $item->T_userDepartmentName,
+                        'department_name' => $item->T_userDepartmentName,
+                        'updated_at' => $item->T_updated_at,
+                    );
+                },  $filter['departmentselect'] == 1 ? $response[4] : $response[3]): [];
+
+            if($filter['departmentselect'] == 1){
+                $resultdepartment = $response[0] ? array_map(function($item) {
+
+                    return (object) array(
+                        'id' => $item->Id,
+                        'DepartmentName' => $item->DepartmentName,
+                    );
+                }, $response[0]): [];
+            }
+            
+            // $resultstatus =  ($filter['departmentselect'] == 1 ? $response[2] : $response[1]) ? array_map(function($item) {
+           
+            //     return (object) array(
+            //         'status' => $item->status,
+            //         'count' => $item->statusCount,
+            //     );
+
+            // }, $filter['departmentselect'] == 1 ? $response[2] : $response[1]): [];
+
+            if ($filter['departmentselect'] == 1 ? $response[2] : $response[1]) {
+                $numbers = [
+                    'approved' => $filter['departmentselect'] == 1 ? $response[2][0]->statusCount : $response[1][0]->statusCount,
+                    'canceled' => $filter['departmentselect'] == 1 ? $response[2][1]->statusCount : $response[1][1]->statusCount,
+                    'declined' => $filter['departmentselect'] == 1 ? $response[2][2]->statusCount : $response[1][2]->statusCount,
+                    'pending'  => $filter['departmentselect'] == 1 ? $response[2][3]->statusCount : $response[1][3]->statusCount,
+                ];
+            }
+                       // dd($result ,$response[0],$response[2],$response[3]);
+            $paginate =  $filter['departmentselect'] == 1 ? $response[3][0] : $response[2][0];
+       
+            $collection["data"] = [ "query" =>$result];
+            if($filter['departmentselect'] == 1){
+                $collection["Department"] = $resultdepartment;
+            }else{
+                $collection["Department"] = [];
+            }
+
+            $collection["numbers"] = $numbers;
+
+            $collection["pagination"] = [
+                                            'total' => (int) $paginate->TotalCount,
+                                            'count' => count( $collection["data"]),
+                                            'per_page' =>  (int) $paginate->Total_Count_Per_Page,
+                                            'current_page' => (int) $paginate->CurrentPage,
+                                            'last_page' => ceil($paginate->TotalCount /  $perpage_count)
+                                        ];
+            
+
+                                        // if( ($paginate->TotalCount % $perpage_count) > 0 
+                                        // && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
+                                        //     $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
+                                        // }
+                                        // dd($collection["data"]);
+            return   $collection;
+        }
+        else {
+            $column = array('id','status','created_at','created_by','updated_by');
+
+            $change_schedules    =   DB::table('change_schedules')
+            ->Leftjoin('users as a', 'a.id', '=', 'change_schedules.user_id')
+            ->Leftjoin('users as b', 'b.id', '=', 'change_schedules.updated_by')
+            ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
+            ->select(  
+                        'change_schedules.id',
+                        'change_schedules.status',
+                        'change_schedules.created_at',
+                        'change_schedules.employee_note',
+                        DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
+                        DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'),
+                        'change_schedules.schedule_id as fourth_column',
+                        DB::raw('NULL fifth_column'),
+                        DB::raw('CONCAT(valid_from," ", valid_to) As date_requested '),
+                        DB::raw('"change_schedules" as table_name'),
+                        'c.department_name',
+                        'change_schedules.updated_at');
+
+            $overtimes    =   DB::table('overtimes')
+            ->Leftjoin('users as a', 'a.id', '=', 'overtimes.user_id')
+            ->Leftjoin('users as b', 'b.id', '=', 'overtimes.updated_by')
+            ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
+            ->select(  
+                        'overtimes.id',
+                        'overtimes.status',
+                        'overtimes.created_at',
+                        'overtimes.employee_note',
+                        DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'),  
+                        DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                        'overtimes.amount as fourth_column',
+                        DB::raw('overtimes.type fifth_column'),
+                        DB::raw('overtimes.date As date_requested'),
+                        DB::raw('"overtimes"  as table_name'),
+                        'c.department_name',
+                        'overtimes.updated_at');
+
+            $rest_day_works    =   DB::table('rest_day_works')
+            ->Leftjoin('users as a', 'a.id', '=', 'rest_day_works.user_id')
+            ->Leftjoin('users as b', 'b.id', '=', 'rest_day_works.updated_by')
+            ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
+            ->select(  
+                        'rest_day_works.id',
+                        'rest_day_works.status',
+                        'rest_day_works.created_at',
+                        'rest_day_works.employee_note',
+                        DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
+                        DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                        'rest_day_works.start_time as fourth_column',
+                        DB::raw('rest_day_works.end_time fifth_column'),
+                        DB::raw('rest_day_works.date As date_requested'),
+                        DB::raw('"rest_day_works"  as table_name'),
+                        'c.department_name',
+                        'rest_day_works.updated_at');
+
+            $alter_logs    =   DB::table('alter_logs')
+            ->Leftjoin('users as a', 'a.id', '=', 'alter_logs.user_id')
+            ->Leftjoin('users as b', 'b.id', '=', 'alter_logs.updated_by')
+            ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
+            ->select(  
+                        'alter_logs.id',
+                        'alter_logs.status',
+                        'alter_logs.created_at',
+                        'alter_logs.employee_note',
+                        DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
+                        DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                        'alter_logs.id As fourth_column',
+                        DB::raw('NULL fifth_column'),
+                        DB::raw('alter_logs.date As date_requested'),
+                        DB::raw('"alter_logs"  as table_name'),
+                        'c.department_name',
+                        'alter_logs.updated_at');
+                        $alter_logs_punches    =   DB::table('alter_log_punches')
+            ->Leftjoin('users as a', 'a.id', '=', 'alter_log_punches.user_id')
+            ->Leftjoin('users as b', 'b.id', '=', 'alter_log_punches.updated_by')
+            ->Leftjoin('departments as c', 'c.id', '=', 'a.department_id')
+            ->select(  
+                        'alter_log_punches.id',
+                        'alter_log_punches.status',
+                        'alter_log_punches.created_at',
+                        'alter_log_punches.employee_note',
+                        DB::raw('CONCAT(a.first_name," ", a.last_name) as created_by'), 
+                        DB::raw('CONCAT(b.first_name," ", b.last_name) as updated_by'), 
+                        'alter_log_punches.id As fourth_column',
+                        DB::raw('NULL fifth_column'),
+                        DB::raw('alter_log_punches.date As date_requested'),
+                        DB::raw('"alter_log_punches"  as table_name'),
+                        'c.department_name',
+                        'alter_log_punches.updated_at');
+
+            #Team or Individual Request
+            if($filter['url']=='my_team_requests'){
+                $id = auth()->user()->users_handled()->pluck('id')->toArray();
+
+                
+                $change_schedules->whereIn('change_schedules.user_id',$id);
+                $overtimes       ->whereIn('overtimes.user_id',$id);
+                $rest_day_works  ->whereIn('rest_day_works.user_id',$id);
+                $alter_logs      ->whereIn('alter_logs.user_id',$id);
+                $alter_logs_punches ->whereIn('alter_log_punches.user_id',$id);
+
+
+                // dd($overtimes->where("`overtimes`.`updated_at`", null));
+                $features = $this->userFeatures();
+                if(!in_array("manage_alter_log_request",$features)){
+                    $alter_logs      ->where("alter_logs.status", null);
+                    // $alter_logs_punches ->where("`alter_logs_punches`.`user_id`", null)
+                }
+                if(!in_array("manage_change_schedules_request",$features)){
+                    $change_schedules->where("change_schedules.status", null);
+                }
+                if(!in_array("manage_rest_day_work_request",$features)){
+                    $rest_day_works  ->where("rest_day_works.status", null);
+                }
+                if(!in_array("manage_overtime_request",$features)){
+                    $overtimes       ->where("overtimes.status", null);
+                }
+                
+
+            }elseif($filter['url']=='my_requests'){
+                $id = auth()->user()->id;
+
+                $change_schedules->where('change_schedules.user_id',$id);
+                $overtimes       ->where('overtimes.user_id',$id);
+                $rest_day_works  ->where('rest_day_works.user_id',$id);
+                $alter_logs      ->where('alter_logs.user_id',$id);
+                $alter_logs_punches ->where('alter_log_punches.user_id',$id);
+            }
+            
+            # Status
+            if(isset($filter['status'])){
+                $change_schedules->where('change_schedules.status',$filter['status']);
+                $overtimes       ->where('overtimes.status',$filter['status']);
+                $rest_day_works  ->where('rest_day_works.status',$filter['status']);
+                $alter_logs      ->where('alter_logs.status',$filter['status']);
+                $alter_logs_punches ->where('alter_log_punches.status',$filter['status']);
+            }
+            
+             # Department Filter
+             if(isset($filter['department_id'])){
+                $change_schedules->where('a.department_id', $filter['department_id']);
+                $overtimes       ->where('a.department_id', $filter['department_id']);
+                $rest_day_works  ->where('a.department_id', $filter['department_id']);
+                $alter_logs      ->where('a.department_id', $filter['department_id']);
+                $alter_logs_punches ->where('a.department_id', $filter['department_id']);
+            }
+
+            # Name Filter
+            if(isset($filter['name'])){
+                $change_schedules->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+                $overtimes       ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+                $rest_day_works  ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+                $alter_logs      ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+                $alter_logs_punches ->whereRaw('(a.first_name like "%' . $filter['name']. '%" OR a.last_name like "%' . $filter['name']. '%" OR CONCAT(a.first_name, " ", a.last_name) LIKE "%' . $filter['name']. '%")'); 
+            }
+            
+            
+
+            # Date Filter
+            if(isset($filter['valid_from'])&&isset($filter['valid_to'])){
+                $change_schedules->where(function($query) use ($filter) {
+                    $query->whereBetween("valid_from", array($filter['valid_from'], $filter['valid_to'])); 
+                    $query->orwhereBetween("valid_to", array($filter['valid_from'], $filter['valid_to'])); 
+                }); 
+
+                $rest_day_works ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
+                $overtimes      ->whereBetween("date", array($filter['valid_from'], $filter['valid_to'])); 
+                $alter_logs     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
+                $alter_logs_punches     ->whereBetween("date", array($filter['valid_from'], $filter['valid_to']));
+            }
+            
+            if(isset($filter['request_type'])){
+                if($filter['request_type']=='all'){
+                    
+                    $query = $alter_logs->union($change_schedules)
+                    ->union($overtimes)
+                    ->union($rest_day_works)
+                    ->union($alter_logs_punches)
+                    ->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+                }elseif($filter['request_type']=='alteration'){
+                    $query = $alter_logs->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+                }elseif($filter['request_type']=='overtime'){
+                    $query = $overtimes->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+                }elseif($filter['request_type']=='rest_day_work'){
+                    $query = $rest_day_works->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+                }elseif($filter['request_type']=='change_schedule'){
+                    $query = $change_schedules->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+                }elseif($filter['request_type']=='alter_logs_punches'){
+                    $query = $alter_logs_punches->orderByRaw("FIELD(status, 'pending', 'approved', 'canceled','declined') ");
+                }
+                
+            }
+            // dump("here2");
+            if($filter['status']=='pending'){
+                $query->orderBy('created_at','desc');
+            }else{
+                $query->orderBy('updated_at','desc');
+            }
+
+
+            $result = array(
+                "query" =>  $query->paginate(10)
+            );
         
-        if($filter['status']=='pending'){
-            $query->orderBy('created_at','desc');
-        }else{
-            $query->orderBy('updated_at','desc');
+            return   $result ;
         }
-
-
-        $result = array(
-            "query" =>  $query->paginate(10)
-        );
-     
-        return   $result ;
     }
   
     # Fetch the User's DTR
@@ -612,19 +847,95 @@ class User extends Authenticatable implements JWTSubject
     }
 
     # Fetch the Users Handled of the current User Instance 
-    public function users_handled()
+    
+    public function users_handled($department_id = null, $sub_department_id = null,$is_active = 1,$name = null,$job_title = null, $page = 1, 
+                                $page_count = 99999)
+    {   
+        
+            if (
+                        ($this->isLevel("Admin"))
+                    ) 
+                    {
+                        return User::whereNotNull("bhr_num");
+                    }
+                
+    if(
+                        ($this->isLevel("SubDepartment Head")
+                        ||
+                    $this->isLevel("Department Head")
+                        ||
+                    $this->isLevel("Division Head")
+                    ||
+                    $this->isLevel("DivisionHead")
+                    ||
+                    $this->isLevel("Board"))
+                    ||
+                    $this->isLevel("Client")
+                    ||
+                    $this->isLevel("HR")
+                        ||
+                    $this->isLevel("Payroll")
+    ){
+        $response = call_sp("EH_SP_Employee_List",[
+            $this->id, 
+            is_valid(  $this->LevelId ) ?  $this->LevelId: null, // level
+            $department_id,
+            $department_id != null? $sub_department_id: null,
+            $is_active, // active
+            $name, // name
+            $job_title, // job_title
+            $page,
+            $page_count,
+            1      
+            ]
+        ); 
+        
+            $result = array(
+                "query" =>  $response ?? [],
+            );
+
+        //     $minus_e = 2;
+        // if( count($result['query']) ==5 ){
+        //    $minus_e = 3;
+        // }
+        $id = [];
+        // $count = count($result['query']);
+        // $index = $count - $minus_e;
+
+        for ($i = 0; $i < count($result["query"]); $i++) {
+
+            if (isset($result["query"][$i][0]->CurrentPage)) {
+                $ids = array_pluck($result["query"][$i-1], "id");
+        
+                break;
+        
+            }
+        
+        }
+
+        
+    
+    return user::whereIn('id', $ids);
+    }
+
+    return [];
+    }
+   
+    public function users_handled_old()
     {   
         // If the User has Client Role, get all the Users from his/her departments handled.
-        if( $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
+        if( $this->isLevel("Client") ) { 
             return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
 
 
         //HR and Payroll gets all the users
-        } elseif ( 
-            $this->hasRole( get_constant('USER_ROLES.admin') ) ||
-            $this->hasRole( get_constant('USER_ROLES.hr') ) ||
-            $this->hasRole( get_constant('USER_ROLES.payroll') )
-         ) {
+        } elseif (
+                    !($this->isLevel("Admin")
+                    ||
+                   $this->isLevel("HR")
+                    ||
+                   $this->isLevel("Payroll"))
+                ) {
             return User::whereNotNull("bhr_num");//practically all users
 
         // If the User has Team Leader & Supervisor Role, get all the Users from the Department's Handled Team list AND the default users handled via users_supervivsors pivot table.
@@ -711,6 +1022,12 @@ class User extends Authenticatable implements JWTSubject
             2. Departments of the Teams you are handling via 'team_handlers' 
         */
         $departments_id_array = $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id')->pluck('id')->toArray();
+        // foreach( $this->teams_handled()->get() as $team) {
+        //     $departments_id_array = array_merge( 
+        //         $departments_id_array, 
+        //         $team->deppppppppppartment()->pluck('id')->toArray() 
+        //     );
+        // }
         foreach ($departments_id_array as $key => $department) {
             $users = User::where('department_id', $department)->where('is_active', 1)->get();
             if (count($users) <= 0) {
@@ -718,14 +1035,139 @@ class User extends Authenticatable implements JWTSubject
             }
         }
 
-        foreach( $this->teams_handled()->get() as $team) {
-            $departments_id_array = array_merge( 
-                $departments_id_array, 
-                $team->department()->pluck('id')->toArray() 
-            );
-        }
         return Department::whereIn('departments.id', array_unique($departments_id_array));
     }
+
+    
+    # Fetch the User Departments Handled
+    public function evox_departments_handled()
+    {
+
+        if(is_valid($this->LevelId)){
+            if($this->LevelId != 0){
+                $perpage_count = 5;
+            
+            $response = call_sp("EH_SP_Get_Department_By_UserId",
+            
+            [
+                $this->id, // vishnu this_id
+                null,
+                0,
+                1
+                ]
+            ); 
+                $result = $response[0] ? array_map(function($item) {
+                    $dep_name = null;
+                    if(isset($item->Name)){
+                        $dep_name = $item->Name;
+                    }
+                    if(isset($item->DepartmentName)){
+                        $dep_name = $item->DepartmentName;
+                    }   
+                    return (object) array(
+                        'id' => $item->Id,
+                        'department_name' => $dep_name,
+                    );
+                }, $response[0]): []
+            ;
+                return $result;
+            }
+        }
+        return  [];
+
+        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
+
+    }
+
+    # Fetch the User Departments Handled
+    public function evox_departments_handled_strict()
+    {
+
+        if(is_valid($this->LevelId)){
+            if($this->LevelId != 0){
+                $perpage_count = 5;
+            
+            $response = call_sp("EH_SP_Get_Department_By_UserId",
+            
+            [
+                $this->id, // vishnu this_id
+                null,
+                1,
+                1                
+                ]
+            ); 
+                $result = $response[0] ? array_map(function($item) {
+                    $dep_name = null;
+                    if(isset($item->Name)){
+                        $dep_name = $item->Name;
+                    }
+                    if(isset($item->DepartmentName)){
+                        $dep_name = $item->DepartmentName;
+                    }
+                    return (object) array(
+                        'id' => $item->Id,
+                        'department_name' => $dep_name,
+                    );
+                }, $response[0]): []
+            ;
+                return $result;
+            }
+        }
+        return  [];
+
+        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
+
+    }
+
+    // # Fetch the User Departments Handled
+    public function evox_sub_departments_handled($department_id)
+    {
+
+        if(is_valid($this->LevelId)){
+            if($this->LevelId != 0){
+                $perpage_count = 5;
+            
+            $response = call_sp("EH_SP_Get_Department_By_UserId",
+            
+            [
+                $this->id, // vishnu this_id
+                $department_id
+                ,0
+                ,1
+                ]
+            ); 
+            // dd($response[0]);
+
+         
+                $result = $response[0] ? array_map(function($item) {
+                    $dep_name = null;
+                    if(isset($item->SubDepartment)){
+                        $dep_name = $item->SubDepartment;
+                    }
+                    if(isset($item->SubDepartmentName)){
+                        $dep_name = $item->SubDepartmentName;
+                    }
+                    return (object) array(
+                        'Id' => $item->Id,
+                        'Name' => $dep_name,
+                    );
+                }, $response[0]): []
+            ;
+                return $result;
+            }
+        }
+        return  [];
+
+        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
+
+    }
+
+    // # Fetch the User Departments Handled
+    // public function evox_sub_departments_handled()
+    // {
+      
+    //     return EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
+    // }
 
     public function getHasSchedule(){
 
@@ -741,5 +1183,94 @@ class User extends Authenticatable implements JWTSubject
             return ($checkDefault_schedule ||  $checkTemp_schedule);
     }
 
+
+    # Fetch the User's Level
+    public function level(){
+        return $this->hasOne(EvoxLevels::class, 'LevelId', 'LevelId');
+    }
+
+    # Fetch the User's Level Name
+    public function level_type(){
+            $type = $this->level()->first()->Name;
+
+            if (stristr($type, "HR") !== false){
+                return "HR";
+            }
+            if (stristr($type, "Payroll") !== false){
+                return "Payroll";
+            }
+
+            return $type;
+    }
+
+    public function isLevel($level_role_name){
+        return $level_role_name == $this->level_type()? true : false ;
+    }
+    
+
+    public function getFeatureAccess(){
+
+        if(is_valid($this->LevelId)){
+            $level_id = $this->LevelId;
+            $type = $this->level_type();
+
+            if($type == "Payroll" || $type == "HR"){
+                $level_id =EvoxLevels::where("Name", $type)->first()->LevelId; //
+            }else if(stripos($type, 'payroll')!== false){
+                $level_id =EvoxLevels::where("Name", "Payroll")->first()->LevelId;
+            }else if(stripos($type, 'hr')!== false){
+                $level_id =EvoxLevels::where("Name", "HR")->first()->LevelId;
+            }
+            
+            return RoleLevelFeatures::where('evox_levels_id', $level_id)->leftJoin("features", 'features_id', '=', 'features.id');
+            
+        }
+           
+        return [];
+    }
+
+    public function getFeatureAccessWithUnconditional(){
+
+        if(is_valid($this->LevelId)){
+            return UserFeatures::where('user_id', $this->id)->leftJoin("features", 'feature_id', '=', 'features.id');
+            
+        }
+           
+        return [];
+    }
+
+    public function hasFeature($feature_name){
+        if(is_valid($this->LevelId)){
+            if(is_valid($feature_name)){
+                $feature_all_list = $this->userFeatures();
+                return in_array($feature_name, $feature_all_list) ;
+            }
+        }
+        return false;
+        
+    }
+
+    public function userFeatures(){
+
+            if(is_valid($this->getFeatureAccess())){
+                $default = $this->getFeatureAccess()->pluck("feature_name")->toArray();
+                $conditional = $this->getFeatureAccessWithUnconditional()->where("has_access", true)->get()->pluck("feature_name")->toArray();
+                $remove = $this->getFeatureAccessWithUnconditional()->where("has_access", false)->get()->pluck("feature_name")->toArray();
+                $feature_all_list = array_unique(array_merge($default,$conditional));
+                if(is_valid($remove)){
+                    $feature_all_list = array_diff($feature_all_list, $remove);
+                }
+            
+                return $feature_all_list ;
+            }
+            return [] ;
+           
+        
+    }
+
+
+    public function features(){
+        return $this->belongsToMany(Features::class, 'user_features', "user_id","feature_id" )->withTimestamps();
+     }
     ########################################################################
 }

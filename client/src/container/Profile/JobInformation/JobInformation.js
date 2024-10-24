@@ -67,7 +67,7 @@ const JobInformation = ( props ) => {
                                 </tr>
                             </thead>
                             <tbody>
-                            { Authenticator.checkRole('client') && props.id != user.id ? 
+                            { Authenticator.scanLevel("Client") && props.id != user.id ? 
                             <React.Fragment>
                             {profile.job_information.slice().reverse().map(function (data, i) {
                                 if(user.department==data.department){

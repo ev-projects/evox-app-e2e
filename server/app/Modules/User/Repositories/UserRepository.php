@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Repositories;
 
+use App\Features;
 use Exception;
 use Carbon\Carbon;
 use DebugBar\DebugBar;
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\User\Models\UtcTimelog;
+use App\UserFeatures;
 
 class UserRepository implements UserRepositoryInterface{
 
@@ -420,27 +422,27 @@ class UserRepository implements UserRepositoryInterface{
                     $supervisor->supervisee()->syncWithoutDetaching( $user_id_array );
 
                     /**  Fetch the Supervisor Role to attach on the Supervisor  */
-                        $supervisor_role = Role::findByName( get_constant('USER_ROLES.supervisor') );
+                        // $supervisor_role = Role::findByName( get_constant('USER_ROLES.supervisor') );
 
                         // Check if the Supervisor has already a Role
-                        if( ! $supervisor->hasRole($supervisor_role) ){
+                        // if( ! $supervisor->isLevel("Supervisor") ){
 
-                            // Assign the Supervisor Role
-                            $supervisor->assignRole( $supervisor_role );
+                            // // Assign the Supervisor Role
+                            // $supervisor->assignRole( $supervisor_role );
 
-                            // Total Permissions that are not synced yet on the Supervisor
-                            $permissions_to_sync = [];
+                            // // Total Permissions that are not synced yet on the Supervisor
+                            // $permissions_to_sync = [];
 
-                            // Iterate and filter out all the Permissions that are already existing for the Supervisor.
-                            foreach( $supervisor_role->permissions()->get() as $permission ){
-                                if( ! $supervisor->hasDirectPermission( $permission ) ) {
-                                    $permissions_to_sync[] = $permission;
-                                }
-                            }
+                            // // Iterate and filter out all the Permissions that are already existing for the Supervisor.
+                            // foreach( $supervisor_role->permissions()->get() as $permission ){
+                            //     if( ! $supervisor->hasDirectPermission( $permission ) ) {
+                            //         $permissions_to_sync[] = $permission;
+                            //     }
+                            // }
 
-                            // Assign the Supervisor's Permissions
-                            $supervisor->givePermissionTo( $permissions_to_sync );
-                        }
+                            // // Assign the Supervisor's Permissions
+                            // $supervisor->givePermissionTo( $permissions_to_sync );
+                        // }
                     /** */
 
                     $result[ $supervisor->id ] = $user_id_array;
@@ -669,6 +671,162 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+      /**
+     *  Responsible for fetching all the Supervisee of the User
+     * @param $id
+     * @return User $user_collection
+     */
+    public function new_get_my_team_list( $id ){
+        try {
+
+            $collection = [];
+            if( get_authenticated_user( $id )  ) {
+                
+                $user = Auth::user();
+                $original_perpage_count =   15;
+                $perpage_count =    !is_valid( request()->get('order_by') ) ? 15 : 99999;
+                $response = call_sp("EH_SP_Employee_List",
+                
+                [
+                    $user->id, // vishnu user_id
+                    is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
+                    is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
+                    (is_valid( request()->get('sub_department_id') ) 
+                        && is_valid( request()->get('department_id') ))
+                            ? request()->get('sub_department_id'): null,
+                        is_valid( request()->get('status') ) ? (int)request()->get('status'): 1, // active
+                    is_valid( request()->get('name') ) ? request()->get('name'): null, // name
+                    is_valid( request()->get('job_title') ) ? request()->get('job_title'): null, // job_title
+                    !is_valid( request()->get('order_by') ) ?
+                                (is_valid( request()->get('page') ) ? request()->get('page'): 1)
+                                :
+                                1,
+                     $perpage_count,
+                    1 
+                    
+                    ]
+
+
+                ); 
+                // dd(request()->all(), is_valid( request()->get('order_by') ), $response);
+
+                // dd($response);
+                
+                    $result = array(
+                        "query" =>  $response ?? [],
+                    );
+                    
+
+                    $perPageArrays = array_filter($result['query'], function($array) {
+
+                        if(isset($array[0])){
+                    
+                            return property_exists($array[0], 'PerPage');
+                    
+                        }
+
+                       
+                    
+                    });
+
+                    $empArrays = array_filter($result['query'], function($array) {
+
+                       
+
+                        if(isset($array[0])){
+                    
+                            return property_exists($array[0], 'Employee_Name');
+                    
+                        }
+                    
+                    });
+
+            
+                    
+                    $perPageKeys = array_keys($perPageArrays);
+                    $empKeys = array_keys($empArrays);
+                        // dd($result['query'][count($result['query'])-3]);
+                
+                    $arr = [];
+                    if( is_valid( request()->get('order_by') ) && is_valid($empKeys) && is_valid($result['query'][$empKeys[0]])  ) {
+                        $arr =  $result['query'][count($result['query'])-3];
+                        $order = explode(":", request()->get('order_by'));
+    // dd($order[0]);
+                        switch ($order[0]) {
+                            case "name":
+                                if( $order[1] ==  "asc"){
+                                    usort( $arr,function($first,$second){
+                                        return $first->Employee_Name > $second->Employee_Name;
+                                    });
+                                }
+                                if( $order[1] ==  "desc"){
+                                    usort( $arr,function($first,$second){
+                                        return $first->Employee_Name < $second->Employee_Name;
+                                    });
+                                }
+                                break;
+                            case "job_title":
+                                if( $order[1] ==  "asc"){
+                                    usort( $arr,function($first,$second){
+                                        return $first->job_title > $second->job_title;
+                                    });
+                                }
+                                if( $order[1] ==  "desc"){
+                                    usort( $arr,function($first,$second){
+                                        return $first->job_title < $second->job_title;
+                                    });
+                                }
+                          }
+                        //   dd($arr, $result['query'][count($result['query'])-3]);
+                          $arr =   array_chunk($arr, 15)
+                                [is_valid( request()->get('page') ) ? ((int)request()->get('page')) - 1: 0];
+           
+                    }
+
+            
+                 
+                  
+                   
+                    
+
+                // dd($result['query'],   $perPageKeys[0], $empKeys) ;
+
+                  
+                if( count($result['query']) > 2){
+                    // $paginate = $result['query'][count($result['query'])-2][0];
+                    
+                    // $collection["data"] = !is_valid($arr)? $result['query'][count($result['query'])-3] : $arr;
+// dd($result['query'], $empKeys, isset($empKeys), is_valid($empKeys));
+                    // dd($result['query'],$result['query'][$empKeys[0]]);
+
+                    $paginate = $result['query'][$perPageKeys[0]][0];
+                    $collection["data"] = !is_valid($arr)? (is_valid($empKeys) ?$result['query'][$empKeys[0]] : []) : $arr; 
+                    $collection["pagination"] = [
+                                                    'total' => (int) $paginate->TotalCount,
+                                                    'count' => count( $collection["data"]),
+                                                    'per_page' =>  (int)  $original_perpage_count,
+                                                    'current_page' => !is_valid($arr)?((int) $paginate->CurrentPage) : (is_valid( request()->get('page') ) ? ((int)request()->get('page')): 1),
+                                                    'last_page' => ((ceil($paginate->TotalCount /   $original_perpage_count)) ) 
+                                                ];
+
+                                                // if( ($paginate->TotalCount % $perpage_count) > 0 
+                                                // && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
+                                                //     $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
+                                                // }
+                }
+     
+            }
+           
+           
+            log_to_file('info', 'Success', [$collection]);
+            return $collection;
+        } catch (Exception $e) {
+            log_error($e);
+            // dd($e);
+            throw $e;
+        }
+    }
+
 
 
     /**
@@ -849,44 +1007,76 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function get_dpa_list( Request $request ){
         try {
-            // Fetch the Users under the supervisee and join to their department for the sorting via Department Name
-            $user_collection = User::whereIn('users.id', auth()->user()->users_handled()->pluck('id')->toArray())
-                                    ->join('departments', 'departments.id','=','users.department_id')
-                                    ->orderBy('departments.department_name','asc')
-                                    ->orderBy('users.emp_num','desc')
-                                    ->select('users.*');
 
-            // For the Department ID Filtering
-            if( is_valid( $request->department_id ) ){
-                $user_collection->where('department_id',$request->department_id );
+           
+            $perpage_count = 10;
+            if( $request->export == "all"){
+                $perpage_count = 99999;
             }
+            // dd( $request ->all());
+            $user = Auth::user();
 
-            // For the Employee Name filtering
-            if( is_valid( $request->name ) ){
-                $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
+            $response = call_sp("EH_SP_Employee_DPA_List",
+              
+            [
+                $user->id, // vishnu user_id
+                is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
+                is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
+                is_valid( request()->get('is_active') ) ? request()->get('is_active'): null, // active
+                is_valid( request()->get('name') ) ? request()->get('name'): null, // name
+                is_valid( request()->get('submitted_dpa') ) ? request()->get('submitted_dpa'): null, // submitted_dpa
+                is_valid( request()->get('page') ) ? request()->get('page'): 1,
+                 $perpage_count,
+                null
+                
+                ]
+
+
+            ); 
+            // dd()
+                $result = array(
+                    "query" =>  $response ?? [],
+                );
+
+                // dd($result['query'][0]);
+            if( count($result['query']) > 1){
+                // $paginate = $result['query'][count($result['query'])-2][0];
+                
+                // $collection["data"] = $result['query'][count($result['query'])-2];
+
+                // $collection["data"]  = $collection["data"] ? array_map(function($item) {
+
+                $paginate = $result['query'][1][0];
+
+                $collection["data"] = $result['query'][0];
+
+                $collection["data"]  = $collection["data"] ? array_map(function($item) {
+                    
+                    return (object) array(
+                        'id' => isset($item->id) ? $item->id : $item->UserId,
+                        'emp_num' => $item->Employee_Number,
+                        'department' => ( is_valid(  $item->Name ) ?  $item->Name : null ),
+                        'is_active' => (int)$item->is_active,
+                        'full_name' => $item->Employee_Name,
+                        'dpa_ticked_at' =>  $item->Status
+                    );
+                }, $collection["data"]): [];
+                $collection["pagination"] = [
+                                                'total' => (int) $paginate->TotalCount,
+                                                'count' => count( $collection["data"]),
+                                                'per_page' =>  (int) $paginate->PerPage,
+                                                'current_page' => (int) $paginate->CurrentPage,
+                                                'last_page' => ((ceil($paginate->TotalCount /  $perpage_count)) ) 
+                                            ];
+
             }
-
-            // For DPA data filtering.
-            if( !is_null( $request->submitted_dpa ) ){
-
-                //  If true, fetch all the dpa_ticked_at that's not NULL
-                if( $request->submitted_dpa == 1 ){
-                    $user_collection->whereNotNull('dpa_ticked_at');
-
-                //  If true, fetch all the dpa_ticked_at that's NULL
-                } else {
-                    $user_collection->whereNull('dpa_ticked_at');
-                }
-            }
-
-            // For Active User filtering
-            if( !is_null( $request->is_active ) ){
-                $user_collection->where('is_active',$request->is_active );
-            }
-
-            return $user_collection->paginate(50);
+ 
+        
+        // dd($collection);
+            return  $collection;
 
         } catch (Exception $e) {
+            // dump ($e);
             throw $e;
         }
     }
@@ -1091,6 +1281,60 @@ class UserRepository implements UserRepositoryInterface{
             }
 
             log_to_file('info', 'Success', [$id, $permissions_array], 'assign');
+            return $user;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+        /**
+     *  Responsible for assigning Features for the user.
+     * @param $id
+     * @return User $user
+     */
+    public function assign_level_features( $id, array $features_array , $level ){
+        try {
+
+           
+
+                $user =  User::findOrFail( $id );
+
+                $user_owned_features = $user->userFeatures();
+
+                
+                $added = array_diff($features_array,$user_owned_features);
+                $removed =  array_diff($user_owned_features,$features_array);
+
+                $data = [];
+                $removed_data = [];
+            // dd($user_owned_features,  $added, $removed);
+              
+
+                if(is_valid($removed)){
+                    $bulk_of_feature_list = Features::whereIn('feature_name', $removed )->get()->pluck("id")->toArray();
+                    
+                    foreach($bulk_of_feature_list as $feature_id){
+                        $removed_data[$feature_id]= ["has_access"=> false];
+                    }
+                    $user->features()->syncWithoutDetaching( $removed_data);
+                }
+
+
+                if(is_valid($added)){
+                    $bulk_of_feature_list = Features::whereIn('feature_name', $added)->get()->pluck("id")->toArray();
+                    // dd($added,Features::whereIn('feature_name', $added)->get(),$bulk_of_feature_list);
+                    foreach($bulk_of_feature_list as $feature_id){
+                        $data[$feature_id]= ["has_access"=> true];
+                    }
+                    UserFeatures::where('user_id', $user->id)->update(["has_access"=> false]);
+                    $user->features()->syncWithoutDetaching( $data);
+                }
+                
+
+
+                // $user->syncPermissions( $features_array );
+            
+
+            // log_to_file('info', 'Success', [$id, $features_array], 'assign');
             return $user;
         } catch (Exception $e) {
             throw $e;

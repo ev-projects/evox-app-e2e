@@ -24,7 +24,7 @@ export const biometrixLog = ( post_data, id ) => {
             .then(result => {
                 dispatch({
                     'type'      : 'FETCH_RECENT_DTR', 
-                    'data'      : result.data,
+                    'recent_dtr'      : result.data.content.dtr_records,
                 })
             })
             .catch(e => {
@@ -64,7 +64,7 @@ export const biometrixLogMulti = ( post_data, id ) => {
                 console.log(e.data);
                 dispatch( Formatter.alert_error( e ) ) 
             });
-            dispatch( Formatter.alert_success( result ));
+            // dispatch( Formatter.alert_success( result ));
         })
         .catch(e => {
 

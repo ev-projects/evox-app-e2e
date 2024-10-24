@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
 use App\Modules\Payroll\Models\DtrSummaryReport;
+use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 use App\Modules\Payroll\Models\TeamAttendanceSummary;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Report\Repositories\ReportRepositoryInterface;
@@ -51,9 +53,14 @@ class ReportRepository implements ReportRepositoryInterface{
      */
     public function get_my_dtr_notifications( $start_date, $end_date ){
         try {
-            
-            $dtr_collection = auth()->user()->dtr( $start_date, $end_date )->get();
-            return $dtr_collection;
+            //$dtr_collection = auth()->user()->dtr( $start_date, $end_date )->get();
+            $me = auth()->user();
+            $dtr_sets = call_sp('SP_DTR_By_UserId', [$me->id, $start_date, $end_date]);
+
+            $dtr_records = $dtr_sets[0];
+            $dtr_leaves = $dtr_sets[3];
+            $dtr_requests = $dtr_sets[4];
+            return [$dtr_records, $dtr_leaves, $dtr_requests];
 
         } catch (Exception $e) {
             throw $e;
@@ -249,7 +256,7 @@ class ReportRepository implements ReportRepositoryInterface{
                     'employee_info' => array(   
                                                 'employee_id'=> $user->emp_num,
                                                 'name'=> $user->first_name .' '. $user->last_name,
-                                                'department'=> (isset($user->department_id)) ? $user->department()->get()[0]->department_name : "" ,
+                                                'department'=> (isset($user->department_id)) ? EvoxSubDepartment::where("Id", $user->department_id)->first()->Name : "" ,
                                                 'status'=> $user->employment_status,
                                                 'timezone'=> $user->country_zone()->country_time_zone,
                                                 
@@ -371,7 +378,7 @@ class ReportRepository implements ReportRepositoryInterface{
                     'employee_info' => array(   
                                                 'employee_id'=> $user->emp_num,
                                                 'name'=> $user->first_name .' '. $user->last_name,
-                                                'department'=> (isset($user->department_id)) ? $user->department()->get()[0]->department_name : "" ,
+                                                'department'=> (isset($user->SubDepartmentID)) ?  EvoxSubDepartment::where("Id", $user->SubDepartmentID)->first()->Name : "" ,
                                                 'status'=> $user->employment_status,
                                                 'timezone'=> $user->country_zone()->country_time_zone,
                                             ), 

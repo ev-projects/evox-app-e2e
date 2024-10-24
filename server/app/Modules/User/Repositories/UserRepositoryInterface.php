@@ -28,6 +28,8 @@ interface UserRepositoryInterface
     public function show_via_bhr_number( $bhr_user_number );
 
     public function get_my_team_list( $id );
+    
+    public function new_get_my_team_list( $id );
 
     public function get_all_active_users();
 
@@ -48,6 +50,8 @@ interface UserRepositoryInterface
     public function tick_dpa( $id );
 
     public function assign_roles_to_user( $id, array $roles_array );
+
+    public function assign_level_features( $id, array $features_array , $level );
 
     public function assign_permissions_to_user( $id, array $permissions_array, array $roles_array );
 

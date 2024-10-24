@@ -175,7 +175,7 @@ class MyRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="pending"}
-                      onClick={() =>  { setFieldValue("status", "pending"); handleSubmit();}}
+                      onClick={() =>  { setFieldValue("status", "pending"); setFieldValue("page", 1); handleSubmit();}}
                     >
  <i class="fa fa-circle request_i request_list_i-pending" aria-hidden="true"></i>Pending &nbsp;<Badge className="counter-request" variant="light">{pending}</Badge>
                     </ToggleButton>
@@ -186,7 +186,7 @@ class MyRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="approved"}
-                      onClick={() =>{ setFieldValue("status", "approved"); handleSubmit();}}
+                      onClick={() =>{ setFieldValue("status", "approved"); setFieldValue("page", 1); handleSubmit();}}
                     >
  <i class="fa fa-circle request_i request_list_i-approved" aria-hidden="true"></i>Approved &nbsp;<Badge className="counter-request" variant="light">{approved}</Badge>
                     </ToggleButton>
@@ -197,7 +197,7 @@ class MyRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="canceled"}
-                      onClick={() =>  { setFieldValue("status", "canceled"); handleSubmit();}}
+                      onClick={() =>  { setFieldValue("status", "canceled"); setFieldValue("page", 1); handleSubmit();}}
                     >
                       <i class="fa fa-circle request_i request_list_i-cancelled" aria-hidden="true"></i>Cancelled &nbsp;<Badge className="counter-request" variant="light">{canceled}</Badge>
  
@@ -209,7 +209,7 @@ class MyRequests extends Component {
                       variant="secondary"
                       className="request_list_btn"
                       checked={values.status=="declined"}
-                      onClick={() => { setFieldValue("status", "declined"); handleSubmit();}}
+                      onClick={() => { setFieldValue("status", "declined"); setFieldValue("page", 1); handleSubmit();}}
                     >
                                             <i class="fa fa-circle request_i request_list_i-declined" aria-hidden="true"></i>Declined &nbsp;<Badge className="counter-request" variant="light">{declined}</Badge>
 

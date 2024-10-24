@@ -2,37 +2,38 @@
 
 namespace App\Modules\Request\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\Controller;
-use App\Modules\Email\Mail\OvertimeRequestEmail;
-use App\Modules\Email\Repositories\EmailRepositoryInterface;
-use App\Modules\Request\Http\Requests\RequestFilterRequest;
-use App\Modules\Request\Repositories\RequestRepositoryInterface;
-use App\Modules\Request\Resources\OvertimeResource;
-use App\Modules\Request\Resources\RequestResource;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 
-use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
-use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
-use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
-use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
-use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
-use App\Modules\Request\Http\Requests\RequestApprovalChangeStatusRequest;
-use App\Modules\Request\Models\AlterLog;
-use App\Modules\Request\Models\ChangeSchedule;
-use App\Modules\Request\Models\Overtime;
-use App\Modules\Request\Models\RestDayWork;
-use App\Modules\Request\Repositories\AlterLogPunchRepositoryInterface;
-use App\Modules\Request\Resources\AlterLogResource;
-use App\Modules\Request\Resources\ChangeScheduleResource;
-use App\Modules\Request\Resources\RequestApprovalChangeStatusResource;
-use App\Modules\Request\Resources\RestDayWorkResource;
+use Illuminate\Http\Request;
 use App\Modules\User\Models\User;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Modules\Request\Models\AlterLog;
+use App\Modules\Request\Models\Overtime;
+use App\Modules\Request\Models\RestDayWork;
+use Illuminate\Database\Eloquent\Collection;
+
+use App\Modules\Request\Models\ChangeSchedule;
+use App\Modules\Email\Mail\OvertimeRequestEmail;
+use App\Modules\Request\Resources\RequestResource;
+use App\Modules\Request\Resources\AlterLogResource;
+use App\Modules\Request\Resources\OvertimeResource;
+use App\Modules\Request\Resources\RestDayWorkResource;
+use App\Modules\Request\Resources\ChangeScheduleResource;
+use App\Modules\Request\Http\Requests\RequestFilterRequest;
+use App\Modules\Email\Repositories\EmailRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
+use App\Modules\Request\Repositories\RequestRepositoryInterface;
+use App\Modules\Request\Repositories\AlterLogRepositoryInterface;
+use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
+use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
+use App\Modules\Request\Repositories\AlterLogPunchRepositoryInterface;
+use App\Modules\Request\Resources\RequestApprovalChangeStatusResource;
+use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
+use App\Modules\Request\Http\Requests\RequestApprovalChangeStatusRequest;
 
 class RequestController extends Controller
 {
@@ -43,7 +44,8 @@ class RequestController extends Controller
     protected $change_schedule;
     protected $work_from_home;
 
-    public function __construct(    OvertimeRepositoryInterface $overtime,
+    public function __construct(    PayrollCutoffRepositoryInterface $payroll_cutoff,
+                                    OvertimeRepositoryInterface $overtime,
                                     RequestRepositoryInterface $request,
                                     RestDayWorkRepositoryInterface $rest_day_work,
                                     AlterLogRepositoryInterface $alter_log,
@@ -51,7 +53,7 @@ class RequestController extends Controller
                                     ChangeScheduleRepositoryInterface $change_schedule,
                                     DtrRepositoryInterface $dtr,
                                     EmailRepositoryInterface $email){
-
+        $this->payroll_cutoff         = $payroll_cutoff;
         $this->overtime         = $overtime;
         $this->request          = $request;
         $this->rest_day_work    = $rest_day_work;
@@ -103,15 +105,63 @@ class RequestController extends Controller
      */
     public function requestlist(RequestFilterRequest $request){
         $user = User::find(auth()->user()->id);
-      
+
         try {
             log_activity( trans('messages.request_display_attempt') );
-            return success_response(
-                trans('messages.request_display_success'), 
-                  new RequestResource( $user->requests_list('my_request',$request) ) 
-            );
+
+            // if(!isset($request->valid_from)){
+            //     $cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+            //     $request->merge(['valid_from' => $cutoff->start_date]);
+            //     $request->merge(['valid_to' => $cutoff->end_date]);
+            // }
+
+            if($request->url== 'my_requests'){
+                $response = $user->requests_list('my_request',$request);
+                $my_req_proc = (new RequestResource($response["data"]))->resolve();
+
+                $result = [
+                    "data" => $my_req_proc["result"],
+                    "total" => $response["pagination"]->TotalCount ? (int) $response["pagination"]->TotalCount : 0,
+                    "count" => count($my_req_proc["result"]),
+                    "per_page" => $response["pagination"]->Total_Count_Per_Page ? (int) $response["pagination"]->Total_Count_Per_Page : 0,
+                    "current_page" => $response["pagination"]->CurrentPage ? (int) $response["pagination"]->CurrentPage : 0,
+                    "last_page" => floor($response["pagination"]->TotalCount / $response["pagination"]->Total_Count_Per_Page)
+                ];
+
+                if( ($response["pagination"]->TotalCount % $response["pagination"]->Total_Count_Per_Page) > 0
+                    && fmod($response["pagination"]->TotalCount / $response["pagination"]->Total_Count_Per_Page, 1) !== 0.00){
+                    $result['last_page'] = $result['last_page'] + 1;
+                }
+
+                return success_response(
+                    trans('messages.request_display_success'), ["result" => $result]
+                );
+            }
+            if($request->url== 'my_team_requests'){
+                // return success_response(
+                //     trans('messages.request_display_success'), 
+                //       new RequestResource( $user->requests_list('my_request',$request) ) 
+                // );
+                $collection  = $user->requests_list('my_team_requests',$request);
+                $DAT = (new RequestResource( $collection["data"] ))->resolve();
+        
+                return success_response(
+                    trans('messages.request_display_success'), 
+                    ["result" => [
+                        "data" =>       $DAT["result"],
+                        "department" => $collection["Department"],
+                        "status_numbers" => $collection["numbers"],
+                        "total" => is_valid($collection["pagination"]["total"]) ? $collection["pagination"]["total"]: 0,
+                        "count" => is_valid($collection["pagination"]["count"]) ? $collection["pagination"]["count"]: 0,
+                        "per_page" => is_valid($collection["pagination"]["per_page"]) ? $collection["pagination"]["per_page"]: 0,
+                        "current_page" =>is_valid($collection["pagination"]["current_page"]) ? $collection["pagination"]["current_page"]: 0,
+                        "last_page" => is_valid($collection["pagination"]["last_page"]) ? $collection["pagination"]["last_page"]: 0,
+                    ]]
+                );
+            }
+
         } catch(Exception $e){
-            // dd($e);
+            // dump($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
@@ -125,7 +175,7 @@ class RequestController extends Controller
         try {
             log_activity( trans('messages.request_number_display_attempt') );
             return success_response(
-                trans('messages.request_display_success'), $this->request->get_status_numbers( $request )
+                trans('messages.request_display_success'), $this->request->get_status_numbers( $request, $this->payroll_cutoff->get_payroll_cutoff() )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -135,8 +185,12 @@ class RequestController extends Controller
     public function requestlistNumbers_dashboard(Request $request){
         try {
             log_activity( trans('messages.request_number_display_attempt') );
+            // return success_response(
+            //     trans('messages.request_display_success'), $this->request->get_status_numbers_dashboard( $request )
+            // );
+
             return success_response(
-                trans('messages.request_display_success'), $this->request->get_status_numbers_dashboard( $request )
+                trans('messages.request_display_success'), $this->request->get_status_numbers_only( Auth::user(),$this->payroll_cutoff->get_payroll_cutoff() )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

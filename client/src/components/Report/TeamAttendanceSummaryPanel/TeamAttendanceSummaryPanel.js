@@ -48,8 +48,8 @@ const TeamAttendanceSummaryPanel = (props) => {
           }}>
           <label className={selected_summary == "attendance" ? "active-text font-weight-bolder" : ""}
           >Recorded Attendance</label><br />
-          <span className={(attendance?.total_percentage >= attendance?.target_percentage ? "green" : "red")}>{attendance?.total_percentage}%</span>&nbsp;<small>({attendance?.total_count})</small> <br />
-          <div className="target"><small>TARGET: {attendance?.target_percentage}%</small></div>
+          <span className={(attendance?.total_percentage >= attendance?.target_percentage ? "green" : "red")}>{attendance?.total_percentage}</span>&nbsp;<small>({attendance?.total_count})</small> <br />
+          <div className="target"><small>TARGET: {attendance?.target_percentage}</small></div>
         </div>
 
         <div className={selected_summary == "planned_leaves" ? "summary-active" : "summary-inactive"}
@@ -57,8 +57,8 @@ const TeamAttendanceSummaryPanel = (props) => {
             props.setSelectedAttendanceSummary("planned_leaves")
           }}>
           <label className={selected_summary == "planned_leaves" ? "active-text font-weight-bolder" : ""}>Recorded Planned Leaves</label><br />
-          <span className={(planned_leaves?.total_percentage <= planned_leaves?.target_percentage ? "green" : "red")}>{planned_leaves?.total_percentage}%</span>&nbsp;<small>({planned_leaves?.total_count})</small> <br />
-          <div className="target"><small>TARGET: {planned_leaves?.target_percentage}%</small></div>
+          <span className={(planned_leaves?.total_percentage <= planned_leaves?.target_percentage ? "green" : "red")}>{planned_leaves?.total_percentage}</span>&nbsp;<small>({planned_leaves?.total_count})</small> <br />
+          <div className="target"><small>TARGET: {planned_leaves?.target_percentage}</small></div>
         </div>
 
         <div className={selected_summary == "unplanned_leaves" ? "summary-active" : "summary-inactive"}
@@ -67,8 +67,8 @@ const TeamAttendanceSummaryPanel = (props) => {
           }}>
           <label className={selected_summary == "unplanned_leaves" ? "active-text font-weight-bolder" : ""}
           >Recorded Unplanned Leaves</label><br />
-          <span className={(unplanned_leaves?.total_percentage <= unplanned_leaves?.target_percentage ? "green" : "red")}>{unplanned_leaves?.total_percentage}%</span>&nbsp;<small>({unplanned_leaves?.total_count})</small> <br />
-          <div className="target"><small>TARGET: {unplanned_leaves?.target_percentage}%</small></div>
+          <span className={(unplanned_leaves?.total_percentage <= unplanned_leaves?.target_percentage ? "green" : "red")}>{unplanned_leaves?.total_percentage}</span>&nbsp;<small>({unplanned_leaves?.total_count})</small> <br />
+          <div className="target"><small>TARGET: {unplanned_leaves?.target_percentage}</small></div>
         </div>
 
       </div>
@@ -108,7 +108,7 @@ const TeamAttendanceSummaryPanel = (props) => {
               return (
                 <tr >
                   
-                  <td><Link to={Authenticator.checkRole('supervisor')? global.links.dtr + item.user_id : global.links.profile + item.user_id}>{item.name} </Link> </td>
+                  <td><Link to={Authenticator.scanFeature('view_attendance_report')? global.links.dtr + item.user_id : global.links.profile + item.user_id}>{item.name} </Link> </td>
                   <td>{item.emp_num}</td>
                   <td>{item.job_title}</td>
                   <td>{moment(item.date).format("MMM D")}</td>

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\Announcement;
+use App\Modules\Department\Models\EvoxDepartment;
 
 class DepartmentRepository implements DepartmentRepositoryInterface{
     
@@ -28,7 +29,22 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function all()
     {
         try {
-            $department_collection = Department::orderBy('department_name', 'asc')->get();
+            // $department_collection = Department::orderBy('department_name', 'asc')->get();
+            $department_collection = EvoxDepartment::select(
+                ["Id AS id",
+                'Name AS department_name', 
+                'HeadId',
+                'isActive',
+                'CreatedOn AS created_at',
+                'UpdatedOn AS updated_at',
+                'CreatedBy',
+                'LevelId',])
+             ->orderBy('Name', 'asc')
+             ->get();
+
+            
+            
+            // dd($department_collection);
             log_to_file('info', 'Success', [$department_collection]);
             return $department_collection;
 
@@ -46,7 +62,18 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function all_with_announcements()
     {
         try {
-            $department_collection = Department::has("departments_announcements")->orHas('departments_announcements_presented')->orderBy('department_name', 'asc')->get();
+            // $department_collection = Department::has("departments_announcements")->orHas('departments_announcements_presented')->orderBy('department_name', 'asc')->get();
+            $department_collection = EvoxDepartment::select(
+                ["Id AS id",
+                'Name AS department_name', 
+                'HeadId',
+                'isActive',
+                'CreatedOn AS created_at',
+                'UpdatedOn AS updated_at',
+                'CreatedBy',
+                'LevelId',])
+             ->orderBy('Name', 'asc')
+             ->get();
             log_to_file('info', 'Success', [$department_collection]);
             return $department_collection;
 
@@ -65,7 +92,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function find($id)
     {
         try {
-            $department = Department::find($id);
+            $department = EvoxDepartment::find($id);
             log_to_file('info', 'Success', [$department]);
             return $department;
 

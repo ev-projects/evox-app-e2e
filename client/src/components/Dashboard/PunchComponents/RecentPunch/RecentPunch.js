@@ -81,6 +81,7 @@ componentDidMount(){
                       <th className="dtr-log">Clock Out</th>
                       <th className="dtr-log">Hour Count</th>
                       <th className="dtr-log">Punch Status</th>
+                      <th className="dtr-log">Project Worked on</th>
                 </tr>
             </thead>
             <tbody>
@@ -119,6 +120,9 @@ componentDidMount(){
                            
                           <b>{ ((punch.log_out_type == "Log_out" && punch.log_in_type == "Continue") || (punch.log_out_type == "Log_out" && punch.log_in_type == "Log_in")? "Logout" : punch.log_out_type == "Pause" ? "Pause" : punch.log_in_type == "rest_day_work" ? "Rest Day Work" : "" )}</b>
                             </div></td>
+                            <td className="dtr-log"><div>
+                            { (punch.project_name)}
+                            </div></td>
                         </tr>
               })}
               </tbody>
@@ -150,7 +154,7 @@ componentDidMount(){
 
 	}
   }
-  const mapDispatchToProps = (dispatch) => {
+  const mapDispatchToProps = (dispatch) => {  
 	  return {
       getRecentPunches : (user_id,from,to) => dispatch( getRecentPunches(user_id,from,to) ),
       biometrixLog    : ( post_data , id ) => dispatch( biometrixLog( post_data , id ) )

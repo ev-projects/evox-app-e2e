@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\Department\Models\Department;
+use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Schedule\Models\ScheduleDetail;
 use App\Modules\Schedule\Models\SchedulePolicy;
 
@@ -202,7 +203,7 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             } elseif( $data['bind_to'] == 'department' ) {
 
                 # Gets the Department from the Bind ID..
-                $department = Department::findOrFail(  $data['bind_id']);
+                $department = EvoxDepartment::where( "id",$data['bind_id'] )->first();
                 
                 $schedule = $this->assign_to_department( $data, $department );
             }
@@ -406,9 +407,9 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
      * @param Department $department
      * @return Schedule $schedule
      */
-    protected function assign_to_department( array $data, Department $department){
+    protected function assign_to_department( array $data,EvoxDepartment $department){
         try{
-            
+
             # If the Department has an existing Default Schedule, update the Schedule
             if ( $department->defaultSchedule()->count() > 0 ) {
                 

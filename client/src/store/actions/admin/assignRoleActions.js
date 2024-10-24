@@ -24,6 +24,27 @@ export const fetchUserRolePermission = ( id ) => {
     }
 }
 
+// Fetch User Role
+export const fetchUserFeatures = ( id ) => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/"+ id +"/features",
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'FETCH_USER_FEATURES', 
+                'userLevel'         : result.data.content.level,
+                'userFeatures'      : result.data.content.features,
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 export const fetchUser = ( name_string ) => {
     return (dispatch, getState) => {
@@ -73,6 +94,31 @@ export const assignRolesPermissions = ( user_id , post_data ) => {
         API.call({
             method: "POST",
             url: "/user/" + user_id + "/assign_roles_permissions/",
+            data: post_data
+        })
+        .then(result => {
+            dispatch( Formatter.alert_success( result, 3000 ));
+
+            dispatch({
+                'type'         : 'UPDATE_USER',
+                'user'         : result.data.content,
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
+
+export const assignLevelFeatures = ( user_id , post_data ) => {
+    // Add or Remove supervisor access
+   
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "POST",
+            url: "/user/" + user_id + "/assign_level_features/",
             data: post_data
         })
         .then(result => {
