@@ -24,6 +24,7 @@ import DailyTimeRecord from "../container/DailyTimeRecord";
 import DailyTimeRecordPuncher from "../container/DailyTimeRecordPuncher";
 import DtrPunch from "../container/DtrPunch";
 import EVLearning from "../container/EVLearning/EVLearning";
+import ElSecureCoding from "../container/ElSecureCoding/ElSecureCoding";
 import OpsSchedule from "../container/OpsSchedule/";
 
 // Requests
@@ -162,6 +163,11 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.ev_learning} >
           <EVLearning 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
+          />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.ev_learning_secure_coding} >
+          <ElSecureCoding 
           />
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.ops_schedule} >

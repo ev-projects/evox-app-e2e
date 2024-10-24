@@ -3,7 +3,7 @@ import { Container,Col } from 'react-bootstrap';
 import "./EVLearning.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../components/Template/Wrapper/Wrapper";
-
+import { Link } from "react-router-dom";
 class EVLearning extends Component {
   render() {
     return  <Wrapper >
@@ -51,6 +51,17 @@ class EVLearning extends Component {
 		<li><a href="https://www.coursera.org/learn/learn-korean" target="_blank">Korean for Beginners</a></li>
 		<li><a href="https://www.coursera.org/learn/etudier-en-france" target="_blank">French - Intermediate</a></li>
 		<li><a href="https://www.coursera.org/learn/communicate-with-impact?utm_medium=email&utm_source=marketing&utm_campaign=A8asML8OEempyReieZALEQ" target="_blank">Communicate with Impact</a></li>
+	  </ul>
+	</div>
+	<div className="el-links">
+	  <div className="el-link-title">Internal Resource</div>
+	  <ul className="el-list-link">
+		<li> 
+		<Link className="nav-link" to={global.links.ev_learning_secure_coding}>
+    
+                    Secure Coding - A Refresher
+                  </Link>
+			</li>
 	  </ul>
 	</div>
 	<div className="el-links">

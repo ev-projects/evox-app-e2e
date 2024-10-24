@@ -344,7 +344,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
      */
     public function update($request, $id)
     {
-
+        // dd($request->all());
         $dep_ids = null;
         if( is_valid( $request->selectedDepartments ) &&  $request->set_all == 0  ){
             $dep_ids = $request->selectedDepartments;
@@ -358,7 +358,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 $dep_ids = EvoxDepartment::whereIn("id",$dep_ids )->pluck('id')->toArray();
             }
          
-        }   
+        } 
+
+        
         DB::beginTransaction();
         try {
             // dd($request->content, gettype($request->content));
