@@ -45,7 +45,7 @@ class RequestResource extends JsonResource
 
                       break;
                     case 'change_schedules':
-                        $schedule = Schedule::find($request->fourth_column);
+                        /*$schedule = Schedule::find($request->fourth_column);
                         
                         if($schedule!=null){
                             # Create Resource for Schedule Policies
@@ -62,7 +62,10 @@ class RequestResource extends JsonResource
                         } else {
                           $request->fourth_column = json_decode($request->fourth_column, true);
                           $request->fifth_column = json_decode($request->fifth_column, true);
-                        }
+                        }*/
+
+                        $request->fourth_column = json_decode($request->fourth_column, true);
+                        $request->fifth_column = json_decode($request->fifth_column, true);
 
                       break;
                       case 'alter_log_punches':
@@ -96,13 +99,15 @@ class RequestResource extends JsonResource
                       break;
                     case 'alter_logs':
                         // $alter_log = AlterLog::find($request->fourth_column);
-                        $alter_log = $request->fourth_column ? AlterLog::find($request->fourth_column) : AlterLog::find($request->id);
-                        $old_time_logs = array(   "current_time_in" =>  timestamp_to_datetime($alter_log->current_time_in),
-                                                  "current_time_out" => timestamp_to_datetime($alter_log->current_time_out));
+                        $alter_log = $request->fourth_column ? explode(',', $request->fourth_column) : array(null, null);
+                        $old_time_logs = array(   "current_time_in" =>  $alter_log[0],
+                                                  "current_time_out" => $alter_log[1]
+                                                );
 
-                        
-                        $new_time_logs = array(   "new_time_in" =>  timestamp_to_datetime($alter_log->new_time_in),
-                                                  "new_time_out" => timestamp_to_datetime($alter_log->new_time_out));
+                        $alter_log = $request->fifth_column ? explode(',', $request->fifth_column) : array(null, null);
+                        $new_time_logs = array(   "new_time_in" =>  $alter_log[0],
+                                                  "new_time_out" => $alter_log[1]
+                                                );
                 
                         $request->fourth_column =  $old_time_logs;
                         $request->fifth_column =  $new_time_logs;

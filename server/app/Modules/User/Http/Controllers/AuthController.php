@@ -328,7 +328,8 @@ class AuthController extends Controller
         $result['settings'] = [
             'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll_cutoff->get_payroll_cutoff()),
             'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num ),
-            'country' =>  $bhr_details ? $bhr_details->country : '',
+            // 'country' =>  $bhr_details ? $bhr_details->country : '',
+	    'country' =>  auth()->user()->country_id == 2 ? "philippines" : '',
             'countries' => CountryResource::collection(UtcTimelog::orderBy('country_name')->get() )
         ];
         

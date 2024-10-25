@@ -55,7 +55,6 @@ class NotificationMenu extends Component {
 
   mergeNotifications = (selecttag, data) => {
 
-
     
     const notifications = [];
     const notification_photo = [];
@@ -105,7 +104,9 @@ class NotificationMenu extends Component {
       addNotifications(data.requestStatus, 'status');
     }
 
-    addPhoto(data.profilePhotos);
+    if (data.profilePhotos != undefined) {
+      addPhoto(data.profilePhotos);
+    }
 
     this.setState({ notificaion_list: notifications, photo_list:notification_photo });
   };

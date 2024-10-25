@@ -117,6 +117,7 @@ return [
         'Phillippines'=> "BHR_API_LINK",
         'India' => "BHR_API_LINK_INDIA",
         'Bulgaria' => "BHR_API_LINK_BULGARIA",
+        'Morocco' => "BHR_API_LINK_MOROCCO",
     ], 
 
     'BHR_USER_EMPLOYMENT_STATUS' => [
