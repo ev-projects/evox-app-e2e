@@ -5,7 +5,7 @@ import { Dropdown, Tabs, Tab, Button } from 'react-bootstrap';
 import { getMyNotifications } from '../../../store/actions/dashboard/dashboardActions';
 import "./NotificationMenu.css";
 import "./NotificationMenunew.css";
-
+import { format, parse } from 'date-fns';
 class NotificationMenu extends Component {
   constructor(props) {
     super(props);
@@ -45,6 +45,12 @@ class NotificationMenu extends Component {
    
   }
 
+
+  formatDate = (dateString) => {
+    const date = parse(dateString, 'MM/dd/yyyy HH:mm:ss', new Date());
+    return format(date, 'yyyy-MM-dd HH:mm:ss');
+  };
+
  
 
   mergeNotifications = (selecttag, data) => {
@@ -66,8 +72,8 @@ class NotificationMenu extends Component {
           announcementId: item.announcementId ? item.announcementId : "",
           celebrations: isCelebration ? "It's " : "",
           userId: isCelebration ? item.celebrationID : item.userId ? item.userId : item.approverId ? item.approverId : "",
-          timeIn: item.TimeIn ? item.TimeIn : null,
-          timeOut: item.TimeOut ? item.TimeOut : null,
+          timeIn: item.timeIn ? this.formatDate(item.timeIn) : null,
+          timeOut: item.timeOut ? this.formatDate(item.timeOut) : null,
           dtrDate: item.dtrDate ? item.dtrDate : ""
           });
           
@@ -98,7 +104,6 @@ class NotificationMenu extends Component {
       addNotifications(data.requestsForApproval, 'request');
       addNotifications(data.requestStatus, 'status');
     }
-
 
     addPhoto(data.profilePhotos);
 
