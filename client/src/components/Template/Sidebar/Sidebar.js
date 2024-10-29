@@ -506,7 +506,7 @@ const Sidebar = (props) => {
                   </ul>
                 </li>
               ) : null}
-               {(Authenticator.scanLevel_Feature(["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "manage_announcement"))  &&
+               {(Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], "manage_announcement"))  &&
                           
                           <React.Fragment>
                           <li className="nav-item has-treeview newfeature_announcements">
@@ -530,7 +530,18 @@ const Sidebar = (props) => {
                                   <p>Create Announcement</p>
                                 </Link>
                               </li>
-                              {(Authenticator.check("admin", "admin_manage_all_announcements")|| Authenticator.check("supervisor", "manage_all_announcements")) && (
+                              {/* {(Authenticator.check("admin", "admin_manage_all_announcements")|| Authenticator.check("supervisor", "manage_all_announcements")) && (
+                              <li className="nav-item">
+                                  <Link
+                                    className="nav-link"
+                                    to={global.links.admin_announcement_list}
+                                  >
+                                    <i className="nav-icon fa fa-comments-o  nav-icon" />
+                                    <p>All Announcement List</p>
+                                  </Link>
+                                </li>
+                              )} */}
+                              {(Authenticator.scanLevel_Feature(["Admin"], "manage_announcement")) && (
                               <li className="nav-item">
                                   <Link
                                     className="nav-link"
