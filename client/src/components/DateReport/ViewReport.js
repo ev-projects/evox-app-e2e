@@ -6,10 +6,14 @@ import Select from "react-select";
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
+import {
+  fecthUserContry,
+} from "./PayrollReportApi.js";
 import Wrapper from "../../components/Template/Wrapper";
 import "./ViewReport.css";
+
 import { clearOpsScheduleInstance } from "../../store/actions/opsschedule/opsScheduleActions.js";
-const ViewReport = () => {
+const ViewReport = (props) => {
     const [month, setMonth] = useState("");
     const [year, setYear] = useState("");
     const [noofdays, setNoofdays] = useState("");
@@ -20,9 +24,14 @@ const ViewReport = () => {
     const [datayear, setDatayear] = useState([]);
     const [validmonth, setvalidmonth] = useState(false);
     const [validyear, setvalidyear] = useState(false);
+    const [validcountry, setvalidcountry] = useState(false);
     const [datatimeoff,Setdatatimeoff] = useState([]);
     const [datatimeoffnew,Setdatatimeoffnew] = useState([]);
+    const [country,setCountry] = useState({});
+    const [countryid,setCountryid] = useState("");
     const dispatch = useDispatch();
+
+    const { user, usercountry } = props;
     useEffect(() => {
       const currentYear = new Date().getFullYear();
       const yearsArray = [];
@@ -31,7 +40,11 @@ const ViewReport = () => {
       }
       yearsArray.sort((a, b) => b - a);
       setDatayear(yearsArray); 
+      dispatch(fecthUserContry());
     }, []);
+
+
+
     const getMonthName = (monthNumber) => {
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -47,17 +60,29 @@ const getDaysInMonth = (year, month) => {
     const handlesave = async (e) => {
       settext(currentmonth + " 01 - " + currentmonth + " " + getDaysInMonth(year,month));
       settext1(((month - 1) == 0 ? getMonthName(12) + " 21 - " + currentmonth + " 20" : getMonthName(month - 1) + " 21 - " + currentmonth + " 20"));
-      if (year == "" && month == "") {
+      if (year == "" && month == "" && countryid == "") {
         setvalidyear(true);
         setvalidmonth(true);
+        setvalidcountry(true);
+      }if (year == "" && month == "") {
+        setvalidyear(true);
+        setvalidmonth(true);
+      }if (month == "" && countryid == "") {
+        setvalidmonth(true);
+        setvalidcountry(true);
+      }if (year == "" && countryid == "") {
+        setvalidyear(true);
+        setvalidcountry(true);
       }else if (year == "") {
         setvalidyear(true);
       }else if(month == ""){
         setvalidmonth(true);
+      }else if(countryid == ""){
+        setvalidcountry(true);
       }else{
         await API.call({
           method: "GET",
-          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}`,
+          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=${countryid}`,
         })
           .then((result) => {
             console.log(result);
@@ -85,10 +110,12 @@ const getDaysInMonth = (year, month) => {
         setvalidyear(true);
       }else if(month == ""){
         setvalidmonth(true);
+      }else if(countryid == ""){
+        setvalidcountry(true);
       }else{
         await API.call({
           method: "GET",
-          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&export=1`,
+          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&export=1&country=${countryid}`,
         })
           .then((result) => {
 
@@ -195,6 +222,39 @@ const getDaysInMonth = (year, month) => {
                   </div>
                         </Col>
 
+                        <Col size="3"> 
+                        <div className="form-group">
+                    <select
+                      name="type"
+                      className="form-control"
+                      required
+                      value={countryid}
+                      onChange={(e) => {
+                        console.log(e.target.value,"CountryId");
+                        setCountryid(e.target.value);
+                        if (e.target.value == "") {
+                          setvalidcountry(true);
+                        } else {
+                          setvalidcountry(false);
+                        }
+                      }}
+                    >
+                      <option value="">- Select Country -</option>
+                      {usercountry && usercountry.length > 0 &&
+                        usercountry.map((country, pos) => (
+                          <option value={country.country_id}>
+                            {country.country_name}
+                          </option>
+                        ))}
+                    </select>
+                    {validcountry && (
+                      <label style={{ color: "red" }}>
+                        Please Select Country
+                      </label>
+                    )}
+                  </div>
+                        </Col>
+
                         <Col size="2"> 
                           
                             <Button variant="primary" className="mr-2" onClick={handlesave}>
@@ -293,6 +353,11 @@ const getDaysInMonth = (year, month) => {
       
         
           )}
+const mapStateToProps = (state) => {
+    return {
+      user: state.user,
+      usercountry: state.dashboard.my_country,
+    };
+};
 
-
-export default ViewReport
+export default connect(mapStateToProps)(ViewReport)

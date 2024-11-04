@@ -1639,7 +1639,7 @@ class ReportController extends Controller
    
         try {    
            
-            $result_sets = call_sp('EVOX_PAYROLL_REPORT', [$request->timeoff_month,$request->timeoff_year]);
+            $result_sets = call_sp('EVOX_PAYROLL_REPORT', [$request->timeoff_month,$request->timeoff_year,$request->country]);
             $user_timeoff = $result_sets[0];
             $user_timeoff_new = $result_sets[1];
            

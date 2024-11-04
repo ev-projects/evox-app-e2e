@@ -48,6 +48,12 @@ const dashboardReducers = (state = initState, action) => {
                 my_notifications : action.data,
             }
             break;
+            case "FETCH_MY_COUNTRY":
+            result = {
+                ...state,
+                my_country : action.data,
+            }
+            break;
         case "FETCH_BIRTHDAY_ANNIVERSARY":
             result = {
                 ...state,

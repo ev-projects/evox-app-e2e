@@ -1051,4 +1051,17 @@ class UserController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+    public function getUserCountry(Request $request){
+    try {   
+        $me = Auth::user();
+        $result_sets = call_sp('EH_SP_Get_User_Country', [$me->LevelId]);
+        $response = $result_sets [0];
+        return $response;
+    }catch (Exception $e) {
+    log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
+    return error_response(trans('messages.error_default'), $e);
+    }
+}
+
 }

@@ -70,6 +70,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('export_dpa_list', 'UserController@export_dpa_list');
 
     Route::get('sub_department_list', 'UserController@sub_department_list');
+
+    Route::get('getusercountry', 'UserController@getUserCountry');
+
 });
 #####################################################################################################
 
@@ -198,3 +201,4 @@ Route::group(['prefix' => 'generate/dtr', 'middleware' => ['jwtauth', 'auth.apik
     Route::post('/', 'UserController@generateDtrDate');
 
 });
+
