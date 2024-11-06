@@ -28,7 +28,9 @@ $ne = 0;
 
             # If not, fetch the User Instance from the currently logged in's supervisee list.
            } else {
-              $ne = 3; return auth()->user()->users_handled()->findOrFail( $user_id );
+              // $ne = 3; return auth()->user()->users_handled()->findOrFail( $user_id );
+              $user = User::findOrFail($user_id);
+              $ne = 3; return auth()->user()->users_handled(null, null, $user->is_active)->findOrFail( $user_id );
             }
 
         }catch(Exception $e){

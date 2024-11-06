@@ -56,10 +56,10 @@ class ScheduleDetail extends Model{
         
         # Sets the default value for the Parsed Detail to Date which merges the Start & Start Flexy & End & End Flexy with the Corresponding Time.
         $result = [
-            'start_datetime'        => add_time_to_timestamp( $date, $this->start_time ),
-            'end_datetime'          => add_time_to_timestamp( $date, $this->end_time ),
-            'start_flexy_datetime'  => !is_null( $this->start_flexy_time ) ? add_time_to_timestamp( $date, $this->start_flexy_time ) : null,
-            'end_flexy_datetime'    => !is_null( $this->end_flexy_time ) ? add_time_to_timestamp( $date, $this->end_flexy_time ) : null,
+            'start_datetime'        => add_time_to_timestamp( $date, (int)$this->start_time ),
+            'end_datetime'          => add_time_to_timestamp( $date, (int)$this->end_time ),
+            'start_flexy_datetime'  => !is_null( $this->start_flexy_time ) ? add_time_to_timestamp( $date, (int)$this->start_flexy_time ) : null,
+            'end_flexy_datetime'    => !is_null( $this->end_flexy_time ) ? add_time_to_timestamp( $date, (int)$this->end_flexy_time ) : null,
             'break_time'            => $this->break_time
         ];
 
