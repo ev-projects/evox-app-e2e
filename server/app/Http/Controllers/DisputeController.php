@@ -88,6 +88,7 @@ class DisputeController extends Controller
 
     public function showExport(Dispute $dispute, Request $request)
     {
+        $me = Auth::user();
         $result_sets = call_sp('EV_SP_Payroll_Dispute_new', [$request->department,$request->disputeType,$request->startDate,$request->endDate,$me->id,$me->LevelId,1,null]);
         try {
             log_activity( trans('messages.list_role_attempt') );
