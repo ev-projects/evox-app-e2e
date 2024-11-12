@@ -39,7 +39,7 @@ class DisputeExport implements FromCollection, WithHeadings, WithEvents
                 $event->sheet->getDelegate()->insertNewRowBefore(1, 1); // Add a new row at the top
                 $event->sheet->getDelegate()->mergeCells('J1:L1');
                 if(isset($this->pre_mon)){
-                    $event->sheet->getDelegate()->setCellValue('J1', 'Cutoff ('.$this->pre_mon.' To '.$this->cur_mon.')');
+                    $event->sheet->getDelegate()->setCellValue('J1', 'Payroll Cutoff ('.$this->pre_mon.' To '.$this->cur_mon.')');
                 }else{
                     $event->sheet->getDelegate()->setCellValue('J1', 'Overall Report');
                 }

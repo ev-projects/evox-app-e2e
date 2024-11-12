@@ -90,7 +90,7 @@ class DisputeController extends Controller
         $result_sets = call_sp('EV_SP_Payroll_Dispute', [$request->department,$request->disputeType,$request->startDate,$request->endDate]);
         try {
             log_activity( trans('messages.list_role_attempt') );
-            return Excel::download(new DisputeExport($result_sets[0],$request->start,$request->end), 'Dispute.csv');
+            return Excel::download(new DisputeExport($result_sets[0],$request->startDate,$request->endDate), 'Dispute.csv');
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
