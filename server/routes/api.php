@@ -51,4 +51,13 @@ Route::post('sync_timeoff_allocation_fail_sync', 'SyncController@timeoff_allocat
 Route::get('get_dashboard_all/{page_type}', 'BookingController@get_dashboard_all')->middleware('jwtauth', 'auth.apikey');
 Route::get('get_redis_notifications/{user_id}', 'RedisController@get_redis_notifications')->middleware('jwtauth', 'auth.apikey');
 
+// PayRoll Dispute
+Route::post('storedispute', 'DisputeController@store')->middleware('jwtauth', 'auth.apikey');
+Route::get('getdispute', 'DisputeController@show')->middleware('jwtauth', 'auth.apikey');
+Route::get('getdisputeExport', 'DisputeController@showExport')->middleware('jwtauth', 'auth.apikey');
+Route::get('getpayrollcutoff/{fromdate}/{todate}', 'DisputeController@getpayrollcutoff')->middleware('jwtauth', 'auth.apikey');
+Route::get('getuserdispute/{id}', 'DisputeController@getEmployeeDispute')->middleware('jwtauth', 'auth.apikey');
+Route::put('updatedispute/{id}', 'DisputeController@UpdateDispute')->middleware('jwtauth', 'auth.apikey');
+
+
 

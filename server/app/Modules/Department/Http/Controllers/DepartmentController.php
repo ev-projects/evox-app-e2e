@@ -229,4 +229,22 @@ class DepartmentController extends Controller
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
+
+
+        /**
+     * Get All Department
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get_department_all( Request $request ){
+            try {
+                $department = call_sp('EH_SP_Get_All_Department', []);
+    
+                return success_response(
+                    trans('messages.all_department_success'), 
+                    $department[0]
+                );
+            } catch(Exception $e){
+                return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+            }
+    }
 }

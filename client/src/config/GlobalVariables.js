@@ -116,7 +116,9 @@
     ops_schedule_list               :  "/app/ops/ManageOpsSchedulesList/",
 
     // Report
-    view_report                     :   "/app/viewreport/"
+    view_report                     :   "/app/viewreport/",
+    payroll_dispute                 :   "/app/payrolldispute/",
+    payroll_dispute_view                 :   "/app/payrolldisputeview/"
    
 };
 

@@ -675,18 +675,22 @@ const Sidebar = (props) => {
                 </Link>
                 </li>
   )}
-                {/* <li className="nav-item">
+  {!Authenticator.scanLevel(["Payroll","Employee","DivisionHead","Board","Admin","HR"]) && (
+                <li className="nav-item">
                 <Link className="nav-link" to={global.links.payroll_dispute}>
                   <i className="nav-icon fa fa-clock-o" />
                   <p className="blue"> Create Dispute</p>
                 </Link>
                 </li>
+  )}
+   {(Authenticator.scanLevel(["SubDepartment Head","Department Head","Payroll"])) && (
                 <li className="nav-item">
                 <Link className="nav-link" to={global.links.payroll_dispute_view}>
                   <i className="nav-icon fa fa-clock-o" />
                   <p className="blue"> Payroll Dispute Report</p>
                 </Link>
-                </li> */}
+                </li>
+   )}
                   </ul>
                 </li>
               )}

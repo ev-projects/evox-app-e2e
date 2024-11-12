@@ -64,6 +64,24 @@ export const fetchUser = ( name_string ) => {
     }
 }
 
+export const fetchUserDispute = ( name_string ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/search-user-dispute/" + name_string,
+        })
+        .then(result => {
+            dispatch({
+                'type'      : 'FETCH_USER', 
+                'userLists'  : result.data 
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 export const assignRolesPermissions = ( user_id , post_data ) => {
     // Add or Remove supervisor access
