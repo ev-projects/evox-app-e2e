@@ -3,7 +3,7 @@
 namespace App\Modules\Department\Http\Controllers;
 
 use Exception;
-
+use Auth;
 use Illuminate\Http\Request;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -237,12 +237,48 @@ class DepartmentController extends Controller
      */
     public function get_department_all( Request $request ){
             try {
-                $department = call_sp('EH_SP_Get_All_Department', []);
+                // $department = call_sp('EH_SP_Get_All_Department', []);
     
-                return success_response(
+                // return success_response(
+                //     trans('messages.all_department_success'), 
+                //     $department[0]
+                // );
+                $me = Auth::user();
+                if(is_valid($me ->LevelId)){
+                    if($me->LevelId != 0){
+                        $perpage_count = 5;
+                    
+                    $response = call_sp("EH_SP_Get_Department_By_UserId",
+                    
+                    [
+                        $me ->id, // vishnu this_id
+                        null,
+                        0,
+                        1
+                        ]
+                    ); 
+                        $result = $response[0] ? array_map(function($item) {
+                            $dep_name = null;
+                            if(isset($item->Name)){
+                                $dep_name = $item->Name;
+                            }
+                            if(isset($item->DepartmentName)){
+                                $dep_name = $item->DepartmentName;
+                            }   
+                            return (object) array(
+                                'id' => $item->Id,
+                                'department_name' => $dep_name,
+                            );
+                        }, $response[0]): []
+                    ;
+                
+                    return success_response(
                     trans('messages.all_department_success'), 
-                    $department[0]
-                );
+                    $result
+                    );
+                    }
+                }
+                return  [];
             } catch(Exception $e){
                 return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
             }

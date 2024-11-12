@@ -8,7 +8,7 @@ const initState = {
 
     isUserRolesPermissionsLoaded: false,
     userRole: null,
-
+    payroll: "Novmber 2024",
     isUserListLoaded: false,
     userLists: {},
 }
@@ -31,6 +31,11 @@ const assignRoleReducers = (state = initState, action) => {
                 isUserListLoaded : true,
             };
             break;
+            case "FETCH_PAYROLL_PERIOD":
+                return {
+                    payroll : action.payroll,
+                };
+                break;
         case "FETCH_USER_ROLE_AND_PERMISSION":
             return {
                 userRole : action.userRole,

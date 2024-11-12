@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Authenticator from "../../services/Authenticator";
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
 import Wrapper from "../Template/Wrapper";
 import { connect,useDispatch } from 'react-redux';
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory} from "react-router-dom";
 import {
   ContainerHeader,
   Content,
@@ -17,7 +17,12 @@ import {
 import {fetchUserRolePermission,assignRolesPermissions,  fetchUserFeatures, assignLevelFeatures,fetchUserDispute } from '../../store/actions/admin/assignRoleActions'
 function DisputeForm(props) {
   let history = useHistory();
-  const { userLists,user} = props;
+  const { userLists,user, payroll} = props;
+  const inputRef = useRef(null);
+  const inputRef1 = useRef(null);
+  const inputRef2 = useRef(null);
+  const inputref3 = useRef(null);
+  
   const dispatch = useDispatch();
   const [employeeName, setEmployeeName] = useState('');
   const [validatename, setValidateName] = useState(true);
@@ -26,7 +31,7 @@ function DisputeForm(props) {
   const [startdate, setStartdate] = useState('');
   const [enddate, setEnddate] = useState('');
   const [employeeDetails, setEmployeeDetails] = useState({});
-  const [cutoff, setCutoff] = useState([]);
+  const [cutoff, setCutoff] = useState('');
   const [userid,setUserid] = useState('')
   const [validationResult, setValidationResult] = useState('');
   const [formData1, setFormData1] = useState({
@@ -34,6 +39,11 @@ function DisputeForm(props) {
     last_name:'',
     emp_num:'',
     department_name:''
+  });
+
+  const [formvalidate1, setFormvalidate1] = useState({
+    dispute_type:'',
+    description:'',
   });
 
   const [formvalidate, setFormvalidate] = useState({
@@ -65,7 +75,7 @@ function DisputeForm(props) {
     created_by:null,
     dispute_type:"",
     description:"",
-    status: "",
+    status: "open",
     LWOP: '',
     UT: '',
     TARDINESS: '',
@@ -114,6 +124,19 @@ function DisputeForm(props) {
       return 1;
     }
   };
+
+  const stringFields = [
+    'LWOP', 'UT', 'TARDINESS',
+    'Late', 'Night_Shift_Diff', 'Overtime', 'OT_with_NSD', 'Rest_Day',
+    'Rest_Day_200', 'Rest_Day_Work_With_NSD', 'Rest_Day_Work_With_OT',
+    'Rest_Day_Work_NSD_With_OT', 'Legal_Holiday', 'Legal_Holiday_With_NSD',
+    'Legal_Holiday_With_Overtime', 'Legal_Holiday_OT_With_OT', 'Special_Holiday',
+    'Special_Holiday_200', 'Special_Holiday_With_NSD', 'Special_Holiday_With_Overtime',
+    'Special_Holiday_OT_With_OT', 'Referral_Fee', 'Bonus', 'LWOP_Adjustment',
+    'Commission', 'BPs_Remarks', 'BPs_Date_Encoded'
+  ];
+  
+
 
   useEffect(() => {
 
@@ -215,28 +238,35 @@ function DisputeForm(props) {
   const handleCutoff = async (fromdate,todate) => {
     try {
      
-        
-        API.call({
+   
+       await API.call({
             method: "get",
             url: "/getpayrollcutoff/"+fromdate+"/"+todate,
         })
         .then(result => {
           if (result.data && Array.isArray(result.data) && result.data.length > 0) {
-            setCutoff(result.data.name);
-            setFormData({
-              ...formData,
-              ["Payroll_Period"]: result.data[0].name,
-              ["Valid_From"]: fromdate,
-              ["Valid_To"]: todate,
-              ["Payroll_Cutoff"]: fromdate+" To "+todate,
-              ["created_by"]: user.id,
-            });
+            // alert(result.data[0].name);
+            // setCutoff(result.data[0].name);
+           dispatch({
+            'type'      : 'FETCH_PAYROLL_PERIOD', 
+            'payroll'  : result.data[0].name
+            })
           }
           
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
         });
+       
+        setFormData({
+          ...formData,
+          ["Valid_From"]: fromdate,
+          ["Valid_To"]: todate,
+          ["Payroll_Cutoff"]: fromdate+" To "+todate,
+          ["created_by"]: user.id,
+          ["Payroll_Period"]: payroll,
+        });
+      
 
     //   const response = await axios.get(process.env.REACT_APP_API_BASE_URL+'/user/search-user-dispute/'+employeeName);
     //   setEmployeeDetails(response.data[0] || {}); // Assume first match for simplicity
@@ -256,7 +286,9 @@ function DisputeForm(props) {
         })
         .then(result => {
           if (result.data && Array.isArray(result.data) && result.data.length > 0) {
-            setEmployeeDetails(result.data[0]);
+            if(result.data.length > 0){
+              alert("test1");
+                            setEmployeeDetails(result.data[0]);
             setFormData({
                 ...formData,
                 ["employee_id"]: result.data[0].id,
@@ -265,12 +297,26 @@ function DisputeForm(props) {
               });
             setValidateName(true); 
             setValidateeid(true);   
+            }else{
+              alert("test2");
+              setFormData({
+                ...formData,
+                ["employee_id"]: result.data[0].id,
+                ["Rest_Day_200"]: 0,
+                ["Special_Holiday_200"]: 0,
+              });
+            setValidateName(true); 
+            setValidateeid(true);  
+            }
+            
           }else{
             setValidateName(false);
+            alert("test3");
           }
           
         })
         .catch(e => {
+          alert("test4");
             dispatch( Formatter.alert_error( e ) ) 
         });
 
@@ -304,26 +350,71 @@ function DisputeForm(props) {
         });
         setFormvalidate({
           ...formvalidate,
-          [e.target.name]: "Please Enter Number",
+          [e.target.name]: "Allow Only Numeric ",
         });
       }
+    }else{
+    if(formvalidate1[name]!== undefined){
+      setFormvalidate1({
+        ...formvalidate1,
+        [e.target.name]: "",
+      });
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
     }else{
       setFormData({
         ...formData,
         [e.target.name]: e.target.value,
       });
     }
-
+  }
   
   };
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
 
-   
-    if(!formData.employee_id){
+   if(!formData.dispute_type && !formData.description){
+    e.preventDefault();    
+    setFormvalidate1({
+      ...formvalidate,
+      ["dispute_type"]: "Please Enter DisputeType",
+      ["description"]: "Please Enter Description",
+      
+    });
+    window.scrollTo(0, 0);
+    inputRef.current.focus();
+   }else if(!formData.dispute_type){
+    e.preventDefault();    
+    setFormvalidate1({
+      ...formvalidate,
+      ["dispute_type"]: "Please Enter DisputeType",
+    });
+    window.scrollTo(0, 0);
+    inputRef.current.focus();
+   }else if(!formData.description){
+    e.preventDefault();    
+    setFormvalidate1({
+      ...formvalidate,
+      ["description"]: "Please Enter Description",
+    });
+    window.scrollTo(0, 0);
+    inputRef1.current.focus();
+   }else{
+    e.preventDefault();
+    const allEmpty = stringFields.every(field => formData[field] === "");
+    if(allEmpty){
+      e.preventDefault();   
+      dispatch(Formatter.alert_error_message("Please fill in at least one dispute value."));
+      window.scrollTo(0, 0);
+      inputref3.current.focus();
+    }
+    else if(!formData.employee_id){
       e.preventDefault();
-      setValidateeid(false);   
+      dispatch(Formatter.alert_error_message("Please Select Employee..."));
+      // setValidateeid(false);   
     }else{
       e.preventDefault();    
     
@@ -335,6 +426,15 @@ function DisputeForm(props) {
         })
         .then(result => {
             dispatch( Formatter.alert_success( result, 3000 ));
+            dispatch({
+              'type'      : 'FETCH_USER', 
+              'userLists'  : []
+          })
+          setEmployeeName('');
+          window.scrollTo(0, 0);
+          inputRef2.current.focus();
+          handleblur();
+
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
@@ -343,6 +443,7 @@ function DisputeForm(props) {
       console.error("Error submitting dispute:", error);
     }
   }
+}
   };
 
    // Function to handle form submission
@@ -356,7 +457,8 @@ function DisputeForm(props) {
           url: `/updatedispute/${props.params.id}`,
           data: {
             Payroll_Remarks : formData.Payroll_Remarks,
-            Payout_Inclusion : formData.Payout_Inclusion
+            Payout_Inclusion : formData.Payout_Inclusion,
+            status : formData.status
 
           },
         })
@@ -372,22 +474,56 @@ function DisputeForm(props) {
     }
 
   };
+  const defaultFormData = {
+    employee_id: null,
+    dispute_type: "",
+    description: "",
+    LWOP: '',
+    UT: '',
+    TARDINESS: '',
+    Late: '',
+    Night_Shift_Diff: '',
+    Overtime: '',
+    OT_with_NSD: '',
+    Rest_Day: '',
+    Rest_Day_200: '',
+    Rest_Day_Work_With_NSD: '',
+    Rest_Day_Work_With_OT: '',
+    Rest_Day_Work_NSD_With_OT: '',
+    Legal_Holiday: '',
+    Legal_Holiday_With_NSD: '',
+    Legal_Holiday_With_Overtime: '',
+    Legal_Holiday_OT_With_OT: '',
+    Special_Holiday: '',
+    Special_Holiday_200: '',
+    Special_Holiday_With_NSD: '',
+    Special_Holiday_With_Overtime: '',
+    Special_Holiday_OT_With_OT: '',
+    Referral_Fee: '',
+    Bonus: '',
+    LWOP_Adjustment: '',
+    Commission: '',
+    BPs_Remarks: '',
+    BPs_Date_Encoded: '',
+    Payroll_Remarks: '',
+    Payout_Inclusion: '',
+  };
+  
+  const defaultFormData1 = {
+    first_name: '',
+    last_name: '',
+    emp_num: '',
+    department_name: '',
+  };
 
 
  const handleblur = (e) =>{
 
-    // setFormData({
-    //   ...formData,
-    //   ["employee_id"]: null,
-    //   ["Rest_Day_200"]: 0,
-    //   ["Special_Holiday_200"]: 0,
-    // });
     setFormData({
       ...formData,
       employee_id: null,
       dispute_type: "",
       description: "",
-      status: "",
       LWOP: '',
       UT: '',
       TARDINESS: '',
@@ -425,6 +561,9 @@ function DisputeForm(props) {
       ["emp_num"]:'',
       ["department_name"]: '',
     });
+
+    // setFormData(defaultFormData);
+    // setFormData1(defaultFormData1);
   }
 
   return (
@@ -446,6 +585,7 @@ function DisputeForm(props) {
 										<input type="textfield" className="form-control" 
                     onChange={(e) => { setEmployeeName(e.target.value); if(e.target.value.length>2){dispatch(fetchUserDispute(e.target.value));} }} 
                     onBlur={handleblur}
+                    ref={inputRef2}
                     variant="primary" 
                     placeholder="Enter Name..." 
                     name="nameFilter" 
@@ -616,20 +756,20 @@ function DisputeForm(props) {
               </Col>  
               <Col size="3">
                 <div className="form-group">
-                  <label>Type of Dispute:</label>
+                  <label>Type of Dispute:* {formvalidate1.dispute_type && <span style={{"color" : "red"}}>{formvalidate1.dispute_type}</span>}</label>
                   <input
                     type="text"
                     placeholder="Enter Type"
                     className="form-control"
-                    required
                     name='dispute_type'
                     value={formData.dispute_type}
                     onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
+                    disabled = {!props.params.id ? false : true }
+                    ref={inputRef}
                   />
                 </div>
               </Col>
-             
+             {props.params.id ?
               <Col size="3">
                 <div className="form-group">
                   <label>Status:</label>
@@ -640,7 +780,6 @@ function DisputeForm(props) {
 				  value={formData.status}
 				  style={{ display: 'block' }}
                   onChange={handleChange}
-                  disabled = {!props.params.id ?false : true }
 				  >
 				<option    label="Select Type" />
                 <option value={"open"} label={"Open"} />
@@ -648,17 +787,34 @@ function DisputeForm(props) {
 				</select>
                 </div>
               </Col>
+              : 
               <Col size="3">
                 <div className="form-group">
-                  <label>Description:</label>
+                  <label>Status:</label>
+        <input
+				  className="form-control" 
+				  name="status"
+          type='text'
+          required
+				  value={"open"}
+				  style={{ display: 'block' }}
+          onChange={handleChange}
+          disabled = {props.params.id ? false : true }
+				>
+				</input>                
+        </div>
+              </Col>}
+              <Col size="3">
+                <div className="form-group">
+                  <label>Description:* {formvalidate1.description && <span style={{"color" : "red"}}>{formvalidate1.description}</span>}</label>
                   <textarea
                     placeholder="Enter Description"
                     className="form-control"
                     name="description"
-                    required
                     value={formData.description}
                     onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
+                    disabled = {!props.params.id ? false : true }
+                    ref={inputRef1}
                   />
                 </div>
               </Col>
@@ -673,6 +829,7 @@ function DisputeForm(props) {
                     placeholder="Enter LWOP"
                     className="form-control"
                     name='LWOP'
+                    ref={inputref3}
                     value={formData.LWOP}
                     onChange={handleChange}
                     disabled = {!props.params.id ?false : true }
@@ -697,10 +854,10 @@ function DisputeForm(props) {
             
               <Col size="3">
                 <div className="form-group">
-                  <label>TARDINESS: {formvalidate.TARDINESS && <span style={{"color" : "red"}}>{formvalidate.TARDINESS}</span>}</label>
+                  <label>Tardiness: {formvalidate.TARDINESS && <span style={{"color" : "red"}}>{formvalidate.TARDINESS}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter TARDINESS"
+                    placeholder="Enter Tardiness"
                     className="form-control"
                     name='TARDINESS'
                     value={formData.TARDINESS}
@@ -726,10 +883,10 @@ function DisputeForm(props) {
               </Col>
               <Col size="3">
                 <div className="form-group">
-                  <label>NightShiftDiff: {formvalidate.Night_Shift_Diff && <span style={{"color" : "red"}}>{formvalidate.Night_Shift_Diff}</span>}</label>
+                  <label>Night Shift Diff: {formvalidate.Night_Shift_Diff && <span style={{"color" : "red"}}>{formvalidate.Night_Shift_Diff}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter NightShiftDiff"
+                    placeholder="Enter Night Shift Diff"
                     className="form-control"
                     name='Night_Shift_Diff'
                     value={formData.Night_Shift_Diff}
@@ -741,10 +898,10 @@ function DisputeForm(props) {
          
               <Col size="3">
                 <div className="form-group">
-                  <label>Overtime: {formvalidate.Overtime && <span style={{"color" : "red"}}>{formvalidate.Overtime}</span>}</label>
+                  <label>Over Time: {formvalidate.Overtime && <span style={{"color" : "red"}}>{formvalidate.Overtime}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Overtime"
+                    placeholder="Enter OverTime"
                     className="form-control"
                     name='Overtime'
                     value={formData.Overtime}
@@ -758,7 +915,7 @@ function DisputeForm(props) {
                   <label>OT with NSD: {formvalidate.OT_with_NSD && <span style={{"color" : "red"}}>{formvalidate.OT_with_NSD}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter OT with NSD"
+                    placeholder="Enter OT With NSD"
                     className="form-control"
                     name='OT_with_NSD'
                     value={formData.OT_with_NSD}
@@ -803,7 +960,7 @@ function DisputeForm(props) {
                   <label>Rest Day Work with NSD: {formvalidate.Rest_Day_Work_With_NSD && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_Work_With_NSD}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Rest Day Work with NSD"
+                    placeholder="Enter Rest Day Work With NSD"
                     className="form-control"
                     name='Rest_Day_Work_With_NSD'
                     value={formData.Rest_Day_Work_With_NSD}
@@ -814,10 +971,10 @@ function DisputeForm(props) {
               </Col>
               <Col size="3">
                 <div className="form-group">
-                  <label>Rest Day Work with OT: {formvalidate.Rest_Day_Work_With_OT && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_Work_With_OT}</span>}</label>
+                  <label>Rest Day Work With OT: {formvalidate.Rest_Day_Work_With_OT && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_Work_With_OT}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Rest Day Work with OT"
+                    placeholder="Enter Rest Day Work With OT"
                     className="form-control"
                     name='Rest_Day_Work_With_OT'
                     value={formData.Rest_Day_Work_With_OT}
@@ -829,10 +986,10 @@ function DisputeForm(props) {
    
               <Col size="3">
                 <div className="form-group">
-                  <label>Rest Day Work NSD with OT: {formvalidate.Rest_Day_Work_NSD_With_OT && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_Work_NSD_With_OT}</span>}</label>
+                  <label>Rest Day Work NSD With OT: {formvalidate.Rest_Day_Work_NSD_With_OT && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_Work_NSD_With_OT}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Rest Day Work NSD with OT"
+                    placeholder="Enter Rest Day Work NSD With OT"
                     className="form-control"
                     name='Rest_Day_Work_NSD_With_OT'
                     value={formData.Rest_Day_Work_NSD_With_OT}
@@ -857,10 +1014,10 @@ function DisputeForm(props) {
               </Col>
               <Col size="3">
                 <div className="form-group">
-                  <label>Legal Holiday with NSD: {formvalidate.Legal_Holiday_With_NSD && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_With_NSD}</span>}</label>
+                  <label>Legal Holiday With NSD: {formvalidate.Legal_Holiday_With_NSD && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_With_NSD}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Legal Holiday with NSD"
+                    placeholder="Enter Legal Holiday With NSD"
                     className="form-control"
                     name='Legal_Holiday_With_NSD'
                     value={formData.Legal_Holiday_With_NSD}
@@ -872,10 +1029,10 @@ function DisputeForm(props) {
         
               <Col size="3">
                 <div className="form-group">
-                  <label>Legal Holiday with Overtime: {formvalidate.Legal_Holiday_With_Overtime && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_With_Overtime}</span>}</label>
+                  <label>Legal Holiday With Overtime: {formvalidate.Legal_Holiday_With_Overtime && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_With_Overtime}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Legal Holiday with Overtime"
+                    placeholder="Enter Legal Holiday With Overtime"
                     className="form-control"
                     name='Legal_Holiday_With_Overtime'
                     value={formData.Legal_Holiday_With_Overtime}
@@ -886,10 +1043,10 @@ function DisputeForm(props) {
               </Col>
               <Col size="3">
                 <div className="form-group">
-                  <label>Legal Holiday OT with OT: {formvalidate.Legal_Holiday_OT_With_OT && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_OT_With_OT}</span>}</label>
+                  <label>Legal Holiday OT With OT: {formvalidate.Legal_Holiday_OT_With_OT && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_OT_With_OT}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Legal Holiday OT with OT"
+                    placeholder="Enter Legal Holiday OT With OT"
                     className="form-control"
                     name='Legal_Holiday_OT_With_OT'
                     value={formData.Legal_Holiday_OT_With_OT}
@@ -930,10 +1087,10 @@ function DisputeForm(props) {
               :""}
               <Col size="3">
                 <div className="form-group">
-                  <label>Special Holiday with NSD: {formvalidate.Special_Holiday_With_NSD && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_With_NSD}</span>}</label>
+                  <label>Special Holiday With NSD: {formvalidate.Special_Holiday_With_NSD && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_With_NSD}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Special Holiday with NSD"
+                    placeholder="Enter Special Holiday With NSD"
                     className="form-control"
                     name='Special_Holiday_With_NSD'
                     value={formData.Special_Holiday_With_NSD}
@@ -944,10 +1101,10 @@ function DisputeForm(props) {
               </Col>
               <Col size="3">
                 <div className="form-group">
-                  <label>Special Holiday with Overtime: {formvalidate.Special_Holiday_With_Overtime && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_With_Overtime}</span>}</label>
+                  <label>Special Holiday With Overtime: {formvalidate.Special_Holiday_With_Overtime && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_With_Overtime}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Special Holiday with Overtime"
+                    placeholder="Enter Special Holiday With Overtime"
                     className="form-control"
                     name='Special_Holiday_With_Overtime'
                     value={formData.Special_Holiday_With_Overtime}
@@ -959,10 +1116,10 @@ function DisputeForm(props) {
 
               <Col size="3">
                 <div className="form-group">
-                  <label>Special Holiday OT with OT: {formvalidate.Special_Holiday_OT_With_OT && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_OT_With_OT}</span>}</label>
+                  <label>Special Holiday OT With OT: {formvalidate.Special_Holiday_OT_With_OT && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_OT_With_OT}</span>}</label>
                   <input
                     type="number"
-                    placeholder="Enter Special Holiday OT with OT"
+                    placeholder="Enter Special Holiday OT With OT"
                     className="form-control"
                     name='Special_Holiday_OT_With_OT'
                     value={formData.Special_Holiday_OT_With_OT}
@@ -1033,9 +1190,9 @@ function DisputeForm(props) {
 
               <Col size="3">
                 <div className="form-group">
-                  <label>BPs Remarks:</label>
+                  <label>BP's Remarks:</label>
                   <textarea
-                    placeholder="Enter BPs Remarks"
+                    placeholder="Enter BP's Remarks"
                     className="form-control"
                     name="BPs_Remarks"
                     value={formData.BPs_Remarks}
@@ -1138,6 +1295,7 @@ const mapStateToProps = (state) => {
 	return {
         user: state.user,
 		userLists     						: state.assignRole.userLists, 
+    payroll     						: state.assignRole.payroll, 
 		isUserListLoaded     				: state.assignRole.isUserListLoaded,
 
 		// isRolesLoaded     				: state.assignRole.isRolesLoaded,

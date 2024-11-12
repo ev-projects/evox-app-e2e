@@ -123,7 +123,8 @@ const DisputeReport = (props) => {
     <div  style={{ "margin-left": "20px" }}>
 
     <ContainerWrapper>
-     
+    <ContainerBody>
+    <Content label="Create Room">
     
         <h2 className="">Dispute Report</h2>
         <div>
@@ -153,7 +154,7 @@ const DisputeReport = (props) => {
 										
 										<option    label="Select Department" />
 										  { department.map(function(department){
-											  return  <option value={department.Id} label={department.Name} />
+											  return  <option value={department.id} label={department.department_name} />
 										  })}
 										</select>
 									</div>
@@ -217,40 +218,40 @@ const DisputeReport = (props) => {
           <thead>
           <tr>
 
-        <th>Employee ID</th>
-        <th>Employee Name</th>
-        <th>Employee Department</th>
+        <th>Emp No</th>
+        <th>Name</th>
+        <th>Department</th>
         <th>Dispute Type</th>
         <th>Description</th>
-        <th>Created By</th>
         <th>Status</th>
         <th>LWOP</th>
         <th>UT</th>
         <th>Tardiness</th>
         <th>Late</th>
-        <th>Night Shift Diff</th>
-        <th>Overtime</th>
+        <th>NSD</th>
+        <th>OT</th>
         <th>OT with NSD</th>
-        <th>Rest Day</th>
-        <th>Rest Day 200</th>
-        <th>Rest Day Work with NSD</th>
-        <th>Rest Day Work with OT</th>
-        <th>Rest Day Work NSD with OT</th>
-        <th>Legal Holiday</th>
-        <th>Legal Holiday with NSD</th>
-        <th>Legal Holiday with Overtime</th>
-        <th>Legal Holiday OT with OT</th>
-        <th>Special Holiday</th>
-        <th>Special Holiday 200</th>
-        <th>Special Holiday with NSD</th>
-        <th>Special Holiday with Overtime</th>
-        <th>Special Holiday OT with OT</th>
+        <th>RD</th>
+        <th>RD 200</th>
+        <th>RDW with NSD</th>
+        <th>RDW with OT</th>
+        <th>RDW NSD with OT</th>
+        <th>LH</th>
+        <th>LH with NSD</th>
+        <th>LH with OT</th>
+        <th>LH OT with OT</th>
+        <th>SH</th>
+        <th>SH 200</th>
+        <th>SH with NSD</th>
+        <th>SH with OT</th>
+        <th>SH OT with OT</th>
         <th>Referral Fee</th>
         <th>Bonus</th>
-        <th>LWOP Adjustment</th>
+        <th>LWOP Adj</th>
         <th>Commission</th>
         <th>Payroll Period</th>
         <th>Payroll Cutoff</th>
+        <th>Created BP</th>
         <th>BP's Remarks</th>
         <th>BP's Date Encoded</th>
         <th>Payroll Remarks</th>
@@ -268,7 +269,6 @@ const DisputeReport = (props) => {
           <td>{dispute.Department}</td>
           <td>{dispute.dispute_type}</td>
           <td>{dispute.description}</td>
-          <td>{dispute.created_by}</td>
           <td>{dispute.status}</td>
           <td>{dispute.LWOP}</td>
           <td>{dispute.UT}</td>
@@ -297,6 +297,7 @@ const DisputeReport = (props) => {
           <td>{dispute.Commission}</td>
           <td>{dispute.Payroll_Period}</td>
           <td>{dispute.Payroll_Cutoff}</td>
+          <td>{dispute.created_by}</td>
           <td>{dispute.BPs_Remarks}</td>
           <td>{dispute.BPs_Date_Encoded}</td>
           <td>{dispute.Payroll_Remarks}</td>
@@ -319,6 +320,8 @@ const DisputeReport = (props) => {
           </tbody>
         </Table>
 </div>
+</Content>
+</ContainerBody>
     </ContainerWrapper>
     </div>
   );

@@ -488,6 +488,16 @@ const Sidebar = (props) => {
                       </li>
                     </>
                      )}
+                     <>
+                     {!Authenticator.scanLevel(["Payroll","Employee","Board","Admin","HR"]) && (
+                <li className="nav-item">
+                <Link className="nav-link" to={global.links.payroll_dispute}>
+                  <i className="nav-icon fa fa-clock-o" />
+                  <p className="blue"> Create Dispute</p>
+                </Link>
+                </li>
+              )}</>
+                                
                     {/* <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_conflict}>
                         <i className="nav-icon fa fa-file-text nav-icon" />
@@ -502,7 +512,7 @@ const Sidebar = (props) => {
                         </Link>
                       </li>
                      )}
-
+               
                   </ul>
                 </li>
               ) : null}
@@ -530,6 +540,8 @@ const Sidebar = (props) => {
                                   <p>Create Announcement</p>
                                 </Link>
                               </li>
+
+   
                               {/* {(Authenticator.check("admin", "admin_manage_all_announcements")|| Authenticator.check("supervisor", "manage_all_announcements")) && (
                               <li className="nav-item">
                                   <Link
@@ -675,15 +687,8 @@ const Sidebar = (props) => {
                 </Link>
                 </li>
   )}
-  {!Authenticator.scanLevel(["Payroll","Employee","DivisionHead","Board","Admin","HR"]) && (
-                <li className="nav-item">
-                <Link className="nav-link" to={global.links.payroll_dispute}>
-                  <i className="nav-icon fa fa-clock-o" />
-                  <p className="blue"> Create Dispute</p>
-                </Link>
-                </li>
-  )}
-   {(Authenticator.scanLevel(["SubDepartment Head","Department Head","Payroll"])) && (
+
+   {(Authenticator.scanLevel(["SubDepartment Head","Department Head","Payroll","DivisionHead"])) && (
                 <li className="nav-item">
                 <Link className="nav-link" to={global.links.payroll_dispute_view}>
                   <i className="nav-icon fa fa-clock-o" />

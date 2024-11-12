@@ -71,6 +71,11 @@ export const fetchUserDispute = ( name_string ) => {
             url: "/user/search-user-dispute/" + name_string,
         })
         .then(result => {
+
+    
+            if (result.data.length === undefined){
+                dispatch(Formatter.alert_error_message("No User Found..."));
+            }
             dispatch({
                 'type'      : 'FETCH_USER', 
                 'userLists'  : result.data 

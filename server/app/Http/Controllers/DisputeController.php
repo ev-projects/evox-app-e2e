@@ -73,8 +73,9 @@ class DisputeController extends Controller
      */
     public function show(Dispute $dispute, Request $request)
     {
-        // dd($request->department);
-        $result_sets = call_sp('EV_SP_Payroll_Dispute', [$request->department,$request->disputeType,$request->startDate,$request->endDate]);
+
+        $me = Auth::user();
+        $result_sets = call_sp('EV_SP_Payroll_Dispute_new', [$request->department,$request->disputeType,$request->startDate,$request->endDate,$me->id,$me->LevelId,1,null]);
         try {
             log_activity( trans('messages.list_role_attempt') );
             return success_response(
@@ -87,7 +88,7 @@ class DisputeController extends Controller
 
     public function showExport(Dispute $dispute, Request $request)
     {
-        $result_sets = call_sp('EV_SP_Payroll_Dispute', [$request->department,$request->disputeType,$request->startDate,$request->endDate]);
+        $result_sets = call_sp('EV_SP_Payroll_Dispute_new', [$request->department,$request->disputeType,$request->startDate,$request->endDate,$me->id,$me->LevelId,1,null]);
         try {
             log_activity( trans('messages.list_role_attempt') );
             return Excel::download(new DisputeExport($result_sets[0],$request->startDate,$request->endDate), 'Dispute.csv');
@@ -125,6 +126,7 @@ class DisputeController extends Controller
                 ->update([
                     'Payroll_Remarks' => $request->Payroll_Remarks,
                     'Payout_Inclusion' => $request->Payout_Inclusion,
+                    'status' => $request->status,
                     'updated_by' =>  $me->id,
                  ]);
          
