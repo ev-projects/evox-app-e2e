@@ -27,6 +27,8 @@ const ViewReport = (props) => {
     const [validcountry, setvalidcountry] = useState(false);
     const [datatimeoff,Setdatatimeoff] = useState([]);
     const [datatimeoffnew,Setdatatimeoffnew] = useState([]);
+    const [datatimeoffbelgium,Setdatatimeoffbelgium] = useState([]);
+    const [datatimeoffmoroco,Setdatatimeoffmoroco] = useState([]);
     const [country,setCountry] = useState({});
     const [countryid,setCountryid] = useState("");
     const dispatch = useDispatch();
@@ -94,6 +96,10 @@ const getDaysInMonth = (year, month) => {
                 timeoffItems)
                 Setdatatimeoffnew(result.data.content.
                   timeoffItemsnew)
+                  Setdatatimeoffbelgium(result.data.content.
+                    timeoffItemsbelgium)
+                    Setdatatimeoffmoroco(result.data.content.
+                      timeoffItemsmoroco)
             }
           })
           .catch((e) => {
@@ -340,7 +346,62 @@ const getDaysInMonth = (year, month) => {
                       <td>{timeoff.CloseBal} </td>
                     </tr>
                   ))}
+                 {datatimeoffbelgium.length > 0 ?
+                  <tr>
+                  <td colspan="3" className="newhire">
 
+                  BELGIUM HOLIDAYS TAKEN
+
+                  </td>
+                 
+
+                </tr>
+                : ""
+                  }
+                   {datatimeoffbelgium.map((timeoff, pos) => (
+                    <tr>
+                      <td>{timeoff.Sno}</td>
+                      <td>{timeoff.Employee_Name}</td>
+                      <td>{timeoff.Employee_status}</td>
+                      <td>{timeoff.Account}</td>
+                      <td>{timeoff.startdate}</td>
+                      <td>{timeoff.presentdays} </td>
+                      <td>{timeoff.AvaiPaid} </td>
+                      <td>{timeoff.AvaiLWP}</td>
+                      <td>{timeoff.MaxLv}</td>
+                      <td>{timeoff.PrePais}</td>
+                      <td>{timeoff.PreLWP} </td>
+                      <td>{timeoff.CloseBal} </td>
+                    </tr>
+                  ))}
+                  {datatimeoffmoroco.length > 0 ?
+                  <tr>
+                  <td colspan="3" className="newhire">
+
+                  MOROCCO HOLIDAYS TAKEN
+
+                  </td>
+                 
+
+                </tr>
+                : ""
+                  }
+                   {datatimeoffmoroco.map((timeoff, pos) => (
+                    <tr>
+                      <td>{timeoff.Sno}</td>
+                      <td>{timeoff.Employee_Name}</td>
+                      <td>{timeoff.Employee_status}</td>
+                      <td>{timeoff.Account}</td>
+                      <td>{timeoff.startdate}</td>
+                      <td>{timeoff.presentdays} </td>
+                      <td>{timeoff.AvaiPaid} </td>
+                      <td>{timeoff.AvaiLWP}</td>
+                      <td>{timeoff.MaxLv}</td>
+                      <td>{timeoff.PrePais}</td>
+                      <td>{timeoff.PreLWP} </td>
+                      <td>{timeoff.CloseBal} </td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
             

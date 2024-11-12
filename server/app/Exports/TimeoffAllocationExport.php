@@ -44,11 +44,13 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
     protected $period;
     protected $current_period;
     protected $noofdays;
-    public function __construct($list, $list_new, $pre_mon, $cur_mon, $noofdays)
+    public function __construct($list, $list_new, $list_new1, $list_new2, $pre_mon, $cur_mon, $noofdays)
     {
 
         $this->list = $list ?? [];
         $this->list_new = $list_new ?? [];
+        $this->list_new1 = $list_new1 ?? [];
+        $this->list_new2 = $list_new2 ?? [];
         $this->noofdays = $noofdays;
         $this->pre_mon = $pre_mon;
         $this->cur_mon = $cur_mon;
@@ -85,11 +87,34 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
 
         ];
     }
+
+    
     public function array(): array
     {
 
         $employee_items = [];
         $employee_items_new = [];
+        $employee_items_new1 = [];
+        $employee_items_new2 = [];
+
+        foreach ($this->list_new2 as $item) {
+            $item_vals = [];
+            foreach(get_object_vars($item) as $key => $val) {
+                $item_vals[] = $val;
+            }
+            array_push($employee_items_new2, array_merge($item_vals));
+        }
+        $excel_employees_new2 = $employee_items_new2;
+
+        foreach ($this->list_new1 as $item) {
+            $item_vals = [];
+            foreach(get_object_vars($item) as $key => $val) {
+                $item_vals[] = $val;
+            }
+            array_push($employee_items_new1, array_merge($item_vals));
+        }
+        $excel_employees_new1 = $employee_items_new1;
+
 
         foreach ($this->list_new as $item) {
             $item_vals = [];
@@ -187,8 +212,40 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 [""],
                 [""],
             ),
-            [$this->period],
+            !empty($employee_items_new) ? [$this->period] :[""],
             $employee_items_new,
+            array_merge(
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+            ),
+            !empty($employee_items_new1) ?["BELGIUM HOLIDAYS TAKEN"] : [""],
+            $employee_items_new1,
+            array_merge(
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+                [""],
+            ),
+            !empty($employee_items_new2)?["MOROCCO HOLIDAYS TAKEN"]:[""],
+            $employee_items_new2,
         );
         return $excel;
     }
