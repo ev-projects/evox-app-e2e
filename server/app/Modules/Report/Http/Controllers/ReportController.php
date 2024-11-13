@@ -1639,11 +1639,11 @@ class ReportController extends Controller
    
         try {    
            
-            $result_sets = call_sp('EVOX_PAYROLL_REPORT', [$request->timeoff_month,$request->timeoff_year,$request->country]);
+            $result_sets = call_sp('EVOX_PAYROLL_REPORT', [$request->timeoff_month,$request->timeoff_year]);
             $user_timeoff = $result_sets[0];
             $user_timeoff_new = $result_sets[1];
-            $user_timeoff_belgium = $result_sets[2];
-            $user_timeoff_moroco = $result_sets[3];
+            // $user_timeoff_belgium = $result_sets[2];
+            // $user_timeoff_moroco = $result_sets[3];
            
 
             
@@ -1660,15 +1660,15 @@ class ReportController extends Controller
                 $date = Carbon::create($request->timeoff_year, $request->timeoff_month, 1);
                 $daysInMonth = $date->daysInMonth;
                 $response =  Excel::download(
-                    new TimeoffAllocationExport($result_sets[0],$result_sets[1],$result_sets[2],$result_sets[3],$previous_mon_name,$current_mon_name,$daysInMonth),
-                    'TimeoffAllocation.csv'
+                    new TimeoffAllocationExport($result_sets[0],$result_sets[1],$previous_mon_name,$current_mon_name,$daysInMonth),
+                    'IndianPayroll.csv'
                 );
                return $response;
             }else{
             $report = [];
             $report1 = [];
-            $report2 = [];
-            $report3 = [];
+            // $report2 = [];
+            // $report3 = [];
             $newrow = 0;
             foreach($user_timeoff as $timeoff) {
                 $report[] = array(
@@ -1708,53 +1708,53 @@ class ReportController extends Controller
                 $newrow = 1;
             }
 
-            foreach($user_timeoff_belgium as $timeoff) {
-                $newhire = 1;
-                $newrow  == 0 ? $newhire = 1 : $newhire = 0;
-                $report2[] = array(
-                    "Sno" => $timeoff->Sno,
-                    "Employee_Name" => $timeoff->Employee_Name,
-                    "Employee_status" => $timeoff->Employment_Status,
-                    "Account" => $timeoff->Account,
-                    "startdate" =>$timeoff->HireDate,
-                    "presentdays" =>$timeoff->PresentDays,
-                    "AvaiPaid" => $timeoff->Paid_Leave,
-                    "AvaiLWP" => $timeoff->LWP_Leave,
-                    "MaxLv" => $timeoff->Max_Leave_Eligible,
-                    "PrePais" => $timeoff->Pre_LWP_Leave,
-                    "PreLWP" => $timeoff->Pre_LWP_Leave,
-                    "CloseBal"=> $timeoff->Close_Leave_Balance,
-                    "NewHire" => $newhire,
-                );
-                $newrow = 1;
-            }
-            foreach($user_timeoff_moroco as $timeoff) {
-                $newhire = 1;
-                $newrow  == 0 ? $newhire = 1 : $newhire = 0;
-                $report3[] = array(
-                    "Sno" => $timeoff->Sno,
-                    "Employee_Name" => $timeoff->Employee_Name,
-                    "Employee_status" => $timeoff->Employment_Status,
-                    "Account" => $timeoff->Account,
-                    "startdate" =>$timeoff->HireDate,
-                    "presentdays" =>$timeoff->PresentDays,
-                    "AvaiPaid" => $timeoff->Paid_Leave,
-                    "AvaiLWP" => $timeoff->LWP_Leave,
-                    "MaxLv" => $timeoff->Max_Leave_Eligible,
-                    "PrePais" => $timeoff->Pre_LWP_Leave,
-                    "PreLWP" => $timeoff->Pre_LWP_Leave,
-                    "CloseBal"=> $timeoff->Close_Leave_Balance,
-                    "NewHire" => $newhire,
-                );
-                $newrow = 1;
-            }
+            // foreach($user_timeoff_belgium as $timeoff) {
+            //     $newhire = 1;
+            //     $newrow  == 0 ? $newhire = 1 : $newhire = 0;
+            //     $report2[] = array(
+            //         "Sno" => $timeoff->Sno,
+            //         "Employee_Name" => $timeoff->Employee_Name,
+            //         "Employee_status" => $timeoff->Employment_Status,
+            //         "Account" => $timeoff->Account,
+            //         "startdate" =>$timeoff->HireDate,
+            //         "presentdays" =>$timeoff->PresentDays,
+            //         "AvaiPaid" => $timeoff->Paid_Leave,
+            //         "AvaiLWP" => $timeoff->LWP_Leave,
+            //         "MaxLv" => $timeoff->Max_Leave_Eligible,
+            //         "PrePais" => $timeoff->Pre_LWP_Leave,
+            //         "PreLWP" => $timeoff->Pre_LWP_Leave,
+            //         "CloseBal"=> $timeoff->Close_Leave_Balance,
+            //         "NewHire" => $newhire,
+            //     );
+            //     $newrow = 1;
+            // }
+            // foreach($user_timeoff_moroco as $timeoff) {
+            //     $newhire = 1;
+            //     $newrow  == 0 ? $newhire = 1 : $newhire = 0;
+            //     $report3[] = array(
+            //         "Sno" => $timeoff->Sno,
+            //         "Employee_Name" => $timeoff->Employee_Name,
+            //         "Employee_status" => $timeoff->Employment_Status,
+            //         "Account" => $timeoff->Account,
+            //         "startdate" =>$timeoff->HireDate,
+            //         "presentdays" =>$timeoff->PresentDays,
+            //         "AvaiPaid" => $timeoff->Paid_Leave,
+            //         "AvaiLWP" => $timeoff->LWP_Leave,
+            //         "MaxLv" => $timeoff->Max_Leave_Eligible,
+            //         "PrePais" => $timeoff->Pre_LWP_Leave,
+            //         "PreLWP" => $timeoff->Pre_LWP_Leave,
+            //         "CloseBal"=> $timeoff->Close_Leave_Balance,
+            //         "NewHire" => $newhire,
+            //     );
+            //     $newrow = 1;
+            // }
                 $final_report = array_merge($report,$report1);
 
                 $response = [];
                 $response['timeoffItems'] =  $report ;
                 $response['timeoffItemsnew'] = $report1;
-                $response['timeoffItemsbelgium'] = $report2;
-                $response['timeoffItemsmoroco'] = $report3;
+                // $response['timeoffItemsbelgium'] = $report2;
+                // $response['timeoffItemsmoroco'] = $report3;
                 return success_response(
                     trans('messages.' . __FUNCTION__ . '_success'),
                     $response

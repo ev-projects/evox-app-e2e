@@ -62,29 +62,18 @@ const getDaysInMonth = (year, month) => {
     const handlesave = async (e) => {
       settext(currentmonth + " 01 - " + currentmonth + " " + getDaysInMonth(year,month));
       settext1(((month - 1) == 0 ? getMonthName(12) + " 21 - " + currentmonth + " 20" : getMonthName(month - 1) + " 21 - " + currentmonth + " 20"));
-      if (year == "" && month == "" && countryid == "") {
+      if (year == "" && month == "") {
         setvalidyear(true);
         setvalidmonth(true);
-        setvalidcountry(true);
-      }if (year == "" && month == "") {
-        setvalidyear(true);
-        setvalidmonth(true);
-      }if (month == "" && countryid == "") {
-        setvalidmonth(true);
-        setvalidcountry(true);
-      }if (year == "" && countryid == "") {
-        setvalidyear(true);
-        setvalidcountry(true);
       }else if (year == "") {
         setvalidyear(true);
       }else if(month == ""){
         setvalidmonth(true);
-      }else if(countryid == ""){
-        setvalidcountry(true);
       }else{
         await API.call({
           method: "GET",
-          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=${countryid}`,
+          // url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=${countryid}`,
+          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}`,
         })
           .then((result) => {
             console.log(result);
@@ -96,10 +85,10 @@ const getDaysInMonth = (year, month) => {
                 timeoffItems)
                 Setdatatimeoffnew(result.data.content.
                   timeoffItemsnew)
-                  Setdatatimeoffbelgium(result.data.content.
-                    timeoffItemsbelgium)
-                    Setdatatimeoffmoroco(result.data.content.
-                      timeoffItemsmoroco)
+                  // Setdatatimeoffbelgium(result.data.content.
+                  //   timeoffItemsbelgium)
+                  //   Setdatatimeoffmoroco(result.data.content.
+                  //     timeoffItemsmoroco)
             }
           })
           .catch((e) => {
@@ -116,8 +105,6 @@ const getDaysInMonth = (year, month) => {
         setvalidyear(true);
       }else if(month == ""){
         setvalidmonth(true);
-      }else if(countryid == ""){
-        setvalidcountry(true);
       }else{
         await API.call({
           method: "GET",
@@ -128,7 +115,7 @@ const getDaysInMonth = (year, month) => {
             const url = window.URL.createObjectURL(new Blob([result.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'TimeoffAllocation.csv');
+            link.setAttribute('download', 'IndianPayroll.csv');
             document.body.appendChild(link);
             link.click();
 
@@ -228,7 +215,7 @@ const getDaysInMonth = (year, month) => {
                   </div>
                         </Col>
 
-                        <Col size="3"> 
+                        {/* <Col size="3"> 
                         <div className="form-group">
                     <select
                       name="type"
@@ -259,7 +246,7 @@ const getDaysInMonth = (year, month) => {
                       </label>
                     )}
                   </div>
-                        </Col>
+                        </Col> */}
 
                         <Col size="2"> 
                           
@@ -346,7 +333,7 @@ const getDaysInMonth = (year, month) => {
                       <td>{timeoff.CloseBal} </td>
                     </tr>
                   ))}
-                 {datatimeoffbelgium.length > 0 ?
+                 {/* {datatimeoffbelgium.length > 0 ?
                   <tr>
                   <td colspan="3" className="newhire">
 
@@ -373,8 +360,8 @@ const getDaysInMonth = (year, month) => {
                       <td>{timeoff.PreLWP} </td>
                       <td>{timeoff.CloseBal} </td>
                     </tr>
-                  ))}
-                  {datatimeoffmoroco.length > 0 ?
+                  ))} */}
+                  {/* {datatimeoffmoroco.length > 0 ?
                   <tr>
                   <td colspan="3" className="newhire">
 
@@ -401,7 +388,7 @@ const getDaysInMonth = (year, month) => {
                       <td>{timeoff.PreLWP} </td>
                       <td>{timeoff.CloseBal} </td>
                     </tr>
-                  ))}
+                  ))} */}
                 </tbody>
               </Table>
             
