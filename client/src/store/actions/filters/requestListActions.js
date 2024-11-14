@@ -316,3 +316,16 @@ export const eventclick1 = (requesttype) => {
        
     }
   }
+
+  export const payrollperiod = (requesttype) => {
+
+
+    return (dispatch, getState) => {
+      
+      dispatch({
+        type      : 'FETCH_PAYROLL_PERIOD', 
+        payroll  : requesttype
+        })  
+       
+    }
+  }

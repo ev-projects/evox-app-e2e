@@ -7,6 +7,9 @@ import Authenticator from "../../services/Authenticator";
 import Validator from "../../services/Validator";
 import axios from "axios";
 import "./Dispute.css";
+import {
+  fecthdepartment,fecthdispute
+} from "./Disouteapi.js";
 import { connect,useDispatch } from 'react-redux';
 import {
     ContainerWrapper,
@@ -17,7 +20,8 @@ import {
 import { now } from "moment";
 const DisputeReport = (props) => {
 
-  const { settings } = props;
+  const { settings,userdepartment,dispute } = props;
+
     // State variables to store disputes and filters
   const [disputes, setDisputes] = useState([]);
   const [department, setDepartment] = useState([]);
@@ -28,6 +32,7 @@ const DisputeReport = (props) => {
     disputeType: '',
     startDate:  '',
     endDate: '',
+    status:''
   });
 
     // Function to fetch disputes from the API
@@ -56,21 +61,21 @@ const DisputeReport = (props) => {
   // Function to fetch disputes from the API
   const fetchDisputes = async () => {
     try {
-        API.call({
-            method: "get",
-            url: "/getdispute",
-            params: filters
-        })
-        .then(result => {
+
+      dispatch(fecthdispute(filters));
+        // API.call({
+        //     method: "get",
+        //     url: "/getdispute",
+        //     params: filters
+        // })
+        // .then(result => {
        
-        setDisputes(result.data.content);
+        // setDisputes(result.data.content);
                    
-        })
-        .catch(e => {
-            dispatch( Formatter.alert_error( e ) ) 
-        });
-    //   const response = await axios.get('/api/storedispute', { params: filters });
-    //   setDisputes(response.data); // Update state with fetched data
+        // })
+        // .catch(e => {
+        //     dispatch( Formatter.alert_error( e ) ) 
+        // });
     } catch (error) {
       console.error("Error fetching disputes:", error); // Log any errors
     }
@@ -104,8 +109,8 @@ const DisputeReport = (props) => {
       ["endDate"]: Validator.isValid(settings.current_payroll_cutoff) ?  
       settings.current_payroll_cutoff.end_date : null,
      });
-    fetchDisputes();
-    fetchDepartment();
+    dispatch(fecthdispute(filters));
+    dispatch(fecthdepartment());
    
   }, []); // Dependency on filters to refetch when any filter is updated
 
@@ -153,8 +158,8 @@ const DisputeReport = (props) => {
 											style={{ display: 'block' }}>                                           
 										
 										<option    label="Select Department" />
-										  { department.map(function(department){
-											  return  <option value={department.id} label={department.department_name} />
+										  { userdepartment && userdepartment.length > 0 &&  userdepartment.map(function(userdepartment){
+											  return  <option value={userdepartment.id} label={userdepartment.department_name} />
 										  })}
 										</select>
 									</div>
@@ -173,6 +178,25 @@ const DisputeReport = (props) => {
           />
        </div>
        </Col>
+       <Col size="2">
+       <div className="form-group">
+        <label>
+          Status:
+          </label>
+       <select
+				  className="form-control" 
+				  name="status"
+          required
+				  value={filters.status}
+				  style={{ display: 'block' }}
+                  onChange={handleFilterChange}
+				  >
+				<option  label="Select Type" />
+                <option value={"approved"} label={"Approved"} />
+                <option value={"rejected"} label={"Rejected"} />
+				</select>
+        </div>
+        </Col>
        <Col size="2">
        <div className="form-group">
         <label>
@@ -201,20 +225,22 @@ const DisputeReport = (props) => {
           />
       </div>
       </Col>
-      <Col size="1" style={{"text-align":"center"}}>
+      <Col size="2" style={{"text-align":"center"}}>
+      <Row>
       <div className="form-group mt-4">
-                  <button onClick={fetchDisputes} className="btn btn-primary">Filter</button>
-                </div>
-                </Col>
-                <Col size="2" >
-      <div className="form-group mt-4">
-                  <button onClick={handleExport} className="btn btn-primary">Export</button>
-                </div>
+      
+      <button onClick={fetchDisputes} className="btn btn-primary" ><i className="fa fa-filter" /> Filter</button>
+    </div>
+    <div className="form-group mt-4">
+      <button onClick={handleExport} className="btn btn-primary btnspace" >Export</button>
+    </div>
+      </Row>
+   
                 </Col>
                 </Row>
       </div>
         <div className="mb-3 table-container">
-        <Table striped bordered hover >
+        <Table striped bordered hover className="tablealignment">
           <thead>
           <tr>
 
@@ -260,11 +286,11 @@ const DisputeReport = (props) => {
       </tr>
           </thead>
           <tbody>
-            {disputes.length > 0 &&
-              disputes.map((dispute, pos) => (
+            { dispute && dispute.length > 0 &&
+              dispute.map((dispute, pos) => (
                
           <tr>
-          <td>{dispute.employee_id}</td>
+          <td>{dispute.emp_num}</td>
           <td>{dispute.EmployeeName}</td>
           <td>{dispute.Department}</td>
           <td>{dispute.dispute_type}</td>
@@ -329,7 +355,9 @@ const DisputeReport = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    settings        : state.settings
+    settings        : state.settings,
+    userdepartment: state.dashboard.my_department,
+    dispute: state.dashboard.dispute_list,
   }
 }
 

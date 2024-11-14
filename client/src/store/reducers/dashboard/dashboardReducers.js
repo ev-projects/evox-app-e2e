@@ -54,6 +54,24 @@ const dashboardReducers = (state = initState, action) => {
                 my_country : action.data,
             }
             break;
+            case "FETCH_MY_DEPT":
+                result = {
+                    ...state,
+                    my_department : action.data,
+                }
+                break;
+                case "FETCH_DISPUTE_LIST":
+                    result = {
+                        ...state,
+                        dispute_list : action.data,
+                    }
+                    break;
+                    case "FETCH_DEP_USER_LIST":
+                        result = {
+                            ...state,
+                            user_list : action.data,
+                        }
+                        break;
         case "FETCH_BIRTHDAY_ANNIVERSARY":
             result = {
                 ...state,

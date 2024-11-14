@@ -55,7 +55,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     # Gets the User List of Specific Role
     Route::get('/search-user/{string_name}', 'UserController@get_user_by_string');
 
-    Route::get('/search-user-dispute/{string_name}', 'UserController@get_user_by_string_dispute');
+    Route::get('/search-user-dispute', 'UserController@get_user_by_string_dispute');
 
     # Get the user roles
     Route::get('/roles/', 'UserController@get_roles');

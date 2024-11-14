@@ -8,7 +8,7 @@ const initState = {
 
     isUserRolesPermissionsLoaded: false,
     userRole: null,
-    payroll: "Novmber 2024",
+    payroll: "",
     isUserListLoaded: false,
     userLists: {},
 }

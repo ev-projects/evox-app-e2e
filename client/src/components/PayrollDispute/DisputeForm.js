@@ -7,6 +7,9 @@ import Wrapper from "../Template/Wrapper";
 import { connect,useDispatch } from 'react-redux';
 import { useParams, useHistory} from "react-router-dom";
 import {
+  payrollperiod
+} from "../../store/actions/filters/requestListActions";
+import {
   ContainerHeader,
   Content,
   ContainerWrapper,
@@ -22,7 +25,7 @@ function DisputeForm(props) {
   const inputRef1 = useRef(null);
   const inputRef2 = useRef(null);
   const inputref3 = useRef(null);
-  
+  const inputref4 = useRef(null);
   const dispatch = useDispatch();
   const [employeeName, setEmployeeName] = useState('');
   const [validatename, setValidateName] = useState(true);
@@ -70,12 +73,17 @@ function DisputeForm(props) {
     Special_Holiday_OT_With_OT: '',
   });
 
+  const [formData5, setFormData5] = useState({
+    Payroll_Period:'',
+  });
+
+
   const [formData, setFormData] = useState({
     employee_id:null,
     created_by:null,
     dispute_type:"",
     description:"",
-    status: "open",
+    status: "pending",
     LWOP: '',
     UT: '',
     TARDINESS: '',
@@ -101,7 +109,7 @@ function DisputeForm(props) {
     Bonus: '',
     LWOP_Adjustment: '',
     Commission: '',
-    Payroll_Period: '',
+    Payroll_Period:'',
     Payroll_Cutoff: '',
     BPs_Remarks: '',
     BPs_Date_Encoded: '',
@@ -141,16 +149,15 @@ function DisputeForm(props) {
   useEffect(() => {
 
     if (!props.params.id) {
-
+      dispatch(fetchUserDispute());
     const month = new Date().getMonth() + 1;
     const date =  new Date().getDate();
     const year =  new Date().getFullYear();
     const formattedDay = String(date).padStart(2, '0');
     // const fromdate = year+"-"+ month -1+"-"+15;
     // const todate = year+"-"+ month+"-"+16;
-
     
-
+   
     if(formattedDay > 15){
 
       handleCutoff(year+"-"+ (month)+"-"+"16",year+"-"+ (month+1) +"-"+"15");
@@ -163,7 +170,15 @@ function DisputeForm(props) {
     fetchDisputes();
 
   }
-  }, []);
+  }, [payroll]);
+
+  // useEffect(() => {
+    
+  //   setFormData5({
+  //     ...formData5,
+  //     ["Payroll_Period"]:payroll
+  //   });
+  // }, [payroll]);
 
 
     // Function to fetch disputes from the API
@@ -238,34 +253,40 @@ function DisputeForm(props) {
   const handleCutoff = async (fromdate,todate) => {
     try {
      
-   
+
        await API.call({
             method: "get",
             url: "/getpayrollcutoff/"+fromdate+"/"+todate,
         })
         .then(result => {
-          if (result.data && Array.isArray(result.data) && result.data.length > 0) {
-            // alert(result.data[0].name);
-            // setCutoff(result.data[0].name);
-           dispatch({
-            'type'      : 'FETCH_PAYROLL_PERIOD', 
-            'payroll'  : result.data[0].name
-            })
-          }
-          
+
+          dispatch(payrollperiod(result.data[0].name));
+          setCutoffname(result.data[0].name);
+          payroll && inputRef1.current.focus();
+          setFormData({
+            ...formData,
+            ["Valid_From"]: fromdate,
+            ["Valid_To"]: todate,
+            ["Payroll_Cutoff"]: fromdate + " To " + todate,
+            ["created_by"]: user.id,
+            ["Payroll_Period"]:payroll
+          });
+         
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
         });
-       
+
+        inputref4.current.focus();
         setFormData({
           ...formData,
           ["Valid_From"]: fromdate,
           ["Valid_To"]: todate,
-          ["Payroll_Cutoff"]: fromdate+" To "+todate,
+          ["Payroll_Cutoff"]: fromdate + " To " + todate,
           ["created_by"]: user.id,
-          ["Payroll_Period"]: payroll,
+          ["Payroll_Period"]:payroll
         });
+       
       
 
     //   const response = await axios.get(process.env.REACT_APP_API_BASE_URL+'/user/search-user-dispute/'+employeeName);
@@ -375,7 +396,8 @@ function DisputeForm(props) {
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
-
+    e.preventDefault();
+    // alert(formData5.Payroll_Period);
    if(!formData.dispute_type && !formData.description){
     e.preventDefault();    
     setFormvalidate1({
@@ -417,7 +439,10 @@ function DisputeForm(props) {
       // setValidateeid(false);   
     }else{
       e.preventDefault();    
-    
+      // setFormData({
+      //   ...formData,
+      //   ["Payroll_Period"]: inputref4.current.value,
+      // });
     try {
         API.call({
             method: "post",
@@ -426,13 +451,9 @@ function DisputeForm(props) {
         })
         .then(result => {
             dispatch( Formatter.alert_success( result, 3000 ));
-            dispatch({
-              'type'      : 'FETCH_USER', 
-              'userLists'  : []
-          })
           setEmployeeName('');
           window.scrollTo(0, 0);
-          inputRef2.current.focus();
+          setUserid("");
           handleblur();
 
         })
@@ -443,7 +464,7 @@ function DisputeForm(props) {
       console.error("Error submitting dispute:", error);
     }
   }
-}
+  }
   };
 
    // Function to handle form submission
@@ -574,9 +595,16 @@ function DisputeForm(props) {
         <Content col="12" label="Create Room">
           <form onSubmit={!props.params.id ? handleSubmit : handleUpdate}>
             <h2>Create Dispute</h2>
-
+            {/* <input type='text'
+                   value={payroll && payroll}
+                   name='Payroll_Period'
+                   onBlur={handleChange}
+                   ref={inputref4}
+                   disabled
+                  //  style={{"visibility":"hidden"}}
+            ></input> */}
             <Row>
-            {!props.params.id && (
+            {/* {!props.params.id && (
             <Col size="4">
             <div className="form-group">
 								<label>Search Name:</label>
@@ -590,24 +618,16 @@ function DisputeForm(props) {
                     placeholder="Enter Name..." 
                     name="nameFilter" 
                     value={employeeName} />
-                                        {/* <input type="textfield" className="form-control" 
-                                        onChange={(e) => { 
-                                            setEmployeeName(e.target.value);
-                                            
-                                        }}
-                                            onBlur={handleEmployeeSearch}
-                                            variant="primary" placeholder="Enter Name..." 
-                                            name="nameFilter" 
-                                            value={employeeName} />  */}
+                          
 										</div>
 								
 							</div>
             </Col>
           
-            )}
+            )} */}
               {!props.params.id && (
             <Col size="4">
-            { userLists?.length > 0  ? 
+            {/* { userLists?.length > 0  ?  */}
 								<div>
 									<div className="form-group">
 										<label>Select User:</label>
@@ -634,15 +654,15 @@ function DisputeForm(props) {
                       
                                                 }}
 											style={{ display: 'block' }}>
-										  <option    label="Select Name" />
-										  { userLists.map(function(user){
+										  <option  value = {""}  label="Select Name" />
+										  { userLists && userLists.length > 0 && userLists.map(function(user){
 											  return  <option value={user.id}  data-value1 ={user.first_name} data-value2 = {user.last_name} data-value3 = {user.emp_num} 
-                        data-value4 = {user.department_name}  label={user.emp_num + ' - ' + user.first_name + ' ' + user.last_name} />
+                        data-value4 = {user.department_name}  label={user.first_name + ' ' + user.last_name + ' - ' + user.emp_num } />
 										  })}
 										</select>
 									</div>
 								</div>
-								: 
+								{/* : 
 								<div>
 									<div className="form-group">
 										<label>Select User:</label>
@@ -657,7 +677,7 @@ function DisputeForm(props) {
 										</select>
 									</div>
 								</div>
-							 } 
+							 }  */}
                             </Col>
               )}
                             <Col size = "4">
@@ -769,41 +789,7 @@ function DisputeForm(props) {
                   />
                 </div>
               </Col>
-             {props.params.id ?
-              <Col size="3">
-                <div className="form-group">
-                  <label>Status:</label>
-                  <select
-				  className="form-control" 
-				  name="status"
-          required
-				  value={formData.status}
-				  style={{ display: 'block' }}
-                  onChange={handleChange}
-				  >
-				<option    label="Select Type" />
-                <option value={"open"} label={"Open"} />
-                <option value={"close"} label={"Close"} />
-				</select>
-                </div>
-              </Col>
-              : 
-              <Col size="3">
-                <div className="form-group">
-                  <label>Status:</label>
-        <input
-				  className="form-control" 
-				  name="status"
-          type='text'
-          required
-				  value={"open"}
-				  style={{ display: 'block' }}
-          onChange={handleChange}
-          disabled = {props.params.id ? false : true }
-				>
-				</input>                
-        </div>
-              </Col>}
+
               <Col size="3">
                 <div className="form-group">
                   <label>Description:* {formvalidate1.description && <span style={{"color" : "red"}}>{formvalidate1.description}</span>}</label>
@@ -1257,6 +1243,43 @@ function DisputeForm(props) {
                 </div>
               </Col>
                )}
+                            {props.params.id ?
+              <Col size="3">
+                <div className="form-group">
+                  <label>Status:</label>
+                  <select
+				  className="form-control" 
+				  name="status"
+          required
+				  value={formData.status}
+				  style={{ display: 'block' }}
+                  onChange={handleChange}
+				  >
+				<option    label="Select Type" />
+                <option value={"approved"} label={"Approved"} />
+                <option value={"rejected"} label={"Rejected"} />
+				</select>
+                </div>
+              </Col>
+              : 
+              ""
+        //       <Col size="3">
+        //         <div className="form-group">
+        //           <label>Status:</label>
+        // <input
+				//   className="form-control" 
+				//   name="status"
+        //   type='text'
+        //   required
+				//   value={"open"}
+				//   style={{ display: 'block' }}
+        //   onChange={handleChange}
+        //   disabled = {props.params.id ? false : true }
+				// >
+				// </input>                
+        // </div>
+        //       </Col>
+              }
             </Row>
             <Row>
              { !props.params.id ? 
@@ -1294,7 +1317,8 @@ const mapStateToProps = (state) => {
 	 
 	return {
         user: state.user,
-		userLists     						: state.assignRole.userLists, 
+
+		userLists     						: state.dashboard.user_list,
     payroll     						: state.assignRole.payroll, 
 		isUserListLoaded     				: state.assignRole.isUserListLoaded,
 
@@ -1313,7 +1337,7 @@ const mapStateToProps = (state) => {
   
   const mapDispatchToProps = (dispatch) => {
 	  return {
-    fetchUserDispute       		: ( name_string  ) => dispatch( fetchUserDispute( name_string ) ),
+    // fetchUserDispute       		: () => dispatch( fetchUserDispute() ),
 		fetchUserRolePermission       	: ( user_id ) => dispatch( fetchUserRolePermission( user_id ) ),
 		fetchUserFeatures       	: ( user_id ) => dispatch( fetchUserFeatures( user_id ) ),
 		

@@ -50,7 +50,7 @@ const ViewReport = (props) => {
     const getMonthName = (monthNumber) => {
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sepr', 'Oct', 'Nov', 'Dec'
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ];
   return months[monthNumber - 1];
 };
@@ -115,7 +115,7 @@ const getDaysInMonth = (year, month) => {
             const url = window.URL.createObjectURL(new Blob([result.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'IndianPayroll.csv');
+            link.setAttribute('download', "India_Payroll_Report_"+getMonthName(month)+"_"+year+".csv");
             document.body.appendChild(link);
             link.click();
 

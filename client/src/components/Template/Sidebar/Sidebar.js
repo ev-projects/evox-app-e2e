@@ -683,7 +683,7 @@ const Sidebar = (props) => {
                 <li className="nav-item">
                 <Link className="nav-link" to={global.links.view_report}>
                   <i className="nav-icon fa fa-clock-o" />
-                  <p className="blue"> Indian Payroll</p>
+                  <p className="blue"> Indian Payroll Report</p>
                 </Link>
                 </li>
   )}

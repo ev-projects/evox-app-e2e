@@ -64,11 +64,11 @@ export const fetchUser = ( name_string ) => {
     }
 }
 
-export const fetchUserDispute = ( name_string ) => {
+export const fetchUserDispute = ( ) => {
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/search-user-dispute/" + name_string,
+            url: "/user/search-user-dispute",
         })
         .then(result => {
 
@@ -77,9 +77,9 @@ export const fetchUserDispute = ( name_string ) => {
                 dispatch(Formatter.alert_error_message("No User Found..."));
             }
             dispatch({
-                'type'      : 'FETCH_USER', 
-                'userLists'  : result.data 
-            })
+                type: 'FETCH_DEP_USER_LIST',
+                data: result.data, // Ensure you're dispatching the correct data structure
+              });
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
