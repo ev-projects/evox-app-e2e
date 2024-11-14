@@ -1075,7 +1075,7 @@ public function get_user_by_string_dispute(){
     // ->get(); 
     try {
         $me = Auth::user();
-        $user = $result_sets = call_sp('EV_SP_Payroll_Dispute_new1', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
+        $user = $result_sets = call_sp('EV_SP_Payroll_Dispute_new', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
         log_activity( trans('messages.list_role_attempt') );
         return $user[0]; 
         // return success_response(
