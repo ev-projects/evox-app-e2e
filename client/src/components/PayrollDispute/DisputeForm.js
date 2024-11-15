@@ -588,13 +588,14 @@ function DisputeForm(props) {
   }
 
   return (
+
     <div>
     <Wrapper>
       <ContainerWrapper>
         <ContainerBody>
         <Content col="12" label="Create Room">
           <form onSubmit={!props.params.id ? handleSubmit : handleUpdate}>
-            <h2>Create Dispute</h2>
+            {!props.params.id ? <h2>Create Dispute</h2> : (Authenticator.scanLevel("Payroll")) ? (  <h2>Dispute Form</h2> ) : <h2>Dispute Form</h2>} 
             {/* <input type='text'
                    value={payroll && payroll}
                    name='Payroll_Period'
@@ -1243,7 +1244,7 @@ function DisputeForm(props) {
                 </div>
               </Col>
                )}
-                            {props.params.id ?
+               {(Authenticator.scanLevel("Payroll")) && (
               <Col size="3">
                 <div className="form-group">
                   <label>Status:</label>
@@ -1261,8 +1262,6 @@ function DisputeForm(props) {
 				</select>
                 </div>
               </Col>
-              : 
-              ""
         //       <Col size="3">
         //         <div className="form-group">
         //           <label>Status:</label>
@@ -1279,7 +1278,7 @@ function DisputeForm(props) {
 				// </input>                
         // </div>
         //       </Col>
-              }
+              )}
             </Row>
             <Row>
              { !props.params.id ? 
@@ -1291,8 +1290,9 @@ function DisputeForm(props) {
                   ""}
                 </div>
               </Col>
-              :
-             <Col size="12">
+              :              
+              (Authenticator.scanLevel("Payroll")) && ( 
+                <Col size="12">
                <div className="form-group">
                 <button type="submit" className="btn btn-primary">Submit</button>
                 { validateeid === false ?
@@ -1300,6 +1300,7 @@ function DisputeForm(props) {
                 ""}
               </div>
             </Col>
+            )
              }
             </Row>
           </form>

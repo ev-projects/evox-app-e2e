@@ -252,38 +252,40 @@ const DisputeReport = (props) => {
         <th>Description</th>
         <th>Status</th>
         <th>LWOP</th>
-        <th>UT</th>
-        <th>Tardiness</th>
-        <th>Late</th>
+        {/* <th>UT</th> */}
+        {/* <th>Tardiness</th> */}
+        {/* <th>Late</th> */}
         <th>NSD</th>
         <th>OT</th>
-        <th>OT with NSD</th>
+        {/* <th>OT with NSD</th> */}
         <th>RD</th>
-        <th>RD 200</th>
-        <th>RDW with NSD</th>
-        <th>RDW with OT</th>
-        <th>RDW NSD with OT</th>
+        {/* <th>RD 200</th> */}
+        {/* <th>RDW with NSD</th> */}
+        {/* <th>RDW with OT</th> */}
+        {/* <th>RDW NSD with OT</th> */}
         <th>LH</th>
-        <th>LH with NSD</th>
-        <th>LH with OT</th>
-        <th>LH OT with OT</th>
-        <th>SH</th>
-        <th>SH 200</th>
-        <th>SH with NSD</th>
-        <th>SH with OT</th>
-        <th>SH OT with OT</th>
-        <th>Referral Fee</th>
-        <th>Bonus</th>
-        <th>LWOP Adj</th>
-        <th>Commission</th>
+        {/* <th>LH with NSD</th> */}
+        {/* <th>LH with OT</th> */}
+        {/* <th>LH OT with OT</th> */}
+        {/* <th>SH</th> */}
+        {/* <th>SH 200</th> */}
+        {/* <th>SH with NSD</th> */}
+        {/* <th>SH with OT</th> */}
+        {/* <th>SH OT with OT</th> */}
+        {/* <th>Referral Fee</th> */}
+        {/* <th>Bonus</th> */}
+        {/* <th>LWOP Adj</th> */}
+        {/* <th>Commission</th> */}
         <th>Payroll Period</th>
-        <th>Payroll Cutoff</th>
+        {/* <th>Payroll Cutoff</th> */}
         <th>Created BP</th>
         <th>BP's Remarks</th>
-        <th>BP's Date Encoded</th>
+        {/* <th>BP's Date Encoded</th> */}
         <th>Payroll Remarks</th>
         <th>Payout Inclusion</th>
-        {(Authenticator.scanLevel("Payroll")) && ( <th>Action</th> )}
+        {/* {(Authenticator.scanLevel("Payroll")) && (  */}
+          <th>Action</th> 
+          {/* )} */}
       </tr>
           </thead>
           <tbody>
@@ -298,38 +300,39 @@ const DisputeReport = (props) => {
           <td>{dispute.description}</td>
           <td className="textUC">{dispute.status}</td>
           <td>{dispute.LWOP}</td>
-          <td>{dispute.UT}</td>
-          <td>{dispute.TARDINESS}</td>
-          <td>{dispute.Late}</td>
+          {/* <td>{dispute.UT}</td> */}
+          {/* <td>{dispute.TARDINESS}</td> */}
+          {/* <td>{dispute.Late}</td> */}
           <td>{dispute.Night_Shift_Diff}</td>
           <td>{dispute.Overtime}</td>
-          <td>{dispute.OT_with_NSD}</td>
+          {/* <td>{dispute.OT_with_NSD}</td> */}
           <td>{dispute.Rest_Day}</td>
-          <td>{dispute.Rest_Day_200}</td>
-          <td>{dispute.Rest_Day_Work_with_NSD}</td>
-          <td>{dispute.Rest_Day_Work_with_OT}</td>
-          <td>{dispute.Rest_Day_Work_NSD_with_OT}</td>
+          {/* <td>{dispute.Rest_Day_200}</td> */}
+          {/* <td>{dispute.Rest_Day_Work_with_NSD}</td> */}
+          {/* <td>{dispute.Rest_Day_Work_with_OT}</td> */}
+          {/* <td>{dispute.Rest_Day_Work_NSD_with_OT}</td> */}
           <td>{dispute.Legal_Holiday}</td>
-          <td>{dispute.Legal_Holiday_with_NSD}</td>
-          <td>{dispute.Legal_Holiday_with_Overtime}</td>
-          <td>{dispute.Legal_Holiday_OT_with_OT}</td>
-          <td>{dispute.Special_Holiday}</td>
-          <td>{dispute.Special_Holiday_200}</td>
-          <td>{dispute.Special_Holiday_with_NSD}</td>
-          <td>{dispute.Special_Holiday_with_Overtime}</td>
-          <td>{dispute.Special_Holiday_OT_with_OT}</td>
-          <td>{dispute.Referral_Fee}</td>
-          <td>{dispute.Bonus}</td>
-          <td>{dispute.LWOP_Adjustment}</td>
-          <td>{dispute.Commission}</td>
+          {/* <td>{dispute.Legal_Holiday_with_NSD}</td> */}
+          {/* <td>{dispute.Legal_Holiday_with_Overtime}</td> */}
+          {/* <td>{dispute.Legal_Holiday_OT_with_OT}</td> */}
+          {/* <td>{dispute.Special_Holiday}</td> */}
+          {/* <td>{dispute.Special_Holiday_200}</td> */}
+          {/* <td>{dispute.Special_Holiday_with_NSD}</td> */}
+          {/* <td>{dispute.Special_Holiday_with_Overtime}</td> */}
+          {/* <td>{dispute.Special_Holiday_OT_with_OT}</td> */}
+          {/* <td>{dispute.Referral_Fee}</td> */}
+          {/* <td>{dispute.Bonus}</td> */}
+          {/* <td>{dispute.LWOP_Adjustment}</td> */}
+          {/* <td>{dispute.Commission}</td> */}
           <td>{dispute.Payroll_Period}</td>
-          <td>{dispute.Payroll_Cutoff}</td>
+          {/* <td>{dispute.Payroll_Cutoff}</td> */}
           <td>{dispute.created_by}</td>
           <td>{dispute.BPs_Remarks}</td>
-          <td>{dispute.BPs_Date_Encoded}</td>
+          {/* <td>{dispute.BPs_Date_Encoded}</td> */}
           <td>{dispute.Payroll_Remarks}</td>
           <td>{dispute.Payout_Inclusion}</td>
-          {(Authenticator.scanLevel("Payroll")) && ( <td> <Link
+          {/* {(Authenticator.scanLevel("Payroll")) && (  */}
+            <td> <Link
                           to={{
                             pathname: global.links.payroll_dispute + dispute.id,
                             resetInitialState: true,
@@ -340,7 +343,8 @@ const DisputeReport = (props) => {
                             className="fa fa-eye ev-color"
                             aria-hidden="true"
                           ></i>
-                        </Link></td>)}
+                        </Link></td>
+                        {/* )} */}
         </tr>
                   
               ))}
