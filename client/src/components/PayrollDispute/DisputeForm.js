@@ -1256,7 +1256,7 @@ function DisputeForm(props) {
 				  style={{ display: 'block' }}
                   onChange={handleChange}
 				  >
-				<option    label="Select Type" />
+				<option    label="Select Status" />
                 <option value={"approve"} label={"Approve"} />
                 <option value={"reject"} label={"Reject"} />
 				</select>

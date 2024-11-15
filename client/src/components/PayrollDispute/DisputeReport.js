@@ -191,7 +191,7 @@ const DisputeReport = (props) => {
 				  style={{ display: 'block' }}
                   onChange={handleFilterChange}
 				  >
-				<option  label="Select Type" />
+				<option  label="Select Status" />
                 <option value={"pending"} label={"Pending"} />
                 <option value={"approve"} label={"Approve"} />
                 <option value={"reject"} label={"Reject"} />
