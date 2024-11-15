@@ -131,7 +131,7 @@ const DisputeReport = (props) => {
     <ContainerBody>
     <Content label="Create Room">
     
-        <h2 className="">Dispute Report</h2>
+        <h2 className="">Payroll Dispute Report</h2>
         <div>
             <Row>
             <Col size="2">
@@ -192,8 +192,9 @@ const DisputeReport = (props) => {
                   onChange={handleFilterChange}
 				  >
 				<option  label="Select Type" />
-                <option value={"approved"} label={"Approved"} />
-                <option value={"rejected"} label={"Rejected"} />
+                <option value={"pending"} label={"Pending"} />
+                <option value={"approve"} label={"Approve"} />
+                <option value={"reject"} label={"Reject"} />
 				</select>
         </div>
         </Col>
@@ -295,7 +296,7 @@ const DisputeReport = (props) => {
           <td>{dispute.Department}</td>
           <td>{dispute.dispute_type}</td>
           <td>{dispute.description}</td>
-          <td>{dispute.status}</td>
+          <td className="textUC">{dispute.status}</td>
           <td>{dispute.LWOP}</td>
           <td>{dispute.UT}</td>
           <td>{dispute.TARDINESS}</td>

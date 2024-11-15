@@ -141,7 +141,7 @@ const getDaysInMonth = (year, month) => {
             <Wrapper>
                 <ContainerWrapper>   
                     <ContainerBody>  
-                        <h2 className="page-title">TimeOff Allocation Report</h2>
+                        <h2 className="page-title">India Payroll Report</h2>
                         <div className="content-table">
                       
                         <Row className="filters filter-dtr">  

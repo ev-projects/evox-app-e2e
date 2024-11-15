@@ -435,7 +435,7 @@ function DisputeForm(props) {
     }
     else if(!formData.employee_id){
       e.preventDefault();
-      dispatch(Formatter.alert_error_message("Please Select Employee..."));
+      dispatch(Formatter.alert_error_message("Please select an employee."));
       // setValidateeid(false);   
     }else{
       e.preventDefault();    
@@ -1256,8 +1256,8 @@ function DisputeForm(props) {
                   onChange={handleChange}
 				  >
 				<option    label="Select Type" />
-                <option value={"approved"} label={"Approved"} />
-                <option value={"rejected"} label={"Rejected"} />
+                <option value={"approve"} label={"Approve"} />
+                <option value={"reject"} label={"Reject"} />
 				</select>
                 </div>
               </Col>
