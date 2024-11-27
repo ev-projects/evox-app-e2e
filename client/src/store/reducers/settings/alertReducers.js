@@ -50,7 +50,7 @@ const alertReducer = (state = initState, action) => {
                     result = {
                         onShow          : true,
                         variant         : 'danger',
-                        header          : "",
+                        header          : "An error has occured:",
                         body            : ( action.errorMessage ?action.errorMessage : "" ),
                         timeOut         : ( action.timeOut ?  action.timeOut : 0 ),
                         isTimeOutActive : ( action.timeOut != 0 ?  true : false )

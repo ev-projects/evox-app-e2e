@@ -276,7 +276,7 @@ function DisputeForm(props) {
             setValidbtn(false);
           }else{
             setValidbtn(true);
-            dispatch(Formatter.alert_error_message("Cutoff Not Found."));
+            dispatch(Formatter.alert_error_message("Cut Off Details Not Found, Please Contact Projects Team."));
           }
          
          
