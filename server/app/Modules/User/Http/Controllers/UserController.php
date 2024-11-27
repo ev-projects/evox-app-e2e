@@ -1064,6 +1064,18 @@ class UserController extends Controller
     }
 }
 
+public function getCountry(Request $request){
+    try {  
+
+        $result_sets = call_sp('EV_SP_Policies_Document', [null, null, null, null, 2]);
+        $response = $result_sets [0];
+        return $response;
+    }catch (Exception $e) {
+        log_to_file( 'error', $e->getMessage(), [$e], "upload_document");
+        return error_response(trans('messages.error_default'), $e);
+    }
+}
+
 public function get_user_by_string_dispute(){ 
     # Get user
 
@@ -1075,7 +1087,7 @@ public function get_user_by_string_dispute(){
     // ->get(); 
     try {
         $me = Auth::user();
-        $user = $result_sets = call_sp('EV_SP_Payroll_Dispute_new', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
+        $user = $result_sets = call_sp('EV_SP_Payroll_Dispute', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
         log_activity( trans('messages.list_role_attempt') );
         return $user[0]; 
         // return success_response(
