@@ -214,7 +214,7 @@ class DtrController extends Controller
                 $is_within_time = false;
                 $after_time_half = false;
                 $is_within_time_extended = false;
-                $checked_end_time =  $dtr_record->end_datetime;
+                $checked_end_time =  $dtr_record->end_flexy_datetime ?? $dtr_record->end_datetime;
                 
                 if($dtr_record->is_rest_day == 0) {
                     $is_within_time = Carbon::now()->timestamp > ($dtr_record->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $dtr_record->is_rest_day == 0 ;

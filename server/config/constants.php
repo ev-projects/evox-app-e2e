@@ -118,6 +118,7 @@ return [
         'India' => "BHR_API_LINK_INDIA",
         'Bulgaria' => "BHR_API_LINK_BULGARIA",
         'Morocco' => "BHR_API_LINK_MOROCCO",
+        'Belgium' => "BHR_API_LINK_BELGIUM",
     ], 
 
     'BHR_USER_EMPLOYMENT_STATUS' => [
