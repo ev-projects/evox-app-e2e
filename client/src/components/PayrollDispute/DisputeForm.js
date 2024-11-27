@@ -37,6 +37,7 @@ function DisputeForm(props) {
   const [cutoff, setCutoff] = useState('');
   const [userid,setUserid] = useState('')
   const [validationResult, setValidationResult] = useState('');
+  const [validbtn, setValidbtn] = useState(false);
   const [formData1, setFormData1] = useState({
     first_name:'',
     last_name:'',
@@ -148,7 +149,7 @@ function DisputeForm(props) {
 
   useEffect(() => {
 
-    if (!props.params.id) {
+  if (!props.params.id) {
       dispatch(fetchUserDispute());
     const month = new Date().getMonth() + 1;
     const date =  new Date().getDate();
@@ -157,7 +158,8 @@ function DisputeForm(props) {
     // const fromdate = year+"-"+ month -1+"-"+15;
     // const todate = year+"-"+ month+"-"+16;
     
-   
+    setValidbtn(true);
+
     if(formattedDay > 15){
 
       handleCutoff(year+"-"+ (month)+"-"+"16",year+"-"+ (month+1) +"-"+"15");
@@ -259,18 +261,24 @@ function DisputeForm(props) {
             url: "/getpayrollcutoff/"+fromdate+"/"+todate,
         })
         .then(result => {
-
-          dispatch(payrollperiod(result.data[0].name));
-          setCutoffname(result.data[0].name);
-          payroll && inputRef1.current.focus();
-          setFormData({
-            ...formData,
-            ["Valid_From"]: fromdate,
-            ["Valid_To"]: todate,
-            ["Payroll_Cutoff"]: fromdate + " To " + todate,
-            ["created_by"]: user.id,
-            ["Payroll_Period"]:payroll
-          });
+          if(result.data.length > 0){
+            dispatch(payrollperiod(result.data[0].name));
+            setCutoffname(result.data[0].name);
+            payroll && inputRef1.current.focus();
+            setFormData({
+              ...formData,
+              ["Valid_From"]: fromdate,
+              ["Valid_To"]: todate,
+              ["Payroll_Cutoff"]: fromdate + " To " + todate,
+              ["created_by"]: user.id,
+              ["Payroll_Period"]:payroll
+            });
+            setValidbtn(false);
+          }else{
+            setValidbtn(true);
+            dispatch(Formatter.alert_error_message("Cutoff Not Found."));
+          }
+         
          
         })
         .catch(e => {
@@ -1284,7 +1292,7 @@ function DisputeForm(props) {
              { !props.params.id ? 
               <Col size="12">
                 <div className="form-group">
-                  <button type="submit" className="btn btn-primary">Submit Dispute</button>
+                  <button type="submit" className="btn btn-primary" disabled={validbtn} >Submit Dispute </button>
                   { validateeid === false ?
                   <label style={{"color":"red"}}>*Employee ID Not Found</label> :
                   ""}
