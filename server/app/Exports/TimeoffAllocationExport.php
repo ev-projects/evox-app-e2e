@@ -49,6 +49,8 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
 
         $this->list = $list ?? [];
         $this->list_new = $list_new ?? [];
+        // $this->list_new1 = $list_new1 ?? [];
+        // $this->list_new2 = $list_new2 ?? [];
         $this->noofdays = $noofdays;
         $this->pre_mon = $pre_mon;
         $this->cur_mon = $cur_mon;
@@ -79,17 +81,40 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 $sheet->setCellValue('G3', "No of Lv availed");
                 $sheet->mergeCells('G4:H4');
                 $sheet->setCellValue('G4', "(".$this->pre_mon." 21 - ".$this->cur_mon." 20)");
-                $sheet->setCellValue('F6', $this->current_period );
+                $sheet->setCellValue('H6', $this->current_period );
                 
           }
 
         ];
     }
+
+    
     public function array(): array
     {
 
         $employee_items = [];
         $employee_items_new = [];
+        // $employee_items_new1 = [];
+        // $employee_items_new2 = [];
+
+        // foreach ($this->list_new2 as $item) {
+        //     $item_vals = [];
+        //     foreach(get_object_vars($item) as $key => $val) {
+        //         $item_vals[] = $val;
+        //     }
+        //     array_push($employee_items_new2, array_merge($item_vals));
+        // }
+        // $excel_employees_new2 = $employee_items_new2;
+
+        // foreach ($this->list_new1 as $item) {
+        //     $item_vals = [];
+        //     foreach(get_object_vars($item) as $key => $val) {
+        //         $item_vals[] = $val;
+        //     }
+        //     array_push($employee_items_new1, array_merge($item_vals));
+        // }
+        // $excel_employees_new1 = $employee_items_new1;
+
 
         foreach ($this->list_new as $item) {
             $item_vals = [];
@@ -129,8 +154,10 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 [""],
                 [""],
                 [""],
+                [""],
             ),
             array_merge(
+                [""],
                 [""],
                 [""],
                 [""],
@@ -146,9 +173,11 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
             ),
             array_merge(
                 ["Sno"],
-                ["Employee Number"],
+                ["Employee No"],
+                ["Employee Name"],
                 ["Employment Status"],
                 ["Account"],
+                ["Status"],
                 ["Start Date"],
                 ["Present Days"],
                 ["Paid"],
@@ -159,6 +188,8 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 ["Clos. Bal"],
             ),
             array_merge(
+                [""],
+                [""],
                 [""],
                 [""],
                 [""],
@@ -186,9 +217,43 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 [""],
                 [""],
                 [""],
+                [""],
+                [""],
             ),
-            [$this->period],
+            !empty($employee_items_new) ? [$this->period] :[""],
             $employee_items_new,
+            // array_merge(
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            // ),
+            // !empty($employee_items_new1) ?["BELGIUM HOLIDAYS TAKEN"] : [""],
+            // $employee_items_new1,
+            // array_merge(
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            //     [""],
+            // ),
+            // !empty($employee_items_new2)?["MOROCCO HOLIDAYS TAKEN"]:[""],
+            // $employee_items_new2,
         );
         return $excel;
     }

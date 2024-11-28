@@ -1051,4 +1051,51 @@ class UserController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
+
+    public function getUserCountry(Request $request){
+    try {   
+        $me = Auth::user();
+        $result_sets = call_sp('EH_SP_Get_User_Country', [$me->LevelId, $me->id]);
+        $response = $result_sets [0];
+        return $response;
+    }catch (Exception $e) {
+    log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
+    return error_response(trans('messages.error_default'), $e);
+    }
+}
+
+public function getCountry(Request $request){
+    try {  
+
+        $result_sets = call_sp('EV_SP_Policies_Document', [null, null, null, null, 2]);
+        $response = $result_sets [0];
+        return $response;
+    }catch (Exception $e) {
+        log_to_file( 'error', $e->getMessage(), [$e], "upload_document");
+        return error_response(trans('messages.error_default'), $e);
+    }
+}
+
+public function get_user_by_string_dispute(){ 
+    # Get user
+
+    // $user = User::where('first_name', 'like', '%' . $string_name . '%')
+    // ->orWhere('last_name', 'like', '%' . $string_name . '%')
+    // ->join('EVOX_SUB_DEPARTMENT', 'users.SubDepartmentId', '=', 'EVOX_SUB_DEPARTMENT.Id')
+    // ->join('EVOX_DEPARTMENT', 'EVOX_SUB_DEPARTMENT.DepartmentId', '=', 'EVOX_DEPARTMENT.Id') // Joining the 'departments' table
+    // ->select('users.id', 'users.first_name', 'users.middle_name', 'users.last_name', 'users.emp_num', 'EVOX_DEPARTMENT.Name as department_name') // Select relevant fields from both tables
+    // ->get(); 
+    try {
+        $me = Auth::user();
+        $user = $result_sets = call_sp('EV_SP_Payroll_Dispute', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
+        log_activity( trans('messages.list_role_attempt') );
+        return $user[0]; 
+        // return success_response(
+        //     trans('messages.list_role_success'), $user 
+        // );
+    } catch(Exception $e){
+        return error_response( trans('messages.error_default'), $e );
+    }
+}
+
 }

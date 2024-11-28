@@ -108,6 +108,8 @@ import DtrMultiLogsSummary from "../container/MyTeam/DtrMultiLogsSummary";
 
 
 import ViewReport from "../components/DateReport/ViewReport";
+import DisputeForm from "../components/PayrollDispute/DisputeForm";
+import DisputeReport from "../components/PayrollDispute/DisputeReport";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -594,8 +596,15 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.view_report}>
-    <ViewReport></ViewReport>
-          </ProtectedRoute> 
+           <ViewReport></ViewReport>
+        </ProtectedRoute> 
+
+        <ProtectedRoute exact path={global.links.payroll_dispute+":id?"}>
+           <DisputeForm></DisputeForm>
+        </ProtectedRoute> 
+        <ProtectedRoute exact path={global.links.payroll_dispute_view}>
+           <DisputeReport></DisputeReport>
+        </ProtectedRoute> 
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
         <Route exact path={["/", global.links.email_not_found ]} component={EmailNotFound} />

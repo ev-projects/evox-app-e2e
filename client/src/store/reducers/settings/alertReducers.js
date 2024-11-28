@@ -10,6 +10,7 @@ const initState = {
     body : "",
     isTimeOutActive : false,
     timeOut: 0,
+    errorMessage : ""
 }
 
 const alertReducer = (state = initState, action) => {
@@ -43,6 +44,20 @@ const alertReducer = (state = initState, action) => {
             }
             return result;
             break;
+            case "SHOW_ALERT_MESSAGE":
+                result = {};
+             
+                    result = {
+                        onShow          : true,
+                        variant         : 'danger',
+                        header          : "An error has occured:",
+                        body            : ( action.errorMessage ?action.errorMessage : "" ),
+                        timeOut         : ( action.timeOut ?  action.timeOut : 0 ),
+                        isTimeOutActive : ( action.timeOut != 0 ?  true : false )
+                    }
+                
+                return result;
+                break;
         case "HIDE_ALERT":
             return initState;
             break;

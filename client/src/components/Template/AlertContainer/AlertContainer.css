@@ -39,3 +39,8 @@
 .alert-body {
     font-size: .8rem !important;
 }
+
+.alert-body ul{
+    list-style-type: none;
+    /* text-align: center; */
+}

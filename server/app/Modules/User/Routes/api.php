@@ -55,6 +55,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     # Gets the User List of Specific Role
     Route::get('/search-user/{string_name}', 'UserController@get_user_by_string');
 
+    Route::get('/search-user-dispute', 'UserController@get_user_by_string_dispute');
+
     # Get the user roles
     Route::get('/roles/', 'UserController@get_roles');
 
@@ -70,6 +72,9 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('export_dpa_list', 'UserController@export_dpa_list');
 
     Route::get('sub_department_list', 'UserController@sub_department_list');
+
+    Route::get('getusercountry', 'UserController@getUserCountry');
+
 });
 #####################################################################################################
 
@@ -198,3 +203,4 @@ Route::group(['prefix' => 'generate/dtr', 'middleware' => ['jwtauth', 'auth.apik
     Route::post('/', 'UserController@generateDtrDate');
 
 });
+

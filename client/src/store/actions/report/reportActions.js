@@ -56,6 +56,7 @@ export const getTeamAttendanceSummary = (start_date, end_date, params) => {
                 })
             })
             .catch(e => {
+                console.log(e);
                 dispatch(Formatter.alert_error(e))
             });
     }

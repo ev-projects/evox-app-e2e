@@ -16,6 +16,13 @@ class Formatter {
     return first_obj;
   }
 
+  alert_error_message( error_result ) {
+    return {
+      'type'      : 'SHOW_ALERT_MESSAGE',
+      'errorMessage'     : error_result,
+    }
+  }
+
   
   /** Formats the success response that would be interpretted by the Dispatch of Alert Reducer 
    * param | Object | call_result ( The parameter indicated on the 'then' )

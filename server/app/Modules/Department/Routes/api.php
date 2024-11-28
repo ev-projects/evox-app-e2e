@@ -21,6 +21,8 @@ Route::group(['prefix' => 'department', 'middleware' => ['jwtauth', 'auth.apikey
     # Gets all the Department Lists
     Route::get('/all', 'DepartmentController@all');
 
+    Route::get('/get_department_all', 'DepartmentController@get_department_all');
+
     # Gets all the Department Lists
     Route::get('/all_with_announcements', 'DepartmentController@all_with_announcements');
 

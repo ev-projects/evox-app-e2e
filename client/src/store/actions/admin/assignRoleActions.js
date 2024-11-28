@@ -64,6 +64,29 @@ export const fetchUser = ( name_string ) => {
     }
 }
 
+export const fetchUserDispute = ( ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/search-user-dispute",
+        })
+        .then(result => {
+
+    
+            if (result.data.length === undefined){
+                dispatch(Formatter.alert_error_message("No User Found..."));
+            }
+            dispatch({
+                type: 'FETCH_DEP_USER_LIST',
+                data: result.data, // Ensure you're dispatching the correct data structure
+              });
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}
+
 
 export const assignRolesPermissions = ( user_id , post_data ) => {
     // Add or Remove supervisor access

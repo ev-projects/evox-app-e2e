@@ -1,0 +1,33 @@
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Horizontal scrolling */
+    margin: 20px 0;
+  }
+  
+  table {
+    width: 1200px; /* Or a specific width if needed */
+    border-collapse: collapse;
+    min-width: 100%; /* Ensure table takes at least 100% of available width */
+  }
+  
+  th, td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+
+  /* .tablealignment tbody td  {
+    padding: 1px !important;
+    text-align: center;
+}  */
+
+.btnspace {
+  margin-left: 10px !important;
+}
+
+.textUC{
+  text-transform: capitalize;
+}
