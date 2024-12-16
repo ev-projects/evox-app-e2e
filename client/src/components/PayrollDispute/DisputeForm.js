@@ -263,9 +263,6 @@ function DisputeForm(props) {
 
   const handleCutoff = async (fromdate,todate) => {
     try {
-     
-      alert(fromdate);
-      alert(todate);
 
        await API.call({
             method: "get",
