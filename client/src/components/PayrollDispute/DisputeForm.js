@@ -151,6 +151,8 @@ function DisputeForm(props) {
 
   if (!props.params.id) {
       dispatch(fetchUserDispute());
+      const mon = '01';
+      const mon1 = '12';
     const month = new Date().getMonth() + 1;
     const date =  new Date().getDate();
     const year =  new Date().getFullYear();
@@ -161,11 +163,18 @@ function DisputeForm(props) {
     setValidbtn(true);
 
     if(formattedDay > 15){
-
-      handleCutoff(year+"-"+ (month)+"-"+"16",year+"-"+ (month+1) +"-"+"15");
+      if(month === 12){
+        handleCutoff(year+"-"+ (month)+"-"+"16",(year+1)+"-"+ (mon) +"-"+"15");
+      }else{
+        handleCutoff(year+"-"+ (month)+"-"+"16",year+"-"+ (month+1) +"-"+"15");
+      }
+     
     }else{
-
-      handleCutoff(year+"-"+ (month-1) +"-"+"16",year+"-"+ (month) +"-"+"15");
+      if(month === 1){
+      handleCutoff((year-1)+"-"+ (mon1) +"-"+"16",year+"-"+ (month) +"-"+"15");
+      }else{
+        handleCutoff(year+"-"+ (month-1) +"-"+"16",year+"-"+ (month) +"-"+"15")
+      }
     }
   }else{
 
@@ -254,7 +263,6 @@ function DisputeForm(props) {
 
   const handleCutoff = async (fromdate,todate) => {
     try {
-     
 
        await API.call({
             method: "get",
