@@ -8,14 +8,17 @@ import Formatter from "../../services/Formatter";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
 import {
   fecthUserContry,
+  fecthMoroccoPayrollParams,
 } from "./PayrollReportApi.js";
 import Wrapper from "../../components/Template/Wrapper";
-import "./ViewReport.css";
+import "./ViewReportMorocco.css";
 
 import { clearOpsScheduleInstance } from "../../store/actions/opsschedule/opsScheduleActions.js";
-const ViewReport = (props) => {
+const ViewReportMorocco = (props) => {
+    const [userparams, setUserParams] = useState([]);
     const [month, setMonth] = useState("");
     const [year, setYear] = useState("");
+    const [department, setDepartment] = useState("");
     const [noofdays, setNoofdays] = useState("");
     const [currentmonth, setCurrentmonth] = useState("");
     const [text, settext] = useState("");
@@ -43,6 +46,8 @@ const ViewReport = (props) => {
       yearsArray.sort((a, b) => b - a);
       setDatayear(yearsArray); 
       dispatch(fecthUserContry());
+      dispatch(fecthMoroccoPayrollParams());
+      console.log(456, userparams, props, dispatch(fecthMoroccoPayrollParams()));
     }, []);
 
 
@@ -70,10 +75,11 @@ const getDaysInMonth = (year, month) => {
       }else if(month == ""){
         setvalidmonth(true);
       }else{
+        console.log(222, year, month, countryid);
         await API.call({
           method: "GET",
           // url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=${countryid}`,
-          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=1`,
+          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=4`,
         })
           .then((result) => {
             console.log(result);
@@ -106,6 +112,7 @@ const getDaysInMonth = (year, month) => {
       }else if(month == ""){
         setvalidmonth(true);
       }else{
+        console.log(333, year, month, countryid);
         await API.call({
           method: "GET",
           url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&export=1&country=${countryid}`,
@@ -115,7 +122,7 @@ const getDaysInMonth = (year, month) => {
             const url = window.URL.createObjectURL(new Blob([result.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', "India_Payroll_Report_"+getMonthName(month)+"_"+year+".csv");
+            link.setAttribute('download', "Morocco_Payroll_Report_"+getMonthName(month)+"_"+year+".csv");
             document.body.appendChild(link);
             link.click();
 
@@ -141,78 +148,99 @@ const getDaysInMonth = (year, month) => {
             <Wrapper>
                 <ContainerWrapper>   
                     <ContainerBody>  
-                        <h2 className="page-title">India Payroll Report</h2>
+                        <h2 className="page-title">Morocco Payroll Report</h2>
                         <div className="content-table">
                       
                         <Row className="filters filter-dtr">  
                         <Col size="3">
-                        <div className="form-group">
-                    <select
-                      name="type"
-                      className="form-control"
-                      required
-                      value={month}
-                      onChange={(e) => {
-                        setMonth(e.target.value);
-                        if (e.target.value == "") {
-                          setvalidmonth(true);
-                        } else {
-                          setvalidmonth(false);
-                          setCurrentmonth(getMonthName(e.target.value));
-                        }
-                      }}
-                    >
-                      <option value="">- Select Month -</option>
-                      <option value="1">January</option>
-                      <option value="2">February</option>
-                      <option value="3">March</option>
-                      <option value="4">April</option>
-                      <option value="5">May</option>
-                      <option value="6">June</option>
-                      <option value="7">July</option>
-                      <option value="8">August</option>
-                      <option value="9">September</option>
-                      <option value="10">October</option>
-                      <option value="11">November</option>
-                      <option value="12">December</option>
-                    </select>
-                    {validmonth && (
-                      <label style={{ color: "red" }}>
-                        Please Select Month
-                      </label>
-                    )}
-                  </div>
-                </Col>
+                            <div className="form-group">
+                                <select
+                                name="type"
+                                className="form-control"
+                                required
+                                value={month}
+                                onChange={(e) => {
+                                    setMonth(e.target.value);
+                                    if (e.target.value == "") {
+                                    setvalidmonth(true);
+                                    } else {
+                                    setvalidmonth(false);
+                                    setCurrentmonth(getMonthName(e.target.value));
+                                    }
+                                }}
+                                >
+                                <option value="">- Select Month -</option>
+                                {props.userparams?.month.length > 0 &&
+                                    props.userparams.month.map((month, pos) => (
+                                    <option value={month.month_number}>
+                                        {month.month_name}
+                                    </option>
+                                ))}
+                                </select>
+                                {validmonth && (
+                                <label style={{ color: "red" }}>
+                                    Please Select Month
+                                </label>
+                                )}
+                            </div>
+                        </Col>
                         <Col size="3"> 
                         <div className="form-group">
-                    <select
-                      name="type"
-                      className="form-control"
-                      required
-                      value={year}
-                      onChange={(e) => {
-                        setYear(e.target.value);
-                        if (e.target.value == "") {
-                          setvalidyear(true);
-                        } else {
-                          setvalidyear(false);
-                        }
-                      }}
-                    >
-                      <option value="">- Select Year -</option>
-                      {datayear.length > 0 &&
-                        datayear.map((years, pos) => (
-                          <option value={years}>
-                            {years}
-                          </option>
-                        ))}
-                    </select>
-                    {validyear && (
-                      <label style={{ color: "red" }}>
-                        Please Select Year
-                      </label>
-                    )}
-                  </div>
+                        {console.log(888, props.userparams, datayear)}
+                            <select
+                            name="type"
+                            className="form-control"
+                            required
+                            value={year}
+                            onChange={(e) => {
+                                setYear(e.target.value);
+                                if (e.target.value == "") {
+                                setvalidyear(true);
+                                } else {
+                                setvalidyear(false);
+                                }
+                            }}
+                            >
+                            <option value="">- Select Year -</option>
+                            {props.userparams?.year.length > 0 &&
+                                props.userparams.year.map((year, pos) => (
+                                <option value={year.year_name}>
+                                    {year.year_name}
+                                </option>
+                                ))}
+                            </select>
+                            {validyear && (
+                            <label style={{ color: "red" }}>
+                                Please Select Year
+                            </label>
+                            )}
+                        </div>
+                        </Col>
+                        <Col size="3"> 
+                        <div className="form-group">
+                            <select
+                            name="type"
+                            className="form-control"
+                            required
+                            value={year}
+                            onChange={(e) => {
+                                setDepartment(e.target.value);
+                            }}
+                            >
+                            <option value="">- Select Department -</option>
+                            {props.userparams?.department.length > 0 &&
+                                props.userparams?.department.map((department, pos) => (
+                                <option value={department.Id}>
+                                    {department.Name}
+                                </option>
+                                ))}
+                            </select>
+                            {validyear && (
+                            <label style={{ color: "red" }}>
+                                Select Department
+                            </label>
+                            )}
+                        </div>
                         </Col>
 
                         {/* <Col size="3"> 
@@ -402,10 +430,12 @@ const getDaysInMonth = (year, month) => {
         
           )}
 const mapStateToProps = (state) => {
+    console.log(999, state);
     return {
       user: state.user,
       usercountry: state.dashboard.my_country,
+      userparams: state.dashboard.morocco_payroll_params,
     };
 };
 
-export default connect(mapStateToProps)(ViewReport)
+export default connect(mapStateToProps)(ViewReportMorocco)
