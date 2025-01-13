@@ -47,7 +47,6 @@ const ViewReportMorocco = (props) => {
       setDatayear(yearsArray); 
       dispatch(fecthUserContry());
       dispatch(fecthMoroccoPayrollParams());
-      console.log(456, userparams, props, dispatch(fecthMoroccoPayrollParams()));
     }, []);
 
 
@@ -75,26 +74,15 @@ const getDaysInMonth = (year, month) => {
       }else if(month == ""){
         setvalidmonth(true);
       }else{
-        console.log(222, year, month, countryid);
         await API.call({
           method: "GET",
           // url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=${countryid}`,
-          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=4`,
+          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&department=${department}&country=4`,
         })
           .then((result) => {
-            console.log(result);
             // dispatch(Formatter.alert_success(result, 3000));
             if (result.status == 200) {
-              console.log(result.data.content.
-                timeoffItems);
-              Setdatatimeoff(result.data.content.
-                timeoffItems)
-                Setdatatimeoffnew(result.data.content.
-                  timeoffItemsnew)
-                  // Setdatatimeoffbelgium(result.data.content.
-                  //   timeoffItemsbelgium)
-                  //   Setdatatimeoffmoroco(result.data.content.
-                  //     timeoffItemsmoroco)
+              Setdatatimeoff(result.data.content.reports);
             }
           })
           .catch((e) => {
@@ -103,7 +91,6 @@ const getDaysInMonth = (year, month) => {
       }
     }
     const exporthandlesave = async (e) => {
-      console.log("test");
       if (year == "" && month == "") {
         setvalidyear(true);
         setvalidmonth(true);
@@ -112,10 +99,9 @@ const getDaysInMonth = (year, month) => {
       }else if(month == ""){
         setvalidmonth(true);
       }else{
-        console.log(333, year, month, countryid);
         await API.call({
           method: "GET",
-          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&export=1&country=${countryid}`,
+          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&department=${department}&export=1&country=4`,
         })
           .then((result) => {
 
@@ -186,7 +172,6 @@ const getDaysInMonth = (year, month) => {
                         </Col>
                         <Col size="3"> 
                         <div className="form-group">
-                        {console.log(888, props.userparams, datayear)}
                             <select
                             name="type"
                             className="form-control"
@@ -222,7 +207,7 @@ const getDaysInMonth = (year, month) => {
                             name="type"
                             className="form-control"
                             required
-                            value={year}
+                            value={department}
                             onChange={(e) => {
                                 setDepartment(e.target.value);
                             }}
@@ -235,11 +220,6 @@ const getDaysInMonth = (year, month) => {
                                 </option>
                                 ))}
                             </select>
-                            {validyear && (
-                            <label style={{ color: "red" }}>
-                                Select Department
-                            </label>
-                            )}
                         </div>
                         </Col>
 
@@ -297,40 +277,62 @@ const getDaysInMonth = (year, month) => {
             <Table striped bordered hover tableheader>
                 <thead>
                   <tr>
-                    <th className="tableheader" rowspan="2">Sno</th>
+                    <th className="tableheader" rowspan="2">Employee No</th>
                     <th className="tableheader" rowspan="2">Employee Name</th>
-                    <th className="tableheader" rowspan="2">Employment Status</th>
-                    <th className="tableheader" rowspan="2">Account</th>
-                    <th className="tableheader" rowspan="2">Start Date</th>
-                    <th className="tableheader" rowspan="2">Present Days <br></br> {text}</th>
-                    <th className="tableheader" colspan="2">No of Lv availed <br></br> {text1}</th>
-                    <th className="tableheader" rowspan="2">Max Lv Eligible</th>
-                    <th className="tableheader" colspan="2">Prev. Used</th>
-                    <th className="tableheader" rowspan="2">Clos. Bal</th>
-                  </tr>
-                  <tr>  
-                  <th className="tableheader">Paid</th>
-                  <th className="tableheader">LWP</th>
-                  <th className="tableheader">Paid</th>
-                  <th className="tableheader">LWP</th>
+                    <th className="tableheader" rowspan="2">Department</th>
+                    <th className="tableheader" rowspan="2">Hire Date</th>
+                    <th className="tableheader" rowspan="2">Last Work Date</th>
+                    <th className="tableheader" rowspan="2">Total Working Days</th>
+                    <th className="tableheader" rowspan="2">Employee Status</th>
+                    <th className="tableheader" rowspan="2">UL</th>
+                    <th className="tableheader" rowspan="2">Paid Leaves</th>
+                    <th className="tableheader" rowspan="2">Sick Leave</th>
+                    <th className="tableheader" rowspan="2">Paid Holiday</th>
+                    <th className="tableheader" rowspan="2">Regular OverTime</th>
+                    <th className="tableheader" rowspan="2">Regular OverTime NightDiff</th>
+                    <th className="tableheader" rowspan="2">Rest Day OverTime</th>
+                    <th className="tableheader" rowspan="2">Rest Day OverTime NightDiff</th>
+                    <th className="tableheader" rowspan="2">Legal Holiday OverTime</th>
+                    <th className="tableheader" rowspan="2">Legal HoliDay OverTime NightDiff</th>
+                    <th className="tableheader" rowspan="2">Special HoliDay OverTime</th>
+                    <th className="tableheader" rowspan="2">Special HoliDay OverTime NightDiff</th>
+                    <th className="tableheader" rowspan="2">Double Special HoliDay OverTime</th>
+                    <th className="tableheader" rowspan="2">Double Special HoliDay OverTime NightDiff</th>
+                    <th className="tableheader" rowspan="2">Double Legal Holiday OverTime</th>
+                    <th className="tableheader" rowspan="2">Double Legal HoliDay OverTime NightDiff</th>
+                    <th className="tableheader" rowspan="2">Special Legal HoliDay OverTime</th>
+                    <th className="tableheader" rowspan="2">Special Legal HoliDay OverTime NightDiff</th>
                   </tr>
                 </thead>
                 <tbody>
               
-                  {datatimeoff.map((timeoff, pos) => (
+                  {datatimeoff.map((report, pos) => (
                     <tr>
-                      <td>{timeoff.Sno}</td>
-                      <td>{timeoff.Employee_Name}</td>
-                      <td>{timeoff.Employee_status}</td>
-                      <td>{timeoff.Account}</td>
-                      <td>{timeoff.startdate}</td>
-                      <td>{timeoff.presentdays} </td>
-                      <td>{timeoff.AvaiPaid} </td>
-                      <td>{timeoff.AvaiLWP}</td>
-                      <td>{timeoff.MaxLv}</td>
-                      <td>{timeoff.PrePais}</td>
-                      <td>{timeoff.PreLWP} </td>
-                      <td>{timeoff.CloseBal} </td>
+                      <td>{report.Employee_Number}</td>
+                      <td>{report.Last_Name} {report.First_Name}</td>
+                      <td>{report.Department_Name}</td>
+                      <td>{report.Hire_Date}</td>
+                      <td>{report.Last_Work_Date}</td>
+                      <td>{report.TotalWorkingDays}</td>
+                      <td>{report.EmployeeStatus}</td>
+                      <td>{report.UL}</td>
+                      <td>{report.PaidLeaves}</td>
+                      <td>{report.SickLeave}</td>
+                      <td>{report.PaidHoliday}</td>
+                      <td>{report.RegularOverTime}</td>
+                      <td>{report.RegularOverTimeNightDiff}</td>
+                      <td>{report.RestDayOverTime}</td>
+                      <td>{report.RegularOverTimeNightDiff}</td>
+                      <td>{report.LegalHolidayOverTime}</td>
+                      <td>{report.LegalHoliDayOverTimeNightDiff}</td>
+                      <td>{report.SpecialHoliDayOverTime}</td>
+                      <td>{report.SpecialHoliDayOverTimeNightDiff}</td>
+                      <td>{report.DoubleSpecialHoliDayOverTime}</td>
+                      <td>{report.DoubleSpecialHoliDayOverTimeNightDiff}</td>
+                      <td>{report.DoubleLegalHolidayOverTime}</td>
+                      <td>{report.DoubleLegalHoliDayOverTimeNightDiff}</td>
+                      <td>{report.SpecialLegalHoliDayOverTime}</td>
+                      <td>{report.SpecialLegalHoliDayOverTimeNightDiff}</td>
                     </tr>
                   ))}
                   {datatimeoffnew.length > 0 ?
@@ -430,7 +432,6 @@ const getDaysInMonth = (year, month) => {
         
           )}
 const mapStateToProps = (state) => {
-    console.log(999, state);
     return {
       user: state.user,
       usercountry: state.dashboard.my_country,

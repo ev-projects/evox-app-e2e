@@ -44,7 +44,7 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
     protected $period;
     protected $current_period;
     protected $noofdays;
-    public function __construct($list, $list_new, $pre_mon, $cur_mon, $noofdays)
+    public function __construct($list, $list_new, $pre_mon, $cur_mon, $noofdays, $columns_set)
     {
 
         $this->list = $list ?? [];
@@ -56,6 +56,7 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
         $this->cur_mon = $cur_mon;
         $this->period = "NEW HIRE (".$this->pre_mon." 21 - ".$this->cur_mon." 20)";
         $this->current_period = "(".$this->cur_mon." 01 - ".$this->cur_mon."" .$this->noofdays .")";
+        $this->columns_set = $columns_set ?? [];
     }
 
 
@@ -171,22 +172,7 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 [""],
                 [""],
             ),
-            array_merge(
-                ["Sno"],
-                ["Employee No"],
-                ["Employee Name"],
-                ["Employment Status"],
-                ["Account"],
-                ["Status"],
-                ["Start Date"],
-                ["Present Days"],
-                ["Paid"],
-                ["LWP"],
-                ["Max Lv Eligible"],
-                ["Paid"],
-                ["LWP"],
-                ["Clos. Bal"],
-            ),
+            $this->columns_set,
             array_merge(
                 [""],
                 [""],

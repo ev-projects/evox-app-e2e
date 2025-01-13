@@ -1659,8 +1659,10 @@ class ReportController extends Controller
                     $current_mon_name = date('M', strtotime("2000-".$current_mon."-01"));
                     $date = Carbon::create($request->timeoff_year, $request->timeoff_month, 1);
                     $daysInMonth = $date->daysInMonth;
+                    $columns_set = ["Sno", "Employee No", "Employee Name", "Employment Status", "Account", "Status", "Start Date", "Present Days", "Paid", "LWP", "Max Lv Eligible", "Paid", "LWP", "Clos. Bal"];
+
                     $response =  Excel::download(
-                        new TimeoffAllocationExport($result_sets[0],$result_sets[1],$previous_mon_name,$current_mon_name,$daysInMonth),
+                        new TimeoffAllocationExport($result_sets[0],$result_sets[1],$previous_mon_name,$current_mon_name,$daysInMonth, $columns_set),
                         'IndianPayroll.csv'
                     );
                 return $response;
@@ -1761,7 +1763,36 @@ class ReportController extends Controller
                     );
                 }
             } elseif ($request->country == 4) {
-                print_r('hahahaha Morocco');
+                $results = call_sp('EH_SP_Morocco_DTR_Summary_Report', [$request->timeoff_month, $request->timeoff_year, $request->department, 2]);
+
+                if($request->export == 1){
+                    if($request->timeoff_month - 1 == 0){
+                        $previous_mon = 12;
+                    }else{
+                        $previous_mon = $request->timeoff_month - 1;
+                    }
+
+                    $current_mon = $request->timeoff_month;
+                    $previous_mon_name = date('M', strtotime("2000-".$previous_mon."-01"));
+                    $current_mon_name = date('M', strtotime("2000-".$current_mon."-01"));
+                    $date = Carbon::create($request->timeoff_year, $request->timeoff_month, 1);
+                    $daysInMonth = $date->daysInMonth;
+                    $columns_set = ["Employee No", "Last Name", "First Name", "Department", "Hire Date", "Last Work Date", "Total Working Days", "Employee Status", "UL", "Paid Leaves", "Sick Leave", "Paid Holiday", "Regular OverTime", "Regular OverTime NightDiff", "Rest Day OverTime", "Rest Day OverTime NightDiff", "Legal Holiday OverTime", "Legal HoliDay OverTime NightDiff", "Special HoliDay OverTime", "Special HoliDay OverTime NightDiff", "Double Special HoliDay OverTime", "Double Special HoliDay OverTime NightDiff", "Double Legal Holiday OverTime", "Double Legal Holiday OverTime NightDiff", "Special Legal HoliDay OverTime", "Special Legal HoliDay OverTime NightDiff"];
+
+                    $response =  Excel::download(
+                        new TimeoffAllocationExport($results[0], null, $previous_mon_name, $current_mon_name, $daysInMonth, $columns_set),
+                        'MoroccoPayroll.csv'
+                    );
+                    return $response;
+                } else {
+                    $response = [
+                        'reports' => $results[0]
+                    ];
+                    return success_response(
+                        trans('messages.' . __FUNCTION__ . '_success'),
+                        $response,
+                    );
+                }
             }
           
             
