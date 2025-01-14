@@ -689,7 +689,7 @@ const Sidebar = (props) => {
                                   </li>
                     )}
 
-                    {Authenticator.scanLevel(["Admin","HR","Payroll"]) && (
+                    {Authenticator.scanLevel(["Admin","HR","Payroll","MAR_Payroll","MAR_HR"]) && (
                                   <li className="nav-item">
                                   <Link className="nav-link" to={global.links.view_report_morocco}>
                                     <i className="nav-icon fa fa-clock-o" />

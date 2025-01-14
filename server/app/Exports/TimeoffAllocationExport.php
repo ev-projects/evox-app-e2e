@@ -44,7 +44,7 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
     protected $period;
     protected $current_period;
     protected $noofdays;
-    public function __construct($list, $list_new, $pre_mon, $cur_mon, $noofdays, $columns_set)
+    public function __construct($list, $list_new, $pre_mon, $cur_mon, $noofdays, $columns_set, $year, $country)
     {
 
         $this->list = $list ?? [];
@@ -57,6 +57,8 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
         $this->period = "NEW HIRE (".$this->pre_mon." 21 - ".$this->cur_mon." 20)";
         $this->current_period = "(".$this->cur_mon." 01 - ".$this->cur_mon."" .$this->noofdays .")";
         $this->columns_set = $columns_set ?? [];
+        $this->year = $year ?? null;
+        $this->country = $country ?? null;
     }
 
 
@@ -68,21 +70,26 @@ class TimeoffAllocationExport implements FromArray, ShouldAutoSize, WithEvents, 
                 $sheet = $event->sheet;
 
                 $sheet->mergeCells('D1:H1');
-                $sheet->setCellValue('G1', "Month of ".$this->cur_mon);
+                $sheet->setCellValue('G1', "Month of " . $this->cur_mon . " " . $this->year);
 
-                $sheet->mergeCells('J4:K4');
-                $sheet->setCellValue('J4', "Prev. Used");
+                if ($this->country == 1) {
+                    $sheet->mergeCells('J4:K4');
+                    $sheet->setCellValue('J4', "Prev. Used");
+                }
                
                 $columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"];
-            foreach ($columns as $column) {
-                $event->sheet->getColumnDimension($column)->setAutoSize(true);
-            }
 
-                $sheet->mergeCells('G3:H3');
-                $sheet->setCellValue('G3', "No of Lv availed");
-                $sheet->mergeCells('G4:H4');
-                $sheet->setCellValue('G4', "(".$this->pre_mon." 21 - ".$this->cur_mon." 20)");
-                $sheet->setCellValue('H6', $this->current_period );
+                foreach ($columns as $column) {
+                    $event->sheet->getColumnDimension($column)->setAutoSize(true);
+                }
+
+                if ($this->country == 1) {
+                    $sheet->mergeCells('G3:H3');
+                    $sheet->setCellValue('G3', "No of Lv availed");
+                    $sheet->mergeCells('G4:H4');
+                    $sheet->setCellValue('G4', "(".$this->pre_mon." 21 - ".$this->cur_mon." 20)");
+                    $sheet->setCellValue('H6', $this->current_period );
+                }
                 
           }
 
