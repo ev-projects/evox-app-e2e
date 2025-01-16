@@ -22,3 +22,25 @@ export const fecthUserContry =  (setCountry) =>{
     
     };
 }
+
+export const fecthMoroccoPayrollParams =  (setCountry) =>{
+
+
+  return async (dispatch, getState) => {
+
+    await API.call({
+        method: "get",
+        url: `/report/get_morocco_payroll_params`,
+      })
+        .then((result) => {
+          dispatch({
+            type: 'FETCH_MOROCCO_PAYROLL_PARAMS',
+            data: result.data, // Ensure you're dispatching the correct data structure
+          });
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        });
+  
+  };
+}
