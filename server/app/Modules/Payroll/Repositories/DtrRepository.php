@@ -1090,7 +1090,7 @@ class DtrRepository implements DtrRepositoryInterface{
     // }
 
 
-    public function bind_leaves_to_dtr( array $bhr_leaves_array )
+    public function bind_leaves_to_dtr( array $bhr_leaves_array, $country_id = null)
     {
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr_leaves");
 
@@ -1099,6 +1099,8 @@ class DtrRepository implements DtrRepositoryInterface{
 
             $result = new Collection;
             $processed_data = array();
+            $approved_leave_insert_array = array();
+            $leave_insert_array = array();
             
             // Iterate the fetched Employee Leaves that was fetched from BHr.
             foreach( $bhr_leaves_array as $row ) {
@@ -1107,70 +1109,77 @@ class DtrRepository implements DtrRepositoryInterface{
                     
                     if( in_array( $row->status->status, get_constant('LEAVE_REQUEST_STATUS') ) )   {
                         $bhr_leave_status = $row->status->status;
-                        $user = $this->user->show_via_bhr_number( $row->employeeId );
-                        
-                        // Get the DTR related on the Leave Request's Date Range
-                        $dtr_collection = Dtr::select('dtrs.*')
-                                                ->join('users', 'dtrs.user_id', '=', 'users.id')
-                                                ->whereRaw("
-                                                        users.bhr_num = ?
-                                                        AND date BETWEEN ? AND ?
-                                                    ", array(
-                                                        $row->employeeId,
-                                                        $row->start,
-                                                        $row->end
-                                                    )
-                                                )->get();
+                        $user = $this->user->show_via_bhr_number( $row->employeeId, $country_id );
+                        if ($user) {
+                            // Get the DTR related on the Leave Request's Date Range
+                            $dtr_collection = Dtr::select('dtrs.*')
+                                                    ->join('users', 'dtrs.user_id', '=', 'users.id')
+                                                    ->whereRaw("
+                                                            users.bhr_num = ?
+                                                            AND date BETWEEN ? AND ?
+                                                        ", array(
+                                                            $row->employeeId,
+                                                            $row->start,
+                                                            $row->end
+                                                        )
+                                                    )->get();
 
-                        // Iterate each DTR in order to bind the Leave on each DTR.
-                        foreach( $dtr_collection as $dtr ) {
-                            # Setting the Amount of Leave from the Leave request for the Corresponding Date
-                            $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
+                            if (!count($dtr_collection)) {
+                                throw new Exception("No DTR Dates for {$user->first_name} {$user->last_name} from {$row->start} to {$row->end}.");
+                            }
+                            // Iterate each DTR in order to bind the Leave on each DTR.
+                            foreach( $dtr_collection as $dtr ) {
+                                # Setting the Amount of Leave from the Leave request for the Corresponding Date
+                                $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
 
-                            # Create the Leave Insert Value Array Structure
-                            $leave_insert_values =  [
-                                'dtr_id'              => ( is_valid( $dtr->id ) ) ?  "'".$dtr->id."'" : 'null',
-                                'type'                => ( is_valid( $row->type ) && isset( $row->type->name ) ) ?  "'".$row->type->name."'" : 'null',
-                                'status'              => ( is_valid( $row->status->status ) ) ?  "'".$row->status->status."'" : 'null',
-                                'amount'              =>  "'". ( $amount == 0 ? 0 : ( $amount <= 0.5 ? 0.5 : 1 ) ) ."'",
-                                'employee_note'       => ( is_valid( $row->notes ) && isset( $row->notes->employee ) ) ?  "'".addslashes($row->notes->employee)."'" : 'null',
-                                'manager_note'        => ( is_valid( $row->notes ) && isset( $row->notes->manager ) ) ?  "'".addslashes($row->notes->manager)."'" : 'null',
-                                'approved_by'         => ( is_valid( $row->status->lastChangedByUserId ) ) ?  "'".$row->status->lastChangedByUserId."'" : 'null',
-                                'updated_by'          => 'NOW()',
-                                'created_by'          => 'NOW()'
-                            ];
+                                # Create the Leave Insert Value Array Structure
+                                $leave_insert_values =  [
+                                    'dtr_id'              => ( is_valid( $dtr->id ) ) ?  "'".$dtr->id."'" : 'null',
+                                    'type'                => ( is_valid( $row->type ) && isset( $row->type->name ) ) ?  "'".$row->type->name."'" : 'null',
+                                    'status'              => ( is_valid( $row->status->status ) ) ?  "'".$row->status->status."'" : 'null',
+                                    'amount'              =>  "'". ( $amount == 0 ? 0 : ( $amount <= 0.5 ? 0.5 : 1 ) ) ."'",
+                                    'employee_note'       => ( is_valid( $row->notes ) && isset( $row->notes->employee ) ) ?  "'".addslashes($row->notes->employee)."'" : 'null',
+                                    'manager_note'        => ( is_valid( $row->notes ) && isset( $row->notes->manager ) ) ?  "'".addslashes($row->notes->manager)."'" : 'null',
+                                    'approved_by'         => ( is_valid( $row->status->lastChangedByUserId ) ) ?  "'".$row->status->lastChangedByUserId."'" : 'null',
+                                    'updated_by'          => 'NOW()',
+                                    'created_by'          => 'NOW()'
+                                ];
 
-                            # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
-                            if ($bhr_leave_status == "approved") {
-                                $approved_leave_insert_array[] = implode(",", $leave_insert_values);
-                            } else {
-                                $leave_insert_array[] = implode(",", $leave_insert_values);
+                                # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
+                                if ($bhr_leave_status == "approved") {
+                                    $approved_leave_insert_array[] = implode(",", $leave_insert_values);
+                                } else {
+                                    $leave_insert_array[] = implode(",", $leave_insert_values);
+                                }
+
+                                /*foreach( $dtr_collection as $dtr ) {
+                                    $this->compute_payroll_items( $dtr );
+                                }*/
+
                             }
 
-                            /*foreach( $dtr_collection as $dtr ) {
-                                $this->compute_payroll_items( $dtr );
-                            }*/
-
+                            $processed_data[] = [
+                                "date" => $row->start .' - '.  $row->end,
+                                "employee_no" =>  $user->emp_num,
+                                "employee_name" => $user->first_name . ' ' . $user->last_name ,
+                                "leave_type" =>( is_valid( $row->type ) && isset( $row->type->name ) ) ? $row->type->name: 'null',
+                                'updated_by'         => ( is_valid( $row->status->lastChangedByUserId ) ) ?  "".$row->status->lastChangedByUserId."" : 'null',
+                                "status" => ( is_valid( $row->status->status ) ) ? $row->status->status : 'null',
+                                "amount" =>   ( is_valid( $row->amount->amount ) ) ? $row->amount->amount : 'null',
+                            ];
                         }
-
-                        $processed_data[] = [
-                            "date" => $row->start .' - '.  $row->end,
-                            "employee_no" =>  $user->emp_num,
-                            "employee_name" => $user->first_name . ' ' . $user->last_name ,
-                            "leave_type" =>( is_valid( $row->type ) && isset( $row->type->name ) ) ? $row->type->name: 'null',
-                            'updated_by'         => ( is_valid( $row->status->lastChangedByUserId ) ) ?  "".$row->status->lastChangedByUserId."" : 'null',
-                            "status" => ( is_valid( $row->status->status ) ) ? $row->status->status : 'null',
-                            "amount" =>   ( is_valid( $row->amount->amount ) ) ? $row->amount->amount : 'null',
-                        ];
                     }
                 } catch (Exception $t) {
                     log_to_file( 'critical', '[FOR LOOP ERROR - ' . "$row->id" . "] [". $t->getMessage() . "]" . __FUNCTION__ , [], "dtr_leaves");
                     continue;
                 }
             }
+            #print_r($processed_data);
 
             $merged_leave_insert_array = array_merge($leave_insert_array, $approved_leave_insert_array);
- 
+            if (!count($merged_leave_insert_array)) {
+                throw new Exception("Leave Sync was not able to process any data, please check the logs file.");
+            }
             # Creates the Customized Query for Batch inserting the To-be-generated Leaves.
             $leave_insert_query = "INSERT INTO leaves (
                                                 dtr_id,
@@ -1193,6 +1202,7 @@ class DtrRepository implements DtrRepositoryInterface{
                                                 created_at      = IF(created_at IS NULL, VALUES(created_at), created_at),
                                                 updated_at      = VALUES(updated_at)";
 
+            #dd($processed_data, $approved_leave_insert_array, $leave_insert_array, $merged_leave_insert_array);
             # Executes the Batch Insert Query
             $result = [
                 "result" => DB::insert($leave_insert_query),
