@@ -1094,7 +1094,7 @@ class DtrRepository implements DtrRepositoryInterface{
     {
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr_leaves");
 
-        DB::beginTransaction();
+        /*DB::beginTransaction();*/
         try {
 
             $result = new Collection;
@@ -1133,27 +1133,30 @@ class DtrRepository implements DtrRepositoryInterface{
                                 $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
 
                                 # Create the Leave Insert Value Array Structure
-                                $leave_insert_values =  [
-                                    'dtr_id'              => ( is_valid( $dtr->id ) ) ?  "'".$dtr->id."'" : 'null',
-                                    'type'                => ( is_valid( $row->type ) && isset( $row->type->name ) ) ?  "'".$row->type->name."'" : 'null',
-                                    'status'              => ( is_valid( $row->status->status ) ) ?  "'".$row->status->status."'" : 'null',
-                                    'amount'              =>  "'". ( $amount == 0 ? 0 : ( $amount <= 0.5 ? 0.5 : 1 ) ) ."'",
-                                    'employee_note'       => ( is_valid( $row->notes ) && isset( $row->notes->employee ) ) ?  "'".addslashes($row->notes->employee)."'" : 'null',
-                                    'manager_note'        => ( is_valid( $row->notes ) && isset( $row->notes->manager ) ) ?  "'".addslashes($row->notes->manager)."'" : 'null',
-                                    'approved_by'         => ( is_valid( $row->status->lastChangedByUserId ) ) ?  "'".$row->status->lastChangedByUserId."'" : 'null',
-                                    'updated_by'          => 'NOW()',
-                                    'created_by'          => 'NOW()'
+                                $leave_data =  [
+                                    'dtr_id'              => ( is_valid( $dtr->id ) ) ?  $dtr->id : null,
+                                    'type'                => ( is_valid( $row->type ) && isset( $row->type->name ) ) ?  $row->type->name : null,
+                                    'status'              => ( is_valid( $row->status->status ) ) ?  $row->status->status : null,
+                                    'amount'              =>  ( $amount == 0 ? 0 : ( $amount <= 0.5 ? 0.5 : 1 ) ),
+                                    'employee_note'       => ( is_valid( $row->notes ) && isset( $row->notes->employee ) ) ?  addslashes($row->notes->employee) : null,
+                                    'manager_note'        => ( is_valid( $row->notes ) && isset( $row->notes->manager ) ) ?  addslashes($row->notes->manager) : null,
+                                    'approved_by'         => ( is_valid( $row->status->lastChangedByUserId ) ) ?  $row->status->lastChangedByUserId : null
                                 ];
+                                log_to_file( 'info', '[INSERT DATA FOR ' , $leave_data, "dtr_leaves");
+                                call_sp('InsertOrUpdateLeaves', [
+                                    $leave_data['dtr_id'],
+                                    $leave_data['type'],
+                                    $leave_data['status'],
+                                    $leave_data['amount'],
+                                    $leave_data['employee_note'],
+                                    $leave_data['manager_note'],
+                                    $leave_data['approved_by']]);
 
                                 # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
-                                if ($bhr_leave_status == "approved") {
+                                /*if ($bhr_leave_status == "approved") {
                                     $approved_leave_insert_array[] = implode(",", $leave_insert_values);
                                 } else {
                                     $leave_insert_array[] = implode(",", $leave_insert_values);
-                                }
-
-                                /*foreach( $dtr_collection as $dtr ) {
-                                    $this->compute_payroll_items( $dtr );
                                 }*/
 
                             }
@@ -1175,7 +1178,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 }
             }
             #print_r($processed_data);
-
+            /*
             $merged_leave_insert_array = array_merge($leave_insert_array, $approved_leave_insert_array);
             if (!count($merged_leave_insert_array)) {
                 throw new Exception("Leave Sync was not able to process any data, please check the logs file.");
@@ -1210,18 +1213,14 @@ class DtrRepository implements DtrRepositoryInterface{
                 "dtr_leaves"   => $leave_insert_array
             ];
 
-            // Update DTR Computations
-            /*foreach( $dtr_collection as $dtr ) {
-                $this->compute_payroll_items( $dtr );
-            }*/
-
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr_leaves");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
             DB::commit();
+            */
             return $processed_data;
 
         } catch (Exception $e) {
-            DB::rollback();
+            /*DB::rollback();*/
             log_to_file( 'critical', '['. $e->getMessage() . ']' . __FUNCTION__ , [$e], "dtr_leaves");
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_leaves");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_leaves");
