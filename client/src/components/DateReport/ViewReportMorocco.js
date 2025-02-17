@@ -284,7 +284,6 @@ const getDaysInMonth = (year, month) => {
                     <th className="tableheader" rowspan="2">Last Work Date</th>
                     <th className="tableheader" rowspan="2">Total Working Days</th>
                     <th className="tableheader" rowspan="2">Employee Status</th>
-                    <th className="tableheader" rowspan="2">Lates</th>
                     <th className="tableheader" rowspan="2">UL</th>
                     <th className="tableheader" rowspan="2">Paid Leaves</th>
                     <th className="tableheader" rowspan="2">Sick Leave</th>
@@ -316,7 +315,6 @@ const getDaysInMonth = (year, month) => {
                       <td>{report.Last_Work_Date}</td>
                       <td>{report.TotalWorkingDays}</td>
                       <td>{report.EmployeeStatus}</td>
-                      <td>{report.Late}</td>
                       <td>{report.UL}</td>
                       <td>{report.PaidLeaves}</td>
                       <td>{report.SickLeave}</td>
