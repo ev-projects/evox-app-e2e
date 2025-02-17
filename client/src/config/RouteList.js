@@ -108,7 +108,6 @@ import DtrMultiLogsSummary from "../container/MyTeam/DtrMultiLogsSummary";
 
 
 import ViewReport from "../components/DateReport/ViewReport";
-import ViewReportMorocco from "../components/DateReport/ViewReportMorocco";
 import DisputeForm from "../components/PayrollDispute/DisputeForm";
 import DisputeReport from "../components/PayrollDispute/DisputeReport";
 
@@ -598,10 +597,6 @@ const RoutesList = (props) => {
 
         <ProtectedRoute exact path={global.links.view_report}>
            <ViewReport></ViewReport>
-        </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.view_report_morocco}>
-           <ViewReportMorocco></ViewReportMorocco>
         </ProtectedRoute> 
 
         <ProtectedRoute exact path={global.links.payroll_dispute+":id?"}>

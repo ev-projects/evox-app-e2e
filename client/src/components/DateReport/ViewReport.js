@@ -73,7 +73,7 @@ const getDaysInMonth = (year, month) => {
         await API.call({
           method: "GET",
           // url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=${countryid}`,
-          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&country=1`,
+          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}`,
         })
           .then((result) => {
             console.log(result);
@@ -108,7 +108,7 @@ const getDaysInMonth = (year, month) => {
       }else{
         await API.call({
           method: "GET",
-          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&export=1&country=1`,
+          url: `/report/timeoff_allocation?timeoff_year=${year}&timeoff_month=${month}&export=1&country=${countryid}`,
         })
           .then((result) => {
 
