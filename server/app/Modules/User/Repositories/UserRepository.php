@@ -582,9 +582,13 @@ class UserRepository implements UserRepositoryInterface{
      * @param $id
      * @return User $user
      */
-    public function show_via_bhr_number( $bhr_user_number ){
+    public function show_via_bhr_number( $bhr_user_number, $country_id = null ) {
         try {
-            $user = User::where('bhr_num', '=', $bhr_user_number )->first();
+            if (($country_id) and is_numeric($country_id)) {
+                $user = User::where('bhr_num', '=', $bhr_user_number )->where('country_id', $country_id)->first();
+            } else {
+                $user = User::where('bhr_num', '=', $bhr_user_number )->first();
+            }
 
             if( is_valid( $user ) ) {
                 log_to_file('info', 'Success', [$user]);
