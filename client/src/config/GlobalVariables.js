@@ -118,9 +118,7 @@
     // Report
     view_report                     :   "/app/viewreport/",
     payroll_dispute                 :   "/app/payrolldispute/",
-    payroll_dispute_view                 :   "/app/payrolldisputeview/",
-
-    view_report_morocco             :   "/app/viewreport/morocco/",
+    payroll_dispute_view                 :   "/app/payrolldisputeview/"
    
 };
 
