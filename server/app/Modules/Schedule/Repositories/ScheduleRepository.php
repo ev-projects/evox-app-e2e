@@ -14,6 +14,7 @@ use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Schedule\Models\ScheduleDetail;
 use App\Modules\Schedule\Models\SchedulePolicy;
+use Illuminate\Support\Facades\Auth;
 
 class ScheduleRepository implements ScheduleRepositoryInterface{
     
@@ -223,10 +224,19 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
      */
     public function get_template_schedules(){
         try {
-            $schedule_collection = Schedule::select('id', 'name', 'schedule_type')
-                                            ->where('source_type', 'template')
-                                            ->orderBy('name', 'asc')
-                                            ->get();
+            $me = Auth::user();
+            if ($me->isLevel("Admin")) {
+                $schedule_collection = Schedule::select('id', 'name', 'schedule_type')
+                                                ->where('source_type', 'template')
+                                                ->orderBy('name', 'asc')
+                                                ->get();
+            } else {
+                $schedule_collection = Schedule::select('id', 'name', 'schedule_type')
+                                                ->where('source_type', 'template')
+                                                ->where('created_by', $me->id)
+                                                ->orderBy('name', 'asc')
+                                                ->get();
+            }
             return $schedule_collection;
         } catch (Exception $e) {
             log_error($e);
