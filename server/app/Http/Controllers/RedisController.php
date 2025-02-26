@@ -17,7 +17,6 @@ class RedisController extends Controller
             'celebrations' => [],
             'missedDtr' => []
         ];
-        //return response()->json($default_content);
         try {
             $api_endpoint = '/api/cache/' . $user_id;
             $response = Curl::to( env('REDIS_SERVER_HOST') . $api_endpoint )
