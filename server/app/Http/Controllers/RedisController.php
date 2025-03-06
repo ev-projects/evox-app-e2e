@@ -29,7 +29,7 @@ class RedisController extends Controller
                 if ((!isset($response->content)) or (empty($response->content))) {
                     return response()->json($default_content);
                 }
-                return response()->json($response->content);
+                return $response->content;
             } else if ($response->status == 404) {
                 return response()->json($default_content);
             } else {
