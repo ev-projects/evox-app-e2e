@@ -679,14 +679,24 @@ const Sidebar = (props) => {
                         </Link>
                       </li>
                     ) : null}
-  {Authenticator.scanLevel(["Admin","HR","Payroll"]) && (
-                <li className="nav-item">
-                <Link className="nav-link" to={global.links.view_report}>
-                  <i className="nav-icon fa fa-clock-o" />
-                  <p className="blue"> India Payroll Report</p>
-                </Link>
-                </li>
-  )}
+
+                    {Authenticator.scanLevel(["Admin","HR","Payroll"]) && (
+                                  <li className="nav-item">
+                                  <Link className="nav-link" to={global.links.view_report}>
+                                    <i className="nav-icon fa fa-clock-o" />
+                                    <p className="blue"> India Payroll Report</p>
+                                  </Link>
+                                  </li>
+                    )}
+
+                    {Authenticator.scanLevel(["Admin","HR","Payroll","MAR_Payroll","MAR_HR"]) && (
+                                  <li className="nav-item">
+                                  <Link className="nav-link" to={global.links.view_report_morocco}>
+                                    <i className="nav-icon fa fa-clock-o" />
+                                    <p className="blue"> Morocco Payroll Report</p>
+                                  </Link>
+                                  </li>
+                    )}
 
    {(Authenticator.scanLevel(["SubDepartment Head","Department Head","Payroll","DivisionHead"])) && (
                 <li className="nav-item">
