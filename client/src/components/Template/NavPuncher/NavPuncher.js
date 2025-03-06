@@ -80,9 +80,15 @@ class NavPuncher extends Component {
       this.props.biometrixLog(formData, this.props.user.id);
     }
     
+    // generate date if dtr yesterday not found
     if (this.props.dashboard?.recent_dtr[0]?.id == undefined && values["isGenerate"] == true) {
       console.log("PASS_GEN");
       // formData.set("dtr_id", this.props.dashboard?.recent_dtr[0].id);
+      this.props.biometrixLog(formData, this.props.user.id);
+    }
+
+    // generate date if dtr today not found
+    if (this.props.dashboard?.recent_dtr[1]?.id == undefined && values["isGenerate"] == true) {
       this.props.biometrixLog(formData, this.props.user.id);
     }
 
@@ -288,21 +294,13 @@ class NavPuncher extends Component {
                       ) :
                         this.props.dashboard?.isNavDtrLoaded == true ? (
                           <>
-
-
-                            <Button className="nav-clock-button dropdown newfeature" type="submit" onClick={(e) => { setFieldValue('quickpunch', 'in');  setFieldValue('isGenerate', true); }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button>
-
-
+                            {/* <Button className="nav-clock-button dropdown newfeature" type="submit" onClick={(e) => { setFieldValue('quickpunch', 'in');  setFieldValue('isGenerate', true); }} ><i className="fa fa-clock-o" /> Clock In and Generate</Button> */}
+                            <Button className="nav-clock-button dropdown newfeature" type="submit" onClick={(e) => { setFieldValue('quickpunch', 'in');  setFieldValue('isGenerate', true); }} ><i className="fa fa-clock-o" /> Clock In</Button>
                           </>)
                           : (
                             <>
-
-
                               <Button type="submit" className="nav-clock-button dropdown neutral newfeature"><i className=" fa fa-clock-o" /> Loading</Button>
-
                             </>)
-
-
                       }
 
 
