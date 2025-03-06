@@ -179,6 +179,12 @@ const dashboardReducers = (state = initState, action) => {
                                     alldata : action.alldata,
                                 }
                                 break;
+                case "FETCH_MOROCCO_PAYROLL_PARAMS":
+                    result = {
+                        ...state,
+                        morocco_payroll_params : action.data,
+                    }
+                    break;
             
         default:
             result = state;
