@@ -183,7 +183,7 @@ if (! function_exists('request_validity_checker')) {
             } else {
                 // Call SP to check if the target date of the request is still within the valid period
                 $is_within_period = call_sp("EV_SP_Validate_Request_Payroll_Period", [$user_id, $target_date]);
-                return $is_within_period;
+                return $is_within_period[0][0]->result;
             }
 
         } catch (Exception $e) {
