@@ -38,20 +38,27 @@ class ChangeScheduleController extends Controller
      */
     public function store(ChangeScheduleRequest $request){
         try {
-            log_activity( trans('messages.create_change_schedule_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $change_schedule = $this->change_schedule->store( $request->all());
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request') );
+            } else {
+                log_activity( trans('messages.create_change_schedule_attempt') );
 
-            $this->email->sendChangeScheduleRequestEmail( $change_schedule );
+                $change_schedule = $this->change_schedule->store( $request->all());
 
-            // log action to audit_trail table
-            log_to_audit_trail(['action' => 'Change Schedule', 'description' => 'has requested for change schedule', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+                $this->email->sendChangeScheduleRequestEmail( $change_schedule );
 
-            return success_response(
-                trans('messages.create_change_schedule_success'), 
-                new ChangeScheduleResource($change_schedule),
-                JsonResponse::HTTP_CREATED
-            );
+                // log action to audit_trail table
+                log_to_audit_trail(['action' => 'Change Schedule', 'description' => 'has requested for change schedule', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
+                return success_response(
+                    trans('messages.create_change_schedule_success'), 
+                    new ChangeScheduleResource($change_schedule),
+                    JsonResponse::HTTP_CREATED
+                );
+            }
 
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

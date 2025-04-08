@@ -41,34 +41,41 @@ class AlterLogPunchController extends Controller
      */
     public function store(Request $request){
         try {
-            $conflict = $this->alter_log_punch->on_conflict($request);
-            if($conflict != ""){
-                return error_response(  $conflict );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
+
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request') );
+            } else {
+                $conflict = $this->alter_log_punch->on_conflict($request);
+                if($conflict != ""){
+                    return error_response(  $conflict );
+                }
+
+                // log_activity( trans('messages.create_alter_log_attempt') );
+                $check_alters = AlterLogPunch::where('date',$request->date)->where("user_id",$request->user_id)->where("status","pending")->latest();
+
+                if($check_alters->count() > 0){
+
+                    $update_id = $check_alters->first()->id;
+
+                    return success_response(
+                        trans('messages.update_alter_log_success'), 
+                        new AlterLogPunchResource( $this->alter_log_punch->update( $request->all(), $update_id ) ) 
+                    );
+                }
+                else{
+                    $alter_log_punch = $this->alter_log_punch->store( $request->all());
+
+
+                    return success_response(
+                        trans('messages.create_alter_log_success'), 
+                        new AlterLogPunchResource($alter_log_punch),
+                        JsonResponse::HTTP_CREATED
+                    );
+                }
             }
 
-            // log_activity( trans('messages.create_alter_log_attempt') );
-            $check_alters = AlterLogPunch::where('date',$request->date)->where("user_id",$request->user_id)->where("status","pending")->latest();
-         
-            if($check_alters->count() > 0){
-
-                $update_id = $check_alters->first()->id;
-
-                return success_response(
-                    trans('messages.update_alter_log_success'), 
-                    new AlterLogPunchResource( $this->alter_log_punch->update( $request->all(), $update_id ) ) 
-                );
-            }
-            else{
-                $alter_log_punch = $this->alter_log_punch->store( $request->all());
-          
-            
-                return success_response(
-                    trans('messages.create_alter_log_success'), 
-                    new AlterLogPunchResource($alter_log_punch),
-                    JsonResponse::HTTP_CREATED
-                );
-            }
-          
 
         } catch(Exception $e){
             // dd($e);

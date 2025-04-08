@@ -169,3 +169,25 @@ if (! function_exists('generate_username')) {
     }
 }
 
+if (! function_exists('request_validity_checker')) {
+    /**
+     * This function checks if the request is still valid depending on the cutoff period
+     *
+     */
+    function request_validity_checker( $user_id, $target_date )
+    {
+        try {
+            // Check if request's target date is older than 30 days
+            if (strtotime($target_date) < strtotime('-30 days')) {
+                return false;
+            } else {
+                // Call SP to check if the target date of the request is still within the valid period
+                $is_within_period = call_sp("EV_SP_Validate_Request_Payroll_Period", [$user_id, $target_date]);
+                return $is_within_period;
+            }
+
+        } catch (Exception $e) {
+            throw new Exception( trans('messages.user_instance_invalid') );
+        }
+    }
+}

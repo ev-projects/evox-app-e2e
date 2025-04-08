@@ -39,18 +39,24 @@ class AlterLogController extends Controller
      */
     public function store(AlterLogRequest $request){
         try {
-            log_activity( trans('messages.create_alter_log_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $alter_log = $this->alter_log->store( $request->all());
-            
-            $this->email->sendAlterLogRequestEmail( $alter_log );
-            
-            return success_response(
-                trans('messages.create_alter_log_success'), 
-                new AlterLogResource($alter_log),
-                JsonResponse::HTTP_CREATED
-            );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request') );
+            } else {
+                log_activity( trans('messages.create_alter_log_attempt') );
 
+                $alter_log = $this->alter_log->store( $request->all());
+
+                $this->email->sendAlterLogRequestEmail( $alter_log );
+
+                return success_response(
+                    trans('messages.create_alter_log_success'),
+                    new AlterLogResource($alter_log),
+                    JsonResponse::HTTP_CREATED
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

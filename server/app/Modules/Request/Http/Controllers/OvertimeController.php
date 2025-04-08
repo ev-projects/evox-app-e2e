@@ -39,21 +39,28 @@ class OvertimeController extends Controller
      */
     public function store(OvertimeRequest $request){
         try {
-            log_activity( trans('messages.create_overtime_attempt') );
-            
-            $overtime = $this->overtime->store( $request->all() );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $this->email->sendOvertimeRequestEmail( $overtime );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request') );
+            } else {
+                log_activity( trans('messages.create_overtime_attempt') );
 
-            // log action to audit_trail table
-            $description = 'has requested for ' . str_replace('_', '-', $request->type);
-            log_to_audit_trail(['action' => 'Overtime', 'description' => $description, 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+                $overtime = $this->overtime->store( $request->all() );
 
-            return success_response(
-                trans('messages.create_overtime_success'), 
-                new OvertimeResource( $overtime ),
-                JsonResponse::HTTP_CREATED
-            );
+                $this->email->sendOvertimeRequestEmail( $overtime );
+
+                // log action to audit_trail table
+                $description = 'has requested for ' . str_replace('_', '-', $request->type);
+                log_to_audit_trail(['action' => 'Overtime', 'description' => $description, 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
+                return success_response(
+                    trans('messages.create_overtime_success'), 
+                    new OvertimeResource( $overtime ),
+                    JsonResponse::HTTP_CREATED
+                );
+            }
 
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

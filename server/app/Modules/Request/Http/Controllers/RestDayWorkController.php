@@ -35,28 +35,35 @@ class RestDayWorkController extends Controller
      */
     public function store(RestDayWorkRequest $request){
         try {
-            log_activity( trans('messages.create_rest_day_work_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-             $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request') );
+            } else {
+                log_activity( trans('messages.create_rest_day_work_attempt') );
 
-            if( $dtr_check!= null){
-                if($dtr_check->is_rest_day == 0){
-                    return error_response( "The Date requested/targeted is not a restday, if its a work day make an alter log instead." );
+                $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
+
+                if( $dtr_check!= null){
+                    if($dtr_check->is_rest_day == 0){
+                        return error_response( "The Date requested/targeted is not a restday, if its a work day make an alter log instead." );
+                    }
                 }
+
+                $rest_day_work = $this->rest_day_work->store( $request->all() );
+
+                $this->email->sendRestDayWorkRequestEmail( $rest_day_work );
+
+                // log action to audit_trail table
+                log_to_audit_trail(['action' => 'Rest Day Work', 'description' => 'has requested for rest day work', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
+                return success_response(
+                    trans('messages.create_rest_day_work_success'), 
+                    new RestDayWorkResource( $rest_day_work ),
+                    JsonResponse::HTTP_CREATED
+                );
             }
-            
-            $rest_day_work = $this->rest_day_work->store( $request->all() );
-
-            $this->email->sendRestDayWorkRequestEmail( $rest_day_work );
-
-            // log action to audit_trail table
-            log_to_audit_trail(['action' => 'Rest Day Work', 'description' => 'has requested for rest day work', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
-
-            return success_response(
-                trans('messages.create_rest_day_work_success'), 
-                new RestDayWorkResource( $rest_day_work ),
-                JsonResponse::HTTP_CREATED
-            );
 
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

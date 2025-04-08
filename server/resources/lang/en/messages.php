@@ -250,6 +250,8 @@ return [
     'request_number_display_attempt' => 'Request Number List Attempt',
     'request_display_success' => 'List of Request are now displayed',
 
+    'invalid_request' => 'Sorry the date for your request has already exceeded the allowed timeframe.',
+
 
     
     /**
