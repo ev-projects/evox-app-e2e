@@ -142,23 +142,29 @@ class AlterLogPunchController extends Controller
      */
     public function approve(Request $request, $id){
         try {
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
+
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request_approval') );
+            } else {
+                $conflict = $this->alter_log_punch->on_conflict($request);
+                if($conflict != ""){
+                    return error_response(  $conflict );
+                }
+
+                // log_activity( trans('messages.approve_alter_log_attempt') );
+        
+                $alter_log_punch = $this->alter_log_punch->approve( $request->all() , $id );
             
-            $conflict = $this->alter_log_punch->on_conflict($request);
-            if($conflict != ""){
-                return error_response(  $conflict );
+                // Add code to apply the Alter Log on the specific DTR.
+                $punch = $this->dtr->apply_alter_to_punch( $alter_log_punch );
+
+                return success_response(
+                    trans('messages.approve_alter_log_success'), 
+                    new AlterLogPunchResource( $alter_log_punch ) 
+                );
             }
-
-            // log_activity( trans('messages.approve_alter_log_attempt') );
-     
-            $alter_log_punch = $this->alter_log_punch->approve( $request->all() , $id );
-           
-            // Add code to apply the Alter Log on the specific DTR.
-            $punch = $this->dtr->apply_alter_to_punch( $alter_log_punch );
-
-            return success_response(
-                trans('messages.approve_alter_log_success'), 
-                new AlterLogPunchResource( $alter_log_punch ) 
-            );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }

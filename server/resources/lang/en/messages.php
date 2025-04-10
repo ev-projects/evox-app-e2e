@@ -251,6 +251,7 @@ return [
     'request_display_success' => 'List of Request are now displayed',
 
     'invalid_request' => 'Sorry the date for your request has already exceeded the allowed timeframe.',
+    'invalid_request_approval' => 'Sorry the date for your approval has already exceeded the allowed timeframe.',
 
 
     

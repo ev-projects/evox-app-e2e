@@ -119,17 +119,24 @@ class AlterLogController extends Controller
      */
     public function approve(AlterLogRequest $request, $id){
         try {
-            log_activity( trans('messages.approve_alter_log_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $alter_log = $this->alter_log->approve( $request->all() , $id );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request_approval') );
+            } else {
+                log_activity( trans('messages.approve_alter_log_attempt') );
 
-            // Add code to apply the Alter Log on the specific DTR.
-            $dtr = $this->dtr->apply_alter_log_to_dtr( $alter_log );
+                $alter_log = $this->alter_log->approve( $request->all() , $id );
 
-            return success_response(
-                trans('messages.approve_alter_log_success'), 
-                new AlterLogResource( $alter_log ) 
-            );
+                // Add code to apply the Alter Log on the specific DTR.
+                $dtr = $this->dtr->apply_alter_log_to_dtr( $alter_log );
+
+                return success_response(
+                    trans('messages.approve_alter_log_success'),
+                    new AlterLogResource( $alter_log )
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }

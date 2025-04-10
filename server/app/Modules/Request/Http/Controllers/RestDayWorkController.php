@@ -129,17 +129,24 @@ class RestDayWorkController extends Controller
      */
     public function approve(RestDayWorkRequest $request, $id){
         try {
-            log_activity( trans('messages.approve_rest_day_work_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $rest_day_work = $this->rest_day_work->approve( $request->all(), $id );
-            
-            // Add code to apply the Rest Day Work on the specific DTR.
-            $dtr = $this->dtr->apply_rest_day_work_to_dtr( $rest_day_work );
-            
-            return success_response(
-                trans('messages.approve_rest_day_work_success'), 
-                new RestDayWorkResource( $rest_day_work ) 
-            );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request_approval') );
+            } else {
+                log_activity( trans('messages.approve_rest_day_work_attempt') );
+
+                $rest_day_work = $this->rest_day_work->approve( $request->all(), $id );
+                
+                // Add code to apply the Rest Day Work on the specific DTR.
+                $dtr = $this->dtr->apply_rest_day_work_to_dtr( $rest_day_work );
+                
+                return success_response(
+                    trans('messages.approve_rest_day_work_success'), 
+                    new RestDayWorkResource( $rest_day_work ) 
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }

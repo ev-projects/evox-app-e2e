@@ -126,23 +126,30 @@ class OvertimeController extends Controller
      */
     public function approve(OvertimeRequest $request, $id){
         try {
-            log_activity( trans('messages.approve_overtime_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $overtime = $this->overtime->approve( $request->all(), $id );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request_approval') );
+            } else {
+                log_activity( trans('messages.approve_overtime_attempt') );
+
+                $overtime = $this->overtime->approve( $request->all(), $id );
 
 
-            $user =  User::find($overtime->user_id);
-            $has_multi =  $user->hasFeature("multi_login");
+                $user =  User::find($overtime->user_id);
+                $has_multi =  $user->hasFeature("multi_login");
 
-            if(!$has_multi){
-            // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
-            $this->dtr->compute_payroll_items($overtime->dtr()->first());
+                if(!$has_multi){
+                // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
+                $this->dtr->compute_payroll_items($overtime->dtr()->first());
+                }
+
+                return success_response(
+                    trans('messages.approve_overtime_success'), 
+                    new OvertimeResource( $overtime ) 
+                );
             }
-
-            return success_response(
-                trans('messages.approve_overtime_success'), 
-                new OvertimeResource( $overtime ) 
-            );
         } catch(Exception $e){
             // dd($e);
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
