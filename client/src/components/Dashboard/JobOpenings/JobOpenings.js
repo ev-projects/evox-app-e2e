@@ -71,7 +71,7 @@ class JobOpenings extends Component {
 
                 {careers_phl !== '' ?
                   <h4 align="center" className="refer-h4">
-                    <strong>Refer a friend and earn as much as 30K PHP!</strong>
+                    <strong>Refer a friend and earn as much as P30,000!</strong>
                   </h4>
                 : '' }
                 {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
@@ -94,7 +94,7 @@ class JobOpenings extends Component {
                 <br />
                 {careers_ind !== '' ?
                   <h4 align="center" className="refer-h4">
-                    <strong>Refer a friend and earn as much as 25K INR!</strong>
+                    <strong>Refer a friend and earn as much as ₹30,000!</strong>
                   </h4>
                 : '' }
                 {/* <div align="center">Go to <a href="https://careers.eastvantage.com/evbuddy">https://careers.eastvantage.com/evbuddy</a></div> */}
