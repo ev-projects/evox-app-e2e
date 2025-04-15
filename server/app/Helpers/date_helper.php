@@ -250,7 +250,7 @@ if (! function_exists('timestamp_to_datetime')) {
     {
     
         try {
-            if($use_OWNER = true && $owner != null ){
+            if($use_OWNER == true && $owner != null ){
                 $user = $owner;
                 
                 $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone($user->country_timezone_name())->format("P"));
@@ -268,6 +268,9 @@ if (! function_exists('timestamp_to_datetime')) {
             
 
                 $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone(Auth::user()->country_timezone_name())->format("P"));
+                if ($owner && ($owner->country_timezone_name() == Auth::user()->country_timezone_name())) {
+                    $target_date_offset = 0;
+                }
                
                 if(!(string_offset_to_seconds(Auth::user()->country_timezone_to_offset()) == ($target_date_offset))){
                     return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ ($target_date_offset)) : null;
