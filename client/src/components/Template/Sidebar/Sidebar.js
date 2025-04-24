@@ -608,7 +608,7 @@ const Sidebar = (props) => {
               )} */}
 
               {/* Report Links Links */}
-             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules'])) && (
+             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules', 'manage_morocco_payroll'])) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-line-chart" />
@@ -689,7 +689,7 @@ const Sidebar = (props) => {
                                   </li>
                     )}
 
-                    {Authenticator.scanLevel(["Admin","HR","Payroll","MAR_Payroll","MAR_HR"]) && (
+                    {Authenticator.scanLevel_Feature(["Admin","HR","Payroll","MAR_Payroll","MAR_HR","SubDepartment Head","Department Head","Employee","Division Head"], "manage_morocco_payroll") && (
                                   <li className="nav-item">
                                   <Link className="nav-link" to={global.links.view_report_morocco}>
                                     <i className="nav-icon fa fa-clock-o" />
