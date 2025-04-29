@@ -121,6 +121,11 @@
     payroll_dispute_view            :   "/app/payrolldisputeview/",
 
     view_report_morocco             :   "/app/viewreport/morocco/",
+
+    // Policies Document    
+    policies_upload                 : "/app/policiesupload",
+    policies_download               : "/app/policiesdownload",
+    policies_document_list          : "/app/policiesdocumentlist" 
    
 };
 

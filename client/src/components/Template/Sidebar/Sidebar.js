@@ -710,6 +710,43 @@ const Sidebar = (props) => {
                 </li>
               )}
 
+              {(Authenticator.scanFeature(['upload_policies']))
+              && (
+              <li className="nav-item has-treeview ">
+                <a className="nav-link nav-link-main">
+                  <i className="nav-icon fa fa-book" />
+                  <p>
+                    Policies
+                    <i className="right fa fa-chevron-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+
+
+                <li className="nav-item">
+                  <Link className="nav-link" to={global.links.policies_upload}>
+                    <i className="nav-icon fa fa-upload nav-icon" />
+                    <p>Upload Policies</p>
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link className="nav-link" to={global.links.policies_document_list}>
+                    <i className="nav-icon fa fa-toggle-on nav-icon" />
+                    <p>Manage Policy Accessibility</p>
+                  </Link>
+                </li>
+
+                {/* <li className="nav-item">
+                  <Link className="nav-link" to={global.links.policies_download}>
+                    <i className="nav-icon fa fa-download nav-icon" />
+                    <p>Download Policies</p>
+                  </Link>
+                </li> */}
+                </ul>
+              </li>
+            )}
+
               {/* HR Links */}
               {(Authenticator.scanLevel("Payroll")) && (
                 <li className="nav-item has-treeview ">

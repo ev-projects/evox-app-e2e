@@ -74,6 +74,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('sub_department_list', 'UserController@sub_department_list');
 
     Route::get('getusercountry', 'UserController@getUserCountry');
+    Route::get('getcountry', 'UserController@getCountry');
 
 });
 #####################################################################################################
