@@ -111,6 +111,9 @@ import ViewReport from "../components/DateReport/ViewReport";
 import ViewReportMorocco from "../components/DateReport/ViewReportMorocco";
 import DisputeForm from "../components/PayrollDispute/DisputeForm";
 import DisputeReport from "../components/PayrollDispute/DisputeReport";
+import PoliciesDocumentUpload from "../components/PoliciesDocument/PoliciesDocumentUpload";
+import PoliciesDocumentDownload from "../components/PoliciesDocument/PoliciesDocumentDownload";
+import UploadedDocumentList from "../components/PoliciesDocument/UploadedDocumentList";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -259,6 +262,16 @@ const RoutesList = (props) => {
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
           feature={['request_rest_day_work']}
           />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.policies_upload}>
+          <PoliciesDocumentUpload />
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.policies_document_list}>
+          <UploadedDocumentList />
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.policies_download}>
+          <PoliciesDocumentDownload />
         </ProtectedRoute>
 
         {/* <ProtectedRoute exact path={global.links.work_from_home+":id?"}>
