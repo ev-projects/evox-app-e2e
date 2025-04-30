@@ -63,7 +63,7 @@ const dashboardReducers = (state = initState, action) => {
             case "FETCH_MY_POLICIES_DOC":
             result = {
                 ...state,
-                my_doc : action.data,
+                my_doc : action.data.content,
             }
             break;
             case "FETCH_MY_POLICY_DOC":

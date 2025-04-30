@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect,useDispatch } from 'react-redux';
 import PoliciesDocumentModal from './PoliciesDocumentModal';
-import { Table } from "react-bootstrap";
+import { Table, Accordion, Card, Button } from "react-bootstrap";
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
 import JSZip from 'jszip';
@@ -217,36 +217,40 @@ const PoliciesDocumentDownload = (props) => {
 
     return (
       <div>
-      <Wrapper>
+        <Wrapper>
           <ContainerBody>
-          <Content col="12" label="Create Room">
-            
+            <Content col="12" label="Create Room">
+
             <div className='heading-style'>
-            <h3 className='download-header'>Download Policies Document</h3>
-            </div>  
+              <h3 className='download-header'>Download Policies Document</h3>
+            </div>
 
-
-
-            <div style={{ overflowY: 'auto',padding: '0px 33px', fontSize: '14px' }}>
-      <Table striped bordered hover tableheader>
-      {policiesdocument && policiesdocument.length > 0 ?
-      <thead>
-          <tr>
-
-        <th>Sno</th>
-        <th>Title</th>
-        <th>Geo</th>
-        <th>Department</th>
-        <th colspan="1" style={{"textAlign":"center"}}>Action</th>
-        </tr>
-      </thead>
-      :""
-}
-      <tbody>
-      {policiesdocument && policiesdocument.length > 0 ?
-                          policiesdocument.map((file,pos) => {
+            <Accordion alwaysopen className='accordion-main'>
+              {policiesdocument != undefined && Object.values(policiesdocument).length > 0 ?
+                Object.values(policiesdocument).map((file, pos) => {
+                  return (
+                    <Card className='accordion-card' key={pos}>
+                      <div className='accordion-card-header'>
+                        <Accordion.Toggle as={Button} 
+                          variant="link" eventKey={pos + 1} className="tooglestyle">
+                          {Object.keys(policiesdocument)[pos]}
+                        </Accordion.Toggle>
+                      </div>
+                      <Accordion.Collapse eventKey={pos + 1}>
+                        <Card.Body className="removeborder">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Sno</th>
+                              <th scope="col">Geo</th>
+                              <th scope="col">Title</th>
+                              <th scope="col" style={{"textAlign":"center"}}>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {file.map((item, index) => {
                             let link = '';
-                            switch (file.FileExtension) {
+                            switch (item.FileExtension) {
                               case "csv":
                                 link = "/images/excel.png";
                                 break;
@@ -259,154 +263,50 @@ const PoliciesDocumentDownload = (props) => {
                               case "pdf":
                                 link = "/images/pdf.png";
                                 break;
-                                case "png":
+                              case "png":
                                 link = "/images/img.png";
                                 break;
-                                case "jpg":
+                              case "jpg":
                                 link = "/images/img.png";
                                 break;
-                                case "jpeg":
+                              case "jpeg":
                                 link = "/images/img.png";
                                 break;
                               default:
                                 link = ''; // Handle the default case if needed
                             }
-                            return (
-                              
-              
+                          return (
+                            <tr key={index}>
+                              <th scope="row">{index + 1}</th>
+                              <td>{item.IsGlobal == 1 ? "Global" : user.country }</td>
+                              <td className='tdcontent'><img src={link} className='back-img'></img><span>{item.Title}</span></td>
+                              <td style={{"textAlign":"center"}}><button  class="download-btn" onClick={() => handleviewer(index, item.Id)}><i class="fa fa-eye" aria-hidden="true"></i></button></td>
+                            </tr>
+                          )})}
+                          </tbody>
+                        </table>
+                        </Card.Body>
+                      </Accordion.Collapse>
+                    </Card>
+                  )}) : 
+                    <div style={{ overflowY: 'auto',padding: '0px 33px', fontSize: '14px' }}>
+                      <Table striped bordered hover tableheader>
+                        <tbody>
+                          <tr><td colSpan="3" className='notfound'><h4><img src="/images/nodata.png" className='back-img'></img> No Document Found</h4></td></tr>
+                        </tbody>
+                      </Table>
+                    </div> 
+                  }
+            </Accordion>
+            </Content>
+          </ContainerBody>
+        </Wrapper>
 
-                  <tr>
-                  <td>{pos+1}</td>
-                  {/* <td><img src={link} className='back-img'></img></td> */}
-                  <td className='tdcontent'><img src={link} className='back-img'></img><span>{file.Title}</span></td>
-                  <td >{file.IsGlobal == 1 ? "Global" : user.country }  </td>
-                  <td >{file.Name}  </td>
-                  {/* <td style={{"textAlign":"center"}}><button  class="download-btn" onClick={() => downloadBase64File(file.FileData, file.FileName)}><i class="fa fa-download" aria-hidden="true"></i></button></td> */}
-                  <td style={{"textAlign":"center"}}><button  class="download-btn" onClick={() => handleviewer(pos, file.Id)}><i class="fa fa-eye" aria-hidden="true"></i></button></td>
-                  </tr>
-
-                          )}) : <tr><td colSpan="3" className='notfound'><h4><img src="/images/nodata.png" className='back-img'></img> No Document Found</h4></td></tr> }
-  </tbody>
-  </Table>
-  </div>
-
-
-
-            
-            {/* <Row>
-            <Col size="12">
-            <Row> */}
-            {/* <Col size="4">
-            <div className="form-group">
-            <label>          
-                        <input 
-                          name= "GlobalType" 
-                          type="radio"
-                          value="Global"
-                          checked={selectedOption === 'Global'}
-                          onChange={handleChange}
-                        /> 
-                      Global &nbsp;</label>
-                      </div>
-            </Col>
-            <Col size="4">
-            <div className="form-group">
-            <label>          
-                        <input 
-                          name= "GlobalType" 
-                          type="radio"
-                          value="Geo"
-                          checked={selectedOption === 'Geo'}
-                          onChange={handleChange}
-                        /> 
-                      Geo &nbsp;</label>
-              </div>
-          
-            </Col> */}
-
-            {/* <Col size="6">
-            <div className="form-group">
-            <select
-                        className="form-control" 
-                        name="CountryId"
-                        value={formData.CountryId}
-                        onChange={handleChange}
-                        style={{ display: 'block' }}>
-                        <option  value = {0}  label="Global" />
-                        {usercountry && usercountry.length > 0 &&
-                          usercountry.map((country, pos) => (
-                            <option value={country.country_id}>
-                              {country.country_name}
-                            </option>
-                          ))}
-                      </select>
-                      {vlaidatecountry && (
-                        <label style={{ color: "red" }}>
-                          Please Select Country
-                        </label>
-                      )}
-            </div>
-
-            </Col> */}
-
-            {/* <Col size="6">
-          <div className="form-group multi-item-height"> */}
-          {/* <MultiSelect
-                              name="department"
-                              options={userdepartment && userdepartment.length > 0 ?(Formatter.array_to_multiselect_array(userdepartment, 'DepartmentName', 'Id')) : []}
-                              value={formData.DepartmentId}
-                              onChange={handleChange1}
-                              labelledBy={"Select Departments"}
-                              hasSelectAll = {true}
-                              className='item-height' />
-                                   {vlaidatedepartment && (
-                        <label style={{ color: "red" }}>
-                          Please Select Department
-                        </label>
-                      )} */}
-                       {/* <select
-                        className="form-control" 
-                        name="department"
-                        value={formData.DepartmentId}
-                        onChange={handleChange2}
-                        style={{ display: 'block' }}>
-                        <option  value = {"All"}  label="Select Department" />
-                        {userdepartment && userdepartment.length > 0 &&
-                          userdepartment.map((dept, pos) => (
-                            <option value={dept.Id}>
-                              {dept.DepartmentName}
-                            </option>
-                          ))}
-                      </select> */}
-                      {/* {vlaidatedepartment && (
-                        <label style={{ color: "red" }}>
-                          Please Select Department
-                        </label>
-                      )} */}
-                            {/* </div> */}
-                       
-                            {/* </Col>
-                            </Row>
-                            <Row> */}
-            {/* <Col size="12" >
-                  <div className="form-group">
-                    <button onClick={handleFilter} className="btn btn-primary col-btn-css btn-space" ><i class="fa fa-filter" aria-hidden="true"></i> Filter</button>
-                  </div>
-                </Col> */}
-               
-            {/* </Row>
-            </Col>  
-            </Row> */}
-             {/* {policiesdocument && policiesdocument.length > 0 && <button onClick={handleDownloadAll} className="btn btn-primary col-btn-css" style={{marginTop: "13px"}}><i class="fa fa-download" aria-hidden="true"></i> Download All as ZIP</button> }  */}
-              </Content>
-              </ContainerBody>
-              </Wrapper>
-
-              {isId && policiesdocument && 
-               <PoliciesDocumentViewer isOpen={isModalOpen} closeModal={closeModal} policiesdocument={policiesdocument} index={isindex} id={isId} />
-              }
-              {/* <PoliciesDocumentModal isOpen={isModalOpen} closeModal={closeModal} policiesdocument={policiesdocument} /> */}
-              </div>
+        {isId && policiesdocument && 
+          <PoliciesDocumentViewer isOpen={isModalOpen} closeModal={closeModal} policiesdocument={policiesdocument} index={isindex} id={isId} />
+        }
+        {/* <PoliciesDocumentModal isOpen={isModalOpen} closeModal={closeModal} policiesdocument={policiesdocument} /> */}
+      </div>
               
     )
   }

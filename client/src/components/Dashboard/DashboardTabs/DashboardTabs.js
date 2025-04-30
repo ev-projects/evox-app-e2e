@@ -144,7 +144,7 @@ class DashboardTabs extends Component {
           </Tab>
           <Tab
             eventKey="policies-download"
-            title="Policies"
+            title="Eastvantage Policies"
             tabClassName="newfeature3"
           >
             {this.state.policies_shown && (<PoliciesDocumentDownload />)}
