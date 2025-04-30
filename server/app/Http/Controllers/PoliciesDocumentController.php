@@ -6,6 +6,7 @@ use App\EV_Policies_Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
 
 class PoliciesDocumentController extends Controller
 {
@@ -119,7 +120,19 @@ class PoliciesDocumentController extends Controller
         try {
             $me = Auth::user();
             $result = call_sp('EV_SP_Policies_Document', [null, $request->GlobalType, $me->country_id, null,null, null, null, null, $request->selectedDepartments, null, 3, null, null]);
-            return $result[0];
+
+            $policies = [];
+            if ($result[0]) {
+                foreach ($result[0] as $key => $value) {
+                    $policies[$value->Name][] = $value;
+                }
+            }
+
+            return success_response(
+                trans('messages.fetch_policies_success'), 
+                $policies,
+                JsonResponse::HTTP_OK,
+            );
         } catch (Exception $e) {
             return error_response( trans('messages.error_default'), $e );
         }

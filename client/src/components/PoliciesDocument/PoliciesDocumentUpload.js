@@ -326,7 +326,7 @@ function PoliciesDocumentUpload(props) {
           </Col>
           </Row>
           <Row>
-          <Col size="6">
+          <Col size="12">
           <div className="form-group">
           <select
 											className="form-control" 
@@ -348,18 +348,20 @@ function PoliciesDocumentUpload(props) {
                         Please Select Country
                       </label>
                     )}
+
+              <input
+                type="hidden"
+                className="form-control"
+                name='department'
+                value={user.department}
+                disabled = {true}
+              />
           </div>
           </Col>
-          <Col size="6">
-          <div className="form-group multi-item-height">
-          
-                  <input
-                    type="text"
-                    className="form-control"
-                    name='department'
-                    value={user.department}
-                    disabled = {true}
-                  />
+          {/* <Col size="6">
+          <div className="form-group multi-item-height"> */}
+
+                  
 
           {/* <MultiSelect
                               name="department"
@@ -374,8 +376,8 @@ function PoliciesDocumentUpload(props) {
                         Please Select Department
                       </label>
                     )} */}
-                            </div>
-                            </Col>
+                            {/* </div>
+                            </Col> */}
           
           <Col size="12">
             <div className="form-group">
