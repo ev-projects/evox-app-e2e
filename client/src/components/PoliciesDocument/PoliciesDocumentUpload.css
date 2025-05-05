@@ -241,3 +241,7 @@ scrollbar-width: thin;
   border: none !important;
   background-color: #07335e !important;
 }
+
+.accordion-card-header-icon {
+  float: right;
+}

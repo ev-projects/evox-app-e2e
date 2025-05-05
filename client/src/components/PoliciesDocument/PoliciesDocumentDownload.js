@@ -234,6 +234,7 @@ const PoliciesDocumentDownload = (props) => {
                         <Accordion.Toggle as={Button} 
                           variant="link" eventKey={pos + 1} className="tooglestyle">
                           {Object.keys(policiesdocument)[pos]}
+                          <span className='accordion-card-header-icon'><i class="fa fa-caret-down"></i></span>
                         </Accordion.Toggle>
                       </div>
                       <Accordion.Collapse eventKey={pos + 1}>
