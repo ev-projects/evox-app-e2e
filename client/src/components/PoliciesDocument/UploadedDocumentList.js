@@ -175,7 +175,7 @@ const UploadedDocumentList = (props) => {
                   <td >{file.Name}  </td>
                   <td className="emp-status"> <Status status={file.IsActive} /></td>
                   <td style={{"textAlign":"center"}}><button  className="btn btn-primary " onClick={() => handleupdatestatus(file.Id,file.IsActive)}
-                    >{file.IsActive == 0 ? "Click to active" : "Click to Inactive"}</button></td>
+                    >{file.IsActive == 0 ? "Click to activate" : "Click to deactivate"}</button></td>
                   </tr>
 
                           )}) : <tr><td colSpan="3" className='notfound'><h4><img src="/images/nodata.png" className='back-img'></img> No Document Found</h4></td></tr> }
