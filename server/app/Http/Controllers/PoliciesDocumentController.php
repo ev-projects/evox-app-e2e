@@ -143,7 +143,8 @@ class PoliciesDocumentController extends Controller
         try {
             $me = Auth::user();
             $result = call_sp('EV_SP_Policies_Document', [null, $request->GlobalType, $me->country_id, null,null, null, null, null, $request->selectedDepartments, $me->id, 5, null, null]);
-            return $result[0];
+            $response['content'] = $result[0];
+            return $response;
         } catch (Exception $e) {
             return error_response( trans('messages.error_default'), $e );
         }
@@ -154,7 +155,8 @@ class PoliciesDocumentController extends Controller
         try {
             $me = Auth::user();
             $result = call_sp('EV_SP_Document_Status_Update', [$id, $staus, $me->id]);
-            return $result[0];
+            $response['content'] = $result[0];
+            return $response;
         } catch (Exception $e) {
             return error_response( trans('messages.error_default'), $e );
         }
