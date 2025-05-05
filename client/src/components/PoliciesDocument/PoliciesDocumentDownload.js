@@ -243,8 +243,8 @@ const PoliciesDocumentDownload = (props) => {
                           <thead>
                             <tr>
                               <th scope="col">Sno</th>
-                              <th scope="col">Geo</th>
                               <th scope="col">Title</th>
+                              <th scope="col">Geo</th>
                               <th scope="col" style={{"textAlign":"center"}}>Action</th>
                             </tr>
                           </thead>
@@ -279,8 +279,8 @@ const PoliciesDocumentDownload = (props) => {
                           return (
                             <tr key={index}>
                               <th scope="row">{index + 1}</th>
-                              <td>{item.IsGlobal == 1 ? "Global" : user.country }</td>
                               <td className='tdcontent'><img src={link} className='back-img'></img><span>{item.Title}</span></td>
+                              <td>{item.IsGlobal == 1 ? "Global" : user.country }</td>
                               <td style={{"textAlign":"center"}}><button  class="download-btn" onClick={() => handleviewer(index, item.Id)}><i class="fa fa-eye" aria-hidden="true"></i></button></td>
                             </tr>
                           )})}
