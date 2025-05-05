@@ -19,7 +19,7 @@ import {
  
 function PoliciesDocumentUpload(props) {
     const dispatch = useDispatch();
-    const { user, usercountry, userdepartment } = props;
+    const { user, usercountry, userdepartment, countries } = props;
     const [files, setFiles] = useState([]);
     const [invalidfiles, setinvalidFiles] = useState([]);
     const [vlaidatefiles, setValidateFiles] = useState(false);
@@ -336,8 +336,8 @@ function PoliciesDocumentUpload(props) {
                       onChange={handleChange}
 											style={{ display: 'block' }}>
 										  <option  value = {0}  label="Select Country" />
-                      {usercountry && usercountry.length > 0 &&
-                        usercountry.map((country, pos) => (
+                      {countries && countries.length > 0 &&
+                        countries.map((country, pos) => (
                           <option value={country.country_id}>
                             {country.country_name}
                           </option>
@@ -454,6 +454,7 @@ const mapStateToProps = (state) => {
     user: state.user,
     usercountry: state.dashboard.my_country,
     userdepartment: state.dashboard.my_department,
+    countries: state.settings.countries
   };
 };
 export default connect(mapStateToProps)(PoliciesDocumentUpload)
