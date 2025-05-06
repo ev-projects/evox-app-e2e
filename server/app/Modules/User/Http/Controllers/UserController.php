@@ -1066,9 +1066,9 @@ class UserController extends Controller
 
 public function getCountry(Request $request){
     try {  
-
-        $result_sets = call_sp('EV_SP_Policies_Document', [null, null, null, null, 2]);
-        $response = $result_sets [0];
+        $me = Auth::user();
+        $result_sets = call_sp('EV_SP_Policies_Document', [null, null, null, null, null, null, null, $me->country_id, null, null, 2]);
+        $response = $result_sets[0];
         return $response;
     }catch (Exception $e) {
         log_to_file( 'error', $e->getMessage(), [$e], "upload_document");

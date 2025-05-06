@@ -302,6 +302,11 @@ return [
     'fetch_careers_success' => 'List of all imported careers!',
 
     /**
+     *  Policies
+     */
+    'fetch_policies_success' => 'List of all EV policies!',
+
+    /**
      * Department Announcements
      */
 

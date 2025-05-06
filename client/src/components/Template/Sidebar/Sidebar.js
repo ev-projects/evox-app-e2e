@@ -608,7 +608,7 @@ const Sidebar = (props) => {
               )} */}
 
               {/* Report Links Links */}
-             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules'])) && (
+             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules', 'manage_morocco_payroll'])) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-line-chart" />
@@ -689,7 +689,7 @@ const Sidebar = (props) => {
                                   </li>
                     )}
 
-                    {Authenticator.scanLevel(["Admin","HR","Payroll","MAR_Payroll","MAR_HR"]) && (
+                    {Authenticator.scanLevel_Feature(["Admin","HR","Payroll","MAR_Payroll","MAR_HR","SubDepartment Head","Department Head","Employee","Division Head"], "manage_morocco_payroll") && (
                                   <li className="nav-item">
                                   <Link className="nav-link" to={global.links.view_report_morocco}>
                                     <i className="nav-icon fa fa-clock-o" />
@@ -709,6 +709,43 @@ const Sidebar = (props) => {
                   </ul>
                 </li>
               )}
+
+              {(Authenticator.scanFeature(['upload_policies']))
+              && (
+              <li className="nav-item has-treeview ">
+                <a className="nav-link nav-link-main">
+                  <i className="nav-icon fa fa-book" />
+                  <p>
+                    Policies
+                    <i className="right fa fa-chevron-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+
+
+                <li className="nav-item">
+                  <Link className="nav-link" to={global.links.policies_upload}>
+                    <i className="nav-icon fa fa-upload nav-icon" />
+                    <p>Upload Policies</p>
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link className="nav-link" to={global.links.policies_document_list}>
+                    <i className="nav-icon fa fa-toggle-on nav-icon" />
+                    <p>Manage Policy Accessibility</p>
+                  </Link>
+                </li>
+
+                {/* <li className="nav-item">
+                  <Link className="nav-link" to={global.links.policies_download}>
+                    <i className="nav-icon fa fa-download nav-icon" />
+                    <p>Download Policies</p>
+                  </Link>
+                </li> */}
+                </ul>
+              </li>
+            )}
 
               {/* HR Links */}
               {(Authenticator.scanLevel("Payroll")) && (
