@@ -241,7 +241,7 @@ const DisputeReport = (props) => {
                 </Row>
       </div>
         <div className="mb-3 table-container">
-        <Table striped bordered hover className="tablealignment">
+        <Table striped bordered hover className="tablealignment table-dispute">
           <thead>
           <tr>
 
