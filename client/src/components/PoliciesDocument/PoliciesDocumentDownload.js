@@ -222,7 +222,7 @@ const PoliciesDocumentDownload = (props) => {
             <Content col="12" label="Create Room">
 
             <div className='heading-style'>
-              <h3 className='download-header'>Download Policies Document</h3>
+              {/* <h3 className='download-header'>Download Policies Document</h3> */}
             </div>
 
             <Accordion alwaysopen className='accordion-main'>
