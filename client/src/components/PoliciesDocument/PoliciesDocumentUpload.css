@@ -232,9 +232,8 @@ scrollbar-width: thin;
 }
 
 .accordion-card {
-  width: 80%;
-  margin: auto;
-  margin-bottom: 10px;
+  width: 95%;
+  margin: 1% 1% 15px;
 }
 
 .accordion-card-header {
