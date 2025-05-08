@@ -280,7 +280,7 @@ const PoliciesDocumentDownload = (props) => {
                             <tr key={index}>
                               <th scope="row">{index + 1}</th>
                               <td className='tdcontent'><img src={link} className='back-img'></img><span>{item.Title}</span></td>
-                              <td>{item.IsGlobal == 1 ? "Global" : user.country }</td>
+                              <td>{item.countryname}</td>
                               <td style={{"textAlign":"center"}}><button  class="download-btn" onClick={() => handleviewer(index, item.Id)}><i class="fa fa-eye" aria-hidden="true"></i></button></td>
                             </tr>
                           )})}
