@@ -171,7 +171,7 @@ const UploadedDocumentList = (props) => {
                   <tr>
                   <td>{pos+1}</td>
                   <td className='tdcontent'><img src={link} className='back-img'></img><span>{file.Title}</span></td>
-                  <td >{file.IsGlobal == 1 ? "Global" : user.country }  </td>
+                  <td >{file.countryname}</td>
                   <td >{file.Name}  </td>
                   <td className="emp-status"> <Status status={file.IsActive} /></td>
                   <td style={{"textAlign":"center"}}><button  className="btn btn-primary " onClick={() => handleupdatestatus(file.Id,file.IsActive)}
