@@ -18,6 +18,7 @@ use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Resources\AlterLogResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class AlterLogController extends Controller
 {   
@@ -43,7 +44,27 @@ class AlterLogController extends Controller
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
             if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
-                return error_response( trans('messages.invalid_request') );
+                // call SP to store request on dispute table
+                $auth_user_offset =  Auth::user() && Auth::user()->country_timezone_to_offset() ? string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): 0;
+                $alter_log_dispute = call_sp('EV_SP_PD_Autoamtion_AlterLog', [
+                    ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+                    ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+                    ( isset( $request['current_time_in'] ) && is_valid( $request['current_time_in'] ) ) ? strtotime($request['current_time_in']) - $auth_user_offset: null,
+                    ( isset( $request['current_time_out'] ) && is_valid( $request['current_time_out'] ) ) ? strtotime($request['current_time_out']) - $auth_user_offset: null,
+                    ( isset( $request['new_time_in'] ) && is_valid( $request['new_time_in'] ) ) ? strtotime($request['new_time_in']) - $auth_user_offset: null,
+                    ( isset( $request['new_time_out'] ) && is_valid( $request['new_time_out'] ) ) ? strtotime($request['new_time_out']) - $auth_user_offset: null,
+                    ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+                    ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+                    "pending",
+                    auth()->user()->id,
+                    auth()->user()->id
+                ]);
+
+                return success_response(
+                    trans('messages.invalid_request'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
             } else {
                 log_activity( trans('messages.create_alter_log_attempt') );
 

@@ -250,7 +250,7 @@ return [
     'request_number_display_attempt' => 'Request Number List Attempt',
     'request_display_success' => 'List of Request are now displayed',
 
-    'invalid_request' => 'Sorry the date for your request has already exceeded the allowed timeframe.',
+    'invalid_request' => 'The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request.',
     'invalid_request_approval' => 'Sorry the date for your approval has already exceeded the allowed timeframe.',
 
 

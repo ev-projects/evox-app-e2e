@@ -39,7 +39,34 @@ class RestDayWorkController extends Controller
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
             if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
-                return error_response( trans('messages.invalid_request') );
+                // check if the exact dtr is rest day, if not return error message
+                $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
+
+                if ($dtr_check != null) {
+                    if ($dtr_check->is_rest_day == 0) {
+                        return error_response( "The Date requested/targeted is not a restday, if its a work day make an alter log instead." );
+                    }
+                }
+
+                // call SP to store request on dispute table
+                $rdw_dispute = call_sp('EV_SP_PD_Autoamtion_RestDay', [
+                    ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+                    ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+                    ( isset( $request['start_time'] ) && is_valid( $request['start_time'] ) ) ? time_to_seconds( $request['start_time'] , true, "subtract") : 0,
+                    ( isset( $request['end_time'] )   && is_valid( $request['end_time'] ) )   ? time_to_seconds( $request['end_time'] , true, "subtract")   : 0,
+                    ( isset( $request['break_time'] ) && is_valid( $request['break_time'] ) ) ? time_to_seconds( $request['break_time'] )   : 0,
+                    ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+                    ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+                    "pending",
+                    auth()->user()->id,
+                    auth()->user()->id,
+                ]);
+
+                return success_response(
+                    trans('messages.invalid_request'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
             } else {
                 log_activity( trans('messages.create_rest_day_work_attempt') );
 
