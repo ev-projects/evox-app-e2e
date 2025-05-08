@@ -190,7 +190,7 @@ function PoliciesDocumentUpload(props) {
       setinvalidFiles([]);
       // Filter out files that are already in the selectedFiles list
         const uniqueFiles = newFiles.filter((file) => {
-        const allowedExtensions = ['jpg', 'jpeg', 'png', 'docx', 'pdf'];
+        const allowedExtensions = ['jpg', 'jpeg', 'png', 'docx', 'pdf', 'xlsx'];
       // Check if the file has an allowed extension
         const fileExtension = file.name.slice(((file.name.lastIndexOf('.') - 1) >>> 0) + 2).toLowerCase();
         const isValidExtension = allowedExtensions.includes(`${fileExtension}`);
@@ -411,7 +411,7 @@ function PoliciesDocumentUpload(props) {
           {/* <span className="icon-stack">Drag & Drop</span> */}
             {vlaidatefiles && (
                       <label style={{ color: "red" }}>
-                        Please choose a valid file (pdf, doc, jpg, jpeg, png)
+                        Please choose a valid file (pdf, doc, jpg, jpeg, png, xlsx)
                       </label>
                     )}
             {
