@@ -43,19 +43,7 @@ class OvertimeController extends Controller
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
             if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
-                // call SP to store request on dispute table
-                $overtime_dispute = call_sp('EV_SP_PD_Autoamtion_Overtimes', [
-                    ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
-                    ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
-                    null,
-                    ( isset( $request['amount'] ) && is_valid( $request['amount'] ) ) ? time_to_seconds( $request['amount'] ) : 0,
-                    ( isset( $request['type'] ) && is_valid( $request['type'] ) ) ? $request['type'] : null,
-                    ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
-                    ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
-                    "pending",
-                    auth()->user()->id,
-                    auth()->user()->id,
-                ]);
+                $overtime_dispute = $this->insertToOvertimeDispute($request);
 
                 return success_response(
                     trans('messages.invalid_request'),
@@ -237,5 +225,22 @@ class OvertimeController extends Controller
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
+    }
+
+    public function insertToOvertimeDispute($request) {
+        // call SP to store request on dispute table
+        $overtime_dispute = call_sp('EV_SP_PD_Autoamtion_Overtimes', [
+            ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+            ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+            null,
+            ( isset( $request['amount'] ) && is_valid( $request['amount'] ) ) ? time_to_seconds( $request['amount'] ) : 0,
+            ( isset( $request['type'] ) && is_valid( $request['type'] ) ) ? $request['type'] : null,
+            ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+            ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+            "approved",
+            auth()->user()->id,
+            auth()->user()->id,
+        ]);
+        return $overtime_dispute;
     }
 }
