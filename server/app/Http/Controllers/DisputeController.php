@@ -82,13 +82,21 @@ class DisputeController extends Controller
      */
     public function show(Dispute $dispute, Request $request)
     {
-        // get latest cutoff period
-        $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
-        $start_date = $request->startDate ?? $payroll_cutoff->start_date;
-        $end_date = $request->endDate ?? $payroll_cutoff->end_date;
-
         $me = Auth::user();
-        $result_sets = call_sp('EV_SP_PD_Get_Pending_Request', [$me->id, $request->department ?? null, null, 1]);
+        $check_if_payroll = call_sp('EV_SP_Validate_Payroll_Level', [$me->id]);
+
+        if ($check_if_payroll[0][0]->IsExists == 1) {
+            // get latest cutoff period
+            $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+            $start_date = $request->startDate ?? $payroll_cutoff->start_date;
+            $end_date = $request->endDate ?? $payroll_cutoff->end_date;
+
+            // return summary of disputes
+            $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->status ?? 1, $request->department ?? null]);
+        } else {
+            // return list of individual dispute records
+            $result_sets = call_sp('EV_SP_PD_Get_Pending_Request', [$me->id, $request->department ?? null, null, 1]);
+        }
 
         try {
             return success_response(
@@ -101,11 +109,15 @@ class DisputeController extends Controller
 
     public function showExport(Dispute $dispute, Request $request)
     {
-        $me = Auth::user();
-        $result_sets = call_sp('EV_SP_Payroll_Dispute', [$request->department,$request->disputeType,$request->startDate,$request->endDate,$request->status,$me->id,$me->LevelId,1,null]);
+        // get latest cutoff period
+        $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+        $start_date = $request->startDate ?? $payroll_cutoff->start_date;
+        $end_date = $request->endDate ?? $payroll_cutoff->end_date;
+
+        $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->status ?? 1, $request->department ?? null]);
         try {
-            log_activity( trans('messages.list_role_attempt') );
-            return Excel::download(new DisputeExport($result_sets[0],$request->startDate,$request->endDate), 'Dispute.csv');
+            log_activity( trans('messages.dispute_export_success') );
+            return Excel::download(new DisputeExport($result_sets[0], $start_date, $end_date), 'Dispute.csv');
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

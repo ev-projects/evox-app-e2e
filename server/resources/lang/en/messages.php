@@ -255,6 +255,7 @@ return [
     'dispute_list_success' => 'Successfully fetched list of dispute records.',
     'dispute_record_success' => 'Successfully fetched dispute record.',
     'dispute_status_success' => 'Successfully updated status of dispute record.',
+    'dispute_export_success' => 'Successfully exported dispute summary.',
 
     
     /**

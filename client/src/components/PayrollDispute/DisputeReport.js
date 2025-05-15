@@ -83,22 +83,22 @@ const DisputeReport = (props) => {
 
   const handleExport =  async () => {
     await API.call({
-        method: "get",
-        url: "/getdisputeExport",
-        params: filters
+      method: "get",
+      url: "/getdisputeExport",
+      params: filters
     })
-        .then((result) => {
+      .then((result) => {
 
-          const url = window.URL.createObjectURL(new Blob([result.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', 'Dispute.csv');
-          document.body.appendChild(link);
-          link.click();
-        })
-        .catch((e) => {
-          dispatch(Formatter.alert_error(e));
-        });
+        const url = window.URL.createObjectURL(new Blob([result.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Dispute.csv');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((e) => {
+        dispatch(Formatter.alert_error(e));
+    });
   }
 
   // Fetch disputes when filters change
@@ -147,7 +147,7 @@ const DisputeReport = (props) => {
                   </select>
                 </div>
               </Col>
-              <Col size="2">
+              {/* <Col size="2">
                 <div className="form-group">
                   <label>Dispute Type:</label>
                   <input
@@ -158,7 +158,8 @@ const DisputeReport = (props) => {
                     className="form-control"
                   />
                 </div>
-              </Col>
+              </Col> */}
+              {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
               <Col size="2">
                 <div className="form-group">
                   <label>Status:</label>
@@ -169,26 +170,28 @@ const DisputeReport = (props) => {
                       value={filters.status}
                       style={{ display: 'block' }}
                               onChange={handleFilterChange}
-                      >
-                    <option  label="Select Status" />
-                            <option value={"pending"} label={"Pending"} />
-                            <option value={"approve"} label={"Approve"} />
-                            <option value={"reject"} label={"Reject"} />
+                  >
+                    <option value="1" label={"Approved"} />
+                    <option value="2" label={"Rejected"} />
                   </select>
                 </div>
               </Col>
-              <Col size="2">
-                <div className="form-group">
-                  <label>Start Date:</label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={filters.startDate}
-                    onChange={handleFilterChange}
-                    className="form-control"
-                  />
-                </div>
-              </Col>
+              )}
+              {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
+                <Col size="2">
+                  <div className="form-group">
+                    <label>Start Date:</label>
+                    <input
+                      type="date"
+                      name="startDate"
+                      value={filters.startDate}
+                      onChange={handleFilterChange}
+                      className="form-control"
+                    />
+                  </div>
+                </Col>  
+              )}
+              {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
               <Col size="2">
                 <div className="form-group">
                   <label>End Date:</label>
@@ -201,65 +204,146 @@ const DisputeReport = (props) => {
                   />
                 </div>
               </Col>
+              )}
               <Col size="2" style={{"text-align":"center"}}>
                 <Row>
                   <div className="form-group mt-4">
                     <button onClick={fetchDisputes} className="btn btn-primary" ><i className="fa fa-filter" /> Filter</button>
                   </div>
-                  <div className="form-group mt-4">
-                    <button onClick={handleExport} className="btn btn-primary btnspace" >Export</button>
-                  </div>
+                  {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
+                    <div className="form-group mt-4">
+                      <button onClick={handleExport} className="btn btn-primary btnspace" >Export</button>
+                    </div>
+                  )}
                 </Row>
               </Col>
             </Row>
           </div>
           <div className="mb-3 table-container">
-            <Table striped bordered hover className="tablealignment">
-              <thead>
-                <tr>
-                  <th>Emp No</th>
-                  <th>Name</th>
-                  <th>Department</th>
-                  <th>Status</th>
-                  <th>Rendered Hours</th>
-                  <th>OT</th>
-                  <th>RD</th>
-                  <th>LH</th>
-                  <th>SH</th>
-                  <th style={{ "text-align" : "center" }}>Action</th> 
-                </tr>
-              </thead>
-              <tbody>
-                { dispute && dispute.length > 0 &&
-                  dispute.map((dispute, pos) => (
-                <tr>
-                  <td>{dispute.Employee_Number}</td>
-                  <td>{dispute.Employee_Name}</td>
-                  <td>{dispute.Department_Name}</td>
-                  <td>Pending</td>
-                  <td>{dispute.Render_Hr}</td>
-                  <td>{dispute.OverTime}</td>
-                  <td>{dispute.RD_Render_HR}</td>
-                  <td>{dispute.LH_Render_HR}</td>
-                  <td>{dispute.SH_Render_Hr}</td>
-                  <td style={{ "text-align" : "center" }}>
-                    <Link
-                      to={{
-                        pathname: global.links.payroll_dispute + dispute.id,
-                        resetInitialState: true,
-                      }}
-                      title="View Location Details"
-                    >
-                      <i
-                        className="fa fa-eye ev-color"
-                        aria-hidden="true"
-                      ></i>
-                    </Link>
-                  </td>
-                </tr>
-                  ))}
-              </tbody>
-            </Table>
+            {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) ? (
+              <Table striped bordered hover className="tablealignment">
+                <thead>
+                  <tr>
+                    <th>Emp No</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>RH</th>
+                    <th>ND</th>
+                    <th>OT</th>
+                    <th>OT ND</th>
+                    <th>RD RH</th>
+                    <th>RD ND</th>
+                    <th>RD OT</th>
+                    <th>RD OT ND</th>
+                    <th>LH RH</th>
+                    <th>LH ND</th>
+                    <th>LH OT</th>
+                    <th>LH OT ND</th>
+                    <th>SH RH</th>
+                    <th>SH ND</th>
+                    <th>SH OT</th>
+                    <th>SH OT ND</th>
+                    <th>DSH RH</th>
+                    <th>DSH ND</th>
+                    <th>DSH OT</th>
+                    <th>DSH OT ND</th>
+                    <th>DLH RH</th>
+                    <th>DLH ND</th>
+                    <th>DLH OT</th>
+                    <th>DLH OT ND</th>
+                    <th>SLH RH</th>
+                    <th>SLH ND</th>
+                    <th>SLH OT</th>
+                    <th>SLH OT ND</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { dispute && dispute.length > 0 &&
+                    dispute.map((dispute, pos) => (
+                      <tr>
+                        <td>{dispute.Employee_Number}</td>
+                        <td>{dispute.Employee_Name}</td>
+                        <td>{dispute.Department_Name}</td>
+                        <td>{dispute.Render_Hr}</td>
+                        <td>{dispute.Night_Diff}</td>
+                        <td>{dispute.OverTime}</td>
+                        <td>{dispute.OT_ND}</td>
+                        <td>{dispute.RD_Render_HR}</td>
+                        <td>{dispute.RD_ND}</td>
+                        <td>{dispute.RD_OT}</td>
+                        <td>{dispute.RD_OT_ND}</td>
+                        <td>{dispute.LH_Render_HR}</td>
+                        <td>{dispute.LH_ND}</td>
+                        <td>{dispute.LH_OT}</td>
+                        <td>{dispute.LH_OT_ND}</td>
+                        <td>{dispute.SH_Render_Hr}</td>
+                        <td>{dispute.SH_ND}</td>
+                        <td>{dispute.SH_OT}</td>
+                        <td>{dispute.SH_OT_ND}</td>
+                        <td>{dispute.DSH_Render_HR}</td>
+                        <td>{dispute.DSH_ND}</td>
+                        <td>{dispute.DSH_OT}</td>
+                        <td>{dispute.DSH_OT_ND}</td>
+                        <td>{dispute.DLH_Render_HR}</td>
+                        <td>{dispute.DLH_ND}</td>
+                        <td>{dispute.DLH_OT}</td>
+                        <td>{dispute.DLH_OT_ND}</td>
+                        <td>{dispute.SLH_Render_HR}</td>
+                        <td>{dispute.SLH_ND}</td>
+                        <td>{dispute.SLH_OT}</td>
+                        <td>{dispute.SLH_OT_ND}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            ) : 
+              <Table striped bordered hover className="tablealignment">
+                <thead>
+                  <tr>
+                    <th>Emp No</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Rendered Hours</th>
+                    <th>OT</th>
+                    <th>RD</th>
+                    <th>LH</th>
+                    <th>SH</th>
+                    <th style={{ "text-align" : "center" }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { dispute && dispute.length > 0 &&
+                    dispute.map((dispute, pos) => (
+                      <tr>
+                        <td>{dispute.Employee_Number}</td>
+                        <td>{dispute.Employee_Name}</td>
+                        <td>{dispute.Department_Name}</td>
+                        <td>Pending</td>
+                        <td>{dispute.Render_Hr}</td>
+                        <td>{dispute.OverTime}</td>
+                        <td>{dispute.RD_Render_HR}</td>
+                        <td>{dispute.LH_Render_HR}</td>
+                        <td>{dispute.SH_Render_Hr}</td>
+                        <td style={{ "text-align" : "center" }}>
+                          <Link
+                            to={{
+                              pathname: global.links.payroll_dispute + dispute.id,
+                              resetInitialState: true,
+                            }}
+                            title="View Complete Details"
+                          >
+                            <i
+                              className="fa fa-eye ev-color"
+                              aria-hidden="true"
+                            ></i>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            }
           </div>
         </Content>
       </ContainerBody>
