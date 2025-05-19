@@ -21,7 +21,7 @@ export const addRestDayWork = ( post_data ) => {
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
+            dispatch( Formatter.alert_success( result, 10000 ));
             // dispatch(fetchRequestList({
             //     status:           "pending",
             //     valid_from:       null,

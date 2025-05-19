@@ -231,8 +231,8 @@ class RestDayWorkController extends Controller
         $rdw_dispute = call_sp('EV_SP_PD_Autoamtion_RestDay', [
             ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
             ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
-            ( isset( $request['start_time'] ) && is_valid( $request['start_time'] ) ) ? time_to_seconds( $request['start_time'] , true, "subtract") : 0,
-            ( isset( $request['end_time'] )   && is_valid( $request['end_time'] ) )   ? time_to_seconds( $request['end_time'] , true, "subtract")   : 0,
+            ( isset( $request['start_time'] ) && is_valid( $request['start_time'] ) ) ? add_time_to_timestamp( $request['date'], time_to_seconds( $request['start_time'] , true, "subtract") ) : 0,
+            ( isset( $request['end_time'] )   && is_valid( $request['end_time'] ) )   ? add_time_to_timestamp( $request['date'], time_to_seconds( $request['end_time'] , true, "subtract") ) : 0,
             ( isset( $request['break_time'] ) && is_valid( $request['break_time'] ) ) ? time_to_seconds( $request['break_time'] )   : 0,
             ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
             ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,

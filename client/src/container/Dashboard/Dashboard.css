@@ -15,7 +15,7 @@ h6,.h6{font-size: .75em !important}
 .dashboard .col-6 > div{margin-bottom: 20px; min-height: 100px}
 .dashboard .card-body{box-shadow: none !important;padding: 0px 0 !important; border:0 !important;}
 .card-header {background: transparent !important;}
-.alert-pop-up{z-index:  100; width: 80% !important; max-width: 400px;top:25%;}
+.alert-pop-up{z-index:  100; width: 80% !important; max-width: 600px;top:25%;}
 .alert-heading {text-transform: initial !important;}
 .page-title{margin-left:20px;}
 .team-request-page .col-lg-12{padding: 0 !important; margin:0 !important;}
