@@ -17,7 +17,7 @@ import {
     Content,
     Row,Col
   } from "../../components/GridComponent/AdminLte.js";
-import { now } from "moment";
+import { moment } from "moment";
 const DisputeReport = (props) => {
 
   const { settings,userdepartment,dispute, geos } = props;
@@ -326,7 +326,7 @@ const DisputeReport = (props) => {
                     <th>Emp No</th>
                     <th>Name</th>
                     <th>Department</th>
-                    <th>Status</th>
+                    <th>Date</th>
                     <th>Rendered Hours</th>
                     <th>OT</th>
                     <th>RD</th>
@@ -342,7 +342,7 @@ const DisputeReport = (props) => {
                         <td>{dispute.Employee_Number}</td>
                         <td>{dispute.Employee_Name}</td>
                         <td>{dispute.Department_Name}</td>
-                        <td>Pending</td>
+                        <td>{dispute.login_date}</td>
                         <td>{dispute.Render_Hr}</td>
                         <td>{dispute.OverTime}</td>
                         <td>{dispute.RD_Render_HR}</td>
