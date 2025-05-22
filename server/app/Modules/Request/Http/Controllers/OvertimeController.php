@@ -46,7 +46,7 @@ class OvertimeController extends Controller
                 $overtime_dispute = $this->insertToOvertimeDispute($request);
 
                 return success_response(
-                    trans('messages.invalid_request'),
+                    trans('messages.dispute_request_success'),
                     [],
                     JsonResponse::HTTP_CREATED
                 );

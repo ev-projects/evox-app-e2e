@@ -51,7 +51,7 @@ class RestDayWorkController extends Controller
                 $rdw_dispute = $this->insertToRestDayWorkDispute($request);
 
                 return success_response(
-                    trans('messages.invalid_request'),
+                    trans('messages.dispute_request_success'),
                     [],
                     JsonResponse::HTTP_CREATED
                 );

@@ -22,7 +22,7 @@ export const addAlterLog = ( post_data ) => {
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result, 10000 ));
+            dispatch( Formatter.alert_success( result, 3000 ));
             
             dispatch({
                 'type'      : 'SET_REDIRECT',

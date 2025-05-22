@@ -47,7 +47,7 @@ class AlterLogController extends Controller
                 $alter_log_dispute = $this->insertToAlterLogDispute($request);
 
                 return success_response(
-                    trans('messages.invalid_request'),
+                    trans('messages.dispute_request_success'),
                     [],
                     JsonResponse::HTTP_CREATED
                 );

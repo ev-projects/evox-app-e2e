@@ -45,7 +45,7 @@ class AlterLogPunchController extends Controller
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
             if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
-                return error_response( trans('messages.invalid_request') );
+                return error_response( trans('messages.dispute_request_success') );
             } else {
                 $conflict = $this->alter_log_punch->on_conflict($request);
                 if($conflict != ""){

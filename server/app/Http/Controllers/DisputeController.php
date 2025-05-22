@@ -92,10 +92,10 @@ class DisputeController extends Controller
             $end_date = $request->endDate ?? $payroll_cutoff->end_date;
 
             // return summary of disputes
-            $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->status ?? 1, $request->department ?? null]);
+            $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->geo ?? null]);
         } else {
             // return list of individual dispute records
-            $result_sets = call_sp('EV_SP_PD_Get_Pending_Request', [$me->id, $request->department ?? null, null, 1]);
+            $result_sets = call_sp('EV_SP_PD_Get_Pending_Request', [$me->id, $request->department ?? null, null, $request->status ?? 0, 1]);
         }
 
         try {
@@ -114,7 +114,7 @@ class DisputeController extends Controller
         $start_date = $request->startDate ?? $payroll_cutoff->start_date;
         $end_date = $request->endDate ?? $payroll_cutoff->end_date;
 
-        $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->status ?? 1, $request->department ?? null]);
+        $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->geo ?? null]);
         try {
             log_activity( trans('messages.dispute_export_success') );
             return Excel::download(new DisputeExport($result_sets[0], $start_date, $end_date), 'Dispute.csv');
@@ -127,7 +127,7 @@ class DisputeController extends Controller
     public function getEmployeeDispute(Request $request)
     {
         try {
-            $result_sets = call_sp('EV_SP_PD_Get_Pending_Request', [null, null, $request->id, 2]);
+            $result_sets = call_sp('EV_SP_PD_Get_Pending_Request', [null, null, $request->id, null, 2]);
 
             return success_response(
                 trans('messages.dispute_record_success'), $result_sets[0]

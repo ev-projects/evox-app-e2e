@@ -250,7 +250,7 @@ return [
     'request_number_display_attempt' => 'Request Number List Attempt',
     'request_display_success' => 'List of Request are now displayed',
 
-    'invalid_request' => 'The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request.',
+    'dispute_request_success' => 'Your dispute request has been successfully submitted.',
     'invalid_request_approval' => 'The approval date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request.',
     'dispute_list_success' => 'Successfully fetched list of dispute records.',
     'dispute_record_success' => 'Successfully fetched dispute record.',

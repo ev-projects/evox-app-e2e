@@ -20,7 +20,7 @@ import {
 import { now } from "moment";
 const DisputeReport = (props) => {
 
-  const { settings,userdepartment,dispute } = props;
+  const { settings,userdepartment,dispute, geos } = props;
 
     // State variables to store disputes and filters
   const [disputes, setDisputes] = useState([]);
@@ -32,7 +32,8 @@ const DisputeReport = (props) => {
     disputeType: '',
     startDate:  '',
     endDate: '',
-    status:''
+    status:'',
+    geo:''
   });
 
     // Function to fetch disputes from the API
@@ -130,23 +131,44 @@ const DisputeReport = (props) => {
           <h2 className="">Payroll Dispute Report</h2>
           <div>
             <Row>
-              <Col size="2">
-                <div className="form-group">
-                  <label>Select Department:</label>
-                  <select
-                    className="form-control"
-                    name="department"
-                    value={filters.department}
-                    onChange={
-                      handleFilterChange}
-                    style={{ display: 'block' }}>
-                    <option    label="Select Department" />
-                      { userdepartment && userdepartment.length > 0 &&  userdepartment.map(function(userdepartment){
-                        return  <option value={userdepartment.id} label={userdepartment.department_name} />
-                      })}
-                  </select>
-                </div>
-              </Col>
+              {!Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
+                <Col size="2">
+                  <div className="form-group">
+                    <label>Select Department:</label>
+                    <select
+                      className="form-control"
+                      name="department"
+                      value={filters.department}
+                      onChange={
+                        handleFilterChange}
+                      style={{ display: 'block' }}>
+                      <option    label="Select Department" />
+                        { userdepartment && userdepartment.length > 0 &&  userdepartment.map(function(userdepartment){
+                          return  <option value={userdepartment.id} label={userdepartment.department_name} />
+                        })}
+                    </select>
+                  </div>
+                </Col>
+              )}
+              {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
+                <Col size="2">
+                  <div className="form-group">
+                    <label>Select Geo:</label>
+                    <select
+                      className="form-control"
+                      name="geo"
+                      value={filters.geo}
+                      onChange={
+                        handleFilterChange}
+                      style={{ display: 'block' }}>
+                      <option    label="Select Geo" />
+                        { geos && geos.length > 0 &&  geos.map(function(geo){
+                          return  <option value={geo.country_id} label={geo.country_name} />
+                        })}
+                    </select>
+                  </div>
+                </Col>
+              )}
               {/* <Col size="2">
                 <div className="form-group">
                   <label>Dispute Type:</label>
@@ -159,7 +181,7 @@ const DisputeReport = (props) => {
                   />
                 </div>
               </Col> */}
-              {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
+              {!Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
               <Col size="2">
                 <div className="form-group">
                   <label>Status:</label>
@@ -171,6 +193,7 @@ const DisputeReport = (props) => {
                       style={{ display: 'block' }}
                               onChange={handleFilterChange}
                   >
+                    <option value="0" label={"Pending"} />
                     <option value="1" label={"Approved"} />
                     <option value="2" label={"Rejected"} />
                   </select>
@@ -180,7 +203,7 @@ const DisputeReport = (props) => {
               {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
                 <Col size="2">
                   <div className="form-group">
-                    <label>Start Date:</label>
+                    <label>Request Date Range</label>
                     <input
                       type="date"
                       name="startDate"
@@ -194,7 +217,7 @@ const DisputeReport = (props) => {
               {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
               <Col size="2">
                 <div className="form-group">
-                  <label>End Date:</label>
+                  <label>&nbsp;</label>
                   <input
                     type="date"
                     name="endDate"
@@ -357,6 +380,7 @@ const mapStateToProps = (state) => {
     settings        : state.settings,
     userdepartment: state.dashboard.my_department,
     dispute: state.dashboard.dispute_list,
+    geos: state.settings.countries
   }
 }
 
