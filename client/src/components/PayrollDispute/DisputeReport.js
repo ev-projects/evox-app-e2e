@@ -17,7 +17,7 @@ import {
     Content,
     Row,Col
   } from "../../components/GridComponent/AdminLte.js";
-import { moment } from "moment";
+import moment from "moment";
 const DisputeReport = (props) => {
 
   const { settings,userdepartment,dispute, geos } = props;
@@ -203,7 +203,7 @@ const DisputeReport = (props) => {
               {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
                 <Col size="2">
                   <div className="form-group">
-                    <label>Request Date Range</label>
+                    <label>Request Date Range:</label>
                     <input
                       type="date"
                       name="startDate"
@@ -342,7 +342,7 @@ const DisputeReport = (props) => {
                         <td>{dispute.Employee_Number}</td>
                         <td>{dispute.Employee_Name}</td>
                         <td>{dispute.Department_Name}</td>
-                        <td>{dispute.login_date}</td>
+                        <td>{moment(new Date(dispute.login_date)).format("MMMM D, YYYY")}</td>
                         <td>{dispute.Render_Hr}</td>
                         <td>{dispute.OverTime}</td>
                         <td>{dispute.RD_Render_HR}</td>
