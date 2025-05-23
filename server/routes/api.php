@@ -66,3 +66,6 @@ Route::get('get_user_departments', 'PoliciesDocumentController@get_user_departme
 Route::get('showlist', 'PoliciesDocumentController@showlist');
 Route::put('updatestatus/{id}/{status}', 'PoliciesDocumentController@updatestatus');
 Route::get('download_policy/{id}/', 'PoliciesDocumentController@downloadPolicy');
+
+// NHO Survey
+Route::post('nho_survey', 'NewHireOrientationController@store')->middleware('auth.apikey');

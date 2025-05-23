@@ -294,5 +294,23 @@ export const forgotPasswordRequest = ( email ) => {
     }
 }
 
+// submission of NHO survey
+export const addNhoSurvey = ( post_data ) => {
+    return (dispatch, getState) => {
 
-
+        API.call({
+            method: "post",
+            url: "/nho_survey/",
+            data: post_data
+        })
+        .then(result => {
+            // dispatch({
+            //     type: "SET_REDIRECT",
+            //     link: global.links.dashboard,
+            // });
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error(  e.response )  ) 
+        });
+    }
+}
