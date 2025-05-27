@@ -9,7 +9,8 @@ import {
   Image,
   Spinner,
   Button,
-  Modal
+  Modal,
+  Form,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
@@ -18,6 +19,7 @@ import { Formik, ErrorMessage,getIn  } from 'formik';
 import { InputDate,InputTime } from '../../components/DatePickerComponent/DatePicker.js';
 import * as Yup from 'yup';
 import RequestSubtitle from "../../components/RequestComponent/RequestButtons/RequestSubtitle";
+import RequestButtons from "../../components/RequestComponent/RequestButtons/RequestButtons";
 
 import {
   ContainerHeader,
@@ -184,24 +186,25 @@ class Dashboard extends Component {
 
   onSubmitHandler = (values) => {
     var formData = new FormData();
-    formData.set('nho_date', this.state.nho_date);
-    formData.set('onboarding_exp_rating', this.state.onboarding_exp_rating);
-    formData.set('recruitment_exp_rating', this.state.recruitment_exp_rating);
-    formData.set('schedule_awareness_rating', this.state.schedule_awareness_rating);
-    formData.set('topic_relevance_rating', this.state.topic_relevance_rating);
-    formData.set('facilitator_id', this.state.facilitator_id);
-    formData.set('facilitator_knowledge_rating', this.state.facilitator_knowledge_rating);
-    formData.set('facilitator_presentation_rating', this.state.facilitator_presentation_rating);
-    formData.set('facilitator_response_rating', this.state.facilitator_response_rating);
-    formData.set('equipment_rating', this.state.equipment_rating);
-    formData.set('accessibility_rating', this.state.accessibility_rating);
-    formData.set('welcome_rating', this.state.welcome_rating);
-    formData.set('suggestions', this.state.suggestions);
-    formData.set('nho_overall_feedback', this.state.nho_overall_feedback);
+    for (var key in values) {
+      if( values[key] != null ) {
+        switch( key ) {
+          case "nho_date":
+            formData.append(key, moment( values[key] ).format("YYYY-MM-DD") );
+            break;
+          default:
+            formData.set(key, values[key]);
+            break;
+        }
+      }
+    }
 
     this.props.addNhoSurvey(formData);
     this.onHide();
-    window.open("https://www.glassdoor.co.in/Reviews/Eastvantage-Business-Solutions-Reviews-E1084085.htm", "_blank", "noopener");
+
+    setTimeout(function() {
+      window.open("https://www.glassdoor.co.in/Reviews/Eastvantage-Business-Solutions-Reviews-E1084085.htm", "_blank", "noopener");
+    }, 3000);
 
   }
 
@@ -248,8 +251,23 @@ class Dashboard extends Component {
   render() {
     const { run, steps, stepIndex } = this.state;
     const { user } = this.props;
-    const initialValue = {};
-    let title = "2025 New Hire Orientation Experience and Feedback Survey";
+    const initialValue = {
+      nho_date: null,
+      onboarding_exp_rating: null,
+      recruitment_exp_rating: null,
+      schedule_awareness_rating: null,
+      topic_relevance_rating: null,
+      facilitator_id: null,
+      facilitator_knowledge_rating: null,
+      facilitator_presentation_rating: null,
+      facilitator_response_rating: null,
+      equipment_rating: null,
+      accessibility_rating: null,
+      welcome_rating: null,
+      suggestions: null,
+      nho_overall_feedback: null,
+    };
+    let title = new Date().getFullYear() + " New Hire Orientation Experience and Feedback Survey";
 
     return (
       <Wrapper {...this.props}>
@@ -277,7 +295,7 @@ class Dashboard extends Component {
           }}
           disableBeacon={true}
         />
-        <ContainerWrapper className="full-wrapper">
+        <ContainerWrapper>
           <ContainerBody>
             {true ? (
               <EmployeeDashboard {...this.props} />
@@ -288,207 +306,254 @@ class Dashboard extends Component {
                           null
                         } */}
 
-              <Modal className="remark-modal" show={this.state.showModal} onHide={this.onHide} size="xl">
-                <Modal.Header closeButton>
-                  <Modal.Title>NHO Survey Form</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Formik 
-                    enableReinitialize
-                    onSubmit={this.onSubmitHandler}
-                    validationSchema={validationSchema} 
-                    initialValues={initialValue}
-                    >
-                    {({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-                      <form onSubmit={handleSubmit}>
-                        <ContainerWrapper style={{ marginLeft: "0 !important;" }}>
-                          <ContainerBody style={{ marginLeft: "5px !important;" }}>
-                            <Content col="12" title={title} subtitle={<RequestSubtitle method={"store"} user={user} />}>
-                              <Row>  
-                                <Col size="12"> 
-                                  <div className="form-group">
-                                    <label>1. When did you have your New Hire Orientation? (Date of NHO)</label>
-                                    <input type="date" name="nho_date" className="form-control" onChange={this.handleChange}/>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>2. How would you rate your Over-all Week-1 Employee Onboarding Experience with Eastvantage? (5 being the highest)</label><br/>
-                                    <input name="onboarding_exp_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="onboarding_exp_rating">1&nbsp;</label>
-                                    <input name="onboarding_exp_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="onboarding_exp_rating">2&nbsp;</label>
-                                    <input name="onboarding_exp_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="onboarding_exp_rating">3&nbsp;</label>
-                                    <input name="onboarding_exp_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="onboarding_exp_rating">4&nbsp;</label>
-                                    <input name="onboarding_exp_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="onboarding_exp_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>3. How would you rate your Over-all Experience with the Recruitment process? (5 being the highest)</label><br/>
-                                    <input name="recruitment_exp_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="recruitment_exp_rating">1&nbsp;</label>
-                                    <input name="recruitment_exp_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="recruitment_exp_rating">2&nbsp;</label>
-                                    <input name="recruitment_exp_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="recruitment_exp_rating">3&nbsp;</label>
-                                    <input name="recruitment_exp_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="recruitment_exp_rating">4&nbsp;</label>
-                                    <input name="recruitment_exp_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="recruitment_exp_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>4. I am aware of the New Hire Orientation Schedule. (5 being the highest)</label><br/>
-                                    <input name="schedule_awareness_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="schedule_awareness_rating">1&nbsp;</label>
-                                    <input name="schedule_awareness_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="schedule_awareness_rating">2&nbsp;</label>
-                                    <input name="schedule_awareness_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="schedule_awareness_rating">3&nbsp;</label>
-                                    <input name="schedule_awareness_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="schedule_awareness_rating">4&nbsp;</label>
-                                    <input name="schedule_awareness_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="schedule_awareness_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>5. The topics covered during New Hire Orientation are relevant as a new hire. (5 being the highest)</label><br/>
-                                    <input name="topic_relevance_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="topic_relevance_rating">1&nbsp;</label>
-                                    <input name="topic_relevance_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="topic_relevance_rating">2&nbsp;</label>
-                                    <input name="topic_relevance_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="topic_relevance_rating">3&nbsp;</label>
-                                    <input name="topic_relevance_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="topic_relevance_rating">4&nbsp;</label>
-                                    <input name="topic_relevance_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="topic_relevance_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="4">
-                                  <div className="form-group">
-                                    <label>6. Choose your Facilitator</label>
-                                    {/* <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
-                                        <option  value = {0}  label="Select Country" />
-                                        {countries && countries.length > 0 &&
-                                            countries.map((country, pos) => (
-                                            <option value={country.country_id}>
-                                                {country.country_name}
-                                            </option>
-                                        ))}
-                                    </select> */}
-                                    <select className="form-control" name="facilitator_id" onChange={this.handleChange} style={{ display: 'block' }}>
-                                        <option value="4713">Vennize Perol</option>
-                                        <option value="4698">Marjorie Villegas</option>
-                                        <option value="3310">Toiba Qureshi</option>
-                                        <option value="4661">Antoeneta Antonova</option>
-                                        <option value="5794">Haitam Achou</option>
-                                    </select>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>7. The facilitator/s were highly knowledgeable about the topics. (5 being the highest)</label><br/>
-                                    <input name="facilitator_knowledge_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="facilitator_knowledge_rating">1&nbsp;</label>
-                                    <input name="facilitator_knowledge_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="facilitator_knowledge_rating">2&nbsp;</label>
-                                    <input name="facilitator_knowledge_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="facilitator_knowledge_rating">3&nbsp;</label>
-                                    <input name="facilitator_knowledge_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="facilitator_knowledge_rating">4&nbsp;</label>
-                                    <input name="facilitator_knowledge_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="facilitator_knowledge_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>8. The facilitator/s were able to present in a clear and understandable manner. (5 being the highest)</label><br/>
-                                    <input name="facilitator_presentation_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="facilitator_presentation_rating">1&nbsp;</label>
-                                    <input name="facilitator_presentation_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="facilitator_presentation_rating">2&nbsp;</label>
-                                    <input name="facilitator_presentation_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="facilitator_presentation_rating">3&nbsp;</label>
-                                    <input name="facilitator_presentation_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="facilitator_presentation_rating">4&nbsp;</label>
-                                    <input name="facilitator_presentation_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="facilitator_presentation_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>9. The facilitator/s were able to answer my questions. (5 being the highest)</label><br/>
-                                    <input name="facilitator_response_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="facilitator_response_rating">1&nbsp;</label>
-                                    <input name="facilitator_response_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="facilitator_response_rating">2&nbsp;</label>
-                                    <input name="facilitator_response_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="facilitator_response_rating">3&nbsp;</label>
-                                    <input name="facilitator_response_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="facilitator_response_rating">4&nbsp;</label>
-                                    <input name="facilitator_response_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="facilitator_response_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>10. My EV equipment is working properly. (5 being the highest)</label><br/>
-                                    <input name="equipment_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="equipment_rating">1&nbsp;</label>
-                                    <input name="equipment_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="equipment_rating">2&nbsp;</label>
-                                    <input name="equipment_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="equipment_rating">3&nbsp;</label>
-                                    <input name="equipment_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="equipment_rating">4&nbsp;</label>
-                                    <input name="equipment_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="equipment_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>11. I was able to login to my webmail, EVOX and BHR during my Day 1. (5 being the highest)</label><br/>
-                                    <input name="accessibility_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="accessibility_rating">1&nbsp;</label>
-                                    <input name="accessibility_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="accessibility_rating">2&nbsp;</label>
-                                    <input name="accessibility_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="accessibility_rating">3&nbsp;</label>
-                                    <input name="accessibility_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="accessibility_rating">4&nbsp;</label>
-                                    <input name="accessibility_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="accessibility_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>12. I am welcomed by Eastvantage on my first day. (5 being the highest)</label><br/>
-                                    <input name="welcome_rating" type="radio" value="1" onChange={this.handleChange}/><label htmlFor="welcome_rating">1&nbsp;</label>
-                                    <input name="welcome_rating" type="radio" value="2" onChange={this.handleChange}/><label htmlFor="welcome_rating">2&nbsp;</label>
-                                    <input name="welcome_rating" type="radio" value="3" onChange={this.handleChange}/><label htmlFor="welcome_rating">3&nbsp;</label>
-                                    <input name="welcome_rating" type="radio" value="4" onChange={this.handleChange}/><label htmlFor="welcome_rating">4&nbsp;</label>
-                                    <input name="welcome_rating" type="radio" value="5" onChange={this.handleChange}/><label htmlFor="welcome_rating">5&nbsp;</label>
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>13. What suggestions/recommendations do you have to improve our EV New Hire Orientation.</label>
-                                    <textarea className="form-control" rows="3" name="suggestions" onChange={this.handleChange}></textarea>
-                                    {/* <Form.Control.Feedback type="invalid">
-                                      &nbsp;{errors.suggestions && touched.suggestions && errors.suggestions}
-                                    </Form.Control.Feedback> */}
-                                  </div>
-                                </Col>
-                              </Row><br/>
-                              <Row>
-                                <Col size="12">
-                                  <div className="form-group">
-                                    <label>14. Let us know your Over-all New Hire Orientation Feedback.</label>
-                                    <textarea className="form-control" rows="3" name="nho_overall_feedback" onChange={this.handleChange}></textarea>
-                                    {/* <Form.Control.Feedback type="invalid">
-                                      &nbsp;{errors.nho_overall_feedback && touched.nho_overall_feedback && errors.nho_overall_feedback}
-                                    </Form.Control.Feedback>  */}
-                                  </div>
-                                </Col>
-                              </Row>
-                            </Content>
-                          </ContainerBody>
-                        </ContainerWrapper>
-                      </form>
-                    )}
-                  </Formik>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={this.onHide}>Cancel</Button>
-                  <Button variant="primary" onClick={this.onSubmitHandler}>Submit</Button>
-                </Modal.Footer>
-              </Modal>
+            <Modal className="remark-modal" show={this.state.showModal} onHide={this.onHide} size="xl">
+              <Modal.Header closeButton>
+                <Modal.Title>NHO Survey Form</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Formik 
+                  enableReinitialize
+                  onSubmit={this.onSubmitHandler}
+                  validationSchema={validationSchema} 
+                  initialValues={initialValue}
+                  >
+                  {({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                    <form onSubmit={handleSubmit}>
+                      <ContainerWrapper>
+                        <ContainerBody>
+                          <Content col="12" title={title} subtitle={<RequestSubtitle method={"store"} user={user} />}>
+                            <Row>  
+                              <Col size="12"> 
+                                <div className="form-group survey-description">
+                                  <p>Your feedback is important to us and these will help improve our New Hire Orientation experience for new hire associates. Rating is 1 to 5 where 5 is the highest.</p>
+                                  <p>5 - Highly Satisfied<br/>4 - Satisfied<br/>3 - Neutral<br/>2 - Dissatisfied<br/>1 - Highly Dissatisfied<br/></p>
+                                  <p className="survey-note">Note: All information is required so please ensure that all fields are completed.</p>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>  
+                              <Col size="12"> 
+                                <div className="form-group">
+                                  <label>1. When did you have your New Hire Orientation? (Date of NHO)</label>
+                                  <InputDate name="nho_date" value={values.nho_date} />
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>2. How would you rate your Over-all Week-1 Employee Onboarding Experience with Eastvantage? (5 being the highest)</label><br/>
+                                  <input name="onboarding_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">1&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">2&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">3&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">4&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="onboarding_exp_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>3. How would you rate your Over-all Experience with the Recruitment process? (5 being the highest)</label><br/>
+                                  <input name="recruitment_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">1&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">2&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">3&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">4&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="recruitment_exp_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>4. I am aware of the New Hire Orientation Schedule. (5 being the highest)</label><br/>
+                                  <input name="schedule_awareness_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">1&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">2&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">3&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">4&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="schedule_awareness_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>5. The topics covered during New Hire Orientation are relevant as a new hire. (5 being the highest)</label><br/>
+                                  <input name="topic_relevance_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="topic_relevance_rating">1&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="topic_relevance_rating">2&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="topic_relevance_rating">3&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="topic_relevance_rating">4&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="topic_relevance_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="topic_relevance_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="4">
+                                <div className="form-group">
+                                  <label>6. Choose your Facilitator</label>
+                                  {/* <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
+                                      <option  value = {0}  label="Select Country" />
+                                      {countries && countries.length > 0 &&
+                                          countries.map((country, pos) => (
+                                          <option value={country.country_id}>
+                                              {country.country_name}
+                                          </option>
+                                      ))}
+                                  </select> */}
+                                  <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
+                                      <option value={values.facilitator_id}>-Select Facilitator-</option>
+                                      <option value="4713">Vennize Perol</option>
+                                      <option value="4698">Marjorie Villegas</option>
+                                      <option value="3310">Toiba Qureshi</option>
+                                      <option value="4661">Antoeneta Antonova</option>
+                                      <option value="5794">Haitam Achou</option>
+                                  </select>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="facilitator_id" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>7. The facilitator/s were highly knowledgeable about the topics. (5 being the highest)</label><br/>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">1&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">2&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">3&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">4&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="facilitator_knowledge_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>8. The facilitator/s were able to present in a clear and understandable manner. (5 being the highest)</label><br/>
+                                  <input name="facilitator_presentation_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">1&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">2&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">3&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">4&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="facilitator_presentation_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>9. The facilitator/s were able to answer my questions. (5 being the highest)</label><br/>
+                                  <input name="facilitator_response_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_response_rating">1&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_response_rating">2&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_response_rating">3&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_response_rating">4&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_response_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="facilitator_response_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>10. My EV equipment is working properly. (5 being the highest)</label><br/>
+                                  <input name="equipment_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="equipment_rating">1&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="equipment_rating">2&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="equipment_rating">3&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="equipment_rating">4&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="equipment_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="equipment_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>11. I was able to login to my webmail, EVOX and BHR during my Day 1. (5 being the highest)</label><br/>
+                                  <input name="accessibility_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="accessibility_rating">1&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="accessibility_rating">2&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="accessibility_rating">3&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="accessibility_rating">4&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="accessibility_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="accessibility_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>12. I am welcomed by Eastvantage on my first day. (5 being the highest)</label><br/>
+                                  <input name="welcome_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="welcome_rating">1&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="welcome_rating">2&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="welcome_rating">3&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="welcome_rating">4&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="welcome_rating">5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="welcome_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>13. What suggestions/recommendations do you have to improve our EV New Hire Orientation.</label>
+                                  <textarea className="form-control" rows="3" name="suggestions" onChange={handleChange} value={values.suggestions}></textarea>
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="suggestions" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label>14. Let us know your Over-all New Hire Orientation Feedback.</label>
+                                  <textarea className="form-control" rows="3" name="nho_overall_feedback" onChange={handleChange} value={values.nho_overall_feedback}></textarea>
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="nho_overall_feedback" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col size="12">
+                                <br/>
+                                <RequestButtons method="store" {...this} noBackBtn={true} />
+                              </Col>
+                            </Row>
+                          </Content>
+                        </ContainerBody>
+                      </ContainerWrapper>
+                    </form>
+                  )}
+                </Formik>
+              </Modal.Body>
+              <Modal.Footer>
+              </Modal.Footer>
+            </Modal>
           </ContainerBody>
         </ContainerWrapper>
       </Wrapper>
@@ -497,12 +562,20 @@ class Dashboard extends Component {
 }
 
 const validationSchema = Yup.object().shape({
-    nho_date:           Yup.string().required("This field is required").nullable(),
-    start_time:     Yup.date().required("This field is required").nullable(),
-    end_time:       Yup.date().required("This field is required").nullable(),
-    // break_time:     Yup.date().required("This field is required").nullable().max( DateFormatter.get_specific_datetime( null, '01:00:01' ) , 'Please select valid break time.'),
-    employee_note:  Yup.string().nullable(),
-    approver_note:  Yup.string().nullable()
+    nho_date:                         Yup.string().required("This field is required").nullable(),
+    suggestions:                      Yup.string().required("This field is required").nullable(),
+    nho_overall_feedback:             Yup.string().required("This field is required").nullable(),
+    onboarding_exp_rating:            Yup.string().required("This field is required").nullable(),
+    recruitment_exp_rating:           Yup.string().required("This field is required").nullable(),
+    schedule_awareness_rating:        Yup.string().required("This field is required").nullable(),
+    topic_relevance_rating:           Yup.string().required("This field is required").nullable(),
+    facilitator_knowledge_rating:     Yup.string().required("This field is required").nullable(),
+    facilitator_presentation_rating:  Yup.string().required("This field is required").nullable(),
+    facilitator_response_rating:      Yup.string().required("This field is required").nullable(),
+    equipment_rating:                 Yup.string().required("This field is required").nullable(),
+    accessibility_rating:             Yup.string().required("This field is required").nullable(),
+    welcome_rating:                   Yup.string().required("This field is required").nullable(),
+    facilitator_id:                   Yup.string().required("This field is required").nullable(),
 });
 
 const mapStateToProps = (state) => {
