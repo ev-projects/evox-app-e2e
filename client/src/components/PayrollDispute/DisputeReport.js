@@ -93,7 +93,7 @@ const DisputeReport = (props) => {
         const url = window.URL.createObjectURL(new Blob([result.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'Dispute.csv');
+        link.setAttribute('download', 'Dispute_Tracker_' + moment(new Date(filters.startDate)).format("DDMMMYYYY") + '_' + moment(new Date(filters.endDate)).format("DDMMMYYYY") + '.csv');
         document.body.appendChild(link);
         link.click();
       })
@@ -250,34 +250,34 @@ const DisputeReport = (props) => {
                     <th>Emp No</th>
                     <th>Name</th>
                     <th>Department</th>
-                    <th>RH</th>
-                    <th>ND</th>
-                    <th>OT</th>
-                    <th>OT ND</th>
-                    <th>RD RH</th>
-                    <th>RD ND</th>
-                    <th>RD OT</th>
-                    <th>RD OT ND</th>
-                    <th>LH RH</th>
-                    <th>LH ND</th>
-                    <th>LH OT</th>
-                    <th>LH OT ND</th>
-                    <th>SH RH</th>
-                    <th>SH ND</th>
-                    <th>SH OT</th>
-                    <th>SH OT ND</th>
-                    <th>DSH RH</th>
-                    <th>DSH ND</th>
-                    <th>DSH OT</th>
-                    <th>DSH OT ND</th>
-                    <th>DLH RH</th>
-                    <th>DLH ND</th>
-                    <th>DLH OT</th>
-                    <th>DLH OT ND</th>
-                    <th>SLH RH</th>
-                    <th>SLH ND</th>
-                    <th>SLH OT</th>
-                    <th>SLH OT ND</th>
+                    <th>Rendered Hours</th>
+                    <th>Night Differential</th>
+                    <th>Overtime</th>
+                    <th>Overtime Night Differential</th>
+                    <th>Rest Day Rendered Hours</th>
+                    <th>Rest Day Night Differential</th>
+                    <th>Rest Day Overtime</th>
+                    <th>Rest Day Overtime Night Differential</th>
+                    <th>Legal Holiday Rendered Hours</th>
+                    <th>Legal Holiday Night Differential</th>
+                    <th>Legal Holiday Overtime</th>
+                    <th>Legal Holiday Overtime Night Differential</th>
+                    <th>Special Holiday Rendered Hours</th>
+                    <th>Special Holiday Night Differential</th>
+                    <th>Special Hoiday Overtime</th>
+                    <th>Special Holiday Overtime Night Differential</th>
+                    <th>Double Special Holiday Rendered Hours</th>
+                    <th>Double Special Holiday Night Differential</th>
+                    <th>Double Special Holiday Overtime</th>
+                    <th>Double Special Holiday Overtime Night Differential</th>
+                    <th>Double Legal Holiday Rendered Hours</th>
+                    <th>Double Legal Holiday Night Differential</th>
+                    <th>Double Legal Holiday Overtime</th>
+                    <th>Double Legal Holiday Overtime Night Differential</th>
+                    <th>Special Legal Holiday Rendered Hours</th>
+                    <th>Special Legal Holiday Night Differential</th>
+                    <th>Special Legal Holiday Overtime</th>
+                    <th>Special Legal Holiday Overtime Night Differential</th>
                   </tr>
                 </thead>
                 <tbody>
