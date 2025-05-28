@@ -330,7 +330,8 @@ class AuthController extends Controller
             'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num ),
             // 'country' =>  $bhr_details ? $bhr_details->country : '',
 	    'country' =>  auth()->user()->country_id == 2 ? "philippines" : '',
-            'countries' => CountryResource::collection(UtcTimelog::orderBy('country_name')->get() )
+            'countries' => CountryResource::collection(UtcTimelog::orderBy('country_name')->get() ),
+            'hr_list' => call_sp('EV_SP_Get_HR_Users', [])[0]
         ];
         
 

@@ -262,6 +262,7 @@ class Dashboard extends Component {
       nho_overall_feedback: null,
     };
     let title = new Date().getFullYear() + " New Hire Orientation Experience and Feedback Survey";
+    const hr_list = this.props.settings.hr_list;
 
     return (
       <Wrapper {...this.props}>
@@ -397,23 +398,20 @@ class Dashboard extends Component {
                               <Col size="4">
                                 <div className="form-group">
                                   <label className="nho-required">6. Choose your Facilitator</label>
-                                  {/* <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
-                                      <option  value = {0}  label="Select Country" />
-                                      {countries && countries.length > 0 &&
-                                          countries.map((country, pos) => (
-                                          <option value={country.country_id}>
-                                              {country.country_name}
-                                          </option>
-                                      ))}
-                                  </select> */}
                                   <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
+                                      <option value={values.facilitator_id}>-Select Facilitator-</option>
+                                      {hr_list && hr_list.length > 0 &&
+                                        hr_list.map((hr, pos) => (
+                                          <option value={hr.id}>{hr.empname}</option>
+                                      ))}
+                                  </select>
+                                  {/* <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
                                       <option value={values.facilitator_id}>-Select Facilitator-</option>
                                       <option value="4713">Vennize Perol</option>
                                       <option value="4698">Marjorie Villegas</option>
                                       <option value="3310">Toiba Qureshi</option>
                                       <option value="4661">Antoeneta Antonova</option>
-                                      <option value="5794">Haitam Achou</option>
-                                  </select>
+                                  </select> */}
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="facilitator_id" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -576,6 +574,7 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     dashboard: state.dashboard,
+    settings: state.settings,
   };
 };
 
