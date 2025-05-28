@@ -304,13 +304,24 @@ export const addNhoSurvey = ( post_data ) => {
             data: post_data
         })
         .then(result => {
-            // dispatch({
-            //     type: "SET_REDIRECT",
-            //     link: global.links.dashboard,
-            // });
+            if (result.status == 200) {
+                const gdElement = document.createElement('a');
+                gdElement.href = "https://www.glassdoor.co.in/Reviews/Eastvantage-Business-Solutions-Reviews-E1084085.htm";
+                gdElement.target = "_blank";
+                document.body.appendChild(gdElement);
+                gdElement.click();
+                document.body.removeChild(gdElement);
+
+                const closeButton = document.getElementsByClassName('close');
+                for (const element of closeButton) {
+                    element.click();
+                }
+
+                dispatch( Formatter.alert_success( result, 5000 ));
+            }
         })
         .catch(e => {
-            dispatch( Formatter.alert_error(  e.response )  ) 
+            dispatch( Formatter.alert_error(  e, 3000 )  ) 
         });
     }
 }

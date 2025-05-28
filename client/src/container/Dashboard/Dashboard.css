@@ -198,3 +198,8 @@ table {
     color: red;
     font-style: italic;
 }
+
+.nho-required::after {
+    content: " *";
+    color: red;
+}

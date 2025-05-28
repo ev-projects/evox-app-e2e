@@ -200,12 +200,6 @@ class Dashboard extends Component {
     }
 
     this.props.addNhoSurvey(formData);
-    this.onHide();
-
-    setTimeout(function() {
-      window.open("https://www.glassdoor.co.in/Reviews/Eastvantage-Business-Solutions-Reviews-E1084085.htm", "_blank", "noopener");
-    }, 3000);
-
   }
 
   onHide = () => {
@@ -334,7 +328,7 @@ class Dashboard extends Component {
                             <Row>  
                               <Col size="12"> 
                                 <div className="form-group">
-                                  <label>1. When did you have your New Hire Orientation? (Date of NHO)</label>
+                                  <label className="nho-required">1. When did you have your New Hire Orientation? (Date of NHO)</label>
                                   <InputDate name="nho_date" value={values.nho_date} />
                                 </div>
                               </Col>
@@ -342,7 +336,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>2. How would you rate your Over-all Week-1 Employee Onboarding Experience with Eastvantage? (5 being the highest)</label><br/>
+                                  <label className="nho-required">2. How would you rate your Over-all Week-1 Employee Onboarding Experience with Eastvantage? (5 being the highest)</label><br/>
                                   <input name="onboarding_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">1&nbsp;</label>
                                   <input name="onboarding_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">2&nbsp;</label>
                                   <input name="onboarding_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">3&nbsp;</label>
@@ -357,7 +351,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>3. How would you rate your Over-all Experience with the Recruitment process? (5 being the highest)</label><br/>
+                                  <label className="nho-required">3. How would you rate your Over-all Experience with the Recruitment process? (5 being the highest)</label><br/>
                                   <input name="recruitment_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">1&nbsp;</label>
                                   <input name="recruitment_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">2&nbsp;</label>
                                   <input name="recruitment_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">3&nbsp;</label>
@@ -372,7 +366,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>4. I am aware of the New Hire Orientation Schedule. (5 being the highest)</label><br/>
+                                  <label className="nho-required">4. I am aware of the New Hire Orientation Schedule. (5 being the highest)</label><br/>
                                   <input name="schedule_awareness_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">1&nbsp;</label>
                                   <input name="schedule_awareness_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">2&nbsp;</label>
                                   <input name="schedule_awareness_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">3&nbsp;</label>
@@ -387,7 +381,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>5. The topics covered during New Hire Orientation are relevant as a new hire. (5 being the highest)</label><br/>
+                                  <label className="nho-required">5. The topics covered during New Hire Orientation are relevant as a new hire. (5 being the highest)</label><br/>
                                   <input name="topic_relevance_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="topic_relevance_rating">1&nbsp;</label>
                                   <input name="topic_relevance_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="topic_relevance_rating">2&nbsp;</label>
                                   <input name="topic_relevance_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="topic_relevance_rating">3&nbsp;</label>
@@ -402,7 +396,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="4">
                                 <div className="form-group">
-                                  <label>6. Choose your Facilitator</label>
+                                  <label className="nho-required">6. Choose your Facilitator</label>
                                   {/* <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
                                       <option  value = {0}  label="Select Country" />
                                       {countries && countries.length > 0 &&
@@ -429,7 +423,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>7. The facilitator/s were highly knowledgeable about the topics. (5 being the highest)</label><br/>
+                                  <label className="nho-required">7. The facilitator/s were highly knowledgeable about the topics. (5 being the highest)</label><br/>
                                   <input name="facilitator_knowledge_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">1&nbsp;</label>
                                   <input name="facilitator_knowledge_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">2&nbsp;</label>
                                   <input name="facilitator_knowledge_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">3&nbsp;</label>
@@ -444,7 +438,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>8. The facilitator/s were able to present in a clear and understandable manner. (5 being the highest)</label><br/>
+                                  <label className="nho-required">8. The facilitator/s were able to present in a clear and understandable manner. (5 being the highest)</label><br/>
                                   <input name="facilitator_presentation_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">1&nbsp;</label>
                                   <input name="facilitator_presentation_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">2&nbsp;</label>
                                   <input name="facilitator_presentation_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">3&nbsp;</label>
@@ -459,7 +453,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>9. The facilitator/s were able to answer my questions. (5 being the highest)</label><br/>
+                                  <label className="nho-required">9. The facilitator/s were able to answer my questions. (5 being the highest)</label><br/>
                                   <input name="facilitator_response_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_response_rating">1&nbsp;</label>
                                   <input name="facilitator_response_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_response_rating">2&nbsp;</label>
                                   <input name="facilitator_response_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_response_rating">3&nbsp;</label>
@@ -474,7 +468,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>10. My EV equipment is working properly. (5 being the highest)</label><br/>
+                                  <label className="nho-required">10. My EV equipment is working properly. (5 being the highest)</label><br/>
                                   <input name="equipment_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="equipment_rating">1&nbsp;</label>
                                   <input name="equipment_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="equipment_rating">2&nbsp;</label>
                                   <input name="equipment_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="equipment_rating">3&nbsp;</label>
@@ -489,7 +483,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>11. I was able to login to my webmail, EVOX and BHR during my Day 1. (5 being the highest)</label><br/>
+                                  <label className="nho-required">11. I was able to login to my webmail, EVOX and BHR during my Day 1. (5 being the highest)</label><br/>
                                   <input name="accessibility_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="accessibility_rating">1&nbsp;</label>
                                   <input name="accessibility_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="accessibility_rating">2&nbsp;</label>
                                   <input name="accessibility_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="accessibility_rating">3&nbsp;</label>
@@ -504,7 +498,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>12. I am welcomed by Eastvantage on my first day. (5 being the highest)</label><br/>
+                                  <label className="nho-required">12. I am welcomed by Eastvantage on my first day. (5 being the highest)</label><br/>
                                   <input name="welcome_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="welcome_rating">1&nbsp;</label>
                                   <input name="welcome_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="welcome_rating">2&nbsp;</label>
                                   <input name="welcome_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="welcome_rating">3&nbsp;</label>
@@ -519,7 +513,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>13. What suggestions/recommendations do you have to improve our EV New Hire Orientation.</label>
+                                  <label className="nho-required">13. What suggestions/recommendations do you have to improve our EV New Hire Orientation.</label>
                                   <textarea className="form-control" rows="3" name="suggestions" onChange={handleChange} value={values.suggestions}></textarea>
                                   <Form.Control.Feedback type="invalid">
                                     <ErrorMessage component="div" name="suggestions" className="input-feedback" />
@@ -530,7 +524,7 @@ class Dashboard extends Component {
                             <Row>
                               <Col size="12">
                                 <div className="form-group">
-                                  <label>14. Let us know your Over-all New Hire Orientation Feedback.</label>
+                                  <label className="nho-required">14. Let us know your Over-all New Hire Orientation Feedback.</label>
                                   <textarea className="form-control" rows="3" name="nho_overall_feedback" onChange={handleChange} value={values.nho_overall_feedback}></textarea>
                                   <Form.Control.Feedback type="invalid">
                                     <ErrorMessage component="div" name="nho_overall_feedback" className="input-feedback" />
