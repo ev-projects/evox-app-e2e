@@ -76,6 +76,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('getusercountry', 'UserController@getUserCountry');
     Route::get('getcountry', 'UserController@getCountry');
 
+    Route::post('/addasset', 'UserController@addUserAsset');
+
 });
 #####################################################################################################
 

@@ -35,6 +35,7 @@ use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\User\Resources\LeaveCreditsListResource;
 use App\Modules\Schedule\Repositories\ScheduleRepository;
+use App\Modules\User\Models\AssetManagement;
 
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
@@ -1053,49 +1054,89 @@ class UserController extends Controller
     }
 
     public function getUserCountry(Request $request){
-    try {   
-        $me = Auth::user();
-        $result_sets = call_sp('EH_SP_Get_User_Country', [$me->LevelId, $me->id]);
-        $response = $result_sets [0];
-        return $response;
-    }catch (Exception $e) {
-    log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
-    return error_response(trans('messages.error_default'), $e);
-    }
-}
-
-public function getCountry(Request $request){
-    try {  
-        $me = Auth::user();
-        $result_sets = call_sp('EV_SP_Policies_Document', [null, null, null, null, null, null, null, $me->country_id, null, null, 2]);
-        $response = $result_sets[0];
-        return $response;
-    }catch (Exception $e) {
-        log_to_file( 'error', $e->getMessage(), [$e], "upload_document");
+        try {   
+            $me = Auth::user();
+            $result_sets = call_sp('EH_SP_Get_User_Country', [$me->LevelId, $me->id]);
+            $response = $result_sets [0];
+            return $response;
+        }catch (Exception $e) {
+        log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
         return error_response(trans('messages.error_default'), $e);
+        }
     }
-}
 
-public function get_user_by_string_dispute(){ 
-    # Get user
-
-    // $user = User::where('first_name', 'like', '%' . $string_name . '%')
-    // ->orWhere('last_name', 'like', '%' . $string_name . '%')
-    // ->join('EVOX_SUB_DEPARTMENT', 'users.SubDepartmentId', '=', 'EVOX_SUB_DEPARTMENT.Id')
-    // ->join('EVOX_DEPARTMENT', 'EVOX_SUB_DEPARTMENT.DepartmentId', '=', 'EVOX_DEPARTMENT.Id') // Joining the 'departments' table
-    // ->select('users.id', 'users.first_name', 'users.middle_name', 'users.last_name', 'users.emp_num', 'EVOX_DEPARTMENT.Name as department_name') // Select relevant fields from both tables
-    // ->get(); 
-    try {
-        $me = Auth::user();
-        $user = $result_sets = call_sp('EV_SP_Payroll_Dispute', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
-        log_activity( trans('messages.list_role_attempt') );
-        return $user[0]; 
-        // return success_response(
-        //     trans('messages.list_role_success'), $user 
-        // );
-    } catch(Exception $e){
-        return error_response( trans('messages.error_default'), $e );
+    public function getCountry(Request $request){
+        try {  
+            $me = Auth::user();
+            $result_sets = call_sp('EV_SP_Policies_Document', [null, null, null, null, null, null, null, $me->country_id, null, null, 2]);
+            $response = $result_sets[0];
+            return $response;
+        }catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "upload_document");
+            return error_response(trans('messages.error_default'), $e);
+        }
     }
-}
+
+    public function get_user_by_string_dispute(){ 
+        # Get user
+
+        // $user = User::where('first_name', 'like', '%' . $string_name . '%')
+        // ->orWhere('last_name', 'like', '%' . $string_name . '%')
+        // ->join('EVOX_SUB_DEPARTMENT', 'users.SubDepartmentId', '=', 'EVOX_SUB_DEPARTMENT.Id')
+        // ->join('EVOX_DEPARTMENT', 'EVOX_SUB_DEPARTMENT.DepartmentId', '=', 'EVOX_DEPARTMENT.Id') // Joining the 'departments' table
+        // ->select('users.id', 'users.first_name', 'users.middle_name', 'users.last_name', 'users.emp_num', 'EVOX_DEPARTMENT.Name as department_name') // Select relevant fields from both tables
+        // ->get(); 
+        try {
+            $me = Auth::user();
+            $user = $result_sets = call_sp('EV_SP_Payroll_Dispute', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
+            log_activity( trans('messages.list_role_attempt') );
+            return $user[0]; 
+            // return success_response(
+            //     trans('messages.list_role_success'), $user 
+            // );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function addUserAsset(Request $request)
+    {
+        try {
+            $main_equipments = ['Desktop', 'Laptop', 'Keyboard', 'Mouse', 'Monitor', 'Headset', 'Webcam', 'Wifi Modem'];
+            $personal_equipment = $request->personal_equipment ?? null;
+            $serial_no_collection = [];
+            $asset_tag_collection = [];
+
+            // explode collection of serial nos
+            if ($request->serial_no) {
+                $serial_no_collection = explode(",", $request->serial_no);
+            }
+
+            // explode collection of asset tags
+            if ($request->asset_tag) {
+                $asset_tag_collection = explode(",", $request->asset_tag);
+            }
+
+            $asset = [];
+            // iterate each main equipments and assign the corresponding serial no and asset tag
+            foreach ($main_equipments as $key => $value) {
+                $asset[$key]['user_id'] = Auth::user()->id;
+                $asset[$key]['personal_equipment'] = $personal_equipment;
+                $asset[$key]['equipment_type'] = $value;
+                $asset[$key]['serial_no'] = $serial_no_collection[$key];
+                $asset[$key]['asset_tag'] = $asset_tag_collection[$key];
+                $asset[$key]['created_at'] = Carbon::now();
+            }
+
+            $asset_insert = AssetManagement::insert($asset);
+            return success_response(
+                trans('Assets successfully added!'),
+                $asset_insert,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
 
 }

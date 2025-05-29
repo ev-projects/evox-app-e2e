@@ -294,5 +294,26 @@ export const forgotPasswordRequest = ( email ) => {
     }
 }
 
+// Actions for the adding asset
+export const addUserAsset = ( data ) => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/user/addasset",
+            data: data
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'SET_REDIRECT',
+                'link'  : global.links.dashboard
+            })
+            dispatch(Formatter.alert_success( result, 3000 ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
 
 
