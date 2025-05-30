@@ -294,6 +294,27 @@ export const forgotPasswordRequest = ( email ) => {
     }
 }
 
+// get user NHO survey
+export const getNhoSurvey = () => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/nho_survey/"
+        })
+        .then(result => {
+            dispatch({
+                'type'          : 'FETCH_USER_NHO',
+                'data'          : result.data,
+                'is_nho_loaded' : true
+            })
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error(  e, 3000 )  )
+        });
+    }
+}
+
 // submission of NHO survey
 export const addNhoSurvey = ( post_data ) => {
     return (dispatch, getState) => {
@@ -316,6 +337,11 @@ export const addNhoSurvey = ( post_data ) => {
                 for (const element of closeButton) {
                     element.click();
                 }
+
+                dispatch({
+                    'type'          : 'CLEAR_USER_NHO',
+                    'is_nho_loaded' : false
+                })
 
                 dispatch( Formatter.alert_success( result, 5000 ));
             }

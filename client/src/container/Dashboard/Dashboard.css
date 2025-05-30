@@ -203,3 +203,12 @@ table {
     content: " *";
     color: red;
 }
+
+#nho-modal-header {
+    background-color: #07335e !important;
+}
+
+#nho-modal-title {
+    color: #fff !important;
+    font-size: 1.5rem !important;
+}

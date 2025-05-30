@@ -68,4 +68,5 @@ Route::put('updatestatus/{id}/{status}', 'PoliciesDocumentController@updatestatu
 Route::get('download_policy/{id}/', 'PoliciesDocumentController@downloadPolicy');
 
 // NHO Survey
+Route::get('nho_survey', 'NewHireOrientationController@index')->middleware('auth.apikey');
 Route::post('nho_survey', 'NewHireOrientationController@store')->middleware('auth.apikey');

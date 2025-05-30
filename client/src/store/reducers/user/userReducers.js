@@ -119,6 +119,21 @@ const userReducer = (state = initState, action) => {
                 ...action.error,
             }
             break;
+
+        case "FETCH_USER_NHO":
+            return {
+                ...state,
+                user_nho_survey : action.data,
+                is_nho_loaded : action.is_nho_loaded
+            }
+            break;
+
+        case "CLEAR_USER_NHO":
+            return {
+                ...state,
+                is_nho_loaded : action.is_nho_loaded
+            }
+            break;
         /**  */
         
         

@@ -13,6 +13,11 @@ use Carbon\Carbon;
 
 class NewHireOrientationController extends Controller
 {
+    public function index()
+    {
+        return NhoSurvey::where('user_id', Auth::user()->id)->first() ?? [];
+    }
+
     /**
      * Store a newly created resource in storage.
      *
