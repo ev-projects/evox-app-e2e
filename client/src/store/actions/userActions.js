@@ -294,7 +294,28 @@ export const forgotPasswordRequest = ( email ) => {
     }
 }
 
-// Actions for the adding asset
+// Actions for the getting user asset
+export const getUserAsset = ( data ) => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/getasset",
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'FETCH_USER_ASSET',
+                'data'              : result.data.content,
+                'is_asset_loaded'   : true
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
+
+// Actions for the adding user asset
 export const addUserAsset = ( data ) => {
 
     return (dispatch, getState) => {
@@ -305,8 +326,8 @@ export const addUserAsset = ( data ) => {
         })
         .then(result => {
             dispatch({
-                'type'  : 'SET_REDIRECT',
-                'link'  : global.links.dashboard
+                'type'              : 'CLEAR_USER_ASSET_LOAD',
+                'is_asset_loaded'   : false
             })
             dispatch(Formatter.alert_success( result, 3000 ));
         })

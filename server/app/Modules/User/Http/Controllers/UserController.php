@@ -1099,38 +1099,41 @@ class UserController extends Controller
         }
     }
 
+    public function getUserAsset()
+    {
+        try {
+            $asset_get = AssetManagement::where('user_id', Auth::user()->id)->where('deleted_at', null)->get();
+            return success_response(
+                trans('Assets successfully fetched!'),
+                $asset_get,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     public function addUserAsset(Request $request)
     {
         try {
-            $main_equipments = ['Desktop', 'Laptop', 'Keyboard', 'Mouse', 'Monitor', 'Headset', 'Webcam', 'Wifi Modem'];
             $personal_equipment = $request->personal_equipment ?? null;
-            $serial_no_collection = [];
-            $asset_tag_collection = [];
+            $equipment_type = $request->equipment_type ?? null;
+            $serial_no = $request->serial_no ?? null;
+            $asset_tag = $request->asset_tag ?? null;
+            $add_equipment_type = $request->add_equipment_type ?? null;
 
-            // explode collection of serial nos
-            if ($request->serial_no) {
-                $serial_no_collection = explode(",", $request->serial_no);
-            }
-
-            // explode collection of asset tags
-            if ($request->asset_tag) {
-                $asset_tag_collection = explode(",", $request->asset_tag);
-            }
-
-            $asset = [];
-            // iterate each main equipments and assign the corresponding serial no and asset tag
-            foreach ($main_equipments as $key => $value) {
-                $asset[$key]['user_id'] = Auth::user()->id;
-                $asset[$key]['personal_equipment'] = $personal_equipment;
-                $asset[$key]['equipment_type'] = $value;
-                $asset[$key]['serial_no'] = $serial_no_collection[$key];
-                $asset[$key]['asset_tag'] = $asset_tag_collection[$key];
-                $asset[$key]['created_at'] = Carbon::now();
-            }
+            $asset = [
+                'user_id' => Auth::user()->id,
+                'personal_equipment' => $personal_equipment,
+                'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
+                'serial_no' => $serial_no,
+                'asset_tag' => $asset_tag,
+                'created_at' => Carbon::now()
+            ];
 
             $asset_insert = AssetManagement::insert($asset);
             return success_response(
-                trans('Assets successfully added!'),
+                trans('Asset successfully added!'),
                 $asset_insert,
                 JsonResponse::HTTP_CREATED
             );
