@@ -64,9 +64,14 @@ class MultiQuickpunch extends Component {
 	addSeconds(date, seconds) {
 		date.setSeconds(date.getSeconds() + seconds);
 		return date;
-	  }
+	}
 	  
-
+	subtractSeconds(date, seconds) {
+		//console.log('oms', date.getTime());
+		//console.log('s', seconds);
+		//console.log('-ms', date.getTime() - Math.abs(seconds * 1000));  
+		return new Date(date.getTime() - Math.abs(seconds * 1000));
+	}
 	  ////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////
 
 	  handleModalSubmit = () => {
@@ -165,7 +170,7 @@ class MultiQuickpunch extends Component {
 	}
 	
     componentWillUnmount(){
-    	clearTimeout(this.timer);
+    	clearInterval(this.timer);
     }
 
 	render = () => {
