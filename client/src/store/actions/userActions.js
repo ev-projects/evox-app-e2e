@@ -294,5 +294,60 @@ export const forgotPasswordRequest = ( email ) => {
     }
 }
 
+// get user NHO survey
+export const getNhoSurvey = () => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/nho_survey/"
+        })
+        .then(result => {
+            dispatch({
+                'type'          : 'FETCH_USER_NHO',
+                'data'          : result.data,
+                'is_nho_loaded' : true
+            })
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error(  e, 3000 )  )
+        });
+    }
+}
 
+// submission of NHO survey
+export const addNhoSurvey = ( post_data ) => {
+    return (dispatch, getState) => {
 
+        API.call({
+            method: "post",
+            url: "/nho_survey/",
+            data: post_data
+        })
+        .then(result => {
+            if (result.status == 200) {
+                const gdElement = document.createElement('a');
+                gdElement.href = "https://www.glassdoor.co.in/Reviews/Eastvantage-Business-Solutions-Reviews-E1084085.htm";
+                gdElement.target = "_blank";
+                document.body.appendChild(gdElement);
+                gdElement.click();
+                document.body.removeChild(gdElement);
+
+                const closeButton = document.getElementsByClassName('close');
+                for (const element of closeButton) {
+                    element.click();
+                }
+
+                dispatch({
+                    'type'          : 'CLEAR_USER_NHO',
+                    'is_nho_loaded' : false
+                })
+
+                dispatch( Formatter.alert_success( result, 5000 ));
+            }
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error(  e, 3000 )  ) 
+        });
+    }
+}
