@@ -1,0 +1,246 @@
+.upload_files{
+    height: 200% !important;
+}
+.heading-style{
+    margin-bottom: 20px;
+}
+
+.list_style{
+
+    list-style-type: decimal !important;
+}
+
+
+.file-list {
+    list-style-type: none;
+    padding: 0;
+}
+.file-item {
+    margin: 10px 0;
+    /* border-top: 1px solid darkgrey; */
+    border: 1px solid grey;
+    /* border-radius: 5px; */
+    /* background-color: aliceblue; */
+    /* box-shadow: 0cqi; */
+    /* border-style: groove; */
+    font-size: 12px !important;
+}
+.download-btn {
+    /* padding: 5px 10px; */
+    background-color: transparent;
+    color: #82af13;
+    border: none;
+    cursor: pointer;
+}
+
+
+.col-btn-css{
+
+    float: inline-end;
+}
+
+.back-img{
+    width: 25px;
+    height: 25px;
+    margin-right: 8px;
+}
+
+.close-modal{
+
+    padding: 0.3rem 1rem !important;
+}
+
+.header-modal{
+    line-height: 1.5 !important;
+}
+
+.body-modal{
+    padding: 25px 25px !important;
+}
+.notfound{
+    text-align: center !important;
+}
+
+.file-upload-container {
+    max-width: 400px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .file-drop-area {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    cursor: pointer;
+  }
+  
+  .file-list {
+    margin-top: 20px;
+  }
+  
+  .file-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .file-list li {
+    margin: 5px 0;
+  }
+
+  .invalid{
+
+    color: red !important;
+
+  }
+
+
+  #drop-area {
+    border: 2px dashed #aaa;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: #333; */
+    border-radius: 8px;
+    min-height: 1in;
+    flex-direction: column;
+    grid-gap: 10px;
+    gap: 10px;
+    cursor: pointer;
+    background-image: url(/images/file.png) !important;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    content-visibility: hidden !important;
+    
+  }
+
+  .drop-icon i {
+    color: #888;
+    font-size: 4.5rem;
+  }
+
+  .drop-text {
+    font-size: 18px;
+    color: #888; 
+  }
+  
+.removebtn{
+  background-color: transparent;
+  border: none;
+  color: red;
+}
+
+.rendertd td{
+  padding: 1px
+}
+
+.tdcontent{
+  width: 50%;
+  word-break: break-word;
+}
+
+.multi-item-height .go2642161244{
+  height: 32px !important;
+}
+
+.btn-space{
+
+  margin-top: 30px !important ;
+}
+
+.custom-modal .modal-content {
+  /* Increase the width and height of the content */
+  width: 100% !important;  /* You can specify a percentage or pixel value */
+  max-height: 180vh !important;  /* Adjust height of modal content */
+}
+
+.custom-modal .modal-body {
+  /* Adjust the padding or size of content */
+  padding: 30px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-top: 1em !important;
+  padding-bottom: 6em !important;
+  /* padding: 1em !important; */
+  /* position: relative;
+    height: 450px; */
+}
+
+.pg-viewer{
+
+/* border: 1px solid black; */
+max-height: 330px !important;
+scrollbar-width: thin;
+
+}
+
+.pg-viewer-wrapper{
+  scrollbar-width: thin;
+  }
+
+  .doc .react-grid-Canvas{
+
+    height:290px !important;
+    scrollbar-width: thin;
+  }
+
+.doc .pg-viewer-wrapper {
+    overflow: hidden;
+}
+
+.fix{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  top: 20px;
+  /* overflow: scroll; */
+  overflow-y: auto;
+  scrollbar-width: thin
+  /* overflow-y: hidden;
+  overflow-x: auto; */
+
+}
+
+.fix1{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  top: 20px;
+  /* overflow: scroll; */
+  overflow-y: auto;
+  scrollbar-width: thin
+}
+
+.t-body td{
+  padding: 12px !important;
+}
+
+.download-header {
+  padding: 20px;
+}
+
+/* 
+
+.pg-viewer-wrapper {
+    overflow-y: hidden;
+    overflow-x: hidden;
+} */
+
+.accordion-main {
+  margin-bottom: 30px;
+}
+
+.accordion-card {
+  width: 95%;
+  margin: 1% 1% 15px;
+}
+
+.accordion-card-header {
+  border: none !important;
+  background-color: #07335e !important;
+}
+
+.accordion-card-header-icon {
+  float: right;
+}

@@ -41,6 +41,8 @@ import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 import SummaryDashbord from "../../Summary/SummaryDashbord";
 import Authenticator from "../../../services/Authenticator";
 import Engagement from "../Engagement/Engagement";
+import PoliciesDocumentDownload from "../../PoliciesDocument/PoliciesDocumentDownload";
+
 class DashboardTabs extends Component {
   constructor(props, context) {
     super(props, context);
@@ -55,7 +57,8 @@ class DashboardTabs extends Component {
       announcement_shown: false,
       engagement_shown: false,
       jobs_shown: false,
-      updates_shown: false
+      updates_shown: false,
+      policies_shown: false,
     };
   }
 
@@ -91,7 +94,8 @@ class DashboardTabs extends Component {
       announcement_shown: eventKey == 'all-announcements',
       engagement_shown: eventKey == 'engagement',
       jobs_shown: eventKey == 'job-openings',
-      updates_shown: eventKey == 'evox-updates'
+      updates_shown: eventKey == 'evox-updates',
+      policies_shown: eventKey == 'policies-download'
     });
   }
   render() {
@@ -137,6 +141,13 @@ class DashboardTabs extends Component {
             tabClassName="newfeature2"
           >
             {this.state.jobs_shown && (<JobOpenings />)}
+          </Tab>
+          <Tab
+            eventKey="policies-download"
+            title="Eastvantage Policies"
+            tabClassName="newfeature3"
+          >
+            {this.state.policies_shown && (<PoliciesDocumentDownload />)}
           </Tab>
           {/* <Tab
             eventKey="evox-updates"

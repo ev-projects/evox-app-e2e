@@ -54,6 +54,30 @@ const dashboardReducers = (state = initState, action) => {
                 my_country : action.data,
             }
             break;
+            case "FETCH_PAYROLL_CUTOFF":
+                result = {
+                    ...state,
+                    payroll_cutoff : action.data,
+                }
+                break;
+            case "FETCH_MY_POLICIES_DOC":
+            result = {
+                ...state,
+                my_doc : action.data.content,
+            }
+            break;
+            case "FETCH_MY_POLICY_DOC":
+            result = {
+                ...state,
+                my_doc_file : action.data,
+            }
+            break;
+            case "CLEAR_MY_POLICY_DOC":
+            result = {
+                ...state,
+                my_doc_file : [],
+            }
+            break;
             case "FETCH_MY_DEPT":
                 result = {
                     ...state,

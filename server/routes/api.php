@@ -59,5 +59,10 @@ Route::get('getpayrollcutoff/{fromdate}/{todate}', 'DisputeController@getpayroll
 Route::get('getuserdispute/{id}', 'DisputeController@getEmployeeDispute')->middleware('jwtauth', 'auth.apikey');
 Route::put('updatedispute/{id}', 'DisputeController@UpdateDispute')->middleware('jwtauth', 'auth.apikey');
 
-
-
+// Pocicies Documents
+Route::post('uploadfiles', 'PoliciesDocumentController@upload');
+Route::get('show', 'PoliciesDocumentController@show');
+Route::get('get_user_departments', 'PoliciesDocumentController@get_user_departments');
+Route::get('showlist', 'PoliciesDocumentController@showlist');
+Route::put('updatestatus/{id}/{status}', 'PoliciesDocumentController@updatestatus');
+Route::get('download_policy/{id}/', 'PoliciesDocumentController@downloadPolicy');
