@@ -5,6 +5,7 @@
 const initState = {
     team_attendance_summary: [],
     selected_summary: "attendance",
+    dispute_record: []
 }
 
 const reportReducers = (state = initState, action) => {
@@ -22,6 +23,12 @@ const reportReducers = (state = initState, action) => {
             result = {
                 ...state,
                 selected_summary: action.payload
+            }
+            break;
+        case "FETCH_DISPUTE_RECORD":
+            result = {
+                ...state,
+                dispute_record: action.data
             }
             break;
         default:
