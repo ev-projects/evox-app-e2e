@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
-import { Form } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 
 import "./AssetManagementForm.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../components/GridComponent/AdminLte.js';
@@ -83,19 +83,19 @@ class AssetManagementForm extends Component {
                 <Row>  
                   <Col size="4">
                     <div className="form-group">
-                      <label>Employee Name:</label>
+                      <label>Employee Name</label>
                       <input type="text" className="form-control" name="employee_name" value={this.props.user.first_name + " " + this.props.user.last_name} disabled />
                     </div>
                   </Col>
                   <Col size="4">
                     <div className="form-group">
-                      <label>Employee Number:</label>
+                      <label>Employee Number</label>
                       <input type="text" className="form-control" name="emp_num" value={this.props.user.emp_num} disabled />
                     </div>
                   </Col>
                   <Col size="4">
                     <div className="form-group">
-                      <label>Email:</label>
+                      <label>Email</label>
                       <input type="text" className="form-control" name="email" value={this.props.user.email} disabled />
                     </div>
                   </Col>
@@ -104,7 +104,7 @@ class AssetManagementForm extends Component {
                 <Row>  
                   <Col size="3">
                     <div className="form-group">
-                      <label>Personal Equipment:</label>
+                      <label className="itam-required">Personal Equipment</label>
                       <select name="personal_equipment" className="form-control" value={values.personal_equipment} onChange={handleChange}>
                         <option value=""></option>
                         <option value="1">Yes</option>
@@ -117,7 +117,7 @@ class AssetManagementForm extends Component {
                   </Col>
                   <Col size="3">
                     <div className="form-group">
-                      <label>Equipment Type:</label>
+                      <label className="itam-required">Equipment Type</label>
                       <select name="equipment_type" className="form-control" value={values.equipment_type} onChange={(e) => {setFieldValue(e.target.name, e.target.value); (e.target.value == "Others") ? this.setState({'showAddEquipment': true}) : this.setState({'showAddEquipment': false}); }}>
                         <option value=""></option>
                         <option value="Desktop">Desktop</option>
@@ -145,18 +145,30 @@ class AssetManagementForm extends Component {
                   </Col>
                   <Col size="3">
                     <div className="form-group">
-                      <label>Serial No:</label>
-                      <input name="serial_no" type="text" className="form-control" onChange={handleChange} value={values.serial_no} />
+                      <label className="itam-required">Serial No</label>
+                      <input name="serial_no" type="text" className="form-control" onChange={handleChange} value={values.serial_no} placeholder='Please indicate "N/A" if not applicable' />
+                      <Form.Control.Feedback type="invalid">
+                        <ErrorMessage component="div" name="serial_no" className="input-feedback" />
+                      </Form.Control.Feedback>
                     </div>
                   </Col>
                   <Col size="3">
                     <div className="form-group">
-                      <label>Asset Tag:</label>
-                      <input name="asset_tag" type="text" className="form-control" onChange={handleChange} value={values.asset_tag} />
+                      <label className="itam-required">Asset Tag</label>
+                      <input name="asset_tag" type="text" className="form-control" onChange={handleChange} value={values.asset_tag} placeholder='Please indicate "N/A" if not applicable' />
+                      <Form.Control.Feedback type="invalid">
+                        <ErrorMessage component="div" name="asset_tag" className="input-feedback" />
+                      </Form.Control.Feedback>
                     </div>
                   </Col>
                 </Row><br/>
-                <RequestButtons method={method} {...this} /><br/><br/>
+                {/* <RequestButtons method={method} {...this} /><br/><br/> */}
+                <span>
+                  <Button type="button" className="back-button btn btn-secondary" onClick={() => this.props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
+                  <div style={{'float': 'right'}}>
+                    <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action',null); handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Add</Button>
+                  </div>
+                </span>
 
                 {user_assets != undefined && user_assets.length > 0 ?
                   <table class="table table-bordered" style={{ 'marginTop': '50px' }}>
@@ -190,7 +202,7 @@ class AssetManagementForm extends Component {
                         )})}
                     </tbody>
                   </table>
-                  : <h3 style={{ 'marginTop': '50px' }}>No assets found.</h3>
+                  : <h3 style={{ 'marginTop': '50px' }}>No assets found</h3>
                 }
               </Content>
             </ContainerBody>
@@ -206,11 +218,13 @@ class AssetManagementForm extends Component {
 /** Form Validation */
 const validationSchema = Yup.object().shape({
     personal_equipment: Yup.string().required("This field is required").nullable(),
-    equipment_type:     Yup.string().required("This field is required").nullable(),
+    equipment_type: Yup.string().required("This field is required").nullable(),
     add_equipment_type: Yup.string().nullable().when('equipment_type', {
       is: 'Others',
       then: Yup.string().required("This field is required").nullable()
     }),
+    serial_no: Yup.string().required("This field is required").nullable(),
+    asset_tag: Yup.string().required("This field is required").nullable(),
   });
 
 const mapStateToProps = (state) => {
