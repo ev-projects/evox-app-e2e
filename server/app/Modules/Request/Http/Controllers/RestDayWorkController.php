@@ -35,28 +35,50 @@ class RestDayWorkController extends Controller
      */
     public function store(RestDayWorkRequest $request){
         try {
-            log_activity( trans('messages.create_rest_day_work_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-             $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                // check if the exact dtr is rest day, if not return error message
+                $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
 
-            if( $dtr_check!= null){
-                if($dtr_check->is_rest_day == 0){
-                    return error_response( "The Date requested/targeted is not a restday, if its a work day make an alter log instead." );
+                if ($dtr_check != null) {
+                    if ($dtr_check->is_rest_day == 0) {
+                        return error_response( "The Date requested/targeted is not a restday, if its a work day make an alter log instead." );
+                    }
                 }
+
+                $rdw_dispute = $this->insertToRestDayWorkDispute($request);
+
+                return success_response(
+                    trans('messages.dispute_request_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                log_activity( trans('messages.create_rest_day_work_attempt') );
+
+                $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
+
+                if( $dtr_check!= null){
+                    if($dtr_check->is_rest_day == 0){
+                        return error_response( "The Date requested/targeted is not a restday, if its a work day make an alter log instead." );
+                    }
+                }
+
+                $rest_day_work = $this->rest_day_work->store( $request->all() );
+
+                $this->email->sendRestDayWorkRequestEmail( $rest_day_work );
+
+                // log action to audit_trail table
+                log_to_audit_trail(['action' => 'Rest Day Work', 'description' => 'has requested for rest day work', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
+                return success_response(
+                    trans('messages.create_rest_day_work_success'), 
+                    new RestDayWorkResource( $rest_day_work ),
+                    JsonResponse::HTTP_CREATED
+                );
             }
-            
-            $rest_day_work = $this->rest_day_work->store( $request->all() );
-
-            $this->email->sendRestDayWorkRequestEmail( $rest_day_work );
-
-            // log action to audit_trail table
-            log_to_audit_trail(['action' => 'Rest Day Work', 'description' => 'has requested for rest day work', 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
-
-            return success_response(
-                trans('messages.create_rest_day_work_success'), 
-                new RestDayWorkResource( $rest_day_work ),
-                JsonResponse::HTTP_CREATED
-            );
 
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -122,17 +144,24 @@ class RestDayWorkController extends Controller
      */
     public function approve(RestDayWorkRequest $request, $id){
         try {
-            log_activity( trans('messages.approve_rest_day_work_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $rest_day_work = $this->rest_day_work->approve( $request->all(), $id );
-            
-            // Add code to apply the Rest Day Work on the specific DTR.
-            $dtr = $this->dtr->apply_rest_day_work_to_dtr( $rest_day_work );
-            
-            return success_response(
-                trans('messages.approve_rest_day_work_success'), 
-                new RestDayWorkResource( $rest_day_work ) 
-            );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request_approval') );
+            } else {
+                log_activity( trans('messages.approve_rest_day_work_attempt') );
+
+                $rest_day_work = $this->rest_day_work->approve( $request->all(), $id );
+                
+                // Add code to apply the Rest Day Work on the specific DTR.
+                $dtr = $this->dtr->apply_rest_day_work_to_dtr( $rest_day_work );
+                
+                return success_response(
+                    trans('messages.approve_rest_day_work_success'), 
+                    new RestDayWorkResource( $rest_day_work ) 
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
@@ -195,5 +224,30 @@ class RestDayWorkController extends Controller
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
+    }
+
+    public function insertToRestDayWorkDispute($request) {
+        $start_time = ( isset( $request['start_time'] ) && is_valid( $request['start_time'] ) ) ? add_time_to_timestamp( $request['date'], time_to_seconds( $request['start_time'] , true, "subtract") ) : 0;
+        $end_time = ( isset( $request['end_time'] )   && is_valid( $request['end_time'] ) ) ? add_time_to_timestamp( $request['date'], time_to_seconds( $request['end_time'] , true, "subtract") ) : 0;
+
+        # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
+        if( $start_time >= $end_time ) {
+            $end_time = add_days_to_timestamp( $end_time, 1 );
+        }
+
+        // call SP to store request on dispute table
+        $rdw_dispute = call_sp('EV_SP_PD_Autoamtion_RestDay', [
+            ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+            ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+            $start_time,
+            $end_time,
+            ( isset( $request['break_time'] ) && is_valid( $request['break_time'] ) ) ? time_to_seconds( $request['break_time'] )   : 0,
+            ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+            ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+            "approved",
+            auth()->user()->id,
+            auth()->user()->id,
+        ]);
+        return $rdw_dispute;
     }
 }

@@ -39,21 +39,34 @@ class OvertimeController extends Controller
      */
     public function store(OvertimeRequest $request){
         try {
-            log_activity( trans('messages.create_overtime_attempt') );
-            
-            $overtime = $this->overtime->store( $request->all() );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $this->email->sendOvertimeRequestEmail( $overtime );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                $overtime_dispute = $this->insertToOvertimeDispute($request);
 
-            // log action to audit_trail table
-            $description = 'has requested for ' . str_replace('_', '-', $request->type);
-            log_to_audit_trail(['action' => 'Overtime', 'description' => $description, 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+                return success_response(
+                    trans('messages.dispute_request_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                log_activity( trans('messages.create_overtime_attempt') );
 
-            return success_response(
-                trans('messages.create_overtime_success'), 
-                new OvertimeResource( $overtime ),
-                JsonResponse::HTTP_CREATED
-            );
+                $overtime = $this->overtime->store( $request->all() );
+
+                $this->email->sendOvertimeRequestEmail( $overtime );
+
+                // log action to audit_trail table
+                $description = 'has requested for ' . str_replace('_', '-', $request->type);
+                log_to_audit_trail(['action' => 'Overtime', 'description' => $description, 'user_id' => auth()->user()->id, 'session_id' => $request->session_id, 'type' => 1]);
+
+                return success_response(
+                    trans('messages.create_overtime_success'), 
+                    new OvertimeResource( $overtime ),
+                    JsonResponse::HTTP_CREATED
+                );
+            }
 
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -119,23 +132,30 @@ class OvertimeController extends Controller
      */
     public function approve(OvertimeRequest $request, $id){
         try {
-            log_activity( trans('messages.approve_overtime_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $overtime = $this->overtime->approve( $request->all(), $id );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                return error_response( trans('messages.invalid_request_approval') );
+            } else {
+                log_activity( trans('messages.approve_overtime_attempt') );
+
+                $overtime = $this->overtime->approve( $request->all(), $id );
 
 
-            $user =  User::find($overtime->user_id);
-            $has_multi =  $user->hasFeature("multi_login");
+                $user =  User::find($overtime->user_id);
+                $has_multi =  $user->hasFeature("multi_login");
 
-            if(!$has_multi){
-            // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
-            $this->dtr->compute_payroll_items($overtime->dtr()->first());
+                if(!$has_multi){
+                // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
+                $this->dtr->compute_payroll_items($overtime->dtr()->first());
+                }
+
+                return success_response(
+                    trans('messages.approve_overtime_success'), 
+                    new OvertimeResource( $overtime ) 
+                );
             }
-
-            return success_response(
-                trans('messages.approve_overtime_success'), 
-                new OvertimeResource( $overtime ) 
-            );
         } catch(Exception $e){
             // dd($e);
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
@@ -205,5 +225,22 @@ class OvertimeController extends Controller
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
+    }
+
+    public function insertToOvertimeDispute($request) {
+        // call SP to store request on dispute table
+        $overtime_dispute = call_sp('EV_SP_PD_Autoamtion_Overtimes', [
+            ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+            ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+            null,
+            ( isset( $request['amount'] ) && is_valid( $request['amount'] ) ) ? time_to_seconds( $request['amount'] ) : 0,
+            ( isset( $request['type'] ) && is_valid( $request['type'] ) ) ? $request['type'] : null,
+            ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+            ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+            "approved",
+            auth()->user()->id,
+            auth()->user()->id,
+        ]);
+        return $overtime_dispute;
     }
 }
