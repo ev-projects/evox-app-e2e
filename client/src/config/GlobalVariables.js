@@ -125,7 +125,10 @@
     // Policies Document    
     policies_upload                 : "/app/policiesupload",
     policies_download               : "/app/policiesdownload",
-    policies_document_list          : "/app/policiesdocumentlist" 
+    policies_document_list          : "/app/policiesdocumentlist",
+
+    // IT Asset Management
+    asset_management                : "/app/asset_management"
    
 };
 

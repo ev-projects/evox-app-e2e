@@ -1,0 +1,4 @@
+.itam-required::after {
+    content: " *";
+    color: red;
+}
