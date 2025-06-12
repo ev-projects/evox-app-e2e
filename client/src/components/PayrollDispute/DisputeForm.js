@@ -120,7 +120,8 @@ function DisputeForm(props) {
     Payroll_Remarks: '',
     Payout_Inclusion: '',
     Valid_From:'',
-    Valid_To:''
+    Valid_To:'',
+    Remarks:''
   });
 
   const validateNumber = (value) => {
@@ -417,7 +418,8 @@ function DisputeForm(props) {
           method: "put",
           url: `/updatedispute/${props.params.id}`,
           data: {
-            status : action
+            status : action,
+            remarks : formData.Remarks
           },
         })
         .then(result => {
@@ -1232,6 +1234,47 @@ function DisputeForm(props) {
                     value={dispute_record.SLH_OT_ND}
                     onChange={handleChange}
                     disabled="true"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Late</label>
+                  <input
+                    type="number"
+                    placeholder="Late"
+                    className="form-control"
+                    name='Late'
+                    value={dispute_record.late}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Undertime</label>
+                  <input
+                    type="number"
+                    placeholder="Undertime"
+                    className="form-control"
+                    name='Undertime'
+                    value={dispute_record.undertime}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="6">
+                <div className="form-group">
+                  <label>Remarks</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name='Remarks'
+                    onChange={handleChange}
                   />
                 </div>
               </Col>
