@@ -31,7 +31,7 @@ class NewHireOrientationController extends Controller
             $nho = NhoSurvey::insert($request->all() + ['user_id' => Auth::user()->id, 'created_at' => Carbon::now()]);
 
             if ($nho == 1) {
-                return response()->json(['message' => 'New hire orientation survey submitted successfully', 'status' => 200], 200);
+                return response()->json(['message' => 'Thank you for completing the NHO Survey! Your response has been successfully submitted.', 'status' => 200], 200);
             }
         } catch(Exception $e) {
             return error_response( trans('messages.error_default'), $e );

@@ -128,7 +128,8 @@
     policies_document_list          : "/app/policiesdocumentlist",
 
     // IT Asset Management
-    asset_management                : "/app/asset_management"
+    asset_management                : "/app/asset_management",
+    asset_reports                   : "/app/asset_reports"
    
 };
 

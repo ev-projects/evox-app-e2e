@@ -149,6 +149,15 @@ const userReducer = (state = initState, action) => {
                 is_nho_loaded : action.is_nho_loaded
             }
             break;
+
+        case "FETCH_ALL_ASSETS":
+            return {
+                ...state,
+                all_assets: action.data,
+                is_all_asset_loaded: action.is_all_asset_loaded,
+                asset_reports_filter: action.filters
+            }
+            break;
         /**  */
         
         

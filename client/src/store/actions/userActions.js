@@ -295,6 +295,28 @@ export const forgotPasswordRequest = ( email ) => {
 }
 
 // Actions for the getting user asset
+export const getAllAssets = ( params ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/getallassets",
+            params: params
+        })
+        .then(result => {
+            dispatch({
+                'type'                  : 'FETCH_ALL_ASSETS',
+                'data'                  : result.data,
+                'is_all_asset_loaded'   : true,
+                'filters'               : params
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
+
+// Actions for the getting user asset
 export const getUserAsset = ( data ) => {
 
     return (dispatch, getState) => {
@@ -369,24 +391,26 @@ export const addNhoSurvey = ( post_data ) => {
         })
         .then(result => {
             if (result.status == 200) {
-                const gdElement = document.createElement('a');
-                gdElement.href = "https://www.glassdoor.co.in/Reviews/Eastvantage-Business-Solutions-Reviews-E1084085.htm";
-                gdElement.target = "_blank";
-                document.body.appendChild(gdElement);
-                gdElement.click();
-                document.body.removeChild(gdElement);
-
                 const closeButton = document.getElementsByClassName('close');
                 for (const element of closeButton) {
                     element.click();
                 }
 
+                dispatch( Formatter.alert_success( result, 5000 ));
+
+                setInterval(function () {
+                  const gdElement = document.createElement('a');
+                  gdElement.href = "https://www.glassdoor.com/surveys/interviews/create?i=1084085&c=PAGE_INFOSITE_TOP";
+                  gdElement.target = "_blank";
+                  document.body.appendChild(gdElement);
+                  gdElement.click();
+                  document.body.removeChild(gdElement);
+                }, 3000);
+
                 dispatch({
                     'type'          : 'CLEAR_USER_NHO',
                     'is_nho_loaded' : false
                 })
-
-                dispatch( Formatter.alert_success( result, 5000 ));
             }
         })
         .catch(e => {

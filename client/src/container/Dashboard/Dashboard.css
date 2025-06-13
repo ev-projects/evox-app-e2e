@@ -190,12 +190,11 @@ table {
 }
 
 .survey-description {
-    font-size: 12px;
-    margin-bottom: 20px !important;
+    margin-bottom: 50px !important;
 }
 
 .survey-note {
-    color: red;
+    color: #07335e;
     font-style: italic;
 }
 
@@ -211,4 +210,12 @@ table {
 #nho-modal-title {
     color: #fff !important;
     font-size: 1.5rem !important;
+}
+
+.survey-label {
+  font-weight: 600 !important;
+}
+
+.mb-2rem {
+  margin-bottom: 2rem !important;
 }

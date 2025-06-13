@@ -9,6 +9,7 @@ use App\Features;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Exports\DpaListExport;
+use App\Exports\AssetExport;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Spatie\Permission\Models\Role;
@@ -1099,6 +1100,16 @@ class UserController extends Controller
         }
     }
 
+    public function getAllAssets(Request $request)
+    {
+      try {
+            $assets = $result_sets = call_sp('EV_SP_Get_Assets', [$request->geo_id, $request->department_id, $request->emp_name]);
+            return $assets[0];
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
     public function getUserAsset()
     {
         try {
@@ -1137,6 +1148,16 @@ class UserController extends Controller
                 $asset_insert,
                 JsonResponse::HTTP_CREATED
             );
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function assetExport(Request $request)
+    {
+        try {
+            $assets = $result_sets = call_sp('EV_SP_Get_Assets', [$request->geo_id, $request->department_id, $request->emp_name]);
+            return Excel::download(new AssetExport($assets[0]), 'AssetReports.csv');
         } catch (Exception $e) {
             return error_response( trans('messages.error_default'), $e );
         }
