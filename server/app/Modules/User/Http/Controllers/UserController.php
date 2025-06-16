@@ -1141,27 +1141,53 @@ class UserController extends Controller
     public function addUserAsset(Request $request)
     {
         try {
-            $personal_equipment = $request->personal_equipment ?? null;
-            $equipment_type = $request->equipment_type ?? null;
-            $serial_no = $request->serial_no ?? null;
-            $asset_tag = $request->asset_tag ?? null;
-            $add_equipment_type = $request->add_equipment_type ?? null;
+            if ($request->action == 'Add') {
+                $personal_equipment = $request->personal_equipment ?? null;
+                $equipment_type = $request->equipment_type ?? null;
+                $serial_no = $request->serial_no ?? null;
+                $asset_tag = $request->asset_tag ?? null;
+                $add_equipment_type = $request->add_equipment_type ?? null;
 
-            $asset = [
-                'user_id' => Auth::user()->id,
-                'personal_equipment' => $personal_equipment,
-                'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
-                'serial_no' => $serial_no,
-                'asset_tag' => $asset_tag,
-                'created_at' => Carbon::now()
-            ];
+                $asset = [
+                    'user_id' => Auth::user()->id,
+                    'personal_equipment' => $personal_equipment,
+                    'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
+                    'serial_no' => $serial_no,
+                    'asset_tag' => $asset_tag,
+                    'created_at' => Carbon::now()
+                ];
 
-            $asset_insert = AssetManagement::insert($asset);
-            return success_response(
-                trans('Asset successfully added!'),
-                $asset_insert,
-                JsonResponse::HTTP_CREATED
-            );
+                $asset_insert = AssetManagement::insert($asset);
+                return success_response(
+                    trans('Asset successfully added!'),
+                    $asset_insert,
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                foreach ($request->all() as $key => $value) {
+                    $personal_equipment = $value['personal_equipment'] ?? null;
+                    $equipment_type = $value['equipment_type'] ?? null;
+                    $serial_no = $value['serial_no'] ?? null;
+                    $asset_tag = $value['asset_tag'] ?? null;
+                    $add_equipment_type = $value['add_equipment_type'] ?? null;
+
+                    $asset = [
+                        'user_id' => Auth::user()->id,
+                        'personal_equipment' => $personal_equipment,
+                        'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
+                        'serial_no' => $serial_no,
+                        'asset_tag' => $asset_tag,
+                        'created_at' => Carbon::now()
+                    ];
+
+                    $asset_insert = AssetManagement::insert($asset);
+                }
+                return success_response(
+                    trans('Assets successfully added!'),
+                    $asset_insert,
+                    JsonResponse::HTTP_CREATED
+                );
+            }
         } catch (Exception $e) {
             return error_response( trans('messages.error_default'), $e );
         }

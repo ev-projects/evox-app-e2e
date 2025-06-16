@@ -156,6 +156,7 @@ class Dashboard extends Component {
     showModal: false,
     allowModalClose: true,
     showItamModal: false,
+    equipment_list: [],
   };
 
   componentDidMount() {
@@ -221,25 +222,51 @@ class Dashboard extends Component {
   }
 
   onSubmitHandler = (values) => {
-    var formData = new FormData();
-    for (var key in values) {
-      if( values[key] != null ) {
-        switch( key ) {
-          case "nho_date":
-            formData.append(key, moment( values[key] ).format("YYYY-MM-DD") );
-            break;
-          default:
-            formData.set(key, values[key]);
-            break;
+    if (values.action === "add_equipment") {
+      const new_equipment = {
+        personal_equipment: values.personal_equipment,
+        equipment_type: values.equipment_type,
+        serial_no: values.serial_no,
+        asset_tag: values.asset_tag,
+        add_equipment_type: values.add_equipment_type
+      }
+      this.setState({ equipment_list: [...this.state.equipment_list, new_equipment] });
+
+      // clear input fields
+      const personal_equipment_text = document.getElementById("personal_equipment");
+      personal_equipment_text.value = "";
+      const equipment_type_text = document.getElementById("equipment_type");
+      equipment_type_text.value = "";
+      const serial_no_text = document.getElementById("serial_no");
+      serial_no_text.value = "";
+      const asset_tag_text = document.getElementById("asset_tag");
+      asset_tag_text.value = "";
+      const add_equipment_type_text = document.getElementById("add_equipment_type");
+      add_equipment_type_text.value = "";
+
+    } else {
+      var formData = new FormData();
+      for (var key in values) {
+        if( values[key] != null ) {
+          switch( key ) {
+            case "nho_date":
+              formData.append(key, moment( values[key] ).format("YYYY-MM-DD") );
+              break;
+            default:
+              formData.set(key, values[key]);
+              break;
+          }
         }
       }
-    }
 
-    this.setState({ allowModalClose: true });
-    if (values.action == "itam") {
-      this.props.addUserAsset(formData);
-    } else {
-      this.props.addNhoSurvey(formData);
+      this.setState({ allowModalClose: true });
+      if (values.action == "itam") {
+        if (window.confirm("Are you sure you want to add the following equipment?")) {
+          this.props.addUserAsset(this.state.equipment_list);
+        }
+      } else {
+        this.props.addNhoSurvey(formData);
+      }
     }
   }
 
@@ -302,13 +329,14 @@ class Dashboard extends Component {
       welcome_rating: null,
       suggestions: null,
       nho_overall_feedback: null,
-      personal_equipment: null,
-      equipment_type: null,
-      serial_no: null,
-      asset_tag: null,
-      add_equipment_type: null,
+      personal_equipment: '',
+      equipment_type: '',
+      serial_no: '',
+      asset_tag: '',
+      add_equipment_type: '',
     };
     const hr_list = this.props.settings.hr_list;
+    const equipment_list = this.state.equipment_list;
 
     return (
       <Wrapper {...this.props}>
@@ -636,7 +664,7 @@ class Dashboard extends Component {
                               <Col size="6">
                                 <div className="form-group">
                                   <label className="itam-required">Personal Equipment</label>
-                                  <select name="personal_equipment" className="form-control" value={values.personal_equipment} onChange={handleChange}>
+                                  <select id="personal_equipment" name="personal_equipment" className="form-control" defaultValue={values.personal_equipment} onChange={handleChange}>
                                     <option value=""></option>
                                     <option value="1">Yes</option>
                                     <option value="2">No</option>
@@ -649,7 +677,7 @@ class Dashboard extends Component {
                               <Col size="6">
                                 <div className="form-group">
                                   <label className="itam-required">Equipment Type</label>
-                                  <select name="equipment_type" className="form-control" value={values.equipment_type} onChange={(e) => {setFieldValue(e.target.name, e.target.value); (e.target.value == "Others") ? this.setState({'showAddEquipment': true}) : this.setState({'showAddEquipment': false}); }}>
+                                  <select id="equipment_type" name="equipment_type" className="form-control" defaultValue={values.equipment_type} onChange={(e) => {setFieldValue(e.target.name, e.target.value); (e.target.value == "Others") ? this.setState({'showAddEquipment': true}) : this.setState({'showAddEquipment': false}); }}>
                                     <option value=""></option>
                                     <option value="Desktop">Desktop</option>
                                     <option value="Laptop">Laptop</option>
@@ -666,7 +694,7 @@ class Dashboard extends Component {
                                   </Form.Control.Feedback><br/>
                                   {this.state.showAddEquipment &&
                                     <div>
-                                      <input name="add_equipment_type" type="text" className="form-control" onChange={handleChange} value={values.add_equipment_type} />
+                                      <input id="add_equipment_type" name="add_equipment_type" type="text" className="form-control" onChange={handleChange} defaultValue={values.add_equipment_type} />
                                       <Form.Control.Feedback type="invalid">
                                         <ErrorMessage component="div" name="add_equipment_type" className="input-feedback" />
                                       </Form.Control.Feedback><br/>
@@ -679,7 +707,7 @@ class Dashboard extends Component {
                               <Col size="6">
                                 <div className="form-group">
                                   <label className="itam-required">Serial No</label>
-                                  <input name="serial_no" type="text" className="form-control" onChange={handleChange} value={values.serial_no} placeholder='Please indicate "N/A" if not applicable' />
+                                  <input id="serial_no" name="serial_no" type="text" className="form-control" onChange={handleChange} defaultValue={values.serial_no} placeholder='Please indicate "N/A" if not applicable' />
                                   <Form.Control.Feedback type="invalid">
                                     <ErrorMessage component="div" name="serial_no" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -688,7 +716,7 @@ class Dashboard extends Component {
                               <Col size="6">
                                 <div className="form-group">
                                   <label className="itam-required">Asset Tag</label>
-                                  <input name="asset_tag" type="text" className="form-control" onChange={handleChange} value={values.asset_tag} placeholder='Please indicate "N/A" if not applicable' />
+                                  <input id="asset_tag" name="asset_tag" type="text" className="form-control" onChange={handleChange} defaultValue={values.asset_tag} placeholder='Please indicate "N/A" if not applicable' />
                                   <Form.Control.Feedback type="invalid">
                                     <ErrorMessage component="div" name="asset_tag" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -699,9 +727,59 @@ class Dashboard extends Component {
                             <span>
                               <Button type="button" className="back-button btn btn-secondary" onClick={() => this.props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
                               <div style={{'float': 'right'}}>
-                                <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'itam');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Add</Button>
+                                <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'add_equipment');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Add Equipment</Button>
                               </div>
                             </span>
+
+                            {equipment_list != undefined && equipment_list.length > 0 ?
+                              <div>
+                                <table class="table table-bordered" style={{ 'marginTop': '50px' }}>
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Personal Equipment</th>
+                                      <th scope="col">Equipment Type</th>
+                                      <th scope="col">Serial No</th>
+                                      <th scope="col">Asset Tag</th>
+                                      {/* <th scope="col" className="is-center">Actions</th> */}
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {equipment_list.map((equipment, index) => {
+                                      let is_personal = '';
+                                      let has_serial = equipment.serial_no ?? "N/A";
+                                      let has_asset = equipment.asset_tag ?? "N/A";
+                                      let equip_type = '';
+                                      if (equipment.personal_equipment == 1) {
+                                        is_personal = 'Yes'
+                                      } else if (equipment.personal_equipment == 2) {
+                                        is_personal = 'No';
+                                      }
+                                      if (equipment.equipment_type === 'Others') {
+                                        equip_type = equipment.equipment_type + ": " + equipment.add_equipment_type;
+                                      } else {
+                                        equip_type = equipment.equipment_type;
+                                      }
+                                      return (
+                                        <tr key={index}>
+                                          <td>{is_personal}</td>
+                                          <td>{equip_type}</td>
+                                          <td>{has_serial}</td>
+                                          <td>{has_asset}</td>
+                                          {/* <td className="is-center">
+                                            <button type="submit" className="btn" onClick={(e)=>{ e.preventDefault(); window.location.href = global.links.asset_management + asset.id; }}><i className="fa is-green fa-edit"></i></button>
+                                          </td> */}
+                                        </tr>
+                                      )})}
+                                  </tbody>
+                                </table>
+                                <span>
+                                  <div style={{'float': 'right'}}>
+                                    <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'itam');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Confirm</Button>
+                                  </div>
+                                </span>
+                              </div>
+                              : <h3 style={{ 'marginTop': '50px' }}>No assets added yet</h3>
+                            }
                           </Content>
                         </ContainerBody>
                       </ContainerWrapper>
