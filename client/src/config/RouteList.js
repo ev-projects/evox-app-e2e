@@ -625,7 +625,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.payroll_dispute_view}>
            <DisputeReport></DisputeReport>
         </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.asset_management}>
+        <ProtectedRoute exact path={global.links.asset_management+":id?"}>
            <AssetManagementForm></AssetManagementForm>
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.asset_reports}>

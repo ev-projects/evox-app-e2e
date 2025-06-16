@@ -115,6 +115,14 @@ const userReducer = (state = initState, action) => {
         case "FETCH_USER_ASSET":
             return {
                 ...state,
+                user_asset: action.data,
+                is_asset_loaded: action.is_asset_loaded
+            }
+            break;
+
+        case "FETCH_USER_ASSETS":
+            return {
+                ...state,
                 user_assets: action.data,
                 is_asset_loaded: action.is_asset_loaded
             }

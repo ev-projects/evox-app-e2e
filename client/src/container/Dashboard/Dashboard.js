@@ -15,7 +15,7 @@ import {
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { getNhoSurvey, addNhoSurvey } from "../../store/actions/userActions";
-import { getUserAsset, addUserAsset } from '../../store/actions/userActions' ;
+import { getUserAssets, addUserAsset } from '../../store/actions/userActions' ;
 import { Formik, ErrorMessage,getIn  } from 'formik';
 import { InputDate,InputTime } from '../../components/DatePickerComponent/DatePicker.js';
 import * as Yup from 'yup';
@@ -184,7 +184,7 @@ class Dashboard extends Component {
     }
 
     if (!this.props.user.is_asset_loaded) {
-      this.props.getUserAsset();
+      this.props.getUserAssets();
     }
 
     // check if user hire date is valid for ITAM modal
@@ -756,10 +756,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-      addNhoSurvey  : ( post_data ) => dispatch( addNhoSurvey( post_data ) ),
-      getNhoSurvey  : () => dispatch( getNhoSurvey() ),
-      addUserAsset  : ( post_data ) => dispatch( addUserAsset( post_data) ),
-      getUserAsset  : () => dispatch( getUserAsset() ),
+      addNhoSurvey    : ( post_data ) => dispatch( addNhoSurvey( post_data ) ),
+      getNhoSurvey    : () => dispatch( getNhoSurvey() ),
+      addUserAsset    : ( post_data ) => dispatch( addUserAsset( post_data) ),
+      getUserAssets   : () => dispatch( getUserAssets() ),
     }
 }
 
