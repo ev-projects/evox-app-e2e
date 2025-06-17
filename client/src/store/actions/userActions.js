@@ -442,7 +442,7 @@ export const addNhoSurvey = ( post_data ) => {
 
                 dispatch( Formatter.alert_success( result, 5000 ));
 
-                setInterval(function () {
+                setTimeout(function () {
                   const gdElement = document.createElement('a');
                   gdElement.href = "https://www.glassdoor.com/surveys/interviews/create?i=1084085&c=PAGE_INFOSITE_TOP";
                   gdElement.target = "_blank";
