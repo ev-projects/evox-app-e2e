@@ -1272,5 +1272,12 @@ class User extends Authenticatable implements JWTSubject
     public function features(){
         return $this->belongsToMany(Features::class, 'user_features', "user_id","feature_id" )->withTimestamps();
      }
+
+    public function isUserNhoValid()
+    {
+        // returns 1 if user is from Magic or Bigo, else 0
+        $is_user_nho_valid = call_sp("EV_SP_NHO_Validate_User", [$this->id]);
+        return $is_user_nho_valid[0][0]->Result;
+    }
     ########################################################################
 }

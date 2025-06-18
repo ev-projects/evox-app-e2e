@@ -160,28 +160,31 @@ class Dashboard extends Component {
   };
 
   componentDidMount() {
-    // check if user has nho survey record
-    if (!this.props.user.is_nho_loaded) {
-      this.props.getNhoSurvey();
-    }
+    // check if user is valid for NHO
+    if (this.props.user.is_user_nho_valid === "0") {
+      // check if user has nho survey record
+      if (!this.props.user.is_nho_loaded) {
+        this.props.getNhoSurvey();
+      }
 
-    // check if user hire date is valid for NHO survey
-    const start_date = new Date(this.props.user.date_hired);
-    const end_date = new Date(this.props.user.date_hired);
-    end_date.setDate(end_date.getDate() + 14);
-    const today = new Date();
-    const nho_survey_valid = (today >= start_date && today <= end_date);
+      // check if user hire date is valid for NHO survey
+      const start_date = new Date(this.props.user.date_hired);
+      const end_date = new Date(this.props.user.date_hired);
+      end_date.setDate(end_date.getDate() + 14);
+      const today = new Date();
+      const nho_survey_valid = (today >= start_date && today <= end_date);
 
-    // if hire date is still within the user's first two weeks and has no NHO survey yet, then show survey modal
-    if (nho_survey_valid && (this.props.user.user_nho_survey && Object.keys(this.props.user.user_nho_survey).length <= 0)) {
-      this.setState({ showModal : true });
-    }
+      // if hire date is still within the user's first two weeks and has no NHO survey yet, then show survey modal
+      if (nho_survey_valid && (this.props.user.user_nho_survey && Object.keys(this.props.user.user_nho_survey).length <= 0)) {
+        this.setState({ showModal : true });
+      }
 
-    // don't allow closing of modal if the user is already on the 2nd week
-    const new_start_date = new Date(this.props.user.date_hired);
-    new_start_date.setDate(new_start_date.getDate() + 7);
-    if (today >= new_start_date && today <= end_date) {
-      this.setState({ allowModalClose: false });
+      // don't allow closing of modal if the user is already on the 2nd week
+      const new_start_date = new Date(this.props.user.date_hired);
+      new_start_date.setDate(new_start_date.getDate() + 7);
+      if (today >= new_start_date && today <= end_date) {
+        this.setState({ allowModalClose: false });
+      }
     }
 
     if (!this.props.user.is_asset_loaded) {
@@ -830,6 +833,7 @@ const validationSchemaITAM = Yup.object().shape({
 });
 
 const mapStateToProps = (state) => {
+  console.log(111, state);
   return {
     user: state.user,
     dashboard: state.dashboard,
