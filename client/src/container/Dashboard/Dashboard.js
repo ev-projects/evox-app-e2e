@@ -833,7 +833,6 @@ const validationSchemaITAM = Yup.object().shape({
 });
 
 const mapStateToProps = (state) => {
-  console.log(111, state);
   return {
     user: state.user,
     dashboard: state.dashboard,
