@@ -733,7 +733,6 @@ class Dashboard extends Component {
                             </Row><br/>
                             {/* <RequestButtons method={method} {...this} /><br/><br/> */}
                             <span>
-                              <Button type="button" className="back-button btn btn-secondary" onClick={() => this.props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
                               <div style={{'float': 'right'}}>
                                 <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'add_equipment');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Add Equipment</Button>
                               </div>
