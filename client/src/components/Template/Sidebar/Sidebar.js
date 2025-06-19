@@ -617,7 +617,7 @@ const Sidebar = (props) => {
               )} */}
 
               {/* Report Links Links */}
-             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules', 'manage_morocco_payroll'])) && (
+             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules', 'manage_morocco_payroll', 'manage_asset_reports'])) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-line-chart" />
@@ -716,7 +716,7 @@ const Sidebar = (props) => {
                       </li>
                     )}
 
-                    {(Authenticator.scanLevel_Feature(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead"], "manage_asset_reports")) && (
+                    {(Authenticator.scanLevel_Feature(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead","Employee"], "manage_asset_reports")) && (
                       <li className="nav-item">
                         <Link className="nav-link" to={global.links.asset_reports}>
                           <i className="nav-icon fa fa-window-restore" />
