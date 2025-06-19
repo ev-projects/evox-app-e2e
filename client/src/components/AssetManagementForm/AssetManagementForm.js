@@ -41,7 +41,9 @@ class AssetManagementForm extends Component {
     }
 
     if (values.action === "Add") {
-      this.props.addUserAsset( formData );
+      if (window.confirm("Data Confirmation Statement\n\nI confirm that all data provided is true and correct. I understand that any discrepancies, whether intentional or due to negligence, may result in disciplinary action and that I will be held fully accountable.")) {
+        this.props.addUserAsset( formData );
+      }
     } else if (values.action === "Update") {
       formData.set('id', this.props.params.id);
       this.props.updateUserAsset( formData );

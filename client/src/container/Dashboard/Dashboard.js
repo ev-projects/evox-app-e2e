@@ -269,7 +269,7 @@ class Dashboard extends Component {
 
       this.setState({ allowModalClose: true });
       if (values.action == "itam") {
-        if (window.confirm("Are you sure you want to add the following equipment?")) {
+        if (window.confirm("Data Confirmation Statement\n\nI confirm that all data provided is true and correct. I understand that any discrepancies, whether intentional or due to negligence, may result in disciplinary action and that I will be held fully accountable.")) {
           this.props.addUserAsset(this.state.equipment_list);
         }
       } else {
