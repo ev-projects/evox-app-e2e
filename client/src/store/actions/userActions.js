@@ -449,7 +449,7 @@ export const addNhoSurvey = ( post_data ) => {
                   document.body.appendChild(gdElement);
                   gdElement.click();
                   document.body.removeChild(gdElement);
-                }, 3000);
+                }, 6000);
 
                 dispatch({
                     'type'          : 'CLEAR_USER_NHO',

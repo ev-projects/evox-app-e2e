@@ -53,7 +53,7 @@ class NewHireOrientationController extends Controller
             $nho = NhoSurvey::insert($data);
 
             if ($nho == 1) {
-                return response()->json(['message' => 'Thank you for completing the NHO Survey! Your response has been successfully submitted.', 'status' => 200], 200);
+                return response()->json(['message' => 'Thank you for completing the NHO Survey! Your response has been successfully submitted. Please also consider leaving a Glassdoor review to help us improve our onboarding and workplace culture.', 'status' => 200], 200);
             }
         } catch(Exception $e) {
             return error_response( trans('messages.error_default'), $e );
