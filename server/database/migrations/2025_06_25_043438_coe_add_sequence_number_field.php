@@ -14,7 +14,7 @@ class CoeAddSequenceNumberField extends Migration
     public function up()
     {
         Schema::table('coes', function (Blueprint $table) {
-            $table->string('sequence_number')->after('id');
+            $table->string('sequence_number')->nullable()->after('id');
         });
     }
 

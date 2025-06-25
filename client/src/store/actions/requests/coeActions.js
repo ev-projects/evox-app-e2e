@@ -22,10 +22,20 @@ export const addCOE = ( post_data ) => {
         })
         .then(result => {
             dispatch(fetchCOE());
+            const contentDisposition = result.headers['content-disposition'];
+            let filename = 'certificate-of-employment.pdf';
+
+            if (contentDisposition && contentDisposition.includes('filename=')) {
+                const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                if (match && match[1]) {
+                    filename = match[1].replace(/['"]/g, '');
+                }
+            }
             dispatch({
                 'type'      : 'REQUEST_COE_SUCCESS',
-                'data'      : result.data
-            })
+                'data'      : result.data,
+                filename: filename
+            });
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 

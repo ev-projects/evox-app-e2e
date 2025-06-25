@@ -14,7 +14,7 @@ class CoePurposeNoteFieldToCoes extends Migration
     public function up()
     {
         Schema::table('coes', function (Blueprint $table) {
-            $table->string('purpose_note')->after('purpose_index');
+            $table->string('purpose_note')->nullable()->after('purpose_index');
         });
     }
 

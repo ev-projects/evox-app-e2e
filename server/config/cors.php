@@ -47,6 +47,7 @@ return [
             'Expires',
             'Last-Modified',
             'Pragma',
+            'Content-Disposition',
         ],
 
         'forbidden_response' => [

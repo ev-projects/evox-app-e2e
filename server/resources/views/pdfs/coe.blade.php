@@ -209,7 +209,7 @@
           </tr>
           <tr>
             <td style="width: 200px;">Date Generated</td>
-            <td>{{$coe->created_at->format('F d, Y h:i:s A')}}</td>
+            <td> {{ $local_time }}</td>
           </tr>
         </tbody>
       </table>

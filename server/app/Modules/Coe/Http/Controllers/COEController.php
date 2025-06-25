@@ -84,9 +84,9 @@ class COEController extends Controller
             }
             // log action to audit_trail table
             log_to_audit_trail(['action' => 'Certificate of Employment', 'description' => 'has requested for certificate of employment', 'user_id' => $user->id, 'session_id' => $request->session_id, 'type' => 1]);
-
-            $pdf = PDF::loadView('pdfs.coe', compact('coe', 'allowances', 'coe_template', 'header_image'))->setPaper('a4', 'portrait');
-            return $pdf->stream('Certificate-of-Employment.pdf');
+            $local_time = $coe->created_at->copy()->timezone($user->country_timezone_name())->format('F d, Y h:i:s A');;
+            $pdf = PDF::loadView('pdfs.coe', compact('coe', 'allowances', 'coe_template', 'header_image', 'local_time'))->setPaper('a4', 'portrait');
+            return $pdf->stream($coe->sequence_number . '.pdf');
             
             // return success_response(
             //     trans('Create Success'), 
