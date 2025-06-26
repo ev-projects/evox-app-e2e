@@ -81,6 +81,8 @@ class COEController extends Controller
                 $mimeType = Storage::disk('public')->mimeType($image_file); // e.g., image/png
                 $base64 = base64_encode($fileContent);
                 $header_image = "data:{$mimeType};base64,{$base64}";
+            } else {
+                log_to_file( 'warning', "Image does not exits.", [$image_file], "coelog");
             }
             // log action to audit_trail table
             log_to_audit_trail(['action' => 'Certificate of Employment', 'description' => 'has requested for certificate of employment', 'user_id' => $user->id, 'session_id' => $request->session_id, 'type' => 1]);
