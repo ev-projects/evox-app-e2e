@@ -75,7 +75,7 @@ class COEController extends Controller
             $coe_template = $created_coe[2];
             $image_file = 'images/' . $coe_template->template_header;
             $header_image = '';
-
+            log_to_file( 'warning', "Image does not exits.", [Storage::disk('public')->path($image_file)], "coelog");
             if (Storage::disk('public')->exists($image_file)) {
                 $fileContent = Storage::disk('public')->get($image_file);
                 $mimeType = Storage::disk('public')->mimeType($image_file); // e.g., image/png
