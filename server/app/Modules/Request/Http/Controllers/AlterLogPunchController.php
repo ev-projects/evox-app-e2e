@@ -41,39 +41,32 @@ class AlterLogPunchController extends Controller
      */
     public function store(Request $request){
         try {
-            // call request validity checker
-            $request_validity = request_validity_checker($request->user_id, $request->date);
+          $conflict = $this->alter_log_punch->on_conflict($request);
+            if($conflict != ""){
+                return error_response(  $conflict );
+            }  
 
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
-                return error_response( trans('messages.dispute_request_success') );
-            } else {
-                $conflict = $this->alter_log_punch->on_conflict($request);
-                if($conflict != ""){
-                    return error_response(  $conflict );
-                }
+            // log_activity( trans('messages.create_alter_log_attempt') );
+            $check_alters = AlterLogPunch::where('date',$request->date)->where("user_id",$request->user_id)->where("status","pending")->latest();
+         
+            if($check_alters->count() > 0){
 
-                // log_activity( trans('messages.create_alter_log_attempt') );
-                $check_alters = AlterLogPunch::where('date',$request->date)->where("user_id",$request->user_id)->where("status","pending")->latest();
+                $update_id = $check_alters->first()->id;
 
-                if($check_alters->count() > 0){
-
-                    $update_id = $check_alters->first()->id;
-
-                    return success_response(
-                        trans('messages.update_alter_log_success'), 
-                        new AlterLogPunchResource( $this->alter_log_punch->update( $request->all(), $update_id ) ) 
-                    );
-                }
-                else{
-                    $alter_log_punch = $this->alter_log_punch->store( $request->all());
-
-
-                    return success_response(
-                        trans('messages.create_alter_log_success'), 
-                        new AlterLogPunchResource($alter_log_punch),
-                        JsonResponse::HTTP_CREATED
-                    );
-                }
+                return success_response(
+                    trans('messages.update_alter_log_success'), 
+                    new AlterLogPunchResource( $this->alter_log_punch->update( $request->all(), $update_id ) ) 
+                );
+            }
+            else{
+                $alter_log_punch = $this->alter_log_punch->store( $request->all());
+          
+            
+                return success_response(
+                    trans('messages.create_alter_log_success'), 
+                    new AlterLogPunchResource($alter_log_punch),
+                    JsonResponse::HTTP_CREATED
+                );
             }
 
 
@@ -142,29 +135,23 @@ class AlterLogPunchController extends Controller
      */
     public function approve(Request $request, $id){
         try {
-            // call request validity checker
-            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
-                return error_response( trans('messages.invalid_request_approval') );
-            } else {
-                $conflict = $this->alter_log_punch->on_conflict($request);
-                if($conflict != ""){
-                    return error_response(  $conflict );
-                }
-
-                // log_activity( trans('messages.approve_alter_log_attempt') );
-        
-                $alter_log_punch = $this->alter_log_punch->approve( $request->all() , $id );
-            
-                // Add code to apply the Alter Log on the specific DTR.
-                $punch = $this->dtr->apply_alter_to_punch( $alter_log_punch );
-
-                return success_response(
-                    trans('messages.approve_alter_log_success'), 
-                    new AlterLogPunchResource( $alter_log_punch ) 
-                );
+            $conflict = $this->alter_log_punch->on_conflict($request);
+            if($conflict != ""){
+                return error_response(  $conflict );
             }
+
+            // log_activity( trans('messages.approve_alter_log_attempt') );
+     
+            $alter_log_punch = $this->alter_log_punch->approve( $request->all() , $id );
+           
+            // Add code to apply the Alter Log on the specific DTR.
+            $punch = $this->dtr->apply_alter_to_punch( $alter_log_punch );
+
+            return success_response(
+                trans('messages.approve_alter_log_success'), 
+                new AlterLogPunchResource( $alter_log_punch ) 
+            );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
