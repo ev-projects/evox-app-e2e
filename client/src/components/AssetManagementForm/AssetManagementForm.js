@@ -11,7 +11,7 @@ import * as Yup from 'yup';
 
 import { setRedirect } from '../../store/actions/redirectActions';
 
-import { getUserAsset, addUserAsset } from '../../store/actions/userActions' ;
+import { getUserAsset, getUserAssets, addUserAsset, updateUserAsset } from '../../store/actions/userActions' ;
 
 import Wrapper from "../../components/Template/Wrapper";
 import RequestButtons from "../../components/RequestComponent/RequestButtons/RequestButtons";
@@ -39,32 +39,50 @@ class AssetManagementForm extends Component {
         formData.set(key, values[key]);
       }
     }
-    this.props.addUserAsset( formData );
+
+    if (values.action === "Add") {
+      if (window.confirm("Data Confirmation Statement\n\nI confirm that all data provided is true and correct. I understand that any discrepancies, whether intentional or due to negligence, may result in disciplinary action and that I will be held fully accountable.")) {
+        this.props.addUserAsset( formData );
+      }
+    } else if (values.action === "Update") {
+      formData.set('id', this.props.params.id);
+      this.props.updateUserAsset( formData );
+      window.location.href = global.links.asset_management;
+    }
   }
 
   componentDidMount(){
-    if (!this.props.user.is_asset_loaded) {
-      this.props.getUserAsset();
+    if (this.props.params.id != undefined) {
+      if (!this.props.user.is_asset_loaded) {
+        this.props.getUserAsset(this.props.params.id);
+      }
+    } else {
+      if (!this.props.user.is_asset_loaded) {
+        this.props.getUserAssets();
+      }
     }
   }
 
   render = () => {
     // Sets the Method of the current state.
     const method = 'store';
+
+    let title = 'IT Asset Management';
+    const asset_id = this.props.params.id;
+    const user_assets = this.props.user.user_assets;
+    const user_asset = this.props.user.user_asset;
+    const btn_func = asset_id != undefined ? 'Update' : 'Add';
     
     // Sets Initial Value of the current Formik form.
     const initialValue = {
         action:             null,
         method:             method,
-        personal_equipment: null,
-        equipment_type:     null,
-        serial_no:          null,
-        asset_tag:          null,
-        add_equipment_type: null,
+        personal_equipment: (user_asset) ? user_asset.personal_equipment : null,
+        equipment_type:     (user_asset) ? user_asset.equipment_type : null,
+        serial_no:          (user_asset) ? user_asset.serial_no : null,
+        asset_tag:          (user_asset) ? user_asset.asset_tag : null,
+        add_equipment_type: (user_asset) ? user_asset.add_equipment_type : null,
     }
-
-    let title = 'IT Asset Management';
-    const user_assets = this.props.user.user_assets;
 
     return <Wrapper {...this.props} >
       <Formik 
@@ -166,44 +184,52 @@ class AssetManagementForm extends Component {
                 <span>
                   <Button type="button" className="back-button btn btn-secondary" onClick={() => this.props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
                   <div style={{'float': 'right'}}>
-                    <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action',null); handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Add</Button>
+                    <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', btn_func); handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> {btn_func}</Button>
                   </div>
                 </span>
 
-                {user_assets != undefined && user_assets.length > 0 ?
-                  <table class="table table-bordered" style={{ 'marginTop': '50px' }}>
-                    <thead>
-                      <tr>
-                        <th scope="col">Item No</th>
-                        <th scope="col">Equipment Type</th>
-                        <th scope="col">Personal Equipment</th>
-                        <th scope="col">Serial No</th>
-                        <th scope="col">Asset Tag</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {user_assets.map((asset, index) => {
-                        let is_personal = '';
-                        let has_serial = asset.serial_no ?? "n/a";
-                        let has_asset = asset.asset_tag ?? "n/a";;
-                        if (asset.personal_equipment == 1) {
-                          is_personal = 'Yes'
-                        } else if (asset.personal_equipment == 2) {
-                          is_personal = 'No';
-                        }
-                        return (
-                          <tr key={index}>
-                            <th scope="row">{index + 1}</th>
-                            <td>{asset.equipment_type}</td>
-                            <td>{is_personal}</td>
-                            <td>{has_serial}</td>
-                            <td>{has_asset}</td>
-                          </tr>
-                        )})}
-                    </tbody>
-                  </table>
-                  : <h3 style={{ 'marginTop': '50px' }}>No assets found</h3>
-                }
+                {asset_id === undefined ?
+                  <div>
+                  {user_assets != undefined && user_assets.length > 0 ?
+                    <table class="table table-bordered" style={{ 'marginTop': '50px' }}>
+                      <thead>
+                        <tr>
+                          <th scope="col">Item No</th>
+                          <th scope="col">Equipment Type</th>
+                          <th scope="col">Personal Equipment</th>
+                          <th scope="col">Serial No</th>
+                          <th scope="col">Asset Tag</th>
+                          <th scope="col" className="is-center">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {user_assets.map((asset, index) => {
+                          let is_personal = '';
+                          let has_serial = asset.serial_no ?? "N/A";
+                          let has_asset = asset.asset_tag ?? "N/A";;
+                          if (asset.personal_equipment == 1) {
+                            is_personal = 'Yes'
+                          } else if (asset.personal_equipment == 2) {
+                            is_personal = 'No';
+                          }
+                          return (
+                            <tr key={index}>
+                              <th scope="row">{index + 1}</th>
+                              <td>{asset.equipment_type}</td>
+                              <td>{is_personal}</td>
+                              <td>{has_serial}</td>
+                              <td>{has_asset}</td>
+                              <td className="is-center">
+                                <button type="submit" className="btn" onClick={(e)=>{ e.preventDefault(); window.location.href = global.links.asset_management + asset.id; }}><i className="fa is-green fa-edit"></i></button>
+                              </td>
+                            </tr>
+                          )})}
+                      </tbody>
+                    </table>
+                    : <h3 style={{ 'marginTop': '50px' }}>No assets found</h3>
+                  }
+                  </div>
+                : null}
               </Content>
             </ContainerBody>
           </ContainerWrapper>
@@ -236,9 +262,11 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-      addUserAsset  : ( post_data ) => dispatch( addUserAsset( post_data) ),
-      getUserAsset  : () => dispatch( getUserAsset() ),
-      setRedirect   : ( link ) => dispatch( setRedirect( link ) ),
+      addUserAsset    : ( post_data ) => dispatch( addUserAsset( post_data) ),
+      updateUserAsset : ( post_data ) => dispatch( updateUserAsset( post_data) ),
+      getUserAssets   : () => dispatch( getUserAssets() ),
+      getUserAsset    : ( id ) => dispatch( getUserAsset( id ) ),
+      setRedirect     : ( link ) => dispatch( setRedirect( link ) ),
     }
 }
 

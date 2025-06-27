@@ -2,3 +2,7 @@
     content: " *";
     color: red;
 }
+
+.is-center {
+  text-align: center !important;
+}

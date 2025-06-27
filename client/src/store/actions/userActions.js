@@ -295,16 +295,59 @@ export const forgotPasswordRequest = ( email ) => {
 }
 
 // Actions for the getting user asset
-export const getUserAsset = ( data ) => {
+export const getAllAssets = ( params ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/getallassets",
+            params: params
+        })
+        .then(result => {
+            dispatch({
+                'type'                  : 'FETCH_ALL_ASSETS',
+                'data'                  : result.data,
+                'is_all_asset_loaded'   : true,
+                'filters'               : params
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
+
+// Actions for the getting user asset
+export const getUserAsset = ( id ) => {
 
     return (dispatch, getState) => {
         API.call({
             method: "get",
-            url: "/user/getasset",
+            url: "/user/getasset/" + id,
         })
         .then(result => {
             dispatch({
                 'type'              : 'FETCH_USER_ASSET',
+                'data'              : result.data.content,
+                'is_asset_loaded'   : true
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
+
+// Actions for the getting user asset
+export const getUserAssets = ( data ) => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/getassets",
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'FETCH_USER_ASSETS',
                 'data'              : result.data.content,
                 'is_asset_loaded'   : true
             })
@@ -337,4 +380,25 @@ export const addUserAsset = ( data ) => {
     }
 }
 
+// Actions for the adding user asset
+export const updateUserAsset = ( data ) => {
 
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/user/updateasset",
+            data: data
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'CLEAR_USER_ASSET_LOAD',
+                'is_asset_loaded'   : false
+            });
+
+            dispatch(Formatter.alert_success( result, 3000 ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}

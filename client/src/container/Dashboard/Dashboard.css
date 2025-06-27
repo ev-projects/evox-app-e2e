@@ -180,3 +180,46 @@ table {
     border-collapse: separate;
     border-radius: 10px; */
   }
+
+.content-wrapper {
+    margin-right: 4.6rem !important;
+}
+
+.modal-body h3 {
+    margin-bottom: 20px !important;
+}
+
+.survey-description {
+    margin-bottom: 50px !important;
+}
+
+.survey-note {
+    color: #07335e;
+    font-style: italic;
+}
+
+.nho-required::after {
+    content: " *";
+    color: red;
+}
+
+#nho-modal-header {
+    background-color: #07335e !important;
+}
+
+#nho-modal-title {
+    color: #fff !important;
+    font-size: 1.5rem !important;
+}
+
+.survey-label {
+  font-weight: 600 !important;
+}
+
+.mb-2rem {
+  margin-bottom: 2rem !important;
+}
+
+.form-group input[type=radio] {
+  transform: scale(1.5);
+}

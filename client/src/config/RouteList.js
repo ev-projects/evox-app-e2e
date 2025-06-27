@@ -115,6 +115,7 @@ import PoliciesDocumentUpload from "../components/PoliciesDocument/PoliciesDocum
 import PoliciesDocumentDownload from "../components/PoliciesDocument/PoliciesDocumentDownload";
 import UploadedDocumentList from "../components/PoliciesDocument/UploadedDocumentList";
 import AssetManagementForm from "../components/AssetManagementForm/AssetManagementForm";
+import AssetReport from "../components/AssetManagementForm/AssetReport/AssetReport";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -624,8 +625,11 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.payroll_dispute_view}>
            <DisputeReport></DisputeReport>
         </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.asset_management}>
+        <ProtectedRoute exact path={global.links.asset_management+":id?"}>
            <AssetManagementForm></AssetManagementForm>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.asset_reports}>
+           <AssetReport></AssetReport>
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

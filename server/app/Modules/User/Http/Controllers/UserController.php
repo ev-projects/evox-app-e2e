@@ -9,6 +9,7 @@ use App\Features;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Exports\DpaListExport;
+use App\Exports\AssetExport;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Spatie\Permission\Models\Role;
@@ -1099,14 +1100,38 @@ class UserController extends Controller
         }
     }
 
-    public function getUserAsset()
+    public function getAllAssets(Request $request)
+    {
+      try {
+            $assets = $result_sets = call_sp('EV_SP_Get_Assets', [$request->geo_id, $request->department_id, $request->emp_name]);
+            return $assets[0];
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function getUserAsset($id)
+    {
+        try {
+            $asset_get = AssetManagement::where('id', $id)->where('deleted_at', null)->first();
+            return success_response(
+                trans('Asset successfully fetched!'),
+                $asset_get,
+                JsonResponse::HTTP_OK
+            );
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function getUserAssets()
     {
         try {
             $asset_get = AssetManagement::where('user_id', Auth::user()->id)->where('deleted_at', null)->get();
             return success_response(
                 trans('Assets successfully fetched!'),
                 $asset_get,
-                JsonResponse::HTTP_CREATED
+                JsonResponse::HTTP_OK
             );
         } catch (Exception $e) {
             return error_response( trans('messages.error_default'), $e );
@@ -1116,6 +1141,61 @@ class UserController extends Controller
     public function addUserAsset(Request $request)
     {
         try {
+            if ($request->action == 'Add') {
+                $personal_equipment = $request->personal_equipment ?? null;
+                $equipment_type = $request->equipment_type ?? null;
+                $serial_no = $request->serial_no ?? null;
+                $asset_tag = $request->asset_tag ?? null;
+                $add_equipment_type = $request->add_equipment_type ?? null;
+
+                $asset = [
+                    'user_id' => Auth::user()->id,
+                    'personal_equipment' => $personal_equipment,
+                    'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
+                    'serial_no' => $serial_no,
+                    'asset_tag' => $asset_tag,
+                    'created_at' => Carbon::now()
+                ];
+
+                $asset_insert = AssetManagement::insert($asset);
+                return success_response(
+                    trans('Asset successfully added!'),
+                    $asset_insert,
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                foreach ($request->all() as $key => $value) {
+                    $personal_equipment = $value['personal_equipment'] ?? null;
+                    $equipment_type = $value['equipment_type'] ?? null;
+                    $serial_no = $value['serial_no'] ?? null;
+                    $asset_tag = $value['asset_tag'] ?? null;
+                    $add_equipment_type = $value['add_equipment_type'] ?? null;
+
+                    $asset = [
+                        'user_id' => Auth::user()->id,
+                        'personal_equipment' => $personal_equipment,
+                        'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
+                        'serial_no' => $serial_no,
+                        'asset_tag' => $asset_tag,
+                        'created_at' => Carbon::now()
+                    ];
+
+                    $asset_insert = AssetManagement::insert($asset);
+                }
+                return success_response(
+                    trans('Assets successfully added!'),
+                    $asset_insert,
+                    JsonResponse::HTTP_CREATED
+                );
+            }
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function updateUserAsset(Request $request)
+    {
+        try {
             $personal_equipment = $request->personal_equipment ?? null;
             $equipment_type = $request->equipment_type ?? null;
             $serial_no = $request->serial_no ?? null;
@@ -1123,20 +1203,29 @@ class UserController extends Controller
             $add_equipment_type = $request->add_equipment_type ?? null;
 
             $asset = [
-                'user_id' => Auth::user()->id,
                 'personal_equipment' => $personal_equipment,
                 'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
                 'serial_no' => $serial_no,
                 'asset_tag' => $asset_tag,
-                'created_at' => Carbon::now()
+                'updated_at' => Carbon::now()
             ];
 
-            $asset_insert = AssetManagement::insert($asset);
+            $asset_update = AssetManagement::where('id', $request->id)->update($asset);
             return success_response(
-                trans('Asset successfully added!'),
-                $asset_insert,
+                trans('Asset successfully updated!'),
+                $asset_update,
                 JsonResponse::HTTP_CREATED
             );
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function assetExport(Request $request)
+    {
+        try {
+            $assets = $result_sets = call_sp('EV_SP_Get_Assets', [$request->geo_id, $request->department_id, $request->emp_name]);
+            return Excel::download(new AssetExport($assets[0]), 'AssetReports.csv');
         } catch (Exception $e) {
             return error_response( trans('messages.error_default'), $e );
         }

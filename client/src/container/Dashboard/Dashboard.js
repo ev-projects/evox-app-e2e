@@ -9,10 +9,17 @@ import {
   Image,
   Spinner,
   Button,
+  Modal,
+  Form,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { fetchUser } from "../../store/actions/userActions";
+import { getUserAssets, addUserAsset } from '../../store/actions/userActions' ;
+import { Formik, ErrorMessage,getIn  } from 'formik';
+import { InputDate,InputTime } from '../../components/DatePickerComponent/DatePicker.js';
+import * as Yup from 'yup';
+import RequestSubtitle from "../../components/RequestComponent/RequestButtons/RequestSubtitle";
+import RequestButtons from "../../components/RequestComponent/RequestButtons/RequestButtons";
 
 import {
   ContainerHeader,
@@ -34,6 +41,8 @@ import moment from "moment";
 import {
   getcurrentdate
 } from "../../services/Helper";
+import { useEffect } from "react";
+import { ThemeConsumer } from "styled-components";
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -124,9 +133,35 @@ class Dashboard extends Component {
         ],
     stepIndex: 0,
     spotlightClicks: false,
+    personal_equipment: '',
+    equipment_type: '',
+    serial_no: '',
+    asset_tag: '',
+    add_equipment_type: '',
+    showItamModal: false,
+    equipment_list: [],
   };
 
   componentDidMount() {
+    if (!this.props.user.is_asset_loaded) {
+      this.props.getUserAssets();
+    }
+
+    // check if user hire date is valid for ITAM modal
+    const itam_date = new Date(this.props.user.date_hired);
+    itam_date.setDate(itam_date.getDate() + 15);
+    const itam_today = new Date();
+    const itam_valid = (itam_today >= itam_date);
+
+    // if current date is over the user's first 15 days and has no recorded asset yet, then show itam modal
+    if (itam_valid && (this.props.user.user_assets && Object.keys(this.props.user.user_assets).length <= 0)) {
+      this.setState({ showItamModal : true });
+    }
+
+    // if user level id is in (DivisionHead, Client, Board), don't show itam popup modal
+    if (["DivisionHead", "Client", "Board"].includes(this.props.user.lvl_name)) {
+      this.setState({ showItamModal : false });
+    }
     // alert(this.props.dashboard?.worktour);
     // const user = localStorage.getItem('user');
     // const userid = user ? JSON.parse(user) : null;
@@ -142,6 +177,65 @@ class Dashboard extends Component {
     // var cudate = Date.parse(date);
     // var currentdate = format(cudate, "yyyy-MM-dd");
     // if (expiredate >= currentdate) this.setState({ run: this.props.dashboard?.worktour });
+  }
+
+  handleChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  }
+
+  onSubmitHandler = (values) => {
+    if (values.action === "add_equipment") {
+      const new_equipment = {
+        personal_equipment: values.personal_equipment,
+        equipment_type: values.equipment_type,
+        serial_no: values.serial_no,
+        asset_tag: values.asset_tag,
+        add_equipment_type: values.add_equipment_type
+      }
+      this.setState({ equipment_list: [...this.state.equipment_list, new_equipment] });
+
+      // clear input fields
+      const personal_equipment_text = document.getElementById("personal_equipment");
+      personal_equipment_text.value = "";
+      const equipment_type_text = document.getElementById("equipment_type");
+      equipment_type_text.value = "";
+      const serial_no_text = document.getElementById("serial_no");
+      serial_no_text.value = "";
+      const asset_tag_text = document.getElementById("asset_tag");
+      asset_tag_text.value = "";
+      const add_equipment_type_text = document.getElementById("add_equipment_type");
+      add_equipment_type_text.value = "";
+
+    } else {
+      var formData = new FormData();
+      for (var key in values) {
+        if( values[key] != null ) {
+          switch( key ) {
+            case "nho_date":
+              formData.append(key, moment( values[key] ).format("YYYY-MM-DD") );
+              break;
+            default:
+              formData.set(key, values[key]);
+              break;
+          }
+        }
+      }
+
+      this.setState({ allowModalClose: true });
+      if (values.action == "itam") {
+        if (window.confirm("Data Confirmation Statement\n\nI confirm that all data provided is true and correct. I understand that any discrepancies, whether intentional or due to negligence, may result in disciplinary action and that I will be held fully accountable.")) {
+          this.props.addUserAsset(this.state.equipment_list);
+        }
+      } else {
+        this.props.addNhoSurvey(formData);
+      }
+    }
+  }
+
+  onHide = () => {
+    this.setState({ showItamModal: false });
   }
 
   handleJoyrideCallback = (data) => {
@@ -184,6 +278,16 @@ class Dashboard extends Component {
     const { run, steps, stepIndex } = this.state;
     const { user } = this.props;
 
+    const initialValue = {
+      personal_equipment: '',
+      equipment_type: '',
+      serial_no: '',
+      asset_tag: '',
+      add_equipment_type: '',
+    };
+    const hr_list = this.props.settings.hr_list;
+    const equipment_list = this.state.equipment_list;
+
     return (
       <Wrapper {...this.props}>
         <Joyride
@@ -210,7 +314,7 @@ class Dashboard extends Component {
           }}
           disableBeacon={true}
         />
-        <ContainerWrapper className="full-wrapper">
+        <ContainerWrapper>
           <ContainerBody>
             {true ? (
               <EmployeeDashboard {...this.props} />
@@ -220,6 +324,173 @@ class Dashboard extends Component {
                           :
                           null
                         } */}
+
+            <Modal className="remark-modal" show={this.state.showItamModal} size="xl">
+              <Modal.Header id="nho-modal-header" closeButton>
+                <Modal.Title id="nho-modal-title">IT Asset Management</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Formik
+                  enableReinitialize
+                  onSubmit={this.onSubmitHandler}
+                  validationSchema={validationSchemaITAM}
+                  initialValues={initialValue}
+                  >
+                  {({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                    <form onSubmit={handleSubmit}>
+                      <input type="hidden" name="modal_mode" value="itam" />
+                      <ContainerWrapper>
+                        <ContainerBody>
+                          <Content col="12" subtitle={<RequestSubtitle method={"store"} />}>
+                            <Row>
+                              <Col size="4">
+                                <div className="form-group">
+                                  <label>Employee Name</label>
+                                  <input type="text" className="form-control" name="employee_name" value={this.props.user.first_name + " " + this.props.user.last_name} disabled />
+                                </div>
+                              </Col>
+                              <Col size="4">
+                                <div className="form-group">
+                                  <label>Employee Number</label>
+                                  <input type="text" className="form-control" name="emp_num" value={this.props.user.emp_num} disabled />
+                                </div>
+                              </Col>
+                              <Col size="4">
+                                <div className="form-group">
+                                  <label>Email</label>
+                                  <input type="text" className="form-control" name="email" value={this.props.user.email} disabled />
+                                </div>
+                              </Col>
+                            </Row><br/>
+
+                            <Row>
+                              <Col size="6">
+                                <div className="form-group">
+                                  <label className="itam-required">Personal Equipment</label>
+                                  <select id="personal_equipment" name="personal_equipment" className="form-control" defaultValue={values.personal_equipment} onChange={handleChange}>
+                                    <option value=""></option>
+                                    <option value="1">Yes</option>
+                                    <option value="2">No</option>
+                                  </select>
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="personal_equipment" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                              <Col size="6">
+                                <div className="form-group">
+                                  <label className="itam-required">Equipment Type</label>
+                                  <select id="equipment_type" name="equipment_type" className="form-control" defaultValue={values.equipment_type} onChange={(e) => {setFieldValue(e.target.name, e.target.value); (e.target.value == "Others") ? this.setState({'showAddEquipment': true}) : this.setState({'showAddEquipment': false}); }}>
+                                    <option value=""></option>
+                                    <option value="Desktop">Desktop</option>
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="Keyboard">Keyboard</option>
+                                    <option value="Mouse">Mouse</option>
+                                    <option value="Monitor">Monitor</option>
+                                    <option value="Headset">Headset</option>
+                                    <option value="Webcam">Webcam</option>
+                                    <option value="Wifi Modem">Wifi Modem</option>
+                                    <option value="Others">Others</option>
+                                  </select>
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="equipment_type" className="input-feedback" />
+                                  </Form.Control.Feedback><br/>
+                                  {this.state.showAddEquipment &&
+                                    <div>
+                                      <input id="add_equipment_type" name="add_equipment_type" type="text" className="form-control" onChange={handleChange} defaultValue={values.add_equipment_type} />
+                                      <Form.Control.Feedback type="invalid">
+                                        <ErrorMessage component="div" name="add_equipment_type" className="input-feedback" />
+                                      </Form.Control.Feedback><br/>
+                                    </div>
+                                  }
+                                </div>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col size="6">
+                                <div className="form-group">
+                                  <label className="itam-required">Serial No</label>
+                                  <input id="serial_no" name="serial_no" type="text" className="form-control" onChange={handleChange} defaultValue={values.serial_no} placeholder='Please indicate "N/A" if not applicable' />
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="serial_no" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                              <Col size="6">
+                                <div className="form-group">
+                                  <label className="itam-required">Asset Tag</label>
+                                  <input id="asset_tag" name="asset_tag" type="text" className="form-control" onChange={handleChange} defaultValue={values.asset_tag} placeholder='Please indicate "N/A" if not applicable' />
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="asset_tag" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            {/* <RequestButtons method={method} {...this} /><br/><br/> */}
+                            <span>
+                              <div style={{'float': 'right'}}>
+                                <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'add_equipment');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Add Equipment</Button>
+                              </div>
+                            </span>
+
+                            {equipment_list != undefined && equipment_list.length > 0 ?
+                              <div>
+                                <table class="table table-bordered" style={{ 'marginTop': '50px' }}>
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Personal Equipment</th>
+                                      <th scope="col">Equipment Type</th>
+                                      <th scope="col">Serial No</th>
+                                      <th scope="col">Asset Tag</th>
+                                      {/* <th scope="col" className="is-center">Actions</th> */}
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {equipment_list.map((equipment, index) => {
+                                      let is_personal = '';
+                                      let has_serial = equipment.serial_no ?? "N/A";
+                                      let has_asset = equipment.asset_tag ?? "N/A";
+                                      let equip_type = '';
+                                      if (equipment.personal_equipment == 1) {
+                                        is_personal = 'Yes'
+                                      } else if (equipment.personal_equipment == 2) {
+                                        is_personal = 'No';
+                                      }
+                                      if (equipment.equipment_type === 'Others') {
+                                        equip_type = equipment.equipment_type + ": " + equipment.add_equipment_type;
+                                      } else {
+                                        equip_type = equipment.equipment_type;
+                                      }
+                                      return (
+                                        <tr key={index}>
+                                          <td>{is_personal}</td>
+                                          <td>{equip_type}</td>
+                                          <td>{has_serial}</td>
+                                          <td>{has_asset}</td>
+                                          {/* <td className="is-center">
+                                            <button type="submit" className="btn" onClick={(e)=>{ e.preventDefault(); window.location.href = global.links.asset_management + asset.id; }}><i className="fa is-green fa-edit"></i></button>
+                                          </td> */}
+                                        </tr>
+                                      )})}
+                                  </tbody>
+                                </table>
+                                <span>
+                                  <div style={{'float': 'right'}}>
+                                    <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'itam');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Confirm</Button>
+                                  </div>
+                                </span>
+                              </div>
+                              : <h3 style={{ 'marginTop': '50px' }}>No assets added yet</h3>
+                            }
+                          </Content>
+                        </ContainerBody>
+                      </ContainerWrapper>
+                    </form>
+                  )}
+                </Formik>
+              </Modal.Body>
+              {/* <Modal.Footer></Modal.Footer> */}
+            </Modal>
           </ContainerBody>
         </ContainerWrapper>
       </Wrapper>
@@ -227,11 +498,30 @@ class Dashboard extends Component {
   }
 }
 
+const validationSchemaITAM = Yup.object().shape({
+    personal_equipment:   Yup.string().required("This field is required").nullable(),
+    equipment_type:       Yup.string().required("This field is required").nullable(),
+    add_equipment_type:   Yup.string().nullable().when('equipment_type', {
+                            is: 'Others',
+                            then: Yup.string().required("This field is required").nullable()
+                          }),
+    serial_no:            Yup.string().required("This field is required").nullable(),
+    asset_tag:            Yup.string().required("This field is required").nullable(),
+});
+
 const mapStateToProps = (state) => {
   return {
     user: state.user,
     dashboard: state.dashboard,
+    settings: state.settings,
   };
 };
 
-export default connect(mapStateToProps, null)(Dashboard);
+const mapDispatchToProps = (dispatch) => {
+    return {
+      addUserAsset    : ( post_data ) => dispatch( addUserAsset( post_data) ),
+      getUserAssets   : () => dispatch( getUserAssets() ),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
