@@ -514,6 +514,7 @@ const mapStateToProps = (state) => {
     user: state.user,
     dashboard: state.dashboard,
     settings: state.settings,
+    settings: state.settings,
   };
 };
 
