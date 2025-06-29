@@ -76,6 +76,13 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
     Route::get('getusercountry', 'UserController@getUserCountry');
     Route::get('getcountry', 'UserController@getCountry');
 
+    Route::get('/getallassets', 'UserController@getAllAssets');
+    Route::get('/getasset/{id}', 'UserController@getUserAsset');
+    Route::get('/getassets', 'UserController@getUserAssets');
+    Route::post('/assetExport', 'UserController@assetExport');
+    Route::post('/addasset', 'UserController@addUserAsset');
+    Route::post('/updateasset', 'UserController@updateUserAsset');
+
 });
 #####################################################################################################
 
@@ -204,4 +211,3 @@ Route::group(['prefix' => 'generate/dtr', 'middleware' => ['jwtauth', 'auth.apik
     Route::post('/', 'UserController@generateDtrDate');
 
 });
-

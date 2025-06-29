@@ -6,6 +6,7 @@ import Formatter from "../../services/Formatter";
 import Wrapper from "../Template/Wrapper";
 import { connect,useDispatch } from 'react-redux';
 import { useParams, useHistory} from "react-router-dom";
+import { Button } from 'react-bootstrap';
 import {
   payrollperiod
 } from "../../store/actions/filters/requestListActions";
@@ -17,10 +18,12 @@ import {
   Row,
   Col,
 } from "../../components/GridComponent/AdminLte.js";
-import {fetchUserRolePermission,assignRolesPermissions,  fetchUserFeatures, assignLevelFeatures,fetchUserDispute } from '../../store/actions/admin/assignRoleActions'
+import {fetchUserRolePermission,assignRolesPermissions,  fetchUserFeatures, assignLevelFeatures,fetchUserDispute } from '../../store/actions/admin/assignRoleActions';
+// import { getDisputeReport } from '../../store/actions/report/reportActions';
+
 function DisputeForm(props) {
   let history = useHistory();
-  const { userLists,user, payroll} = props;
+  const { userLists,user, payroll, dispute_record} = props;
   const inputRef = useRef(null);
   const inputRef1 = useRef(null);
   const inputRef2 = useRef(null);
@@ -148,39 +151,37 @@ function DisputeForm(props) {
 
 
   useEffect(() => {
-
-  if (!props.params.id) {
+    if (!props.params.id) {
       dispatch(fetchUserDispute());
       const mon = '01';
       const mon1 = '12';
-    const month = new Date().getMonth() + 1;
-    const date =  new Date().getDate();
-    const year =  new Date().getFullYear();
-    const formattedDay = String(date).padStart(2, '0');
-    // const fromdate = year+"-"+ month -1+"-"+15;
-    // const todate = year+"-"+ month+"-"+16;
-    
-    setValidbtn(true);
+      const month = new Date().getMonth() + 1;
+      const date =  new Date().getDate();
+      const year =  new Date().getFullYear();
+      const formattedDay = String(date).padStart(2, '0');
+      // const fromdate = year+"-"+ month -1+"-"+15;
+      // const todate = year+"-"+ month+"-"+16;
 
-    if(formattedDay > 15){
-      if(month === 12){
-        handleCutoff(year+"-"+ (month)+"-"+"16",(year+1)+"-"+ (mon) +"-"+"15");
+      setValidbtn(true);
+
+      if(formattedDay > 15){
+        if(month === 12){
+          handleCutoff(year+"-"+ (month)+"-"+"16",(year+1)+"-"+ (mon) +"-"+"15");
+        }else{
+          handleCutoff(year+"-"+ (month)+"-"+"16",year+"-"+ (month+1) +"-"+"15");
+        }
+
       }else{
-        handleCutoff(year+"-"+ (month)+"-"+"16",year+"-"+ (month+1) +"-"+"15");
+        if(month === 1){
+        handleCutoff((year-1)+"-"+ (mon1) +"-"+"16",year+"-"+ (month) +"-"+"15");
+        }else{
+          handleCutoff(year+"-"+ (month-1) +"-"+"16",year+"-"+ (month) +"-"+"15")
+        }
       }
-     
     }else{
-      if(month === 1){
-      handleCutoff((year-1)+"-"+ (mon1) +"-"+"16",year+"-"+ (month) +"-"+"15");
-      }else{
-        handleCutoff(year+"-"+ (month-1) +"-"+"16",year+"-"+ (month) +"-"+"15")
-      }
+      // fetchDisputes();
+      // dispatch(getDisputeReport(props.params.id));
     }
-  }else{
-
-    fetchDisputes();
-
-  }
   }, [payroll]);
 
   // useEffect(() => {
@@ -201,7 +202,6 @@ function DisputeForm(props) {
               url: "/getuserdispute/"+ props.params.id,
           })
           .then(result => {
-         
             setFormData({
               ...formData,
               employee_id: result.data.content[0].employee_id,
@@ -248,7 +248,6 @@ function DisputeForm(props) {
               ["emp_num"]:result.data.content[0].emp_num,
               ["department_name"]: result.data.content[0].Department,
             });
-                     
           })
           .catch(e => {
               dispatch( Formatter.alert_error( e ) ) 
@@ -411,76 +410,94 @@ function DisputeForm(props) {
   };
 
   // Function to handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, action) => {
     e.preventDefault();
-    // alert(formData5.Payroll_Period);
-   if(!formData.dispute_type && !formData.description){
-    e.preventDefault();    
-    setFormvalidate1({
-      ...formvalidate,
-      ["dispute_type"]: "Please Enter DisputeType",
-      ["description"]: "Please Enter Description",
-      
-    });
-    window.scrollTo(0, 0);
-    inputRef.current.focus();
-   }else if(!formData.dispute_type){
-    e.preventDefault();    
-    setFormvalidate1({
-      ...formvalidate,
-      ["dispute_type"]: "Please Enter DisputeType",
-    });
-    window.scrollTo(0, 0);
-    inputRef.current.focus();
-   }else if(!formData.description){
-    e.preventDefault();    
-    setFormvalidate1({
-      ...formvalidate,
-      ["description"]: "Please Enter Description",
-    });
-    window.scrollTo(0, 0);
-    inputRef1.current.focus();
-   }else{
-    e.preventDefault();
-    const allEmpty = stringFields.every(field => formData[field] === "");
-    if(allEmpty){
-      e.preventDefault();   
-      dispatch(Formatter.alert_error_message("Please fill in at least one dispute value."));
-      window.scrollTo(0, 0);
-      inputref3.current.focus();
-    }
-    else if(!formData.employee_id){
-      e.preventDefault();
-      dispatch(Formatter.alert_error_message("Please select an employee."));
-      // setValidateeid(false);   
-    }else{
-      e.preventDefault();    
-      // setFormData({
-      //   ...formData,
-      //   ["Payroll_Period"]: inputref4.current.value,
-      // });
     try {
         API.call({
-            method: "post",
-            url: "/storedispute",
-            data: formData
+          method: "put",
+          url: `/updatedispute/${props.params.id}`,
+          data: {
+            status : action
+          },
         })
         .then(result => {
             dispatch( Formatter.alert_success( result, 3000 ));
-          setEmployeeName('');
-          window.scrollTo(0, 0);
-          setUserid("");
-          handleblur();
-
+            history.push(global.links.payroll_dispute_view);
         })
         .catch(e => {
             dispatch( Formatter.alert_error( e ) ) 
         });
     } catch (error) {
-      console.error("Error submitting dispute:", error);
+      console.error("Error updating dispute:", error);
     }
-  }
-  }
+    // alert(formData5.Payroll_Period);
+    // if(!formData.dispute_type && !formData.description){
+    //   e.preventDefault();    
+    //   setFormvalidate1({
+    //     ...formvalidate,
+    //     ["dispute_type"]: "Please Enter DisputeType",
+    //     ["description"]: "Please Enter Description",
+        
+    //   });
+    //   window.scrollTo(0, 0);
+    //   inputRef.current.focus();
+    // }else if(!formData.dispute_type){
+    //   e.preventDefault();    
+    //   setFormvalidate1({
+    //     ...formvalidate,
+    //     ["dispute_type"]: "Please Enter DisputeType",
+    //   });
+    //   window.scrollTo(0, 0);
+    //   inputRef.current.focus();
+    // }else if(!formData.description){
+    //   e.preventDefault();    
+    //   setFormvalidate1({
+    //     ...formvalidate,
+    //     ["description"]: "Please Enter Description",
+    //   });
+    //   window.scrollTo(0, 0);
+    //   inputRef1.current.focus();
+    // }else{
+    //   e.preventDefault();
+    //   const allEmpty = stringFields.every(field => formData[field] === "");
+    //   if(allEmpty){
+    //     e.preventDefault();   
+    //     dispatch(Formatter.alert_error_message("Please fill in at least one dispute value."));
+    //     window.scrollTo(0, 0);
+    //     inputref3.current.focus();
+    //   }
+    //   else if(!formData.employee_id){
+    //     e.preventDefault();
+    //     dispatch(Formatter.alert_error_message("Please select an employee."));
+    //     // setValidateeid(false);   
+    //   }else{
+    //     e.preventDefault();    
+    //     // setFormData({
+    //     //   ...formData,
+    //     //   ["Payroll_Period"]: inputref4.current.value,
+    //     // });
+    //   try {
+    //       API.call({
+    //           method: "post",
+    //           url: "/storedispute",
+    //           data: formData
+    //       })
+    //       .then(result => {
+    //           dispatch( Formatter.alert_success( result, 3000 ));
+    //         setEmployeeName('');
+    //         window.scrollTo(0, 0);
+    //         setUserid("");
+    //         handleblur();
+
+    //       })
+    //       .catch(e => {
+    //           dispatch( Formatter.alert_error( e ) ) 
+    //       });
+    //   } catch (error) {
+    //     console.error("Error submitting dispute:", error);
+    //   }
+    // }
+    // }
   };
 
    // Function to handle form submission
@@ -697,13 +714,18 @@ function DisputeForm(props) {
 							 }  */}
                             </Col>
               )}
-                            <Col size = "4">
-           
-            <label></label>
+            <Col size = "4">
                 <div className="form-group">
-                 {employeeDetails && ( <div> <p>Employee Number: {formData1.emp_num} <br></br> Department: {formData1.department_name}<br></br>First Name: {formData1.first_name} <br></br> Last Name: {formData1.last_name}</p></div> )}
+                  {dispute_record && ( 
+                    <div>
+                      <p>
+                        Employee Number: {dispute_record.Employee_Number} <br></br>
+                        Name: {dispute_record.Employee_Name} <br></br>
+                        Department: {dispute_record.Department_Name}<br></br>
+                      </p>
+                    </div>
+                  )}
                 </div>
-
             </Col>
                      
                             </Row>
@@ -774,11 +796,10 @@ function DisputeForm(props) {
                 }
                 
               </Row>               */}
-                            <Row>
-
-                            <Col size="3">
+            <Row>
+              <Col size="3">
                 <div className="form-group">
-                  <label>Payroll Cutoff:</label>
+                  <label>Login Date:</label>
                   <input
                     type="text"
                     placeholder="Enter Payroll Cutoff"
@@ -786,12 +807,12 @@ function DisputeForm(props) {
                     disabled  
                     name='Payroll_Cutoff'
                     style={{"font-weight": "bold","color":"green !important"}}
-                    value={formData.Payroll_Cutoff}
+                    value={dispute_record.login_date}
                     onChange={handleChange}
                   />
                 </div>
               </Col>  
-              <Col size="3">
+              {/* <Col size="3">
                 <div className="form-group">
                   <label>Type of Dispute:* {formvalidate1.dispute_type && <span style={{"color" : "red"}}>{formvalidate1.dispute_type}</span>}</label>
                   <input
@@ -805,498 +826,428 @@ function DisputeForm(props) {
                     ref={inputRef}
                   />
                 </div>
-              </Col>
-
-              <Col size="3">
-                <div className="form-group">
-                  <label>Description:* {formvalidate1.description && <span style={{"color" : "red"}}>{formvalidate1.description}</span>}</label>
-                  <textarea
-                    placeholder="Enter Description"
-                    className="form-control"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ? false : true }
-                    ref={inputRef1}
-                  />
-                </div>
-              </Col>
+              </Col> */}
             </Row>
+
             <Row>
-         
               <Col size="3">
                 <div className="form-group">
-                  <label>LWOP: {formvalidate.LWOP && <span style={{"color" : "red"}}>{formvalidate.LWOP}</span>}</label>
+                  <label>Rendered Hours</label>
                   <input
                     type="number"
-                    placeholder="Enter LWOP"
+                    placeholder="Rendered Hours"
                     className="form-control"
-                    name='LWOP'
+                    name='Render_Hr'
                     ref={inputref3}
-                    value={formData.LWOP}
+                    value={dispute_record.Render_Hr}
                     onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
+                    disabled="true"
                   />
                 </div>
               </Col>
               <Col size="3">
                 <div className="form-group">
-                  <label>UT: {formvalidate.UT && <span style={{"color" : "red"}}>{formvalidate.UT}</span>}</label>
+                  <label>Night Differential</label>
                   <input
                     type="number"
-                    placeholder="Enter UT"
+                    placeholder="Night Differential"
                     className="form-control"
-                    name='UT'
-                    value={formData.UT}
+                    name='Night_Diff'
+                    value={dispute_record.Night_Diff}
                     onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
+                    disabled="true"
                   />
                 </div>
               </Col>
-           
-            
               <Col size="3">
                 <div className="form-group">
-                  <label>Tardiness: {formvalidate.TARDINESS && <span style={{"color" : "red"}}>{formvalidate.TARDINESS}</span>}</label>
+                  <label>Overtime</label>
                   <input
                     type="number"
-                    placeholder="Enter Tardiness"
+                    placeholder="Overtime"
                     className="form-control"
-                    name='TARDINESS'
-                    value={formData.TARDINESS}
+                    name='OverTime'
+                    value={dispute_record.OverTime}
                     onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                    pattern='[0-9]'
+                    disabled="true"
                   />
                 </div>
               </Col>
               <Col size="3">
                 <div className="form-group">
-                  <label>Late: {formvalidate.Late && <span style={{"color" : "red"}}>{formvalidate.Late}</span>}</label>
+                  <label>Overtime Night Differential</label>
                   <input
                     type="number"
-                    placeholder="Enter Late"
+                    placeholder="Overtime Night Differential"
                     className="form-control"
-                    name='Late'
-                    value={formData.Late}
-                    disabled = {!props.params.id ?false : true }
+                    name='OT_ND'
+                    value={dispute_record.OT_ND}
                     onChange={handleChange}
+                    disabled="true"
                   />
                 </div>
               </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Night Shift Diff: {formvalidate.Night_Shift_Diff && <span style={{"color" : "red"}}>{formvalidate.Night_Shift_Diff}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Night Shift Diff"
-                    className="form-control"
-                    name='Night_Shift_Diff'
-                    value={formData.Night_Shift_Diff}
-                    disabled = {!props.params.id ?false : true }
-                    onChange={handleChange}
-                  />
-                </div>
-              </Col>
-         
-              <Col size="3">
-                <div className="form-group">
-                  <label>Over Time: {formvalidate.Overtime && <span style={{"color" : "red"}}>{formvalidate.Overtime}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter OverTime"
-                    className="form-control"
-                    name='Overtime'
-                    value={formData.Overtime}
-                    disabled = {!props.params.id ?false : true }
-                    onChange={handleChange}
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>OT with NSD: {formvalidate.OT_with_NSD && <span style={{"color" : "red"}}>{formvalidate.OT_with_NSD}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter OT With NSD"
-                    className="form-control"
-                    name='OT_with_NSD'
-                    value={formData.OT_with_NSD}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Rest Day: {formvalidate.Rest_Day && <span style={{"color" : "red"}}>{formvalidate.Rest_Day}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Rest Day"
-                    className="form-control"
-                    name='Rest_Day'
-                    value={formData.Rest_Day}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-            {formData1.department_name === 'Solutions30' ?
-              <Col size="3">
-                <div className="form-group">
-                  <label>Rest Day 200: {formvalidate.Rest_Day_200 && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_200}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Rest Day 200"
-                    className="form-control"
-                    name='Rest_Day_200'
-                    value={formData.Rest_Day_200}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              : ""
-              }
-              <Col size="3">
-                <div className="form-group">
-                  <label>Rest Day Work with NSD: {formvalidate.Rest_Day_Work_With_NSD && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_Work_With_NSD}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Rest Day Work With NSD"
-                    className="form-control"
-                    name='Rest_Day_Work_With_NSD'
-                    value={formData.Rest_Day_Work_With_NSD}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Rest Day Work With OT: {formvalidate.Rest_Day_Work_With_OT && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_Work_With_OT}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Rest Day Work With OT"
-                    className="form-control"
-                    name='Rest_Day_Work_With_OT'
-                    value={formData.Rest_Day_Work_With_OT}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-   
-              <Col size="3">
-                <div className="form-group">
-                  <label>Rest Day Work NSD With OT: {formvalidate.Rest_Day_Work_NSD_With_OT && <span style={{"color" : "red"}}>{formvalidate.Rest_Day_Work_NSD_With_OT}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Rest Day Work NSD With OT"
-                    className="form-control"
-                    name='Rest_Day_Work_NSD_With_OT'
-                    value={formData.Rest_Day_Work_NSD_With_OT}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Legal Holiday: {formvalidate.Legal_Holiday && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Legal Holiday"
-                    className="form-control"
-                    name='Legal_Holiday'
-                    value={formData.Legal_Holiday}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Legal Holiday With NSD: {formvalidate.Legal_Holiday_With_NSD && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_With_NSD}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Legal Holiday With NSD"
-                    className="form-control"
-                    name='Legal_Holiday_With_NSD'
-                    value={formData.Legal_Holiday_With_NSD}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-        
-              <Col size="3">
-                <div className="form-group">
-                  <label>Legal Holiday With Overtime: {formvalidate.Legal_Holiday_With_Overtime && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_With_Overtime}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Legal Holiday With Overtime"
-                    className="form-control"
-                    name='Legal_Holiday_With_Overtime'
-                    value={formData.Legal_Holiday_With_Overtime}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Legal Holiday OT With OT: {formvalidate.Legal_Holiday_OT_With_OT && <span style={{"color" : "red"}}>{formvalidate.Legal_Holiday_OT_With_OT}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Legal Holiday OT With OT"
-                    className="form-control"
-                    name='Legal_Holiday_OT_With_OT'
-                    value={formData.Legal_Holiday_OT_With_OT}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Special Holiday: {formvalidate.Special_Holiday && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Special Holiday"
-                    className="form-control"
-                    name='Special_Holiday'
-                    value={formData.Special_Holiday}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              {formData1.department_name === 'Solutions30' ?
-              <Col size="3">
-                <div className="form-group">
-                  <label>Special Holiday 200: {formvalidate.Special_Holiday_200 && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_200}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Special Holiday 200"
-                    className="form-control"
-                    name='Special_Holiday_200'
-                    value={formData.Special_Holiday_200}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              :""}
-              <Col size="3">
-                <div className="form-group">
-                  <label>Special Holiday With NSD: {formvalidate.Special_Holiday_With_NSD && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_With_NSD}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Special Holiday With NSD"
-                    className="form-control"
-                    name='Special_Holiday_With_NSD'
-                    value={formData.Special_Holiday_With_NSD}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Special Holiday With Overtime: {formvalidate.Special_Holiday_With_Overtime && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_With_Overtime}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Special Holiday With Overtime"
-                    className="form-control"
-                    name='Special_Holiday_With_Overtime'
-                    value={formData.Special_Holiday_With_Overtime}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-
-              <Col size="3">
-                <div className="form-group">
-                  <label>Special Holiday OT With OT: {formvalidate.Special_Holiday_OT_With_OT && <span style={{"color" : "red"}}>{formvalidate.Special_Holiday_OT_With_OT}</span>}</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Special Holiday OT With OT"
-                    className="form-control"
-                    name='Special_Holiday_OT_With_OT'
-                    value={formData.Special_Holiday_OT_With_OT}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-
-              <Col size="3">
-                <div className="form-group">
-                  <label>Referral Fee:</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Referral Fee"
-                    className="form-control"
-                    name='Referral_Fee'
-                    value={formData.Referral_Fee}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Bonus:</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Bonus"
-                    className="form-control"
-                    name='Bonus'
-                    value={formData.Bonus}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>LWOP Adjustment:</label>
-                  <input
-                    type="number"
-                    placeholder="Enter LWOP Adjustment"
-                    className="form-control"
-                    name='LWOP_Adjustment'
-                    value={formData.LWOP_Adjustment}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-
-              <Col size="3">
-                <div className="form-group">
-                  <label>Commission:</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Commission"
-                    className="form-control"
-                    name='Commission'
-                    value={formData.Commission}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-
-
-              <Col size="3">
-                <div className="form-group">
-                  <label>BP's Remarks:</label>
-                  <textarea
-                    placeholder="Enter BP's Remarks"
-                    className="form-control"
-                    name="BPs_Remarks"
-                    value={formData.BPs_Remarks}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                </div>
-              </Col>
-
-              <Col size="3">
-                <div className="form-group">
-                  <label>BPs Date Encoded:</label>
-                  {!props.params.id ? 
-                  <input
-                    type="date"
-                    placeholder="Enter BPs Date Encoded"
-                    className="form-control"
-                    name="BPs_Date_Encoded"
-                    value={formData.BPs_Date_Encoded}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ?false : true }
-                  />
-                  :
-                  <input
-                      type="text"
-                      placeholder="BPs Date Encoded"
-                      className="form-control"
-                      value={formData.BPs_Date_Encoded}
-                      disabled
-                    ></input>
-                  }
-                </div>
-              </Col>
-              {(Authenticator.scanLevel("Payroll")) && (
-              <Col size="3">
-                <div className="form-group">
-                  <label>Payroll Remarks:</label>
-                  <textarea
-                    placeholder="Enter Payroll Remarks"
-                    className="form-control"
-                    name="Payroll_Remarks"
-                    value={formData.Payroll_Remarks}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </Col>
-              )}
-              {(Authenticator.scanLevel("Payroll")) && (
-              <Col size="3">
-                <div className="form-group">
-                  <label>Payout Inclusion:</label>
-                  <input
-                    type="text"
-                    placeholder="Enter Payout Inclusion"
-                    className="form-control"
-                    name="Payout_Inclusion"
-                    value={formData.Payout_Inclusion}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </Col>
-               )}
-               {(Authenticator.scanLevel("Payroll")) && (
-              <Col size="3">
-                <div className="form-group">
-                  <label>Status:</label>
-                  <select
-				  className="form-control" 
-				  name="status"
-          required
-				  value={formData.status}
-				  style={{ display: 'block' }}
-                  onChange={handleChange}
-				  >
-				<option    label="Select Status" />
-                <option value={"approve"} label={"Approve"} />
-                <option value={"reject"} label={"Reject"} />
-				</select>
-                </div>
-              </Col>
-        //       <Col size="3">
-        //         <div className="form-group">
-        //           <label>Status:</label>
-        // <input
-				//   className="form-control" 
-				//   name="status"
-        //   type='text'
-        //   required
-				//   value={"open"}
-				//   style={{ display: 'block' }}
-        //   onChange={handleChange}
-        //   disabled = {props.params.id ? false : true }
-				// >
-				// </input>                
-        // </div>
-        //       </Col>
-              )}
             </Row>
             <Row>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Rest Day Rendered Hours</label>
+                  <input
+                    type="number"
+                    placeholder="Rest Day Rendered Hours"
+                    className="form-control"
+                    name='RD_Render_HR'
+                    value={dispute_record.RD_Render_HR}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Rest Day Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="Rest Day Night Differential"
+                    className="form-control"
+                    name='RD_ND'
+                    value={dispute_record.RD_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Rest Day Overtime</label>
+                  <input
+                    type="number"
+                    placeholder="Rest Day Overtime"
+                    className="form-control"
+                    name='RD_OT'
+                    value={dispute_record.RD_OT}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Rest Day Overtime Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="Rest Day Overtime Night Differential"
+                    className="form-control"
+                    name='RD_OT_ND'
+                    value={dispute_record.RD_OT_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Legal Holiday Rendered Hours</label>
+                  <input
+                    type="number"
+                    placeholder="Legal Holiday Rendered Hours"
+                    className="form-control"
+                    name='LH_Render_HR'
+                    value={dispute_record.LH_Render_HR}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Legal Holiday Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="Legal Holiday Night Differential"
+                    className="form-control"
+                    name='LH_ND'
+                    value={dispute_record.LH_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Legal Holiday Overtime</label>
+                  <input
+                    type="number"
+                    placeholder="Legal Holiday Overtime"
+                    className="form-control"
+                    name='LH_OT'
+                    value={dispute_record.LH_OT}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Legal Holiday Overtime Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="Legal Holiday Overtime Night Differential"
+                    className="form-control"
+                    name='LH_OT_ND'
+                    value={dispute_record.LH_OT_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Special Holiday Rendered Hours</label>
+                  <input
+                    type="number"
+                    placeholder="Special Holiday Rendered Hours"
+                    className="form-control"
+                    name='SH_Render_Hr'
+                    value={dispute_record.SH_Render_Hr}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Special Holiday Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="Special Holiday Night Differential"
+                    className="form-control"
+                    name='SH_ND'
+                    value={dispute_record.SH_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Special Holiday Overtime</label>
+                  <input
+                    type="number"
+                    placeholder="Special Holiday Overtime"
+                    className="form-control"
+                    name='SH_OT'
+                    value={dispute_record.SH_OT}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>Special Holiday Overtime Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="Special Holiday Overtime Night Differential"
+                    className="form-control"
+                    name='SH_OT_ND'
+                    value={dispute_record.SH_OT_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col size="3">
+                <div className="form-group">
+                  <label>DSH Rendered Hours</label>
+                  <input
+                    type="number"
+                    placeholder="DSH Rendered Hours"
+                    className="form-control"
+                    name='DSH_Render_HR'
+                    value={dispute_record.DSH_Render_HR}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>DSH Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="DSH Night Differential"
+                    className="form-control"
+                    name='DSH_ND'
+                    value={dispute_record.DSH_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>DSH Overtime</label>
+                  <input
+                    type="number"
+                    placeholder="DSH Overtime"
+                    className="form-control"
+                    name='DSH_OT'
+                    value={dispute_record.DSH_OT}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>DSH Overtime Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="DSH Overtime Night Differential"
+                    className="form-control"
+                    name='DSH_OT_ND'
+                    value={dispute_record.DSH_OT_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col size="3">
+                <div className="form-group">
+                  <label>DLH Rendered Hours</label>
+                  <input
+                    type="number"
+                    placeholder="DLH Rendered Hours"
+                    className="form-control"
+                    name='DLH_Render_HR'
+                    value={dispute_record.DLH_Render_HR}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>DLH Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="DLH Night Differential"
+                    className="form-control"
+                    name='DLH_ND'
+                    value={dispute_record.DLH_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>DLH Overtime</label>
+                  <input
+                    type="number"
+                    placeholder="DLH Overtime"
+                    className="form-control"
+                    name='DLH_OT'
+                    value={dispute_record.DLH_OT}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>DLH Overtime Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="DLH Overtime Night Differential"
+                    className="form-control"
+                    name='DLH_OT_ND'
+                    value={dispute_record.DLH_OT_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col size="3">
+                <div className="form-group">
+                  <label>SLH Rendered Hours</label>
+                  <input
+                    type="number"
+                    placeholder="SLH Rendered Hours"
+                    className="form-control"
+                    name='SLH_Render_HR'
+                    value={dispute_record.SLH_Render_HR}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>SLH Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="SLH Night Differential"
+                    className="form-control"
+                    name='SLH_ND'
+                    value={dispute_record.SLH_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>SLH Overtime</label>
+                  <input
+                    type="number"
+                    placeholder="SLH Overtime"
+                    className="form-control"
+                    name='SLH_OT'
+                    value={dispute_record.SLH_OT}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+              <Col size="3">
+                <div className="form-group">
+                  <label>SLH Overtime Night Differential</label>
+                  <input
+                    type="number"
+                    placeholder="SLH Overtime Night Differential"
+                    className="form-control"
+                    name='SLH_OT_ND'
+                    value={dispute_record.SLH_OT_ND}
+                    onChange={handleChange}
+                    disabled="true"
+                  />
+                </div>
+              </Col>
+            </Row>
+
+            <span>
+              <Button style={ props.style? props.style : null} type="button" className="back-button btn btn-secondary" onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>
+              <div style={{ "float":"right" }}>
+                <span>
+                  <Button type="submit" className="btn btn-primary-2" onClick={(e)=> { handleSubmit(e, 1);  }} ><i className="fa  is-green fa-thumbs-up" /> Approve</Button> &nbsp;
+                  <Button type="submit" className="btn btn-danger" onClick={(e)=> { handleSubmit(e, 2);  }} ><i className="fa  fa-thumbs-down" /> Decline</Button>  &nbsp;
+                </span>
+              </div>
+            </span>
+
+            {/* <Row>
              { !props.params.id ? 
               <Col size="12">
                 <div className="form-group">
@@ -1318,7 +1269,7 @@ function DisputeForm(props) {
             </Col>
             )
              }
-            </Row>
+            </Row> */}
           </form>
           </Content>
         </ContainerBody>
@@ -1331,36 +1282,39 @@ function DisputeForm(props) {
 }
 
 const mapStateToProps = (state) => {
-	 
 	return {
-        user: state.user,
+    user: state.user,
 
-		userLists     						: state.dashboard.user_list,
+    userLists     						: state.dashboard.user_list,
     payroll     						: state.assignRole.payroll, 
-		isUserListLoaded     				: state.assignRole.isUserListLoaded,
+    isUserListLoaded     				: state.assignRole.isUserListLoaded,
 
-		// isRolesLoaded     				: state.assignRole.isRolesLoaded,
-		// roles     						: state.assignRole.roles,
-		roles             					: state.lookup.roles,
-		features             				: state.lookup.features,
+    // isRolesLoaded     				: state.assignRole.isRolesLoaded,
+    // roles     						: state.assignRole.roles,
+    roles             					: state.lookup.roles,
+    features             				: state.lookup.features,
 
-		userRole     						: state.assignRole.userRole,
-		userPermission     					: state.assignRole.userPermission,
-		userLevel 							: state.assignRole.userLevel,
-		userFeatures 						: state.assignRole.userFeatures,
-		isUserRolesPermissionsLoaded     	: state.assignRole.isUserRolesPermissionsLoaded,
-	}
+    userRole     						: state.assignRole.userRole,
+    userPermission     					: state.assignRole.userPermission,
+    userLevel 							: state.assignRole.userLevel,
+    userFeatures 						: state.assignRole.userFeatures,
+    isUserRolesPermissionsLoaded     	: state.assignRole.isUserRolesPermissionsLoaded,
+
+    dispute_record : state.report.dispute_record
   }
+}
   
-  const mapDispatchToProps = (dispatch) => {
-	  return {
+const mapDispatchToProps = (dispatch) => {
+  return {
     // fetchUserDispute       		: () => dispatch( fetchUserDispute() ),
-		fetchUserRolePermission       	: ( user_id ) => dispatch( fetchUserRolePermission( user_id ) ),
-		fetchUserFeatures       	: ( user_id ) => dispatch( fetchUserFeatures( user_id ) ),
-		
-		assignRolesPermissions  : ( user_id , post_data ) => dispatch( assignRolesPermissions( user_id , post_data ) ),
-		assignLevelFeatures  : ( user_id , post_data ) => dispatch( assignLevelFeatures( user_id , post_data ) ),
-	  } 
+    fetchUserRolePermission       	: ( user_id ) => dispatch( fetchUserRolePermission( user_id ) ),
+    fetchUserFeatures       	: ( user_id ) => dispatch( fetchUserFeatures( user_id ) ),
+
+    assignRolesPermissions  : ( user_id , post_data ) => dispatch( assignRolesPermissions( user_id , post_data ) ),
+    assignLevelFeatures  : ( user_id , post_data ) => dispatch( assignLevelFeatures( user_id , post_data ) ),
+    // getDisputeReport  : ( dispute_id ) => dispatch( getDisputeReport( dispute_id ) ),
   }
-  export default connect(mapStateToProps, mapDispatchToProps)(DisputeForm);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DisputeForm);
 

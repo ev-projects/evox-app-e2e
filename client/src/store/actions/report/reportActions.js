@@ -61,4 +61,3 @@ export const getTeamAttendanceSummary = (start_date, end_date, params) => {
             });
     }
 }
-
