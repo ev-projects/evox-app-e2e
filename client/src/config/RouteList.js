@@ -114,6 +114,9 @@ import DisputeReport from "../components/PayrollDispute/DisputeReport";
 import PoliciesDocumentUpload from "../components/PoliciesDocument/PoliciesDocumentUpload";
 import PoliciesDocumentDownload from "../components/PoliciesDocument/PoliciesDocumentDownload";
 import UploadedDocumentList from "../components/PoliciesDocument/UploadedDocumentList";
+import NeoReportOnboarding from "../components/NeoReport/NeoOnboarding";
+import NeoReportSubmissions from "../components/NeoReport/NeoSubmissions";
+import NeoReportSubmissionsDetails from "../components/NeoReport/NeoDetails";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -623,6 +626,16 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.payroll_dispute_view}>
            <DisputeReport></DisputeReport>
         </ProtectedRoute> 
+
+        <ProtectedRoute exact path={global.links.neo_report_onboarding}>
+           <NeoReportOnboarding></NeoReportOnboarding>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.neo_report_submissions}>
+           <NeoReportSubmissions></NeoReportSubmissions>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.neo_report_submissions + ":id"}>
+           <NeoReportSubmissionsDetails></NeoReportSubmissionsDetails>
+        </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />
         <Route exact path={["/", global.links.email_not_found ]} component={EmailNotFound} />

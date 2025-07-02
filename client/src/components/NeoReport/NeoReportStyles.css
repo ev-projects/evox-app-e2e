@@ -1,0 +1,10 @@
+.tba-label {
+  background-color: orange;
+  padding: 5px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.neo-report-table {
+  font-size: 18px !important;
+}

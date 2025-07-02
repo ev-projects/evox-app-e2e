@@ -66,3 +66,7 @@ Route::get('get_user_departments', 'PoliciesDocumentController@get_user_departme
 Route::get('showlist', 'PoliciesDocumentController@showlist');
 Route::put('updatestatus/{id}/{status}', 'PoliciesDocumentController@updatestatus');
 Route::get('download_policy/{id}/', 'PoliciesDocumentController@downloadPolicy');
+
+// NEO
+Route::get('get_neo_onboarding_users', 'NeoController@get_neo_onboarding_users');
+Route::get('send_onboarding_link/{guid}', 'NeoController@send_onboarding_link');

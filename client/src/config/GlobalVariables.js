@@ -125,7 +125,11 @@
     // Policies Document    
     policies_upload                 : "/app/policiesupload",
     policies_download               : "/app/policiesdownload",
-    policies_document_list          : "/app/policiesdocumentlist" 
+    policies_document_list          : "/app/policiesdocumentlist",
+
+    // NEO Report
+    neo_report_onboarding           : "/app/neo/onboarding/",
+    neo_report_submissions          : "/app/neo/submissions/",
    
 };
 
