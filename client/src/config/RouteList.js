@@ -633,7 +633,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.neo_report_submissions}>
            <NeoReportSubmissions></NeoReportSubmissions>
         </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.neo_report_submissions + ":id"}>
+        <ProtectedRoute exact path={global.links.neo_report_submissions + ":guid?"}>
            <NeoReportSubmissionsDetails></NeoReportSubmissionsDetails>
         </ProtectedRoute>
         

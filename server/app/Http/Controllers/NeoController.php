@@ -8,11 +8,13 @@ use Ixudra\Curl\Facades\Curl;
 
 class NeoController extends Controller
 {
-    public function get_neo_onboarding_users()
+    public function get_neo_onboarding_users(Request $request)
     {
         $default_content = [];
         try {
-            $api_endpoint = '/api/user/';
+            $countries = [1 => "Philippines", 2 => "India", 3 => "Morocco", 4 => "Bulgaria", 5 => "Belgium"];
+            $country_id = array_search($request->country, $countries);
+            $api_endpoint = '/api/hr/available-users?countryId=' . $country_id;
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
                 ->withHeader('Accept: application/json')
                 ->withTimeout(300)
@@ -29,16 +31,113 @@ class NeoController extends Controller
         }
     }
 
-    public function send_onboarding_link($guid)
+    public function get_users_pending_submissions(Request $request)
     {
+        $default_content = [];
         try {
-            $api_endpoint = '/api/user/send/mail/' . $guid;
+            $countries = [1 => "Philippines", 2 => "India", 3 => "Morocco", 4 => "Bulgaria", 5 => "Belgium"];
+            $country_id = array_search($request->country, $countries);
+            $api_endpoint = '/api/hr/pending-submissions?countryId=' . $country_id;
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
                 ->withHeader('Accept: application/json')
                 ->withTimeout(300)
                 ->withConnectTimeout(300)
                 ->returnResponseObject()
                 ->get();
+
+            if ($response->status == 200) {
+                return $response->content;
+            }
+            return response()->json($default_content);
+        } catch (Exception $e) {
+            return response()->json($default_content);
+        }
+    }
+
+    public function get_user_submissions_data(Request $request)
+    {
+        $default_content = [];
+        try {
+            $api_endpoint = '/api/genericform/review/' . $request->guid;
+            $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
+                ->withHeader('Accept: application/json')
+                ->withTimeout(300)
+                ->withConnectTimeout(300)
+                ->returnResponseObject()
+                ->get();
+
+            if ($response->status == 200) {
+                return $response->content;
+            }
+            return response()->json($default_content);
+        } catch (Exception $e) {
+            return response()->json($default_content);
+        }
+    }
+
+    public function send_onboarding_link(Request $request)
+    {
+        try {
+            $api_endpoint = '/api/hr/initiate-neo/' . $request->guid . '/' . $request->user_id;
+            $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
+                ->withHeader('Accept: application/json')
+                ->withTimeout(300)
+                ->withConnectTimeout(300)
+                ->returnResponseObject()
+                ->post();
+
+            if ($response->status == 200) {
+                return $response->content;
+            }
+            return false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function approve_submissions(Request $request)
+    {
+        try {
+            $api_endpoint = '/api/genericform/approve/' . $request->guid;
+            $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
+                ->withHeader('Accept: application/json')
+                ->withHeader('Content-Type: application/json')
+                ->withTimeout(300)
+                ->withConnectTimeout(300)
+                ->withData(json_encode([
+                    'approvedBy' => $request->approvedBy,
+                    'department' => $request->department,
+                    'notes' => $request->notes
+                ]))
+                ->returnResponseObject()
+                ->post();
+
+            if ($response->status == 200) {
+                return $response->content;
+            }
+            return false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function request_for_resubmission(Request $request)
+    {
+        try {
+            $api_endpoint = '/api/genericform/resubmit/';
+            $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
+                ->withHeader('Accept: application/json')
+                ->withHeader('Content-Type: application/json')
+                ->withTimeout(300)
+                ->withConnectTimeout(300)
+                ->withData(json_encode([
+                    'userGuid' => $request->userGuid,
+                    'fieldsToResubmit' => json_decode($request->fieldsToResubmit, true),
+                    'reason' => $request->reason,
+                    'requestedBy' => $request->requestedBy
+                ]))
+                ->returnResponseObject()
+                ->post();
 
             if ($response->status == 200) {
                 return $response->content;
