@@ -43,44 +43,48 @@ const NeoSubmissions = ({ user }) => {
 
           <div className="content-table neo-report-table">
             <div className="mt-4 mb-3">
-              <Table striped bordered hover tableheader>
-                <thead>
-                  <tr>
-                    <th className="tableheader">BHR No</th>
-                    <th className="tableheader">Name</th>
-                    <th className="tableheader">Email</th>
-                    <th className="tableheader">Days Pending</th>
-                    <th className="tableheader">First Submission</th>
-                    <th className="tableheader">Latest Submission</th>
-                    <th className="tableheader">Pending Fields</th>
-                    <th className="tableheader">Resubmission Fields</th>
-                    <th className="tableheader">Uploaded Files</th>
-                    <th className="tableheader">Status</th>
-                    <th className="tableheader" style={{ textAlign: "center" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {submissionUsers && submissionUsers.length > 0 && submissionUsers.map((user) => (
+              {submissionUsers && Object.keys(submissionUsers).length <= 0 ? (
+                <h3>No results found</h3>
+              ) : (
+                <Table striped bordered hover tableheader>
+                  <thead>
                     <tr>
-                      <td>{user.bhrNumber}</td>
-                      <td>{user.userName}</td>
-                      <td>{user.email}</td>
-                      <td>{user.daysPending}</td>
-                      <td>{user.firstSubmittedAt ? moment( user.firstSubmittedAt ).format("MMM DD, YYYY") : null}</td>
-                      <td>{user.latestSubmittedAt ? moment( user.latestSubmittedAt ).format("MMM DD, YYYY") : null}</td>
-                      <td>{user.pendingFields}</td>
-                      <td>{user.resubmissionFields}</td>
-                      <td>{user.uploadedFiles}</td>
-                      <td>{user.status}</td>
-                      <td style={{ textAlign: "center" }}>
-                        <Link to={{ pathname: global.links.neo_report_submissions + user.userGuid, resetInitialState: true }} title="View NEO Submissions">
-                          <i className="fa fa-eye ev-color" aria-hidden="true"></i>
-                        </Link>
-                      </td>
+                      <th className="tableheader">BHR No</th>
+                      <th className="tableheader">Name</th>
+                      <th className="tableheader">Email</th>
+                      <th className="tableheader">Days Pending</th>
+                      <th className="tableheader">First Submission</th>
+                      <th className="tableheader">Latest Submission</th>
+                      <th className="tableheader">Pending Fields</th>
+                      <th className="tableheader">Resubmission Fields</th>
+                      <th className="tableheader">Uploaded Files</th>
+                      <th className="tableheader">Status</th>
+                      <th className="tableheader" style={{ textAlign: "center" }}>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {submissionUsers.map((user) => (
+                      <tr>
+                        <td>{user.bhrNumber}</td>
+                        <td>{user.userName}</td>
+                        <td>{user.email}</td>
+                        <td>{user.daysPending}</td>
+                        <td>{user.firstSubmittedAt ? moment( user.firstSubmittedAt ).format("MMM DD, YYYY") : null}</td>
+                        <td>{user.latestSubmittedAt ? moment( user.latestSubmittedAt ).format("MMM DD, YYYY") : null}</td>
+                        <td>{user.pendingFields}</td>
+                        <td>{user.resubmissionFields}</td>
+                        <td>{user.uploadedFiles}</td>
+                        <td>{user.status}</td>
+                        <td style={{ textAlign: "center" }}>
+                          <Link to={{ pathname: global.links.neo_report_submissions + user.userGuid, resetInitialState: true }} title="View NEO Submissions">
+                            <i className="fa fa-eye ev-color" aria-hidden="true"></i>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
             </div>
           </div>
         </ContainerBody>
