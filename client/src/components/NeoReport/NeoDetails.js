@@ -8,7 +8,7 @@ import Formatter from "../../services/Formatter"
 import moment from 'moment';
 
 const NeoDetails = (props) => {
-  const DISABLED_FIELDS = ['guid', 'bhrNumber', 'workEmail'];
+  const DISABLED_FIELDS = ['guid', 'bhrNumber', 'empId', 'workEmail'];
   const [submissionData, setSubmissionData] = useState({});
   const [markedFields, setMarkedFields] = useState({});
   const [hrNote, setHrNote] = useState('');
@@ -89,6 +89,7 @@ const NeoDetails = (props) => {
         })
         .then((result) => {
           if (result.status === 200) {
+            dispatch(Formatter.alert_success(result, 3000));
             dispatch({
               'type'      : 'SET_REDIRECT',
               'link'      : global.links.neo_report_submissions
@@ -113,6 +114,7 @@ const NeoDetails = (props) => {
         })
         .then((result) => {
           if (result.status === 200) {
+            dispatch(Formatter.alert_success(result, 3000));
             dispatch({
               'type'      : 'SET_REDIRECT',
               'link'      : global.links.neo_report_submissions

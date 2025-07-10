@@ -26,7 +26,9 @@ const NeoOnboarding = ({ user }) => {
       }
     })
     .then((result) => {
-      setOnboarding(result.data.data.users);
+      if (result.status === 200) {
+        setOnboarding(result.data.data.users);
+      }
     })
     .catch((e) => {
       dispatch(Formatter.alert_error(e));
@@ -45,6 +47,9 @@ const NeoOnboarding = ({ user }) => {
     .then((result) => {
       if (result.status === 200) {
         dispatch(Formatter.alert_success(result, 3000));
+
+        // Refresh the onboarding list
+        getNeoOnboardingUsers();
       }
     })
     .catch((e) => {
