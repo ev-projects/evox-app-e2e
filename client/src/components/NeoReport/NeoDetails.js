@@ -11,14 +11,15 @@ import Modal from "react-bootstrap/Modal";
 import FileViewer from 'react-file-viewer';
 
 const NeoDetails = (props) => {
-  const DISABLED_FIELDS = ['guid', 'email'];
+  const DISABLED_FIELDS = ['guid', 'bhrNumber', 'empId', 'workEmail'];
   const [submissionData, setSubmissionData] = useState({});
   const [markedFields, setMarkedFields] = useState({});
-  const [hrData, setHrData] = useState({});
   const [bhrNUmber, setBhrNumber] = useState(0);
   const [neoFile, setNeoFile] = useState({});
   const [neoFilePath, setNeoFilePath] = useState('');
   const [openViewer, setOpenViewer] = useState(false);
+  const [hrNote, setHrNote] = useState('');
+  const [error, setError] = useState('');
   const dispatch = useDispatch();
   const mimeToExtension = {
     'image/png': 'png',
@@ -97,10 +98,8 @@ const NeoDetails = (props) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    setHrData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setHrNote(value);
+    setError('');
   }
 
   const viewFile = (fileId) => {
@@ -135,50 +134,62 @@ const NeoDetails = (props) => {
   }
 
   const handleSubmit = (action) => {
+    // validation for the hr note
+    if (!hrNote) {
+      setError('This field is required');
+      return;
+    }
+
     if (action === 'approve') {
-      API.call({
-        method: "post",
-        url: "/approve_submissions/",
-        params: {
-          guid: props.params.guid,
-          approvedBy: props.user.full_name,
-          department: "Human Resources",
-          notes: hrData.hr_note
-        }
-      })
-      .then((result) => {
-        if (result.status === 200) {
-          dispatch({
-            'type'      : 'SET_REDIRECT',
-            'link'      : global.links.neo_report_submissions
-          })
-        }
-      })
-      .catch((e) => {
-        dispatch(Formatter.alert_error(e));
-      });
+      if (window.confirm("Do you confirm that all data submitted by the employee were accurate and wish to continue with the approval process?")) {
+        API.call({
+          method: "post",
+          url: "/approve_submissions/",
+          params: {
+            guid: props.params.guid,
+            approvedBy: props.user.full_name,
+            department: "Human Resources",
+            notes: hrNote
+          }
+        })
+        .then((result) => {
+          if (result.status === 200) {
+            dispatch(Formatter.alert_success(result, 3000));
+            dispatch({
+              'type'      : 'SET_REDIRECT',
+              'link'      : global.links.neo_report_submissions
+            })
+          }
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        });
+      }
     } else {
-      API.call({
-        method: "post",
-        url: "/request_for_resubmission/",
-        params: {
-          userGuid: props.params.guid,
-          fieldsToResubmit: markedFields,
-          reason: hrData.hr_note,
-          requestedBy: props.user.full_name
-        }
-      })
-      .then((result) => {
-        if (result.status === 200) {
-          dispatch({
-            'type'      : 'SET_REDIRECT',
-            'link'      : global.links.neo_report_submissions
-          })
-        }
-      })
-      .catch((e) => {
-        dispatch(Formatter.alert_error(e));
-      });
+      if (window.confirm("Kindly verify that all marked fields will be returned to the employee for resubmission.")) {
+        API.call({
+          method: "post",
+          url: "/request_for_resubmission/",
+          params: {
+            userGuid: props.params.guid,
+            fieldsToResubmit: markedFields,
+            reason: hrNote,
+            requestedBy: props.user.full_name
+          }
+        })
+        .then((result) => {
+          if (result.status === 200) {
+            dispatch(Formatter.alert_success(result, 3000));
+            dispatch({
+              'type'      : 'SET_REDIRECT',
+              'link'      : global.links.neo_report_submissions
+            })
+          }
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        });
+      }
     }
   }
 
@@ -276,9 +287,15 @@ const NeoDetails = (props) => {
             {submissionData && Object.keys(submissionData).length > 0 && (
             <div>
               <div className="col-12">
-                <textarea className="form-control mb-3" rows="3" name="hr_note" placeholder="Please enter note" onChange={handleInputChange}></textarea>
+                <textarea className="form-control" rows="3" name="hr_note" placeholder="Please enter note" onChange={handleInputChange}></textarea>
+                {error ? (
+                  <div className="invalid-feedback">
+                    <div className="input-feedback">{error}</div>
+                  </div>
+                ) : null
+                }
               </div>
-              <div className="col-12">
+              <div className="col-12 mt-3">
                 <div style={{'float': 'right'}}>
                   <Button type="button" className="back-button btn btn-secondary" onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
                   {markedFields && Object.keys(markedFields).length > 0 ? (

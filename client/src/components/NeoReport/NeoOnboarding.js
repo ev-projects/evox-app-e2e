@@ -9,7 +9,7 @@ import NeoReportStyles from "./NeoReportStyles.css";
 import moment from 'moment';
 
 const NeoOnboarding = ({ user }) => {
-  const [onboarding, setOnboarding] = useState({});
+  const [onboarding, setOnboarding] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -26,7 +26,9 @@ const NeoOnboarding = ({ user }) => {
       }
     })
     .then((result) => {
-      setOnboarding(result.data.data.users);
+      if (result.status === 200) {
+        setOnboarding(result.data.data.users);
+      }
     })
     .catch((e) => {
       dispatch(Formatter.alert_error(e));
@@ -45,6 +47,9 @@ const NeoOnboarding = ({ user }) => {
     .then((result) => {
       if (result.status === 200) {
         dispatch(Formatter.alert_success(result, 3000));
+
+        // Refresh the onboarding list
+        getNeoOnboardingUsers();
       }
     })
     .catch((e) => {
@@ -65,34 +70,38 @@ const NeoOnboarding = ({ user }) => {
 
           <div className="content-table neo-report-table">
             <div className="mt-4 mb-3">
-              <Table striped bordered hover tableheader>
-                <thead>
-                  <tr>
-                    <th className="tableheader">BHR No</th>
-                    <th className="tableheader">Employee No</th>
-                    <th className="tableheader">Name</th>
-                    <th className="tableheader">Job Title</th>
-                    <th className="tableheader">Email</th>
-                    <th className="tableheader">Hire Date</th>
-                    <th className="tableheader" style={{ textAlign: "center" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {onboarding && onboarding.length > 0 && onboarding.map((user, key) => (
-                    <tr key={key}>
-                      <td>{user.bhrNumber}</td>
-                      <td>{user.emp_num ?? <span className="tba-label">To be assigned</span>}</td>
-                      <td>{user.firstName} {user.middleName} {user.lastName}</td>
-                      <td>{user.job_title ?? <span className="tba-label">To be assigned</span>}</td>
-                      <td>{user.email}</td>
-                      <td>{user.dateHired ? moment( user.dateHired ).format("MMM DD, YYYY") : null}</td>
-                      <td style={{ textAlign: "center" }}>
-                        <Button type="submit" className="btn btn-primary-2" onClick={() => handleSendLink(user.userGuid)}><i className="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;Send Link</Button>
-                      </td>
+              {onboarding && onboarding.length <= 0 ? (
+                <h3>No results found</h3>
+              ) : (
+                <Table striped bordered hover tableheader>
+                  <thead>
+                    <tr>
+                      <th className="tableheader">BHR No</th>
+                      <th className="tableheader">Employee No</th>
+                      <th className="tableheader">Name</th>
+                      <th className="tableheader">Job Title</th>
+                      <th className="tableheader">Email</th>
+                      <th className="tableheader">Hire Date</th>
+                      <th className="tableheader" style={{ textAlign: "center" }}>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {onboarding.map((user, key) => (
+                      <tr key={key}>
+                        <td>{user.bhrNumber}</td>
+                        <td>{user.emp_num ?? <span className="tba-label">To be assigned</span>}</td>
+                        <td>{user.firstName} {user.middleName} {user.lastName}</td>
+                        <td>{user.job_title ?? <span className="tba-label">To be assigned</span>}</td>
+                        <td>{user.email}</td>
+                        <td>{user.dateHired ? moment( user.dateHired ).format("MMM DD, YYYY") : null}</td>
+                        <td style={{ textAlign: "center" }}>
+                          <Button type="submit" className="btn btn-primary-2" onClick={() => handleSendLink(user.userGuid)}><i className="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;Send Link</Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
             </div>
           </div>
         </ContainerBody>
