@@ -8,3 +8,28 @@
 .neo-report-table {
   font-size: 18px !important;
 }
+.file-viewer-modal .modal-dialog {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  max-width: 100%;
+}
+
+.file-viewer-modal .modal-content,
+.file-viewer-modal .modal-content .container {
+  height: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  border-radius: 0;
+}
+.file-viewer-modal .modal-content .container {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-y: hidden;
+}
+.file-viewer-modal .modal-content .container .pg-viewer,
+.file-viewer-modal .modal-content .container .pg-viewer>div {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}

@@ -2,17 +2,42 @@ import React, { useState, useEffect } from "react"
 import { useDispatch } from 'react-redux';
 import { ContainerBody, ContainerWrapper } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
-import { Table, Button } from "react-bootstrap"
+import { Table, Button, Container } from "react-bootstrap"
 import API from "../../services/API"
 import Formatter from "../../services/Formatter"
 import moment from 'moment';
+import { da } from "date-fns/locale";
+import Modal from "react-bootstrap/Modal";
+import FileViewer from 'react-file-viewer';
 
 const NeoDetails = (props) => {
   const DISABLED_FIELDS = ['guid', 'email'];
   const [submissionData, setSubmissionData] = useState({});
   const [markedFields, setMarkedFields] = useState({});
   const [hrData, setHrData] = useState({});
+  const [bhrNUmber, setBhrNumber] = useState(0);
+  const [neoFile, setNeoFile] = useState({});
+  const [neoFilePath, setNeoFilePath] = useState('');
+  const [openViewer, setOpenViewer] = useState(false);
   const dispatch = useDispatch();
+  const mimeToExtension = {
+    'image/png': 'png',
+    'image/jpeg': 'jpeg',
+    'image/jpg': 'jpg',
+    'image/gif': 'gif',
+    'application/pdf': 'pdf',
+    'text/plain': 'txt',
+    'application/msword': 'doc',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+    'application/vnd.ms-excel': 'xls',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+    'application/vnd.ms-powerpoint': 'ppt',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+    'audio/mpeg': 'mp3',
+    'video/mp4': 'mp4'
+    // add others as needed
+  };
+
 
   useEffect(() => {
     // call .net api to get list of submitted neo data and requirements of a single employee
@@ -29,7 +54,16 @@ const NeoDetails = (props) => {
     })
     .then((result) => {
       if (result.status === 200) {
-        setSubmissionData(result.data.data.submissions);
+        const resData = result.data.data.submissions;
+        setSubmissionData(resData);
+        console.log();
+        if (resData && Object.keys(resData).length > 0) {
+           Object.entries(resData).map(([key, data]) => {
+              if (data.fieldName === 'bhrNumber') {
+                setBhrNumber(data.fieldValue);
+              }
+           });
+        }
       }
     })
     .catch((e) => {
@@ -67,6 +101,37 @@ const NeoDetails = (props) => {
       ...prev,
       [name]: value,
     }));
+  }
+
+  const viewFile = (fileId) => {
+    API.call({
+        method: "get",
+        url: "/get_neo_file/" + bhrNUmber + "/" + fileId
+      })
+      .then((result) => {
+        if (result.status === 200) {
+          const theFile =  result.data.content;
+          if (theFile.success) {
+            setNeoFile(theFile.data);
+            const byteCharacters = atob(theFile.data.fileContent);
+            const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: theFile.data.mimeType });
+            const url = URL.createObjectURL(blob);
+            setNeoFilePath(url);
+            setOpenViewer(true);
+          } else {
+            setNeoFile({});
+            setOpenViewer(false);
+          }
+        } else {
+          setNeoFile({});
+          setOpenViewer(false);
+        }
+      })
+      .catch((e) => {
+        dispatch(Formatter.alert_error(e));
+      });
   }
 
   const handleSubmit = (action) => {
@@ -117,7 +182,44 @@ const NeoDetails = (props) => {
     }
   }
 
+  const closeViewer = () => {
+    setOpenViewer(false);
+    setNeoFile({});
+  }
+
+  const onViewerError = (e) => {
+    console.log('file viewer', e);
+  }
+
   return (
+    <>
+    {openViewer && (
+      <Modal
+        show={openViewer}
+        onHide={closeViewer}
+        aria-labelledby="contained-modal-title-vcenter"
+        size="xl"
+        fullscreen="true"
+        animation={true}
+        className="file-viewer-modal"
+      >
+        <Modal.Header closeButton className="close-modal">
+          <Modal.Title id="contained-modal-title-vcenter" className="header-modal">
+            View File
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="show-grid body-modal">
+          <Container>
+            {/*<FileViewer
+            fileType={mimeToExtension[neoFile.mimeType]}
+            filePath={neoFilePath}
+            errorComponent={<><div>An error occurred while viewing the file. Please check file support compatibility.</div></>}
+            onError={onViewerError}/>*/}
+            <iframe src={neoFilePath} width={'100%'} height={'100%'}></iframe>
+          </Container>
+        </Modal.Body>
+      </Modal>
+    )}
     <Wrapper>
       <ContainerWrapper>
         <ContainerBody>
@@ -136,18 +238,42 @@ const NeoDetails = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {submissionData && Object.keys(submissionData).length > 0 && Object.entries(submissionData).map(([key, data]) => (
-                    <tr key={key}>
-                      <td style={{ textAlign: "center" }}><input type="checkbox" name={data.fieldName} onChange={handleCheckboxChange} disabled={DISABLED_FIELDS.includes(data.fieldName)}></input></td>
-                      <td>{data.fieldName.replace(/([A-Z])/g, ' $1').toUpperCase()}</td>
-                      <td>{data.fieldValue && data.fieldValue !== "{}" ? data.fieldValue : <span className="tba-label">Not Provided</span>}</td>
-                      <td>{data.submittedAt ? moment( data.submittedAt ).format("MMM DD, YYYY") : null}</td>
-                    </tr>
-                  ))}
+                  {submissionData && Object.keys(submissionData).length > 0 &&
+                    Object.entries(submissionData).map(([key, data]) => {
+                      if (data.fieldName === 'guid') return null; // skip rendering this row
+                      const isGUIDValue = typeof data.fieldValue === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(data.fieldValue);
+                      return (
+                        <tr key={key}>
+                          <td style={{ textAlign: "center" }}>
+                            <input
+                              type="checkbox"
+                              name={data.fieldName}
+                              onChange={handleCheckboxChange}
+                              disabled={DISABLED_FIELDS.includes(data.fieldName)}
+                            />
+                          </td>
+                          <td>{data.fieldName.replace(/([A-Z])/g, ' $1').toUpperCase()}</td>
+                          <td>
+                            {data.fieldValue && data.fieldValue !== "{}" ? (
+                              isGUIDValue ? <>
+                              <Button type="button" className="btn btn-primary-2" onClick={() => viewFile(data.fieldValue)}><i className="fa  is-green fa-eye" /> View File</Button>
+                              </> : data.fieldValue
+                            ) : (
+                              <span className="tba-label">Not Provided</span>
+                            )}
+                          </td>
+                          <td>
+                            {data.submittedAt
+                              ? moment(data.submittedAt).format("MMM DD, YYYY")
+                              : null}
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </Table>
             </div>
-
+            {submissionData && Object.keys(submissionData).length > 0 && (
             <div>
               <div className="col-12">
                 <textarea className="form-control mb-3" rows="3" name="hr_note" placeholder="Please enter note" onChange={handleInputChange}></textarea>
@@ -163,10 +289,12 @@ const NeoDetails = (props) => {
                 </div>
               </div>
             </div>
+            )}
           </div>
         </ContainerBody>
       </ContainerWrapper>
     </Wrapper>
+    </>
   )
 }
 

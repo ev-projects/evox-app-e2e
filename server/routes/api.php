@@ -74,3 +74,4 @@ Route::get('get_user_submissions_data/', 'NeoController@get_user_submissions_dat
 Route::post('send_onboarding_link/', 'NeoController@send_onboarding_link');
 Route::post('approve_submissions/', 'NeoController@approve_submissions');
 Route::post('request_for_resubmission/', 'NeoController@request_for_resubmission');
+Route::get('get_neo_file/{userId}/{fileId}', 'NeoController@get_file');
