@@ -243,6 +243,7 @@ class SyncController extends Controller
                 "timeoffType" => 'required',
                 "validFrom"=>'required',
             ]);
+            log_to_file('info', 'Posted Timeoff', [$request], 'sync_timeoff');
             if ($validator->fails()) {
               return error_response(trans('messages.error_default'), $validator->messages());
             }else{

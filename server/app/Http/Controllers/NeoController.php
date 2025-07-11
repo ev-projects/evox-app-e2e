@@ -17,11 +17,10 @@ class NeoController extends Controller
             $api_endpoint = '/api/hr/available-users?countryId=' . $country_id;
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
                 ->withHeader('Accept: application/json')
-                ->withTimeout(300)
-                ->withConnectTimeout(300)
+                ->withTimeout(30)
+                ->withConnectTimeout(30)
                 ->returnResponseObject()
                 ->get();
-
             if ($response->status == 200) {
                 return $response->content;
             }
@@ -40,8 +39,8 @@ class NeoController extends Controller
             $api_endpoint = '/api/hr/pending-submissions?countryId=' . $country_id;
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
                 ->withHeader('Accept: application/json')
-                ->withTimeout(300)
-                ->withConnectTimeout(300)
+                ->withTimeout(30)
+                ->withConnectTimeout(30)
                 ->returnResponseObject()
                 ->get();
 
@@ -145,6 +144,32 @@ class NeoController extends Controller
             return false;
         } catch (Exception $e) {
             return false;
+        }
+    }
+
+    public function get_file($userId, $fileId) {
+        try {
+            //$guid = '7655cf0e-2103-4456-8396-f67b1444a425';
+            $mimeType = 'image/png';//remove this later
+            $api_endpoint = '/api/genericform/file/' . $fileId ."?userId=". $userId;
+            $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
+                ->withHeader('Accept: application/json')
+                ->withTimeout(30)
+                ->withConnectTimeout(30)
+                ->returnResponseObject()
+                ->get();
+            if ($response->status == 200) {
+                $responseContent = $response->content;
+                $fileData = json_decode($responseContent, true);
+                return success_response(
+                    trans('Sucess'), 
+                    $fileData
+                );
+            }
+            return response('File not found', 404);
+        } catch (Exception $e) {
+            log_to_file( 'info', "NEO File", [$e->getMessage()]);
+            return response('File not found', 404);
         }
     }
 }
