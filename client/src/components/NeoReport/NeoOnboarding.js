@@ -41,7 +41,8 @@ const NeoOnboarding = ({ user }) => {
       url: "/send_onboarding_link/",
       params: {
         guid: guid,
-        user_id: user.id
+        user_id: user.id,
+        country: user.country
       }
     })
     .then((result) => {

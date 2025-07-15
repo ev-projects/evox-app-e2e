@@ -57,7 +57,6 @@ const NeoDetails = (props) => {
       if (result.status === 200) {
         const resData = result.data.data.submissions;
         setSubmissionData(resData);
-        console.log();
         if (resData && Object.keys(resData).length > 0) {
            Object.entries(resData).map(([key, data]) => {
               if (data.fieldName === 'bhrNumber') {
@@ -105,7 +104,7 @@ const NeoDetails = (props) => {
   const viewFile = (fileId) => {
     API.call({
         method: "get",
-        url: "/get_neo_file/" + bhrNUmber + "/" + fileId
+        url: "/get_neo_file/" + 50101 + "/" + fileId
       })
       .then((result) => {
         if (result.status === 200) {
@@ -149,7 +148,8 @@ const NeoDetails = (props) => {
             guid: props.params.guid,
             approvedBy: props.user.full_name,
             department: "Human Resources",
-            notes: hrNote
+            notes: hrNote,
+            country: props.user.country
           }
         })
         .then((result) => {
@@ -174,7 +174,8 @@ const NeoDetails = (props) => {
             userGuid: props.params.guid,
             fieldsToResubmit: markedFields,
             reason: hrNote,
-            requestedBy: props.user.full_name
+            requestedBy: props.user.full_name,
+            country: props.user.country
           }
         })
         .then((result) => {

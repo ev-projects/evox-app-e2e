@@ -8,25 +8,48 @@ use Ixudra\Curl\Facades\Curl;
 
 class NeoController extends Controller
 {
+    const COUNTRIES = [1 => "India", 2 => "Philippines", 3 => "Morocco", 4 => "Bulgaria", 5 => "Belgium"];
+    const COUNTRY_API_KEYS = [
+        "Philippines" => 'NEO_API_KEY_PH',
+        "India"       => 'NEO_API_KEY_IN',
+        "Morocco"     => 'NEO_API_KEY_MA',
+        "Bulgaria"    => 'NEO_API_KEY_BG',
+        "Belgium"     => 'NEO_API_KEY_BE',
+    ];
+
+    public function get_api_headers($country) {
+        $headers = [];
+        if ($country) {
+            $api_key = env(self::COUNTRY_API_KEYS[$country]);
+            $headers = [
+                'Accept: application/json',
+                'x-api-key: ' . $api_key,
+            ];
+        }
+        return $headers;
+    }
+
     public function get_neo_onboarding_users(Request $request)
     {
         $default_content = [];
         try {
-            $countries = [1 => "Philippines", 2 => "India", 3 => "Morocco", 4 => "Bulgaria", 5 => "Belgium"];
-            $country_id = array_search($request->country, $countries);
+            // get country id based from the country payload
+            $country_id = array_search($request->country, self::COUNTRIES);
             $api_endpoint = '/api/hr/available-users?countryId=' . $country_id;
+
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
-                ->withHeader('Accept: application/json')
+                ->withHeaders($this->get_api_headers($request->country))
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
                 ->returnResponseObject()
                 ->get();
-            if ($response->status == 200) {
+
+            if ($response->status === 200) {
                 return $response->content;
             }
             return response()->json($default_content);
         } catch (Exception $e) {
-            return response()->json($default_content);
+            return response()->json($e);
         }
     }
 
@@ -34,22 +57,23 @@ class NeoController extends Controller
     {
         $default_content = [];
         try {
-            $countries = [1 => "Philippines", 2 => "India", 3 => "Morocco", 4 => "Bulgaria", 5 => "Belgium"];
-            $country_id = array_search($request->country, $countries);
+            // get country id based from the country payload
+            $country_id = array_search($request->country, self::COUNTRIES);
             $api_endpoint = '/api/hr/pending-submissions?countryId=' . $country_id;
+
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
-                ->withHeader('Accept: application/json')
+                ->withHeaders($this->get_api_headers($request->country))
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
                 ->returnResponseObject()
                 ->get();
 
-            if ($response->status == 200) {
+            if ($response->status === 200) {
                 return $response->content;
             }
             return response()->json($default_content);
         } catch (Exception $e) {
-            return response()->json($default_content);
+            return response()->json($e);
         }
     }
 
@@ -60,12 +84,12 @@ class NeoController extends Controller
             $api_endpoint = '/api/genericform/review/' . $request->guid;
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
                 ->withHeader('Accept: application/json')
-                ->withTimeout(300)
-                ->withConnectTimeout(300)
+                ->withTimeout(30)
+                ->withConnectTimeout(30)
                 ->returnResponseObject()
                 ->get();
 
-            if ($response->status == 200) {
+            if ($response->status === 200) {
                 return $response->content;
             }
             return response()->json($default_content);
@@ -79,18 +103,19 @@ class NeoController extends Controller
         try {
             $api_endpoint = '/api/hr/initiate-neo/' . $request->guid . '/' . $request->user_id;
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
-                ->withHeader('Accept: application/json')
-                ->withTimeout(300)
-                ->withConnectTimeout(300)
+                ->withHeaders($this->get_api_headers($request->country))
+                ->withTimeout(30)
+                ->withConnectTimeout(30)
                 ->returnResponseObject()
                 ->post();
 
-            if ($response->status == 200) {
+            if ($response->status === 200) {
                 return $response->content;
+            } else {
+                return error_response(trans('Error while getting data'), $response->content);
             }
-            return false;
         } catch (Exception $e) {
-            return false;
+            return $e;
         }
     }
 
@@ -99,10 +124,10 @@ class NeoController extends Controller
         try {
             $api_endpoint = '/api/genericform/approve/' . $request->guid;
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
-                ->withHeader('Accept: application/json')
+                ->withHeaders($this->get_api_headers($request->country))
                 ->withHeader('Content-Type: application/json')
-                ->withTimeout(300)
-                ->withConnectTimeout(300)
+                ->withTimeout(30)
+                ->withConnectTimeout(30)
                 ->withData(json_encode([
                     'approvedBy' => $request->approvedBy,
                     'department' => $request->department,
@@ -111,7 +136,7 @@ class NeoController extends Controller
                 ->returnResponseObject()
                 ->post();
 
-            if ($response->status == 200) {
+            if ($response->status === 200) {
                 return $response->content;
             }
             return false;
@@ -125,9 +150,9 @@ class NeoController extends Controller
         try {
             $api_endpoint = '/api/genericform/resubmit/';
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
-                ->withHeader('Accept: application/json')
+                ->withHeaders($this->get_api_headers($request->country))
                 ->withHeader('Content-Type: application/json')
-                ->withTimeout(300)
+                ->withTimeout(30)
                 ->withConnectTimeout(300)
                 ->withData(json_encode([
                     'userGuid' => $request->userGuid,
@@ -138,7 +163,7 @@ class NeoController extends Controller
                 ->returnResponseObject()
                 ->post();
 
-            if ($response->status == 200) {
+            if ($response->status === 200) {
                 return $response->content;
             }
             return false;
