@@ -27,11 +27,33 @@ class NewHireOrientationController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->user_id = auth()->user()->id;
-            $nho = NhoSurvey::insert($request->all() + ['user_id' => Auth::user()->id, 'created_at' => Carbon::now()]);
+            $fields = [
+                'nho_date',
+                'onboarding_exp_rating',
+                'recruitment_exp_rating',
+                'schedule_awareness_rating',
+                'topic_relevance_rating',
+                'facilitator_id',
+                'facilitator_knowledge_rating',
+                'facilitator_presentation_rating',
+                'facilitator_response_rating',
+                'equipment_rating',
+                'accessibility_rating',
+                'welcome_rating',
+                'suggestions',
+                'nho_overall_feedback',
+            ];
+
+            foreach ($fields as $field) {
+                $data[$field] = $request->$field;
+            }
+            $data['user_id'] = Auth::user()->id;
+            $data['created_at'] = Carbon::now();
+
+            $nho = NhoSurvey::insert($data);
 
             if ($nho == 1) {
-                return response()->json(['message' => 'New hire orientation survey submitted successfully', 'status' => 200], 200);
+                return response()->json(['message' => 'Thank you for completing the NHO Survey! Your response has been successfully submitted. Please also consider leaving a Glassdoor review to help us improve our onboarding and workplace culture.', 'status' => 200], 200);
             }
         } catch(Exception $e) {
             return error_response( trans('messages.error_default'), $e );

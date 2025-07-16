@@ -14,6 +14,7 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import { getNhoSurvey, addNhoSurvey } from "../../store/actions/userActions";
 import { getUserAssets, addUserAsset } from '../../store/actions/userActions' ;
 import { Formik, ErrorMessage,getIn  } from 'formik';
 import { InputDate,InputTime } from '../../components/DatePickerComponent/DatePicker.js';
@@ -133,16 +134,59 @@ class Dashboard extends Component {
         ],
     stepIndex: 0,
     spotlightClicks: false,
+    nho_date: '',
+    onboarding_exp_rating: '',
+    recruitment_exp_rating: '',
+    schedule_awareness_rating: '',
+    topic_relevance_rating: '',
+    facilitator_id: '',
+    facilitator_knowledge_rating: '',
+    facilitator_presentation_rating: '',
+    facilitator_response_rating: '',
+    equipment_rating: '',
+    accessibility_rating: '',
+    welcome_rating: '',
+    suggestions: '',
+    nho_overall_feedback: '',
     personal_equipment: '',
     equipment_type: '',
     serial_no: '',
     asset_tag: '',
     add_equipment_type: '',
+    showModal: false,
+    allowModalClose: true,
     showItamModal: false,
     equipment_list: [],
   };
 
   componentDidMount() {
+    // check if user is valid for NHO
+    if (this.props.user.is_user_nho_valid === "0") {
+      // check if user has nho survey record
+      if (!this.props.user.is_nho_loaded) {
+        this.props.getNhoSurvey();
+      }
+
+      // check if user hire date is valid for NHO survey
+      const start_date = new Date(this.props.user.date_hired);
+      const end_date = new Date(this.props.user.date_hired);
+      end_date.setDate(end_date.getDate() + 14);
+      const today = new Date();
+      const nho_survey_valid = (today >= start_date && today <= end_date);
+
+      // if hire date is still within the user's first two weeks and has no NHO survey yet, then show survey modal
+      if (nho_survey_valid && (this.props.user.user_nho_survey && Object.keys(this.props.user.user_nho_survey).length <= 0)) {
+        this.setState({ showModal : true });
+      }
+
+      // don't allow closing of modal if the user is already on the 2nd week
+      const new_start_date = new Date(this.props.user.date_hired);
+      new_start_date.setDate(new_start_date.getDate() + 7);
+      if (today >= new_start_date && today <= end_date) {
+        this.setState({ allowModalClose: false });
+      }
+    }
+
     if (!this.props.user.is_asset_loaded) {
       this.props.getUserAssets();
     }
@@ -235,6 +279,7 @@ class Dashboard extends Component {
   }
 
   onHide = () => {
+    this.setState({ showModal: false });
     this.setState({ showItamModal: false });
   }
 
@@ -277,8 +322,21 @@ class Dashboard extends Component {
   render() {
     const { run, steps, stepIndex } = this.state;
     const { user } = this.props;
-
     const initialValue = {
+      nho_date: moment(user.date_hired).format("MMMM D, YYYY"),
+      onboarding_exp_rating: null,
+      recruitment_exp_rating: null,
+      schedule_awareness_rating: null,
+      topic_relevance_rating: null,
+      facilitator_id: null,
+      facilitator_knowledge_rating: null,
+      facilitator_presentation_rating: null,
+      facilitator_response_rating: null,
+      equipment_rating: null,
+      accessibility_rating: null,
+      welcome_rating: null,
+      suggestions: null,
+      nho_overall_feedback: null,
       personal_equipment: '',
       equipment_type: '',
       serial_no: '',
@@ -324,6 +382,253 @@ class Dashboard extends Component {
                           :
                           null
                         } */}
+
+            <Modal className="remark-modal" show={this.state.showModal} onHide={this.state.allowModalClose ? this.onHide : null} size="xl">
+              <Modal.Header id="nho-modal-header" closeButton>
+                <Modal.Title id="nho-modal-title">We Love To Hear Your Onboarding Experience</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Formik
+                  enableReinitialize
+                  onSubmit={this.onSubmitHandler}
+                  validationSchema={validationSchemaNHO}
+                  initialValues={initialValue}
+                  >
+                  {({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                    <form onSubmit={handleSubmit}>
+                      <input type="hidden" name="modal_mode" value="itam" />
+                      <ContainerWrapper>
+                        <ContainerBody>
+                          <Content col="12" subtitle={<RequestSubtitle method={"store"} user={user} />}>
+                            <Row>  
+                              <Col size="12"> 
+                                <div className="form-group survey-description">
+                                  <p>Your feedback is important to us and these will help improve our New Hire Orientation experience for new hire associates. Rating is 1 to 5 where 5 is the highest.</p>
+                                  <p>5 - Highly Satisfied<br/>4 - Satisfied<br/>3 - Neutral<br/>2 - Dissatisfied<br/>1 - Highly Dissatisfied<br/></p>
+                                  <p className="survey-note">Note: All information is required so please ensure that all fields are completed.</p>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12"> 
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">1. When did you have your New Hire Orientation? (Date of NHO)</label>
+                                  {/* <InputDate name="nho_date" value={values.nho_date} /> */}
+                                  <input type="text" name="nho_date" className="form-control" value={values.nho_date} disabled />
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">2. How would you rate your Over-all Week-1 Employee Onboarding Experience with Eastvantage?</label><br/>
+                                  <input name="onboarding_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;1&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;2&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;3&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;4&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="onboarding_exp_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">3. How would you rate your Over-all Experience with the Recruitment process?</label><br/>
+                                  <input name="recruitment_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;1&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;2&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;3&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;4&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="recruitment_exp_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">4. I am aware of the New Hire Orientation Schedule.</label><br/>
+                                  <input name="schedule_awareness_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;1&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;2&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;3&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;4&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="schedule_awareness_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">5. The topics covered during New Hire Orientation are relevant as a new hire.</label><br/>
+                                  <input name="topic_relevance_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;1&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;2&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;3&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;4&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="topic_relevance_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="4">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">6. Choose your Facilitator</label>
+                                  <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
+                                      <option value={values.facilitator_id}>-Select Facilitator-</option>
+                                      {hr_list && hr_list.length > 0 &&
+                                        hr_list.map((hr, pos) => (
+                                          <option value={hr.id}>{hr.empname}</option>
+                                      ))}
+                                  </select>
+                                  {/* <select className="form-control" name="facilitator_id" onChange={handleChange} style={{ display: 'block' }}>
+                                      <option value={values.facilitator_id}>-Select Facilitator-</option>
+                                      <option value="4713">Vennize Perol</option>
+                                      <option value="4698">Marjorie Villegas</option>
+                                      <option value="3310">Toiba Qureshi</option>
+                                      <option value="4661">Antoeneta Antonova</option>
+                                  </select> */}
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="facilitator_id" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">7. The facilitator/s were highly knowledgeable about the topics.</label><br/>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;1&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;2&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;3&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;4&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="facilitator_knowledge_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">8. The facilitator/s were able to present in a clear and understandable manner.</label><br/>
+                                  <input name="facilitator_presentation_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;1&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;2&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;3&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;4&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="facilitator_presentation_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">9. The facilitator/s were able to answer my questions.</label><br/>
+                                  <input name="facilitator_response_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;1&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;2&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;3&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;4&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="facilitator_response_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">10. My EV equipment is working properly.</label><br/>
+                                  <input name="equipment_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;1&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;2&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;3&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;4&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="equipment_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">11. I was able to login to my webmail, EVOX and BHR during my Day 1.</label><br/>
+                                  <input name="accessibility_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;1&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;2&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;3&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;4&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="accessibility_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">12. I am welcomed by Eastvantage on my first day.</label><br/>
+                                  <input name="welcome_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;1&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;2&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;3&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;4&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="welcome_rating" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">13. What suggestions/recommendations do you have to improve our EV New Hire Orientation.</label>
+                                  <textarea className="form-control" rows="3" name="suggestions" onChange={handleChange} value={values.suggestions}></textarea>
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="suggestions" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">14. Let us know your Over-all New Hire Orientation Feedback.</label>
+                                  <textarea className="form-control" rows="3" name="nho_overall_feedback" onChange={handleChange} value={values.nho_overall_feedback}></textarea>
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="nho_overall_feedback" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col size="12">
+                                <br/>
+                                <RequestButtons method="store" {...this} noBackBtn={true} />
+                              </Col>
+                            </Row>
+                          </Content>
+                        </ContainerBody>
+                      </ContainerWrapper>
+                    </form>
+                  )}
+                </Formik>
+              </Modal.Body>
+              {/* <Modal.Footer></Modal.Footer> */}
+            </Modal>
 
             <Modal className="remark-modal" show={this.state.showItamModal} size="xl">
               <Modal.Header id="nho-modal-header" closeButton>
@@ -498,6 +803,23 @@ class Dashboard extends Component {
   }
 }
 
+const validationSchemaNHO = Yup.object().shape({
+    // nho_date:                         Yup.string().required("This field is required").nullable(),
+    suggestions:                      Yup.string().required("This field is required").nullable(),
+    nho_overall_feedback:             Yup.string().required("This field is required").nullable(),
+    onboarding_exp_rating:            Yup.string().required("This field is required").nullable(),
+    recruitment_exp_rating:           Yup.string().required("This field is required").nullable(),
+    schedule_awareness_rating:        Yup.string().required("This field is required").nullable(),
+    topic_relevance_rating:           Yup.string().required("This field is required").nullable(),
+    facilitator_knowledge_rating:     Yup.string().required("This field is required").nullable(),
+    facilitator_presentation_rating:  Yup.string().required("This field is required").nullable(),
+    facilitator_response_rating:      Yup.string().required("This field is required").nullable(),
+    equipment_rating:                 Yup.string().required("This field is required").nullable(),
+    accessibility_rating:             Yup.string().required("This field is required").nullable(),
+    welcome_rating:                   Yup.string().required("This field is required").nullable(),
+    facilitator_id:                   Yup.string().required("This field is required").nullable(),
+});
+
 const validationSchemaITAM = Yup.object().shape({
     personal_equipment:   Yup.string().required("This field is required").nullable(),
     equipment_type:       Yup.string().required("This field is required").nullable(),
@@ -514,12 +836,13 @@ const mapStateToProps = (state) => {
     user: state.user,
     dashboard: state.dashboard,
     settings: state.settings,
-    settings: state.settings,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
+      addNhoSurvey    : ( post_data ) => dispatch( addNhoSurvey( post_data ) ),
+      getNhoSurvey    : () => dispatch( getNhoSurvey() ),
       addUserAsset    : ( post_data ) => dispatch( addUserAsset( post_data) ),
       getUserAssets   : () => dispatch( getUserAssets() ),
     }
