@@ -173,7 +173,6 @@ const Sidebar = (props) => {
                   </>)}
                    
                   {Authenticator.scanFeature('request_coe')&&(<>
-                      {country.toLowerCase() == "philippines" && (
                         <li className="nav-item">
                           <Link
                             className="nav-link"
@@ -186,7 +185,6 @@ const Sidebar = (props) => {
                             <p>Certificate Of Employment</p>
                           </Link>
                         </li>
-                      )}
                       </>
                       )}
                   </ul>

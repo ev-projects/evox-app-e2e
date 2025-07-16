@@ -98,14 +98,8 @@ return [
         'zipcode',
         'country',
         'payRate',
-        '4206.4',//De Minimis
-        '4206.7',//De Minimis Currency Code
-        '4500.4',//Rice Allowance Company pays,                DMB
-        '4527.4',//Actual Medical Assistance Company pays,     DMB
-        '4526.4',//Laundry Allowance Company pays,             DMB
-        '4529.4',//Medical Allowance (DMB) Company pays,       DMB
-        '4525.4',//Clothing Allowance Company pays,            DMB
-        '4200.2'//Transportation Allowance (non-taxable) Coverage,    OTHER
+        '18',//Location
+        '4455',//Employer
     ],
 
     'BHR_USER_PERSONAL' => [
@@ -335,16 +329,16 @@ return [
 
     'COE_PURPOSES' => [
         0 => [
-            'purpose' => 'Auto/Car Loan'
+            'purpose' => 'Auto/Car Loan Application'
         ],
         1 => [
-            'purpose' => 'Bank Loan'
+            'purpose' => 'Bank Loan Application'
         ],
         2 => [
-            'purpose' => 'Housing Loan'
+            'purpose' => 'Housing Loan Application'
         ],
         3 => [
-            'purpose' => 'Personal Loan'
+            'purpose' => 'Personal Loan Application'
         ],
         4 => [
             'purpose' => 'Proof of Employment'
@@ -353,10 +347,19 @@ return [
             'purpose' => 'Vaccine'
         ],
         6 => [
-            'purpose' => 'Visa Application'
+            'purpose' => 'Visa Application for Personal Travel'
         ],
         7 => [
             'purpose' => 'Credit Card Application'
+        ],
+        8 => [
+            'purpose' => 'Mobile Plan Application'
+        ],
+        9 => [
+            'purpose' => 'Requirement for Continuation of Further Studies'
+        ],
+        10 => [
+            'purpose' => 'Requirement for Personal Travel'
         ]
     ],
 
