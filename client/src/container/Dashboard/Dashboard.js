@@ -156,31 +156,35 @@ class Dashboard extends Component {
     showModal: false,
     allowModalClose: true,
     showItamModal: false,
+    equipment_list: [],
   };
 
   componentDidMount() {
-    // check if user has nho survey record
-    if (!this.props.user.is_nho_loaded) {
-      this.props.getNhoSurvey();
-    }
+    // check if user is valid for NHO
+    if (this.props.user.is_user_nho_valid === "0") {
+      // check if user has nho survey record
+      if (!this.props.user.is_nho_loaded) {
+        this.props.getNhoSurvey();
+      }
 
-    // check if user hire date is valid for NHO survey
-    const start_date = new Date(this.props.user.date_hired);
-    const end_date = new Date(this.props.user.date_hired);
-    end_date.setDate(end_date.getDate() + 14);
-    const today = new Date();
-    const nho_survey_valid = (today >= start_date && today <= end_date);
+      // check if user hire date is valid for NHO survey
+      const start_date = new Date(this.props.user.date_hired);
+      const end_date = new Date(this.props.user.date_hired);
+      end_date.setDate(end_date.getDate() + 14);
+      const today = new Date();
+      const nho_survey_valid = (today >= start_date && today <= end_date);
 
-    // if hire date is still within the user's first two weeks and has no NHO survey yet, then show survey modal
-    if (nho_survey_valid && (this.props.user.user_nho_survey && Object.keys(this.props.user.user_nho_survey).length <= 0)) {
-      this.setState({ showModal : true });
-    }
+      // if hire date is still within the user's first two weeks and has no NHO survey yet, then show survey modal
+      if (nho_survey_valid && (this.props.user.user_nho_survey && Object.keys(this.props.user.user_nho_survey).length <= 0)) {
+        this.setState({ showModal : true });
+      }
 
-    // don't allow closing of modal if the user is already on the 2nd week
-    const new_start_date = new Date(this.props.user.date_hired);
-    new_start_date.setDate(new_start_date.getDate() + 7);
-    if (today >= new_start_date && today <= end_date) {
-      this.setState({ allowModalClose: false });
+      // don't allow closing of modal if the user is already on the 2nd week
+      const new_start_date = new Date(this.props.user.date_hired);
+      new_start_date.setDate(new_start_date.getDate() + 7);
+      if (today >= new_start_date && today <= end_date) {
+        this.setState({ allowModalClose: false });
+      }
     }
 
     if (!this.props.user.is_asset_loaded) {
@@ -196,6 +200,11 @@ class Dashboard extends Component {
     // if current date is over the user's first 15 days and has no recorded asset yet, then show itam modal
     if (itam_valid && (this.props.user.user_assets && Object.keys(this.props.user.user_assets).length <= 0)) {
       this.setState({ showItamModal : true });
+    }
+
+    // if user level id is in (DivisionHead, Client, Board), don't show itam popup modal
+    if (["DivisionHead", "Client", "Board"].includes(this.props.user.lvl_name)) {
+      this.setState({ showItamModal : false });
     }
     // alert(this.props.dashboard?.worktour);
     // const user = localStorage.getItem('user');
@@ -221,25 +230,51 @@ class Dashboard extends Component {
   }
 
   onSubmitHandler = (values) => {
-    var formData = new FormData();
-    for (var key in values) {
-      if( values[key] != null ) {
-        switch( key ) {
-          case "nho_date":
-            formData.append(key, moment( values[key] ).format("YYYY-MM-DD") );
-            break;
-          default:
-            formData.set(key, values[key]);
-            break;
+    if (values.action === "add_equipment") {
+      const new_equipment = {
+        personal_equipment: values.personal_equipment,
+        equipment_type: values.equipment_type,
+        serial_no: values.serial_no,
+        asset_tag: values.asset_tag,
+        add_equipment_type: values.add_equipment_type
+      }
+      this.setState({ equipment_list: [...this.state.equipment_list, new_equipment] });
+
+      // clear input fields
+      const personal_equipment_text = document.getElementById("personal_equipment");
+      personal_equipment_text.value = "";
+      const equipment_type_text = document.getElementById("equipment_type");
+      equipment_type_text.value = "";
+      const serial_no_text = document.getElementById("serial_no");
+      serial_no_text.value = "";
+      const asset_tag_text = document.getElementById("asset_tag");
+      asset_tag_text.value = "";
+      const add_equipment_type_text = document.getElementById("add_equipment_type");
+      add_equipment_type_text.value = "";
+
+    } else {
+      var formData = new FormData();
+      for (var key in values) {
+        if( values[key] != null ) {
+          switch( key ) {
+            case "nho_date":
+              formData.append(key, moment( values[key] ).format("YYYY-MM-DD") );
+              break;
+            default:
+              formData.set(key, values[key]);
+              break;
+          }
         }
       }
-    }
 
-    this.setState({ allowModalClose: true });
-    if (values.action == "itam") {
-      this.props.addUserAsset(formData);
-    } else {
-      this.props.addNhoSurvey(formData);
+      this.setState({ allowModalClose: true });
+      if (values.action == "itam") {
+        if (window.confirm("Data Confirmation Statement\n\nI confirm that all data provided is true and correct. I understand that any discrepancies, whether intentional or due to negligence, may result in disciplinary action and that I will be held fully accountable.")) {
+          this.props.addUserAsset(this.state.equipment_list);
+        }
+      } else {
+        this.props.addNhoSurvey(formData);
+      }
     }
   }
 
@@ -302,13 +337,14 @@ class Dashboard extends Component {
       welcome_rating: null,
       suggestions: null,
       nho_overall_feedback: null,
-      personal_equipment: null,
-      equipment_type: null,
-      serial_no: null,
-      asset_tag: null,
-      add_equipment_type: null,
+      personal_equipment: '',
+      equipment_type: '',
+      serial_no: '',
+      asset_tag: '',
+      add_equipment_type: '',
     };
     const hr_list = this.props.settings.hr_list;
+    const equipment_list = this.state.equipment_list;
 
     return (
       <Wrapper {...this.props}>
@@ -386,11 +422,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">2. How would you rate your Over-all Week-1 Employee Onboarding Experience with Eastvantage?</label><br/>
-                                  <input name="onboarding_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">1&nbsp;</label>
-                                  <input name="onboarding_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">2&nbsp;</label>
-                                  <input name="onboarding_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">3&nbsp;</label>
-                                  <input name="onboarding_exp_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">4&nbsp;</label>
-                                  <input name="onboarding_exp_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">5&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;1&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;2&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;3&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;4&nbsp;</label>
+                                  <input name="onboarding_exp_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="onboarding_exp_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="onboarding_exp_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -401,11 +437,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">3. How would you rate your Over-all Experience with the Recruitment process?</label><br/>
-                                  <input name="recruitment_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">1&nbsp;</label>
-                                  <input name="recruitment_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">2&nbsp;</label>
-                                  <input name="recruitment_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">3&nbsp;</label>
-                                  <input name="recruitment_exp_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">4&nbsp;</label>
-                                  <input name="recruitment_exp_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">5&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;1&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;2&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;3&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;4&nbsp;</label>
+                                  <input name="recruitment_exp_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="recruitment_exp_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="recruitment_exp_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -416,11 +452,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">4. I am aware of the New Hire Orientation Schedule.</label><br/>
-                                  <input name="schedule_awareness_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">1&nbsp;</label>
-                                  <input name="schedule_awareness_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">2&nbsp;</label>
-                                  <input name="schedule_awareness_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">3&nbsp;</label>
-                                  <input name="schedule_awareness_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">4&nbsp;</label>
-                                  <input name="schedule_awareness_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">5&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;1&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;2&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;3&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;4&nbsp;</label>
+                                  <input name="schedule_awareness_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="schedule_awareness_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="schedule_awareness_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -431,11 +467,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">5. The topics covered during New Hire Orientation are relevant as a new hire.</label><br/>
-                                  <input name="topic_relevance_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="topic_relevance_rating">1&nbsp;</label>
-                                  <input name="topic_relevance_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="topic_relevance_rating">2&nbsp;</label>
-                                  <input name="topic_relevance_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="topic_relevance_rating">3&nbsp;</label>
-                                  <input name="topic_relevance_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="topic_relevance_rating">4&nbsp;</label>
-                                  <input name="topic_relevance_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="topic_relevance_rating">5&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;1&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;2&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;3&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;4&nbsp;</label>
+                                  <input name="topic_relevance_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="topic_relevance_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="topic_relevance_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -470,11 +506,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">7. The facilitator/s were highly knowledgeable about the topics.</label><br/>
-                                  <input name="facilitator_knowledge_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">1&nbsp;</label>
-                                  <input name="facilitator_knowledge_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">2&nbsp;</label>
-                                  <input name="facilitator_knowledge_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">3&nbsp;</label>
-                                  <input name="facilitator_knowledge_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">4&nbsp;</label>
-                                  <input name="facilitator_knowledge_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">5&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;1&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;2&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;3&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;4&nbsp;</label>
+                                  <input name="facilitator_knowledge_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_knowledge_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="facilitator_knowledge_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -485,11 +521,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">8. The facilitator/s were able to present in a clear and understandable manner.</label><br/>
-                                  <input name="facilitator_presentation_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">1&nbsp;</label>
-                                  <input name="facilitator_presentation_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">2&nbsp;</label>
-                                  <input name="facilitator_presentation_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">3&nbsp;</label>
-                                  <input name="facilitator_presentation_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">4&nbsp;</label>
-                                  <input name="facilitator_presentation_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">5&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;1&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;2&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;3&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;4&nbsp;</label>
+                                  <input name="facilitator_presentation_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_presentation_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="facilitator_presentation_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -500,11 +536,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">9. The facilitator/s were able to answer my questions.</label><br/>
-                                  <input name="facilitator_response_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_response_rating">1&nbsp;</label>
-                                  <input name="facilitator_response_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_response_rating">2&nbsp;</label>
-                                  <input name="facilitator_response_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_response_rating">3&nbsp;</label>
-                                  <input name="facilitator_response_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_response_rating">4&nbsp;</label>
-                                  <input name="facilitator_response_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_response_rating">5&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;1&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;2&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;3&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;4&nbsp;</label>
+                                  <input name="facilitator_response_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="facilitator_response_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="facilitator_response_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -515,11 +551,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">10. My EV equipment is working properly.</label><br/>
-                                  <input name="equipment_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="equipment_rating">1&nbsp;</label>
-                                  <input name="equipment_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="equipment_rating">2&nbsp;</label>
-                                  <input name="equipment_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="equipment_rating">3&nbsp;</label>
-                                  <input name="equipment_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="equipment_rating">4&nbsp;</label>
-                                  <input name="equipment_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="equipment_rating">5&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;1&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;2&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;3&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;4&nbsp;</label>
+                                  <input name="equipment_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="equipment_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="equipment_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -530,11 +566,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">11. I was able to login to my webmail, EVOX and BHR during my Day 1.</label><br/>
-                                  <input name="accessibility_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="accessibility_rating">1&nbsp;</label>
-                                  <input name="accessibility_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="accessibility_rating">2&nbsp;</label>
-                                  <input name="accessibility_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="accessibility_rating">3&nbsp;</label>
-                                  <input name="accessibility_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="accessibility_rating">4&nbsp;</label>
-                                  <input name="accessibility_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="accessibility_rating">5&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;1&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;2&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;3&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;4&nbsp;</label>
+                                  <input name="accessibility_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="accessibility_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="accessibility_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -545,11 +581,11 @@ class Dashboard extends Component {
                               <Col size="12">
                                 <div className="form-group">
                                   <label className="nho-required survey-label">12. I am welcomed by Eastvantage on my first day.</label><br/>
-                                  <input name="welcome_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="welcome_rating">1&nbsp;</label>
-                                  <input name="welcome_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="welcome_rating">2&nbsp;</label>
-                                  <input name="welcome_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="welcome_rating">3&nbsp;</label>
-                                  <input name="welcome_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="welcome_rating">4&nbsp;</label>
-                                  <input name="welcome_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="welcome_rating">5&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="1" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;1&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="2" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;2&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="3" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;3&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="4" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;4&nbsp;</label>
+                                  <input name="welcome_rating" type="radio" value="5" onChange={handleChange}/><label htmlFor="welcome_rating">&nbsp;5&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
                                       <ErrorMessage component="div" name="welcome_rating" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -636,7 +672,7 @@ class Dashboard extends Component {
                               <Col size="6">
                                 <div className="form-group">
                                   <label className="itam-required">Personal Equipment</label>
-                                  <select name="personal_equipment" className="form-control" value={values.personal_equipment} onChange={handleChange}>
+                                  <select id="personal_equipment" name="personal_equipment" className="form-control" defaultValue={values.personal_equipment} onChange={handleChange}>
                                     <option value=""></option>
                                     <option value="1">Yes</option>
                                     <option value="2">No</option>
@@ -649,7 +685,7 @@ class Dashboard extends Component {
                               <Col size="6">
                                 <div className="form-group">
                                   <label className="itam-required">Equipment Type</label>
-                                  <select name="equipment_type" className="form-control" value={values.equipment_type} onChange={(e) => {setFieldValue(e.target.name, e.target.value); (e.target.value == "Others") ? this.setState({'showAddEquipment': true}) : this.setState({'showAddEquipment': false}); }}>
+                                  <select id="equipment_type" name="equipment_type" className="form-control" defaultValue={values.equipment_type} onChange={(e) => {setFieldValue(e.target.name, e.target.value); (e.target.value == "Others") ? this.setState({'showAddEquipment': true}) : this.setState({'showAddEquipment': false}); }}>
                                     <option value=""></option>
                                     <option value="Desktop">Desktop</option>
                                     <option value="Laptop">Laptop</option>
@@ -666,7 +702,7 @@ class Dashboard extends Component {
                                   </Form.Control.Feedback><br/>
                                   {this.state.showAddEquipment &&
                                     <div>
-                                      <input name="add_equipment_type" type="text" className="form-control" onChange={handleChange} value={values.add_equipment_type} />
+                                      <input id="add_equipment_type" name="add_equipment_type" type="text" className="form-control" onChange={handleChange} defaultValue={values.add_equipment_type} />
                                       <Form.Control.Feedback type="invalid">
                                         <ErrorMessage component="div" name="add_equipment_type" className="input-feedback" />
                                       </Form.Control.Feedback><br/>
@@ -679,7 +715,7 @@ class Dashboard extends Component {
                               <Col size="6">
                                 <div className="form-group">
                                   <label className="itam-required">Serial No</label>
-                                  <input name="serial_no" type="text" className="form-control" onChange={handleChange} value={values.serial_no} placeholder='Please indicate "N/A" if not applicable' />
+                                  <input id="serial_no" name="serial_no" type="text" className="form-control" onChange={handleChange} defaultValue={values.serial_no} placeholder='Please indicate "N/A" if not applicable' />
                                   <Form.Control.Feedback type="invalid">
                                     <ErrorMessage component="div" name="serial_no" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -688,7 +724,7 @@ class Dashboard extends Component {
                               <Col size="6">
                                 <div className="form-group">
                                   <label className="itam-required">Asset Tag</label>
-                                  <input name="asset_tag" type="text" className="form-control" onChange={handleChange} value={values.asset_tag} placeholder='Please indicate "N/A" if not applicable' />
+                                  <input id="asset_tag" name="asset_tag" type="text" className="form-control" onChange={handleChange} defaultValue={values.asset_tag} placeholder='Please indicate "N/A" if not applicable' />
                                   <Form.Control.Feedback type="invalid">
                                     <ErrorMessage component="div" name="asset_tag" className="input-feedback" />
                                   </Form.Control.Feedback>
@@ -697,11 +733,60 @@ class Dashboard extends Component {
                             </Row><br/>
                             {/* <RequestButtons method={method} {...this} /><br/><br/> */}
                             <span>
-                              <Button type="button" className="back-button btn btn-secondary" onClick={() => this.props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
                               <div style={{'float': 'right'}}>
-                                <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'itam');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Add</Button>
+                                <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'add_equipment');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Add Equipment</Button>
                               </div>
                             </span>
+
+                            {equipment_list != undefined && equipment_list.length > 0 ?
+                              <div>
+                                <table class="table table-bordered" style={{ 'marginTop': '50px' }}>
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Personal Equipment</th>
+                                      <th scope="col">Equipment Type</th>
+                                      <th scope="col">Serial No</th>
+                                      <th scope="col">Asset Tag</th>
+                                      {/* <th scope="col" className="is-center">Actions</th> */}
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {equipment_list.map((equipment, index) => {
+                                      let is_personal = '';
+                                      let has_serial = equipment.serial_no ?? "N/A";
+                                      let has_asset = equipment.asset_tag ?? "N/A";
+                                      let equip_type = '';
+                                      if (equipment.personal_equipment == 1) {
+                                        is_personal = 'Yes'
+                                      } else if (equipment.personal_equipment == 2) {
+                                        is_personal = 'No';
+                                      }
+                                      if (equipment.equipment_type === 'Others') {
+                                        equip_type = equipment.equipment_type + ": " + equipment.add_equipment_type;
+                                      } else {
+                                        equip_type = equipment.equipment_type;
+                                      }
+                                      return (
+                                        <tr key={index}>
+                                          <td>{is_personal}</td>
+                                          <td>{equip_type}</td>
+                                          <td>{has_serial}</td>
+                                          <td>{has_asset}</td>
+                                          {/* <td className="is-center">
+                                            <button type="submit" className="btn" onClick={(e)=>{ e.preventDefault(); window.location.href = global.links.asset_management + asset.id; }}><i className="fa is-green fa-edit"></i></button>
+                                          </td> */}
+                                        </tr>
+                                      )})}
+                                  </tbody>
+                                </table>
+                                <span>
+                                  <div style={{'float': 'right'}}>
+                                    <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'itam');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Confirm</Button>
+                                  </div>
+                                </span>
+                              </div>
+                              : <h3 style={{ 'marginTop': '50px' }}>No assets added yet</h3>
+                            }
                           </Content>
                         </ContainerBody>
                       </ContainerWrapper>
