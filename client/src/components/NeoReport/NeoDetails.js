@@ -14,7 +14,7 @@ const NeoDetails = (props) => {
   const DISABLED_FIELDS = ['guid', 'bhrNumber', 'empId', 'workEmail'];
   const [submissionData, setSubmissionData] = useState({});
   const [markedFields, setMarkedFields] = useState({});
-  const [bhrNUmber, setBhrNumber] = useState(0);
+  const [bhrNumber, setBhrNumber] = useState(0);
   const [neoFile, setNeoFile] = useState({});
   const [neoFilePath, setNeoFilePath] = useState('');
   const [openViewer, setOpenViewer] = useState(false);
@@ -57,13 +57,14 @@ const NeoDetails = (props) => {
       if (result.status === 200) {
         const resData = result.data.data.submissions;
         setSubmissionData(resData);
-        if (resData && Object.keys(resData).length > 0) {
-           Object.entries(resData).map(([key, data]) => {
-              if (data.fieldName === 'bhrNumber') {
-                setBhrNumber(data.fieldValue);
-              }
-           });
-        }
+        setBhrNumber(result.data.data.bhrNumber);
+        // if (resData && Object.keys(resData).length > 0) {
+        //    Object.entries(resData).map(([key, data]) => {
+        //       if (data.fieldName === 'bhrNumber') {
+        //         setBhrNumber(data.fieldValue);
+        //       }
+        //    });
+        // }
       }
     })
     .catch((e) => {
@@ -104,7 +105,7 @@ const NeoDetails = (props) => {
   const viewFile = (fileId) => {
     API.call({
         method: "get",
-        url: "/get_neo_file/" + 50101 + "/" + fileId
+        url: "/get_neo_file/" + bhrNumber + "/" + fileId
       })
       .then((result) => {
         if (result.status === 200) {
