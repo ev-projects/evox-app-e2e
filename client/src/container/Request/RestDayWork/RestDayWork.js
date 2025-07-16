@@ -71,15 +71,7 @@ class RestDayWork extends Component {
 
         // If action is NULL, it means it's either store/update
         case null:
-            let dateToCheck = moment( values.date ).format("YYYY-MM-DD");
-            let confirmMessage = '';
-            if (dateToCheck >= this.props.settings.request_payroll_cutoff.StartDate && dateToCheck <= this.props.settings.request_payroll_cutoff.EndDate) {
-              confirmMessage = "Are you sure you want to submit/update this request?";
-            } else {
-              confirmMessage = "The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request. Are you sure you want to submit this request?";
-            }
-
-            if (window.confirm(confirmMessage)) {
+            if (window.confirm("Are you sure you want to submit/update this request?")) {
                 switch( values.method ) {
 
                   case "store":
@@ -363,11 +355,3 @@ const mapDispatchToProps = (dispatch) => {
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(RestDayWork);
-
-
-
-
-
-
-
-
