@@ -78,10 +78,9 @@ const NeoOnboarding = ({ user }) => {
                   <thead>
                     <tr>
                       <th className="tableheader">BHR No</th>
-                      <th className="tableheader">Employee No</th>
                       <th className="tableheader">Name</th>
-                      <th className="tableheader">Job Title</th>
                       <th className="tableheader">Email</th>
+                      <th className="tableheader">Department</th>
                       <th className="tableheader">Hire Date</th>
                       <th className="tableheader" style={{ textAlign: "center" }}>Actions</th>
                     </tr>
@@ -90,10 +89,9 @@ const NeoOnboarding = ({ user }) => {
                     {onboarding.map((user, key) => (
                       <tr key={key}>
                         <td>{user.bhrNumber}</td>
-                        <td>{user.emp_num ?? <span className="tba-label">To be assigned</span>}</td>
                         <td>{user.firstName} {user.middleName} {user.lastName}</td>
-                        <td>{user.job_title ?? <span className="tba-label">To be assigned</span>}</td>
                         <td>{user.email}</td>
+                        <td>{user.department}</td>
                         <td>{user.dateHired ? moment( user.dateHired ).format("MMM DD, YYYY") : null}</td>
                         <td style={{ textAlign: "center" }}>
                           <Button type="submit" className="btn btn-primary-2" onClick={() => handleSendLink(user.userGuid)}><i className="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;Send Link</Button>
