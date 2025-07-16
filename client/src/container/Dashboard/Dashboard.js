@@ -203,7 +203,7 @@ class Dashboard extends Component {
     }
 
     // if user level id is in (DivisionHead, Client, Board), don't show itam popup modal
-    if (["DivisionHead", "Client", "Board"].includes(this.props.user.lvl_name)) {
+    if (["Client"].includes(this.props.user.lvl_name)) {
       this.setState({ showItamModal : false });
     }
     // alert(this.props.dashboard?.worktour);
