@@ -5,8 +5,18 @@
   font-weight: bold;
 }
 
+.approved-label {
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+  color: #82af13;
+}
+
 .neo-report-table {
   font-size: 22px !important;
+  width: 100%;
+  overflow-x: auto;
+  margin: auto;
 }
 .file-viewer-modal .modal-dialog {
   width: 100vw;
@@ -32,4 +42,12 @@
   width: 100% !important;
   height: 100% !important;
   max-height: 100% !important;
+}
+
+.neo-report-table th {
+  font-size: 14px !important;
+}
+
+.content {
+  padding: 0 2rem !important;
 }

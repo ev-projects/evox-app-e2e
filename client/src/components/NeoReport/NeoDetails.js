@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useDispatch } from 'react-redux';
-import { ContainerBody, ContainerWrapper } from "../GridComponent/AdminLte"
+import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import { Table, Button, Container } from "react-bootstrap"
 import API from "../../services/API"
@@ -11,9 +11,9 @@ import Modal from "react-bootstrap/Modal";
 import FileViewer from 'react-file-viewer';
 
 const NeoDetails = (props) => {
-  const DISABLED_FIELDS = ['guid', 'bhrNumber', 'empId', 'workEmail'];
   const [submissionData, setSubmissionData] = useState({});
   const [markedFields, setMarkedFields] = useState({});
+  const [clickedActions, setClickedActions] = useState({});
   const [bhrNumber, setBhrNumber] = useState(0);
   const [neoFile, setNeoFile] = useState({});
   const [neoFilePath, setNeoFilePath] = useState('');
@@ -58,13 +58,6 @@ const NeoDetails = (props) => {
         const resData = result.data.data.submissions;
         setSubmissionData(resData);
         setBhrNumber(result.data.data.bhrNumber);
-        // if (resData && Object.keys(resData).length > 0) {
-        //    Object.entries(resData).map(([key, data]) => {
-        //       if (data.fieldName === 'bhrNumber') {
-        //         setBhrNumber(data.fieldValue);
-        //       }
-        //    });
-        // }
       }
     })
     .catch((e) => {
@@ -86,6 +79,33 @@ const NeoDetails = (props) => {
       } else {
         // remove unchecked fields from state and reindex
         const filteredValues = Object.values(prev).filter((val) => val !== name);
+        const reindexed = {};
+        filteredValues.forEach((val, idx) => {
+          reindexed[idx] = val;
+        });
+        return reindexed;
+      }
+    });
+  }
+
+  const handleHrActions = (action, fieldName) => {
+    // Track clicked action per field
+    setClickedActions((prev) => ({
+      ...prev,
+      [fieldName]: action,
+    }));
+
+    setMarkedFields((prev) => {
+      if (action === "resubmission") {
+        // add resubmission fields to state for resubmission
+        const newIndex = Object.keys(prev).length;
+        return {
+          ...prev,
+          [newIndex]: fieldName,
+        };
+      } else {
+        // remove approved fields from state and reindex
+        const filteredValues = Object.values(prev).filter((val) => val !== fieldName);
         const reindexed = {};
         filteredValues.forEach((val, idx) => {
           reindexed[idx] = val;
@@ -133,15 +153,25 @@ const NeoDetails = (props) => {
       });
   }
 
-  const handleSubmit = (action) => {
+  const handleSubmit = () => {
+    // validation that all fields have actions
+    const unmarkedFields = submissionData.filter(field => 
+      field.isApproved === false && field.isDisabled === false && !clickedActions[field.fieldName]
+    );
+    if (unmarkedFields.length > 0) {
+      const alertMsg = "Please make sure that all items are labeled as either Approved or Resubmitted.";
+      alert(alertMsg);
+      return;
+    }
+
     // validation for the hr note
     if (!hrNote) {
       setError('This field is required');
       return;
     }
 
-    if (action === 'approve') {
-      if (window.confirm("Do you confirm that all data submitted by the employee were accurate and wish to continue with the approval process?")) {
+    if (markedFields && Object.keys(markedFields).length <= 0) {
+      if (window.confirm("Do you confirm that all data submitted by the employee is accurate and that you would like to proceed with the approval process?")) {
         API.call({
           method: "post",
           url: "/approve_submissions/",
@@ -167,7 +197,7 @@ const NeoDetails = (props) => {
         });
       }
     } else {
-      if (window.confirm("Kindly verify that all marked fields will be returned to the employee for resubmission.")) {
+      if (window.confirm("Please confirm that all items labeled as Resubmit will be sent back to the employee for resubmission.")) {
         API.call({
           method: "post",
           url: "/request_for_resubmission/",
@@ -204,6 +234,12 @@ const NeoDetails = (props) => {
     console.log('file viewer', e);
   }
 
+  const visuallyDisabledStyle = {
+    opacity: 0.5,
+    pointerEvents: 'auto',
+    cursor: 'pointer',
+  };
+
   return (
     <>
     {openViewer && (
@@ -236,80 +272,77 @@ const NeoDetails = (props) => {
     <Wrapper>
       <ContainerWrapper>
         <ContainerBody>
-          <h2 className="page-title">NEO Submission Details</h2>
+          <Content>
+            <h2 className="page-title" style={{ marginLeft: "0"}}>NEO Submission Details</h2>
 
-          <div className="content-table neo-report-table">
-            <div className="mt-4 mb-3">
-              <p>We kindly request that you review all submitted data and mark any fields that may require the onboarding employee to resubmit.</p>
-              <Table striped bordered hover tableheader>
-                <thead>
-                  <tr>
-                    <th className="tableheader"></th>
-                    <th className="tableheader">Field Required</th>
-                    <th className="tableheader">Data Submitted</th>
-                    <th className="tableheader">Submission Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {submissionData && Object.keys(submissionData).length > 0 &&
-                    Object.entries(submissionData).map(([key, data]) => {
-                      if (data.fieldName === 'guid') return null; // skip rendering this row
-                      const isGUIDValue = typeof data.fieldValue === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(data.fieldValue);
-                      return (
-                        <tr key={key}>
-                          <td style={{ textAlign: "center" }}>
-                            <input
-                              type="checkbox"
-                              name={data.fieldName}
-                              onChange={handleCheckboxChange}
-                              disabled={DISABLED_FIELDS.includes(data.fieldName)}
-                            />
-                          </td>
-                          <td>{data.fieldName.replace(/([A-Z])/g, ' $1').toUpperCase()}</td>
-                          <td>
-                            {data.fieldValue && data.fieldValue !== "{}" ? (
-                              isGUIDValue ? <>
-                              <Button type="button" className="btn btn-primary-2" onClick={() => viewFile(data.fieldValue)}><i className="fa  is-green fa-eye" /> View File</Button>
-                              </> : data.fieldValue
-                            ) : (
-                              <span className="tba-label">Not Provided</span>
-                            )}
-                          </td>
-                          <td>
-                            {data.submittedAt
-                              ? moment(data.submittedAt).format("MMM DD, YYYY")
-                              : null}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </Table>
-            </div>
-            {submissionData && Object.keys(submissionData).length > 0 && (
-            <div>
-              <div className="col-12">
-                <textarea className="form-control" rows="3" name="hr_note" placeholder="Please enter note" onChange={handleInputChange}></textarea>
-                {error ? (
-                  <div className="invalid-feedback">
-                    <div className="input-feedback">{error}</div>
-                  </div>
-                ) : null
-                }
+            <div className="neo-report-table">
+              <div className="mt-4 mb-3">
+                <p>We kindly request that you review all submitted data and mark any fields that may require the onboarding employee to resubmit.</p>
+                <Table striped bordered hover tableheader>
+                  <thead>
+                    <tr>
+                      <th>Field Required</th>
+                      <th>Data Submitted</th>
+                      <th>Submission Date</th>
+                      <th style={{ textAlign: "center" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submissionData && Object.keys(submissionData).length > 0 &&
+                      Object.entries(submissionData).map(([key, data]) => {
+                        if (data.fieldName === 'guid') return null; // skip rendering this row
+                        const isGUIDValue = typeof data.fieldValue === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(data.fieldValue);
+                        const clicked = clickedActions[data.fieldName];
+                        return (
+                          <tr key={key}>
+                            <td>{data.fieldName.replace(/([A-Z])/g, ' $1').toUpperCase()}</td>
+                            <td>
+                              {data.fieldValue && data.fieldValue !== "{}" ? (
+                                isGUIDValue ? <>
+                                <Button type="button" className="btn btn-primary-2" onClick={() => viewFile(data.fieldValue)}><i className="fa  is-green fa-eye" /> View File</Button>
+                                </> : data.fieldValue
+                              ) : (
+                                <span className="tba-label">Not Provided</span>
+                              )}
+                            </td>
+                            <td>{data.submittedAt ? moment(data.submittedAt).format("MMM DD, YYYY") : null}</td>
+                            <td style={{ textAlign: "center" }}>
+                              {data.isApproved ? (
+                                <span className="approved-label">Approved</span>
+                              ) : !data.isDisabled && (
+                                <>
+                                  <Button type="submit" className="btn btn-primary-2" onClick={() => handleHrActions('approve', data.fieldName)} style={clicked === "resubmission" ? visuallyDisabledStyle : {}}><i className="fa fa-check" /> Approve</Button>
+                                  <Button type="submit" className="btn btn-danger" onClick={() => handleHrActions('resubmission', data.fieldName)} style={{ marginLeft: "10px", ...(clicked === "approve" ? visuallyDisabledStyle : {}), }}><i className="fa fa-refresh" /> Resubmit</Button>
+                                </>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </Table>
               </div>
-              <div className="col-12 mt-3">
-                <div style={{'float': 'right'}}>
-                  <Button type="button" className="back-button btn btn-secondary" onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
-                  {markedFields && Object.keys(markedFields).length > 0 ? (
-                    <Button type="submit" className="btn btn-primary-2" onClick={() => handleSubmit('resubmission')}><i className="fa  is-green fa-location-arrow" /> Request for Resubmission</Button>
-                    ) :
-                    <Button type="submit" className="btn btn-primary-2" onClick={() => handleSubmit('approve')}><i className="fa  is-green fa-location-arrow" /> Approve</Button>
+              {submissionData && Object.keys(submissionData).length > 0 && (
+              <div>
+                <div className="col-12">
+                  <textarea className="form-control" rows="3" name="hr_note" placeholder="Please enter note" onChange={handleInputChange}></textarea>
+                  {error ? (
+                    <div className="invalid-feedback">
+                      <div className="input-feedback">{error}</div>
+                    </div>
+                  ) : null
                   }
                 </div>
+                <div className="col-12 mt-3">
+                  <div style={{'float': 'right'}}>
+                    <Button type="button" className="back-button btn btn-secondary" onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
+                    <Button type="submit" className="btn btn-primary-2" onClick={() => handleSubmit()}><i className="fa  is-green fa-location-arrow" /> Save</Button>
+                  </div>
+                </div>
               </div>
+              )}
             </div>
-            )}
-          </div>
+          </Content>
         </ContainerBody>
       </ContainerWrapper>
     </Wrapper>

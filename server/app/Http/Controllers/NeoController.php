@@ -153,7 +153,7 @@ class NeoController extends Controller
                 ->withHeaders($this->get_api_headers($request->country))
                 ->withHeader('Content-Type: application/json')
                 ->withTimeout(30)
-                ->withConnectTimeout(300)
+                ->withConnectTimeout(30)
                 ->withData(json_encode([
                     'userGuid' => $request->userGuid,
                     'fieldsToResubmit' => json_decode($request->fieldsToResubmit, true),
