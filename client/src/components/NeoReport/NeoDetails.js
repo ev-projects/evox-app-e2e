@@ -309,12 +309,12 @@ const NeoDetails = (props) => {
                             <td style={{ textAlign: "center" }}>
                               {data.isApproved ? (
                                 <span className="approved-label">Approved</span>
-                              ) : !data.isDisabled && (
+                              ) : !data.isDisabled ? (
                                 <>
                                   <Button type="submit" className="btn btn-primary-2" onClick={() => handleHrActions('approve', data.fieldName)} style={clicked === "resubmission" ? visuallyDisabledStyle : {}}><i className="fa fa-check" /> Approve</Button>
                                   <Button type="submit" className="btn btn-danger" onClick={() => handleHrActions('resubmission', data.fieldName)} style={{ marginLeft: "10px", ...(clicked === "approve" ? visuallyDisabledStyle : {}), }}><i className="fa fa-refresh" /> Resubmit</Button>
                                 </>
-                              )}
+                              ) : <span className="approved-label">Master Data already updated</span>}
                             </td>
                           </tr>
                         );
