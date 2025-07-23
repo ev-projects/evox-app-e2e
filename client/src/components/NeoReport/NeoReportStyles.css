@@ -20,10 +20,10 @@
   margin: auto;
 }
 .file-viewer-modal .modal-dialog {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  max-width: 100%;
+  /* width: 80vw; */
+  /* height: 100vh; */
+  margin: 1.75em auto;
+  max-width: 1140px;
 }
 
 .file-viewer-modal .modal-content,
@@ -31,7 +31,7 @@
   height: 100% !important;
   width: 100% !important;
   max-width: 100% !important;
-  border-radius: 0;
+  border-radius: .3rem;
 }
 .file-viewer-modal .modal-content .container {
   margin: 0 !important;

@@ -258,13 +258,15 @@ const NeoDetails = (props) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="show-grid body-modal">
-          <Container>
+          <Container className="fix">
             {/*<FileViewer
             fileType={mimeToExtension[neoFile.mimeType]}
             filePath={neoFilePath}
             errorComponent={<><div>An error occurred while viewing the file. Please check file support compatibility.</div></>}
             onError={onViewerError}/>*/}
-            <iframe src={neoFilePath} width={'100%'} height={'100%'}></iframe>
+            <div style={{ maxHeight: '800px'}}>
+              <iframe src={neoFilePath} width={'100%'} height={'750px'} style={{ border: "none" }}></iframe>
+            </div>
           </Container>
         </Modal.Body>
       </Modal>
