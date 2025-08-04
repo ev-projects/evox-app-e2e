@@ -955,7 +955,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">5. I felt like a valued member of eastvantage</label><br/>
+                                  <label className="nho-required survey-label">5. I felt like a valued member of Eastvantage</label><br/>
                                   <input name="member_value" type="radio" value="1" onChange={handleChange}/><label htmlFor="member_value">&nbsp;1&nbsp;</label>
                                   <input name="member_value" type="radio" value="2" onChange={handleChange}/><label htmlFor="member_value">&nbsp;2&nbsp;</label>
                                   <input name="member_value" type="radio" value="3" onChange={handleChange}/><label htmlFor="member_value">&nbsp;3&nbsp;</label>
