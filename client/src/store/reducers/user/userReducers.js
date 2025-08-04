@@ -160,6 +160,21 @@ const userReducer = (state = initState, action) => {
                 asset_reports_filter: action.filters
             }
             break;
+
+        case "FETCH_USER_EVA":
+            return {
+                ...state,
+                user_eva: action.data,
+                is_eva_loaded: action.is_eva_loaded
+            }
+            break;
+
+        case "CLEAR_USER_EVA":
+            return {
+                ...state,
+                is_eva_loaded: action.is_eva_loaded
+            }
+            break;
         /**  */
         
         
