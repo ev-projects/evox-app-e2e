@@ -970,7 +970,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">6. Platform: Webinar MS Link</label><br/>
+                                  <label className="nho-required survey-label">6. How would you rate Microsoft Teams as the platform used for Q2 EVA?</label><br/>
                                   <input name="platform_link" type="radio" value="1" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;1&nbsp;</label>
                                   <input name="platform_link" type="radio" value="2" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;2&nbsp;</label>
                                   <input name="platform_link" type="radio" value="3" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;3&nbsp;</label>
@@ -985,7 +985,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">7. Program Flow</label><br/>
+                                  <label className="nho-required survey-label">7. How would you rate the overall flow of the program?</label><br/>
                                   <input name="program_flow" type="radio" value="1" onChange={handleChange}/><label htmlFor="program_flow">&nbsp;1&nbsp;</label>
                                   <input name="program_flow" type="radio" value="2" onChange={handleChange}/><label htmlFor="program_flow">&nbsp;2&nbsp;</label>
                                   <input name="program_flow" type="radio" value="3" onChange={handleChange}/><label htmlFor="program_flow">&nbsp;3&nbsp;</label>
@@ -1000,7 +1000,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">8. Content and Messages</label><br/>
+                                  <label className="nho-required survey-label">8. Rate the relevance and clarity of the program's content and/or messages.</label><br/>
                                   <input name="content_messages" type="radio" value="1" onChange={handleChange}/><label htmlFor="content_messages">&nbsp;1&nbsp;</label>
                                   <input name="content_messages" type="radio" value="2" onChange={handleChange}/><label htmlFor="content_messages">&nbsp;2&nbsp;</label>
                                   <input name="content_messages" type="radio" value="3" onChange={handleChange}/><label htmlFor="content_messages">&nbsp;3&nbsp;</label>
@@ -1030,7 +1030,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">10. Over-all EVA Q2 2025 Satisfaction</label><br/>
+                                  <label className="nho-required survey-label">10. Overall, how satisfied are you with the Q2 2025 EVA experience?</label><br/>
                                   <input name="overall_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;1&nbsp;</label>
                                   <input name="overall_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;2&nbsp;</label>
                                   <input name="overall_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;3&nbsp;</label>
@@ -1056,7 +1056,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">12. Do you have questions for the Eastvantage Operations Team?</label>
+                                  <label className="nho-required survey-label">12. Do you have questions for the Eastvantage HR Team?</label>
                                   <textarea className="form-control" rows="3" name="questions" onChange={handleChange} value={values.questions}></textarea>
                                   <Form.Control.Feedback type="invalid">
                                     <ErrorMessage component="div" name="questions" className="input-feedback" />
