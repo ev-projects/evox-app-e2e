@@ -129,7 +129,10 @@
 
     // IT Asset Management
     asset_management                : "/app/asset_management/",
-    asset_reports                   : "/app/asset_reports/"
+    asset_reports                   : "/app/asset_reports/",
+
+    // FreshService
+    fresh_service                   : "/app/fresh_service/",
    
 };
 

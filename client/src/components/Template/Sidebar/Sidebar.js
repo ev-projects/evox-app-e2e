@@ -309,6 +309,13 @@ const Sidebar = (props) => {
                 </li>
               )}
 
+              <li className="nav-item">
+                <Link className="nav-link" to={global.links.fresh_service}>
+                  <i className="nav-icon fa fa-desktop" />
+                  <p className="blue"> Ticketing Services</p>
+                </Link>
+              </li>
+
               {!Authenticator.scanLevel(["DivisionHead", "Client", "Board"]) && (
                 <li className="nav-item">
                   <Link className="nav-link" to={global.links.asset_management}>
