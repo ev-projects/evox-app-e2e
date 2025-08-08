@@ -5,6 +5,7 @@ use Exception;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Ixudra\Curl\Facades\Curl;
+use Auth;
 
 class NeoController extends Controller
 {
@@ -33,8 +34,15 @@ class NeoController extends Controller
     {
         $default_content = [];
         try {
-            // get country id based from the country payload
-            $country_id = array_search($request->country, self::COUNTRIES);
+            $neo_full_access = call_sp("EV_SP_Neo_Full_Access_Validation", [Auth::user()->id]);
+            if ($neo_full_access[0][0]->Result === "1") {
+                // pass a fixed id to show all users from all geos
+                $country_id = 6758;
+            } else {
+                // get country id based from the country payload
+                $country_id = array_search($request->country, self::COUNTRIES);
+            }
+
             $api_endpoint = '/api/hr/available-users?countryId=' . $country_id;
 
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
@@ -57,8 +65,15 @@ class NeoController extends Controller
     {
         $default_content = [];
         try {
-            // get country id based from the country payload
-            $country_id = array_search($request->country, self::COUNTRIES);
+            $neo_full_access = call_sp("EV_SP_Neo_Full_Access_Validation", [Auth::user()->id]);
+            if ($neo_full_access[0][0]->Result === "1") {
+                // pass a fixed id to show all users from all geos
+                $country_id = 6758;
+            } else {
+                // get country id based from the country payload
+                $country_id = array_search($request->country, self::COUNTRIES);
+            }
+
             $api_endpoint = '/api/hr/pending-submissions?countryId=' . $country_id;
 
             $response = Curl::to( env('NEO_SERVER_HOST') . $api_endpoint )
