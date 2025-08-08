@@ -311,8 +311,8 @@ const Sidebar = (props) => {
 
               <li className="nav-item">
                 <Link className="nav-link" to={global.links.fresh_service}>
-                  <i className="nav-icon fa fa-desktop" />
-                  <p className="blue"> Ticketing Services</p>
+                  <i className="nav-icon fa fa-ticket" />
+                  <p className="blue"> FreshService Tickets</p>
                 </Link>
               </li>
 
