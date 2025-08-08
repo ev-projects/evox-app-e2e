@@ -1,777 +1,765 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { useDispatch } from 'react-redux';
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
-import { Table, Button, Container } from "react-bootstrap"
-import API from "../../services/API"
-import Formatter from "../../services/Formatter"
-import moment from 'moment';
-import { da } from "date-fns/locale";
-import Modal from "react-bootstrap/Modal";
-import FileViewer from 'react-file-viewer';
 import "./FreshService.css";
 
-
-
-  var formatDate = function(dateString) {
-    try {
-      if (!dateString) return 'Invalid Date';
-      var date = new Date(dateString);
-      if (isNaN(date.getTime())) return 'Invalid Date';
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch (error) {
-      return 'Invalid Date';
-    }
-  };
-
-  // HARDCODED USER - Replace with actual auth when integrating
-  const CURRENT_USER = {
-    email: "vishnu.prakash@eastvantage.com"
-  };
-
-  // API Configuration
-  // const API_BASE = 'https://localhost:7014/api';
-  const API_BASE = 'https://evoxtest.eastvantage.com/api';
-  const EVOX_WORKSPACE_ID = 14;
-
-  // WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
-  let WORKSPACE_CATEGORIES = {};
-
-  // Simple API helper
-  const apiCall = function (endpoint, options) {
-    options = options || {};
-    let fullUrl = API_BASE + endpoint;
-
-    const urlObj = new URL(fullUrl);
-    urlObj.searchParams.set('userEmail', CURRENT_USER.email);
-    fullUrl = urlObj.toString();
-
-    console.log('🌐 API Call:', fullUrl);
-
-    return fetch(fullUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      credentials: 'omit',
-      method: options.method || 'GET',
-      body: options.body || undefined
-    })
-      .then(function (response) {
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        return response.json();
-      })
-      .catch(function (error) {
-        console.error('❌ API call failed:', error.message);
-        throw error;
-      });
-  };
-
-  // Helper function to get user avatar color
-  const getUserAvatarClass = function(email) {
-    if (!email) return 'avatar-v';
-    const firstChar = email.charAt(0).toLowerCase();
-    const colorMap = {
-      'm': 'avatar-m', 'v': 'avatar-v', 'h': 'avatar-h', 'c': 'avatar-c',
-      's': 'avatar-s', 'd': 'avatar-d', 'e': 'avatar-e', 'r': 'avatar-r'
-    };
-    return colorMap[firstChar] || 'avatar-v';
-  };
-
-  // Helper function to get user initials
-  const getUserInitials = function(email) {
-    if (!email) return 'U';
-    const parts = email.split('@')[0].split('.');
-    return parts.map(p => p.charAt(0).toUpperCase()).join('').substring(0, 2);
-  };
-
-  // Utility functions
-  const sanitizeInput = function (input) {
-    if (typeof input !== 'string') return input;
-    return input.trim().replace(/[<>]/g, '').replace(/javascript:/gi, '');
-  };
-
-  const SafeTextRenderer = function ({ text }) {
-    if (!text) return null;
-    const cleanText = text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-    return React.createElement('div', { style: { whiteSpace: 'pre-wrap' } }, cleanText);
-  };
-
-  const buildSubjectPrefix = function (workspace, subCategory, itemCategory) {
-    if (!workspace) return '';
-    if (!subCategory) return `[${workspace}] | | - `;
-    
-    const parts = [workspace, subCategory];
-    if (itemCategory && itemCategory.trim()) parts.push(itemCategory);
-    
-    return '[' + parts.join('] | [') + '] | - ';
-  };
-
-  // Enhanced Validation Functions
-  const validateTicketData = function (data) {
-    var errors = {};
-
-    const prefix = buildSubjectPrefix(data.selectedWorkspace, data.selectedSubCategory, data.selectedItemCategory);
-    const userSubject = data.subject.replace(prefix, '').trim();
-
-    if (!userSubject || userSubject.length < 5) {
-      errors.userSubject = 'Subject must be at least 5 characters';
-    } else if (data.subject.length > 255) {
-      errors.userSubject = 'Total subject (including categories) must be less than 255 characters';
-    }
-
-    if (!data.description || typeof data.description !== 'string') {
-      errors.description = 'Description is required';
-    } else if (data.description.trim().length < 10) {
-      errors.description = 'Description must be at least 10 characters';
-    } else if (data.description.length > 4000) {
-      errors.description = 'Description must be less than 4000 characters';
-    }
-
-    if (!data.priority || ![1, 2, 3, 4].includes(data.priority)) {
-      errors.priority = 'Priority must be selected';
-    }
-
-    if (!data.selectedWorkspace) {
-      errors.selectedWorkspace = 'Workspace must be selected';
-    } else if (!WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
-      errors.selectedWorkspace = 'Invalid workspace selected';
-    }
-
-    if (data.selectedWorkspace && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
-      const allSubCategories = Object.keys(WORKSPACE_CATEGORIES[data.selectedWorkspace]);
-      const availableSubCategories = allSubCategories.filter(function(subCategory) {
-        return subCategory !== data.selectedWorkspace;
-      });
-      
-      if (availableSubCategories.length > 0 && !data.selectedSubCategory) {
-        errors.selectedSubCategory = 'Sub-Category must be selected';
-      } else if (data.selectedSubCategory && !availableSubCategories.includes(data.selectedSubCategory)) {
-        errors.selectedSubCategory = 'Invalid sub-category selected';
-      }
-    }
-
-    if (data.selectedWorkspace && data.selectedSubCategory && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
-      const itemCategories = WORKSPACE_CATEGORIES[data.selectedWorkspace][data.selectedSubCategory] || [];
-      if (itemCategories.length > 1 && !data.selectedItemCategory) {
-        errors.selectedItemCategory = 'Item Category must be selected';
-      } else if (data.selectedItemCategory && !itemCategories.includes(data.selectedItemCategory)) {
-        errors.selectedItemCategory = 'Invalid item category selected';
-      }
-    }
-
-    return {
-      isValid: Object.keys(errors).length === 0,
-      errors: errors
-    };
-  };
-
-  // CREATE TICKET PAGE - Professional Version
-  const CreateTicketPage = function (props) {
-    var workspaces = props.workspaces;
-    var onTicketCreated = props.onTicketCreated;
-
-    var [formData, setFormData] = useState({
-      subject: '',
-      userSubject: '',
-      description: '',
-      priority: 2,
-      selectedWorkspace: 'EVOX',
-      selectedSubCategory: '',
-      selectedItemCategory: ''
+var formatDate = function(dateString) {
+  try {
+    if (!dateString) return 'Invalid Date';
+    var date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
+  } catch (error) {
+    return 'Invalid Date';
+  }
+};
 
-    var [errors, setErrors] = useState({});
-    var [success, setSuccess] = useState(false);
-    var [loading, setLoading] = useState(false);
+// WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
+let WORKSPACE_CATEGORIES = {};
 
-    useEffect(function () {
-      const prefix = buildSubjectPrefix(
-        formData.selectedWorkspace,
-        formData.selectedSubCategory,
-        formData.selectedItemCategory
-      );
-      setFormData(function (prev) {
-        return { ...prev, subject: prefix + prev.userSubject };
-      });
-    }, [formData.selectedWorkspace, formData.selectedSubCategory, formData.selectedItemCategory, formData.userSubject]);
+// Simple API helper
+const apiCall = function (endpoint, options) {
+  options = options || {};
+  let fullUrl = process.env.REACT_APP_FRESHSERVICE_API_BASE_URL + endpoint;
+  const urlObj = new URL(fullUrl);
 
-    var updateField = function (field, value) {
-      setFormData(function (prev) {
-        var newData = { ...prev, [field]: value };
-        
-        if (field === 'selectedWorkspace') {
-          newData.selectedSubCategory = '';
-          newData.selectedItemCategory = '';
-        }
-        if (field === 'selectedSubCategory') {
-          newData.selectedItemCategory = '';
-        }
-        
-        return newData;
-      });
-      
-      if (errors[field]) {
-        setErrors(function (prev) {
-          var newErrors = { ...prev };
-          delete newErrors[field];
-          return newErrors;
-        });
-      }
-    };
+  if (Object.keys(options).length >= 1) {
+    urlObj.searchParams.set('userEmail', options.useremail);
+  }
+  fullUrl = urlObj.toString();
 
-    var handleSubmit = function (e) {
-      e.preventDefault();
+  console.log('🌐 API Call:', fullUrl);
 
-      var validation = validateTicketData(formData);
-      setErrors(validation.errors);
+  return fetch(fullUrl, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    credentials: 'omit',
+    method: options.method || 'GET',
+    body: options.body || undefined
+  })
+    .then(function (response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
+    .catch(function (error) {
+      console.error('❌ API call failed:', error.message);
+      throw error;
+    });
+};
 
-      if (validation.isValid) {
-        setLoading(true);
-
-        var ticketData = {
-          subject: sanitizeInput(formData.subject),
-          description: sanitizeInput(formData.description),
-          email: CURRENT_USER.email,
-          priority: parseInt(formData.priority),
-          status: 2,
-          workspace_id: EVOX_WORKSPACE_ID
-        };
-
-        apiCall('/tickets', {
-          method: 'POST',
-          body: JSON.stringify(ticketData)
-        })
-          .then(function (result) {
-            setSuccess(true);
-            setFormData({
-              subject: '',
-              userSubject: '',
-              description: '',
-              priority: 2,
-              selectedWorkspace: 'EVOX',
-              selectedSubCategory: '',
-              selectedItemCategory: ''
-            });
-            setTimeout(function () { setSuccess(false); }, 3000);
-            if (onTicketCreated) onTicketCreated();
-          })
-          .catch(function (error) {
-            setErrors({ submit: error.message });
-          })
-          .finally(function () {
-            setLoading(false);
-          });
-      }
-    };
-
-    var workspaceOptions = workspaces.map(function(ws) { return ws.name; });
-
-    var subCategoryOptions = formData.selectedWorkspace && WORKSPACE_CATEGORIES[formData.selectedWorkspace] 
-      ? Object.keys(WORKSPACE_CATEGORIES[formData.selectedWorkspace]).filter(function(subCategory) {
-          return subCategory !== formData.selectedWorkspace;
-        })
-      : [];
-      
-    var itemCategoryOptions = (formData.selectedWorkspace && formData.selectedSubCategory && WORKSPACE_CATEGORIES[formData.selectedWorkspace]) 
-      ? (WORKSPACE_CATEGORIES[formData.selectedWorkspace][formData.selectedSubCategory] || [])
-      : [];
-
-    return React.createElement('div', { className: 'card-fs' },
-      React.createElement('div', { className: 'card-header-fs' },
-        React.createElement('h2', { className: 'card-title-fs' }, 'Create New Ticket')
-      ),
-
-      React.createElement('div', { className: 'card-content-fs' },
-        success && React.createElement('div', { className: 'success-message' },
-          '✅ Ticket created successfully!'
-        ),
-
-        React.createElement('form', { onSubmit: handleSubmit },
-          React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { className: 'form-label' }, 'Workspace *'),
-            React.createElement('select', {
-              className: 'form-select',
-              value: formData.selectedWorkspace,
-              onChange: function (e) { updateField('selectedWorkspace', e.target.value); }
-            },
-              React.createElement('option', { value: '' }, 'Select Workspace'),
-              workspaceOptions.map(function (workspaceName) {
-                return React.createElement('option', { key: workspaceName, value: workspaceName }, workspaceName);
-              })
-            ),
-            errors.selectedWorkspace && React.createElement('div', { className: 'error-message' },
-              '⚠️ ' + errors.selectedWorkspace
-            )
-          ),
-
-          formData.selectedWorkspace && subCategoryOptions.length > 0 && React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { className: 'form-label' }, 'Sub-Category *'),
-            React.createElement('select', {
-              className: 'form-select',
-              value: formData.selectedSubCategory,
-              onChange: function (e) { updateField('selectedSubCategory', e.target.value); }
-            },
-              React.createElement('option', { value: '' }, 'Select Sub-Category'),
-              subCategoryOptions.map(function (subCategory) {
-                return React.createElement('option', { key: subCategory, value: subCategory }, subCategory);
-              })
-            ),
-            errors.selectedSubCategory && React.createElement('div', { className: 'error-message' },
-              '⚠️ ' + errors.selectedSubCategory
-            )
-          ),
-
-          formData.selectedSubCategory && itemCategoryOptions.length > 1 && React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { className: 'form-label' }, 'Item Category'),
-            React.createElement('select', {
-              className: 'form-select',
-              value: formData.selectedItemCategory,
-              onChange: function (e) { updateField('selectedItemCategory', e.target.value); }
-            },
-              React.createElement('option', { value: '' }, 'Select Item Category'),
-              itemCategoryOptions.map(function (itemCategory, index) {
-                return React.createElement('option', { key: index, value: itemCategory }, itemCategory || '(No specific category)');
-              })
-            ),
-            errors.selectedItemCategory && React.createElement('div', { className: 'error-message' },
-              '⚠️ ' + errors.selectedItemCategory
-            )
-          ),
-
-          React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { className: 'form-label' }, 'Subject Preview'),
-            React.createElement('div', { className: 'subject-preview' }, 
-              formData.subject || 'Please select categories above...'
-            ),
-            
-            React.createElement('label', { className: 'form-label' }, 'Your Subject *'),
-            React.createElement('input', {
-              type: 'text',
-              className: 'form-input',
-              placeholder: 'Brief description of the issue',
-              value: formData.userSubject,
-              onChange: function (e) { updateField('userSubject', e.target.value); }
-            }),
-            errors.userSubject && React.createElement('div', { className: 'error-message' },
-              '⚠️ ' + errors.userSubject
-            )
-          ),
-
-          React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { className: 'form-label' }, 'Description *'),
-            React.createElement('textarea', {
-              className: 'form-textarea',
-              placeholder: 'Detailed description of the issue...',
-              value: formData.description,
-              onChange: function (e) { updateField('description', e.target.value); },
-              rows: '6'
-            }),
-            errors.description && React.createElement('div', { className: 'error-message' },
-              '⚠️ ' + errors.description
-            )
-          ),
-
-          React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { className: 'form-label' }, 'Priority *'),
-            React.createElement('select', {
-              className: 'form-select',
-              value: formData.priority,
-              onChange: function (e) { updateField('priority', parseInt(e.target.value)); }
-            },
-              React.createElement('option', { value: 1 }, 'Low'),
-              React.createElement('option', { value: 2 }, 'Medium'),
-              React.createElement('option', { value: 3 }, 'High'),
-              React.createElement('option', { value: 4 }, 'Urgent')
-            )
-          ),
-
-          React.createElement('button', {
-            type: 'submit',
-            className: 'btn-fs',
-            disabled: loading
-          }, loading ? 'Creating...' : 'Create Ticket'),
-
-          errors.submit && React.createElement('div', { className: 'error-message' },
-            '❌ ' + errors.submit
-          )
-        )
-      )
-    );
+// Helper function to get user avatar color
+const getUserAvatarClass = function(email) {
+  if (!email) return 'avatar-v';
+  const firstChar = email.charAt(0).toLowerCase();
+  const colorMap = {
+    'm': 'avatar-m', 'v': 'avatar-v', 'h': 'avatar-h', 'c': 'avatar-c',
+    's': 'avatar-s', 'd': 'avatar-d', 'e': 'avatar-e', 'r': 'avatar-r'
   };
+  return colorMap[firstChar] || 'avatar-v';
+};
 
-  // PROFESSIONAL TICKET LIST PAGE - Table Format
-  const TicketListPage = function (props) {
-    var tickets = props.tickets;
-    var workspaces = props.workspaces;
-    var onTicketSelect = props.onTicketSelect;
-    var onFilterChange = props.onFilterChange;
-    var filters = props.filters;
-    var loading = props.loading;
-    var error = props.error;
+// Helper function to get user initials
+const getUserInitials = function(email) {
+  if (!email) return 'U';
+  const parts = email.split('@')[0].split('.');
+  return parts.map(p => p.charAt(0).toUpperCase()).join('').substring(0, 2);
+};
 
-    var getStatusClass = function (status) {
-      switch (status) {
-        case 2: return 'status-open';
-        case 3: return 'status-pending';
-        case 4: return 'status-resolved';
-        case 5: return 'status-closed';
-        default: return 'status-open';
-      }
-    };
+// Utility functions
+const sanitizeInput = function (input) {
+  if (typeof input !== 'string') return input;
+  return input.trim().replace(/[<>]/g, '').replace(/javascript:/gi, '');
+};
 
-    var getPriorityClass = function (priority) {
-      switch (priority) {
-        case 1: return 'priority-low';
-        case 2: return 'priority-medium';
-        case 3: return 'priority-high';
-        case 4: return 'priority-urgent';
-        default: return 'priority-medium';
-      }
-    };
+const SafeTextRenderer = function ({ text }) {
+  if (!text) return null;
+  const cleanText = text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+  return React.createElement('div', { style: { whiteSpace: 'pre-wrap' } }, cleanText);
+};
 
+const buildSubjectPrefix = function (workspace, subCategory, itemCategory) {
+  if (!workspace) return '';
+  if (!subCategory) return `[${workspace}] | | - `;
   
+  const parts = [workspace, subCategory];
+  if (itemCategory && itemCategory.trim()) parts.push(itemCategory);
+  
+  return '[' + parts.join('] | [') + '] | - ';
+};
 
-    var getStatusText = function(status) {
-      switch (status) {
-        case 2: return 'Open';
-        case 3: return 'Pending';
-        case 4: return 'Resolved';
-        case 5: return 'Closed';
-        default: return 'Open';
-      }
-    };
+// Enhanced Validation Functions
+const validateTicketData = function (data) {
+  var errors = {};
 
-    var getPriorityText = function(priority) {
-      switch (priority) {
-        case 1: return 'Low';
-        case 2: return 'Medium';
-        case 3: return 'High';
-        case 4: return 'Urgent';
-        default: return 'Medium';
-      }
-    };
+  const prefix = buildSubjectPrefix(data.selectedWorkspace, data.selectedSubCategory, data.selectedItemCategory);
+  const userSubject = data.subject.replace(prefix, '').trim();
 
-    // Mock function to get state based on ticket properties
-    var getTicketState = function(ticket) {
-      // This is a mock implementation - adjust based on your actual data
-      const states = ['New', 'Requester Respond', 'Response Due', 'Overdue'];
-      return states[ticket.id % 4];
-    };
+  if (!userSubject || userSubject.length < 5) {
+    errors.userSubject = 'Subject must be at least 5 characters';
+  } else if (data.subject.length > 255) {
+    errors.userSubject = 'Total subject (including categories) must be less than 255 characters';
+  }
 
-    var getStateClass = function(state) {
-      switch (state) {
-        case 'New': return 'state-new';
-        case 'Requester Respond': return 'state-requester-respond';
-        case 'Response Due': return 'state-response-due';
-        case 'Overdue': return 'state-overdue';
-        default: return 'state-new';
-      }
-    };
+  if (!data.description || typeof data.description !== 'string') {
+    errors.description = 'Description is required';
+  } else if (data.description.trim().length < 10) {
+    errors.description = 'Description must be at least 10 characters';
+  } else if (data.description.length > 4000) {
+    errors.description = 'Description must be less than 4000 characters';
+  }
 
-    if (loading) {
-      return React.createElement('div', { className: 'card' },
-        React.createElement('div', { className: 'loading' },
-          React.createElement('span', { className: 'spinner' }),
-          'Loading tickets...'
-        )
-      );
+  if (!data.priority || ![1, 2, 3, 4].includes(data.priority)) {
+    errors.priority = 'Priority must be selected';
+  }
+
+  if (!data.selectedWorkspace) {
+    errors.selectedWorkspace = 'Workspace must be selected';
+  } else if (!WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
+    errors.selectedWorkspace = 'Invalid workspace selected';
+  }
+
+  if (data.selectedWorkspace && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
+    const allSubCategories = Object.keys(WORKSPACE_CATEGORIES[data.selectedWorkspace]);
+    const availableSubCategories = allSubCategories.filter(function(subCategory) {
+      return subCategory !== data.selectedWorkspace;
+    });
+    
+    if (availableSubCategories.length > 0 && !data.selectedSubCategory) {
+      errors.selectedSubCategory = 'Sub-Category must be selected';
+    } else if (data.selectedSubCategory && !availableSubCategories.includes(data.selectedSubCategory)) {
+      errors.selectedSubCategory = 'Invalid sub-category selected';
     }
+  }
 
-    return React.createElement('div', null,
-      // Professional Filters
-      React.createElement('div', { className: 'filters' },
-        React.createElement('div', { className: 'filter-group' },
-          React.createElement('label', { className: 'filter-label' }, 'Workspace'),
-          React.createElement('select', {
-            className: 'form-select',
-            value: filters.workspaceId,
-            onChange: function (e) { onFilterChange('workspaceId', e.target.value); }
-          },
-            React.createElement('option', { value: '' }, 'All Workspaces'),
-            workspaces.map(function (workspace) {
-              return React.createElement('option', {
-                key: workspace.id,
-                value: workspace.id
-              }, workspace.name);
-            })
-          )
-        ),
+  if (data.selectedWorkspace && data.selectedSubCategory && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
+    const itemCategories = WORKSPACE_CATEGORIES[data.selectedWorkspace][data.selectedSubCategory] || [];
+    if (itemCategories.length > 1 && !data.selectedItemCategory) {
+      errors.selectedItemCategory = 'Item Category must be selected';
+    } else if (data.selectedItemCategory && !itemCategories.includes(data.selectedItemCategory)) {
+      errors.selectedItemCategory = 'Invalid item category selected';
+    }
+  }
 
-        React.createElement('div', { className: 'filter-group' },
-          React.createElement('label', { className: 'filter-label' }, 'Status'),
-          React.createElement('select', {
-            className: 'form-select',
-            value: filters.status,
-            onChange: function (e) { onFilterChange('status', e.target.value); }
-          },
-            React.createElement('option', { value: 'all' }, 'All Status'),
-            React.createElement('option', { value: 'open' }, 'Open'),
-            React.createElement('option', { value: 'pending' }, 'Pending'),
-            React.createElement('option', { value: 'resolved' }, 'Resolved'),
-            React.createElement('option', { value: 'closed' }, 'Closed')
-          )
-        ),
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors: errors
+  };
+};
 
-        React.createElement('div', { 
-          style: { 
-            marginLeft: 'auto', 
-            fontSize: '13px', 
-            color: '#64748b',
-            display: 'flex',
-            alignItems: 'center'
-          } 
-        }, 
-          tickets.length + ' tickets'
-        )
-      ),
+// CREATE TICKET PAGE - Professional Version
+const CreateTicketPage = function (props) {
+  var workspaces = props.workspaces;
+  var onTicketCreated = props.onTicketCreated;
+  var useremail = props.useremail;
 
-      // Professional Table
-      React.createElement('div', { className: 'card-fs' },
-        React.createElement('div', { className: 'card-header-fs' },
-          React.createElement('h2', { className: 'card-title-fs' }, 
-            'My Tickets',
-            tickets.length > 0 && React.createElement('span', { className: 'notification-badge' }, tickets.length)
-          )
-        ),
+  var [formData, setFormData] = useState({
+    subject: '',
+    userSubject: '',
+    description: '',
+    priority: 2,
+    selectedWorkspace: 'EVOX',
+    selectedSubCategory: '',
+    selectedItemCategory: ''
+  });
 
-        error && React.createElement('div', { className: 'card-content-fs' },
-          React.createElement('div', { className: 'error-message' },
-            '❌ Failed to load tickets: ' + error
-          )
-        ),
+  var [errors, setErrors] = useState({});
+  var [success, setSuccess] = useState(false);
+  var [loading, setLoading] = useState(false);
 
-        tickets.length === 0 ?
-          React.createElement('div', { className: 'empty-state' },
-            React.createElement('div', { className: 'empty-state-icon' }, '🎫'),
-            React.createElement('h3', null, 'No tickets found'),
-            React.createElement('p', null, 'You haven\'t created any tickets yet.')
-          ) :
-          React.createElement('div', { className: 'table-container' },
-            React.createElement('table', { className: 'professional-table' },
-              React.createElement('thead', null,
-                React.createElement('tr', null,
-                  React.createElement('th', null, 'Status'),
-                  React.createElement('th', null, 'Created Date'),
-                  React.createElement('th', null, 'Subject'),
-                  React.createElement('th', null, 'Requester'),
-                  React.createElement('th', null, 'State'),
-                  React.createElement('th', null, 'Priority'),
-                  React.createElement('th', null, 'Assigned to')
-                )
-              ),
-              React.createElement('tbody', null,
-                tickets.map(function (ticket) {
-                  const state = getTicketState(ticket);
-                  const requesterEmail = ticket.email || CURRENT_USER.email;
-                  
-                  return React.createElement('tr', {
-                    key: ticket.id,
-                    onClick: function () { onTicketSelect(ticket); }
-                  },
-                    React.createElement('td', null,
-                      React.createElement('span', {
-                        className: 'status-badge ' + getStatusClass(ticket.status)
-                      }, getStatusText(ticket.status))
-                    ),
-                    React.createElement('td', null, formatDate(ticket.created_at)),
-                    React.createElement('td', null,
-                      React.createElement('div', { className: 'ticket-subject' },
-                        React.createElement('span', { className: 'ticket-id' }, '#' + ticket.id + ' '),
-                        sanitizeInput(ticket.subject || 'No subject')
-                      )
-                    ),
-                    React.createElement('td', null,
-                      React.createElement('div', { style: { display: 'flex', alignItems: 'center' } },
-                        React.createElement('span', {
-                          className: 'user-avatar ' + getUserAvatarClass(requesterEmail)
-                        }, getUserInitials(requesterEmail)),
-                        React.createElement('span', null, requesterEmail.split('@')[0])
-                      )
-                    ),
-                    React.createElement('td', null,
-                      React.createElement('span', {
-                        className: 'state-badge ' + getStateClass(state)
-                      }, state)
-                    ),
-                    React.createElement('td', null,
-                      React.createElement('span', {
-                        className: 'priority-badge ' + getPriorityClass(ticket.priority)
-                      }, getPriorityText(ticket.priority))
-                    ),
-                    React.createElement('td', null,
-                      React.createElement('span', { style: { color: '#64748b', fontSize: '12px' } },
-                        'EVOX Support'
-                      )
-                    )
-                  );
-                })
-              )
-            )
-          )
-      )
+  useEffect(function () {
+    const prefix = buildSubjectPrefix(
+      formData.selectedWorkspace,
+      formData.selectedSubCategory,
+      formData.selectedItemCategory
     );
+    setFormData(function (prev) {
+      return { ...prev, subject: prefix + prev.userSubject };
+    });
+  }, [formData.selectedWorkspace, formData.selectedSubCategory, formData.selectedItemCategory, formData.userSubject]);
+
+  var updateField = function (field, value) {
+    setFormData(function (prev) {
+      var newData = { ...prev, [field]: value };
+      
+      if (field === 'selectedWorkspace') {
+        newData.selectedSubCategory = '';
+        newData.selectedItemCategory = '';
+      }
+      if (field === 'selectedSubCategory') {
+        newData.selectedItemCategory = '';
+      }
+      
+      return newData;
+    });
+    
+    if (errors[field]) {
+      setErrors(function (prev) {
+        var newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   };
 
-  // TICKET DETAILS PAGE - Professional Version
-  const TicketDetailsPage = function (props) {
-    var ticket = props.ticket;
-    var onBack = props.onBack;
+  var handleSubmit = function (e) {
+    e.preventDefault();
 
-    var [conversations, setConversations] = useState([]);
-    var [reply, setReply] = useState('');
-    var [loading, setLoading] = useState(false);
-    var [conversationsLoading, setConversationsLoading] = useState(false);
+    var validation = validateTicketData(formData);
+    setErrors(validation.errors);
 
-    useEffect(function () {
-      if (!ticket.id) return;
-      
-      var ticketId = parseInt(ticket.id);
-      if (isNaN(ticketId) || ticketId <= 0) return;
-
-      console.log('🔄 Loading conversations for ticket:', ticketId);
-      setConversationsLoading(true);
-
-      apiCall('/tickets/' + ticketId + '/conversations')
-        .then(function (data) {
-          console.log('✅ Conversations loaded successfully');
-          setConversations(data.conversations || []);
-        })
-        .catch(function (error) {
-          console.error('❌ Failed to load conversations:', error);
-        })
-        .finally(function () {
-          setConversationsLoading(false);
-        });
-    }, [ticket.id]);
-
-    var handleReplySubmit = function (e) {
-      e.preventDefault();
-      if (!reply.trim()) return;
-
+    if (validation.isValid) {
       setLoading(true);
-      var id = parseInt(ticket.id);
 
-      apiCall('/tickets/' + id + '/reply', {
+      const ticketWorkSpace = workspaces.find(ws => ws.name === formData.selectedWorkspace);
+      const selectedWorkSpaceId = ticketWorkSpace ? ticketWorkSpace.id : null;
+
+      var ticketData = {
+        subject: sanitizeInput(formData.subject),
+        description: sanitizeInput(formData.description),
+        email: useremail,
+        priority: parseInt(formData.priority),
+        status: 2,
+        workspace_id: selectedWorkSpaceId
+      };
+
+      apiCall('/tickets', {
         method: 'POST',
-        body: JSON.stringify({ body: sanitizeInput(reply) })
+        body: JSON.stringify(ticketData),
+        useremail: useremail
       })
-        .then(function () {
-          setReply('');
-          return apiCall('/tickets/' + id + '/conversations');
-        })
-        .then(function (data) {
-          setConversations(data.conversations || []);
+        .then(function (result) {
+          setSuccess(true);
+          setFormData({
+            subject: '',
+            userSubject: '',
+            description: '',
+            priority: 2,
+            selectedWorkspace: 'EVOX',
+            selectedSubCategory: '',
+            selectedItemCategory: ''
+          });
+          setTimeout(function () { setSuccess(false); }, 3000);
+          if (onTicketCreated) onTicketCreated();
         })
         .catch(function (error) {
-          console.error('Reply failed:', error);
+          setErrors({ submit: error.message });
         })
         .finally(function () {
           setLoading(false);
         });
-    };
+    }
+  };
 
-    return React.createElement('div', null,
-      React.createElement('button', {
-        className: 'back-button',
-        onClick: onBack
-      }, '← Back to My Tickets'),
+  var workspaceOptions = workspaces.map(function(ws) { return ws.name; });
 
-      React.createElement('div', { className: 'card-fs' },
-        React.createElement('div', { className: 'card-header-fs' },
-          React.createElement('h2', { className: 'card-title-fs' }, 'Ticket #' + ticket.id)
-        ),
-        React.createElement('div', { className: 'card-content-fs' },
-          React.createElement('h3', { style: { color: '#3b82f6', marginBottom: '16px' } }, ticket.subject),
+  var subCategoryOptions = formData.selectedWorkspace && WORKSPACE_CATEGORIES[formData.selectedWorkspace] 
+    ? Object.keys(WORKSPACE_CATEGORIES[formData.selectedWorkspace]).filter(function(subCategory) {
+        return subCategory !== formData.selectedWorkspace;
+      })
+    : [];
+      
+  var itemCategoryOptions = (formData.selectedWorkspace && formData.selectedSubCategory && WORKSPACE_CATEGORIES[formData.selectedWorkspace]) 
+    ? (WORKSPACE_CATEGORIES[formData.selectedWorkspace][formData.selectedSubCategory] || [])
+    : [];
 
-          React.createElement('div', {
-            style: {
-              background: '#f8fafc',
-              padding: '16px',
-              borderRadius: '8px',
-              marginBottom: '24px',
-              border: '1px solid #e2e8f0'
-            }
+  return React.createElement('div', { className: 'card-fs' },
+    React.createElement('div', { className: 'card-header-fs' },
+      React.createElement('h2', { className: 'card-title-fs' }, 'Create New Ticket')
+    ),
+
+    React.createElement('div', { className: 'card-content-fs' },
+      success && React.createElement('div', { className: 'success-message' },
+        '✅ Ticket created successfully!'
+      ),
+
+      React.createElement('form', { onSubmit: handleSubmit },
+        React.createElement('div', { className: 'form-group' },
+          React.createElement('label', { className: 'form-label' }, 'Workspace *'),
+          React.createElement('select', {
+            className: 'form-select',
+            value: formData.selectedWorkspace,
+            onChange: function (e) { updateField('selectedWorkspace', e.target.value); }
           },
-            React.createElement('strong', { style: { color: '#374151' } }, 'Description:'),
-            React.createElement('div', { style: { marginTop: '8px' } },
-              React.createElement(SafeTextRenderer, {
-                text: ticket.description || 'No description provided'
+            React.createElement('option', { value: '' }, 'Select Workspace'),
+            workspaceOptions.map(function (workspaceName) {
+              return React.createElement('option', { key: workspaceName, value: workspaceName }, workspaceName);
+            })
+          ),
+          errors.selectedWorkspace && React.createElement('div', { className: 'error-message' },
+            '⚠️ ' + errors.selectedWorkspace
+          )
+        ),
+
+        formData.selectedWorkspace && subCategoryOptions.length > 0 && React.createElement('div', { className: 'form-group' },
+          React.createElement('label', { className: 'form-label' }, 'Sub-Category *'),
+          React.createElement('select', {
+            className: 'form-select',
+            value: formData.selectedSubCategory,
+            onChange: function (e) { updateField('selectedSubCategory', e.target.value); }
+          },
+            React.createElement('option', { value: '' }, 'Select Sub-Category'),
+            subCategoryOptions.map(function (subCategory) {
+              return React.createElement('option', { key: subCategory, value: subCategory }, subCategory);
+            })
+          ),
+          errors.selectedSubCategory && React.createElement('div', { className: 'error-message' },
+            '⚠️ ' + errors.selectedSubCategory
+          )
+        ),
+
+        formData.selectedSubCategory && itemCategoryOptions.length > 1 && React.createElement('div', { className: 'form-group' },
+          React.createElement('label', { className: 'form-label' }, 'Item Category'),
+          React.createElement('select', {
+            className: 'form-select',
+            value: formData.selectedItemCategory,
+            onChange: function (e) { updateField('selectedItemCategory', e.target.value); }
+          },
+            React.createElement('option', { value: '' }, 'Select Item Category'),
+            itemCategoryOptions.map(function (itemCategory, index) {
+              return React.createElement('option', { key: index, value: itemCategory }, itemCategory || '(No specific category)');
+            })
+          ),
+          errors.selectedItemCategory && React.createElement('div', { className: 'error-message' },
+            '⚠️ ' + errors.selectedItemCategory
+          )
+        ),
+
+        React.createElement('div', { className: 'form-group' },
+          React.createElement('label', { className: 'form-label' }, 'Subject Preview'),
+          React.createElement('div', { className: 'subject-preview' }, 
+            formData.subject || 'Please select categories above...'
+          ),
+          
+          React.createElement('label', { className: 'form-label' }, 'Your Subject *'),
+          React.createElement('input', {
+            type: 'text',
+            className: 'form-input',
+            placeholder: 'Brief description of the issue',
+            value: formData.userSubject,
+            onChange: function (e) { updateField('userSubject', e.target.value); }
+          }),
+          errors.userSubject && React.createElement('div', { className: 'error-message' },
+            '⚠️ ' + errors.userSubject
+          )
+        ),
+
+        React.createElement('div', { className: 'form-group' },
+          React.createElement('label', { className: 'form-label' }, 'Description *'),
+          React.createElement('textarea', {
+            className: 'form-textarea',
+            placeholder: 'Detailed description of the issue...',
+            value: formData.description,
+            onChange: function (e) { updateField('description', e.target.value); },
+            rows: '6'
+          }),
+          errors.description && React.createElement('div', { className: 'error-message' },
+            '⚠️ ' + errors.description
+          )
+        ),
+
+        React.createElement('div', { className: 'form-group' },
+          React.createElement('label', { className: 'form-label' }, 'Priority *'),
+          React.createElement('select', {
+            className: 'form-select',
+            value: formData.priority,
+            onChange: function (e) { updateField('priority', parseInt(e.target.value)); }
+          },
+            React.createElement('option', { value: 1 }, 'Low'),
+            React.createElement('option', { value: 2 }, 'Medium'),
+            React.createElement('option', { value: 3 }, 'High'),
+            React.createElement('option', { value: 4 }, 'Urgent')
+          )
+        ),
+
+        React.createElement('button', {
+          type: 'submit',
+          className: 'btn-fs',
+          disabled: loading
+        }, loading ? 'Creating...' : 'Create Ticket'),
+
+        errors.submit && React.createElement('div', { className: 'error-message' },
+          '❌ ' + errors.submit
+        )
+      )
+    )
+  );
+};
+
+// PROFESSIONAL TICKET LIST PAGE - Table Format
+const TicketListPage = function (props) {
+  var tickets = props.tickets;
+  var workspaces = props.workspaces;
+  var onTicketSelect = props.onTicketSelect;
+  var onFilterChange = props.onFilterChange;
+  var filters = props.filters;
+  var loading = props.loading;
+  var error = props.error;
+  var useremail = props.useremail;
+
+  var getStatusClass = function (status) {
+    switch (status) {
+      case 2: return 'status-open';
+      case 3: return 'status-pending';
+      case 4: return 'status-resolved';
+      case 5: return 'status-closed';
+      default: return 'status-open';
+    }
+  };
+
+  var getPriorityClass = function (priority) {
+    switch (priority) {
+      case 1: return 'priority-low';
+      case 2: return 'priority-medium';
+      case 3: return 'priority-high';
+      case 4: return 'priority-urgent';
+      default: return 'priority-medium';
+    }
+  };
+
+  var getStatusText = function(status) {
+    switch (status) {
+      case 2: return 'Open';
+      case 3: return 'Pending';
+      case 4: return 'Resolved';
+      case 5: return 'Closed';
+      default: return 'Open';
+    }
+  };
+
+  var getPriorityText = function(priority) {
+    switch (priority) {
+      case 1: return 'Low';
+      case 2: return 'Medium';
+      case 3: return 'High';
+      case 4: return 'Urgent';
+      default: return 'Medium';
+    }
+  };
+
+  // Mock function to get state based on ticket properties
+  var getTicketState = function(ticket) {
+    // This is a mock implementation - adjust based on your actual data
+    const states = ['New', 'Requester Respond', 'Response Due', 'Overdue'];
+    return states[ticket.id % 4];
+  };
+
+  var getStateClass = function(state) {
+    switch (state) {
+      case 'New': return 'state-new';
+      case 'Requester Respond': return 'state-requester-respond';
+      case 'Response Due': return 'state-response-due';
+      case 'Overdue': return 'state-overdue';
+      default: return 'state-new';
+    }
+  };
+
+  if (loading) {
+    return React.createElement('div', { className: 'card' },
+      React.createElement('div', { className: 'loading' },
+        React.createElement('span', { className: 'spinner' }),
+        'Loading tickets...'
+      )
+    );
+  }
+
+  return React.createElement('div', null,
+    // Professional Filters
+    React.createElement('div', { className: 'filters' },
+      React.createElement('div', { className: 'filter-group' },
+        React.createElement('label', { className: 'filter-label' }, 'Workspace'),
+        React.createElement('select', {
+          className: 'form-select',
+          value: filters.workspaceId,
+          onChange: function (e) { onFilterChange('workspaceId', e.target.value); }
+        },
+          React.createElement('option', { value: '' }, 'All Workspaces'),
+          workspaces.map(function (workspace) {
+            return React.createElement('option', {
+              key: workspace.id,
+              value: workspace.id
+            }, workspace.name);
+          })
+        )
+      ),
+
+      React.createElement('div', { className: 'filter-group' },
+        React.createElement('label', { className: 'filter-label' }, 'Status'),
+        React.createElement('select', {
+          className: 'form-select',
+          value: filters.status,
+          onChange: function (e) { onFilterChange('status', e.target.value); }
+        },
+          React.createElement('option', { value: 'all' }, 'All Status'),
+          React.createElement('option', { value: 'open' }, 'Open'),
+          React.createElement('option', { value: 'pending' }, 'Pending'),
+          React.createElement('option', { value: 'resolved' }, 'Resolved'),
+          React.createElement('option', { value: 'closed' }, 'Closed')
+        )
+      ),
+
+      React.createElement('div', { 
+        style: { 
+          marginLeft: 'auto', 
+          fontSize: '13px', 
+          color: '#64748b',
+          display: 'flex',
+          alignItems: 'center'
+        } 
+      }, 
+        tickets.length + ' tickets'
+      )
+    ),
+
+    // Professional Table
+    React.createElement('div', { className: 'card-fs' },
+      React.createElement('div', { className: 'card-header-fs' },
+        React.createElement('h2', { className: 'card-title-fs' }, 
+          'My Tickets',
+          tickets.length > 0 && React.createElement('span', { className: 'notification-badge' }, tickets.length)
+        )
+      ),
+
+      error && React.createElement('div', { className: 'card-content-fs' },
+        React.createElement('div', { className: 'error-message' },
+          '❌ Failed to load tickets: ' + error
+        )
+      ),
+
+      tickets.length === 0 ?
+        React.createElement('div', { className: 'empty-state' },
+          React.createElement('div', { className: 'empty-state-icon' }, '🎫'),
+          React.createElement('h3', null, 'No tickets found'),
+          React.createElement('p', null, 'You haven\'t created any tickets yet.')
+        ) :
+        React.createElement('div', { className: 'table-container' },
+          React.createElement('table', { className: 'professional-table' },
+            React.createElement('thead', null,
+              React.createElement('tr', null,
+                React.createElement('th', null, 'Status'),
+                React.createElement('th', null, 'Created Date'),
+                React.createElement('th', null, 'Subject'),
+                // React.createElement('th', null, 'Requester'),
+                React.createElement('th', null, 'State'),
+                React.createElement('th', null, 'Priority'),
+                React.createElement('th', null, 'Assigned to')
+              )
+            ),
+            React.createElement('tbody', null,
+              tickets.map(function (ticket) {
+                const state = getTicketState(ticket);
+                const requesterEmail = ticket.email || '';
+                
+                return React.createElement('tr', {
+                  key: ticket.id,
+                  onClick: function () { onTicketSelect(ticket); }
+                },
+                  React.createElement('td', null,
+                    React.createElement('span', {
+                      className: 'status-badge ' + getStatusClass(ticket.status)
+                    }, getStatusText(ticket.status))
+                  ),
+                  React.createElement('td', null, formatDate(ticket.created_at)),
+                  React.createElement('td', null,
+                    React.createElement('div', { className: 'ticket-subject' },
+                      React.createElement('span', { className: 'ticket-id' }, '#' + ticket.id + ' '),
+                      sanitizeInput(ticket.subject || 'No subject')
+                    )
+                  ),
+                  // React.createElement('td', null,
+                  //   React.createElement('div', { style: { display: 'flex', alignItems: 'center' } },
+                  //     React.createElement('span', {
+                  //       className: 'user-avatar ' + getUserAvatarClass(requesterEmail)
+                  //     }, getUserInitials(requesterEmail)),
+                  //     React.createElement('span', null, requesterEmail.split('@')[0])
+                  //   )
+                  // ),
+                  React.createElement('td', null,
+                    React.createElement('span', {
+                      className: 'state-badge ' + getStateClass(state)
+                    }, state)
+                  ),
+                  React.createElement('td', null,
+                    React.createElement('span', {
+                      className: 'priority-badge ' + getPriorityClass(ticket.priority)
+                    }, getPriorityText(ticket.priority))
+                  ),
+                  React.createElement('td', null,
+                    React.createElement('span', { style: { color: '#64748b', fontSize: '12px' } },
+                      'EVOX Support'
+                    )
+                  )
+                );
               })
             )
           )
         )
+    )
+  );
+};
+
+// TICKET DETAILS PAGE - Professional Version
+const TicketDetailsPage = function (props) {
+  var ticket = props.ticket;
+  var onBack = props.onBack;
+  var useremail = props.useremail;
+
+  var [conversations, setConversations] = useState([]);
+  var [reply, setReply] = useState('');
+  var [loading, setLoading] = useState(false);
+  var [conversationsLoading, setConversationsLoading] = useState(false);
+
+  useEffect(function () {
+    if (!ticket.id) return;
+    
+    var ticketId = parseInt(ticket.id);
+    if (isNaN(ticketId) || ticketId <= 0) return;
+
+    console.log('🔄 Loading conversations for ticket:', ticketId);
+    setConversationsLoading(true);
+
+    apiCall('/tickets/' + ticketId + '/conversations?userEmail=' + useremail)
+      .then(function (data) {
+        console.log('✅ Conversations loaded successfully');
+        setConversations(data.conversations || []);
+      })
+      .catch(function (error) {
+        console.error('❌ Failed to load conversations:', error);
+      })
+      .finally(function () {
+        setConversationsLoading(false);
+      });
+  }, [ticket.id]);
+
+  var handleReplySubmit = function (e) {
+    e.preventDefault();
+    if (!reply.trim()) return;
+
+    setLoading(true);
+    var id = parseInt(ticket.id);
+
+    apiCall('/tickets/' + id + '/reply', {
+      method: 'POST',
+      body: JSON.stringify({ body: sanitizeInput(reply) }),
+      useremail: useremail
+    })
+      .then(function () {
+        setReply('');
+        return apiCall('/tickets/' + id + '/conversations?userEmail=' + useremail);
+      })
+      .then(function (data) {
+        setConversations(data.conversations || []);
+      })
+      .catch(function (error) {
+        console.error('Reply failed:', error);
+      })
+      .finally(function () {
+        setLoading(false);
+      });
+  };
+
+  return React.createElement('div', null,
+    React.createElement('button', {
+      className: 'back-button',
+      onClick: onBack
+    }, '← Back to My Tickets'),
+
+    React.createElement('div', { className: 'card-fs' },
+      React.createElement('div', { className: 'card-header-fs' },
+        React.createElement('h2', { className: 'card-title-fs' }, 'Ticket #' + ticket.id)
       ),
+      React.createElement('div', { className: 'card-content-fs' },
+        React.createElement('h3', { style: { color: '#3b82f6', marginBottom: '16px' } }, ticket.subject),
 
-      React.createElement('div', { className: 'card-fs' },
-        React.createElement('div', { className: 'card-header-fs' },
-          React.createElement('h3', { className: 'card-title-fs' }, 'Conversations')
-        ),
-        React.createElement('div', { className: 'card-content-fs' },
-          conversationsLoading ?
-            React.createElement('div', { className: 'loading' },
-              React.createElement('span', { className: 'spinner' }),
-              'Loading conversations...'
-            ) :
-            conversations.length === 0 ?
-              React.createElement('div', { className: 'empty-state' },
-                React.createElement('div', { className: 'empty-state-icon' }, '💬'),
-                React.createElement('p', null, 'No conversations yet.')
-              ) :
-              React.createElement('div', { className: 'conversation-list' },
-                conversations.map(function (conv) {
-                  return React.createElement('div', {
-                    key: conv.id,
-                    className: 'conversation-item'
-                  },
-                    React.createElement('div', { className: 'conversation-header' },
-                      React.createElement('span', { className: 'conversation-user' }, 'User ' + conv.userId),
-                      React.createElement('span', { className: 'conversation-date' },
-                        formatDate(conv.createdAt || conv.created_at))
-                    ),
-                    React.createElement('div', { className: 'conversation-body' },
-                      React.createElement(SafeTextRenderer, {
-                        text: conv.bodyText || conv.body || 'No content'
-                      })
-                    )
-                  );
-                })
-              ),
-
-          React.createElement('div', { 
-            style: { 
-              borderTop: '1px solid #e2e8f0', 
-              paddingTop: '24px', 
-              marginTop: '24px' 
-            } 
-          },
-            React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
-            React.createElement('form', { onSubmit: handleReplySubmit },
-              React.createElement('textarea', {
-                className: 'form-textarea',
-                placeholder: 'Type your reply...',
-                value: reply,
-                onChange: function (e) { setReply(e.target.value); },
-                rows: '4'
-              }),
-              React.createElement('button', {
-                type: 'submit',
-                className: 'btn-fs',
-                disabled: loading || !reply.trim(),
-                style: { marginTop: '12px' }
-              }, loading ? 'Adding Reply...' : 'Add Reply')
-            )
+        React.createElement('div', {
+          style: {
+            background: '#f8fafc',
+            padding: '16px',
+            borderRadius: '8px',
+            marginBottom: '24px',
+            border: '1px solid #e2e8f0'
+          }
+        },
+          React.createElement('strong', { style: { color: '#374151' } }, 'Description:'),
+          React.createElement('div', { style: { marginTop: '8px' } },
+            React.createElement(SafeTextRenderer, {
+              text: ticket.description || 'No description provided'
+            })
           )
         )
       )
-    );
-  };
+    ),
+
+    React.createElement('div', { className: 'card-fs' },
+      React.createElement('div', { className: 'card-header-fs' },
+        React.createElement('h3', { className: 'card-title-fs' }, 'Conversations')
+      ),
+      React.createElement('div', { className: 'card-content-fs' },
+        conversationsLoading ?
+          React.createElement('div', { className: 'loading' },
+            React.createElement('span', { className: 'spinner' }),
+            'Loading conversations...'
+          ) :
+          conversations.length === 0 ?
+            React.createElement('div', { className: 'empty-state' },
+              React.createElement('div', { className: 'empty-state-icon' }, '💬'),
+              React.createElement('p', null, 'No conversations yet.')
+            ) :
+            React.createElement('div', { className: 'conversation-list' },
+              conversations.map(function (conv) {
+                return React.createElement('div', {
+                  key: conv.id,
+                  className: 'conversation-item'
+                },
+                  React.createElement('div', { className: 'conversation-header' },
+                    React.createElement('span', { className: 'conversation-user' }, 'User ' + conv.userId),
+                    React.createElement('span', { className: 'conversation-date' },
+                      formatDate(conv.createdAt || conv.created_at))
+                  ),
+                  React.createElement('div', { className: 'conversation-body' },
+                    React.createElement(SafeTextRenderer, {
+                      text: conv.bodyText || conv.body || 'No content'
+                    })
+                  )
+                );
+              })
+            ),
+
+        React.createElement('div', { 
+          style: { 
+            borderTop: '1px solid #e2e8f0', 
+            paddingTop: '24px', 
+            marginTop: '24px' 
+          } 
+        },
+          React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
+          React.createElement('form', { onSubmit: handleReplySubmit },
+            React.createElement('textarea', {
+              className: 'form-textarea',
+              placeholder: 'Type your reply...',
+              value: reply,
+              onChange: function (e) { setReply(e.target.value); },
+              rows: '4'
+            }),
+            React.createElement('button', {
+              type: 'submit',
+              className: 'btn-fs',
+              disabled: loading || !reply.trim(),
+              style: { marginTop: '12px' }
+            }, loading ? 'Adding Reply...' : 'Add Reply')
+          )
+        )
+      )
+    )
+  );
+};
 
 const FreshServiceForm = (props) => {
   var [currentView, setCurrentView] = useState('list');
@@ -843,7 +831,8 @@ const FreshServiceForm = (props) => {
     var params = new URLSearchParams({
       status: filters.status,
       page: '1',
-      limit: '25'
+      limit: '25',
+      userEmail: props.user.email
     });
 
     if (filters.workspaceId) {
@@ -862,7 +851,7 @@ const FreshServiceForm = (props) => {
       .finally(function () {
         setTicketsLoading(false);
       });
-  }, [filters.status, filters.workspaceId]);
+  }, [filters.status, filters.workspaceId, props.user.email]);
 
   useEffect(function () {
     if (currentView === 'list') {
@@ -922,13 +911,14 @@ const FreshServiceForm = (props) => {
 
                 React.createElement('main', { className: 'main-fs' },
                   !categoriesLoaded ? 
-                    React.createElement('div', { className: 'loading-fs' },
-                      React.createElement('span', { className: 'spinner-fs' }),
+                    React.createElement('div', { className: 'loading' },
+                      React.createElement('span', { className: 'spinner' }),
                       'Loading workspace categories...'
                     ) :
                     currentView === 'create' ? React.createElement(CreateTicketPage, {
                       workspaces: workspaces,
-                      onTicketCreated: handleTicketCreated
+                      onTicketCreated: handleTicketCreated,
+                      useremail: props.user.email
                     }) :
                     currentView === 'list' ? React.createElement(TicketListPage, {
                       tickets: tickets,
@@ -937,11 +927,13 @@ const FreshServiceForm = (props) => {
                       onFilterChange: handleFilterChange,
                       filters: filters,
                       loading: ticketsLoading,
-                      error: ticketsError
+                      error: ticketsError,
+                      useremail: props.user.email
                     }) :
                     currentView === 'details' && selectedTicket ? React.createElement(TicketDetailsPage, {
                       ticket: selectedTicket,
-                      onBack: handleBackToList
+                      onBack: handleBackToList,
+                      useremail: props.user.email
                     }) : null
                 )
               )}

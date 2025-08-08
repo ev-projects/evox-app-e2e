@@ -432,7 +432,7 @@
   }
 
   /* Loading States */
-  .loading-fs {
+  .loading {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -440,7 +440,7 @@
     color: #6b7280;
   }
 
-  .spinner-fs {
+  .spinner {
     width: 16px;
     height: 16px;
     border: 2px solid #e5e7eb;
