@@ -2,23 +2,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
-
-var formatDate = function(dateString) {
-  try {
-    if (!dateString) return 'Invalid Date';
-    var date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'Invalid Date';
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch (error) {
-    return 'Invalid Date';
-  }
-};
+import { Editor } from '@tinymce/tinymce-react';
 
 // WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
 let WORKSPACE_CATEGORIES = {};
@@ -79,12 +63,6 @@ const sanitizeInput = function (input) {
   return input.trim().replace(/[<>]/g, '').replace(/javascript:/gi, '');
 };
 
-const SafeTextRenderer = function ({ text }) {
-  if (!text) return null;
-  const cleanText = text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-  return React.createElement('div', { style: { whiteSpace: 'pre-wrap' } }, cleanText);
-};
-
 const buildSubjectPrefix = function (workspace, subCategory, itemCategory) {
   if (!workspace) return '';
   if (!subCategory) return `[${workspace}] | | - `;
@@ -113,7 +91,7 @@ const validateTicketData = function (data) {
   } else if (data.description.trim().length < 10) {
     errors.description = 'Description must be at least 10 characters';
   } else if (data.description.length > 4000) {
-    errors.description = 'Description must be less than 4000 characters';
+    // errors.description = 'Description must be less than 4000 characters';
   }
 
   if (!data.priority || ![1, 2, 3, 4].includes(data.priority)) {
@@ -157,7 +135,6 @@ const validateTicketData = function (data) {
 // CREATE TICKET PAGE - Professional Version
 const CreateTicketPage = function (props) {
   var workspaces = props.workspaces;
-  var onTicketCreated = props.onTicketCreated;
   var useremail = props.useremail;
 
   var [formData, setFormData] = useState({
@@ -223,7 +200,8 @@ const CreateTicketPage = function (props) {
 
       var ticketData = {
         subject: sanitizeInput(formData.subject),
-        description: sanitizeInput(formData.description),
+        // description: sanitizeInput(formData.description),
+        description: formData.description,
         email: useremail,
         priority: parseInt(formData.priority),
         status: 2,
@@ -247,7 +225,6 @@ const CreateTicketPage = function (props) {
             selectedItemCategory: ''
           });
           setTimeout(function () { setSuccess(false); }, 3000);
-          if (onTicketCreated) onTicketCreated();
         })
         .catch(function (error) {
           setErrors({ submit: error.message });
@@ -353,13 +330,34 @@ const CreateTicketPage = function (props) {
 
         React.createElement('div', { className: 'form-group' },
           React.createElement('label', { className: 'form-label' }, 'Description *'),
-          React.createElement('textarea', {
-            className: 'form-textarea',
-            placeholder: 'Detailed description of the issue...',
-            value: formData.description,
-            onChange: function (e) { updateField('description', e.target.value); },
-            rows: '6'
-          }),
+          <Editor
+            apiKey="nwf6jspi93459hl7io117u8tqtutub6tk18jw7kamd4hujd7"
+            textareaName="content"
+            value={formData.description}
+            onEditorChange={(content, editor) => updateField('description', content)}
+            init={{
+              height: 500,
+              menubar: false,
+              plugins: [
+                'advlist','autolink', 'emoticons',
+                'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
+                'fullscreen','insertdatetime','media','table','help','wordcount'
+              ],
+
+              toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons | ' +
+              'alignleft aligncenter alignright alignjustify | link | ' +
+              'bullist numlist checklist outdent indent | removeformat | help ',
+
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+            }}
+          />,
+          // React.createElement('textarea', {
+          //   className: 'form-textarea',
+          //   placeholder: 'Detailed description of the issue...',
+          //   value: formData.description,
+          //   onChange: function (e) { updateField('description', e.target.value); },
+          //   rows: '6'
+          // }),
           errors.description && React.createElement('div', { className: 'error-message' },
             '⚠️ ' + errors.description
           )
@@ -393,386 +391,13 @@ const CreateTicketPage = function (props) {
   );
 };
 
-// PROFESSIONAL TICKET LIST PAGE - Table Format
-const TicketListPage = function (props) {
-  var tickets = props.tickets;
-  var workspaces = props.workspaces;
-  var onTicketSelect = props.onTicketSelect;
-  var onFilterChange = props.onFilterChange;
-  var filters = props.filters;
-  var loading = props.loading;
-  var error = props.error;
-  var useremail = props.useremail;
-
-  var getStatusClass = function (status) {
-    switch (status) {
-      case 2: return 'status-open';
-      case 3: return 'status-pending';
-      case 4: return 'status-resolved';
-      case 5: return 'status-closed';
-      default: return 'status-open';
-    }
-  };
-
-  var getPriorityClass = function (priority) {
-    switch (priority) {
-      case 1: return 'priority-low';
-      case 2: return 'priority-medium';
-      case 3: return 'priority-high';
-      case 4: return 'priority-urgent';
-      default: return 'priority-medium';
-    }
-  };
-
-  var getStatusText = function(status) {
-    switch (status) {
-      case 2: return 'Open';
-      case 3: return 'Pending';
-      case 4: return 'Resolved';
-      case 5: return 'Closed';
-      default: return 'Open';
-    }
-  };
-
-  var getPriorityText = function(priority) {
-    switch (priority) {
-      case 1: return 'Low';
-      case 2: return 'Medium';
-      case 3: return 'High';
-      case 4: return 'Urgent';
-      default: return 'Medium';
-    }
-  };
-
-  // Mock function to get state based on ticket properties
-  var getTicketState = function(ticket) {
-    // This is a mock implementation - adjust based on your actual data
-    const states = ['New', 'Requester Respond', 'Response Due', 'Overdue'];
-    return states[ticket.id % 4];
-  };
-
-  var getStateClass = function(state) {
-    switch (state) {
-      case 'New': return 'state-new';
-      case 'Requester Respond': return 'state-requester-respond';
-      case 'Response Due': return 'state-response-due';
-      case 'Overdue': return 'state-overdue';
-      default: return 'state-new';
-    }
-  };
-
-  if (loading) {
-    return React.createElement('div', { className: 'card' },
-      React.createElement('div', { className: 'loading' },
-        React.createElement('span', { className: 'spinner' }),
-        'Loading tickets...'
-      )
-    );
-  }
-
-  return React.createElement('div', null,
-    // Professional Filters
-    React.createElement('div', { className: 'filters' },
-      React.createElement('div', { className: 'filter-group' },
-        React.createElement('label', { className: 'filter-label' }, 'Workspace'),
-        React.createElement('select', {
-          className: 'form-select',
-          value: filters.workspaceId,
-          onChange: function (e) { onFilterChange('workspaceId', e.target.value); }
-        },
-          React.createElement('option', { value: '' }, 'All Workspaces'),
-          workspaces.map(function (workspace) {
-            return React.createElement('option', {
-              key: workspace.id,
-              value: workspace.id
-            }, workspace.name);
-          })
-        )
-      ),
-
-      React.createElement('div', { className: 'filter-group' },
-        React.createElement('label', { className: 'filter-label' }, 'Status'),
-        React.createElement('select', {
-          className: 'form-select',
-          value: filters.status,
-          onChange: function (e) { onFilterChange('status', e.target.value); }
-        },
-          React.createElement('option', { value: 'all' }, 'All Status'),
-          React.createElement('option', { value: 'open' }, 'Open'),
-          React.createElement('option', { value: 'pending' }, 'Pending'),
-          React.createElement('option', { value: 'resolved' }, 'Resolved'),
-          React.createElement('option', { value: 'closed' }, 'Closed')
-        )
-      ),
-
-      React.createElement('div', { 
-        style: { 
-          marginLeft: 'auto', 
-          fontSize: '13px', 
-          color: '#64748b',
-          display: 'flex',
-          alignItems: 'center'
-        } 
-      }, 
-        tickets.length + ' tickets'
-      )
-    ),
-
-    // Professional Table
-    React.createElement('div', { className: 'card-fs' },
-      React.createElement('div', { className: 'card-header-fs' },
-        React.createElement('h2', { className: 'card-title-fs' }, 
-          'My Tickets',
-          tickets.length > 0 && React.createElement('span', { className: 'notification-badge' }, tickets.length)
-        )
-      ),
-
-      error && React.createElement('div', { className: 'card-content-fs' },
-        React.createElement('div', { className: 'error-message' },
-          '❌ Failed to load tickets: ' + error
-        )
-      ),
-
-      tickets.length === 0 ?
-        React.createElement('div', { className: 'empty-state' },
-          React.createElement('div', { className: 'empty-state-icon' }, '🎫'),
-          React.createElement('h3', null, 'No tickets found'),
-          React.createElement('p', null, 'You haven\'t created any tickets yet.')
-        ) :
-        React.createElement('div', { className: 'table-container' },
-          React.createElement('table', { className: 'professional-table' },
-            React.createElement('thead', null,
-              React.createElement('tr', null,
-                React.createElement('th', null, 'Status'),
-                React.createElement('th', null, 'Created Date'),
-                React.createElement('th', null, 'Subject'),
-                // React.createElement('th', null, 'Requester'),
-                React.createElement('th', null, 'State'),
-                React.createElement('th', null, 'Priority'),
-                React.createElement('th', null, 'Assigned to')
-              )
-            ),
-            React.createElement('tbody', null,
-              tickets.map(function (ticket) {
-                const state = getTicketState(ticket);
-                const requesterEmail = ticket.email || '';
-                
-                return React.createElement('tr', {
-                  key: ticket.id,
-                  onClick: function () { onTicketSelect(ticket); }
-                },
-                  React.createElement('td', null,
-                    React.createElement('span', {
-                      className: 'status-badge ' + getStatusClass(ticket.status)
-                    }, getStatusText(ticket.status))
-                  ),
-                  React.createElement('td', null, formatDate(ticket.created_at)),
-                  React.createElement('td', null,
-                    React.createElement('div', { className: 'ticket-subject' },
-                      React.createElement('span', { className: 'ticket-id' }, '#' + ticket.id + ' '),
-                      sanitizeInput(ticket.subject || 'No subject')
-                    )
-                  ),
-                  // React.createElement('td', null,
-                  //   React.createElement('div', { style: { display: 'flex', alignItems: 'center' } },
-                  //     React.createElement('span', {
-                  //       className: 'user-avatar ' + getUserAvatarClass(requesterEmail)
-                  //     }, getUserInitials(requesterEmail)),
-                  //     React.createElement('span', null, requesterEmail.split('@')[0])
-                  //   )
-                  // ),
-                  React.createElement('td', null,
-                    React.createElement('span', {
-                      className: 'state-badge ' + getStateClass(state)
-                    }, state)
-                  ),
-                  React.createElement('td', null,
-                    React.createElement('span', {
-                      className: 'priority-badge ' + getPriorityClass(ticket.priority)
-                    }, getPriorityText(ticket.priority))
-                  ),
-                  React.createElement('td', null,
-                    React.createElement('span', { style: { color: '#64748b', fontSize: '12px' } },
-                      'EVOX Support'
-                    )
-                  )
-                );
-              })
-            )
-          )
-        )
-    )
-  );
-};
-
-// TICKET DETAILS PAGE - Professional Version
-const TicketDetailsPage = function (props) {
-  var ticket = props.ticket;
-  var onBack = props.onBack;
-  var useremail = props.useremail;
-
-  var [conversations, setConversations] = useState([]);
-  var [reply, setReply] = useState('');
-  var [loading, setLoading] = useState(false);
-  var [conversationsLoading, setConversationsLoading] = useState(false);
-
-  useEffect(function () {
-    if (!ticket.id) return;
-    
-    var ticketId = parseInt(ticket.id);
-    if (isNaN(ticketId) || ticketId <= 0) return;
-
-    console.log('🔄 Loading conversations for ticket:', ticketId);
-    setConversationsLoading(true);
-
-    apiCall('/tickets/' + ticketId + '/conversations?userEmail=' + useremail)
-      .then(function (data) {
-        console.log('✅ Conversations loaded successfully');
-        setConversations(data.conversations || []);
-      })
-      .catch(function (error) {
-        console.error('❌ Failed to load conversations:', error);
-      })
-      .finally(function () {
-        setConversationsLoading(false);
-      });
-  }, [ticket.id]);
-
-  var handleReplySubmit = function (e) {
-    e.preventDefault();
-    if (!reply.trim()) return;
-
-    setLoading(true);
-    var id = parseInt(ticket.id);
-
-    apiCall('/tickets/' + id + '/reply', {
-      method: 'POST',
-      body: JSON.stringify({ body: sanitizeInput(reply) }),
-      useremail: useremail
-    })
-      .then(function () {
-        setReply('');
-        return apiCall('/tickets/' + id + '/conversations?userEmail=' + useremail);
-      })
-      .then(function (data) {
-        setConversations(data.conversations || []);
-      })
-      .catch(function (error) {
-        console.error('Reply failed:', error);
-      })
-      .finally(function () {
-        setLoading(false);
-      });
-  };
-
-  return React.createElement('div', null,
-    React.createElement('button', {
-      className: 'back-button',
-      onClick: onBack
-    }, '← Back to My Tickets'),
-
-    React.createElement('div', { className: 'card-fs' },
-      React.createElement('div', { className: 'card-header-fs' },
-        React.createElement('h2', { className: 'card-title-fs' }, 'Ticket #' + ticket.id)
-      ),
-      React.createElement('div', { className: 'card-content-fs' },
-        React.createElement('h3', { style: { color: '#3b82f6', marginBottom: '16px' } }, ticket.subject),
-
-        React.createElement('div', {
-          style: {
-            background: '#f8fafc',
-            padding: '16px',
-            borderRadius: '8px',
-            marginBottom: '24px',
-            border: '1px solid #e2e8f0'
-          }
-        },
-          React.createElement('strong', { style: { color: '#374151' } }, 'Description:'),
-          React.createElement('div', { style: { marginTop: '8px' } },
-            React.createElement(SafeTextRenderer, {
-              text: ticket.description || 'No description provided'
-            })
-          )
-        )
-      )
-    ),
-
-    React.createElement('div', { className: 'card-fs' },
-      React.createElement('div', { className: 'card-header-fs' },
-        React.createElement('h3', { className: 'card-title-fs' }, 'Conversations')
-      ),
-      React.createElement('div', { className: 'card-content-fs' },
-        conversationsLoading ?
-          React.createElement('div', { className: 'loading' },
-            React.createElement('span', { className: 'spinner' }),
-            'Loading conversations...'
-          ) :
-          conversations.length === 0 ?
-            React.createElement('div', { className: 'empty-state' },
-              React.createElement('div', { className: 'empty-state-icon' }, '💬'),
-              React.createElement('p', null, 'No conversations yet.')
-            ) :
-            React.createElement('div', { className: 'conversation-list' },
-              conversations.map(function (conv) {
-                return React.createElement('div', {
-                  key: conv.id,
-                  className: 'conversation-item'
-                },
-                  React.createElement('div', { className: 'conversation-header' },
-                    React.createElement('span', { className: 'conversation-user' }, 'User ' + conv.userId),
-                    React.createElement('span', { className: 'conversation-date' },
-                      formatDate(conv.createdAt || conv.created_at))
-                  ),
-                  React.createElement('div', { className: 'conversation-body' },
-                    React.createElement(SafeTextRenderer, {
-                      text: conv.bodyText || conv.body || 'No content'
-                    })
-                  )
-                );
-              })
-            ),
-
-        React.createElement('div', { 
-          style: { 
-            borderTop: '1px solid #e2e8f0', 
-            paddingTop: '24px', 
-            marginTop: '24px' 
-          } 
-        },
-          React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
-          React.createElement('form', { onSubmit: handleReplySubmit },
-            React.createElement('textarea', {
-              className: 'form-textarea',
-              placeholder: 'Type your reply...',
-              value: reply,
-              onChange: function (e) { setReply(e.target.value); },
-              rows: '4'
-            }),
-            React.createElement('button', {
-              type: 'submit',
-              className: 'btn-fs',
-              disabled: loading || !reply.trim(),
-              style: { marginTop: '12px' }
-            }, loading ? 'Adding Reply...' : 'Add Reply')
-          )
-        )
-      )
-    )
-  );
-};
-
 const FreshServiceForm = (props) => {
-  var [currentView, setCurrentView] = useState('list');
-  var [selectedTicket, setSelectedTicket] = useState(null);
-  
+  var [currentView, setCurrentView] = useState('create');
   var [workspaces, setWorkspaces] = useState([]);
-  var [tickets, setTickets] = useState([]);
   var [filters, setFilters] = useState({
     workspaceId: '',
     status: 'all'
   });
-  var [ticketsLoading, setTicketsLoading] = useState(false);
-  var [ticketsError, setTicketsError] = useState(null);
   var [categoriesLoaded, setCategoriesLoaded] = useState(false);
 
   // Load workspace categories from JSON file
@@ -822,65 +447,6 @@ const FreshServiceForm = (props) => {
       });
   }, []);
 
-  // Load tickets when filters change
-  var loadTickets = useCallback(function () {
-    console.log('🔄 Loading tickets');
-    setTicketsLoading(true);
-    setTicketsError(null);
-
-    var params = new URLSearchParams({
-      status: filters.status,
-      page: '1',
-      limit: '25',
-      userEmail: props.user.email
-    });
-
-    if (filters.workspaceId) {
-      params.append('workspaceId', filters.workspaceId);
-    }
-
-    apiCall('/tickets/my-tickets?' + params.toString())
-      .then(function (data) {
-        setTickets(data.tickets || []);
-        console.log('✅ Tickets loaded');
-      })
-      .catch(function (error) {
-        console.error('❌ Failed to load tickets:', error);
-        setTicketsError(error.message);
-      })
-      .finally(function () {
-        setTicketsLoading(false);
-      });
-  }, [filters.status, filters.workspaceId, props.user.email]);
-
-  useEffect(function () {
-    if (currentView === 'list') {
-      loadTickets();
-    }
-  }, [loadTickets, currentView]);
-
-  // Event handlers
-  var handleTicketCreated = useCallback(function () {
-    setCurrentView('list');
-    setTimeout(loadTickets, 500);
-  }, [loadTickets]);
-
-  var handleTicketSelect = useCallback(function (ticket) {
-    setSelectedTicket(ticket);
-    setCurrentView('details');
-  }, []);
-
-  var handleBackToList = useCallback(function () {
-    setCurrentView('list');
-    setSelectedTicket(null);
-  }, []);
-
-  var handleFilterChange = useCallback(function (field, value) {
-    setFilters(function (prev) {
-      return { ...prev, [field]: value };
-    });
-  }, []);
-
   return (
     <>
       <Wrapper>
@@ -888,27 +454,6 @@ const FreshServiceForm = (props) => {
           <ContainerBody>
             <Content>
               {React.createElement('div', { className: 'app-fs' },
-                React.createElement('header', { className: 'header-fs' },
-                  React.createElement('div', { className: 'header-container-fs' },
-                    React.createElement('nav', { className: 'nav-fs' },
-                      React.createElement('button', {
-                        className: 'nav-button-fs' + (currentView === 'create' ? ' active' : ''),
-                        onClick: function () { setCurrentView('create'); }
-                      }, 
-                        React.createElement('span', null, '📝'),
-                        'Create Ticket'
-                      ),
-                      React.createElement('button', {
-                        className: 'nav-button-fs' + (currentView === 'list' ? ' active' : ''),
-                        onClick: function () { setCurrentView('list'); }
-                      },
-                        React.createElement('span', null, '📋'),
-                        'My Tickets'
-                      )
-                    )
-                  )
-                ),
-
                 React.createElement('main', { className: 'main-fs' },
                   !categoriesLoaded ? 
                     React.createElement('div', { className: 'loading' },
@@ -917,22 +462,6 @@ const FreshServiceForm = (props) => {
                     ) :
                     currentView === 'create' ? React.createElement(CreateTicketPage, {
                       workspaces: workspaces,
-                      onTicketCreated: handleTicketCreated,
-                      useremail: props.user.email
-                    }) :
-                    currentView === 'list' ? React.createElement(TicketListPage, {
-                      tickets: tickets,
-                      workspaces: workspaces,
-                      onTicketSelect: handleTicketSelect,
-                      onFilterChange: handleFilterChange,
-                      filters: filters,
-                      loading: ticketsLoading,
-                      error: ticketsError,
-                      useremail: props.user.email
-                    }) :
-                    currentView === 'details' && selectedTicket ? React.createElement(TicketDetailsPage, {
-                      ticket: selectedTicket,
-                      onBack: handleBackToList,
                       useremail: props.user.email
                     }) : null
                 )

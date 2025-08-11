@@ -117,6 +117,7 @@ import UploadedDocumentList from "../components/PoliciesDocument/UploadedDocumen
 import AssetManagementForm from "../components/AssetManagementForm/AssetManagementForm";
 import AssetReport from "../components/AssetManagementForm/AssetReport/AssetReport";
 import FreshServiceForm from "../components/FreshService/FreshServiceForm";
+import FreshServiceTickets from "../components/FreshService/FreshServiceTickets";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -632,8 +633,11 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.asset_reports}>
            <AssetReport></AssetReport>
         </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.fresh_service}>
+        <ProtectedRoute exact path={global.links.fresh_service_create}>
            <FreshServiceForm></FreshServiceForm>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.fresh_service_tickets}>
+           <FreshServiceTickets></FreshServiceTickets>
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

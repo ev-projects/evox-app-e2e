@@ -132,7 +132,8 @@
     asset_reports                   : "/app/asset_reports/",
 
     // FreshService
-    fresh_service                   : "/app/fresh_service/",
+    fresh_service_create            : "/app/fresh_service/create/",
+    fresh_service_tickets           : "/app/fresh_service/tickets/",
    
 };
 
