@@ -3,6 +3,7 @@ import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/Admin
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
 import { Editor } from '@tinymce/tinymce-react';
+import { handleImageUpload } from '../../services/Helper';
 
 // WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
 let WORKSPACE_CATEGORIES = {};
@@ -40,7 +41,7 @@ const apiCall = function (endpoint, options) {
 };
 
 // Helper function to get user avatar color
-const getUserAvatarClass = function(email) {
+const getUserAvatarClass = function (email) {
   if (!email) return 'avatar-v';
   const firstChar = email.charAt(0).toLowerCase();
   const colorMap = {
@@ -51,7 +52,7 @@ const getUserAvatarClass = function(email) {
 };
 
 // Helper function to get user initials
-const getUserInitials = function(email) {
+const getUserInitials = function (email) {
   if (!email) return 'U';
   const parts = email.split('@')[0].split('.');
   return parts.map(p => p.charAt(0).toUpperCase()).join('').substring(0, 2);
@@ -66,10 +67,10 @@ const sanitizeInput = function (input) {
 const buildSubjectPrefix = function (workspace, subCategory, itemCategory) {
   if (!workspace) return '';
   if (!subCategory) return `[${workspace}] | | - `;
-  
+
   const parts = [workspace, subCategory];
   if (itemCategory && itemCategory.trim()) parts.push(itemCategory);
-  
+
   return '[' + parts.join('] | [') + '] | - ';
 };
 
@@ -106,10 +107,10 @@ const validateTicketData = function (data) {
 
   if (data.selectedWorkspace && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
     const allSubCategories = Object.keys(WORKSPACE_CATEGORIES[data.selectedWorkspace]);
-    const availableSubCategories = allSubCategories.filter(function(subCategory) {
+    const availableSubCategories = allSubCategories.filter(function (subCategory) {
       return subCategory !== data.selectedWorkspace;
     });
-    
+
     if (availableSubCategories.length > 0 && !data.selectedSubCategory) {
       errors.selectedSubCategory = 'Sub-Category must be selected';
     } else if (data.selectedSubCategory && !availableSubCategories.includes(data.selectedSubCategory)) {
@@ -165,7 +166,7 @@ const CreateTicketPage = function (props) {
   var updateField = function (field, value) {
     setFormData(function (prev) {
       var newData = { ...prev, [field]: value };
-      
+
       if (field === 'selectedWorkspace') {
         newData.selectedSubCategory = '';
         newData.selectedItemCategory = '';
@@ -173,10 +174,10 @@ const CreateTicketPage = function (props) {
       if (field === 'selectedSubCategory') {
         newData.selectedItemCategory = '';
       }
-      
+
       return newData;
     });
-    
+
     if (errors[field]) {
       setErrors(function (prev) {
         var newErrors = { ...prev };
@@ -235,15 +236,15 @@ const CreateTicketPage = function (props) {
     }
   };
 
-  var workspaceOptions = workspaces.map(function(ws) { return ws.name; });
+  var workspaceOptions = workspaces.map(function (ws) { return ws.name; });
 
-  var subCategoryOptions = formData.selectedWorkspace && WORKSPACE_CATEGORIES[formData.selectedWorkspace] 
-    ? Object.keys(WORKSPACE_CATEGORIES[formData.selectedWorkspace]).filter(function(subCategory) {
-        return subCategory !== formData.selectedWorkspace;
-      })
+  var subCategoryOptions = formData.selectedWorkspace && WORKSPACE_CATEGORIES[formData.selectedWorkspace]
+    ? Object.keys(WORKSPACE_CATEGORIES[formData.selectedWorkspace]).filter(function (subCategory) {
+      return subCategory !== formData.selectedWorkspace;
+    })
     : [];
-      
-  var itemCategoryOptions = (formData.selectedWorkspace && formData.selectedSubCategory && WORKSPACE_CATEGORIES[formData.selectedWorkspace]) 
+
+  var itemCategoryOptions = (formData.selectedWorkspace && formData.selectedSubCategory && WORKSPACE_CATEGORIES[formData.selectedWorkspace])
     ? (WORKSPACE_CATEGORIES[formData.selectedWorkspace][formData.selectedSubCategory] || [])
     : [];
 
@@ -311,10 +312,10 @@ const CreateTicketPage = function (props) {
 
         React.createElement('div', { className: 'form-group' },
           React.createElement('label', { className: 'form-label' }, 'Subject Preview'),
-          React.createElement('div', { className: 'subject-preview' }, 
+          React.createElement('div', { className: 'subject-preview' },
             formData.subject || 'Please select categories above...'
           ),
-          
+
           React.createElement('label', { className: 'form-label' }, 'Your Subject *'),
           React.createElement('input', {
             type: 'text',
@@ -339,16 +340,20 @@ const CreateTicketPage = function (props) {
               height: 500,
               menubar: false,
               plugins: [
-                'advlist','autolink', 'emoticons',
-                'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
-                'fullscreen','insertdatetime','media','table','help','wordcount'
+                'advlist', 'autolink', 'emoticons',
+                'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks',
+                'fullscreen', 'insertdatetime', 'media', 'table', 'help', 'wordcount'
               ],
 
               toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons | ' +
-              'alignleft aligncenter alignright alignjustify | link | ' +
-              'bullist numlist checklist outdent indent | removeformat | help ',
+                'alignleft aligncenter alignright alignjustify | link | ' +
+                'bullist numlist checklist outdent indent | removeformat | help ',
 
-              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+              paste_data_images: true,
+              automatic_uploads: true,
+              images_upload_handler: handleImageUpload,
+              images_reuse_filename: false,
             }}
           />,
           // React.createElement('textarea', {
@@ -455,7 +460,7 @@ const FreshServiceForm = (props) => {
             <Content>
               {React.createElement('div', { className: 'app-fs' },
                 React.createElement('main', { className: 'main-fs' },
-                  !categoriesLoaded ? 
+                  !categoriesLoaded ?
                     React.createElement('div', { className: 'loading' },
                       React.createElement('span', { className: 'spinner' }),
                       'Loading workspace categories...'

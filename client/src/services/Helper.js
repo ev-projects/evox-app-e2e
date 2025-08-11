@@ -148,3 +148,31 @@ export const getcurrentdate = function () {
     var expiredate = format(exdate, "yyyy-MM-dd");
     return expiredate;
 }*/
+
+
+export const handleImageUpload = (blobInfo) => {
+    const formData = new FormData();
+    const extension = blobInfo.filename().split('.').pop();
+    const filename = `image-${Date.now()}.${extension}`;
+    formData.append('file', blobInfo.blob(), filename);
+
+    const headers = {
+      'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
+      'X-Authorization': process.env.REACT_APP_API_KEY,
+    };
+
+    return fetch(process.env.REACT_APP_API_BASE_URL + '/freshservice/tickets/upload-image', {
+      method: 'POST',
+      headers,
+      body: formData
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log(data);
+        if (data.content) {
+          return data.content; // ✅ TinyMCE inserts this as image src
+        } else {
+          return Promise.reject('Invalid response from server');
+        }
+      });
+  }

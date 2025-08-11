@@ -3,6 +3,7 @@ import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/Admin
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
 import { Editor } from '@tinymce/tinymce-react';
+import { handleImageUpload } from '../../services/Helper';
 
 var formatDate = function(dateString) {
   try {
@@ -466,7 +467,11 @@ const TicketDetailsPage = function (props) {
                 'alignleft aligncenter alignright alignjustify | link | ' +
                 'bullist numlist checklist outdent indent | removeformat | help ',
   
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                paste_data_images: true,
+                automatic_uploads: true,
+                images_upload_handler: handleImageUpload,
+                images_reuse_filename: false,
               }}
             />,
             // React.createElement('textarea', {
