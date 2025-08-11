@@ -130,6 +130,14 @@ return [
             'permission' => 0666,
         ],
 
+        'fs' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/freshservice.log'),
+            'level' => 'debug',
+            'days' => 90,
+            'permission' => 0666,
+        ],
+
         'mslog' => [
             'driver' => 'daily',
             'path' => storage_path('logs/microsoft.log'),
