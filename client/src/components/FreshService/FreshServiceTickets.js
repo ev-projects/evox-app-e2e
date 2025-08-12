@@ -356,7 +356,7 @@ const TicketDetailsPage = function (props) {
     API.call({
       method: "post",
       url: "/freshservice/tickets/" + id + "/reply",
-      params: { body: reply }
+      data: { body: reply }
     })
       .then((result) => {
         setReply('');

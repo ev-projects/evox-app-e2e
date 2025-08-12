@@ -211,7 +211,7 @@ const CreateTicketPage = function (props) {
       API.call({
         method: "post",
         url: "/freshservice/tickets",
-        params: ticketData
+        data: ticketData
       })
         .then((result) => {
           setSuccess(true);
