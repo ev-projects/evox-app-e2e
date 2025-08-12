@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Ixudra\Curl\Facades\Curl;
 
 class FreshServiceController extends Controller
@@ -243,10 +244,10 @@ class FreshServiceController extends Controller
 
                 $filename = time() . '-' . $file->getClientOriginalName();
                 $path = $file->storeAs('public/uploads', $filename);
-
+                $file_url = env('ASSET_URL') . Storage::url($path);
                 return success_response(
                     trans('Image file uploaded successfully!'),
-                    asset(str_replace('public/', 'storage/', $path)),
+                    str_replace('public/', 'storage/', $file_url),
                     JsonResponse::HTTP_OK
                 );
             }
