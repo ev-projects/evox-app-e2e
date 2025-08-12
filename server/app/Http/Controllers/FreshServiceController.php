@@ -238,7 +238,7 @@ class FreshServiceController extends Controller
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 $request->validate([
-                    'file' => 'image|max:5120', // 5MB max
+                    'file' => 'mimes:jpeg,png,jpg|max:5120', // 5MB max
                 ]);
 
                 $filename = time() . '-' . $file->getClientOriginalName();

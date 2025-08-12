@@ -4,6 +4,7 @@ import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
 import { Editor } from '@tinymce/tinymce-react';
 import { handleImageUpload } from '../../services/Helper';
+import API from "../../services/API";
 
 var formatDate = function(dateString) {
   try {
@@ -329,13 +330,16 @@ const TicketDetailsPage = function (props) {
     console.log('🔄 Loading conversations for ticket:', ticketId);
     setConversationsLoading(true);
 
-    apiCall('/tickets/' + ticketId + '/conversations?userEmail=' + useremail)
-      .then(function (data) {
+    API.call({
+      method: "get",
+      url: "/freshservice/tickets/" + ticketId + "/conversations/"
+    })
+      .then((result) => {
         console.log('✅ Conversations loaded successfully');
-        setConversations(data.conversations || []);
+        setConversations(result.data.content.conversations || []);
       })
-      .catch(function (error) {
-        console.error('❌ Failed to load conversations:', error);
+      .catch((e) => {
+        console.error('❌ Failed to load conversations:', e);
       })
       .finally(function () {
         setConversationsLoading(false);
@@ -349,20 +353,30 @@ const TicketDetailsPage = function (props) {
     setLoading(true);
     var id = parseInt(ticket.id);
 
-    apiCall('/tickets/' + id + '/reply', {
-      method: 'POST',
-      body: JSON.stringify({ body: reply }),
-      useremail: useremail
+    API.call({
+      method: "post",
+      url: "/freshservice/tickets/" + id + "/reply",
+      params: { body: reply }
     })
-      .then(function () {
+      .then((result) => {
         setReply('');
-        return apiCall('/tickets/' + id + '/conversations?userEmail=' + useremail);
+        return API.call({
+            method: "get",
+            url: "/freshservice/tickets/" + id + "/conversations/"
+          })
+            .then((result) => {
+              console.log('✅ Conversations loaded successfully');
+              setConversations(result.data.content.conversations || []);
+            })
+            .catch((e) => {
+              console.error('❌ Failed to load conversations:', e);
+            })
+            .finally(function () {
+              setConversationsLoading(false);
+            });
       })
-      .then(function (data) {
-        setConversations(data.conversations || []);
-      })
-      .catch(function (error) {
-        console.error('Reply failed:', error);
+      .catch((e) => {
+        console.error('Reply failed:', e);
       })
       .finally(function () {
         setLoading(false);
@@ -463,7 +477,7 @@ const TicketDetailsPage = function (props) {
                   'fullscreen','insertdatetime','media','table','help','wordcount'
                 ],
   
-                toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons | ' +
+                toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons image | ' +
                 'alignleft aligncenter alignright alignjustify | link | ' +
                 'bullist numlist checklist outdent indent | removeformat | help ',
   
@@ -540,18 +554,21 @@ const FreshServiceTickets = (props) => {
   // Load workspaces once
   useEffect(function () {
     console.log('🔄 Loading workspaces (once)');
-    apiCall('/workspaces')
-      .then(function (data) {
-        var activeWorkspaces = (data || []).filter(function (ws) {
+    API.call({
+      method: "get",
+      url: "/freshservice/workspaces/",
+    })
+      .then((result) => {
+        var activeWorkspaces = (result.data.content || []).filter(function (ws) {
           return ws.state === 'active';
         });
         setWorkspaces(activeWorkspaces);
         setCategoriesLoaded(true);
         console.log('✅ Workspaces loaded');
       })
-      .catch(function (error) {
+      .catch((e) => {
         setCategoriesLoaded(true);
-        console.error('❌ Failed to load workspaces:', error);
+        console.error('❌ Failed to load workspaces:', e);
       });
   }, []);
 
@@ -572,14 +589,17 @@ const FreshServiceTickets = (props) => {
       params.append('workspaceId', filters.workspaceId);
     }
 
-    apiCall('/tickets/my-tickets?' + params.toString())
-      .then(function (data) {
-        setTickets(data.tickets || []);
+    API.call({
+      method: "get",
+      url: "/freshservice/tickets/my-tickets?" + params.toString(),
+    })
+      .then((result) => {
+        setTickets(result.data.content.tickets || []);
         console.log('✅ Tickets loaded');
       })
-      .catch(function (error) {
-        console.error('❌ Failed to load tickets:', error);
-        setTicketsError(error.message);
+      .catch((e) => {
+        console.error('❌ Failed to load tickets:', e);
+        setTicketsError(e.message);
       })
       .finally(function () {
         setTicketsLoading(false);

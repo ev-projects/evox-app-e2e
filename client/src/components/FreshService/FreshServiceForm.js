@@ -4,6 +4,7 @@ import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
 import { Editor } from '@tinymce/tinymce-react';
 import { handleImageUpload } from '../../services/Helper';
+import API from "../../services/API";
 
 // WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
 let WORKSPACE_CATEGORIES = {};
@@ -136,7 +137,7 @@ const validateTicketData = function (data) {
 // CREATE TICKET PAGE - Professional Version
 const CreateTicketPage = function (props) {
   var workspaces = props.workspaces;
-  var useremail = props.useremail;
+  // var useremail = props.useremail;
 
   var [formData, setFormData] = useState({
     subject: '',
@@ -201,20 +202,18 @@ const CreateTicketPage = function (props) {
 
       var ticketData = {
         subject: sanitizeInput(formData.subject),
-        // description: sanitizeInput(formData.description),
         description: formData.description,
-        email: useremail,
         priority: parseInt(formData.priority),
         status: 2,
         workspace_id: selectedWorkSpaceId
       };
 
-      apiCall('/tickets', {
-        method: 'POST',
-        body: JSON.stringify(ticketData),
-        useremail: useremail
+      API.call({
+        method: "post",
+        url: "/freshservice/tickets",
+        params: ticketData
       })
-        .then(function (result) {
+        .then((result) => {
           setSuccess(true);
           setFormData({
             subject: '',
@@ -227,8 +226,8 @@ const CreateTicketPage = function (props) {
           });
           setTimeout(function () { setSuccess(false); }, 3000);
         })
-        .catch(function (error) {
-          setErrors({ submit: error.message });
+        .catch((e) => {
+          setErrors({ submit: e.message });
         })
         .finally(function () {
           setLoading(false);
@@ -356,13 +355,6 @@ const CreateTicketPage = function (props) {
               images_reuse_filename: false,
             }}
           />,
-          // React.createElement('textarea', {
-          //   className: 'form-textarea',
-          //   placeholder: 'Detailed description of the issue...',
-          //   value: formData.description,
-          //   onChange: function (e) { updateField('description', e.target.value); },
-          //   rows: '6'
-          // }),
           errors.description && React.createElement('div', { className: 'error-message' },
             '⚠️ ' + errors.description
           )
@@ -437,18 +429,21 @@ const FreshServiceForm = (props) => {
   // Load workspaces once
   useEffect(function () {
     console.log('🔄 Loading workspaces (once)');
-    apiCall('/workspaces')
-      .then(function (data) {
-        var activeWorkspaces = (data || []).filter(function (ws) {
+    API.call({
+      method: "get",
+      url: "/freshservice/workspaces/",
+    })
+      .then((result) => {
+        var activeWorkspaces = (result.data.content || []).filter(function (ws) {
           return ws.state === 'active';
         });
         setWorkspaces(activeWorkspaces);
         setCategoriesLoaded(true);
         console.log('✅ Workspaces loaded');
       })
-      .catch(function (error) {
+      .catch((e) => {
         setCategoriesLoaded(true);
-        console.error('❌ Failed to load workspaces:', error);
+        console.error('❌ Failed to load workspaces:', e);
       });
   }, []);
 
