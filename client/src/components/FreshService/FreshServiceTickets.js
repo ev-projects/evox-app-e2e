@@ -407,8 +407,8 @@ const TicketDetailsPage = function (props) {
         },
           React.createElement('strong', { style: { color: '#374151' } }, 'Description:'),
           React.createElement('div', { style: { marginTop: '8px' } },
-            React.createElement(SafeTextRenderer, {
-              text: ticket.description || 'No description provided'
+            React.createElement('div', {
+              dangerouslySetInnerHTML: { __html: ticket.description || 'No description provided' }
             })
           )
         )
