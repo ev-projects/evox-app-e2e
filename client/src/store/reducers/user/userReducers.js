@@ -143,18 +143,36 @@ const userReducer = (state = initState, action) => {
             }
             break;
 
-        case "FETCH_USER_NHO":
+        case "FETCH_ALL_ASSETS":
             return {
                 ...state,
-                user_nho_survey : action.data,
-                is_nho_loaded : action.is_nho_loaded
+                all_assets: action.data,
+                is_all_asset_loaded: action.is_all_asset_loaded,
+                asset_reports_filter: action.filters
             }
             break;
 
-        case "CLEAR_USER_NHO":
+        case "FETCH_ALL_ASSETS":
             return {
                 ...state,
-                is_nho_loaded : action.is_nho_loaded
+                all_assets: action.data,
+                is_all_asset_loaded: action.is_all_asset_loaded,
+                asset_reports_filter: action.filters
+            }
+            break;
+
+        case "FETCH_USER_EVA":
+            return {
+                ...state,
+                user_eva: action.data,
+                is_eva_loaded: action.is_eva_loaded
+            }
+            break;
+
+        case "CLEAR_USER_EVA":
+            return {
+                ...state,
+                is_eva_loaded: action.is_eva_loaded
             }
             break;
 

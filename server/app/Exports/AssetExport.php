@@ -49,5 +49,4 @@ class AssetExport implements FromCollection, WithHeadings, WithEvents
             'Asset Tag',
         ];
     }
-
 }
