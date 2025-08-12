@@ -10,3 +10,4 @@ class AssetManagement extends Model
 {
     protected $table = 'asset_management';
 }
+

@@ -1,6 +1,6 @@
 .itam-required::after {
-    content: " *";
-    color: red;
+  content: " *";
+  color: red;
 }
 
 .is-center {

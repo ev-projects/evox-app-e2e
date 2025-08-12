@@ -26,7 +26,7 @@ const coeReducers = (state = initState, action) => {
               }));
             var fileLink = document.createElement('a');
             fileLink.href = fileURL;
-            fileLink.setAttribute('download', action.filename);
+            fileLink.setAttribute('download', 'certificate-of-employment.pdf');
             document.body.appendChild(fileLink);
             fileLink.click();
             return result;

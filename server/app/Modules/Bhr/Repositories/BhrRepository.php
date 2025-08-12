@@ -190,7 +190,7 @@ class BhrRepository implements BhrRepositoryInterface{
      * @param boolean $for_sync
      * @return Object $bhr_user
      */
-    public function get_user_bhr_field( string $bhr_user_number = null, string $user_fields_key = '', $additional_fields = array() ){
+    public function get_user_bhr_field( string $bhr_user_number = null, string $user_fields_key = '' ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
 
@@ -198,13 +198,6 @@ class BhrRepository implements BhrRepositoryInterface{
 
             if( is_valid($bhr_user_number) ){
                 $fields = get_imploded_constant(strlen($user_fields_key) > 0 ? $user_fields_key : 'BHR_USER_PERSONAL' );
-                if (count($additional_fields)) {
-                    if (strlen($fields) > 0) {
-                        $fields .= (",".implode(',', $additional_fields));
-                    } else {
-                        $fields = implode(',', $additional_fields);
-                    }
-                }
 
                 # Call the API of BHR to fetch the User's details in BHR
                 $result = bhr_api_call('GET', 'employees/'.$bhr_user_number.'?fields='. $fields   );

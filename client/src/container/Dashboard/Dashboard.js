@@ -14,7 +14,7 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { getNhoSurvey, addNhoSurvey, addEvaSurvey, getEvaSurvey } from "../../store/actions/userActions";
+import { getNhoSurvey, addNhoSurvey } from "../../store/actions/userActions";
 import { getUserAssets, addUserAsset } from '../../store/actions/userActions' ;
 import { Formik, ErrorMessage,getIn  } from 'formik';
 import { InputDate,InputTime } from '../../components/DatePickerComponent/DatePicker.js';
@@ -157,19 +157,6 @@ class Dashboard extends Component {
     allowModalClose: true,
     showItamModal: false,
     equipment_list: [],
-    attended_via: '',
-    job_performance_clarity: '',
-    work_output_contribution: '',
-    management_recognition: '',
-    member_value: '',
-    platform_link: '',
-    program_flow: '',
-    content_messages: '',
-    information_usefulness: '',
-    overall_satisfaction: '',
-    opportunities: '',
-    questions: '',
-    showEvaModal: false,
   };
 
   componentDidMount() {
@@ -216,20 +203,9 @@ class Dashboard extends Component {
     }
 
     // if user level id is in (DivisionHead, Client, Board), don't show itam popup modal
-    if (["Client"].includes(this.props.user.lvl_name)) {
+    if (["DivisionHead", "Client", "Board"].includes(this.props.user.lvl_name)) {
       this.setState({ showItamModal : false });
     }
-
-    // check if user has eva survey
-    if (!this.props.user.is_eva_loaded) {
-      this.props.getEvaSurvey();
-    }
-
-    // if no eva survey yet, show eva modal
-    if (this.props.user.user_eva && Object.keys(this.props.user.user_eva).length >= 1) {
-      this.setState({ showEvaModal : true });
-    }
-
     // alert(this.props.dashboard?.worktour);
     // const user = localStorage.getItem('user');
     // const userid = user ? JSON.parse(user) : null;
@@ -296,8 +272,6 @@ class Dashboard extends Component {
         if (window.confirm("Data Confirmation Statement\n\nI confirm that all data provided is true and correct. I understand that any discrepancies, whether intentional or due to negligence, may result in disciplinary action and that I will be held fully accountable.")) {
           this.props.addUserAsset(this.state.equipment_list);
         }
-      } else if (values.action === "eva") {
-        this.props.addEvaSurvey(formData);
       } else {
         this.props.addNhoSurvey(formData);
       }
@@ -307,7 +281,6 @@ class Dashboard extends Component {
   onHide = () => {
     this.setState({ showModal: false });
     this.setState({ showItamModal: false });
-    this.setState({ showEvaModal: false });
   }
 
   handleJoyrideCallback = (data) => {
@@ -369,18 +342,6 @@ class Dashboard extends Component {
       serial_no: '',
       asset_tag: '',
       add_equipment_type: '',
-      attended_via: null,
-      job_performance_clarity: null,
-      work_output_contribution: null,
-      management_recognition: null,
-      member_value: null,
-      platform_link: null,
-      program_flow: null,
-      content_messages: null,
-      information_usefulness: null,
-      overall_satisfaction: null,
-      opportunities: null,
-      questions: null,
     };
     const hr_list = this.props.settings.hr_list;
     const equipment_list = this.state.equipment_list;
@@ -835,254 +796,6 @@ class Dashboard extends Component {
               </Modal.Body>
               {/* <Modal.Footer></Modal.Footer> */}
             </Modal>
-
-            <Modal className="remark-modal" show={this.state.showEvaModal} size="xl">
-              <Modal.Header id="nho-modal-header" closeButton>
-                <Modal.Title id="nho-modal-title">We Love To Hear Your EVA Experience</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Formik
-                  enableReinitialize
-                  onSubmit={this.onSubmitHandler}
-                  validationSchema={validationSchemaEVA}
-                  initialValues={initialValue}
-                  >
-                  {({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
-                    <form onSubmit={handleSubmit}>
-                      <input type="hidden" name="modal_mode" value="itam" />
-                      <ContainerWrapper>
-                        <ContainerBody>
-                          <Content col="12" subtitle={<RequestSubtitle method={"store"} user={user} />}>
-                            <Row>  
-                              <Col size="12"> 
-                                <div className="form-group survey-description">
-                                  <p>Your feedback is important to us and these will help improve our EVA Q2 experience. Rating is 1 to 5 where 5 is the highest.</p>
-                                  <p>5 - Highly Satisfied<br/>4 - Satisfied<br/>3 - Neutral<br/>2 - Dissatisfied<br/>1 - Highly Dissatisfied<br/></p>
-                                  <p className="survey-note">Note: All information is required so please ensure that all fields are completed.</p>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            {/* <Row className="mb-2rem">
-                              <Col size="12"> 
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">1. Year</label>
-                                  <select className="form-control" name="eva_year" onChange={handleChange} style={{ display: 'block' }}>
-                                      <option value="">- Select Year -</option>
-                                      <option value="2025">2025</option>
-                                      <option value="2024">2024</option>
-                                      <option value="2023">2023</option>
-                                  </select>
-                                  <Form.Control.Feedback type="invalid">
-                                    <ErrorMessage component="div" name="eva_year" className="input-feedback" />
-                                  </Form.Control.Feedback><br/>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">2. Quarter</label><br/>
-                                  <select className="form-control" name="eva_quarter" onChange={handleChange} style={{ display: 'block' }}>
-                                      <option value="">- Select Quarter -</option>
-                                      <option value="1">Quarter 1</option>
-                                      <option value="2">Quarter 2</option>
-                                      <option value="3">Quarter 3</option>
-                                      <option value="4">Quarter 4</option>
-                                  </select>
-                                  <Form.Control.Feedback type="invalid">
-                                    <ErrorMessage component="div" name="eva_quarter" className="input-feedback" />
-                                  </Form.Control.Feedback><br/>
-                                </div>
-                              </Col>
-                            </Row><br/> */}
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">1. I attended EVA Q2 2025</label><br/>
-                                  <input name="attended_via" type="radio" value="Virtual" onChange={handleChange}/><label htmlFor="attended_via">&nbsp;Virtual&nbsp;</label>
-                                  <input name="attended_via" type="radio" value="Onsite" onChange={handleChange}/><label htmlFor="attended_via">&nbsp;Onsite&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="attended_via" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">2. I had more clarity on how I should perform my job</label><br/>
-                                  <input name="job_performance_clarity" type="radio" value="1" onChange={handleChange}/><label htmlFor="job_performance_clarity">&nbsp;1&nbsp;</label>
-                                  <input name="job_performance_clarity" type="radio" value="2" onChange={handleChange}/><label htmlFor="job_performance_clarity">&nbsp;2&nbsp;</label>
-                                  <input name="job_performance_clarity" type="radio" value="3" onChange={handleChange}/><label htmlFor="job_performance_clarity">&nbsp;3&nbsp;</label>
-                                  <input name="job_performance_clarity" type="radio" value="4" onChange={handleChange}/><label htmlFor="job_performance_clarity">&nbsp;4&nbsp;</label>
-                                  <input name="job_performance_clarity" type="radio" value="5" onChange={handleChange}/><label htmlFor="job_performance_clarity">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="job_performance_clarity" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">3. I understood how my work output contributes to business</label><br/>
-                                  <input name="work_output_contribution" type="radio" value="1" onChange={handleChange}/><label htmlFor="work_output_contribution">&nbsp;1&nbsp;</label>
-                                  <input name="work_output_contribution" type="radio" value="2" onChange={handleChange}/><label htmlFor="work_output_contribution">&nbsp;2&nbsp;</label>
-                                  <input name="work_output_contribution" type="radio" value="3" onChange={handleChange}/><label htmlFor="work_output_contribution">&nbsp;3&nbsp;</label>
-                                  <input name="work_output_contribution" type="radio" value="4" onChange={handleChange}/><label htmlFor="work_output_contribution">&nbsp;4&nbsp;</label>
-                                  <input name="work_output_contribution" type="radio" value="5" onChange={handleChange}/><label htmlFor="work_output_contribution">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="work_output_contribution" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="4">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">4. I felt that the management recognizes the good job performance of employee</label><br/>
-                                  <input name="management_recognition" type="radio" value="1" onChange={handleChange}/><label htmlFor="management_recognition">&nbsp;1&nbsp;</label>
-                                  <input name="management_recognition" type="radio" value="2" onChange={handleChange}/><label htmlFor="management_recognition">&nbsp;2&nbsp;</label>
-                                  <input name="management_recognition" type="radio" value="3" onChange={handleChange}/><label htmlFor="management_recognition">&nbsp;3&nbsp;</label>
-                                  <input name="management_recognition" type="radio" value="4" onChange={handleChange}/><label htmlFor="management_recognition">&nbsp;4&nbsp;</label>
-                                  <input name="management_recognition" type="radio" value="5" onChange={handleChange}/><label htmlFor="management_recognition">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="management_recognition" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">5. I felt like a valued member of Eastvantage</label><br/>
-                                  <input name="member_value" type="radio" value="1" onChange={handleChange}/><label htmlFor="member_value">&nbsp;1&nbsp;</label>
-                                  <input name="member_value" type="radio" value="2" onChange={handleChange}/><label htmlFor="member_value">&nbsp;2&nbsp;</label>
-                                  <input name="member_value" type="radio" value="3" onChange={handleChange}/><label htmlFor="member_value">&nbsp;3&nbsp;</label>
-                                  <input name="member_value" type="radio" value="4" onChange={handleChange}/><label htmlFor="member_value">&nbsp;4&nbsp;</label>
-                                  <input name="member_value" type="radio" value="5" onChange={handleChange}/><label htmlFor="member_value">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="member_value" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">6. How would you rate Microsoft Teams as the platform used for Q2 EVA?</label><br/>
-                                  <input name="platform_link" type="radio" value="1" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;1&nbsp;</label>
-                                  <input name="platform_link" type="radio" value="2" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;2&nbsp;</label>
-                                  <input name="platform_link" type="radio" value="3" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;3&nbsp;</label>
-                                  <input name="platform_link" type="radio" value="4" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;4&nbsp;</label>
-                                  <input name="platform_link" type="radio" value="5" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="platform_link" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">7. How would you rate the overall flow of the program?</label><br/>
-                                  <input name="program_flow" type="radio" value="1" onChange={handleChange}/><label htmlFor="program_flow">&nbsp;1&nbsp;</label>
-                                  <input name="program_flow" type="radio" value="2" onChange={handleChange}/><label htmlFor="program_flow">&nbsp;2&nbsp;</label>
-                                  <input name="program_flow" type="radio" value="3" onChange={handleChange}/><label htmlFor="program_flow">&nbsp;3&nbsp;</label>
-                                  <input name="program_flow" type="radio" value="4" onChange={handleChange}/><label htmlFor="program_flow">&nbsp;4&nbsp;</label>
-                                  <input name="program_flow" type="radio" value="5" onChange={handleChange}/><label htmlFor="program_flow">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="program_flow" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">8. Rate the relevance and clarity of the program's content and/or messages.</label><br/>
-                                  <input name="content_messages" type="radio" value="1" onChange={handleChange}/><label htmlFor="content_messages">&nbsp;1&nbsp;</label>
-                                  <input name="content_messages" type="radio" value="2" onChange={handleChange}/><label htmlFor="content_messages">&nbsp;2&nbsp;</label>
-                                  <input name="content_messages" type="radio" value="3" onChange={handleChange}/><label htmlFor="content_messages">&nbsp;3&nbsp;</label>
-                                  <input name="content_messages" type="radio" value="4" onChange={handleChange}/><label htmlFor="content_messages">&nbsp;4&nbsp;</label>
-                                  <input name="content_messages" type="radio" value="5" onChange={handleChange}/><label htmlFor="content_messages">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="content_messages" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">9. How useful was the information presented in EVA?</label><br/>
-                                  <input name="information_usefulness" type="radio" value="1" onChange={handleChange}/><label htmlFor="information_usefulness">&nbsp;1&nbsp;</label>
-                                  <input name="information_usefulness" type="radio" value="2" onChange={handleChange}/><label htmlFor="information_usefulness">&nbsp;2&nbsp;</label>
-                                  <input name="information_usefulness" type="radio" value="3" onChange={handleChange}/><label htmlFor="information_usefulness">&nbsp;3&nbsp;</label>
-                                  <input name="information_usefulness" type="radio" value="4" onChange={handleChange}/><label htmlFor="information_usefulness">&nbsp;4&nbsp;</label>
-                                  <input name="information_usefulness" type="radio" value="5" onChange={handleChange}/><label htmlFor="information_usefulness">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="information_usefulness" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">10. Overall, how satisfied are you with the Q2 2025 EVA experience?</label><br/>
-                                  <input name="overall_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;1&nbsp;</label>
-                                  <input name="overall_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;2&nbsp;</label>
-                                  <input name="overall_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;3&nbsp;</label>
-                                  <input name="overall_satisfaction" type="radio" value="4" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;4&nbsp;</label>
-                                  <input name="overall_satisfaction" type="radio" value="5" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;5&nbsp;</label>
-                                  <Form.Control.Feedback type="invalid">
-                                      <ErrorMessage component="div" name="overall_satisfaction" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">11. What opportunities do you see for making EVA even better in the future?</label>
-                                  <textarea className="form-control" rows="3" name="opportunities" onChange={handleChange} value={values.opportunities}></textarea>
-                                  <Form.Control.Feedback type="invalid">
-                                    <ErrorMessage component="div" name="opportunities" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">12. Do you have questions for the Eastvantage HR Team?</label>
-                                  <textarea className="form-control" rows="3" name="questions" onChange={handleChange} value={values.questions}></textarea>
-                                  <Form.Control.Feedback type="invalid">
-                                    <ErrorMessage component="div" name="questions" className="input-feedback" />
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col size="12">
-                                <br/>
-                                <span>
-                                  <div style={{'float': 'right'}}>
-                                    <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'eva');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Submit</Button>
-                                  </div>
-                                </span>
-                              </Col>
-                            </Row>
-                          </Content>
-                        </ContainerBody>
-                      </ContainerWrapper>
-                    </form>
-                  )}
-                </Formik>
-              </Modal.Body>
-              {/* <Modal.Footer></Modal.Footer> */}
-            </Modal>
           </ContainerBody>
         </ContainerWrapper>
       </Wrapper>
@@ -1118,23 +831,6 @@ const validationSchemaITAM = Yup.object().shape({
     asset_tag:            Yup.string().required("This field is required").nullable(),
 });
 
-const validationSchemaEVA = Yup.object().shape({
-    // eva_year:                   Yup.string().required("This field is required").nullable(),
-    // eva_quarter:                Yup.string().required("This field is required").nullable(),
-    attended_via:               Yup.string().required("This field is required").nullable(),
-    job_performance_clarity:    Yup.string().required("This field is required").nullable(),
-    work_output_contribution:   Yup.string().required("This field is required").nullable(),
-    management_recognition:     Yup.string().required("This field is required").nullable(),
-    member_value:               Yup.string().required("This field is required").nullable(),
-    platform_link:              Yup.string().required("This field is required").nullable(),
-    program_flow:               Yup.string().required("This field is required").nullable(),
-    content_messages:           Yup.string().required("This field is required").nullable(),
-    information_usefulness:     Yup.string().required("This field is required").nullable(),
-    overall_satisfaction:       Yup.string().required("This field is required").nullable(),
-    opportunities:              Yup.string().required("This field is required").nullable(),
-    questions:                  Yup.string().required("This field is required").nullable(),
-});
-
 const mapStateToProps = (state) => {
   return {
     user: state.user,
@@ -1149,8 +845,6 @@ const mapDispatchToProps = (dispatch) => {
       getNhoSurvey    : () => dispatch( getNhoSurvey() ),
       addUserAsset    : ( post_data ) => dispatch( addUserAsset( post_data) ),
       getUserAssets   : () => dispatch( getUserAssets() ),
-      addEvaSurvey    : ( post_data ) => dispatch( addEvaSurvey( post_data ) ),
-      getEvaSurvey   : () => dispatch( getEvaSurvey() ),
     }
 }
 
