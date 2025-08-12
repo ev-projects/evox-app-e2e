@@ -353,7 +353,8 @@ const CreateTicketPage = function (props) {
               automatic_uploads: true,
               images_upload_handler: handleImageUpload,
               images_reuse_filename: false,
-              relative_urls: false
+              relative_urls: false,
+              document_base_url: process.env.REACT_APP_STORAGE_URL,
             }}
           />,
           errors.description && React.createElement('div', { className: 'error-message' },
