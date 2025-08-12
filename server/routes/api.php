@@ -80,6 +80,7 @@ Route::group(['prefix' => 'freshservice/', 'middleware' => [/*'jwtauth', 'auth.a
     Route::group(['prefix' => 'tickets'], function () {
         Route::get('my-tickets', 'FreshServiceController@getMyTickets');
         Route::post('/', 'FreshServiceController@createTicket');
+        Route::post('upload-image', 'FreshServiceController@saveTicketImage');
         Route::group(['prefix' => '{id}'], function () {
             Route::get('/', 'FreshServiceController@getTicket');
             Route::post('reply', 'FreshServiceController@sendTicketConversation');
