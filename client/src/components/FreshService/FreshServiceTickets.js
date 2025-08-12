@@ -477,7 +477,7 @@ const TicketDetailsPage = function (props) {
                   'fullscreen','insertdatetime','media','table','help','wordcount'
                 ],
   
-                toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons image | ' +
+                toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons | image | ' +
                 'alignleft aligncenter alignright alignjustify | link | ' +
                 'bullist numlist checklist outdent indent | removeformat | help ',
   
@@ -486,6 +486,7 @@ const TicketDetailsPage = function (props) {
                 automatic_uploads: true,
                 images_upload_handler: handleImageUpload,
                 images_reuse_filename: false,
+                relative_urls: false
               }}
             />,
             // React.createElement('textarea', {
