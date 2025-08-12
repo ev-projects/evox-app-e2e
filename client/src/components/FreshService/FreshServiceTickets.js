@@ -254,7 +254,7 @@ const TicketListPage = function (props) {
                 // React.createElement('th', null, 'Requester'),
                 React.createElement('th', null, 'State'),
                 React.createElement('th', null, 'Priority'),
-                React.createElement('th', null, 'Assigned to')
+                //React.createElement('th', null, 'Assigned to')
               )
             ),
             React.createElement('tbody', null,
@@ -296,11 +296,11 @@ const TicketListPage = function (props) {
                       className: 'priority-badge ' + getPriorityClass(ticket.priority)
                     }, getPriorityText(ticket.priority))
                   ),
-                  React.createElement('td', null,
-                    React.createElement('span', { style: { color: '#64748b', fontSize: '12px' } },
-                      'EVOX Support'
-                    )
-                  )
+                  // React.createElement('td', null,
+                  //   React.createElement('span', { style: { color: '#64748b', fontSize: '12px' } },
+                  //     'EVOX Support'
+                  //   )
+                  // )
                 );
               })
             )
