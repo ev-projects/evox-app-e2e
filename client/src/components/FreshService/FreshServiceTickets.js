@@ -356,7 +356,7 @@ const TicketDetailsPage = function (props) {
     API.call({
       method: "post",
       url: "/freshservice/tickets/" + id + "/reply",
-      params: { body: reply }
+      data: { body: reply }
     })
       .then((result) => {
         setReply('');
@@ -477,7 +477,7 @@ const TicketDetailsPage = function (props) {
                   'fullscreen','insertdatetime','media','table','help','wordcount'
                 ],
   
-                toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons image | ' +
+                toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons | image | ' +
                 'alignleft aligncenter alignright alignjustify | link | ' +
                 'bullist numlist checklist outdent indent | removeformat | help ',
   
@@ -486,6 +486,9 @@ const TicketDetailsPage = function (props) {
                 automatic_uploads: true,
                 images_upload_handler: handleImageUpload,
                 images_reuse_filename: false,
+                relative_urls: false,
+                remove_script_host: false,
+                document_base_url: process.env.REACT_APP_STORAGE_URL,
               }}
             />,
             // React.createElement('textarea', {
