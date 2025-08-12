@@ -165,8 +165,7 @@ class API  {
     return {
       status: Validator.isValid(response) && Validator.isValid(response.status)? response.status : 400,
       statusText: Validator.isValid(response) && Validator.isValid(response.statusText)? response.statusText : "Bad Request",
-      data: Validator.isValid(response) && Validator.isValid(response.data)? response.data : {},
-      headers: Validator.isValid(response) && Validator.isValid(response.headers) ? response.headers : {}
+      data: Validator.isValid(response) && Validator.isValid(response.data)? response.data : {}
     };
   }
 

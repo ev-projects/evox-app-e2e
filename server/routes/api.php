@@ -70,7 +70,3 @@ Route::get('download_policy/{id}/', 'PoliciesDocumentController@downloadPolicy')
 // NHO Survey
 Route::get('nho_survey', 'NewHireOrientationController@index')->middleware('auth.apikey');
 Route::post('nho_survey', 'NewHireOrientationController@store')->middleware('auth.apikey');
-
-// EVA Survey
-Route::get('eva_survey', 'EvaController@index')->middleware('auth.apikey');
-Route::post('eva_survey', 'EvaController@store')->middleware('auth.apikey');

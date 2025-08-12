@@ -67,7 +67,6 @@ class DisputeExport implements FromCollection, WithHeadings, WithEvents
 
     {
         return [
-            'Id',
             'Employee No',
             'Employee Name',
             'Department',

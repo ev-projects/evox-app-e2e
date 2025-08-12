@@ -9,10 +9,8 @@ class COE extends Model
     protected $table = 'coes';
 
     protected $fillable = [
-        'sequence_number',
         'user_id',
         'purpose_index',
-        'purpose_note',
         'full_name',
         'address',
         'hire_date',

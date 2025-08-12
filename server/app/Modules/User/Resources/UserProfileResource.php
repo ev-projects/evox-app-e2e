@@ -117,7 +117,7 @@ class UserProfileResource extends JsonResource
                 array('roles' => $roles),
                 array('features_access' => is_valid($this->LevelId) ? $feature_all_list : []),
                 array('level' =>(  $level_item )),
-                array('user_nho_survey' => NhoSurvey::where('user_id', $this->id)->first() ?? []),
+                array('nho_survey' => NhoSurvey::where('user_id', $this->id)->first()),
                 array('departments_handled' => $evox_departments_handled),
                 array('departments_handled_strict' =>  count($evox_departments_handled_strict) === 0? $evox_departments_handled : $evox_departments_handled_strict),
                 array("is_user_nho_valid" => $this->isUserNhoValid()),

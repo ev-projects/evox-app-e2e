@@ -40,7 +40,6 @@
     "react-datepicker": "^2.16.0",
     "react-datetime": "^2.16.3",
     "react-dom": "^16.13.1",
-    "react-file-viewer": "^1.2.1",
     "react-google-slides": "^3.1.1",
     "react-joyride": "^2.5.4",
     "react-loader-spinner": "^3.1.14",
