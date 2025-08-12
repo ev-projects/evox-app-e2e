@@ -437,7 +437,7 @@ const TicketDetailsPage = function (props) {
                   className: 'conversation-item'
                 },
                   React.createElement('div', { className: 'conversation-header' },
-                    React.createElement('span', { className: 'conversation-user' }, 'User ' + conv.user_id),
+                    //React.createElement('span', { className: 'conversation-user' }, 'User ' + conv.user_id),
                     React.createElement('span', { className: 'conversation-date' },
                       formatDate(conv.createdAt || conv.created_at))
                   ),
