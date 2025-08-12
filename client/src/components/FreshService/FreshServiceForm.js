@@ -354,6 +354,7 @@ const CreateTicketPage = function (props) {
               images_upload_handler: handleImageUpload,
               images_reuse_filename: false,
               relative_urls: false,
+              remove_script_host: false,
               document_base_url: process.env.REACT_APP_STORAGE_URL,
             }}
           />,
