@@ -73,7 +73,6 @@ class COE extends Component {
     const initialValue = {
         action:             null,
         purpose_index:      this.props.purpose_index != undefined ? this.props.purpose_index : '',
-        purpose_note:       this.props.purpose_note != undefined ? this.props.purpose_note : '',
         show_compensation:  this.props.show_compensation != undefined ? this.props.show_compensation : ''
     }
 
@@ -92,18 +91,10 @@ class COE extends Component {
               <ContainerBody>
                 <Content col="6"  title={title} subtitle={<RequestSubtitle method={'store'} user={this.props.instance.user} />}>
                   <Row>
-                    <Col size="4">   
+                    <Col size="8">   
                       <div className="form-group">
                         <label>Purpose:</label>
-                        <select name="purpose_index" value={ values.purpose_index } className="form-control" onChange={(e) => {
-                          const selectedValue = e.target.value;
-                          setFieldValue("purpose_index", selectedValue);
-
-                          // Clear purpose_note if index is 6 or 10
-                          if (![6, 10].includes(Number(selectedValue))) {
-                            setFieldValue("purpose_note", "");
-                          }
-                        }}>
+                        <select name="purpose_index" value={ values.purpose_index } className="form-control" onChange={handleChange}>
                             <option></option>
                             { /** Iterates the Overtime Type */
                               coePurposes != null ? 
@@ -119,17 +110,6 @@ class COE extends Component {
                         </Form.Control.Feedback> 
                       </div>
                     </Col>
-                    {[6, 10].includes(Number(values.purpose_index)) && (
-                    <Col size="4">
-                      <div className="form-group">
-                        <label>Travel To:</label>
-                        <input type="text" name="purpose_note" value={ values.purpose_note } className="form-control" onChange={handleChange}></input>
-                        <Form.Control.Feedback type="invalid">
-                            <ErrorMessage component="div" name="purpose_note" className="input-feedback" />
-                        </Form.Control.Feedback> 
-                      </div>
-                    </Col>
-                    )}
                     <Col size="4">   
                       <div className="form-group">
                         <label>With Salary:</label>

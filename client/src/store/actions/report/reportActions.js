@@ -61,3 +61,22 @@ export const getTeamAttendanceSummary = (start_date, end_date, params) => {
             });
     }
 }
+
+export const getDisputeReport = (dispute_id) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/getuserdispute/" + dispute_id,
+        })
+        .then(result => {
+            dispatch({
+                'type'  : 'FETCH_DISPUTE_RECORD', 
+                'data'   : result.data.content[0]
+            })
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) ) 
+        });
+    }
+}

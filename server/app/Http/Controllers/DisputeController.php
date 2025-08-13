@@ -9,10 +9,16 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use Auth;
 
 class DisputeController extends Controller
 {
+    public function __construct(PayrollCutoffRepositoryInterface $payroll_cutoff)
+    {
+        $this->payroll_cutoff = $payroll_cutoff;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -76,13 +82,25 @@ class DisputeController extends Controller
      */
     public function show(Dispute $dispute, Request $request)
     {
-
         $me = Auth::user();
-        $result_sets = call_sp('EV_SP_Payroll_Dispute', [$request->department,$request->disputeType,$request->startDate,$request->endDate,$request->status,$me->id,$me->LevelId,1,null]);
+        $check_if_payroll = call_sp('EV_SP_Validate_Payroll_Level', [$me->id]);
+
+        if ($check_if_payroll[0][0]->IsExists == 1) {
+            // get latest cutoff period
+            $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+            $start_date = $request->startDate ?? $payroll_cutoff->start_date;
+            $end_date = $request->endDate ?? $payroll_cutoff->end_date;
+
+            // return summary of disputes
+            $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->geo ?? null]);
+        } else {
+            // return list of individual dispute records
+            $result_sets = call_sp('EV_SP_PD_Get_Pending_Request', [$me->id, $request->department ?? null, null, $request->status ?? 0, 1]);
+        }
+
         try {
-            log_activity( trans('messages.list_role_attempt') );
             return success_response(
-                trans('messages.list_role_success'), $result_sets[0] 
+                trans('messages.dispute_list_success'), $result_sets[0]
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -91,11 +109,63 @@ class DisputeController extends Controller
 
     public function showExport(Dispute $dispute, Request $request)
     {
-        $me = Auth::user();
-        $result_sets = call_sp('EV_SP_Payroll_Dispute', [$request->department,$request->disputeType,$request->startDate,$request->endDate,$request->status,$me->id,$me->LevelId,1,null]);
+        // get latest cutoff period
+        $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+        $start_date = $request->startDate ?? $payroll_cutoff->start_date;
+        $end_date = $request->endDate ?? $payroll_cutoff->end_date;
+
+        $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->geo ?? null]);
+
+        $results = [];
+        if (count($result_sets[0]) > 0) {
+          foreach ($result_sets[0] as $key => $value) {
+            $results[$key] = [
+                $value->Employee_Number,
+                $value->Employee_Name,
+                $value->Department_Name,
+                $value->Cutoff,
+                $value->PayrollPeriod,
+                $value->ApprovedDate,
+                $value->datefilling,
+                $value->Remarks,
+                $value->unpaid_leave,
+                $value->reg_late,
+                $value->reg_undertime,
+                $value->Render_Hr,
+                $value->Night_Diff,
+                $value->OverTime,
+                $value->OT_ND,
+                $value->RD_Render_HR,
+                $value->RD_ND,
+                $value->RD_OT,
+                $value->RD_OT_ND,
+                $value->LH_Render_HR,
+                $value->LH_ND,
+                $value->LH_OT,
+                $value->LH_OT_ND,
+                $value->SH_Render_Hr,
+                $value->SH_ND,
+                $value->SH_OT,
+                $value->SH_OT_ND,
+                $value->DSH_Render_HR,
+                $value->DSH_ND,
+                $value->DSH_OT,
+                $value->DSH_OT_ND,
+                $value->DLH_Render_HR,
+                $value->DLH_ND,
+                $value->DLH_OT,
+                $value->DLH_OT_ND,
+                $value->SLH_Render_HR,
+                $value->SLH_ND,
+                $value->SLH_OT,
+                $value->SLH_OT_ND,
+            ];
+          }
+        }
+
         try {
-            log_activity( trans('messages.list_role_attempt') );
-            return Excel::download(new DisputeExport($result_sets[0],$request->startDate,$request->endDate), 'Dispute.csv');
+            log_activity( trans('messages.dispute_export_success') );
+            return Excel::download(new DisputeExport($results, $start_date, $end_date), 'Dispute.csv');
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -104,12 +174,11 @@ class DisputeController extends Controller
 
     public function getEmployeeDispute(Request $request)
     {
-        // dd($request->department);
-        $result_sets = call_sp('EV_SP_Payroll_Dispute_Edit_Update', [$request->id]);
         try {
-            log_activity( trans('messages.list_role_attempt') );
+            $result_sets = call_sp('EV_SP_PD_Get_Pending_Request', [null, null, $request->id, null, 2]);
+
             return success_response(
-                trans('messages.list_role_success'), $result_sets[0] 
+                trans('messages.dispute_record_success'), $result_sets[0]
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -118,36 +187,15 @@ class DisputeController extends Controller
 
     public function UpdateDispute(Request $request,$id)
     {
-        try{
-            $validator = Validator::make($request->all(), [
-                  'Payroll_Remarks' => 'required',
-              ]);
-              if ($validator->fails()) {
-                return response()->json(['errors'=>$validator->messages()]);
-              }else{
-                $me = Auth::user();
-                $UpdateDispute = Dispute::where('id', $id)
-                ->update([
-                    'Payroll_Remarks' => $request->Payroll_Remarks,
-                    'Payout_Inclusion' => $request->Payout_Inclusion,
-                    'status' => $request->status,
-                    'updated_by' =>  $me->id,
-                 ]);
-         
-                 if($UpdateDispute){
-                     return response()->json([
-              
-                          'status' => '200',
-                          'message' => 'Updated Successfully',                     
-                     ]);
-                         }else{
-                             
-                             return ["Result"=>"Data Not Saved"];
-                         }
-              }
-            } catch (Exception $e) {
-                return error_response(trans('messages.error_default'), $e);
-            }
+        try {
+            $result_sets = call_sp('EV_SP_PD_Update_Dispute_Status', [$request->status, $id, $request->remarks ?? null]);
+
+            return success_response(
+                trans('messages.dispute_status_success'), []
+            );
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e);
+        }
     }
 
     

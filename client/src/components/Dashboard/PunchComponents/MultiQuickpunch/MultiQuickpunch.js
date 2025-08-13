@@ -64,9 +64,14 @@ class MultiQuickpunch extends Component {
 	addSeconds(date, seconds) {
 		date.setSeconds(date.getSeconds() + seconds);
 		return date;
-	  }
-
-
+	}
+	  
+	subtractSeconds(date, seconds) {
+		//console.log('oms', date.getTime());
+		//console.log('s', seconds);
+		//console.log('-ms', date.getTime() - Math.abs(seconds * 1000));  
+		return new Date(date.getTime() - Math.abs(seconds * 1000));
+	}
 	  ////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////  ////////////////////////////////////////////////////////
 
 	  handleModalSubmit = () => {
@@ -122,8 +127,31 @@ class MultiQuickpunch extends Component {
     componentWillMount(){
 		const date = new Date();
 		// const { user, constant, dashboard } = this.props;
-		this.timer = setTimeout(() => {
-		  this.setState({
+		this.timer = setInterval(() => {
+			if (localStorage.getItem("access_token") == null) return;
+			var timeStamp = localStorage.getItem("user_local_timestamp_mils");
+			var offSet = localStorage.getItem("user_local_offset_mils");
+			//console.log('TS', timeStamp);
+			var now = new Date;
+			//console.log('cDate', now);
+			if (offSet != null) {
+				var utcDate = this.subtractSeconds(now, now.getTimezoneOffset() * 60);
+				//console.log('uDate', utcDate);
+				now = new Date(utcDate.getTime() + parseInt(offSet));
+				//console.log('uDate+', now);
+			}
+			if (timeStamp != null) {
+				var currTimeStamp = now.getTime();
+				//console.log('tsDate', new Date(parseInt(timeStamp)));
+				var diffTimeStamp = currTimeStamp - timeStamp;
+				now = new Date(parseInt(timeStamp) + diffTimeStamp);
+				//console.log('lsDate', now);
+			}
+			this.setState({
+				time: now
+			});
+			//console.log(date);
+		  /*this.setState({
 			time: this.props.user?.user_server_timestamp_mils != null ||  this.props.user?.user_server_timestamp_mils != undefined? 
 			this.state.offsetHasLoaded?   this.addSeconds(this.state.time, 1) :(new Date(this.props.user?.user_server_timestamp_mils+ (date.getTimezoneOffset() * 60*1000)))
 			
@@ -137,12 +165,12 @@ class MultiQuickpunch extends Component {
 	
 		  });
 	
-		  this.componentWillMount();
-	  }, Math.floor(Date.now() / 1000) * 1000 + 1000 - Date.now());
+		  this.componentWillMount();*/
+	  }, 1000);
 	}
 	
     componentWillUnmount(){
-    	clearTimeout(this.timer);
+    	clearInterval(this.timer);
     }
 
 	render = () => {
