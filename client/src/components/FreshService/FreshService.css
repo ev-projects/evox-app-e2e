@@ -307,7 +307,7 @@
   .user-avatar.avatar-r { background: #f97316; }
 
   /* Professional Filters */
-  .filters {
+  .filters-fs {
     display: flex;
     gap: 16px;
     margin-bottom: 24px;
@@ -318,13 +318,13 @@
     align-items: center;
   }
 
-  .filter-group {
+  .filter-group-fs {
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
 
-  .filter-label {
+  .filter-label-fs {
     font-size: 12px;
     font-weight: 500;
     color: #374151;

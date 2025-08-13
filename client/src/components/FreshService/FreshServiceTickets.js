@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react"
+import { useDispatch } from 'react-redux'
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
@@ -177,9 +178,9 @@ const TicketListPage = function (props) {
 
   return React.createElement('div', null,
     // Professional Filters
-    React.createElement('div', { className: 'filters' },
-      React.createElement('div', { className: 'filter-group' },
-        React.createElement('label', { className: 'filter-label' }, 'Workspace'),
+    React.createElement('div', { className: 'filters-fs' },
+      React.createElement('div', { className: 'filter-group-fs' },
+        React.createElement('label', { className: 'filter-label-fs' }, 'Workspace'),
         React.createElement('select', {
           className: 'form-select',
           value: filters.workspaceId,
@@ -312,6 +313,7 @@ const TicketListPage = function (props) {
 
 // TICKET DETAILS PAGE - Professional Version
 const TicketDetailsPage = function (props) {
+  const dispatch = useDispatch();
   var ticket = props.ticket;
   var onBack = props.onBack;
   var useremail = props.useremail;
@@ -377,6 +379,9 @@ const TicketDetailsPage = function (props) {
       })
       .catch((e) => {
         console.error('Reply failed:', e);
+        if (e.status === 401) {
+          dispatch({'type': 'SHOW_MODAL_LOGIN'})
+        }
       })
       .finally(function () {
         setLoading(false);

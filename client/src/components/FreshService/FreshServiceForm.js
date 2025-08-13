@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react"
+import { useDispatch } from 'react-redux'
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
@@ -136,6 +137,7 @@ const validateTicketData = function (data) {
 
 // CREATE TICKET PAGE - Professional Version
 const CreateTicketPage = function (props) {
+  const dispatch = useDispatch();
   var workspaces = props.workspaces;
   // var useremail = props.useremail;
 
@@ -228,6 +230,9 @@ const CreateTicketPage = function (props) {
         })
         .catch((e) => {
           setErrors({ submit: e.message });
+          if (e.status === 401) {
+            dispatch({'type': 'SHOW_MODAL_LOGIN'})
+          }
         })
         .finally(function () {
           setLoading(false);
