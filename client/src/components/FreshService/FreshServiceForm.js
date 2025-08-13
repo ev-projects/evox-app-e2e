@@ -6,6 +6,7 @@ import "./FreshService.css";
 import { Editor } from '@tinymce/tinymce-react';
 import { handleImageUpload } from '../../services/Helper';
 import API from "../../services/API";
+import Formatter from "../../services/Formatter";
 
 // WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
 let WORKSPACE_CATEGORIES = {};
@@ -229,10 +230,11 @@ const CreateTicketPage = function (props) {
           setTimeout(function () { setSuccess(false); }, 3000);
         })
         .catch((e) => {
-          setErrors({ submit: e.message });
+          /*setErrors({ submit: e.message });
           if (e.status === 401) {
             dispatch({'type': 'SHOW_MODAL_LOGIN'})
-          }
+          }*/
+          dispatch(Formatter.alert_error(e));
         })
         .finally(function () {
           setLoading(false);
@@ -397,6 +399,7 @@ const CreateTicketPage = function (props) {
 };
 
 const FreshServiceForm = (props) => {
+  const dispatch = useDispatch();
   var [currentView, setCurrentView] = useState('create');
   var [workspaces, setWorkspaces] = useState([]);
   var [filters, setFilters] = useState({
@@ -452,6 +455,7 @@ const FreshServiceForm = (props) => {
       .catch((e) => {
         setCategoriesLoaded(true);
         console.error('❌ Failed to load workspaces:', e);
+        dispatch(Formatter.alert_error(e));
       });
   }, []);
 

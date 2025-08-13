@@ -6,6 +6,7 @@ import "./FreshService.css";
 import { Editor } from '@tinymce/tinymce-react';
 import { handleImageUpload } from '../../services/Helper';
 import API from "../../services/API";
+import Formatter from "../../services/Formatter";
 
 var formatDate = function(dateString) {
   try {
@@ -342,6 +343,7 @@ const TicketDetailsPage = function (props) {
       })
       .catch((e) => {
         console.error('❌ Failed to load conversations:', e);
+        dispatch(Formatter.alert_error(e));
       })
       .finally(function () {
         setConversationsLoading(false);
@@ -372,6 +374,7 @@ const TicketDetailsPage = function (props) {
             })
             .catch((e) => {
               console.error('❌ Failed to load conversations:', e);
+              dispatch(Formatter.alert_error(e));
             })
             .finally(function () {
               setConversationsLoading(false);
@@ -379,9 +382,10 @@ const TicketDetailsPage = function (props) {
       })
       .catch((e) => {
         console.error('Reply failed:', e);
-        if (e.status === 401) {
-          dispatch({'type': 'SHOW_MODAL_LOGIN'})
-        }
+        // if (e.status === 401) {
+        //   dispatch({'type': 'SHOW_MODAL_LOGIN'})
+        // }
+        dispatch(Formatter.alert_error(e));
       })
       .finally(function () {
         setLoading(false);
@@ -517,6 +521,7 @@ const TicketDetailsPage = function (props) {
 };
 
 const FreshServiceTickets = (props) => {
+  const dispatch = useDispatch();
   var [currentView, setCurrentView] = useState('list');
   var [selectedTicket, setSelectedTicket] = useState(null);
   
@@ -577,6 +582,7 @@ const FreshServiceTickets = (props) => {
       .catch((e) => {
         setCategoriesLoaded(true);
         console.error('❌ Failed to load workspaces:', e);
+        dispatch(Formatter.alert_error(e));
       });
   }, []);
 
@@ -608,6 +614,7 @@ const FreshServiceTickets = (props) => {
       .catch((e) => {
         console.error('❌ Failed to load tickets:', e);
         setTicketsError(e.message);
+        dispatch(Formatter.alert_error(e));
       })
       .finally(function () {
         setTicketsLoading(false);
