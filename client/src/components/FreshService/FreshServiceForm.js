@@ -230,10 +230,6 @@ const CreateTicketPage = function (props) {
           setTimeout(function () { setSuccess(false); }, 3000);
         })
         .catch((e) => {
-          /*setErrors({ submit: e.message });
-          if (e.status === 401) {
-            dispatch({'type': 'SHOW_MODAL_LOGIN'})
-          }*/
           dispatch(Formatter.alert_error(e));
         })
         .finally(function () {

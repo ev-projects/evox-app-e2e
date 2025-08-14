@@ -54,7 +54,7 @@ class FreshServiceController extends Controller
             $res = null;
             $workspaceId = is_valid($request->workspaceId) ? $request->workspaceId : null;
             $status = is_valid($request->status) ? $request->status : 'all';
-            $req = Curl::to(env('FRESHSERVICE_API_BASE_URL') . '/tickets/my-tickets?status=' . $status . '&page=1&limit=25' . ($workspaceId ? '&workspaceId=' . $workspaceId : '') . '&userEmail=' . urlencode($me->email))
+            $req = Curl::to(env('FRESHSERVICE_API_BASE_URL') . '/tickets/my-tickets?status=' . $status . '&page='.$request->page.'&limit='.$request->limit . ($workspaceId ? '&workspaceId=' . $workspaceId : '') . '&userEmail=' . urlencode($me->email))
                 ->withHeader('Accept: application/json')
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
@@ -114,9 +114,17 @@ class FreshServiceController extends Controller
                     JsonResponse::HTTP_OK
                 );
             }
+            $ticket = $res->content->ticket;
+            call_sp("EV_SP_FS_Ticket_Count", [
+                $ticket->id,
+                $ticket->requester_id,
+                $ticket->created_at,
+                $ticket->workspace_id,
+                $me->id
+            ]);
             return success_response(
                 trans('Ticket was successfully created!'),
-                [],
+                $res->content->ticket,
                 JsonResponse::HTTP_OK
             );
         } catch (Exception $e) {

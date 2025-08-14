@@ -100,9 +100,50 @@ const buildSubjectPrefix = function (workspace, subCategory, itemCategory) {
   return '[' + parts.join('] | [') + '] | - ';
 };
 
+
+function Pagination({ pagination, onPageChange }) {
+  if (!pagination || pagination.totalPages <= 1) {
+    return null; // No pagination needed
+  }
+
+  const { currentPage, totalPages, hasPrevious, hasNext } = pagination;
+
+  return React.createElement(
+    'div',
+    { className: 'pagination-controls' },
+    // Previous button
+    React.createElement(
+      'button',
+      {
+        disabled: !hasPrevious,
+        onClick: () => hasPrevious && onPageChange(currentPage - 1)
+      },
+      'Previous'
+    ),
+    // Page info
+    React.createElement(
+      'span',
+      { style: { margin: '0 10px' } },
+      `Page ${currentPage} of ${totalPages}`
+    ),
+    // Next button
+    React.createElement(
+      'button',
+      {
+        disabled: !hasNext,
+        onClick: () => hasNext && onPageChange(currentPage + 1)
+      },
+      'Next'
+    )
+  );
+}
+
+
 // PROFESSIONAL TICKET LIST PAGE - Table Format
 const TicketListPage = function (props) {
   var tickets = props.tickets;
+  var pagination = props.pagination; // from API
+  var onPageChange = props.onPageChange; // parent function to fetch a specific page
   var workspaces = props.workspaces;
   var onTicketSelect = props.onTicketSelect;
   var onFilterChange = props.onFilterChange;
@@ -306,6 +347,12 @@ const TicketListPage = function (props) {
                 );
               })
             )
+          ),
+          React.createElement('div', { className: 'ticket-pagination' },
+            React.createElement(Pagination, {
+              pagination: pagination,
+              onPageChange: onPageChange
+            })
           )
         )
     )
@@ -527,6 +574,7 @@ const FreshServiceTickets = (props) => {
   
   var [workspaces, setWorkspaces] = useState([]);
   var [tickets, setTickets] = useState([]);
+  var [pagination, setPagination] = useState(null);
   var [filters, setFilters] = useState({
     workspaceId: '',
     status: 'all'
@@ -587,15 +635,15 @@ const FreshServiceTickets = (props) => {
   }, []);
 
   // Load tickets when filters change
-  var loadTickets = useCallback(function () {
+  var loadTickets = useCallback(function (page = null) {
     console.log('🔄 Loading tickets');
     setTicketsLoading(true);
     setTicketsError(null);
 
     var params = new URLSearchParams({
       status: filters.status,
-      page: '1',
-      limit: '25',
+      page: page ?? '1',
+      limit: '100',
       userEmail: props.user.email
     });
 
@@ -609,6 +657,7 @@ const FreshServiceTickets = (props) => {
     })
       .then((result) => {
         setTickets(result.data.content.tickets || []);
+        setPagination(result.data.content.pagination || null)
         console.log('✅ Tickets loaded');
       })
       .catch((e) => {
@@ -638,6 +687,10 @@ const FreshServiceTickets = (props) => {
     setSelectedTicket(null);
   }, []);
 
+  var onPageChange = useCallback(function (page = null) {
+    loadTickets(page);
+  }, []);
+
   var handleFilterChange = useCallback(function (field, value) {
     setFilters(function (prev) {
       return { ...prev, [field]: value };
@@ -659,6 +712,8 @@ const FreshServiceTickets = (props) => {
                     ) :
                     currentView === 'list' ? React.createElement(TicketListPage, {
                       tickets: tickets,
+                      pagination: pagination,
+                      onPageChange: onPageChange,
                       workspaces: workspaces,
                       onTicketSelect: handleTicketSelect,
                       onFilterChange: handleFilterChange,
