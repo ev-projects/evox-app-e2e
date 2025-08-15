@@ -273,13 +273,13 @@ const CreateTicketPage = function (props) {
 
       React.createElement('form', { onSubmit: handleSubmit },
         React.createElement('div', { className: 'form-group' },
-          React.createElement('label', { className: 'form-label' }, 'Workspace *'),
+          React.createElement('label', { className: 'form-label' }, 'Department *'),
           React.createElement('select', {
             className: 'form-select',
             value: formData.selectedWorkspace,
             onChange: function (e) { updateField('selectedWorkspace', e.target.value); }
           },
-            React.createElement('option', { value: '' }, 'Select Workspace'),
+            React.createElement('option', { value: '' }, 'Select Departent'),
             workspaceOptions.map(function (workspaceName) {
               return React.createElement('option', { key: workspaceName, value: workspaceName }, workspaceName);
             })
@@ -470,6 +470,7 @@ const CreateTicketPage = function (props) {
 
 const FreshServiceForm = (props) => {
   const dispatch = useDispatch();
+  const isMounted = useRef(true);
   var [currentView, setCurrentView] = useState('create');
   var [workspaces, setWorkspaces] = useState([]);
   var [filters, setFilters] = useState({
@@ -477,57 +478,74 @@ const FreshServiceForm = (props) => {
     status: 'all'
   });
   var [categoriesLoaded, setCategoriesLoaded] = useState(false);
+  var [workspacesLoaded, setWorkspacesLoaded] = useState(false);
 
-  // Load workspace categories from JSON file
-  useEffect(function () {
-    console.log('🔄 Loading workspace categories from JSON file');
+  // Load workspace categories
+  useEffect(() => {
+     console.log("🔄 Loading workspaces categories (once)");
+    // Set isMounted to true on mount
+    isMounted.current = true;
+
     fetch('/workspace-categories.json')
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error('Failed to load workspace categories');
+      .then(response => response.json())
+      .then((data) => {
+        if (isMounted.current) {
+          WORKSPACE_CATEGORIES = data;
+          setCategoriesLoaded(true);
+          console.log('✅ Workspace categories loaded');
         }
-        return response.json();
       })
-      .then(function (data) {
-        WORKSPACE_CATEGORIES = data;
-        setCategoriesLoaded(true);
-        console.log('✅ Workspace categories loaded from JSON');
-      })
-      .catch(function (error) {
-        console.error('❌ Failed to load workspace categories:', error);
-        // Fallback to minimal data if JSON fails
-        WORKSPACE_CATEGORIES = {
-          "EVOX": {
-            "EVOX": ["Access", "Bug", "Update"],
-            "Hardware": ["Asset"],
-            "Software": ["Application"]
-          }
-        };
-        setCategoriesLoaded(true);
+      .catch((error) => {
+        if (isMounted.current) {
+          console.error('❌ Failed to load workspace categories:', error);
+          WORKSPACE_CATEGORIES = {
+            "EVOX": {
+              "EVOX": ["Access", "Bug", "Update"],
+              "Hardware": ["Asset"],
+              "Software": ["Application"]
+            }
+          };
+          setCategoriesLoaded(true);
+        }
       });
-  }, []);
 
-  // Load workspaces once
-  useEffect(function () {
-    console.log('🔄 Loading workspaces (once)');
+    // Cleanup: Set isMounted to false on unmount
+    return () => {
+      isMounted.current = false;
+    };
+  }, []); // Only run once on mount
+
+  // Load workspaces
+  useEffect(() => {
+    console.log("🔄 Loading workspaces (once)");
+    // Set isMounted to true on mount
+    isMounted.current = true;
+
     API.call({
-      method: "get",
-      url: "/freshservice/workspaces/",
+      method: 'get',
+      url: '/freshservice/workspaces/',
     })
       .then((result) => {
-        var activeWorkspaces = (result.data.content || []).filter(function (ws) {
-          return ws.state === 'active';
-        });
-        setWorkspaces(activeWorkspaces);
-        setCategoriesLoaded(true);
-        console.log('✅ Workspaces loaded');
+        if (isMounted.current) {
+          const activeWorkspaces = (result.data.content || []).filter(ws => ws.state === 'active');
+          setWorkspaces(activeWorkspaces);
+          setWorkspacesLoaded(true);
+          console.log('✅ Workspaces loaded');
+        }
       })
       .catch((e) => {
-        setCategoriesLoaded(true);
-        console.error('❌ Failed to load workspaces:', e);
-        dispatch(Formatter.alert_error(e));
+        if (isMounted.current) {
+          console.error('❌ Error during API call:', e);
+          setWorkspacesLoaded(true);
+          dispatch(Formatter.alert_error(e));
+        }
       });
-  }, []);
+
+    // Cleanup: Set isMounted to false on unmount
+    return () => {
+      isMounted.current = false;
+    };
+  }, []); // Only run once on mount
 
   return (
     <>
@@ -537,7 +555,7 @@ const FreshServiceForm = (props) => {
             <Content>
               {React.createElement('div', { className: 'app-fs' },
                 React.createElement('main', { className: 'main-fs' },
-                  !categoriesLoaded ?
+                   !(categoriesLoaded && workspacesLoaded) ?
                     React.createElement('div', { className: 'loading' },
                       React.createElement('span', { className: 'spinner' }),
                       'Loading workspace categories...'

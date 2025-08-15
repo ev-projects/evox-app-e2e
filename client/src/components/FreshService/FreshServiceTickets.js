@@ -382,7 +382,7 @@ const TicketDetailsPage = function (props) {
 
   useEffect(function () {
     if (!ticket.id) return;
-
+    console.log(ticket);
     var ticketId = parseInt(ticket.id);
     if (isNaN(ticketId) || ticketId <= 0) return;
 
@@ -487,6 +487,17 @@ const TicketDetailsPage = function (props) {
             React.createElement('div', {
               dangerouslySetInnerHTML: { __html: ticket.description || 'No description provided' }
             })
+          ),
+          React.createElement('div', { className: 'attachment-list' },
+            ticket.attachments.map(function (att) {
+              return React.createElement('div', {
+                key: att.id,
+                className: 'attachment-item'
+              }, React.createElement('a', {
+                href: att.attachment_url,
+                target: '_blank'
+              }, att.name))
+            })
           )
         )
       )
@@ -526,7 +537,18 @@ const TicketDetailsPage = function (props) {
                   React.createElement('div', {
                     className: 'conversation-body',
                     dangerouslySetInnerHTML: { __html: conv.bodyText || conv.body || 'No content' }
-                  })
+                  }),
+                  React.createElement('div', { className: 'attachment-list' },
+                    conv.attachments.map(function (att) {
+                      return React.createElement('div', {
+                        key: att.id,
+                        className: 'attachment-item'
+                      }, React.createElement('a', {
+                        href: att.attachment_url,
+                        target: '_blank'
+                      }, att.name))
+                    })
+                  )
                 );
               })
             ),

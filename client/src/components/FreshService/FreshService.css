@@ -532,6 +532,23 @@
     line-height: 1.5;
   }
 
+  .attachment-list {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #bbb !important;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .attachment-list:empty {
+    display: none;
+  }
+
+  .attachment-list .attachment-item a {
+    color: #000 !important;
+  }
+
   /* Back Button */
   .back-button {
     background: #6b7280;
