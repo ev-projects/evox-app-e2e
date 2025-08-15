@@ -565,6 +565,18 @@
     margin-right: 0 !important;
   }
 
+  .attachment-remove-btn-fs {
+    font-size: 8px;
+    margin-left: 10px;
+    border-radius: 3px;
+    padding: 3px;
+    border: none;
+  }
+
+  .attachments-list-fs {
+    margin-left: 30px;
+  }
+
   /* Responsive Design */
   @media (max-width: 768px) {
     .header-top {

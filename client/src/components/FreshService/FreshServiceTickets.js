@@ -547,13 +547,59 @@ const TicketDetailsPage = function (props) {
                 document_base_url: process.env.REACT_APP_STORAGE_URL,
               }}
             />,
-            // React.createElement('textarea', {
-            //   className: 'form-textarea',
-            //   placeholder: 'Type your reply...',
-            //   value: reply,
-            //   onChange: function (e) { setReply(e.target.value); },
-            //   rows: '4'
-            // }),
+
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' }, 'Attachments'),
+              React.createElement('input', {
+                type: 'file',
+                className: 'form-input',
+                multiple: true,
+                onChange: function (e) {
+                  setLoading(true);
+                  const newFiles = Array.from(e.target.files);
+                  const attachmentData = new FormData();
+
+                  attachmentData.append('ticket_id', ticket.id);
+                  attachmentData.append('workspace_id', ticket.workspace_id);
+                  attachmentData.append("attachment", newFiles[0]);
+    
+                  API.call({
+                    method: "post",
+                    url: "/freshservice/attachments/",
+                    data: attachmentData
+                  })
+                    .then((result) => {
+                      // updateField('attachments', [...formData.attachments, ...newFiles]);
+                      // updateField('attachmentsValues', [...formData.attachmentsValues, ...result]);
+                    })
+                    .catch((e) => {
+                      dispatch(Formatter.alert_error(e));
+                    })
+                    .finally(function () {
+                      setLoading(false);
+                    });
+                }
+              }),
+              // errors.attachments && React.createElement('div', { className: 'error-message' },
+              //   '⚠️ ' + errors.attachments
+              // )
+            ),
+            // formData.attachments.length > 0 && React.createElement('ul', { className: 'attachments-list-fs' },
+            //   formData.attachments.map((file, index) =>
+            //     React.createElement('li', { key: index },
+            //       file.name,
+            //       React.createElement('button', {
+            //         className: 'attachment-remove-btn-fs',
+            //         type: 'button',
+            //         onClick: function () {
+            //           const updatedFiles = formData.attachments.filter((_, i) => i !== index);
+            //           updateField('attachments', updatedFiles);
+            //         }
+            //       }, '❌')
+            //     )
+            //   )
+            // ),
+
             React.createElement('button', {
               type: 'submit',
               className: 'btn-fs',

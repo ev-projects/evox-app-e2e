@@ -149,7 +149,9 @@ const CreateTicketPage = function (props) {
     priority: 2,
     selectedWorkspace: 'EVOX',
     selectedSubCategory: '',
-    selectedItemCategory: ''
+    selectedItemCategory: '',
+    attachments: [],
+    attachmentsValues: []
   });
 
   var [errors, setErrors] = useState({});
@@ -208,7 +210,8 @@ const CreateTicketPage = function (props) {
         description: formData.description,
         priority: parseInt(formData.priority),
         status: 2,
-        workspace_id: selectedWorkSpaceId
+        workspace_id: selectedWorkSpaceId,
+        attachments: formData.attachments
       };
 
       API.call({
@@ -225,7 +228,8 @@ const CreateTicketPage = function (props) {
             priority: 2,
             selectedWorkspace: 'EVOX',
             selectedSubCategory: '',
-            selectedItemCategory: ''
+            selectedItemCategory: '',
+            attachments: []
           });
           setTimeout(function () { setSuccess(false); }, 3000);
         })
@@ -363,6 +367,59 @@ const CreateTicketPage = function (props) {
           />,
           errors.description && React.createElement('div', { className: 'error-message' },
             '⚠️ ' + errors.description
+          )
+        ),
+
+        React.createElement('div', { className: 'form-group' },
+          React.createElement('label', { className: 'form-label' }, 'Attachments'),
+          React.createElement('input', {
+            type: 'file',
+            className: 'form-input',
+            multiple: true,
+            onChange: function (e) {
+              setLoading(true);
+              const newFiles = Array.from(e.target.files);
+              const attachmentData = new FormData();
+
+              const ticketWorkSpace = workspaces.find(ws => ws.name === formData.selectedWorkspace);
+              const selectedWorkSpaceId = ticketWorkSpace ? ticketWorkSpace.id : null;
+              attachmentData.append('workspace_id', selectedWorkSpaceId);
+              attachmentData.append("attachment", newFiles[0]);
+
+              API.call({
+                method: "post",
+                url: "/freshservice/attachments/",
+                data: attachmentData
+              })
+                .then((result) => {
+                  updateField('attachments', [...formData.attachments, ...newFiles]);
+                  updateField('attachmentsValues', [...formData.attachmentsValues, ...result]);
+                })
+                .catch((e) => {
+                  dispatch(Formatter.alert_error(e));
+                })
+                .finally(function () {
+                  setLoading(false);
+                });
+            }
+          }),
+          errors.attachments && React.createElement('div', { className: 'error-message' },
+            '⚠️ ' + errors.attachments
+          )
+        ),
+        formData.attachments.length > 0 && React.createElement('ul', { className: 'attachments-list-fs' },
+          formData.attachments.map((file, index) =>
+            React.createElement('li', { key: index },
+              file.name,
+              React.createElement('button', {
+                className: 'attachment-remove-btn-fs',
+                type: 'button',
+                onClick: function () {
+                  const updatedFiles = formData.attachments.filter((_, i) => i !== index);
+                  updateField('attachments', updatedFiles);
+                }
+              }, '❌')
+            )
           )
         ),
 
