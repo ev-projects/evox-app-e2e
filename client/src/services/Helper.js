@@ -149,6 +149,18 @@ export const getcurrentdate = function () {
     return expiredate;
 }*/
 
+export const formatBytes = function (bytes) {
+  if (bytes === 0) return '0 Bytes';
+
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+
+  const value = bytes / Math.pow(1024, i);
+  const rounded = value.toFixed(value < 10 ? 2 : 1); // 2 decimals if < 10, else 1
+
+  return `${rounded} ${sizes[i]}`;
+}
+
 
 export const handleImageUpload = (blobInfo) => {
     const formData = new FormData();

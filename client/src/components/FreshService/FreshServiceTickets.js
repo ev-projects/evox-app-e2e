@@ -4,7 +4,7 @@ import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/Admin
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
 import { Editor } from '@tinymce/tinymce-react';
-import { handleImageUpload } from '../../services/Helper';
+import { handleImageUpload, formatBytes } from '../../services/Helper';
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
 
@@ -363,7 +363,7 @@ const TicketListPage = function (props) {
 const TicketDetailsPage = function (props) {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
-  var ticket = props.ticket;
+  var [ticket, setTicket] = useState(props.ticket);
   var onBack = props.onBack;
   const defaultSignature = `
     <br><br>
@@ -389,7 +389,34 @@ const TicketDetailsPage = function (props) {
 
   useEffect(function () {
     if (!ticket.id) return;
-    console.log(ticket);
+
+    var ticketId = parseInt(ticket.id);
+    if (isNaN(ticketId) || ticketId <= 0) return;
+
+    console.log('🔄 Loading single ticket:', ticketId);
+    //setConversationsLoading(true);
+
+    API.call({
+      method: "get",
+      url: "/freshservice/tickets/" + ticketId
+    })
+      .then((result) => {
+        console.log('✅ Single ticket loaded successfully');
+        setTicket(result.data.content);
+        //setConversations(result.data.content.conversations || []);
+      })
+      .catch((e) => {
+        console.error('❌ Failed to load single ticket:', e);
+        dispatch(Formatter.alert_error(e));
+      })
+      .finally(function () {
+        //setConversationsLoading(false);
+      });
+  }, [ticket.id]);
+
+  useEffect(function () {
+    if (!ticket.id) return;
+
     var ticketId = parseInt(ticket.id);
     if (isNaN(ticketId) || ticketId <= 0) return;
 
@@ -485,7 +512,6 @@ const TicketDetailsPage = function (props) {
             background: '#f8fafc',
             padding: '16px',
             borderRadius: '8px',
-            marginBottom: '24px',
             border: '1px solid #e2e8f0'
           }
         },
@@ -494,18 +520,20 @@ const TicketDetailsPage = function (props) {
             React.createElement('div', {
               dangerouslySetInnerHTML: { __html: ticket.description || 'No description provided' }
             })
-          ),
-          React.createElement('div', { className: 'attachment-list' },
-            ticket.attachments && ticket.attachments.map(function (att) {
-              return React.createElement('div', {
-                key: att.id,
-                className: 'attachment-item'
-              }, React.createElement('a', {
-                href: att.attachment_url,
-                target: '_blank'
-              }, att.name))
-            })
           )
+        )
+      ),
+      React.createElement('div', { className: 'card-content-fs', style: { paddingTop: 0 } },
+        React.createElement('div', { className: 'attachment-list' },
+          ticket.attachments && ticket.attachments.map(function (att) {
+            return React.createElement('div', {
+              key: att.id,
+              className: 'attachment-item'
+            }, React.createElement('a', {
+              href: att.attachment_url,
+              target: '_blank'
+            }, att.name, React.createElement('br'), formatBytes(att.size)))
+          })
         )
       )
     ),
@@ -553,7 +581,7 @@ const TicketDetailsPage = function (props) {
                       }, React.createElement('a', {
                         href: att.attachment_url,
                         target: '_blank'
-                      }, att.name))
+                      }, att.name, React.createElement('br'), formatBytes(att.size)))
                     })
                   )
                 );

@@ -535,18 +535,39 @@
   .attachment-list {
     margin-top: 10px;
     padding: 10px;
-    background-color: #bbb !important;
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 10px;
   }
+
   .attachment-list:empty {
     display: none;
   }
 
+  @media (min-width: 768px) {
+    .attachment-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .attachment-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
   .attachment-list .attachment-item a {
     color: #000 !important;
+    padding: 15px 10px;
+    border: solid 1px #bbb;
+    background-color: #fff;
+    border-radius: 3px;
+    display: flex;
   }
 
   /* Back Button */
