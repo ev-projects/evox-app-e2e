@@ -140,14 +140,21 @@ const validateTicketData = function (data) {
 const CreateTicketPage = function (props) {
   const dispatch = useDispatch();
   var workspaces = props.workspaces;
-  // var useremail = props.useremail;
+  const defaultSignature = `
+    <br><br>
+    Best Regards,<br>
+    <strong>${props.user.first_name + ' ' + props.user.last_name}</strong><br>
+    <span style="display: inline-block;">${props.user.department_main}</span><br>
+    <span style="display: inline-block;">Employee ID: ${props.user.emp_num}</span><br>
+    <span style="display: inline-block;">Country: ${props.user.country}</span>
+  `;
 
   var [formData, setFormData] = useState({
     subject: '',
     userSubject: '',
     description: '',
     priority: 2,
-    selectedWorkspace: 'EVOX',
+    selectedWorkspace: '',
     selectedSubCategory: '',
     selectedItemCategory: '',
     attachments: [],
@@ -217,7 +224,6 @@ const CreateTicketPage = function (props) {
         attachments: formData.attachmentsValues,
         removed_attachments: formData.removedAttachments
       };
-      console.log(ticketData);
 
       API.call({
         method: "post",
@@ -229,7 +235,7 @@ const CreateTicketPage = function (props) {
           setFormData({
             subject: '',
             userSubject: '',
-            description: '',
+            description: defaultSignature,
             priority: 2,
             selectedWorkspace: 'EVOX',
             selectedSubCategory: '',
@@ -273,7 +279,7 @@ const CreateTicketPage = function (props) {
 
       React.createElement('form', { onSubmit: handleSubmit },
         React.createElement('div', { className: 'form-group' },
-          React.createElement('label', { className: 'form-label' }, 'Workspace *'),
+          React.createElement('label', { className: 'form-label' }, 'EV Department *'),
           React.createElement('select', {
             className: 'form-select',
             value: formData.selectedWorkspace,
@@ -333,7 +339,7 @@ const CreateTicketPage = function (props) {
           React.createElement('input', {
             type: 'text',
             className: 'form-input',
-            placeholder: 'Brief description of the issue',
+            placeholder: 'Brief description',
             value: formData.userSubject,
             onChange: function (e) { updateField('userSubject', e.target.value); }
           }),
@@ -349,6 +355,12 @@ const CreateTicketPage = function (props) {
             textareaName="content"
             value={formData.description}
             onEditorChange={(content, editor) => updateField('description', content)}
+            onInit={(evt, editor) => {
+              if (!formData.description || formData.description.trim() === '') {
+                editor.setContent(defaultSignature);
+                updateField('description', defaultSignature);
+              }
+            }}
             init={{
               height: 500,
               menubar: false,
@@ -403,7 +415,6 @@ const CreateTicketPage = function (props) {
                   console.log(result);
                   updateField('attachments', [...formData.attachments, ...newFiles]);
                   updateField('attachmentsValues', [...formData.attachmentsValues, result.data.content.files[0]]);
-                  console.log(formData.attachmentsValues);
                 })
                 .catch((e) => {
                   dispatch(Formatter.alert_error(e));
@@ -433,7 +444,6 @@ const CreateTicketPage = function (props) {
                   updateField('removedAttachments', [...formData.removedAttachments, formData.attachmentsValues[index]]);
                   const updatedValues = formData.attachmentsValues.filter((_, i) => i !== index);
                   updateField('attachmentsValues', updatedValues);
-                  console.log(formData.attachmentsValues, formData.removedAttachments);
                 }
               }, '❌')
             )
@@ -458,7 +468,7 @@ const CreateTicketPage = function (props) {
           type: 'submit',
           className: 'btn-fs',
           disabled: loading
-        }, loading ? 'Creating...' : 'Create Ticket'),
+        }, loading ? 'Creating...' : 'Create a Ticket'),
 
         errors.submit && React.createElement('div', { className: 'error-message' },
           '❌ ' + errors.submit
@@ -515,9 +525,13 @@ const FreshServiceForm = (props) => {
       url: "/freshservice/workspaces/",
     })
       .then((result) => {
-        var activeWorkspaces = (result.data.content || []).filter(function (ws) {
-          return ws.state === 'active';
-        });
+        var activeWorkspaces = (result.data.content || [])
+          .filter(function (ws) {
+            return ws.state === 'active';
+          })
+          .sort(function (a, b) {
+            return a.name.localeCompare(b.name);
+          });
         setWorkspaces(activeWorkspaces);
         setCategoriesLoaded(true);
         console.log('✅ Workspaces loaded');
@@ -544,7 +558,8 @@ const FreshServiceForm = (props) => {
                     ) :
                     currentView === 'create' ? React.createElement(CreateTicketPage, {
                       workspaces: workspaces,
-                      useremail: props.user.email
+                      useremail: props.user.email,
+                      user: props.user
                     }) : null
                 )
               )}

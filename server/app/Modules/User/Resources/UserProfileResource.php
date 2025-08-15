@@ -44,6 +44,7 @@ class UserProfileResource extends JsonResource
             'emp_num' => $this->emp_num,
             'bhr_num' => $this->bhr_num,
             'department' => ( is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
+            'department_main' => ( is_valid( $this->SubDepartmentID ) ? EvoxDepartment::where("Id", EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->DepartmentId)->first()->Name : null ),
             'department_id' => $this->department_id,
             'email' => $this->email,
             'username' => $this->username,

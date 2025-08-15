@@ -222,13 +222,13 @@ const TicketListPage = function (props) {
     // Professional Filters
     React.createElement('div', { className: 'filters-fs' },
       React.createElement('div', { className: 'filter-group-fs' },
-        React.createElement('label', { className: 'filter-label-fs' }, 'Workspace'),
+        React.createElement('label', { className: 'filter-label-fs' }, 'EV Department'),
         React.createElement('select', {
           className: 'form-select',
           value: filters.workspaceId,
           onChange: function (e) { onFilterChange('workspaceId', e.target.value); }
         },
-          React.createElement('option', { value: '' }, 'All Workspaces'),
+          // React.createElement('option', { value: '' }, 'All Workspaces'),
           workspaces.map(function (workspace) {
             return React.createElement('option', {
               key: workspace.id,
@@ -365,7 +365,14 @@ const TicketDetailsPage = function (props) {
   const fileInputRef = useRef(null);
   var ticket = props.ticket;
   var onBack = props.onBack;
-  var useremail = props.useremail;
+  const defaultSignature = `
+    <br><br>
+    Best Regards,<br>
+    <strong>${props.user.first_name + ' ' + props.user.last_name}</strong><br>
+    <span style="display: inline-block;">${props.user.department_main}</span><br>
+    <span style="display: inline-block;">Employee ID: ${props.user.emp_num}</span><br>
+    <span style="display: inline-block;">Country: ${props.user.country}</span>
+  `;
 
   var [conversations, setConversations] = useState([]);
   var [reply, setReply] = useState('');
@@ -426,7 +433,7 @@ const TicketDetailsPage = function (props) {
       data: replyData
     })
       .then((result) => {
-        setReply('');
+        setReply(defaultSignature);
         setAttachment({
           attachments: [],
           attachmentsValues: [],
@@ -545,6 +552,12 @@ const TicketDetailsPage = function (props) {
               textareaName="content"
               value={reply}
               onEditorChange={(newContent, editor) => setReply(newContent)}
+              onInit={(evt, editor) => {
+                if (!reply || reply.trim() === '') {
+                  editor.setContent(defaultSignature);
+                  // updateField('description', defaultSignature);
+                }
+              }}
               init={{
                 height: 500,
                 menubar: false,
@@ -694,9 +707,13 @@ const FreshServiceTickets = (props) => {
       url: "/freshservice/workspaces/",
     })
       .then((result) => {
-        var activeWorkspaces = (result.data.content || []).filter(function (ws) {
-          return ws.state === 'active';
-        });
+        var activeWorkspaces = (result.data.content || [])
+          .filter(function (ws) {
+            return ws.state === 'active';
+          })
+          .sort(function (a, b) {
+            return a.name.localeCompare(b.name);
+          });
         setWorkspaces(activeWorkspaces);
         setCategoriesLoaded(true);
         console.log('✅ Workspaces loaded');
@@ -723,6 +740,9 @@ const FreshServiceTickets = (props) => {
 
     if (filters.workspaceId) {
       params.append('workspaceId', filters.workspaceId);
+    } else if (workspaces) {
+      const defaultWorkSpaceId = workspaces[0]?.id;
+      params.append('workspaceId', defaultWorkSpaceId);
     }
 
     API.call({
@@ -742,7 +762,7 @@ const FreshServiceTickets = (props) => {
       .finally(function () {
         setTicketsLoading(false);
       });
-  }, [filters.status, filters.workspaceId, props.user.email]);
+  }, [filters.status, filters.workspaceId, props.user.email, workspaces]);
 
   useEffect(function () {
     if (currentView === 'list') {
@@ -799,7 +819,8 @@ const FreshServiceTickets = (props) => {
                       currentView === 'details' && selectedTicket ? React.createElement(TicketDetailsPage, {
                         ticket: selectedTicket,
                         onBack: handleBackToList,
-                        useremail: props.user.email
+                        useremail: props.user.email,
+                        user: props.user
                       }) : null
                 )
               )}

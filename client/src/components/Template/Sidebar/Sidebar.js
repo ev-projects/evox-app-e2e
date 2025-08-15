@@ -314,7 +314,7 @@ const Sidebar = (props) => {
               <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-ticket" />
-                    <p>FreshService<i className="right fa fa-chevron-left" /></p>
+                    <p>EV Assist<i className="right fa fa-chevron-left" /></p>
                   </a>
                   <ul className="nav nav-treeview">
                     <li className="nav-item">
