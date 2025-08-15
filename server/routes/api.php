@@ -81,6 +81,7 @@ Route::group(['prefix' => 'freshservice/', 'middleware' => ['jwtauth', 'auth.api
         Route::get('my-tickets', 'FreshServiceController@getMyTickets');
         Route::post('/', 'FreshServiceController@createTicket');
         Route::post('upload-image', 'FreshServiceController@saveTicketImage');
+        Route::post('attachments', 'FreshServiceController@saveAttachment');
         Route::group(['prefix' => '{id}'], function () {
             Route::get('/', 'FreshServiceController@getTicket');
             Route::post('reply', 'FreshServiceController@sendTicketConversation');

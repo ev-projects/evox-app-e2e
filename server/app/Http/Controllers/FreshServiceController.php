@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Ixudra\Curl\Facades\Curl;
 
@@ -19,15 +20,10 @@ class FreshServiceController extends Controller
                 ->withHeader('Accept: application/json')
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
-                ->returnResponseObject();
+                ->returnResponseObject()
+                ->asJson();
             $res = $req->get();
-            if ($res->status == JsonResponse::HTTP_OK) {
-                if (is_object(json_decode($res->content)) || is_array(json_decode($res->content))) {
-                    $res = json_decode($res->content);
-                } else {
-                    $res = $res->content;
-                }
-            } else {
+            if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 return success_response(
@@ -38,7 +34,7 @@ class FreshServiceController extends Controller
             }
             return success_response(
                 trans('Workspaces are successfully fetched!'),
-                $res,
+                $res->content,
                 JsonResponse::HTTP_OK
             );
         } catch (Exception $e) {
@@ -58,26 +54,21 @@ class FreshServiceController extends Controller
                 ->withHeader('Accept: application/json')
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
-                ->returnResponseObject();
+                ->returnResponseObject()
+                ->asJson();
             $res = $req->get();
-            if ($res->status == JsonResponse::HTTP_OK) {
-                if (is_object(json_decode($res->content)) || is_array(json_decode($res->content))) {
-                    $res = json_decode($res->content);
-                } else {
-                    $res = $res->content;
-                }
-            } else {
+            if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 return success_response(
                     trans('Could not load my tickets.'),
-                    [],
+                    $res->content,
                     JsonResponse::HTTP_OK
                 );
             }
             return success_response(
                 trans('My tickets are successfully fetched!'),
-                $res,
+                $res->content,
                 JsonResponse::HTTP_OK
             );
         } catch (Exception $e) {
@@ -103,14 +94,15 @@ class FreshServiceController extends Controller
                 'status' => intval($request->status),
                 'subject' => $request->subject,
                 'workspace_id' => intval($request->workspace_id),
-                'email' => $me->email
+                'email' => $me->email,
+                'attachments' => $request->attachments
             ])->asJson();
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 return success_response(
                     trans('Could not create ticket.'),
-                    [],
+                    $res->content,
                     JsonResponse::HTTP_OK
                 );
             }
@@ -142,26 +134,21 @@ class FreshServiceController extends Controller
                 ->withHeader('Accept: application/json')
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
-                ->returnResponseObject();
+                ->returnResponseObject()
+                ->asJson();
             $res = $req->get();
-            if ($res->status == JsonResponse::HTTP_OK) {
-                if (is_object(json_decode($res->content)) || is_array(json_decode($res->content))) {
-                    $res = json_decode($res->content);
-                } else {
-                    $res = $res->content;
-                }
-            } else {
+            if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 return success_response(
                     trans('Could not load ticket details.'),
-                    [],
+                    $$res->content,
                     JsonResponse::HTTP_OK
                 );
             }
             return success_response(
                 trans('Ticket details are successfully fetched!'),
-                $res,
+                $res->content,
                 JsonResponse::HTTP_OK
             );
         } catch (Exception $e) {
@@ -183,20 +170,21 @@ class FreshServiceController extends Controller
                 ->returnResponseObject();
             $req->withData([
                 'body' => $request->body,
-                'from_email' => $me->email
+                'user_id' => $request->requester_id,
+                'attachments' => $request->attachments
             ])->asJson();
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 return success_response(
                     trans('Could not create ticket.'),
-                    $res,
+                    $res->content,
                     JsonResponse::HTTP_OK
                 );
             }
             return success_response(
-                trans('Ticket was successfully created!'),
-                [],
+                trans('Ticket reply was successfully created!'),
+                $res->content,
                 JsonResponse::HTTP_OK
             );
         } catch (Exception $e) {
@@ -214,26 +202,21 @@ class FreshServiceController extends Controller
                 ->withHeader('Accept: application/json')
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
-                ->returnResponseObject();
+                ->returnResponseObject()
+                ->asJson();
             $res = $req->get();
-            if ($res->status == JsonResponse::HTTP_OK) {
-                if (is_object(json_decode($res->content)) || is_array(json_decode($res->content))) {
-                    $res = json_decode($res->content);
-                } else {
-                    $res = $res->content;
-                }
-            } else {
+            if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 return success_response(
                     trans('Could not load ticket conversations.'),
-                    [],
+                    $res->content,
                     JsonResponse::HTTP_OK
                 );
             }
             return success_response(
                 trans('Ticket conversations are successfully fetched!'),
-                $res,
+                $res->content,
                 JsonResponse::HTTP_OK
             );
         } catch (Exception $e) {
@@ -246,10 +229,10 @@ class FreshServiceController extends Controller
     {
         try {
             if ($request->hasFile('file')) {
-                $file = $request->file('file');
                 $request->validate([
                     'file' => 'mimes:jpeg,png,jpg|max:5120', // 5MB max
                 ]);
+                $file = $request->file('file');
 
                 $filename = time() . '-' . $file->getClientOriginalName();
                 $path = $file->storeAs('public/uploads', $filename);
@@ -257,6 +240,65 @@ class FreshServiceController extends Controller
                 return success_response(
                     trans('Image file uploaded successfully!'),
                     str_replace('public/', 'storage/', $file_url),
+                    JsonResponse::HTTP_OK
+                );
+            }
+            log_to_file('critical', 'API Call Failed!', 'No file uploaded', "fs");
+            return error_response(trans('messages.error_default'), 'No file uploaded');
+        } catch (Exception $e) {
+            log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
+            return error_response(trans('messages.error_default'), $e);
+        }
+    }
+
+    public function saveAttachment(Request $request)
+    {
+        try {
+            if ($request->hasFile('attachment')) {
+                $request->validate([
+                    'file' => 'mimes:jpeg,jpg,png,gif,bmp,webp,pdf,doc,docx,xls,xlsx,txt,csv|max:5120', // 5MB max
+                    'workspace_id' => 'required|integer',
+                ]);
+                $file = $request->file('attachment');
+                $originalName = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $randomName = uniqid('upload_', true) . '.' . $extension;
+                $path = $file->storeAs('temp', $randomName);
+                $fullPath = storage_path('app/' . $path);
+                $mimeType = (new \finfo(FILEINFO_MIME_TYPE))->file($fullPath)
+                ?? File::mimeType($fullPath)
+                ?? $file->getClientMimeType();
+                if (($mimeType == 'application/octet-stream') and ($extension == 'pdf')) {
+                    $mimeType = 'application/pdf';
+                }
+                $contents = file_get_contents($fullPath);
+                $base64Data = base64_encode($contents);
+                $fileInfo = [
+                    'fileName' => $originalName,
+                    'contentType' => $mimeType,
+                    'contentBase64' => $base64Data,
+                    'exists' => file_exists($fullPath)
+                ];
+                Storage::delete($path);
+                $req = Curl::to(env('FRESHSERVICE_API_BASE_URL') . '/tickets/' . $request->workspace_id . '/attachments')
+                ->withHeader('Accept: application/json')
+                ->withTimeout(30)
+                ->withConnectTimeout(30)
+                ->returnResponseObject();
+                $req->withData([$fileInfo])->asJson();
+                $res = $req->post();
+                if ($res->status != JsonResponse::HTTP_OK) {
+                    // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
+                    log_to_file('info', 'ERROR', ['error' => $res], "fs");
+                    return success_response(
+                        trans('Could not load ticket conversations.'),
+                        $res->content,
+                        JsonResponse::HTTP_OK
+                    );
+                }
+                return success_response(
+                    trans('Image file uploaded successfully!'),
+                    $res->content,
                     JsonResponse::HTTP_OK
                 );
             }

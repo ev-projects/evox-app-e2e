@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import { useDispatch } from 'react-redux'
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
@@ -8,14 +8,14 @@ import { handleImageUpload } from '../../services/Helper';
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
 
-var formatDate = function(dateString) {
+var formatDate = function (dateString) {
   try {
     if (!dateString) return 'Invalid Date';
     var date = new Date(dateString);
     if (isNaN(date.getTime())) return 'Invalid Date';
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -61,7 +61,7 @@ const apiCall = function (endpoint, options) {
 };
 
 // Helper function to get user avatar color
-const getUserAvatarClass = function(email) {
+const getUserAvatarClass = function (email) {
   if (!email) return 'avatar-v';
   const firstChar = email.charAt(0).toLowerCase();
   const colorMap = {
@@ -72,7 +72,7 @@ const getUserAvatarClass = function(email) {
 };
 
 // Helper function to get user initials
-const getUserInitials = function(email) {
+const getUserInitials = function (email) {
   if (!email) return 'U';
   const parts = email.split('@')[0].split('.');
   return parts.map(p => p.charAt(0).toUpperCase()).join('').substring(0, 2);
@@ -93,10 +93,10 @@ const SafeTextRenderer = function ({ text }) {
 const buildSubjectPrefix = function (workspace, subCategory, itemCategory) {
   if (!workspace) return '';
   if (!subCategory) return `[${workspace}] | | - `;
-  
+
   const parts = [workspace, subCategory];
   if (itemCategory && itemCategory.trim()) parts.push(itemCategory);
-  
+
   return '[' + parts.join('] | [') + '] | - ';
 };
 
@@ -172,7 +172,7 @@ const TicketListPage = function (props) {
     }
   };
 
-  var getStatusText = function(status) {
+  var getStatusText = function (status) {
     switch (status) {
       case 2: return 'Open';
       case 3: return 'Pending';
@@ -182,7 +182,7 @@ const TicketListPage = function (props) {
     }
   };
 
-  var getPriorityText = function(priority) {
+  var getPriorityText = function (priority) {
     switch (priority) {
       case 1: return 'Low';
       case 2: return 'Medium';
@@ -193,13 +193,13 @@ const TicketListPage = function (props) {
   };
 
   // Mock function to get state based on ticket properties
-  var getTicketState = function(ticket) {
+  var getTicketState = function (ticket) {
     // This is a mock implementation - adjust based on your actual data
     const states = ['New', 'Requester Respond', 'Response Due', 'Overdue'];
     return states[ticket.id % 4];
   };
 
-  var getStateClass = function(state) {
+  var getStateClass = function (state) {
     switch (state) {
       case 'New': return 'state-new';
       case 'Requester Respond': return 'state-requester-respond';
@@ -253,15 +253,15 @@ const TicketListPage = function (props) {
         )
       ),
 
-      React.createElement('div', { 
-        style: { 
-          marginLeft: 'auto', 
-          fontSize: '13px', 
+      React.createElement('div', {
+        style: {
+          marginLeft: 'auto',
+          fontSize: '13px',
           color: '#64748b',
           display: 'flex',
           alignItems: 'center'
-        } 
-      }, 
+        }
+      },
         tickets.length + ' tickets'
       )
     ),
@@ -269,7 +269,7 @@ const TicketListPage = function (props) {
     // Professional Table
     React.createElement('div', { className: 'card-fs' },
       React.createElement('div', { className: 'card-header-fs' },
-        React.createElement('h2', { className: 'card-title-fs' }, 
+        React.createElement('h2', { className: 'card-title-fs' },
           'My Tickets',
           tickets.length > 0 && React.createElement('span', { className: 'notification-badge' }, tickets.length)
         )
@@ -304,7 +304,7 @@ const TicketListPage = function (props) {
               tickets.map(function (ticket) {
                 const state = getTicketState(ticket);
                 const requesterEmail = ticket.email || '';
-                
+
                 return React.createElement('tr', {
                   key: ticket.id,
                   onClick: function () { onTicketSelect(ticket); }
@@ -362,6 +362,7 @@ const TicketListPage = function (props) {
 // TICKET DETAILS PAGE - Professional Version
 const TicketDetailsPage = function (props) {
   const dispatch = useDispatch();
+  const fileInputRef = useRef(null);
   var ticket = props.ticket;
   var onBack = props.onBack;
   var useremail = props.useremail;
@@ -370,10 +371,18 @@ const TicketDetailsPage = function (props) {
   var [reply, setReply] = useState('');
   var [loading, setLoading] = useState(false);
   var [conversationsLoading, setConversationsLoading] = useState(false);
+  var [attachment, setAttachment] = useState({
+    attachments: [],
+    attachmentsValues: [],
+    removedAttachments: []
+  });
+  var [attachments, setAttachments] = useState([]);
+  var [attachmentsValues, setAttachmentsValues] = useState([]);
+  var [removedAttachments, setRemovedAttachments] = useState([]);
 
   useEffect(function () {
     if (!ticket.id) return;
-    
+
     var ticketId = parseInt(ticket.id);
     if (isNaN(ticketId) || ticketId <= 0) return;
 
@@ -404,28 +413,40 @@ const TicketDetailsPage = function (props) {
     setLoading(true);
     var id = parseInt(ticket.id);
 
+    var replyData = {
+      body: reply,
+      attachments: attachmentsValues,
+      removed_attachments: removedAttachments,
+      requester_id: ticket.requester_id
+    }
+
     API.call({
       method: "post",
       url: "/freshservice/tickets/" + id + "/reply",
-      data: { body: reply }
+      data: replyData
     })
       .then((result) => {
         setReply('');
+        setAttachment({
+          attachments: [],
+          attachmentsValues: [],
+          removedAttachments: []
+        });
         return API.call({
-            method: "get",
-            url: "/freshservice/tickets/" + id + "/conversations/"
+          method: "get",
+          url: "/freshservice/tickets/" + id + "/conversations/"
+        })
+          .then((result) => {
+            console.log('✅ Conversations loaded successfully');
+            setConversations(result.data.content.conversations || []);
           })
-            .then((result) => {
-              console.log('✅ Conversations loaded successfully');
-              setConversations(result.data.content.conversations || []);
-            })
-            .catch((e) => {
-              console.error('❌ Failed to load conversations:', e);
-              dispatch(Formatter.alert_error(e));
-            })
-            .finally(function () {
-              setConversationsLoading(false);
-            });
+          .catch((e) => {
+            console.error('❌ Failed to load conversations:', e);
+            dispatch(Formatter.alert_error(e));
+          })
+          .finally(function () {
+            setConversationsLoading(false);
+          });
       })
       .catch((e) => {
         console.error('Reply failed:', e);
@@ -510,12 +531,12 @@ const TicketDetailsPage = function (props) {
               })
             ),
 
-        React.createElement('div', { 
-          style: { 
-            borderTop: '1px solid #e2e8f0', 
-            paddingTop: '24px', 
-            marginTop: '24px' 
-          } 
+        React.createElement('div', {
+          style: {
+            borderTop: '1px solid #e2e8f0',
+            paddingTop: '24px',
+            marginTop: '24px'
+          }
         },
           React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
           React.createElement('form', { onSubmit: handleReplySubmit },
@@ -528,15 +549,15 @@ const TicketDetailsPage = function (props) {
                 height: 500,
                 menubar: false,
                 plugins: [
-                  'advlist','autolink', 'emoticons',
-                  'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
-                  'fullscreen','insertdatetime','media','table','help','wordcount'
+                  'advlist', 'autolink', 'emoticons',
+                  'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'searchreplace', 'visualblocks',
+                  'fullscreen', 'insertdatetime', 'media', 'table', 'help', 'wordcount'
                 ],
-  
+
                 toolbar: 'undo redo | casechange blocks fontfamily fontsize | bold italic forecolor backcolor removeformat emoticons | image | ' +
-                'alignleft aligncenter alignright alignjustify | link | ' +
-                'bullist numlist checklist outdent indent | removeformat | help ',
-  
+                  'alignleft aligncenter alignright alignjustify | link | ' +
+                  'bullist numlist checklist outdent indent | removeformat | help ',
+
                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
                 paste_data_images: true,
                 automatic_uploads: true,
@@ -553,7 +574,8 @@ const TicketDetailsPage = function (props) {
               React.createElement('input', {
                 type: 'file',
                 className: 'form-input',
-                multiple: true,
+                multiple: false,
+                ref: fileInputRef,
                 onChange: function (e) {
                   setLoading(true);
                   const newFiles = Array.from(e.target.files);
@@ -562,21 +584,24 @@ const TicketDetailsPage = function (props) {
                   attachmentData.append('ticket_id', ticket.id);
                   attachmentData.append('workspace_id', ticket.workspace_id);
                   attachmentData.append("attachment", newFiles[0]);
-    
+
                   API.call({
                     method: "post",
-                    url: "/freshservice/attachments/",
+                    url: "/freshservice/tickets/attachments/",
                     data: attachmentData
                   })
                     .then((result) => {
-                      // updateField('attachments', [...formData.attachments, ...newFiles]);
-                      // updateField('attachmentsValues', [...formData.attachmentsValues, ...result]);
+                      setAttachments([...attachments, ...newFiles]);
+                      setAttachmentsValues([...attachmentsValues, result.data.content.files[0]]);
                     })
                     .catch((e) => {
                       dispatch(Formatter.alert_error(e));
                     })
                     .finally(function () {
                       setLoading(false);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                      }
                     });
                 }
               }),
@@ -584,21 +609,24 @@ const TicketDetailsPage = function (props) {
               //   '⚠️ ' + errors.attachments
               // )
             ),
-            // formData.attachments.length > 0 && React.createElement('ul', { className: 'attachments-list-fs' },
-            //   formData.attachments.map((file, index) =>
-            //     React.createElement('li', { key: index },
-            //       file.name,
-            //       React.createElement('button', {
-            //         className: 'attachment-remove-btn-fs',
-            //         type: 'button',
-            //         onClick: function () {
-            //           const updatedFiles = formData.attachments.filter((_, i) => i !== index);
-            //           updateField('attachments', updatedFiles);
-            //         }
-            //       }, '❌')
-            //     )
-            //   )
-            // ),
+            attachments.length > 0 && React.createElement('ul', { className: 'attachments-list-fs' },
+              attachments.map((file, index) =>
+                React.createElement('li', { key: index },
+                  file.name,
+                  React.createElement('button', {
+                    className: 'attachment-remove-btn-fs',
+                    type: 'button',
+                    onClick: function () {
+                      const updatedFiles = attachments.filter((_, i) => i !== index);
+                      setAttachments(updatedFiles);
+                      setRemovedAttachments([...removedAttachments, attachmentsValues[index]]);
+                      const updatedValues = attachmentsValues.filter((_, i) => i !== index);
+                      setAttachmentsValues(updatedValues);
+                    }
+                  }, '❌')
+                )
+              )
+            ),
 
             React.createElement('button', {
               type: 'submit',
@@ -617,7 +645,7 @@ const FreshServiceTickets = (props) => {
   const dispatch = useDispatch();
   var [currentView, setCurrentView] = useState('list');
   var [selectedTicket, setSelectedTicket] = useState(null);
-  
+
   var [workspaces, setWorkspaces] = useState([]);
   var [tickets, setTickets] = useState([]);
   var [pagination, setPagination] = useState(null);
@@ -751,7 +779,7 @@ const FreshServiceTickets = (props) => {
             <Content>
               {React.createElement('div', { className: 'app-fs' },
                 React.createElement('main', { className: 'main-fs' },
-                  !categoriesLoaded ? 
+                  !categoriesLoaded ?
                     React.createElement('div', { className: 'loading' },
                       React.createElement('span', { className: 'spinner' }),
                       'Loading workspace categories...'
@@ -768,11 +796,11 @@ const FreshServiceTickets = (props) => {
                       error: ticketsError,
                       useremail: props.user.email
                     }) :
-                    currentView === 'details' && selectedTicket ? React.createElement(TicketDetailsPage, {
-                      ticket: selectedTicket,
-                      onBack: handleBackToList,
-                      useremail: props.user.email
-                    }) : null
+                      currentView === 'details' && selectedTicket ? React.createElement(TicketDetailsPage, {
+                        ticket: selectedTicket,
+                        onBack: handleBackToList,
+                        useremail: props.user.email
+                      }) : null
                 )
               )}
             </Content>

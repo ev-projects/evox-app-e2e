@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { useDispatch } from 'react-redux'
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
@@ -151,7 +151,8 @@ const CreateTicketPage = function (props) {
     selectedSubCategory: '',
     selectedItemCategory: '',
     attachments: [],
-    attachmentsValues: []
+    attachmentsValues: [],
+    removedAttachments: []
   });
 
   var [errors, setErrors] = useState({});
@@ -168,6 +169,8 @@ const CreateTicketPage = function (props) {
       return { ...prev, subject: prefix + prev.userSubject };
     });
   }, [formData.selectedWorkspace, formData.selectedSubCategory, formData.selectedItemCategory, formData.userSubject]);
+
+  const fileInputRef = useRef(null);
 
   var updateField = function (field, value) {
     setFormData(function (prev) {
@@ -211,8 +214,10 @@ const CreateTicketPage = function (props) {
         priority: parseInt(formData.priority),
         status: 2,
         workspace_id: selectedWorkSpaceId,
-        attachments: formData.attachments
+        attachments: formData.attachmentsValues,
+        removed_attachments: formData.removedAttachments
       };
+      console.log(ticketData);
 
       API.call({
         method: "post",
@@ -229,7 +234,9 @@ const CreateTicketPage = function (props) {
             selectedWorkspace: 'EVOX',
             selectedSubCategory: '',
             selectedItemCategory: '',
-            attachments: []
+            attachments: [],
+            attachmentsValues: [],
+            removedAttachments: []
           });
           setTimeout(function () { setSuccess(false); }, 3000);
         })
@@ -375,7 +382,8 @@ const CreateTicketPage = function (props) {
           React.createElement('input', {
             type: 'file',
             className: 'form-input',
-            multiple: true,
+            multiple: false,
+            ref: fileInputRef,
             onChange: function (e) {
               setLoading(true);
               const newFiles = Array.from(e.target.files);
@@ -388,18 +396,23 @@ const CreateTicketPage = function (props) {
 
               API.call({
                 method: "post",
-                url: "/freshservice/attachments/",
+                url: "/freshservice/tickets/attachments/",
                 data: attachmentData
               })
                 .then((result) => {
+                  console.log(result);
                   updateField('attachments', [...formData.attachments, ...newFiles]);
-                  updateField('attachmentsValues', [...formData.attachmentsValues, ...result]);
+                  updateField('attachmentsValues', [...formData.attachmentsValues, result.data.content.files[0]]);
+                  console.log(formData.attachmentsValues);
                 })
                 .catch((e) => {
                   dispatch(Formatter.alert_error(e));
                 })
                 .finally(function () {
                   setLoading(false);
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                  }
                 });
             }
           }),
@@ -417,6 +430,10 @@ const CreateTicketPage = function (props) {
                 onClick: function () {
                   const updatedFiles = formData.attachments.filter((_, i) => i !== index);
                   updateField('attachments', updatedFiles);
+                  updateField('removedAttachments', [...formData.removedAttachments, formData.attachmentsValues[index]]);
+                  const updatedValues = formData.attachmentsValues.filter((_, i) => i !== index);
+                  updateField('attachmentsValues', updatedValues);
+                  console.log(formData.attachmentsValues, formData.removedAttachments);
                 }
               }, '❌')
             )
