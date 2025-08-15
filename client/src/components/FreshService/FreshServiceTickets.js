@@ -238,8 +238,8 @@ const TicketListPage = function (props) {
         )
       ),
 
-      React.createElement('div', { className: 'filter-group' },
-        React.createElement('label', { className: 'filter-label' }, 'Status'),
+      React.createElement('div', { className: 'filter-group-fs' },
+        React.createElement('label', { className: 'filter-label-fs' }, 'Status'),
         React.createElement('select', {
           className: 'form-select',
           value: filters.status,

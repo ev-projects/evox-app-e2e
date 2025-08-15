@@ -232,6 +232,7 @@ const CreateTicketPage = function (props) {
       })
         .then((result) => {
           setSuccess(true);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           setFormData({
             subject: '',
             userSubject: '',
