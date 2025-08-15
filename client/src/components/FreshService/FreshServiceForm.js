@@ -115,18 +115,18 @@ const validateTicketData = function (data) {
     });
 
     if (availableSubCategories.length > 0 && !data.selectedSubCategory) {
-      errors.selectedSubCategory = 'Sub-Category must be selected';
+      errors.selectedSubCategory = 'Category must be selected';
     } else if (data.selectedSubCategory && !availableSubCategories.includes(data.selectedSubCategory)) {
-      errors.selectedSubCategory = 'Invalid sub-category selected';
+      errors.selectedSubCategory = 'Invalid category selected';
     }
   }
 
   if (data.selectedWorkspace && data.selectedSubCategory && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
     const itemCategories = WORKSPACE_CATEGORIES[data.selectedWorkspace][data.selectedSubCategory] || [];
     if (itemCategories.length > 1 && !data.selectedItemCategory) {
-      errors.selectedItemCategory = 'Item Category must be selected';
+      errors.selectedItemCategory = 'Sub-category must be selected';
     } else if (data.selectedItemCategory && !itemCategories.includes(data.selectedItemCategory)) {
-      errors.selectedItemCategory = 'Invalid item category selected';
+      errors.selectedItemCategory = 'Invalid sub-category selected';
     }
   }
 
@@ -238,7 +238,7 @@ const CreateTicketPage = function (props) {
             userSubject: '',
             description: defaultSignature,
             priority: 2,
-            selectedWorkspace: 'EVOX',
+            selectedWorkspace: '',
             selectedSubCategory: '',
             selectedItemCategory: '',
             attachments: [],
@@ -297,13 +297,13 @@ const CreateTicketPage = function (props) {
         ),
 
         formData.selectedWorkspace && subCategoryOptions.length > 0 && React.createElement('div', { className: 'form-group' },
-          React.createElement('label', { className: 'form-label' }, 'Sub-Category *'),
+          React.createElement('label', { className: 'form-label' }, 'Category *'),
           React.createElement('select', {
             className: 'form-select',
             value: formData.selectedSubCategory,
             onChange: function (e) { updateField('selectedSubCategory', e.target.value); }
           },
-            React.createElement('option', { value: '' }, 'Select Sub-Category'),
+            React.createElement('option', { value: '' }, 'Select Category'),
             subCategoryOptions.map(function (subCategory) {
               return React.createElement('option', { key: subCategory, value: subCategory }, subCategory);
             })
@@ -314,13 +314,13 @@ const CreateTicketPage = function (props) {
         ),
 
         formData.selectedSubCategory && itemCategoryOptions.length > 1 && React.createElement('div', { className: 'form-group' },
-          React.createElement('label', { className: 'form-label' }, 'Item Category'),
+          React.createElement('label', { className: 'form-label' }, 'Sub-category'),
           React.createElement('select', {
             className: 'form-select',
             value: formData.selectedItemCategory,
             onChange: function (e) { updateField('selectedItemCategory', e.target.value); }
           },
-            React.createElement('option', { value: '' }, 'Select Item Category'),
+            React.createElement('option', { value: '' }, 'Select Sub-category'),
             itemCategoryOptions.map(function (itemCategory, index) {
               return React.createElement('option', { key: index, value: itemCategory }, itemCategory || '(No specific category)');
             })
