@@ -182,14 +182,15 @@ class FreshServiceController extends Controller
                 ->withConnectTimeout(30)
                 ->returnResponseObject();
             $req->withData([
-                'body' => $request->body
+                'body' => $request->body,
+                'from_email' => $me->email
             ])->asJson();
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 return success_response(
                     trans('Could not create ticket.'),
-                    [],
+                    $res,
                     JsonResponse::HTTP_OK
                 );
             }
