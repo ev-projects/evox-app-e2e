@@ -493,7 +493,7 @@ const FreshServiceForm = (props) => {
 
   // Load workspace categories
   useEffect(() => {
-     console.log("🔄 Loading workspaces categories (once)");
+    console.log("🔄 Loading workspaces categories (once)");
     // Set isMounted to true on mount
     isMounted.current = true;
 
@@ -538,16 +538,16 @@ const FreshServiceForm = (props) => {
     })
       .then((result) => {
         if (isMounted.current) {
-        var activeWorkspaces = (result.data.content || [])
-          .filter(function (ws) {
-            return ws.state === 'active';
-          })
-          .sort(function (a, b) {
-            return a.name.localeCompare(b.name);
-          });
-        setWorkspaces(activeWorkspaces);
-        setCategoriesLoaded(true);
-        console.log('✅ Workspaces loaded');
+          var activeWorkspaces = (result.data.content || [])
+            .filter(function (ws) {
+              return ws.state === 'active';
+            })
+            .sort(function (a, b) {
+              return a.name.localeCompare(b.name);
+            });
+          setWorkspaces(activeWorkspaces);
+          setWorkspacesLoaded(true);
+          console.log('✅ Workspaces loaded');
         }
       })
       .catch((e) => {
@@ -572,7 +572,7 @@ const FreshServiceForm = (props) => {
             <Content>
               {React.createElement('div', { className: 'app-fs' },
                 React.createElement('main', { className: 'main-fs' },
-                   !(categoriesLoaded && workspacesLoaded) ?
+                  !(categoriesLoaded && workspacesLoaded) ?
                     React.createElement('div', { className: 'loading' },
                       React.createElement('span', { className: 'spinner' }),
                       'Loading workspace categories...'
