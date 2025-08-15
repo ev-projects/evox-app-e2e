@@ -115,18 +115,18 @@ const validateTicketData = function (data) {
     });
 
     if (availableSubCategories.length > 0 && !data.selectedSubCategory) {
-      errors.selectedSubCategory = 'Sub-Category must be selected';
+      errors.selectedSubCategory = 'Category must be selected';
     } else if (data.selectedSubCategory && !availableSubCategories.includes(data.selectedSubCategory)) {
-      errors.selectedSubCategory = 'Invalid sub-category selected';
+      errors.selectedSubCategory = 'Invalid category selected';
     }
   }
 
   if (data.selectedWorkspace && data.selectedSubCategory && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
     const itemCategories = WORKSPACE_CATEGORIES[data.selectedWorkspace][data.selectedSubCategory] || [];
     if (itemCategories.length > 1 && !data.selectedItemCategory) {
-      errors.selectedItemCategory = 'Item Category must be selected';
+      errors.selectedItemCategory = 'Sub-category must be selected';
     } else if (data.selectedItemCategory && !itemCategories.includes(data.selectedItemCategory)) {
-      errors.selectedItemCategory = 'Invalid item category selected';
+      errors.selectedItemCategory = 'Invalid sub-category selected';
     }
   }
 
@@ -140,14 +140,21 @@ const validateTicketData = function (data) {
 const CreateTicketPage = function (props) {
   const dispatch = useDispatch();
   var workspaces = props.workspaces;
-  // var useremail = props.useremail;
+  const defaultSignature = `
+    <br><br>
+    Best Regards,<br>
+    <strong>${props.user.first_name + ' ' + props.user.last_name}</strong><br>
+    <span style="display: inline-block;">${props.user.department_main}</span><br>
+    <span style="display: inline-block;">Employee ID: ${props.user.emp_num}</span><br>
+    <span style="display: inline-block;">Country: ${props.user.country}</span>
+  `;
 
   var [formData, setFormData] = useState({
     subject: '',
     userSubject: '',
     description: '',
     priority: 2,
-    selectedWorkspace: 'EVOX',
+    selectedWorkspace: '',
     selectedSubCategory: '',
     selectedItemCategory: '',
     attachments: [],
@@ -217,7 +224,6 @@ const CreateTicketPage = function (props) {
         attachments: formData.attachmentsValues,
         removed_attachments: formData.removedAttachments
       };
-      console.log(ticketData);
 
       API.call({
         method: "post",
@@ -226,12 +232,13 @@ const CreateTicketPage = function (props) {
       })
         .then((result) => {
           setSuccess(true);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           setFormData({
             subject: '',
             userSubject: '',
-            description: '',
+            description: defaultSignature,
             priority: 2,
-            selectedWorkspace: 'EVOX',
+            selectedWorkspace: '',
             selectedSubCategory: '',
             selectedItemCategory: '',
             attachments: [],
@@ -273,7 +280,7 @@ const CreateTicketPage = function (props) {
 
       React.createElement('form', { onSubmit: handleSubmit },
         React.createElement('div', { className: 'form-group' },
-          React.createElement('label', { className: 'form-label' }, 'Department *'),
+          React.createElement('label', { className: 'form-label' }, 'EV Department *'),
           React.createElement('select', {
             className: 'form-select',
             value: formData.selectedWorkspace,
@@ -290,13 +297,13 @@ const CreateTicketPage = function (props) {
         ),
 
         formData.selectedWorkspace && subCategoryOptions.length > 0 && React.createElement('div', { className: 'form-group' },
-          React.createElement('label', { className: 'form-label' }, 'Sub-Category *'),
+          React.createElement('label', { className: 'form-label' }, 'Category *'),
           React.createElement('select', {
             className: 'form-select',
             value: formData.selectedSubCategory,
             onChange: function (e) { updateField('selectedSubCategory', e.target.value); }
           },
-            React.createElement('option', { value: '' }, 'Select Sub-Category'),
+            React.createElement('option', { value: '' }, 'Select Category'),
             subCategoryOptions.map(function (subCategory) {
               return React.createElement('option', { key: subCategory, value: subCategory }, subCategory);
             })
@@ -307,13 +314,13 @@ const CreateTicketPage = function (props) {
         ),
 
         formData.selectedSubCategory && itemCategoryOptions.length > 1 && React.createElement('div', { className: 'form-group' },
-          React.createElement('label', { className: 'form-label' }, 'Item Category'),
+          React.createElement('label', { className: 'form-label' }, 'Sub-category'),
           React.createElement('select', {
             className: 'form-select',
             value: formData.selectedItemCategory,
             onChange: function (e) { updateField('selectedItemCategory', e.target.value); }
           },
-            React.createElement('option', { value: '' }, 'Select Item Category'),
+            React.createElement('option', { value: '' }, 'Select Sub-category'),
             itemCategoryOptions.map(function (itemCategory, index) {
               return React.createElement('option', { key: index, value: itemCategory }, itemCategory || '(No specific category)');
             })
@@ -333,7 +340,7 @@ const CreateTicketPage = function (props) {
           React.createElement('input', {
             type: 'text',
             className: 'form-input',
-            placeholder: 'Brief description of the issue',
+            placeholder: 'Brief description',
             value: formData.userSubject,
             onChange: function (e) { updateField('userSubject', e.target.value); }
           }),
@@ -349,6 +356,12 @@ const CreateTicketPage = function (props) {
             textareaName="content"
             value={formData.description}
             onEditorChange={(content, editor) => updateField('description', content)}
+            onInit={(evt, editor) => {
+              if (!formData.description || formData.description.trim() === '') {
+                editor.setContent(defaultSignature);
+                updateField('description', defaultSignature);
+              }
+            }}
             init={{
               height: 500,
               menubar: false,
@@ -403,7 +416,6 @@ const CreateTicketPage = function (props) {
                   console.log(result);
                   updateField('attachments', [...formData.attachments, ...newFiles]);
                   updateField('attachmentsValues', [...formData.attachmentsValues, result.data.content.files[0]]);
-                  console.log(formData.attachmentsValues);
                 })
                 .catch((e) => {
                   dispatch(Formatter.alert_error(e));
@@ -433,7 +445,6 @@ const CreateTicketPage = function (props) {
                   updateField('removedAttachments', [...formData.removedAttachments, formData.attachmentsValues[index]]);
                   const updatedValues = formData.attachmentsValues.filter((_, i) => i !== index);
                   updateField('attachmentsValues', updatedValues);
-                  console.log(formData.attachmentsValues, formData.removedAttachments);
                 }
               }, '❌')
             )
@@ -458,7 +469,7 @@ const CreateTicketPage = function (props) {
           type: 'submit',
           className: 'btn-fs',
           disabled: loading
-        }, loading ? 'Creating...' : 'Create Ticket'),
+        }, loading ? 'Creating...' : 'Create a Ticket'),
 
         errors.submit && React.createElement('div', { className: 'error-message' },
           '❌ ' + errors.submit
@@ -527,10 +538,16 @@ const FreshServiceForm = (props) => {
     })
       .then((result) => {
         if (isMounted.current) {
-          const activeWorkspaces = (result.data.content || []).filter(ws => ws.state === 'active');
-          setWorkspaces(activeWorkspaces);
-          setWorkspacesLoaded(true);
-          console.log('✅ Workspaces loaded');
+        var activeWorkspaces = (result.data.content || [])
+          .filter(function (ws) {
+            return ws.state === 'active';
+          })
+          .sort(function (a, b) {
+            return a.name.localeCompare(b.name);
+          });
+        setWorkspaces(activeWorkspaces);
+        setCategoriesLoaded(true);
+        console.log('✅ Workspaces loaded');
         }
       })
       .catch((e) => {
@@ -562,7 +579,8 @@ const FreshServiceForm = (props) => {
                     ) :
                     currentView === 'create' ? React.createElement(CreateTicketPage, {
                       workspaces: workspaces,
-                      useremail: props.user.email
+                      useremail: props.user.email,
+                      user: props.user
                     }) : null
                 )
               )}
