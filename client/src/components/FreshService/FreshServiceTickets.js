@@ -496,7 +496,7 @@ const TicketDetailsPage = function (props) {
             })
           ),
           React.createElement('div', { className: 'attachment-list' },
-            ticket.attachments.map(function (att) {
+            ticket.attachments && ticket.attachments.map(function (att) {
               return React.createElement('div', {
                 key: att.id,
                 className: 'attachment-item'
@@ -546,7 +546,7 @@ const TicketDetailsPage = function (props) {
                     dangerouslySetInnerHTML: { __html: conv.bodyText || conv.body || 'No content' }
                   }),
                   React.createElement('div', { className: 'attachment-list' },
-                    conv.attachments.map(function (att) {
+                    conv.attachments && conv.attachments.map(function (att) {
                       return React.createElement('div', {
                         key: att.id,
                         className: 'attachment-item'
