@@ -414,7 +414,6 @@ const CreateTicketPage = function (props) {
                 data: attachmentData
               })
                 .then((result) => {
-                  console.log(result);
                   updateField('attachments', [...formData.attachments, ...newFiles]);
                   updateField('attachmentsValues', [...formData.attachmentsValues, result.data.content.files[0]]);
                 })

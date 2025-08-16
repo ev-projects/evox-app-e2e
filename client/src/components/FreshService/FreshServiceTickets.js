@@ -228,7 +228,7 @@ const TicketListPage = function (props) {
           value: filters.workspaceId,
           onChange: function (e) { onFilterChange('workspaceId', e.target.value); }
         },
-          // React.createElement('option', { value: '' }, 'All Workspaces'),
+          React.createElement('option', { value: '' }, 'Please select department'),
           workspaces.map(function (workspace) {
             return React.createElement('option', {
               key: workspace.id,
@@ -365,14 +365,6 @@ const TicketDetailsPage = function (props) {
   const fileInputRef = useRef(null);
   var [ticket, setTicket] = useState(props.ticket);
   var onBack = props.onBack;
-  const defaultSignature = `
-    <br><br>
-    Best Regards,<br>
-    <strong>${props.user.first_name + ' ' + props.user.last_name}</strong><br>
-    <span style="display: inline-block;">${props.user.department_main}</span><br>
-    <span style="display: inline-block;">Employee ID: ${props.user.emp_num}</span><br>
-    <span style="display: inline-block;">Country: ${props.user.country}</span>
-  `;
 
   var [conversations, setConversations] = useState([]);
   var [reply, setReply] = useState('');
@@ -455,7 +447,12 @@ const TicketDetailsPage = function (props) {
       data: replyData
     })
       .then((result) => {
-        setReply(defaultSignature);
+        setReply('');
+        setAttachments({
+          attachments: [],
+          attachmentsValues: [],
+          removedAttachments: []
+        });
         return API.call({
           method: "get",
           url: "/freshservice/tickets/" + id + "/conversations/"
@@ -595,12 +592,6 @@ const TicketDetailsPage = function (props) {
               textareaName="content"
               value={reply}
               onEditorChange={(newContent, editor) => setReply(newContent)}
-              onInit={(evt, editor) => {
-                if (!reply || reply.trim() === '') {
-                  editor.setContent(defaultSignature);
-                  // updateField('description', defaultSignature);
-                }
-              }}
               init={{
                 height: 500,
                 menubar: false,
@@ -694,7 +685,12 @@ const TicketDetailsPage = function (props) {
           )
         )
       )
-    )
+    ),
+
+    React.createElement('button', {
+      className: 'back-button',
+      onClick: onBack
+    }, '← Back to My Tickets'),
   );
 };
 
@@ -784,28 +780,29 @@ const FreshServiceTickets = (props) => {
 
     if (filters.workspaceId) {
       params.append('workspaceId', filters.workspaceId);
-    } else if (workspaces) {
-      const defaultWorkSpaceId = workspaces[0]?.id;
-      params.append('workspaceId', defaultWorkSpaceId);
-    }
 
-    API.call({
-      method: "get",
-      url: "/freshservice/tickets/my-tickets?" + params.toString(),
-    })
-      .then((result) => {
-        setTickets(result.data.content.tickets || []);
-        setPagination(result.data.content.pagination || null)
-        console.log('✅ Tickets loaded');
+      API.call({
+        method: "get",
+        url: "/freshservice/tickets/my-tickets?" + params.toString(),
       })
-      .catch((e) => {
-        console.error('❌ Failed to load tickets:', e);
-        setTicketsError(e.message);
-        dispatch(Formatter.alert_error(e));
-      })
-      .finally(function () {
+        .then((result) => {
+          setTickets(result.data.content.tickets || []);
+          setPagination(result.data.content.pagination || null)
+          console.log('✅ Tickets loaded');
+        })
+        .catch((e) => {
+          console.error('❌ Failed to load tickets:', e);
+          setTicketsError(e.message);
+          dispatch(Formatter.alert_error(e));
+        })
+        .finally(function () {
+          setTicketsLoading(false);
+        });
+      } else {
+        setTickets([]);
+        setPagination(null);
         setTicketsLoading(false);
-      });
+      }
   }, [filters.status, filters.workspaceId, props.user.email, workspaces]);
 
   useEffect(function () {
