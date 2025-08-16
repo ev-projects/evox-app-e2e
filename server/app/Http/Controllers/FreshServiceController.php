@@ -28,9 +28,9 @@ class FreshServiceController extends Controller
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 $error = "Could not load workspaces, please try again.";
-                if (isset($res->content->message) || is_valid($res->content->message))
+                if (isset($res->content->message))
                     $error = $res->content->message;
-                if (isset($res->content->title) || is_valid($res->content->title))
+                if (isset($res->content->title))
                     $error = $res->content->title;
                 return error_response(
                     $error,
@@ -66,9 +66,9 @@ class FreshServiceController extends Controller
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 $error = "Could not load tickets, please try again.";
-                if (isset($res->content->message) || is_valid($res->content->message))
+                if (isset($res->content->message))
                     $error = $res->content->message;
-                if (isset($res->content->title) || is_valid($res->content->title))
+                if (isset($res->content->title))
                     $error = $res->content->title;
                 return error_response(
                     $error,
@@ -110,9 +110,9 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 $error = "Could not create ticket, please try again.";
-                if (isset($res->content->message) || is_valid($res->content->message))
+                if (isset($res->content->message))
                     $error = $res->content->message;
-                if (isset($res->content->title) || is_valid($res->content->title))
+                if (isset($res->content->title))
                     $error = $res->content->title;
                 return error_response(
                     $error,
@@ -154,9 +154,9 @@ class FreshServiceController extends Controller
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 $error = "Could not load ticket detais, please try again.";
-                if (isset($res->content->message) || is_valid($res->content->message))
+                if (isset($res->content->message))
                     $error = $res->content->message;
-                if (isset($res->content->title) || is_valid($res->content->title))
+                if (isset($res->content->title))
                     $error = $res->content->title;
                 return error_response(
                     $error,
@@ -194,9 +194,9 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 $error = "Could not create ticket reply, please try again.";
-                if (isset($res->content->message) || is_valid($res->content->message))
+                if (isset($res->content->message))
                     $error = $res->content->message;
-                if (isset($res->content->title) || is_valid($res->content->title))
+                if (isset($res->content->title))
                     $error = $res->content->title;
                 return error_response(
                     $error,
@@ -230,9 +230,9 @@ class FreshServiceController extends Controller
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 $error = "Could not load ticket conversations, please try again.";
-                if (isset($res->content->message) || is_valid($res->content->message))
+                if (isset($res->content->message))
                     $error = $res->content->message;
-                if (isset($res->content->title) || is_valid($res->content->title))
+                if (isset($res->content->title))
                     $error = $res->content->title;
                 return error_response(
                     $error,
@@ -319,9 +319,9 @@ class FreshServiceController extends Controller
                     // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                     log_to_file('info', 'ERROR', ['error' => $res], "fs");
                     $error = "Could not upload your attachment, please make sure it is not more than 5MB in size. The file must be a type of: jpeg, jpg, png, gif, bmp, webp, pdf, doc, docx, xls, xlsx, txt, or csv.";
-                    if (isset($res->content->message) || is_valid($res->content->message))
+                    if (isset($res->content->message))
                         $error = $res->content->message;
-                    if (isset($res->content->title) || is_valid($res->content->title))
+                    if (isset($res->content->title))
                         $error = $res->content->title;
                     return error_response(
                         $error,
