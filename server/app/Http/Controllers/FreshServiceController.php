@@ -27,9 +27,14 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
+                $error = "Could not load workspaces, please try again.";
+                if (isset($res->content->message))
+                    $error = $res->content->message;
+                if (isset($res->content->title))
+                    $error = $res->content->title;
                 return error_response(
-                    $res->content->title,
-                    $res->content->errors,
+                    $error,
+                    $res,
                 );
             }
             return success_response(
@@ -39,7 +44,7 @@ class FreshServiceController extends Controller
             );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('Could not load workspaces.'), $e);
+            return error_response(trans('Could not load workspaces, please try again.'), $e);
         }
     }
 
@@ -60,9 +65,14 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
+                $error = "Could not load tickets, please try again.";
+                if (isset($res->content->message))
+                    $error = $res->content->message;
+                if (isset($res->content->title))
+                    $error = $res->content->title;
                 return error_response(
-                    $res->content->title,
-                    $res->content->errors,
+                    $error,
+                    $res,
                 );
             }
             return success_response(
@@ -72,7 +82,7 @@ class FreshServiceController extends Controller
             );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('Could not load my tickets, please try again.'), $e);
+            return error_response(trans('Could not load tickets, please try again.'), $e);
         }
     }
 
@@ -99,9 +109,14 @@ class FreshServiceController extends Controller
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
+                $error = "Could not create ticket, please try again.";
+                if (isset($res->content->message))
+                    $error = $res->content->message;
+                if (isset($res->content->title))
+                    $error = $res->content->title;
                 return error_response(
-                    $res->content->title,
-                    $res->content->errors,
+                    $error,
+                    $res,
                 );
             }
             $ticket = $res->content->ticket;
@@ -138,9 +153,14 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
+                $error = "Could not load ticket detais, please try again.";
+                if (isset($res->content->message))
+                    $error = $res->content->message;
+                if (isset($res->content->title))
+                    $error = $res->content->title;
                 return error_response(
-                    $res->content->title,
-                    $res->content->errors,
+                    $error,
+                    $res,
                 );
             }
             return success_response(
@@ -173,9 +193,14 @@ class FreshServiceController extends Controller
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
+                $error = "Could not create ticket reply, please try again.";
+                if (isset($res->content->message))
+                    $error = $res->content->message;
+                if (isset($res->content->title))
+                    $error = $res->content->title;
                 return error_response(
-                    $res->content->title,
-                    $res->content->errors,
+                    $error,
+                    $res,
                 );
             }
             return success_response(
@@ -185,7 +210,7 @@ class FreshServiceController extends Controller
             );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('Could not create ticket, please try again.'), $e);
+            return error_response(trans('Could not create ticket reply, please try again.'), $e);
         }
     }
 
@@ -204,9 +229,14 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                return success_response(
-                    $res->content->title,
-                    $res->content->errors,
+                $error = "Could not load ticket conversations, please try again.";
+                if (isset($res->content->message))
+                    $error = $res->content->message;
+                if (isset($res->content->title))
+                    $error = $res->content->title;
+                return error_response(
+                    $error,
+                    $res,
                 );
             }
             return success_response(
@@ -216,7 +246,7 @@ class FreshServiceController extends Controller
             );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('messages.error_default'), $e);
+            return error_response(trans('Could not load ticket conversations, please try again.'), $e);
         }
     }
 
@@ -288,9 +318,14 @@ class FreshServiceController extends Controller
                 if ($res->status != JsonResponse::HTTP_OK) {
                     // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                     log_to_file('info', 'ERROR', ['error' => $res], "fs");
+                    $error = "Could not upload your attachment, please make sure it is not more than 5MB in size. The file must be a type of: jpeg, jpg, png, gif, bmp, webp, pdf, doc, docx, xls, xlsx, txt, or csv.";
+                    if (isset($res->content->message))
+                        $error = $res->content->message;
+                    if (isset($res->content->title))
+                        $error = $res->content->title;
                     return error_response(
-                        $res->content->title,
-                        $res->content->errors,
+                        $error,
+                        $res,
                     );
                 }
                 return success_response(
