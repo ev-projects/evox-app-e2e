@@ -74,3 +74,18 @@ Route::post('nho_survey', 'NewHireOrientationController@store')->middleware('aut
 // EVA Survey
 Route::get('eva_survey', 'EvaController@index')->middleware('auth.apikey');
 Route::post('eva_survey', 'EvaController@store')->middleware('auth.apikey');
+
+Route::group(['prefix' => 'freshservice/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    Route::get('workspaces', 'FreshServiceController@getWorkspaces');
+    Route::group(['prefix' => 'tickets'], function () {
+        Route::get('my-tickets', 'FreshServiceController@getMyTickets');
+        Route::post('/', 'FreshServiceController@createTicket');
+        Route::post('upload-image', 'FreshServiceController@saveTicketImage');
+        Route::post('attachments', 'FreshServiceController@saveAttachment');
+        Route::group(['prefix' => '{id}'], function () {
+            Route::get('/', 'FreshServiceController@getTicket');
+            Route::post('reply', 'FreshServiceController@sendTicketConversation');
+            Route::get('conversations', 'FreshServiceController@getTicketConversation');
+        });
+    });
+});
