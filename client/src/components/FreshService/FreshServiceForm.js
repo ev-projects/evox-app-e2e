@@ -286,7 +286,7 @@ const CreateTicketPage = function (props) {
             value: formData.selectedWorkspace,
             onChange: function (e) { updateField('selectedWorkspace', e.target.value); }
           },
-            React.createElement('option', { value: '' }, 'Select Departent'),
+            React.createElement('option', { value: '' }, 'Select Department'),
             workspaceOptions.map(function (workspaceName) {
               return React.createElement('option', { key: workspaceName, value: workspaceName }, workspaceName);
             })
