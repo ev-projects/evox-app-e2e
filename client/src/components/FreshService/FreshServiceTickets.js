@@ -370,11 +370,6 @@ const TicketDetailsPage = function (props) {
   var [reply, setReply] = useState('');
   var [loading, setLoading] = useState(false);
   var [conversationsLoading, setConversationsLoading] = useState(false);
-  var [attachment, setAttachment] = useState({
-    attachments: [],
-    attachmentsValues: [],
-    removedAttachments: []
-  });
   var [attachments, setAttachments] = useState([]);
   var [attachmentsValues, setAttachmentsValues] = useState([]);
   var [removedAttachments, setRemovedAttachments] = useState([]);
@@ -483,6 +478,9 @@ const TicketDetailsPage = function (props) {
       })
       .finally(function () {
         setLoading(false);
+        setAttachments([]);
+        setRemovedAttachments([]);
+        setAttachmentsValues([]);
       });
   };
 
@@ -625,6 +623,7 @@ const TicketDetailsPage = function (props) {
                 className: 'form-input',
                 multiple: false,
                 ref: fileInputRef,
+                accept: '.jpg, .jpeg, .png, .pdf, .csv, .xls, .xlsx',
                 onChange: function (e) {
                   setLoading(true);
                   const newFiles = Array.from(e.target.files);

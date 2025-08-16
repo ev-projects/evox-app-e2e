@@ -390,13 +390,14 @@ const CreateTicketPage = function (props) {
           )
         ),
 
-        React.createElement('div', { className: 'form-group' },
+        formData.selectedWorkspace ? React.createElement('div', { className: 'form-group' },
           React.createElement('label', { className: 'form-label' }, 'Attachments'),
           React.createElement('input', {
             type: 'file',
             className: 'form-input',
             multiple: false,
             ref: fileInputRef,
+            accept: '.jpg, .jpeg, .png, .pdf, .csv, .xls, .xlsx',
             onChange: function (e) {
               setLoading(true);
               const newFiles = Array.from(e.target.files);
@@ -430,7 +431,7 @@ const CreateTicketPage = function (props) {
           errors.attachments && React.createElement('div', { className: 'error-message' },
             '⚠️ ' + errors.attachments
           )
-        ),
+        ) : null,
         formData.attachments.length > 0 && React.createElement('ul', { className: 'attachments-list-fs' },
           formData.attachments.map((file, index) =>
             React.createElement('li', { key: index },

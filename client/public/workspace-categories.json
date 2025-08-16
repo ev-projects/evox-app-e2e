@@ -234,5 +234,8 @@
     "Spam/3rd Party Notification": ["Others - Spam/3rd Party Notification"],
     "Timekeeping": ["DTR Concerns"],
     "Training": ["E-Learning Academy Concerns", "Others - Training"]
+  },
+  "Legal": {
+
   }
 }

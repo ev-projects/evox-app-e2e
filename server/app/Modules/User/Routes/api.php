@@ -211,4 +211,3 @@ Route::group(['prefix' => 'generate/dtr', 'middleware' => ['jwtauth', 'auth.apik
     Route::post('/', 'UserController@generateDtrDate');
 
 });
-

@@ -19,7 +19,7 @@ import {
   Col,
 } from "../../components/GridComponent/AdminLte.js";
 import {fetchUserRolePermission,assignRolesPermissions,  fetchUserFeatures, assignLevelFeatures,fetchUserDispute } from '../../store/actions/admin/assignRoleActions';
-import { getDisputeReport } from '../../store/actions/report/reportActions';
+// import { getDisputeReport } from '../../store/actions/report/reportActions';
 
 function DisputeForm(props) {
   let history = useHistory();
@@ -120,8 +120,7 @@ function DisputeForm(props) {
     Payroll_Remarks: '',
     Payout_Inclusion: '',
     Valid_From:'',
-    Valid_To:'',
-    Remarks:''
+    Valid_To:''
   });
 
   const validateNumber = (value) => {
@@ -181,7 +180,7 @@ function DisputeForm(props) {
       }
     }else{
       // fetchDisputes();
-      dispatch(getDisputeReport(props.params.id));
+      // dispatch(getDisputeReport(props.params.id));
     }
   }, [payroll]);
 
@@ -418,8 +417,7 @@ function DisputeForm(props) {
           method: "put",
           url: `/updatedispute/${props.params.id}`,
           data: {
-            status : action,
-            remarks : formData.Remarks
+            status : action
           },
         })
         .then(result => {
@@ -1238,47 +1236,6 @@ function DisputeForm(props) {
                 </div>
               </Col>
             </Row>
-            <Row>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Late</label>
-                  <input
-                    type="number"
-                    placeholder="Late"
-                    className="form-control"
-                    name='Late'
-                    value={dispute_record.late}
-                    onChange={handleChange}
-                    disabled="true"
-                  />
-                </div>
-              </Col>
-              <Col size="3">
-                <div className="form-group">
-                  <label>Undertime</label>
-                  <input
-                    type="number"
-                    placeholder="Undertime"
-                    className="form-control"
-                    name='Undertime'
-                    value={dispute_record.undertime}
-                    onChange={handleChange}
-                    disabled="true"
-                  />
-                </div>
-              </Col>
-              <Col size="6">
-                <div className="form-group">
-                  <label>Remarks</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name='Remarks'
-                    onChange={handleChange}
-                  />
-                </div>
-              </Col>
-            </Row>
 
             <span>
               <Button style={ props.style? props.style : null} type="button" className="back-button btn btn-secondary" onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>
@@ -1355,9 +1312,8 @@ const mapDispatchToProps = (dispatch) => {
 
     assignRolesPermissions  : ( user_id , post_data ) => dispatch( assignRolesPermissions( user_id , post_data ) ),
     assignLevelFeatures  : ( user_id , post_data ) => dispatch( assignLevelFeatures( user_id , post_data ) ),
-    getDisputeReport  : ( dispute_id ) => dispatch( getDisputeReport( dispute_id ) ),
+    // getDisputeReport  : ( dispute_id ) => dispatch( getDisputeReport( dispute_id ) ),
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DisputeForm);
-

@@ -173,7 +173,6 @@ const Sidebar = (props) => {
                   </>)}
                    
                   {Authenticator.scanFeature('request_coe')&&(<>
-                      {country.toLowerCase() == "philippines" && (
                         <li className="nav-item">
                           <Link
                             className="nav-link"
@@ -186,7 +185,6 @@ const Sidebar = (props) => {
                             <p>Certificate Of Employment</p>
                           </Link>
                         </li>
-                      )}
                       </>
                       )}
                   </ul>
@@ -638,7 +636,7 @@ const Sidebar = (props) => {
               )} */}
 
               {/* Report Links Links */}
-             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules', 'manage_morocco_payroll', 'manage_asset_reports'])) && (
+              {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules', 'manage_morocco_payroll', 'manage_asset_reports'])) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-line-chart" />
@@ -728,11 +726,20 @@ const Sidebar = (props) => {
                                   </li>
                     )}
 
-                    {(Authenticator.scanLevel(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead"])) && (
+                    {/* {(Authenticator.scanLevel(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead"])) && (
                       <li className="nav-item">
                         <Link className="nav-link" to={global.links.payroll_dispute_view}>
                           <i className="nav-icon fa fa-clock-o" />
                           <p className="blue"> Payroll Dispute Report</p>
+                        </Link>
+                      </li>
+                    )} */}
+
+                    {(Authenticator.scanLevel_Feature(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead","Employee"], "manage_asset_reports")) && (
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.asset_reports}>
+                          <i className="nav-icon fa fa-window-restore" />
+                          <p className="blue"> Asset Reports</p>
                         </Link>
                       </li>
                     )}

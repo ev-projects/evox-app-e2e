@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Ixudra\Curl\Facades\Curl;
 
 class FreshServiceController extends Controller
@@ -26,10 +27,9 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                return success_response(
-                    trans('Could not load workspaces.'),
-                    [],
-                    JsonResponse::HTTP_OK
+                return error_response(
+                    $res->content->title,
+                    $res->content->errors,
                 );
             }
             return success_response(
@@ -39,7 +39,7 @@ class FreshServiceController extends Controller
             );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('messages.error_default'), $e);
+            return error_response(trans('Could not load workspaces.'), $e);
         }
     }
 
@@ -60,10 +60,9 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                return success_response(
-                    trans('Could not load my tickets.'),
-                    $res->content,
-                    JsonResponse::HTTP_OK
+                return error_response(
+                    $res->content->title,
+                    $res->content->errors,
                 );
             }
             return success_response(
@@ -73,7 +72,7 @@ class FreshServiceController extends Controller
             );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('messages.error_default'), $e);
+            return error_response(trans('Could not load my tickets, please try again.'), $e);
         }
     }
 
@@ -100,10 +99,9 @@ class FreshServiceController extends Controller
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                return success_response(
-                    trans('Could not create ticket.'),
-                    $res->content,
-                    JsonResponse::HTTP_OK
+                return error_response(
+                    $res->content->title,
+                    $res->content->errors,
                 );
             }
             $ticket = $res->content->ticket;
@@ -140,10 +138,9 @@ class FreshServiceController extends Controller
             if ($res->status != JsonResponse::HTTP_OK) {
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                return success_response(
-                    trans('Could not load ticket details.'),
-                    $$res->content,
-                    JsonResponse::HTTP_OK
+                return error_response(
+                    $res->content->title,
+                    $res->content->errors,
                 );
             }
             return success_response(
@@ -153,7 +150,7 @@ class FreshServiceController extends Controller
             );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('messages.error_default'), $e);
+            return error_response(trans('Could not load ticket details, please try again.'), $e);
         }
     }
 
@@ -176,10 +173,9 @@ class FreshServiceController extends Controller
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                return success_response(
-                    trans('Could not create ticket.'),
-                    $res->content,
-                    JsonResponse::HTTP_OK
+                return error_response(
+                    $res->content->title,
+                    $res->content->errors,
                 );
             }
             return success_response(
@@ -189,7 +185,7 @@ class FreshServiceController extends Controller
             );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('messages.error_default'), $e);
+            return error_response(trans('Could not create ticket, please try again.'), $e);
         }
     }
 
@@ -209,9 +205,8 @@ class FreshServiceController extends Controller
                 // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 return success_response(
-                    trans('Could not load ticket conversations.'),
-                    $res->content,
-                    JsonResponse::HTTP_OK
+                    $res->content->title,
+                    $res->content->errors,
                 );
             }
             return success_response(
@@ -244,10 +239,10 @@ class FreshServiceController extends Controller
                 );
             }
             log_to_file('critical', 'API Call Failed!', 'No file uploaded', "fs");
-            return error_response(trans('messages.error_default'), 'No file uploaded');
+            return error_response(trans('An error occurred while uploading atatchment, please try again.'), []);
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('messages.error_default'), $e);
+            return error_response('Could not upload your attachment, please make sure it is not more than 5MB in size. The file must be a type of: jpeg, jpg, png, gif, bmp, webp, pdf, doc, docx, xls, xlsx, txt, or csv.', $e);
         }
     }
 
@@ -256,8 +251,11 @@ class FreshServiceController extends Controller
         try {
             if ($request->hasFile('attachment')) {
                 $request->validate([
-                    'file' => 'mimes:jpeg,jpg,png,gif,bmp,webp,pdf,doc,docx,xls,xlsx,txt,csv|max:5120', // 5MB max
+                    'attachment' => 'mimes:jpeg,jpg,png,gif,bmp,webp,pdf,doc,docx,xls,xlsx,txt,csv|max:5120',
                     'workspace_id' => 'required|integer',
+                ], [
+                    'file.mimes' => 'The file must be a type of: jpeg, jpg, png, gif, bmp, webp, pdf, doc, docx, xls, xlsx, txt, or csv.',
+                    'file.max' => 'The file size must not exceed 5MB.',
                 ]);
                 $file = $request->file('attachment');
                 $originalName = $file->getClientOriginalName();
@@ -290,23 +288,26 @@ class FreshServiceController extends Controller
                 if ($res->status != JsonResponse::HTTP_OK) {
                     // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                     log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                    return success_response(
-                        trans('Could not load ticket conversations.'),
-                        $res->content,
-                        JsonResponse::HTTP_OK
+                    return error_response(
+                        $res->content->title,
+                        $res->content->errors,
                     );
                 }
                 return success_response(
-                    trans('Image file uploaded successfully!'),
+                    trans('Attachment uploaded successfully!'),
                     $res->content,
                     JsonResponse::HTTP_OK
                 );
             }
             log_to_file('critical', 'API Call Failed!', 'No file uploaded', "fs");
             return error_response(trans('messages.error_default'), 'No file uploaded');
-        } catch (Exception $e) {
+        } catch (ValidationException  $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
-            return error_response(trans('messages.error_default'), $e);
+            $error = "Could not upload your attachment, please make sure it is not more than 5MB in size. The file must be a type of: jpeg, jpg, png, gif, bmp, webp, pdf, doc, docx, xls, xlsx, txt, or csv.";
+            return error_response($error, []);
+        } catch (\Exception $e) {
+            log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
+            return error_response($e->getMessage(), []);
         }
     }
 }
