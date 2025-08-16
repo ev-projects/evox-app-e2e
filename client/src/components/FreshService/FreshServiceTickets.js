@@ -448,7 +448,7 @@ const TicketDetailsPage = function (props) {
     })
       .then((result) => {
         setReply('');
-        setAttachment({
+        setAttachments({
           attachments: [],
           attachmentsValues: [],
           removedAttachments: []
