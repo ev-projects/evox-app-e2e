@@ -275,7 +275,7 @@ const CreateTicketPage = function (props) {
 
     React.createElement('div', { className: 'card-content-fs' },
       success && React.createElement('div', { className: 'success-message' },
-        '✅ Ticket created successfully!'
+        '✅ Thanks! EV Assist has logged your request. Our team will be in touch shortly.'
       ),
 
       React.createElement('form', { onSubmit: handleSubmit },
@@ -413,7 +413,6 @@ const CreateTicketPage = function (props) {
                 data: attachmentData
               })
                 .then((result) => {
-                  console.log(result);
                   updateField('attachments', [...formData.attachments, ...newFiles]);
                   updateField('attachmentsValues', [...formData.attachmentsValues, result.data.content.files[0]]);
                 })
