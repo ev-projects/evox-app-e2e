@@ -221,9 +221,9 @@ class Dashboard extends Component {
     }
 
     // check if user has eva survey
-    if (!this.props.user.is_eva_loaded) {
-      this.props.getEvaSurvey();
-    }
+    // if (!this.props.user.is_eva_loaded) {
+    //   this.props.getEvaSurvey();
+    // }
 
     // if no eva survey yet, show eva modal
     if (this.props.user.user_eva && Object.keys(this.props.user.user_eva).length >= 1) {
