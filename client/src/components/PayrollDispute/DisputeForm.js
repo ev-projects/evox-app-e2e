@@ -19,7 +19,7 @@ import {
   Col,
 } from "../../components/GridComponent/AdminLte.js";
 import {fetchUserRolePermission,assignRolesPermissions,  fetchUserFeatures, assignLevelFeatures,fetchUserDispute } from '../../store/actions/admin/assignRoleActions';
-// import { getDisputeReport } from '../../store/actions/report/reportActions';
+import { getDisputeReport } from '../../store/actions/report/reportActions';
 
 function DisputeForm(props) {
   let history = useHistory();
@@ -180,7 +180,7 @@ function DisputeForm(props) {
       }
     }else{
       // fetchDisputes();
-      // dispatch(getDisputeReport(props.params.id));
+      dispatch(getDisputeReport(props.params.id));
     }
   }, [payroll]);
 
@@ -1312,7 +1312,7 @@ const mapDispatchToProps = (dispatch) => {
 
     assignRolesPermissions  : ( user_id , post_data ) => dispatch( assignRolesPermissions( user_id , post_data ) ),
     assignLevelFeatures  : ( user_id , post_data ) => dispatch( assignLevelFeatures( user_id , post_data ) ),
-    // getDisputeReport  : ( dispute_id ) => dispatch( getDisputeReport( dispute_id ) ),
+    getDisputeReport  : ( dispute_id ) => dispatch( getDisputeReport( dispute_id ) ),
   }
 }
 
