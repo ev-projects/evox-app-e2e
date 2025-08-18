@@ -82,7 +82,6 @@ class DisputeController extends Controller
      */
     public function show(Dispute $dispute, Request $request)
     {
-
         $me = Auth::user();
         $check_if_payroll = call_sp('EV_SP_Validate_Payroll_Level', [$me->id]);
 
@@ -100,7 +99,6 @@ class DisputeController extends Controller
         }
 
         try {
-            log_activity( trans('messages.list_role_attempt') );
             return success_response(
                 trans('messages.dispute_list_success'), $result_sets[0]
             );
@@ -117,9 +115,57 @@ class DisputeController extends Controller
         $end_date = $request->endDate ?? $payroll_cutoff->end_date;
 
         $result_sets = call_sp('EV_SP_PD_Get_Payroll_Report', [$start_date, $end_date, $request->geo ?? null]);
+
+        $results = [];
+        if (count($result_sets[0]) > 0) {
+          foreach ($result_sets[0] as $key => $value) {
+            $results[$key] = [
+                $value->Employee_Number,
+                $value->Employee_Name,
+                $value->Department_Name,
+                $value->Cutoff,
+                $value->PayrollPeriod,
+                $value->ApprovedDate,
+                $value->datefilling,
+                $value->Remarks,
+                $value->unpaid_leave,
+                $value->reg_late,
+                $value->reg_undertime,
+                $value->Render_Hr,
+                $value->Night_Diff,
+                $value->OverTime,
+                $value->OT_ND,
+                $value->RD_Render_HR,
+                $value->RD_ND,
+                $value->RD_OT,
+                $value->RD_OT_ND,
+                $value->LH_Render_HR,
+                $value->LH_ND,
+                $value->LH_OT,
+                $value->LH_OT_ND,
+                $value->SH_Render_Hr,
+                $value->SH_ND,
+                $value->SH_OT,
+                $value->SH_OT_ND,
+                $value->DSH_Render_HR,
+                $value->DSH_ND,
+                $value->DSH_OT,
+                $value->DSH_OT_ND,
+                $value->DLH_Render_HR,
+                $value->DLH_ND,
+                $value->DLH_OT,
+                $value->DLH_OT_ND,
+                $value->SLH_Render_HR,
+                $value->SLH_ND,
+                $value->SLH_OT,
+                $value->SLH_OT_ND,
+            ];
+          }
+        }
+
         try {
             log_activity( trans('messages.dispute_export_success') );
-            return Excel::download(new DisputeExport($result_sets[0], $start_date, $end_date), 'Dispute.csv');
+            return Excel::download(new DisputeExport($results, $start_date, $end_date), 'Dispute.csv');
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -142,7 +188,7 @@ class DisputeController extends Controller
     public function UpdateDispute(Request $request,$id)
     {
         try {
-            $result_sets = call_sp('EV_SP_PD_Update_Dispute_Status', [$request->status, $id]);
+            $result_sets = call_sp('EV_SP_PD_Update_Dispute_Status', [$request->status, $id, $request->remarks ?? null]);
 
             return success_response(
                 trans('messages.dispute_status_success'), []

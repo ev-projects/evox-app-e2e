@@ -250,6 +250,14 @@ const DisputeReport = (props) => {
                     <th>Emp No</th>
                     <th>Name</th>
                     <th>Department</th>
+                    <th>Cut Off</th>
+                    <th>Payroll Period</th>
+                    <th>BP's Date of Approval</th>
+                    <th>Date of Filing</th>
+                    <th>Remarks</th>
+                    <th>Unpaid Leave</th>
+                    <th>Late</th>
+                    <th>Undertime</th>
                     <th>Rendered Hours</th>
                     <th>Night Differential</th>
                     <th>Overtime</th>
@@ -287,6 +295,14 @@ const DisputeReport = (props) => {
                         <td>{dispute.Employee_Number}</td>
                         <td>{dispute.Employee_Name}</td>
                         <td>{dispute.Department_Name}</td>
+                        <td>{dispute.Cutoff}</td>
+                        <td>{dispute.PayrollPeriod}</td>
+                        <td>{dispute.ApprovedDate}</td>
+                        <td>{dispute.datefilling}</td>
+                        <td>{dispute.Remarks}</td>
+                        <td>{dispute.unpaid_leave}</td>
+                        <td>{dispute.reg_late}</td>
+                        <td>{dispute.reg_undertime}</td>
                         <td>{dispute.Render_Hr}</td>
                         <td>{dispute.Night_Diff}</td>
                         <td>{dispute.OverTime}</td>
