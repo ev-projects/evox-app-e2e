@@ -343,6 +343,8 @@ const DisputeReport = (props) => {
                     <th>Name</th>
                     <th>Department</th>
                     <th>Date</th>
+                    <th>Cutoff</th>
+                    <th>Payroll Period</th>
                     <th>Rendered Hours</th>
                     <th>OT</th>
                     <th>RD</th>
@@ -359,6 +361,8 @@ const DisputeReport = (props) => {
                         <td>{dispute.Employee_Name}</td>
                         <td>{dispute.Department_Name}</td>
                         <td>{moment(new Date(dispute.login_date)).format("MMMM D, YYYY")}</td>
+                        <td>{dispute.Cutoff}</td>
+                        <td>{dispute.PayrollPeriod}</td>
                         <td>{dispute.Render_Hr}</td>
                         <td>{dispute.OverTime}</td>
                         <td>{dispute.RD_Render_HR}</td>
