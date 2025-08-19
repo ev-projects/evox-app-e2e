@@ -135,9 +135,45 @@ const NeoDetails = (props) => {
             const byteCharacters = atob(theFile.data.fileContent);
             const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
             const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: theFile.data.mimeType });
-            const url = URL.createObjectURL(blob);
-            setNeoFilePath(url);
+            const fileBlob = new Blob([byteArray], { type: theFile.data.mimeType });
+            const fileUrl = URL.createObjectURL(fileBlob);
+
+            let htmlContent;
+
+            // If it's an image, wrap it in HTML with centered styling
+            if (theFile.data.mimeType.startsWith("image/")) {
+              htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <style>
+                      body {
+                        margin: 0;
+                        height: 100vh;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                      }
+                      img {
+                        max-width: 100%;
+                        height: auto;
+                      }
+                    </style>
+                  </head>
+                  <body>
+                    <img src="${fileUrl}" alt="Centered Image" />
+                  </body>
+                </html>
+              `;
+
+              const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+              const htmlBlobUrl = URL.createObjectURL(htmlBlob);
+              setNeoFilePath(htmlBlobUrl);
+            } else {
+              // For non-image files, just show as-is (or use FileViewer as fallback)
+              setNeoFilePath(fileUrl);
+            }
+
             setOpenViewer(true);
           } else {
             setNeoFile({});
