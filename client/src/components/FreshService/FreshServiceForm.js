@@ -137,7 +137,7 @@ const validateTicketData = function (data) {
 // CREATE TICKET PAGE - Professional Version
 const CreateTicketPage = function (props) {
   const dispatch = useDispatch();
-  var workspaces = props.workspaces;
+  const workspaces = props.workspaces || [];
   const defaultSignature = `
     <br><br>
     Best Regards,<br>
@@ -573,7 +573,6 @@ const FreshServiceForm = (props) => {
       .catch((e) => {
         if (isMounted.current) {
           console.error('❌ Error during API call:', e);
-          setWorkspacesLoaded(true);
           dispatch(Formatter.alert_error(e));
         }
       });
@@ -597,10 +596,11 @@ const FreshServiceForm = (props) => {
                       React.createElement('span', { className: 'spinner' }),
                       'Loading workspace categories...'
                     ) :
-                    currentView === 'create' ? React.createElement(CreateTicketPage, {
-                      workspaces: workspaces,
-                      useremail: props.user.email,
-                      user: props.user
+                    (currentView === 'create' && workspacesLoaded && workspaces.length > 0)
+                      ? React.createElement(CreateTicketPage, {
+                        workspaces: workspaces,
+                        useremail: props.user.email,
+                        user: props.user
                     }) : null
                 )
               )}
