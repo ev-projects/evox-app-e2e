@@ -588,7 +588,7 @@ const TicketDetailsPage = function (props) {
           React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
           React.createElement('form', { onSubmit: handleReplySubmit },
             <Editor
-              apiKey="nwf6jspi93459hl7io117u8tqtutub6tk18jw7kamd4hujd7"
+              apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
               textareaName="content"
               value={reply}
               onEditorChange={(newContent, editor) => setReply(newContent)}

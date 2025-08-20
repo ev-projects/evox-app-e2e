@@ -261,7 +261,7 @@ class HrAnnouncementsForm extends Component {
                       
                         <Editor
   
-                          apiKey="nwf6jspi93459hl7io117u8tqtutub6tk18jw7kamd4hujd7"
+                          apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
                           textareaName="content"
                           initialValue={values.content ?? ''}
                           onEditorChange={(e) => { this.handleEditorChange(e); }}

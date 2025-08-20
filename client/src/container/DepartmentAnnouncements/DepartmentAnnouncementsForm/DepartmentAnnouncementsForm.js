@@ -700,7 +700,7 @@ class DepartmentAnnouncementsForm extends Component {
                             {/* <textarea className="form-control" rows="10" name="content" onChange={handleChange} value={values.content??''} placeholder="Change log summary..."></textarea> */}
                             <Editor
                               // onInit={(evt, editor) => editorRef.current = editor}
-                              apiKey="nwf6jspi93459hl7io117u8tqtutub6tk18jw7kamd4hujd7"
+                              apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
                               textareaName="content"
                               initialValue={values.content ?? ''}
                               onEditorChange={(e) => { this.handleEditorChange(e); }}
