@@ -231,9 +231,9 @@ const TicketListPage = function (props) {
           React.createElement('option', { value: '' }, 'Please select department'),
           workspaces.map(function (workspace) {
             return React.createElement('option', {
-              key: workspace.id,
-              value: workspace.id
-            }, workspace.name);
+              key: workspace.Id,
+              value: workspace.Id
+            }, workspace.Name);
           })
         )
       ),
@@ -710,35 +710,6 @@ const FreshServiceTickets = (props) => {
   var [ticketsError, setTicketsError] = useState(null);
   var [categoriesLoaded, setCategoriesLoaded] = useState(false);
 
-  // Load workspace categories from JSON file
-  useEffect(function () {
-    console.log('🔄 Loading workspace categories from JSON file');
-    fetch('/workspace-categories.json')
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error('Failed to load workspace categories');
-        }
-        return response.json();
-      })
-      .then(function (data) {
-        WORKSPACE_CATEGORIES = data;
-        setCategoriesLoaded(true);
-        console.log('✅ Workspace categories loaded from JSON');
-      })
-      .catch(function (error) {
-        console.error('❌ Failed to load workspace categories:', error);
-        // Fallback to minimal data if JSON fails
-        WORKSPACE_CATEGORIES = {
-          "EVOX": {
-            "EVOX": ["Access", "Bug", "Update"],
-            "Hardware": ["Asset"],
-            "Software": ["Application"]
-          }
-        };
-        setCategoriesLoaded(true);
-      });
-  }, []);
-
   // Load workspaces once
   useEffect(function () {
     console.log('🔄 Loading workspaces (once)');
@@ -747,13 +718,7 @@ const FreshServiceTickets = (props) => {
       url: "/freshservice/workspaces/",
     })
       .then((result) => {
-        var activeWorkspaces = (result.data.content || [])
-          .filter(function (ws) {
-            return ws.state === 'active';
-          })
-          .sort(function (a, b) {
-            return a.name.localeCompare(b.name);
-          });
+        var activeWorkspaces = result.data.content;
         setWorkspaces(activeWorkspaces);
         setCategoriesLoaded(true);
         console.log('✅ Workspaces loaded');

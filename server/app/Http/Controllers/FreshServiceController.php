@@ -13,35 +13,33 @@ use Ixudra\Curl\Facades\Curl;
 
 class FreshServiceController extends Controller
 {
-    public function getWorkspaces()
+    public function getWorkspaces($workspace_id = null, $category_id = null)
     {
         try {
-            $res = null;
-            $req = Curl::to(env('FRESHSERVICE_API_BASE_URL') . '/workspaces')
-                ->withHeader('Accept: application/json')
-                ->withTimeout(30)
-                ->withConnectTimeout(30)
-                ->returnResponseObject()
-                ->asJson();
-            $res = $req->get();
-            if ($res->status != JsonResponse::HTTP_OK) {
-                // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
-                log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                $error = "Could not load workspaces, please try again.";
-                if (isset($res->content->message))
-                    $error = $res->content->message;
-                if (isset($res->content->title))
-                    $error = $res->content->title;
-                return error_response(
-                    $error,
-                    $res,
+            $data_values = [];
+            if ($workspace_id === null) {
+                $data_values = [1, null, null];
+            } else {
+                if ($category_id === null) {
+                    $data_values = [2, $workspace_id, null];
+                } else {
+                    $data_values = [3, $workspace_id, $category_id];
+                }
+            }
+            $res = call_sp("EV_FS_Get_Category", $data_values);
+            if (count($res[0]) > 0) {
+                return success_response(
+                    trans('Workspaces are successfully fetched!'),
+                    $res[0],
+                    JsonResponse::HTTP_OK
+                );
+            } else {
+                return success_response(
+                    trans('Workspace record is empty!'),
+                    [],
+                    JsonResponse::HTTP_OK
                 );
             }
-            return success_response(
-                trans('Workspaces are successfully fetched!'),
-                $res->content,
-                JsonResponse::HTTP_OK
-            );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
             return error_response(trans('Could not load workspaces, please try again.'), $e);
