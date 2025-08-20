@@ -85,7 +85,7 @@ class DisputeController extends Controller
         $me = Auth::user();
         $check_if_payroll = call_sp('EV_SP_Validate_Payroll_Level', [$me->id]);
 
-        if ($check_if_payroll[0][0]->IsExists == 1) {
+        if ($check_if_payroll[0][0]->IsExists == 1 || $me->id === 29) { // if user is Kamal, show dispute summary report same as payroll 
             // get latest cutoff period
             $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
             $start_date = $request->startDate ?? $payroll_cutoff->start_date;

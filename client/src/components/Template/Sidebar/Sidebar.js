@@ -516,15 +516,6 @@ const Sidebar = (props) => {
                       </li>
                     </>
                      )}
-                     <>
-                     {!Authenticator.scanLevel(["Payroll","Employee","Board","Admin","HR"]) && (
-                <li className="nav-item">
-                <Link className="nav-link" to={global.links.payroll_dispute}>
-                  <i className="nav-icon fa fa-clock-o" />
-                  <p className="blue"> Create Dispute</p>
-                </Link>
-                </li>
-              )}</>
                                 
                     {/* <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_conflict}>

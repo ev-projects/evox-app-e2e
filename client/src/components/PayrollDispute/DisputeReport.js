@@ -20,7 +20,7 @@ import {
 import moment from "moment";
 const DisputeReport = (props) => {
 
-  const { settings,userdepartment,dispute, geos } = props;
+  const { settings, userdepartment, dispute, geos, user } = props;
 
     // State variables to store disputes and filters
   const [disputes, setDisputes] = useState([]);
@@ -243,7 +243,7 @@ const DisputeReport = (props) => {
             </Row>
           </div>
           <div className="mb-3 table-container">
-            {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) ? (
+            {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) || user.id === 29 ? (
               <Table striped bordered hover className="tablealignment">
                 <thead>
                   <tr>
