@@ -588,7 +588,9 @@ const TicketDetailsPage = function (props) {
           React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
           React.createElement('form', { onSubmit: handleReplySubmit },
             <Editor
-              apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+              // apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+              tinymceScriptSrc='/tinymce/tinymce.min.js'
+              licenseKey='gpl'
               textareaName="content"
               value={reply}
               onEditorChange={(newContent, editor) => setReply(newContent)}

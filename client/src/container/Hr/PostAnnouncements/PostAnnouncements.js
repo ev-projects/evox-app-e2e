@@ -170,7 +170,9 @@ class PostAnnouncements extends Component {
                         {/* <textarea className="form-control" rows="10" name="description" onChange={handleChange} value={values.description??''} placeholder="Change log summary..."></textarea> */}
                         <Editor
                           // onInit={(evt, editor) => editorRef.current = editor}
-                          apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+                          // apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+                          tinymceScriptSrc='/tinymce/tinymce.min.js'
+                          licenseKey='gpl'
                           textareaName="description"
                           initialValue={values.description ?? ''}
                           onEditorChange={(e) => { this.handleEditorChange(e); }}

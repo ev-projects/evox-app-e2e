@@ -700,7 +700,9 @@ class DepartmentAnnouncementsForm extends Component {
                             {/* <textarea className="form-control" rows="10" name="content" onChange={handleChange} value={values.content??''} placeholder="Change log summary..."></textarea> */}
                             <Editor
                               // onInit={(evt, editor) => editorRef.current = editor}
-                              apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+                              // apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+                              tinymceScriptSrc='/tinymce/tinymce.min.js'
+                              licenseKey='gpl'
                               textareaName="content"
                               initialValue={values.content ?? ''}
                               onEditorChange={(e) => { this.handleEditorChange(e); }}

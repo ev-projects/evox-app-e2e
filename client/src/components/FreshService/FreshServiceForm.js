@@ -352,7 +352,9 @@ const CreateTicketPage = function (props) {
         React.createElement('div', { className: 'form-group' },
           React.createElement('label', { className: 'form-label' }, 'Description *'),
           <Editor
-            apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+            // apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+            tinymceScriptSrc='/tinymce/tinymce.min.js'
+            licenseKey='gpl'
             textareaName="content"
             value={formData.description}
             onEditorChange={(content, editor) => updateField('description', content)}
