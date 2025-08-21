@@ -261,7 +261,9 @@ class HrAnnouncementsForm extends Component {
                       
                         <Editor
   
-                          apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+                          // apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
+                          tinymceScriptSrc='/tinymce/tinymce.min.js'
+                          licenseKey='gpl'
                           textareaName="content"
                           initialValue={values.content ?? ''}
                           onEditorChange={(e) => { this.handleEditorChange(e); }}
