@@ -120,7 +120,7 @@ class PoliciesDocumentController extends Controller
     {
         try {
             $me = Auth::user();
-            $result = call_sp('EV_SP_Policies_Document', [null, $request->GlobalType, $me->country_id, null,null, null, null, null, $request->selectedDepartments, null, 3, null, null]);
+            $result = call_sp('EV_SP_Policies_Document', [null, $request->GlobalType, $me->country_id, null,null, null, null, null, $request->selectedDepartments, $me->id, 3, null, null]);
 
             $policies = [];
             if ($result[0]) {
