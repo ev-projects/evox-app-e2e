@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
-import { useDispatch } from 'react-redux'
+import { connect, useDispatch } from 'react-redux'
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
@@ -7,6 +7,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { handleImageUpload } from '../../services/Helper';
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
+import { fetchWorkSpaces } from '../../store/actions/freshservice/freshServiceActions';
 
 // WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
 let WORKSPACE_CATEGORIES = {};
@@ -542,46 +543,12 @@ const CreateTicketPage = function (props) {
 
 const FreshServiceForm = (props) => {
   const dispatch = useDispatch();
-  const isMounted = useRef(true);
   var [currentView, setCurrentView] = useState('create');
-  var [workspaces, setWorkspaces] = useState([]);
-  var [filters, setFilters] = useState({
-    workspaceId: '',
-    status: 'all'
-  });
-  var [categoriesLoaded, setCategoriesLoaded] = useState(false);
-  var [workspacesLoaded, setWorkspacesLoaded] = useState(false);
 
   // Load workspaces
   useEffect(() => {
-    console.log("🔄 Loading workspaces (once)");
-    // Set isMounted to true on mount
-    isMounted.current = true;
-
-    API.call({
-      method: 'get',
-      url: '/freshservice/workspaces/',
-    })
-      .then((result) => {
-        if (isMounted.current) {
-          var activeWorkspaces = result.data.content;
-          setWorkspaces(activeWorkspaces);
-          setWorkspacesLoaded(true);
-          console.log('✅ Workspaces loaded');
-        }
-      })
-      .catch((e) => {
-        if (isMounted.current) {
-          console.error('❌ Error during API call:', e);
-          dispatch(Formatter.alert_error(e));
-        }
-      });
-
-    // Cleanup: Set isMounted to false on unmount
-    return () => {
-      isMounted.current = false;
-    };
-  }, []); // Only run once on mount
+    dispatch(fetchWorkSpaces());
+  }, []);
 
   return (
     <>
@@ -589,21 +556,24 @@ const FreshServiceForm = (props) => {
         <ContainerWrapper>
           <ContainerBody>
             <Content>
-              {React.createElement('div', { className: 'app-fs' },
-                React.createElement('main', { className: 'main-fs' },
-                  !(workspacesLoaded) ?
-                    React.createElement('div', { className: 'loading' },
-                      React.createElement('span', { className: 'spinner' }),
-                      'Loading workspace categories...'
-                    ) :
-                    (currentView === 'create' && workspacesLoaded && workspaces.length > 0)
-                      ? React.createElement(CreateTicketPage, {
-                        workspaces: workspaces,
-                        useremail: props.user.email,
-                        user: props.user
-                    }) : null
-                )
-              )}
+              <div className="app-fs">
+                <main className="main-fs">
+                  {!props.workspacesLoaded ? (
+                    <div className="loading">
+                      <span className="spinner"></span>
+                      Loading workspace categories...
+                    </div>
+                  ) : (
+                    currentView === 'create' && props.workspaces.length > 0 && (
+                      <CreateTicketPage
+                        workspaces={props.workspaces}
+                        useremail={props.user.email}
+                        user={props.user}
+                      />
+                    )
+                  )}
+                </main>
+              </div>
             </Content>
           </ContainerBody>
         </ContainerWrapper>
@@ -612,4 +582,14 @@ const FreshServiceForm = (props) => {
   )
 }
 
-export default FreshServiceForm
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    settings: state.settings,
+    workspaces: state.freshService.instance,
+    workspacesLoaded: state.freshService.isInstanceLoaded
+  };
+};
+
+
+export default connect(mapStateToProps)(FreshServiceForm);
