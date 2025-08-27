@@ -18,6 +18,7 @@ use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Resources\AlterLogResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class AlterLogController extends Controller
 {   
@@ -39,18 +40,31 @@ class AlterLogController extends Controller
      */
     public function store(AlterLogRequest $request){
         try {
-            log_activity( trans('messages.create_alter_log_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $alter_log = $this->alter_log->store( $request->all());
-            
-            $this->email->sendAlterLogRequestEmail( $alter_log );
-            
-            return success_response(
-                trans('messages.create_alter_log_success'), 
-                new AlterLogResource($alter_log),
-                JsonResponse::HTTP_CREATED
-            );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                $alter_log_dispute = $this->insertToAlterLogDispute($request);
+                $this->email->sendAlterLogDisputeEmail($alter_log_dispute);
 
+                return success_response(
+                    trans('messages.dispute_request_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                log_activity( trans('messages.create_alter_log_attempt') );
+
+                $alter_log = $this->alter_log->store( $request->all());
+
+                $this->email->sendAlterLogRequestEmail( $alter_log );
+
+                return success_response(
+                    trans('messages.create_alter_log_success'),
+                    new AlterLogResource($alter_log),
+                    JsonResponse::HTTP_CREATED
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -113,17 +127,30 @@ class AlterLogController extends Controller
      */
     public function approve(AlterLogRequest $request, $id){
         try {
-            log_activity( trans('messages.approve_alter_log_attempt') );
+            // call request validity checker
+            $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            $alter_log = $this->alter_log->approve( $request->all() , $id );
+            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+                $alter_log_dispute = $this->insertToAlterLogDispute($request);
 
-            // Add code to apply the Alter Log on the specific DTR.
-            $dtr = $this->dtr->apply_alter_log_to_dtr( $alter_log );
+                return success_response(
+                    trans('messages.invalid_request'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                log_activity( trans('messages.approve_alter_log_attempt') );
 
-            return success_response(
-                trans('messages.approve_alter_log_success'), 
-                new AlterLogResource( $alter_log ) 
-            );
+                $alter_log = $this->alter_log->approve( $request->all() , $id );
+
+                // Add code to apply the Alter Log on the specific DTR.
+                $dtr = $this->dtr->apply_alter_log_to_dtr( $alter_log );
+
+                return success_response(
+                    trans('messages.approve_alter_log_success'),
+                    new AlterLogResource( $alter_log )
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
@@ -186,5 +213,33 @@ class AlterLogController extends Controller
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
+    }
+
+    public function insertToAlterLogDispute($request) {
+        // call SP to store request on dispute table
+        $auth_user_offset =  Auth::user() && Auth::user()->country_timezone_to_offset() ? string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): 0;
+        $alter_log_dispute = [
+            ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+            ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+            ( isset( $request['current_time_in'] ) && is_valid( $request['current_time_in'] ) ) ? strtotime($request['current_time_in']) - $auth_user_offset: null,
+            ( isset( $request['current_time_out'] ) && is_valid( $request['current_time_out'] ) ) ? strtotime($request['current_time_out']) - $auth_user_offset: null,
+            ( isset( $request['new_time_in'] ) && is_valid( $request['new_time_in'] ) ) ? strtotime($request['new_time_in']) - $auth_user_offset: null,
+            ( isset( $request['new_time_out'] ) && is_valid( $request['new_time_out'] ) ) ? strtotime($request['new_time_out']) - $auth_user_offset: null,
+            ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+            ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+            "approved",
+            auth()->user()->id,
+            auth()->user()->id
+        ];
+        call_sp('EV_SP_PD_Autoamtion_AlterLog', $alter_log_dispute);
+        return array(
+            'user_id' => $alter_log_dispute[0],
+            'date' => $alter_log_dispute[1],
+            'current_time_in' => $alter_log_dispute[2],
+            'current_time_out' => $alter_log_dispute[3],
+            'new_time_in' => $alter_log_dispute[4],
+            'new_time_out' => $alter_log_dispute[5],
+            'employee_note' => $alter_log_dispute[6],
+        );
     }
 }

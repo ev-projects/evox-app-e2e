@@ -20,7 +20,7 @@ import {
 import moment from "moment";
 const DisputeReport = (props) => {
 
-  const { settings,userdepartment,dispute, geos } = props;
+  const { settings, userdepartment, dispute, geos, user } = props;
 
     // State variables to store disputes and filters
   const [disputes, setDisputes] = useState([]);
@@ -243,13 +243,21 @@ const DisputeReport = (props) => {
             </Row>
           </div>
           <div className="mb-3 table-container">
-            {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) ? (
+            {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) || user.id === 29 ? (
               <Table striped bordered hover className="tablealignment">
                 <thead>
                   <tr>
                     <th>Emp No</th>
                     <th>Name</th>
                     <th>Department</th>
+                    <th>Cut Off</th>
+                    <th>Payroll Period</th>
+                    <th>BP's Date of Approval</th>
+                    <th>Date of Filing</th>
+                    <th>Remarks</th>
+                    <th>Unpaid Leave</th>
+                    <th>Late</th>
+                    <th>Undertime</th>
                     <th>Rendered Hours</th>
                     <th>Night Differential</th>
                     <th>Overtime</th>
@@ -287,6 +295,14 @@ const DisputeReport = (props) => {
                         <td>{dispute.Employee_Number}</td>
                         <td>{dispute.Employee_Name}</td>
                         <td>{dispute.Department_Name}</td>
+                        <td>{dispute.Cutoff}</td>
+                        <td>{dispute.PayrollPeriod}</td>
+                        <td>{dispute.ApprovedDate}</td>
+                        <td>{dispute.datefilling}</td>
+                        <td>{dispute.Remarks}</td>
+                        <td>{dispute.unpaid_leave}</td>
+                        <td>{dispute.reg_late}</td>
+                        <td>{dispute.reg_undertime}</td>
                         <td>{dispute.Render_Hr}</td>
                         <td>{dispute.Night_Diff}</td>
                         <td>{dispute.OverTime}</td>
@@ -327,6 +343,8 @@ const DisputeReport = (props) => {
                     <th>Name</th>
                     <th>Department</th>
                     <th>Date</th>
+                    <th>Cutoff</th>
+                    <th>Payroll Period</th>
                     <th>Rendered Hours</th>
                     <th>OT</th>
                     <th>RD</th>
@@ -343,6 +361,8 @@ const DisputeReport = (props) => {
                         <td>{dispute.Employee_Name}</td>
                         <td>{dispute.Department_Name}</td>
                         <td>{moment(new Date(dispute.login_date)).format("MMMM D, YYYY")}</td>
+                        <td>{dispute.Cutoff}</td>
+                        <td>{dispute.PayrollPeriod}</td>
                         <td>{dispute.Render_Hr}</td>
                         <td>{dispute.OverTime}</td>
                         <td>{dispute.RD_Render_HR}</td>

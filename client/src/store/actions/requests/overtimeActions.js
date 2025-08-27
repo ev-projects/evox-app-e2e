@@ -22,7 +22,7 @@ export const addOvertime = ( post_data ) => {
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result ));
+            dispatch( Formatter.alert_success( result, 3000 ));
             // dispatch(fetchRequestList({
             //     status:           "pending",
             //     valid_from:       null,
@@ -174,10 +174,3 @@ export const resetOvertimeInstance = () => {
         })
     }
 }
-
-
-
-
-
-
-

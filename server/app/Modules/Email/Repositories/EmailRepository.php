@@ -22,6 +22,7 @@ use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
+use App\Modules\Email\Jobs\SendAlterLogDisputeEmailJob;
 use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\Email\Jobs\SendRegisteredUserEmailJob;
 use App\Modules\Email\Jobs\SendAlterLogRequestEmailJob;
@@ -29,6 +30,8 @@ use App\Modules\Email\Jobs\SendOvertimeRequestEmailJob;
 use App\Modules\Email\Jobs\SendRestDayWorkRequestEmailJob;
 use App\Modules\Email\Jobs\SendChangeScheduleRequestEmailJob;
 use App\Modules\Email\Jobs\SendForgotPasswordRequestEmailJob;
+use App\Modules\Email\Jobs\SendOvertimeDisputeEmailJob;
+use App\Modules\Email\Jobs\SendRestDayWorkDisputeEmailJob;
 use App\Modules\Email\Jobs\SendSupervisorReminderInvalidCheckInsEmailJob;
 use App\Modules\Email\Jobs\SendSupervisorReminderNoSchedEmailJob;
 use App\Modules\Email\Jobs\SendSupervisorReminderOfNewUserEmailJob;
@@ -109,6 +112,29 @@ class EmailRepository implements EmailRepositoryInterface{
         }
     }
 
+    public function sendOvertimeDisputeEmail( array $request ){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendOvertimeDisputeEmailJob::dispatch( $request )
+                                       ->delay( Carbon::now()->addSeconds(5) );
+            
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            return true;
+            
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
+            throw $e;
+        }
+    }
+
     public function sendOvertimeRequestChangeStatusEmail( Overtime $overtime ){
         try {
                 
@@ -128,6 +154,29 @@ class EmailRepository implements EmailRepositoryInterface{
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
 
             SendRestDayWorkRequestEmailJob::dispatch( $rest_day_work )
+                                          ->delay( Carbon::now()->addSeconds(5) );
+            
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            return true;
+            
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
+            throw $e;
+        }
+    }
+
+    public function sendRestDayWorkDisputeEmail( array $request ){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendRestDayWorkDisputeEmailJob::dispatch( $request )
                                           ->delay( Carbon::now()->addSeconds(5) );
             
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
@@ -166,6 +215,29 @@ class EmailRepository implements EmailRepositoryInterface{
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
 
             SendAlterLogRequestEmailJob::dispatch( $alter_log )
+                                       ->delay( Carbon::now()->addSeconds(5) );
+            
+            log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
+
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+            return true;
+            
+        } catch (Exception $e) {
+
+            log_error($e, 'emails');
+            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
+            log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
+
+            throw $e;
+        }
+    }
+
+    public function sendAlterLogDisputeEmail( array $request ){
+        try {
+            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
+
+            SendAlterLogDisputeEmailJob::dispatch( $request )
                                        ->delay( Carbon::now()->addSeconds(5) );
             
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");

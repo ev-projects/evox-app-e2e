@@ -516,15 +516,6 @@ const Sidebar = (props) => {
                       </li>
                     </>
                      )}
-                     <>
-                     {!Authenticator.scanLevel(["Payroll","Employee","Board","Admin","HR"]) && (
-                <li className="nav-item">
-                <Link className="nav-link" to={global.links.payroll_dispute}>
-                  <i className="nav-icon fa fa-clock-o" />
-                  <p className="blue"> Create Dispute</p>
-                </Link>
-                </li>
-              )}</>
                                 
                     {/* <li className="nav-item">
                       <Link className="nav-link" to={global.links.dtr_conflict}>
@@ -726,20 +717,11 @@ const Sidebar = (props) => {
                                   </li>
                     )}
 
-                    {/* {(Authenticator.scanLevel(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead"])) && (
+                    {(Authenticator.scanLevel(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead"])) && (
                       <li className="nav-item">
                         <Link className="nav-link" to={global.links.payroll_dispute_view}>
                           <i className="nav-icon fa fa-clock-o" />
                           <p className="blue"> Payroll Dispute Report</p>
-                        </Link>
-                      </li>
-                    )} */}
-
-                    {(Authenticator.scanLevel_Feature(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead","Employee"], "manage_asset_reports")) && (
-                      <li className="nav-item">
-                        <Link className="nav-link" to={global.links.asset_reports}>
-                          <i className="nav-icon fa fa-window-restore" />
-                          <p className="blue"> Asset Reports</p>
                         </Link>
                       </li>
                     )}
