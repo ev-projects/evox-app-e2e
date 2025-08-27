@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
-import { useDispatch } from 'react-redux'
+import { connect, useDispatch } from 'react-redux'
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
@@ -7,6 +7,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { handleImageUpload, formatBytes } from '../../services/Helper';
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
+import { fetchWorkSpaces } from '../../store/actions/freshservice/freshServiceActions';
 
 var formatDate = function (dateString) {
   try {
@@ -712,22 +713,7 @@ const FreshServiceTickets = (props) => {
 
   // Load workspaces once
   useEffect(function () {
-    console.log('🔄 Loading workspaces (once)');
-    API.call({
-      method: "get",
-      url: "/freshservice/workspaces/",
-    })
-      .then((result) => {
-        var activeWorkspaces = result.data.content;
-        setWorkspaces(activeWorkspaces);
-        setCategoriesLoaded(true);
-        console.log('✅ Workspaces loaded');
-      })
-      .catch((e) => {
-        setCategoriesLoaded(true);
-        console.error('❌ Failed to load workspaces:', e);
-        dispatch(Formatter.alert_error(e));
-      });
+    dispatch(fetchWorkSpaces());
   }, []);
 
   // Load tickets when filters change
@@ -797,39 +783,42 @@ const FreshServiceTickets = (props) => {
     });
   }, []);
 
-  return (
+    return (
     <>
       <Wrapper>
         <ContainerWrapper>
           <ContainerBody>
             <Content>
-              {React.createElement('div', { className: 'app-fs' },
-                React.createElement('main', { className: 'main-fs' },
-                  !categoriesLoaded ?
-                    React.createElement('div', { className: 'loading' },
-                      React.createElement('span', { className: 'spinner' }),
-                      'Loading workspace categories...'
-                    ) :
-                    currentView === 'list' ? React.createElement(TicketListPage, {
-                      tickets: tickets,
-                      pagination: pagination,
-                      onPageChange: onPageChange,
-                      workspaces: workspaces,
-                      onTicketSelect: handleTicketSelect,
-                      onFilterChange: handleFilterChange,
-                      filters: filters,
-                      loading: ticketsLoading,
-                      error: ticketsError,
-                      useremail: props.user.email
-                    }) :
-                      currentView === 'details' && selectedTicket ? React.createElement(TicketDetailsPage, {
-                        ticket: selectedTicket,
-                        onBack: handleBackToList,
-                        useremail: props.user.email,
-                        user: props.user
-                      }) : null
-                )
-              )}
+              <div className="app-fs">
+                <main className="main-fs">
+                  {!props.workspacesLoaded ? (
+                    <div className="loading">
+                      <span className="spinner"></span>
+                      Loading workspace categories...
+                    </div>
+                  ) : currentView === 'list' ? (
+                    <TicketListPage
+                      tickets={tickets}
+                      pagination={pagination}
+                      onPageChange={onPageChange}
+                      workspaces={props.workspaces}
+                      onTicketSelect={handleTicketSelect}
+                      onFilterChange={handleFilterChange}
+                      filters={filters}
+                      loading={ticketsLoading}
+                      error={ticketsError}
+                      useremail={props.user.email}
+                    />
+                  ) : currentView === 'details' && selectedTicket ? (
+                    <TicketDetailsPage
+                      ticket={selectedTicket}
+                      onBack={handleBackToList}
+                      useremail={props.user.email}
+                      user={props.user}
+                    />
+                  ) : null}
+                </main>
+              </div>
             </Content>
           </ContainerBody>
         </ContainerWrapper>
@@ -838,4 +827,13 @@ const FreshServiceTickets = (props) => {
   )
 }
 
-export default FreshServiceTickets
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    settings: state.settings,
+    workspaces: state.freshService.instance,
+    workspacesLoaded: state.freshService.isInstanceLoaded
+  };
+};
+
+export default connect(mapStateToProps)(FreshServiceTickets);
