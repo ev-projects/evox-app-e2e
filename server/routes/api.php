@@ -67,6 +67,15 @@ Route::get('showlist', 'PoliciesDocumentController@showlist');
 Route::put('updatestatus/{id}/{status}', 'PoliciesDocumentController@updatestatus');
 Route::get('download_policy/{id}/', 'PoliciesDocumentController@downloadPolicy');
 
+// NEO
+Route::get('get_neo_onboarding_users/', 'NeoController@get_neo_onboarding_users');
+Route::get('get_users_pending_submissions/', 'NeoController@get_users_pending_submissions');
+Route::get('get_user_submissions_data/', 'NeoController@get_user_submissions_data');
+Route::post('send_onboarding_link/', 'NeoController@send_onboarding_link');
+Route::post('approve_submissions/', 'NeoController@approve_submissions');
+Route::post('request_for_resubmission/', 'NeoController@request_for_resubmission');
+Route::get('get_neo_file/{userId}/{fileId}', 'NeoController@get_file');
+
 // NHO Survey
 Route::get('nho_survey', 'NewHireOrientationController@index')->middleware('auth.apikey');
 Route::post('nho_survey', 'NewHireOrientationController@store')->middleware('auth.apikey');

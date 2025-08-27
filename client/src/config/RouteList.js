@@ -114,6 +114,9 @@ import DisputeReport from "../components/PayrollDispute/DisputeReport";
 import PoliciesDocumentUpload from "../components/PoliciesDocument/PoliciesDocumentUpload";
 import PoliciesDocumentDownload from "../components/PoliciesDocument/PoliciesDocumentDownload";
 import UploadedDocumentList from "../components/PoliciesDocument/UploadedDocumentList";
+import NeoReportOnboarding from "../components/NeoReport/NeoOnboarding";
+import NeoReportSubmissions from "../components/NeoReport/NeoSubmissions";
+import NeoReportSubmissionsDetails from "../components/NeoReport/NeoDetails";
 import AssetManagementForm from "../components/AssetManagementForm/AssetManagementForm";
 import AssetReport from "../components/AssetManagementForm/AssetReport/AssetReport";
 import FreshServiceForm from "../components/FreshService/FreshServiceForm";
@@ -626,6 +629,16 @@ const RoutesList = (props) => {
         </ProtectedRoute> 
         <ProtectedRoute exact path={global.links.payroll_dispute_view}>
            <DisputeReport></DisputeReport>
+        </ProtectedRoute> 
+
+        <ProtectedRoute exact path={global.links.neo_report_onboarding}>
+           <NeoReportOnboarding></NeoReportOnboarding>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.neo_report_submissions}>
+           <NeoReportSubmissions></NeoReportSubmissions>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.neo_report_submissions + ":guid?"}>
+           <NeoReportSubmissionsDetails></NeoReportSubmissionsDetails>
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.asset_management+":id?"}>
            <AssetManagementForm></AssetManagementForm>
