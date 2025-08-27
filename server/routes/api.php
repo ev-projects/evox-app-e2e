@@ -75,3 +75,26 @@ Route::post('send_onboarding_link/', 'NeoController@send_onboarding_link');
 Route::post('approve_submissions/', 'NeoController@approve_submissions');
 Route::post('request_for_resubmission/', 'NeoController@request_for_resubmission');
 Route::get('get_neo_file/{userId}/{fileId}', 'NeoController@get_file');
+
+// NHO Survey
+Route::get('nho_survey', 'NewHireOrientationController@index')->middleware('auth.apikey');
+Route::post('nho_survey', 'NewHireOrientationController@store')->middleware('auth.apikey');
+
+// EVA Survey
+Route::get('eva_survey', 'EvaController@index')->middleware('auth.apikey');
+Route::post('eva_survey', 'EvaController@store')->middleware('auth.apikey');
+
+Route::group(['prefix' => 'freshservice/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    Route::get('workspaces', 'FreshServiceController@getWorkspaces');
+    Route::group(['prefix' => 'tickets'], function () {
+        Route::get('my-tickets', 'FreshServiceController@getMyTickets');
+        Route::post('/', 'FreshServiceController@createTicket');
+        Route::post('upload-image', 'FreshServiceController@saveTicketImage');
+        Route::post('attachments', 'FreshServiceController@saveAttachment');
+        Route::group(['prefix' => '{id}'], function () {
+            Route::get('/', 'FreshServiceController@getTicket');
+            Route::post('reply', 'FreshServiceController@sendTicketConversation');
+            Route::get('conversations', 'FreshServiceController@getTicketConversation');
+        });
+    });
+});

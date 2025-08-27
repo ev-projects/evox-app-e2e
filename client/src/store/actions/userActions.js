@@ -294,5 +294,222 @@ export const forgotPasswordRequest = ( email ) => {
     }
 }
 
+// Actions for the getting user asset
+export const getAllAssets = ( params ) => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/getallassets",
+            params: params
+        })
+        .then(result => {
+            dispatch({
+                'type'                  : 'FETCH_ALL_ASSETS',
+                'data'                  : result.data,
+                'is_all_asset_loaded'   : true,
+                'filters'               : params
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
 
+// Actions for the getting user asset
+export const getUserAsset = ( id ) => {
 
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/getasset/" + id,
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'FETCH_USER_ASSET',
+                'data'              : result.data.content,
+                'is_asset_loaded'   : true
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
+
+// Actions for the getting user asset
+export const getUserAssets = ( data ) => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/user/getassets",
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'FETCH_USER_ASSETS',
+                'data'              : result.data.content,
+                'is_asset_loaded'   : true
+            })
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
+
+// Actions for the adding user asset
+export const addUserAsset = ( data ) => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/user/addasset",
+            data: data
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'CLEAR_USER_ASSET_LOAD',
+                'is_asset_loaded'   : false
+            })
+            dispatch(Formatter.alert_success( result, 3000 ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
+
+// Actions for the adding user asset
+export const updateUserAsset = ( data ) => {
+
+    return (dispatch, getState) => {
+        API.call({
+            method: "post",
+            url: "/user/updateasset",
+            data: data
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'CLEAR_USER_ASSET_LOAD',
+                'is_asset_loaded'   : false
+            });
+
+            dispatch(Formatter.alert_success( result, 3000 ));
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error( e ) )
+        });
+    }
+}
+
+// get user NHO survey
+export const getNhoSurvey = () => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/nho_survey/"
+        })
+        .then(result => {
+            dispatch({
+                'type'          : 'FETCH_USER_NHO',
+                'data'          : result.data,
+                'is_nho_loaded' : true
+            })
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error(  e, 3000 )  )
+        });
+    }
+}
+
+// submission of NHO survey
+export const addNhoSurvey = ( post_data ) => {
+    return (dispatch, getState) => {
+
+        API.call({
+            method: "post",
+            url: "/nho_survey/",
+            data: post_data
+        })
+        .then(result => {
+            if (result.status == 200) {
+                const closeButton = document.getElementsByClassName('close');
+                for (const element of closeButton) {
+                    element.click();
+                }
+
+                dispatch( Formatter.alert_success( result, 5000 ));
+
+                setTimeout(function () {
+                  const gdElement = document.createElement('a');
+                  gdElement.href = "https://www.glassdoor.com/surveys/interviews/create?i=1084085&c=PAGE_INFOSITE_TOP";
+                  gdElement.target = "_blank";
+                  document.body.appendChild(gdElement);
+                  gdElement.click();
+                  document.body.removeChild(gdElement);
+                }, 6000);
+
+                dispatch({
+                    'type'          : 'CLEAR_USER_NHO',
+                    'is_nho_loaded' : false
+                })
+            }
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error(  e, 3000 )  ) 
+        });
+    }
+}
+
+// get user EVA survey
+export const getEvaSurvey = () => {
+    return (dispatch, getState) => {
+        API.call({
+            method: "get",
+            url: "/eva_survey/"
+        })
+        .then(result => {
+            dispatch({
+                'type'              : 'FETCH_USER_EVA',
+                'data'              : result.data.content,
+                'is_eva_loaded'     : true
+            })
+            dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error(  e, 3000 )  )
+        });
+    }
+}
+
+// submission of EVA survey
+export const addEvaSurvey = ( post_data ) => {
+    return (dispatch, getState) => {
+
+        API.call({
+            method: "post",
+            url: "/eva_survey/",
+            data: post_data
+        })
+        .then(result => {
+            if (result.status === 200) {
+                const closeButton = document.getElementsByClassName('close');
+                for (const element of closeButton) {
+                    element.click();
+                }
+
+                dispatch( Formatter.alert_success( result, 5000 ));
+
+                dispatch({
+                    'type'          : 'CLEAR_USER_EVA',
+                    'is_eva_loaded' : false
+                })
+            }
+        })
+        .catch(e => {
+            dispatch( Formatter.alert_error(  e, 3000 )  ) 
+        });
+    }
+}

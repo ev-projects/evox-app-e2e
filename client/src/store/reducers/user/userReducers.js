@@ -111,12 +111,68 @@ const userReducer = (state = initState, action) => {
                 ...state
             }
             break;
+
+        case "FETCH_USER_ASSET":
+            return {
+                ...state,
+                user_asset: action.data,
+                is_asset_loaded: action.is_asset_loaded
+            }
+            break;
+
+        case "FETCH_USER_ASSETS":
+            return {
+                ...state,
+                user_assets: action.data,
+                is_asset_loaded: action.is_asset_loaded
+            }
+            break;
+
+        case "CLEAR_USER_ASSET_LOAD":
+            return {
+                ...state,
+                is_asset_loaded: action.is_asset_loaded
+            }
+            break;
             
 
         case "FETCH_USER_FAILED":
             message = "Reload User Failed!"
             return {
                 ...action.error,
+            }
+            break;
+
+        case "FETCH_ALL_ASSETS":
+            return {
+                ...state,
+                all_assets: action.data,
+                is_all_asset_loaded: action.is_all_asset_loaded,
+                asset_reports_filter: action.filters
+            }
+            break;
+
+        case "FETCH_ALL_ASSETS":
+            return {
+                ...state,
+                all_assets: action.data,
+                is_all_asset_loaded: action.is_all_asset_loaded,
+                asset_reports_filter: action.filters
+            }
+            break;
+
+        case "FETCH_USER_EVA":
+            return {
+                ...state,
+                user_eva: action.data,
+                is_eva_loaded: action.is_eva_loaded
+            }
+            break;
+
+        case "CLEAR_USER_EVA":
+            return {
+                ...state,
+                is_eva_loaded: action.is_eva_loaded
             }
             break;
         /**  */

@@ -95,6 +95,7 @@ class PoliciesDocumentController extends Controller
             log_to_file('info', 'UploadDocument', [$result], 'document_upload');
 
         } catch (Exception $e) {
+            log_to_file('error', 'UploadDocument', [$e], 'document_upload');
             return error_response( trans('messages.error_default'), $e );
         }
 
@@ -103,7 +104,7 @@ class PoliciesDocumentController extends Controller
         return response()->json(['message' => 'File uploaded successfully!'], 200);
 
         } catch(Exception $e){
-
+            log_to_file('error', 'UploadDocument', [$e], 'document_upload');
             return error_response( trans('messages.error_default'), $e );
 
         }

@@ -22,6 +22,12 @@ class RestDayWork extends Model
         'created_at',
         'updated_at'
     ];
+
+    protected $casts = [
+        'start_time' => 'integer',
+        'end_time' => 'integer',
+        'break_time' => 'integer'
+    ];
     
     ########################################################################
     ############################ Custom Helpers ############################
