@@ -58,26 +58,26 @@ class NotificationMenu extends Component {
     
     const notifications = [];
     const notification_photo = [];
-    // const addNotifications = (items, type, isCelebration = false) => {
-    //   items.forEach(item => {
-    //     notifications.push({
-    //       id: item.id,
-    //       requestID: item.requestID || "",
-    //       type: item.requestID ? "DTR" : isCelebration ? 'celebration' : type,
-    //       title: item.title || item.eventType || (item.requestType ? item.title : "Request Status") ,
-    //       description: item.description || (isCelebration ? ` ${item.eventType}` : "") || item.actionStatus,
-    //       timestamp: item.timestamp || item.eventDate,
-    //       pagetype: item.requestType ? item.requestType : "",
-    //       announcementId: item.announcementId ? item.announcementId : "",
-    //       celebrations: isCelebration ? "It's " : "",
-    //       userId: isCelebration ? item.celebrationID : item.userId ? item.userId : item.approverId ? item.approverId : "",
-    //       timeIn: item.timeIn ? this.formatDate(item.timeIn) : null,
-    //       timeOut: item.timeOut ? this.formatDate(item.timeOut) : null,
-    //       dtrDate: item.dtrDate ? item.dtrDate : ""
-    //       });
+    const addNotifications = (items, type, isCelebration = false) => {
+      items.forEach(item => {
+        notifications.push({
+          id: item.id,
+          requestID: item.requestID || "",
+          type: item.requestID ? "DTR" : isCelebration ? 'celebration' : type,
+          title: item.title || item.eventType || (item.requestType ? item.title : "Request Status") ,
+          description: item.description || (isCelebration ? ` ${item.eventType}` : "") || item.actionStatus,
+          timestamp: item.timestamp || item.eventDate,
+          pagetype: item.requestType ? item.requestType : "",
+          announcementId: item.announcementId ? item.announcementId : "",
+          celebrations: isCelebration ? "It's " : "",
+          userId: isCelebration ? item.celebrationID : item.userId ? item.userId : item.approverId ? item.approverId : "",
+          timeIn: item.timeIn ? this.formatDate(item.timeIn) : null,
+          timeOut: item.timeOut ? this.formatDate(item.timeOut) : null,
+          dtrDate: item.dtrDate ? item.dtrDate : ""
+          });
           
-    //   });
-    // };
+      });
+    };
 
     const addPhoto = (items) => {
       items.forEach(photoitem => {
@@ -88,20 +88,20 @@ class NotificationMenu extends Component {
     };
 
     if (selecttag === 'all') {
-      // addNotifications(data.requestsForApproval, 'request');
-      // addNotifications(data.requestStatus, 'status');
-      // addNotifications(data.announcements, 'announcement');
-      // addNotifications(data.celebrations, 'celebration', true);
-      // addNotifications(data.missedDtr, 'missedDTR');
+      addNotifications(data.requestsForApproval, 'request');
+      addNotifications(data.requestStatus, 'status');
+      addNotifications(data.announcements, 'announcement');
+      addNotifications(data.celebrations, 'celebration', true);
+      addNotifications(data.missedDtr, 'missedDTR');
     } else if (selecttag === 'DTR') {
-      // addNotifications(data.missedDtr, 'missedDTR');
+      addNotifications(data.missedDtr, 'missedDTR');
     } else if (selecttag === 'announcements') {
-      // addNotifications(data.announcements, 'announcement');
+      addNotifications(data.announcements, 'announcement');
     } else if (selecttag === 'birthday') {
-      // addNotifications(data.celebrations, 'celebration', true);
+      addNotifications(data.celebrations, 'celebration', true);
     } else if (selecttag === 'request') {
-      // addNotifications(data.requestsForApproval, 'request');
-      // addNotifications(data.requestStatus, 'status');
+      addNotifications(data.requestsForApproval, 'request');
+      addNotifications(data.requestStatus, 'status');
     }
 
     if (data.profilePhotos != undefined) {
@@ -153,7 +153,7 @@ class NotificationMenu extends Component {
   componentDidMount() {
     const { user, notificationCenter, approval, announcement, celebration, missingdtr, } = this.props;
     if (user && user.id) {
-      // this.props.getMyNotifications(user.id);
+      this.props.getMyNotifications(user.id);
       this.setState({
         approval,
         announcement,
@@ -192,7 +192,7 @@ class NotificationMenu extends Component {
 
     // Refresh notifications when user ID changes
     if (prevProps.user.id !== user.id && user.id) {
-      // this.props.getMyNotifications(user.id);
+      this.props.getMyNotifications(user.id);
       this.setState({
         approval,
         announcement,
