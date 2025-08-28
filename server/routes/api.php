@@ -60,21 +60,21 @@ Route::get('getuserdispute/{id}', 'DisputeController@getEmployeeDispute')->middl
 Route::put('updatedispute/{id}', 'DisputeController@UpdateDispute')->middleware('jwtauth', 'auth.apikey');
 
 // Pocicies Documents
-Route::post('uploadfiles', 'PoliciesDocumentController@upload');
-Route::get('show', 'PoliciesDocumentController@show');
-Route::get('get_user_departments', 'PoliciesDocumentController@get_user_departments');
-Route::get('showlist', 'PoliciesDocumentController@showlist');
-Route::put('updatestatus/{id}/{status}', 'PoliciesDocumentController@updatestatus');
-Route::get('download_policy/{id}/', 'PoliciesDocumentController@downloadPolicy');
+Route::post('uploadfiles', 'PoliciesDocumentController@upload')->middleware('auth.apikey');
+Route::get('show', 'PoliciesDocumentController@show')->middleware('auth.apikey');
+Route::get('get_user_departments', 'PoliciesDocumentController@get_user_departments')->middleware('auth.apikey');
+Route::get('showlist', 'PoliciesDocumentController@showlist')->middleware('auth.apikey');
+Route::put('updatestatus/{id}/{status}', 'PoliciesDocumentController@updatestatus')->middleware('auth.apikey');
+Route::get('download_policy/{id}/', 'PoliciesDocumentController@downloadPolicy')->middleware('auth.apikey');
 
 // NEO
-Route::get('get_neo_onboarding_users/', 'NeoController@get_neo_onboarding_users');
-Route::get('get_users_pending_submissions/', 'NeoController@get_users_pending_submissions');
-Route::get('get_user_submissions_data/', 'NeoController@get_user_submissions_data');
-Route::post('send_onboarding_link/', 'NeoController@send_onboarding_link');
-Route::post('approve_submissions/', 'NeoController@approve_submissions');
-Route::post('request_for_resubmission/', 'NeoController@request_for_resubmission');
-Route::get('get_neo_file/{userId}/{fileId}', 'NeoController@get_file');
+Route::get('get_neo_onboarding_users/', 'NeoController@get_neo_onboarding_users')->middleware('auth.apikey');
+Route::get('get_users_pending_submissions/', 'NeoController@get_users_pending_submissions')->middleware('auth.apikey');
+Route::get('get_user_submissions_data/', 'NeoController@get_user_submissions_data')->middleware('auth.apikey');
+Route::post('send_onboarding_link/', 'NeoController@send_onboarding_link')->middleware('auth.apikey');
+Route::post('approve_submissions/', 'NeoController@approve_submissions')->middleware('auth.apikey');
+Route::post('request_for_resubmission/', 'NeoController@request_for_resubmission')->middleware('auth.apikey');
+Route::get('get_neo_file/{userId}/{fileId}', 'NeoController@get_file')->middleware('auth.apikey');
 
 // NHO Survey
 Route::get('nho_survey', 'NewHireOrientationController@index')->middleware('auth.apikey');
