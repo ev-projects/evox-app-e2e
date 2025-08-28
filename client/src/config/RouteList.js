@@ -253,7 +253,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.alter_log_punch+":id?"}>
           <AlterLogPunch onApproval={false} 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
-          feature={['multi_login']}
+          feature={['multi_login', 'view_multi_login']}
           />
         </ProtectedRoute>
 
