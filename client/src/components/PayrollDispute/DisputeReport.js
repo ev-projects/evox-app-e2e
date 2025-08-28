@@ -233,7 +233,7 @@ const DisputeReport = (props) => {
                   <div className="form-group mt-4">
                     <button onClick={fetchDisputes} className="btn btn-primary" ><i className="fa fa-filter" /> Filter</button>
                   </div>
-                  {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll"]) && (
+                  {Authenticator.scanLevel(["Payroll", "IND_Payroll", "BGR_Payroll", "MAR_Payroll", "DivisionHead"]) && (
                     <div className="form-group mt-4">
                       <button onClick={handleExport} className="btn btn-primary btnspace" >Export</button>
                     </div>
