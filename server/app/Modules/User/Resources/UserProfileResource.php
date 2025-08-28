@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Department\Models\EvoxSubDepartment;
+use App\NhoSurvey;
 
 
 class UserProfileResource extends JsonResource
@@ -43,6 +44,7 @@ class UserProfileResource extends JsonResource
             'emp_num' => $this->emp_num,
             'bhr_num' => $this->bhr_num,
             'department' => ( is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
+            'department_main' => ( is_valid( $this->SubDepartmentID ) ? EvoxDepartment::where("Id", EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->DepartmentId)->first()->Name : null ),
             'department_id' => $this->department_id,
             'email' => $this->email,
             'username' => $this->username,
@@ -116,9 +118,10 @@ class UserProfileResource extends JsonResource
                 array('roles' => $roles),
                 array('features_access' => is_valid($this->LevelId) ? $feature_all_list : []),
                 array('level' =>(  $level_item )),
-            
+                array('user_nho_survey' => NhoSurvey::where('user_id', $this->id)->first() ?? []),
                 array('departments_handled' => $evox_departments_handled),
                 array('departments_handled_strict' =>  count($evox_departments_handled_strict) === 0? $evox_departments_handled : $evox_departments_handled_strict),
+                array("is_user_nho_valid" => $this->isUserNhoValid()),
 
             );
             

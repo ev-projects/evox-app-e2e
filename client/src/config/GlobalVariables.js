@@ -130,6 +130,14 @@
     // NEO Report
     neo_report_onboarding           : "/app/neo/onboarding/",
     neo_report_submissions          : "/app/neo/submissions/",
+
+    // IT Asset Management
+    asset_management                : "/app/asset_management/",
+    asset_reports                   : "/app/asset_reports/",
+
+    // FreshService
+    fresh_service_create            : "/app/fresh_service/create/",
+    fresh_service_tickets           : "/app/fresh_service/tickets/",
    
 };
 

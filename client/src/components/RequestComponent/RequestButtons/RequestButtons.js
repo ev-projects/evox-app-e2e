@@ -14,7 +14,7 @@ const RequestButtons = (context) => {
 
       
       <span>
-        <BackButton  {...context.props} /> 
+        { context.noBackBtn ? null : <BackButton  {...context.props} /> }
         &nbsp;
       <div style={{'float': 'right'}}>
       { /** Shows the respective buttons base on the onApproval variable  */

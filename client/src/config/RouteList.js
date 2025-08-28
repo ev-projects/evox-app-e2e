@@ -117,6 +117,10 @@ import UploadedDocumentList from "../components/PoliciesDocument/UploadedDocumen
 import NeoReportOnboarding from "../components/NeoReport/NeoOnboarding";
 import NeoReportSubmissions from "../components/NeoReport/NeoSubmissions";
 import NeoReportSubmissionsDetails from "../components/NeoReport/NeoDetails";
+import AssetManagementForm from "../components/AssetManagementForm/AssetManagementForm";
+import AssetReport from "../components/AssetManagementForm/AssetReport/AssetReport";
+import FreshServiceForm from "../components/FreshService/FreshServiceForm";
+import FreshServiceTickets from "../components/FreshService/FreshServiceTickets";
 
 const RoutesList = (props) => {
   const  country = props.settings?.country ? props.settings?.country : "";
@@ -635,6 +639,18 @@ const RoutesList = (props) => {
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.neo_report_submissions + ":guid?"}>
            <NeoReportSubmissionsDetails></NeoReportSubmissionsDetails>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.asset_management+":id?"}>
+           <AssetManagementForm></AssetManagementForm>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.asset_reports}>
+           <AssetReport></AssetReport>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.fresh_service_create}>
+           <FreshServiceForm></FreshServiceForm>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.fresh_service_tickets}>
+           <FreshServiceTickets></FreshServiceTickets>
         </ProtectedRoute>
         
         <Route exact path={["/", global.links.authenticate_client ]} component={AuthenticateClient} />

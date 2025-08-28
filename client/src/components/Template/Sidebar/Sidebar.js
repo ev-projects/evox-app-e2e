@@ -173,7 +173,6 @@ const Sidebar = (props) => {
                   </>)}
                    
                   {Authenticator.scanFeature('request_coe')&&(<>
-                      {country.toLowerCase() == "philippines" && (
                         <li className="nav-item">
                           <Link
                             className="nav-link"
@@ -186,7 +185,6 @@ const Sidebar = (props) => {
                             <p>Certificate Of Employment</p>
                           </Link>
                         </li>
-                      )}
                       </>
                       )}
                   </ul>
@@ -307,6 +305,36 @@ const Sidebar = (props) => {
                   <Link className="nav-link" to={global.links.my_request}>
                     <i className="nav-icon fa fa-inbox" aria-hidden="true"></i>
                     <p> My Requests</p>
+                  </Link>
+                </li>
+              )}
+
+              <li className="nav-item has-treeview ">
+                  <a className="nav-link nav-link-main">
+                    <i className="nav-icon fa fa-ticket" />
+                    <p>EV Assist<i className="right fa fa-chevron-left" /></p>
+                  </a>
+                  <ul className="nav nav-treeview">
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.fresh_service_create}>
+                        <i className="nav-icon fa fa-plus" />
+                        <p className="blue"> Create Ticket</p>
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to={global.links.fresh_service_tickets}>
+                        <i className="nav-icon fa fa-th-list" />
+                        <p className="blue"> My Tickets</p>
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+
+              {!Authenticator.scanLevel(["DivisionHead", "Client", "Board"]) && (
+                <li className="nav-item">
+                  <Link className="nav-link" to={global.links.asset_management}>
+                    <i className="nav-icon fa fa-desktop" />
+                    <p className="blue"> Asset Management</p>
                   </Link>
                 </li>
               )}
@@ -608,7 +636,7 @@ const Sidebar = (props) => {
               )} */}
 
               {/* Report Links Links */}
-             {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules', 'manage_morocco_payroll'])) && (
+              {(Authenticator.scanFeature(['view_attendance_report', 'manage_department_schedules', 'manage_morocco_payroll', 'manage_asset_reports'])) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-line-chart" />
@@ -698,14 +726,32 @@ const Sidebar = (props) => {
                                   </li>
                     )}
 
-   {(Authenticator.scanLevel(["SubDepartment Head","Department Head","Payroll","DivisionHead"])) && (
-                <li className="nav-item">
-                <Link className="nav-link" to={global.links.payroll_dispute_view}>
-                  <i className="nav-icon fa fa-clock-o" />
-                  <p className="blue"> Payroll Dispute Report</p>
-                </Link>
-                </li>
-   )}
+                    {/* {(Authenticator.scanLevel(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead"])) && (
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.payroll_dispute_view}>
+                          <i className="nav-icon fa fa-clock-o" />
+                          <p className="blue"> Payroll Dispute Report</p>
+                        </Link>
+                      </li>
+                    )} */}
+
+                    {(Authenticator.scanLevel_Feature(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead","Employee"], "manage_asset_reports")) && (
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.asset_reports}>
+                          <i className="nav-icon fa fa-window-restore" />
+                          <p className="blue"> Asset Reports</p>
+                        </Link>
+                      </li>
+                    )}
+
+                    {(Authenticator.scanLevel_Feature(["Admin","SubDepartment Head","Department Head","Payroll","DivisionHead","Employee"], "manage_asset_reports")) && (
+                      <li className="nav-item">
+                        <Link className="nav-link" to={global.links.asset_reports}>
+                          <i className="nav-icon fa fa-window-restore" />
+                          <p className="blue"> Asset Reports</p>
+                        </Link>
+                      </li>
+                    )}
                   </ul>
                 </li>
               )}

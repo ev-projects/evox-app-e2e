@@ -9,6 +9,7 @@ use App\Features;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Exports\DpaListExport;
+use App\Exports\AssetExport;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Spatie\Permission\Models\Role;
@@ -35,6 +36,7 @@ use App\Modules\User\Http\Requests\RegisterUserRequest;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\User\Resources\LeaveCreditsListResource;
 use App\Modules\Schedule\Repositories\ScheduleRepository;
+use App\Modules\User\Models\AssetManagement;
 
 use App\Modules\User\Http\Requests\ChangePasswordRequest;
 use App\Modules\User\Http\Requests\ForgotPasswordRequest;
@@ -1053,49 +1055,180 @@ class UserController extends Controller
     }
 
     public function getUserCountry(Request $request){
-    try {   
-        $me = Auth::user();
-        $result_sets = call_sp('EH_SP_Get_User_Country', [$me->LevelId, $me->id]);
-        $response = $result_sets [0];
-        return $response;
-    }catch (Exception $e) {
-    log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
-    return error_response(trans('messages.error_default'), $e);
-    }
-}
-
-public function getCountry(Request $request){
-    try {  
-        $me = Auth::user();
-        $result_sets = call_sp('EV_SP_Policies_Document', [null, null, null, null, null, null, null, $me->country_id, null, null, 2]);
-        $response = $result_sets[0];
-        return $response;
-    }catch (Exception $e) {
-        log_to_file( 'error', $e->getMessage(), [$e], "upload_document");
+        try {   
+            $me = Auth::user();
+            $result_sets = call_sp('EH_SP_Get_User_Country', [$me->LevelId, $me->id]);
+            $response = $result_sets [0];
+            return $response;
+        }catch (Exception $e) {
+        log_to_file( 'error', $e->getMessage(), [$e], "dtr_summary");
         return error_response(trans('messages.error_default'), $e);
+        }
     }
-}
 
-public function get_user_by_string_dispute(){ 
-    # Get user
-
-    // $user = User::where('first_name', 'like', '%' . $string_name . '%')
-    // ->orWhere('last_name', 'like', '%' . $string_name . '%')
-    // ->join('EVOX_SUB_DEPARTMENT', 'users.SubDepartmentId', '=', 'EVOX_SUB_DEPARTMENT.Id')
-    // ->join('EVOX_DEPARTMENT', 'EVOX_SUB_DEPARTMENT.DepartmentId', '=', 'EVOX_DEPARTMENT.Id') // Joining the 'departments' table
-    // ->select('users.id', 'users.first_name', 'users.middle_name', 'users.last_name', 'users.emp_num', 'EVOX_DEPARTMENT.Name as department_name') // Select relevant fields from both tables
-    // ->get(); 
-    try {
-        $me = Auth::user();
-        $user = $result_sets = call_sp('EV_SP_Payroll_Dispute', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
-        log_activity( trans('messages.list_role_attempt') );
-        return $user[0]; 
-        // return success_response(
-        //     trans('messages.list_role_success'), $user 
-        // );
-    } catch(Exception $e){
-        return error_response( trans('messages.error_default'), $e );
+    public function getCountry(Request $request){
+        try {  
+            $me = Auth::user();
+            $result_sets = call_sp('EV_SP_Policies_Document', [null, null, null, null, null, null, null, $me->country_id, null, null, 2]);
+            $response = $result_sets[0];
+            return $response;
+        }catch (Exception $e) {
+            log_to_file( 'error', $e->getMessage(), [$e], "upload_document");
+            return error_response(trans('messages.error_default'), $e);
+        }
     }
-}
+
+    public function get_user_by_string_dispute(){ 
+        # Get user
+
+        // $user = User::where('first_name', 'like', '%' . $string_name . '%')
+        // ->orWhere('last_name', 'like', '%' . $string_name . '%')
+        // ->join('EVOX_SUB_DEPARTMENT', 'users.SubDepartmentId', '=', 'EVOX_SUB_DEPARTMENT.Id')
+        // ->join('EVOX_DEPARTMENT', 'EVOX_SUB_DEPARTMENT.DepartmentId', '=', 'EVOX_DEPARTMENT.Id') // Joining the 'departments' table
+        // ->select('users.id', 'users.first_name', 'users.middle_name', 'users.last_name', 'users.emp_num', 'EVOX_DEPARTMENT.Name as department_name') // Select relevant fields from both tables
+        // ->get(); 
+        try {
+            $me = Auth::user();
+            $user = $result_sets = call_sp('EV_SP_Payroll_Dispute', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
+            log_activity( trans('messages.list_role_attempt') );
+            return $user[0]; 
+            // return success_response(
+            //     trans('messages.list_role_success'), $user 
+            // );
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function getAllAssets(Request $request)
+    {
+      try {
+            $assets = $result_sets = call_sp('EV_SP_Get_Assets', [$request->geo_id, $request->department_id, $request->emp_name]);
+            return $assets[0];
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function getUserAsset($id)
+    {
+        try {
+            $asset_get = AssetManagement::where('id', $id)->where('deleted_at', null)->first();
+            return success_response(
+                trans('Asset successfully fetched!'),
+                $asset_get,
+                JsonResponse::HTTP_OK
+            );
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function getUserAssets()
+    {
+        try {
+            $asset_get = AssetManagement::where('user_id', Auth::user()->id)->where('deleted_at', null)->get();
+            return success_response(
+                trans('Assets successfully fetched!'),
+                $asset_get,
+                JsonResponse::HTTP_OK
+            );
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function addUserAsset(Request $request)
+    {
+        try {
+            if ($request->action == 'Add') {
+                $personal_equipment = $request->personal_equipment ?? null;
+                $equipment_type = $request->equipment_type ?? null;
+                $serial_no = $request->serial_no ?? null;
+                $asset_tag = $request->asset_tag ?? null;
+                $add_equipment_type = $request->add_equipment_type ?? null;
+
+                $asset = [
+                    'user_id' => Auth::user()->id,
+                    'personal_equipment' => $personal_equipment,
+                    'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
+                    'serial_no' => $serial_no,
+                    'asset_tag' => $asset_tag,
+                    'created_at' => Carbon::now()
+                ];
+
+                $asset_insert = AssetManagement::insert($asset);
+                return success_response(
+                    trans('Asset successfully added!'),
+                    $asset_insert,
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                foreach ($request->all() as $key => $value) {
+                    $personal_equipment = $value['personal_equipment'] ?? null;
+                    $equipment_type = $value['equipment_type'] ?? null;
+                    $serial_no = $value['serial_no'] ?? null;
+                    $asset_tag = $value['asset_tag'] ?? null;
+                    $add_equipment_type = $value['add_equipment_type'] ?? null;
+
+                    $asset = [
+                        'user_id' => Auth::user()->id,
+                        'personal_equipment' => $personal_equipment,
+                        'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
+                        'serial_no' => $serial_no,
+                        'asset_tag' => $asset_tag,
+                        'created_at' => Carbon::now()
+                    ];
+
+                    $asset_insert = AssetManagement::insert($asset);
+                }
+                return success_response(
+                    trans('Assets successfully added!'),
+                    $asset_insert,
+                    JsonResponse::HTTP_CREATED
+                );
+            }
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function updateUserAsset(Request $request)
+    {
+        try {
+            $personal_equipment = $request->personal_equipment ?? null;
+            $equipment_type = $request->equipment_type ?? null;
+            $serial_no = $request->serial_no ?? null;
+            $asset_tag = $request->asset_tag ?? null;
+            $add_equipment_type = $request->add_equipment_type ?? null;
+
+            $asset = [
+                'personal_equipment' => $personal_equipment,
+                'equipment_type' => ($equipment_type == "Others") ? $add_equipment_type : $equipment_type,
+                'serial_no' => $serial_no,
+                'asset_tag' => $asset_tag,
+                'updated_at' => Carbon::now()
+            ];
+
+            $asset_update = AssetManagement::where('id', $request->id)->update($asset);
+            return success_response(
+                trans('Asset successfully updated!'),
+                $asset_update,
+                JsonResponse::HTTP_CREATED
+            );
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function assetExport(Request $request)
+    {
+        try {
+            $assets = $result_sets = call_sp('EV_SP_Get_Assets', [$request->geo_id, $request->department_id, $request->emp_name]);
+            return Excel::download(new AssetExport($assets[0]), 'AssetReports.csv');
+        } catch (Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
 
 }

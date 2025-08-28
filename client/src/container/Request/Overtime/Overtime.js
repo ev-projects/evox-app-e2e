@@ -338,11 +338,3 @@ function NoScheduleInfo(props) {
 )
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Overtime);
-
-
-
-
-
-
-
-
