@@ -28,7 +28,7 @@ const NeoOnboarding = ( props ) => {
       <ContainerWrapper>
         <ContainerBody>
           <Content>
-            <h2 className="page-title" style={{ marginLeft: "0"}}>NEO Onboarding Listss</h2>
+            <h2 className="page-title" style={{ marginLeft: "0"}}>NEO Onboarding List</h2>
 
             <div className="neo-report-table">
               <div className="mt-4 mb-3">
