@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import { Table, Button, Container } from "react-bootstrap"
@@ -9,6 +9,7 @@ import moment from 'moment';
 import { da } from "date-fns/locale";
 import Modal from "react-bootstrap/Modal";
 import FileViewer from 'react-file-viewer';
+import { fetchNeoSubmissionData } from '../../store/actions/neo/neoActions';
 
 const NeoDetails = (props) => {
   const [submissionData, setSubmissionData] = useState({});
@@ -42,51 +43,14 @@ const NeoDetails = (props) => {
 
   useEffect(() => {
     // call .net api to get list of submitted neo data and requirements of a single employee
-    getSubmissionData();
+    dispatch(fetchNeoSubmissionData(props.params.guid));
   }, []);
 
-  const getSubmissionData = async() => {
-    await API.call({
-      method: "get",
-      url: "/get_user_submissions_data/",
-      params: {
-        guid: props.params.guid
-      }
-    })
-    .then((result) => {
-      if (result.status === 200) {
-        const resData = result.data.data.submissions;
-        setSubmissionData(resData);
-        setBhrNumber(result.data.data.bhrNumber);
-      }
-    })
-    .catch((e) => {
-      dispatch(Formatter.alert_error(e));
-    });
-  }
-
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target;
-
-    setMarkedFields((prev) => {
-      if (checked === true) {
-        // add marked fields to state for resubmission
-        const newIndex = Object.keys(prev).length;
-        return {
-          ...prev,
-          [newIndex]: name,
-        };
-      } else {
-        // remove unchecked fields from state and reindex
-        const filteredValues = Object.values(prev).filter((val) => val !== name);
-        const reindexed = {};
-        filteredValues.forEach((val, idx) => {
-          reindexed[idx] = val;
-        });
-        return reindexed;
-      }
-    });
-  }
+  useEffect(() => {
+    if (props.submission_data) {
+      setSubmissionData(props.submission_data);
+    }
+  }, [props.submission_data]);
 
   const handleHrActions = (action, fieldName) => {
     // Track clicked action per field
@@ -125,7 +89,7 @@ const NeoDetails = (props) => {
   const viewFile = (fileId) => {
     API.call({
         method: "get",
-        url: "/get_neo_file/" + bhrNumber + "/" + fileId
+        url: "/get_neo_file/" + props.bhr_num + "/" + fileId
       })
       .then((result) => {
         if (result.status === 200) {
@@ -373,7 +337,7 @@ const NeoDetails = (props) => {
                 </div>
                 <div className="col-12 mt-3">
                   <div style={{'float': 'right'}}>
-                    <Button type="button" className="back-button btn btn-secondary" onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
+                    <Button type="button" className="back-button btn btn-secondary" style={{ marginBottom: '0'}} onClick={() => props.history.goBack() } ><i className="fa fa-arrow-circle-left" /> Back</Button>&nbsp;
                     <Button type="submit" className="btn btn-primary-2" onClick={() => handleSubmit()}><i className="fa  is-green fa-location-arrow" /> Save</Button>
                   </div>
                 </div>
@@ -388,4 +352,12 @@ const NeoDetails = (props) => {
   )
 }
 
-export default NeoDetails
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    submission_data: state.neo.neo_submission_data,
+    bhr_num: state.neo.neo_bhr_num,
+  }
+}
+
+export default connect(mapStateToProps)(NeoDetails)
