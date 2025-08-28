@@ -163,7 +163,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.dtr_punchlist+":id"} >
           <DailyTimeRecordPuncher 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          feature={["multi_login"]}/>
+          feature={["multi_login", "view_multi_login"]}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_punch_history} >
