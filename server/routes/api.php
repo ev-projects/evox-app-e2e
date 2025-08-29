@@ -76,7 +76,7 @@ Route::get('eva_survey', 'EvaController@index')->middleware('auth.apikey');
 Route::post('eva_survey', 'EvaController@store')->middleware('auth.apikey');
 
 Route::group(['prefix' => 'freshservice/', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
-    Route::get('workspaces/{workspace_id?}/{category_id?}/', 'FreshServiceController@getWorkspaces');
+    Route::get('workspaces', 'FreshServiceController@getWorkspaces');
     Route::group(['prefix' => 'tickets'], function () {
         Route::get('my-tickets', 'FreshServiceController@getMyTickets');
         Route::post('/', 'FreshServiceController@createTicket');

@@ -13,7 +13,7 @@ use Ixudra\Curl\Facades\Curl;
 
 class FreshServiceController extends Controller
 {
-    public function getWorkspaces($workspace_id = null, $category_id = null)
+    public function getWorkspaces()
     {
         try {
             $workspaces = [];
