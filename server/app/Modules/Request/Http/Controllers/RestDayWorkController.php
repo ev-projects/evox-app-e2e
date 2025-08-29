@@ -250,8 +250,8 @@ class RestDayWorkController extends Controller
         return array(
             'user_id' => $rdw_dispute[0],
             'date' => $rdw_dispute[1],
-            'start_time' => $rdw_dispute[2],
-            'end_time' => $rdw_dispute[3],
+            'start_time' => $request['start_time'],
+            'end_time' => $request['end_time'],
             'break_time' => $rdw_dispute[4],
             'employee_note' => $rdw_dispute[5],
         );

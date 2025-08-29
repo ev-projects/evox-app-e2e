@@ -31,8 +31,8 @@
         <div style="margin-bottom:30px;height:80px;padding: 0px 25px 10px 25px;">
           <table width="100%" style="margin-left:auto;margin-right:auto;background-color:#E6E6E6;">
             <tr><td colspan="4" style="padding:5px 10px;">SCHEDULE:</td><tr>
-            <tr><td align="left" style="padding:5px 0px 5px 10px;width:14%">On Duty:</td><td style="padding: 5px 10px;background-color:white;width:34%;">{{ seconds_to_time($request['start_time']) }}</td><td style="width:2%;"></td>
-                <td align="left" style="padding: 5px 0px 5px 10px;width:15%">Off Duty:</td><td style="padding: 5px 10px;background-color:white;width:34%;">{{ seconds_to_time($request['end_time']) }}</td><td style="width:1%;"></td><tr>
+            <tr><td align="left" style="padding:5px 0px 5px 10px;width:14%">On Duty:</td><td style="padding: 5px 10px;background-color:white;width:34%;">{{ $request['start_time'] }}</td><td style="width:2%;"></td>
+                <td align="left" style="padding: 5px 0px 5px 10px;width:15%">Off Duty:</td><td style="padding: 5px 10px;background-color:white;width:34%;">{{ $request['end_time'] }}</td><td style="width:1%;"></td><tr>
             <tr><td colspan="4" style="padding:5px 10px;"></td><tr>
           </table>
         </div>
