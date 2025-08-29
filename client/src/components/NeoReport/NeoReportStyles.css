@@ -1,0 +1,54 @@
+.tba-label {
+  background-color: orange;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.approved-label {
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+  color: #82af13;
+  font-size: 16px;
+}
+
+.neo-report-table {
+  font-size: 22px !important;
+  width: 100%;
+  overflow-x: auto;
+  margin: auto;
+}
+.file-viewer-modal .modal-dialog {
+  /* width: 80vw; */
+  /* height: 100vh; */
+  margin: 1.75em auto;
+  max-width: 1140px;
+}
+
+.file-viewer-modal .modal-content,
+.file-viewer-modal .modal-content .container {
+  height: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  border-radius: .3rem;
+}
+.file-viewer-modal .modal-content .container {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-y: hidden;
+}
+.file-viewer-modal .modal-content .container .pg-viewer,
+.file-viewer-modal .modal-content .container .pg-viewer>div {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}
+
+.neo-report-table th {
+  font-size: 14px !important;
+}
+
+.content {
+  padding: 0 2rem !important;
+}

@@ -114,6 +114,9 @@ import DisputeReport from "../components/PayrollDispute/DisputeReport";
 import PoliciesDocumentUpload from "../components/PoliciesDocument/PoliciesDocumentUpload";
 import PoliciesDocumentDownload from "../components/PoliciesDocument/PoliciesDocumentDownload";
 import UploadedDocumentList from "../components/PoliciesDocument/UploadedDocumentList";
+import NeoReportOnboarding from "../components/NeoReport/NeoOnboarding";
+import NeoReportSubmissions from "../components/NeoReport/NeoSubmissions";
+import NeoReportSubmissionsDetails from "../components/NeoReport/NeoDetails";
 import AssetManagementForm from "../components/AssetManagementForm/AssetManagementForm";
 import AssetReport from "../components/AssetManagementForm/AssetReport/AssetReport";
 import FreshServiceForm from "../components/FreshService/FreshServiceForm";
@@ -160,7 +163,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.dtr_punchlist+":id"} >
           <DailyTimeRecordPuncher 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          feature={["multi_login"]}/>
+          feature={["multi_login", "view_multi_login"]}/>
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_punch_history} >
@@ -250,7 +253,7 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.alter_log_punch+":id?"}>
           <AlterLogPunch onApproval={false} 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
-          feature={['multi_login']}
+          feature={['multi_login', 'view_multi_login']}
           />
         </ProtectedRoute>
 
@@ -626,6 +629,16 @@ const RoutesList = (props) => {
         </ProtectedRoute> 
         <ProtectedRoute exact path={global.links.payroll_dispute_view}>
            <DisputeReport></DisputeReport>
+        </ProtectedRoute> 
+
+        <ProtectedRoute exact path={global.links.neo_report_onboarding}>
+           <NeoReportOnboarding></NeoReportOnboarding>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.neo_report_submissions}>
+           <NeoReportSubmissions></NeoReportSubmissions>
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.neo_report_submissions + ":guid?"}>
+           <NeoReportSubmissionsDetails></NeoReportSubmissionsDetails>
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.asset_management+":id?"}>
            <AssetManagementForm></AssetManagementForm>

@@ -18,13 +18,19 @@ interface EmailRepositoryInterface
 
     public function sendOvertimeRequestEmail( Overtime $overtime );
 
+    public function sendOvertimeDisputeEmail( array $request );
+
     public function sendOvertimeRequestChangeStatusEmail( Overtime $overtime );
 
     public function sendRestDayWorkRequestEmail( RestDayWork $rest_day_work );
 
+    public function sendRestDayWorkDisputeEmail( array $request );
+
     public function sendRestDayWorkRequestChangeStatusEmail( RestDayWork $rest_day_work );
 
     public function sendAlterLogRequestEmail( AlterLog $alter_log );
+
+    public function sendAlterLogDisputeEmail( array $request );
 
     public function sendAlterLogRequestChangeStatusEmail( AlterLog $alter_log );
 
@@ -42,4 +48,3 @@ interface EmailRepositoryInterface
 
 
 }
-

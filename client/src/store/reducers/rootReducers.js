@@ -59,6 +59,7 @@ import jobOpeningReducers from "./admin/jobOpeningReducers";
 import { combineReducers } from 'redux';
 import modalLoginReducer from './settings/modalLoginReducer';
 import freshServiceReducers from './freshservice/freshServiceReducers';
+import neoReducers from "./neo/neoReducers";
 
 const rootReducer = combineReducers({
     
@@ -115,6 +116,7 @@ const rootReducer = combineReducers({
     opsSchedule:   opsScheduleReducers,
     careerList:   jobOpeningReducers,
     freshService:   freshServiceReducers,
+    neo:  neoReducers,
 });
 
 export default rootReducer;
