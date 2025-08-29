@@ -23,7 +23,9 @@ export const fetchWorkSpaces = () => {
       console.log("✅ API call success");
       dispatch({
         type: 'FETCH_WORKSPACES_SUCCESS',
-        data: result.data.content,
+        workspaces: result.data.content[0],
+        categories: result.data.content[1],
+        sub_categories: result.data.content[2],
         isLoaded: true
       });
     } catch (e) {

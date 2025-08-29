@@ -17,7 +17,9 @@ const freshServiceReducers = (state = initState, action) => {
       case "FETCH_WORKSPACES_SUCCESS":
         return {
           ...state,
-          instance : action.data,
+          workspaces : action.workspaces,
+          categories : action.categories,
+          sub_categories : action.sub_categories,
           isInstanceLoaded : action.isLoaded,
         };
         break;

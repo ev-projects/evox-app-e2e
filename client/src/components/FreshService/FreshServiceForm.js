@@ -300,30 +300,7 @@ const CreateTicketPage = function (props) {
               const selectedText = e.target.options[e.target.selectedIndex].text;
               updateField('selectedWorkspace', selectedText);
               updateField('selectedWorkspaceId', e.target.value);
-              API.call({
-                method: "get",
-                url: "/freshservice/workspaces/" + e.target.value + "/",
-                // params: {
-                //   workspace_id: e.target.value,
-                //   category_id: null,
-                //   subcategory_id: null
-                // }
-              })
-                .then((result) => {
-                  updateField('subCategoriesList', result.data.content);
-
-                  // setAttachments([...attachments, ...newFiles]);
-                  // setAttachmentsValues([...attachmentsValues, result.data.content.files[0]]);
-                })
-                .catch((e) => {
-                  dispatch(Formatter.alert_error(e));
-                })
-                .finally(function () {
-                  setLoading(false);
-                  if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                  }
-                });
+              updateField('subCategoriesList', props.categories[e.target.value]);
             }
           },
             React.createElement('option', { value: '' }, 'Select Department'),
@@ -345,22 +322,7 @@ const CreateTicketPage = function (props) {
               const selectedText = e.target.options[e.target.selectedIndex].text;
               updateField('selectedSubCategory', selectedText);
               updateField('selectedSubCategoryId', e.target.value);
-              API.call({
-                method: "get",
-                url: "/freshservice/workspaces/" + formData.selectedWorkspaceId + "/" + e.target.value + "/",
-              })
-                .then((result) => {
-                  updateField('itemCategoriesList', result.data.content);
-                })
-                .catch((e) => {
-                  dispatch(Formatter.alert_error(e));
-                })
-                .finally(function () {
-                  setLoading(false);
-                  if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                  }
-                });
+              updateField('itemCategoriesList', props.sub_categories[e.target.value]);
             }
           },
             React.createElement('option', { value: '' }, 'Select Category'),
@@ -567,6 +529,8 @@ const FreshServiceForm = (props) => {
                     currentView === 'create' && props.workspaces.length > 0 && (
                       <CreateTicketPage
                         workspaces={props.workspaces}
+                        categories={props.categories}
+                        sub_categories={props.sub_categories}
                         useremail={props.user.email}
                         user={props.user}
                       />
@@ -586,7 +550,9 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     settings: state.settings,
-    workspaces: state.freshService.instance,
+    workspaces: state.freshService.workspaces,
+    categories: state.freshService.categories,
+    sub_categories: state.freshService.sub_categories,
     workspacesLoaded: state.freshService.isInstanceLoaded
   };
 };

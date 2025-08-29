@@ -16,21 +16,36 @@ class FreshServiceController extends Controller
     public function getWorkspaces($workspace_id = null, $category_id = null)
     {
         try {
-            $data_values = [];
-            if ($workspace_id === null) {
-                $data_values = [1, null, null];
-            } else {
-                if ($category_id === null) {
-                    $data_values = [2, $workspace_id, null];
-                } else {
-                    $data_values = [3, $workspace_id, $category_id];
+            $workspaces = [];
+            $categories = [];
+            $sub_categories = [];
+            // get all workspaces first
+            $ws = call_sp("EV_FS_Get_Category", [1, null, null]);
+
+            if (count($ws[0]) > 0) {
+                $workspaces = $ws[0];
+                // loop thru each workspace and get categories
+                foreach ($ws[0] as $workspace) {
+                    $cat = call_sp("EV_FS_Get_Category", [2, $workspace->Id, null]);
+                    if (count($cat[0]) > 0) {
+                        $categories[$workspace->Id] = $cat[0];
+
+                        // loop thru each categories and get sub-categories
+                        foreach ($cat[0] as $category) {
+                            $sub_cat = call_sp("EV_FS_Get_Category", [3, $workspace->Id, $category->Id]);
+                            if (count($sub_cat[0]) > 0) {
+                                $sub_categories[$category->Id] = $sub_cat[0];
+                            }
+                        }
+                    }
                 }
-            }
-            $res = call_sp("EV_FS_Get_Category", $data_values);
-            if (count($res[0]) > 0) {
                 return success_response(
                     trans('Workspaces are successfully fetched!'),
-                    $res[0],
+                    [
+                        $workspaces,
+                        $categories,
+                        $sub_categories
+                    ],
                     JsonResponse::HTTP_OK
                 );
             } else {

@@ -831,7 +831,7 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     settings: state.settings,
-    workspaces: state.freshService.instance,
+    workspaces: state.freshService.workspaces,
     workspacesLoaded: state.freshService.isInstanceLoaded
   };
 };
