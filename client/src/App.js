@@ -59,7 +59,7 @@ class App extends Component {
     // If there's an Existing Access Token, fetch the Users and render it on Redux.
     if (localStorage.getItem("access_token") != null) {
       this.props.fetchUser();
-      this.props.fetchStatusNumbers();
+      // this.props.fetchStatusNumbers();
     }
 
     return (

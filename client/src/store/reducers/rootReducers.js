@@ -58,6 +58,7 @@ import jobOpeningReducers from "./admin/jobOpeningReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 import modalLoginReducer from './settings/modalLoginReducer';
+import freshServiceReducers from './freshservice/freshServiceReducers';
 import neoReducers from "./neo/neoReducers";
 
 const rootReducer = combineReducers({
@@ -114,6 +115,7 @@ const rootReducer = combineReducers({
     hrAnnouncement:   hrAnnouncementReducers,
     opsSchedule:   opsScheduleReducers,
     careerList:   jobOpeningReducers,
+    freshService:   freshServiceReducers,
     neo:  neoReducers,
 });
 

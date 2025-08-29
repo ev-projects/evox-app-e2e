@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
-import { useDispatch } from 'react-redux'
+import { connect, useDispatch } from 'react-redux'
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
@@ -7,6 +7,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { handleImageUpload } from '../../services/Helper';
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
+import { fetchWorkSpaces } from '../../store/actions/freshservice/freshServiceActions';
 
 // WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
 let WORKSPACE_CATEGORIES = {};
@@ -104,8 +105,6 @@ const validateTicketData = function (data) {
 
   if (!data.selectedWorkspace) {
     errors.selectedWorkspace = 'Workspace must be selected';
-  } else if (!WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
-    errors.selectedWorkspace = 'Invalid workspace selected';
   }
 
   if (data.selectedWorkspace && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
@@ -139,7 +138,7 @@ const validateTicketData = function (data) {
 // CREATE TICKET PAGE - Professional Version
 const CreateTicketPage = function (props) {
   const dispatch = useDispatch();
-  var workspaces = props.workspaces;
+  const workspaces = props.workspaces || [];
   const defaultSignature = `
     <br><br>
     Best Regards,<br>
@@ -154,12 +153,17 @@ const CreateTicketPage = function (props) {
     userSubject: '',
     description: '',
     priority: 2,
+    selectedWorkspaceId: '',
+    selectedSubCategoryId: '',
+    selectedItemCategoryId: '',
     selectedWorkspace: '',
     selectedSubCategory: '',
     selectedItemCategory: '',
     attachments: [],
     attachmentsValues: [],
-    removedAttachments: []
+    removedAttachments: [],
+    subCategoriesList: [],
+    itemCategoriesList: [],
   });
 
   var [errors, setErrors] = useState({});
@@ -212,15 +216,12 @@ const CreateTicketPage = function (props) {
     if (validation.isValid) {
       setLoading(true);
 
-      const ticketWorkSpace = workspaces.find(ws => ws.name === formData.selectedWorkspace);
-      const selectedWorkSpaceId = ticketWorkSpace ? ticketWorkSpace.id : null;
-
       var ticketData = {
         subject: sanitizeInput(formData.subject),
         description: formData.description,
         priority: parseInt(formData.priority),
         status: 2,
-        workspace_id: selectedWorkSpaceId,
+        workspace_id: formData.selectedWorkspaceId,
         attachments: formData.attachmentsValues,
         removed_attachments: formData.removedAttachments
       };
@@ -238,12 +239,17 @@ const CreateTicketPage = function (props) {
             userSubject: '',
             description: defaultSignature,
             priority: 2,
+            selectedWorkspaceId: '',
+            selectedSubCategoryId: '',
+            selectedItemCategoryId: '',
             selectedWorkspace: '',
             selectedSubCategory: '',
             selectedItemCategory: '',
             attachments: [],
             attachmentsValues: [],
-            removedAttachments: []
+            removedAttachments: [],
+            subCategoriesList: [],
+            itemCategoriesList: [],
           });
           setTimeout(function () { setSuccess(false); }, 3000);
         })
@@ -256,16 +262,22 @@ const CreateTicketPage = function (props) {
     }
   };
 
-  var workspaceOptions = workspaces.map(function (ws) { return ws.name; });
-
-  var subCategoryOptions = formData.selectedWorkspace && WORKSPACE_CATEGORIES[formData.selectedWorkspace]
-    ? Object.keys(WORKSPACE_CATEGORIES[formData.selectedWorkspace]).filter(function (subCategory) {
-      return subCategory !== formData.selectedWorkspace;
-    })
+  var subCategoryOptions = formData.selectedWorkspace && formData.subCategoriesList
+    ? formData.subCategoriesList.map(function (subcategory) {
+        return {
+          Id: subcategory.Id,
+          CategoryName: subcategory.CategoryName
+        };
+      })
     : [];
 
-  var itemCategoryOptions = (formData.selectedWorkspace && formData.selectedSubCategory && WORKSPACE_CATEGORIES[formData.selectedWorkspace])
-    ? (WORKSPACE_CATEGORIES[formData.selectedWorkspace][formData.selectedSubCategory] || [])
+  var itemCategoryOptions = (formData.selectedWorkspace && formData.selectedSubCategory && formData.itemCategoriesList)
+    ? formData.itemCategoriesList.map(function (itemcategory) {
+        return {
+          Id: itemcategory.Id,
+          SubCategoryName: itemcategory.SubCategoryName
+        };
+      })
     : [];
 
   return React.createElement('div', { className: 'card-fs' },
@@ -283,12 +295,17 @@ const CreateTicketPage = function (props) {
           React.createElement('label', { className: 'form-label' }, 'EV Department *'),
           React.createElement('select', {
             className: 'form-select',
-            value: formData.selectedWorkspace,
-            onChange: function (e) { updateField('selectedWorkspace', e.target.value); }
+            value: formData.selectedWorkspaceId,
+            onChange: function (e) {
+              const selectedText = e.target.options[e.target.selectedIndex].text;
+              updateField('selectedWorkspace', selectedText);
+              updateField('selectedWorkspaceId', e.target.value);
+              updateField('subCategoriesList', props.categories[e.target.value]);
+            }
           },
             React.createElement('option', { value: '' }, 'Select Department'),
-            workspaceOptions.map(function (workspaceName) {
-              return React.createElement('option', { key: workspaceName, value: workspaceName }, workspaceName);
+            workspaces.map(function (workSpaceOption) {
+              return React.createElement('option', { key: workSpaceOption.Id, value: workSpaceOption.Id }, workSpaceOption.Name);
             })
           ),
           errors.selectedWorkspace && React.createElement('div', { className: 'error-message' },
@@ -300,12 +317,17 @@ const CreateTicketPage = function (props) {
           React.createElement('label', { className: 'form-label' }, 'Category *'),
           React.createElement('select', {
             className: 'form-select',
-            value: formData.selectedSubCategory,
-            onChange: function (e) { updateField('selectedSubCategory', e.target.value); }
+            value: formData.selectedSubCategoryId,
+            onChange: function (e) {
+              const selectedText = e.target.options[e.target.selectedIndex].text;
+              updateField('selectedSubCategory', selectedText);
+              updateField('selectedSubCategoryId', e.target.value);
+              updateField('itemCategoriesList', props.sub_categories[e.target.value]);
+            }
           },
             React.createElement('option', { value: '' }, 'Select Category'),
             subCategoryOptions.map(function (subCategory) {
-              return React.createElement('option', { key: subCategory, value: subCategory }, subCategory);
+              return React.createElement('option', { key: subCategory.Id, value: subCategory.Id }, subCategory.CategoryName);
             })
           ),
           errors.selectedSubCategory && React.createElement('div', { className: 'error-message' },
@@ -313,16 +335,20 @@ const CreateTicketPage = function (props) {
           )
         ),
 
-        formData.selectedSubCategory && itemCategoryOptions.length > 1 && React.createElement('div', { className: 'form-group' },
+        formData.selectedSubCategoryId && itemCategoryOptions.length > 0 && React.createElement('div', { className: 'form-group' },
           React.createElement('label', { className: 'form-label' }, 'Sub-category'),
           React.createElement('select', {
             className: 'form-select',
-            value: formData.selectedItemCategory,
-            onChange: function (e) { updateField('selectedItemCategory', e.target.value); }
+            value: formData.selectedItemCategoryId,
+            onChange: function (e) {
+              const selectedText = e.target.options[e.target.selectedIndex].text;
+              updateField('selectedItemCategory', selectedText);
+              updateField('selectedItemCategoryId', e.target.value);
+            }
           },
             React.createElement('option', { value: '' }, 'Select Sub-category'),
             itemCategoryOptions.map(function (itemCategory, index) {
-              return React.createElement('option', { key: index, value: itemCategory }, itemCategory || '(No specific category)');
+              return React.createElement('option', { key: itemCategory.Id, value: itemCategory.Id }, itemCategory.SubCategoryName || '(No specific category)');
             })
           ),
           errors.selectedItemCategory && React.createElement('div', { className: 'error-message' },
@@ -403,9 +429,7 @@ const CreateTicketPage = function (props) {
               const newFiles = Array.from(e.target.files);
               const attachmentData = new FormData();
 
-              const ticketWorkSpace = workspaces.find(ws => ws.name === formData.selectedWorkspace);
-              const selectedWorkSpaceId = ticketWorkSpace ? ticketWorkSpace.id : null;
-              attachmentData.append('workspace_id', selectedWorkSpaceId);
+              attachmentData.append('workspace_id', formData.selectedWorkspaceId);
               attachmentData.append("attachment", newFiles[0]);
 
               API.call({
@@ -481,88 +505,12 @@ const CreateTicketPage = function (props) {
 
 const FreshServiceForm = (props) => {
   const dispatch = useDispatch();
-  const isMounted = useRef(true);
   var [currentView, setCurrentView] = useState('create');
-  var [workspaces, setWorkspaces] = useState([]);
-  var [filters, setFilters] = useState({
-    workspaceId: '',
-    status: 'all'
-  });
-  var [categoriesLoaded, setCategoriesLoaded] = useState(false);
-  var [workspacesLoaded, setWorkspacesLoaded] = useState(false);
-
-  // Load workspace categories
-  useEffect(() => {
-    console.log("🔄 Loading workspaces categories (once)");
-    // Set isMounted to true on mount
-    isMounted.current = true;
-
-    fetch('/workspace-categories.json')
-      .then(response => response.json())
-      .then((data) => {
-        if (isMounted.current) {
-          WORKSPACE_CATEGORIES = data;
-          setCategoriesLoaded(true);
-          console.log('✅ Workspace categories loaded');
-        }
-      })
-      .catch((error) => {
-        if (isMounted.current) {
-          console.error('❌ Failed to load workspace categories:', error);
-          WORKSPACE_CATEGORIES = {
-            "EVOX": {
-              "EVOX": ["Access", "Bug", "Update"],
-              "Hardware": ["Asset"],
-              "Software": ["Application"]
-            }
-          };
-          setCategoriesLoaded(true);
-        }
-      });
-
-    // Cleanup: Set isMounted to false on unmount
-    return () => {
-      isMounted.current = false;
-    };
-  }, []); // Only run once on mount
 
   // Load workspaces
   useEffect(() => {
-    console.log("🔄 Loading workspaces (once)");
-    // Set isMounted to true on mount
-    isMounted.current = true;
-
-    API.call({
-      method: 'get',
-      url: '/freshservice/workspaces/',
-    })
-      .then((result) => {
-        if (isMounted.current) {
-          var activeWorkspaces = (result.data.content || [])
-            .filter(function (ws) {
-              return ws.state === 'active';
-            })
-            .sort(function (a, b) {
-              return a.name.localeCompare(b.name);
-            });
-          setWorkspaces(activeWorkspaces);
-          setWorkspacesLoaded(true);
-          console.log('✅ Workspaces loaded');
-        }
-      })
-      .catch((e) => {
-        if (isMounted.current) {
-          console.error('❌ Error during API call:', e);
-          setWorkspacesLoaded(true);
-          dispatch(Formatter.alert_error(e));
-        }
-      });
-
-    // Cleanup: Set isMounted to false on unmount
-    return () => {
-      isMounted.current = false;
-    };
-  }, []); // Only run once on mount
+    dispatch(fetchWorkSpaces());
+  }, []);
 
   return (
     <>
@@ -570,20 +518,26 @@ const FreshServiceForm = (props) => {
         <ContainerWrapper>
           <ContainerBody>
             <Content>
-              {React.createElement('div', { className: 'app-fs' },
-                React.createElement('main', { className: 'main-fs' },
-                  !(categoriesLoaded && workspacesLoaded) ?
-                    React.createElement('div', { className: 'loading' },
-                      React.createElement('span', { className: 'spinner' }),
-                      'Loading workspace categories...'
-                    ) :
-                    currentView === 'create' ? React.createElement(CreateTicketPage, {
-                      workspaces: workspaces,
-                      useremail: props.user.email,
-                      user: props.user
-                    }) : null
-                )
-              )}
+              <div className="app-fs">
+                <main className="main-fs">
+                  {!props.workspacesLoaded ? (
+                    <div className="loading">
+                      <span className="spinner"></span>
+                      Loading workspace categories...
+                    </div>
+                  ) : (
+                    currentView === 'create' && props.workspaces.length > 0 && (
+                      <CreateTicketPage
+                        workspaces={props.workspaces}
+                        categories={props.categories}
+                        sub_categories={props.sub_categories}
+                        useremail={props.user.email}
+                        user={props.user}
+                      />
+                    )
+                  )}
+                </main>
+              </div>
             </Content>
           </ContainerBody>
         </ContainerWrapper>
@@ -592,4 +546,15 @@ const FreshServiceForm = (props) => {
   )
 }
 
-export default FreshServiceForm
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    settings: state.settings,
+    workspaces: state.freshService.workspaces,
+    categories: state.freshService.categories,
+    sub_categories: state.freshService.sub_categories,
+    workspacesLoaded: state.freshService.isInstanceLoaded
+  };
+};
+
+export default connect(mapStateToProps)(FreshServiceForm);
