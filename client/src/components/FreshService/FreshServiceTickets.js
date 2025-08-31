@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react"
-import { useDispatch } from 'react-redux'
+import { connect, useDispatch } from 'react-redux'
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import "./FreshService.css";
@@ -7,6 +7,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { handleImageUpload, formatBytes } from '../../services/Helper';
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
+import { fetchWorkSpaces } from '../../store/actions/freshservice/freshServiceActions';
 
 var formatDate = function (dateString) {
   try {
@@ -231,9 +232,9 @@ const TicketListPage = function (props) {
           React.createElement('option', { value: '' }, 'Please select department'),
           workspaces.map(function (workspace) {
             return React.createElement('option', {
-              key: workspace.id,
-              value: workspace.id
-            }, workspace.name);
+              key: workspace.Id,
+              value: workspace.Id
+            }, workspace.Name);
           })
         )
       ),
@@ -712,59 +713,9 @@ const FreshServiceTickets = (props) => {
   var [ticketsError, setTicketsError] = useState(null);
   var [categoriesLoaded, setCategoriesLoaded] = useState(false);
 
-  // Load workspace categories from JSON file
-  useEffect(function () {
-    console.log('🔄 Loading workspace categories from JSON file');
-    fetch('/workspace-categories.json')
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error('Failed to load workspace categories');
-        }
-        return response.json();
-      })
-      .then(function (data) {
-        WORKSPACE_CATEGORIES = data;
-        setCategoriesLoaded(true);
-        console.log('✅ Workspace categories loaded from JSON');
-      })
-      .catch(function (error) {
-        console.error('❌ Failed to load workspace categories:', error);
-        // Fallback to minimal data if JSON fails
-        WORKSPACE_CATEGORIES = {
-          "EVOX": {
-            "EVOX": ["Access", "Bug", "Update"],
-            "Hardware": ["Asset"],
-            "Software": ["Application"]
-          }
-        };
-        setCategoriesLoaded(true);
-      });
-  }, []);
-
   // Load workspaces once
   useEffect(function () {
-    console.log('🔄 Loading workspaces (once)');
-    API.call({
-      method: "get",
-      url: "/freshservice/workspaces/",
-    })
-      .then((result) => {
-        var activeWorkspaces = (result.data.content || [])
-          .filter(function (ws) {
-            return ws.state === 'active';
-          })
-          .sort(function (a, b) {
-            return a.name.localeCompare(b.name);
-          });
-        setWorkspaces(activeWorkspaces);
-        setCategoriesLoaded(true);
-        console.log('✅ Workspaces loaded');
-      })
-      .catch((e) => {
-        setCategoriesLoaded(true);
-        console.error('❌ Failed to load workspaces:', e);
-        dispatch(Formatter.alert_error(e));
-      });
+    dispatch(fetchWorkSpaces());
   }, []);
 
   // Load tickets when filters change
@@ -834,39 +785,42 @@ const FreshServiceTickets = (props) => {
     });
   }, []);
 
-  return (
+    return (
     <>
       <Wrapper>
         <ContainerWrapper>
           <ContainerBody>
             <Content>
-              {React.createElement('div', { className: 'app-fs' },
-                React.createElement('main', { className: 'main-fs' },
-                  !categoriesLoaded ?
-                    React.createElement('div', { className: 'loading' },
-                      React.createElement('span', { className: 'spinner' }),
-                      'Loading workspace categories...'
-                    ) :
-                    currentView === 'list' ? React.createElement(TicketListPage, {
-                      tickets: tickets,
-                      pagination: pagination,
-                      onPageChange: onPageChange,
-                      workspaces: workspaces,
-                      onTicketSelect: handleTicketSelect,
-                      onFilterChange: handleFilterChange,
-                      filters: filters,
-                      loading: ticketsLoading,
-                      error: ticketsError,
-                      useremail: props.user.email
-                    }) :
-                      currentView === 'details' && selectedTicket ? React.createElement(TicketDetailsPage, {
-                        ticket: selectedTicket,
-                        onBack: handleBackToList,
-                        useremail: props.user.email,
-                        user: props.user
-                      }) : null
-                )
-              )}
+              <div className="app-fs">
+                <main className="main-fs">
+                  {!props.workspacesLoaded ? (
+                    <div className="loading">
+                      <span className="spinner"></span>
+                      Loading workspace categories...
+                    </div>
+                  ) : currentView === 'list' ? (
+                    <TicketListPage
+                      tickets={tickets}
+                      pagination={pagination}
+                      onPageChange={onPageChange}
+                      workspaces={props.workspaces}
+                      onTicketSelect={handleTicketSelect}
+                      onFilterChange={handleFilterChange}
+                      filters={filters}
+                      loading={ticketsLoading}
+                      error={ticketsError}
+                      useremail={props.user.email}
+                    />
+                  ) : currentView === 'details' && selectedTicket ? (
+                    <TicketDetailsPage
+                      ticket={selectedTicket}
+                      onBack={handleBackToList}
+                      useremail={props.user.email}
+                      user={props.user}
+                    />
+                  ) : null}
+                </main>
+              </div>
             </Content>
           </ContainerBody>
         </ContainerWrapper>
@@ -875,4 +829,13 @@ const FreshServiceTickets = (props) => {
   )
 }
 
-export default FreshServiceTickets
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    settings: state.settings,
+    workspaces: state.freshService.workspaces,
+    workspacesLoaded: state.freshService.isInstanceLoaded
+  };
+};
+
+export default connect(mapStateToProps)(FreshServiceTickets);
