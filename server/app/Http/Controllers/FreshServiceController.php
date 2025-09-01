@@ -16,32 +16,45 @@ class FreshServiceController extends Controller
     public function getWorkspaces()
     {
         try {
-            $res = null;
-            $req = Curl::to(env('FRESHSERVICE_API_BASE_URL') . '/workspaces')
-                ->withHeader('Accept: application/json')
-                ->withTimeout(30)
-                ->withConnectTimeout(30)
-                ->returnResponseObject()
-                ->asJson();
-            $res = $req->get();
-            if ($res->status != JsonResponse::HTTP_OK) {
-                // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
-                log_to_file('info', 'ERROR', ['error' => $res], "fs");
-                $error = "Could not load workspaces, please try again.";
-                if (isset($res->content->message))
-                    $error = $res->content->message;
-                if (isset($res->content->title))
-                    $error = $res->content->title;
-                return error_response(
-                    $error,
-                    $res,
+            $workspaces = [];
+            $categories = [];
+            $sub_categories = [];
+            // get all workspaces first
+            $ws = call_sp("EV_FS_Get_Category", [1, null, null]);
+
+            if (count($ws[0]) > 0) {
+                $workspaces = $ws[0];
+                // loop thru each workspace and get categories
+                foreach ($ws[0] as $workspace) {
+                    $cat = call_sp("EV_FS_Get_Category", [2, $workspace->Id, null]);
+                    if (count($cat[0]) > 0) {
+                        $categories[$workspace->Id] = $cat[0];
+
+                        // loop thru each categories and get sub-categories
+                        foreach ($cat[0] as $category) {
+                            $sub_cat = call_sp("EV_FS_Get_Category", [3, $workspace->Id, $category->Id]);
+                            if (count($sub_cat[0]) > 0) {
+                                $sub_categories[$category->Id] = $sub_cat[0];
+                            }
+                        }
+                    }
+                }
+                return success_response(
+                    trans('Workspaces are successfully fetched!'),
+                    [
+                        $workspaces,
+                        $categories,
+                        $sub_categories
+                    ],
+                    JsonResponse::HTTP_OK
+                );
+            } else {
+                return success_response(
+                    trans('Workspace record is empty!'),
+                    [],
+                    JsonResponse::HTTP_OK
                 );
             }
-            return success_response(
-                trans('Workspaces are successfully fetched!'),
-                $res->content,
-                JsonResponse::HTTP_OK
-            );
         } catch (Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
             return error_response(trans('Could not load workspaces, please try again.'), $e);

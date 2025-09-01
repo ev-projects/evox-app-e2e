@@ -1,39 +1,19 @@
 import React, { useState, useEffect } from "react"
-import { useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { ContainerBody, ContainerWrapper, Content } from "../GridComponent/AdminLte"
 import Wrapper from "../Template/Wrapper"
 import { Table } from "react-bootstrap"
 import { Link } from "react-router-dom"
-import API from "../../services/API";
-import Formatter from "../../services/Formatter";
 import moment from 'moment';
+import { fetchNeoSubmissionUsers } from '../../store/actions/neo/neoActions';
 
-const NeoSubmissions = ({ user }) => {
-  const [submissionUsers, setSubmissionUsers] = useState({});
+const NeoSubmissions = ( props ) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     // call .net api to get list of newly onboarded employees
-    getNeoSubmissionUsers();
+    dispatch(fetchNeoSubmissionUsers(props.user.country));
   }, []);
-
-  const getNeoSubmissionUsers = async() => {
-    await API.call({
-      method: "get",
-      url: "/get_users_pending_submissions/",
-      params: {
-        country: user.country
-      }
-    })
-    .then((result) => {
-      if (result.status === 200) {
-        setSubmissionUsers(result.data.data.submissions);
-      }
-    })
-    .catch((e) => {
-      dispatch(Formatter.alert_error(e));
-    });
-  }
 
   return (
     <Wrapper>
@@ -44,7 +24,7 @@ const NeoSubmissions = ({ user }) => {
 
             <div className="neo-report-table">
               <div className="mt-4 mb-3">
-                {submissionUsers && Object.keys(submissionUsers).length <= 0 ? (
+                {props.submissions && props.submissions.length <= 0 ? (
                   <h3>No results found</h3>
                 ) : (
                   <Table striped bordered hover>
@@ -64,7 +44,7 @@ const NeoSubmissions = ({ user }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {submissionUsers.map((user) => (
+                      {props.submissions !== undefined && props.submissions.map((user) => (
                         <tr>
                           <td>{user.bhrNumber}</td>
                           <td>{user.userName}</td>
@@ -95,4 +75,11 @@ const NeoSubmissions = ({ user }) => {
   )
 }
 
-export default NeoSubmissions
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    submissions: state.neo.neo_submissions
+  }
+}
+
+export default connect(mapStateToProps)(NeoSubmissions)
