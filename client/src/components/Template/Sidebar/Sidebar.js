@@ -738,7 +738,7 @@ const Sidebar = (props) => {
                 </li>
               )}
 
-              {Authenticator.scanLevel(["Admin","HR","MAR_HR",]) && (
+              {Authenticator.scanLevel(["Admin", "HR", "PH_HR", "IND_HR", "MAR_HR"]) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-address-book" /><p>NEO<i className="right fa fa-chevron-left" /></p>
