@@ -97,6 +97,30 @@ export const fetchStatusNumbers = (params) => {
   };
 };
 
+// Fetch request list disputes
+export const fetchRequestListDisputes = (params = null) => {
+  return (dispatch, getState) => {
+    API.call({
+      method: "get",
+      url: "/request/request-list-disputes",
+      params: params,
+    })
+      .then((result) => {
+        if (result.status === 200) {
+          dispatch({
+            type: "FETCH_MY_DISPUTE_REQUEST_LIST_SUCCESS",
+            disputeRequestList: result.data.content.dispute_list,
+            disputeRequestCount: result.data.content.dispute_count,
+          });
+        }
+
+      })
+      .catch((e) => {
+        dispatch(Formatter.alert_error(e));
+      });
+  };
+};
+
 //  fetch the Pending MyRequest Count
 export const myfetchStatusNumbers_dashboard = (
     setMyaltercount,setMyOvertimecount,setMyRestdayworkcount,setMyChangeschedulecount,setTaskcompletestatus1
