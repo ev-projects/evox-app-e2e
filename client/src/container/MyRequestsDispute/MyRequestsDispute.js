@@ -189,7 +189,7 @@ class MyRequestsDispute extends Component {
                             <th colspan="2"> Request Information</th>
                             <th>Status</th>
                             <th>Updated By / Date</th>
-                            <th>Actions</th>
+                            {/* <th>Actions</th> */}
                           </tr>
                         </thead>
                         <tbody className="request_list">
@@ -287,7 +287,7 @@ class MyRequestsDispute extends Component {
                               <td>{fifthColumn}</td>
                               <td className="status"><div className={item.status.charAt(0).toUpperCase() + item.status.slice(1)}><Status status={item.status.charAt(0).toUpperCase() + item.status.slice(1)} /></div></td>
                               <td>{item.updated_by} <br/><small> {item.updated_at}</small></td>
-                              <td> <Link to={{ pathname: link, previousPath:  global.links.base +'account/MyRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td>
+                              {/* <td> <Link to={{ pathname: link, previousPath:  global.links.base +'account/MyRequests' }} className="nav-link" ><i className="fa fa-eye" aria-hidden="true"></i></Link></td> */}
                             </tr>         
                           })}
                           </tbody>

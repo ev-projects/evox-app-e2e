@@ -864,7 +864,6 @@ const Sidebar = (props) => {
               )}
 
               {/* ADMIN Links */}
-              {console.log(Authenticator.scanLevel("Admin"))}
               {Authenticator.scanLevel("Admin") && (
                 <li className="admin-sidebar nav-item has-treeview ">
                   <a className="nav-link nav-link-main">

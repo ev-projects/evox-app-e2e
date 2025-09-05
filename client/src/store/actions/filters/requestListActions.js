@@ -37,8 +37,6 @@ export const fetchRequestList = (params = null) => {
       params: params,
     })
       .then((result) => {
-
-        console.log();
         dispatch({
           type: dispatch_commands.fetch_list,
           requestList: result.data.content,
@@ -175,7 +173,6 @@ return (dispatch, getState) => {
   })
     .then((result) => {
       setTodayleaves(result.data.data);
-      console.log(result.data.data)
       dispatch({
         type: "TODAY_LEAVES",
         todayleaves: result.data.data,
@@ -201,7 +198,6 @@ return (dispatch, getState) => {
   })
     .then((result) => {
       setTommrowleaves(result.data.data);
-      console.log(result.data.data)
       dispatch({
         type: "TOMMOROW_LEAVES",
         tommorowleaves: result.data.data,
@@ -230,7 +226,6 @@ return (dispatch, getState) => {
   })
     .then((result) => {
       setHoliday(result.data);
-      console.log(result.data)
       dispatch({
         type: "DASHBOARD_HOLIDAY",
         dashboardholiday: result.data,
@@ -289,7 +284,6 @@ export const fetchStatusNumbers_dashboard = (
           myrestdayrequest :result.data.content.status_numbers.restdayworkpending,
           mychangeschedulerequest : result.data.content.status_numbers.changeschedulepending,
         });
-       console.log()
       })
       .catch((e) => {
         dispatch(Formatter.alert_error(e));
