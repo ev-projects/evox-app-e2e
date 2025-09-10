@@ -374,6 +374,12 @@ const TicketDetailsPage = function (props) {
   var [attachments, setAttachments] = useState([]);
   var [attachmentsValues, setAttachmentsValues] = useState([]);
   var [removedAttachments, setRemovedAttachments] = useState([]);
+  var [ccEmails, setCcEmails] = useState('');
+  
+  const [ccInput, setCcInput] = useState('');
+  const [ccSuggestions, setCcSuggestions] = useState([]);
+  const ccDebounceRef = useRef(null);
+  const skipSearchRef = useRef(false);
 
   useEffect(function () {
     if (!ticket.id) return;
@@ -428,6 +434,46 @@ const TicketDetailsPage = function (props) {
       });
   }, [ticket.id]);
 
+  useEffect(() => {
+    if (skipSearchRef.current) {
+      skipSearchRef.current = false; // Reset flag
+      return;
+    }
+
+    if (ccDebounceRef.current) clearTimeout(ccDebounceRef.current);
+
+    if (!ccInput || ccInput.trim() === '') {
+      setCcSuggestions([]);
+      return;
+    }
+
+    ccDebounceRef.current = setTimeout(() => {
+      const terms = ccInput.split(',');
+      const lastTerm = terms[terms.length - 1].trim();
+
+      if (lastTerm.length < 2) return;
+
+      API.call({
+        method: "get",
+        url: "/freshservice/users/suggestions",
+        params: {
+          keyword: lastTerm
+        }
+      })
+        .then((result) => {
+          setCcSuggestions(result.data);
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        })
+        .finally(function () {
+          setLoading(false);
+        });
+    }, 1000);
+
+    return () => clearTimeout(ccDebounceRef.current);
+  }, [ccInput]);
+
   var handleReplySubmit = function (e) {
     e.preventDefault();
     if (!reply.trim()) return;
@@ -439,7 +485,8 @@ const TicketDetailsPage = function (props) {
       body: reply,
       attachments: attachmentsValues,
       removed_attachments: removedAttachments,
-      requester_id: ticket.requester_id
+      requester_id: ticket.requester_id,
+      cc_emails: ccEmails.replace(/\s+/g, '').replace(/,/g, ';')
     }
 
     API.call({
@@ -454,6 +501,7 @@ const TicketDetailsPage = function (props) {
           attachmentsValues: [],
           removedAttachments: []
         });
+        setCcEmails('');
         return API.call({
           method: "get",
           url: "/freshservice/tickets/" + id + "/conversations/"
@@ -472,9 +520,6 @@ const TicketDetailsPage = function (props) {
       })
       .catch((e) => {
         console.error('Reply failed:', e);
-        // if (e.status === 401) {
-        //   dispatch({'type': 'SHOW_MODAL_LOGIN'})
-        // }
         dispatch(Formatter.alert_error(e));
       })
       .finally(function () {
@@ -587,6 +632,47 @@ const TicketDetailsPage = function (props) {
           }
         },
           React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
+
+          React.createElement('div', { className: 'form-group cc-email-autocomplete' },
+            React.createElement('label', { className: 'form-label' }, 'CC Emails (Optional)'),
+            React.createElement('div', { className: 'cc-email-wrapper' },
+              React.createElement('input', {
+                type: 'text',
+                className: 'form-input',
+                value: ccEmails,
+                placeholder: 'Type to search',
+                onChange: function (e) {
+                  const value = e.target.value;
+                  setCcEmails(value);
+                  setCcInput(value);
+                }
+              }),
+              ccSuggestions.length > 0 && React.createElement('div', { className: 'cc-suggestions' },
+                ccSuggestions.map(function (email, index) {
+                  return React.createElement('div', {
+                    key: index,
+                    className: 'cc-suggestion-item',
+                    onClick: function () {
+                      const email_add = email.match(/<([^>]+)>/)?.[1] || '';
+                      const emails = ccEmails.split(',').map(e => e.trim());
+                      emails[emails.length - 1] = email_add;
+                      const updated = emails.filter(Boolean).join(', ');
+
+                      skipSearchRef.current = true;
+
+                      setCcEmails(updated);
+                      setCcInput(updated);
+                      setCcSuggestions([]);
+                    }
+                  }, email);
+                })
+              )
+            ),
+            // errors.ccEmails && React.createElement('div', { className: 'error-message' },
+            //   '⚠️ ' + errors.ccEmails
+            // )
+          ),
+
           React.createElement('form', { onSubmit: handleReplySubmit },
             <Editor
               // apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"

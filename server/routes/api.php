@@ -97,4 +97,5 @@ Route::group(['prefix' => 'freshservice/', 'middleware' => ['jwtauth', 'auth.api
             Route::get('conversations', 'FreshServiceController@getTicketConversation');
         });
     });
+    Route::get('users/suggestions', 'FreshServiceController@getUserSuggestions');
 });
