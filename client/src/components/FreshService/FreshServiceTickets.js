@@ -374,7 +374,7 @@ const TicketDetailsPage = function (props) {
   var [attachments, setAttachments] = useState([]);
   var [attachmentsValues, setAttachmentsValues] = useState([]);
   var [removedAttachments, setRemovedAttachments] = useState([]);
-  var [ccEmails, setCcEmails] = useState('');
+  var [ccEmails, setCcEmails] = useState([]);
   
   const [ccInput, setCcInput] = useState('');
   const [ccSuggestions, setCcSuggestions] = useState([]);
@@ -397,6 +397,9 @@ const TicketDetailsPage = function (props) {
       .then((result) => {
         console.log('✅ Single ticket loaded successfully');
         setTicket(result.data.content);
+        if (result.data.content.cc_emails) {
+          setCcEmails(result.data.content.cc_emails);
+        }
         //setConversations(result.data.content.conversations || []);
       })
       .catch((e) => {
@@ -486,7 +489,7 @@ const TicketDetailsPage = function (props) {
       attachments: attachmentsValues,
       removed_attachments: removedAttachments,
       requester_id: ticket.requester_id,
-      cc_emails: ccEmails.replace(/\s+/g, '').replace(/,/g, ';')
+      cc_emails: ccEmails
     }
 
     API.call({
@@ -501,7 +504,7 @@ const TicketDetailsPage = function (props) {
           attachmentsValues: [],
           removedAttachments: []
         });
-        setCcEmails('');
+        setCcEmails([]);
         return API.call({
           method: "get",
           url: "/freshservice/tickets/" + id + "/conversations/"
@@ -636,14 +639,28 @@ const TicketDetailsPage = function (props) {
           React.createElement('div', { className: 'form-group cc-email-autocomplete' },
             React.createElement('label', { className: 'form-label' }, 'CC Emails (Optional)'),
             React.createElement('div', { className: 'cc-email-wrapper' },
+              <div className="cc-tags">
+                {ccEmails.map((email, index) => (
+                  <div key={index} className="cc-tag">
+                    {email}
+                    <button
+                      type="button"
+                      className="cc-tag-remove"
+                      onClick={() => {
+                        const updated = ccEmails.filter((_, i) => i !== index);
+                        setCcEmails(updated);
+                      }}
+                    >❌</button>
+                  </div>
+                ))}
+              </div>,
               React.createElement('input', {
                 type: 'text',
                 className: 'form-input',
-                value: ccEmails,
+                value: ccInput,
                 placeholder: 'Type to search',
                 onChange: function (e) {
                   const value = e.target.value;
-                  setCcEmails(value);
                   setCcInput(value);
                 }
               }),
@@ -654,15 +671,12 @@ const TicketDetailsPage = function (props) {
                     className: 'cc-suggestion-item',
                     onClick: function () {
                       const email_add = email.match(/<([^>]+)>/)?.[1] || '';
-                      const emails = ccEmails.split(',').map(e => e.trim());
-                      emails[emails.length - 1] = email_add;
-                      const updated = emails.filter(Boolean).join(', ');
-
-                      skipSearchRef.current = true;
-
-                      setCcEmails(updated);
-                      setCcInput(updated);
-                      setCcSuggestions([]);
+                      if (!ccEmails.includes(email_add)) {
+                        const updated = [...ccEmails, email_add];
+                        setCcEmails(updated);
+                        setCcInput('');
+                        setCcSuggestions([]);
+                      }
                     }
                   }, email);
                 })

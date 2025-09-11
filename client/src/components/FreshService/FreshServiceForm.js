@@ -168,7 +168,7 @@ const CreateTicketPage = function (props) {
     removedAttachments: [],
     subCategoriesList: [],
     itemCategoriesList: [],
-    ccEmails: '',
+    ccEmails: [],
   });
 
   var [errors, setErrors] = useState({});
@@ -269,7 +269,7 @@ const CreateTicketPage = function (props) {
         workspace_id: formData.selectedWorkspaceId,
         attachments: formData.attachmentsValues,
         removed_attachments: formData.removedAttachments,
-        cc_emails: formData.ccEmails.replace(/\s+/g, '').replace(/,/g, ';')
+        cc_emails: formData.ccEmails
       };
 
       API.call({
@@ -296,7 +296,7 @@ const CreateTicketPage = function (props) {
             removedAttachments: [],
             subCategoriesList: [],
             itemCategoriesList: [],
-            ccEmails: '',
+            ccEmails: [],
           });
           setTimeout(function () { setSuccess(false); }, 3000);
         })
@@ -425,14 +425,28 @@ const CreateTicketPage = function (props) {
         React.createElement('div', { className: 'form-group cc-email-autocomplete' },
           React.createElement('label', { className: 'form-label' }, 'CC Emails (Optional)'),
           React.createElement('div', { className: 'cc-email-wrapper' },
+            <div className="cc-tags">
+              {formData.ccEmails.map((email, index) => (
+                <div key={index} className="cc-tag">
+                  {email}
+                  <button
+                    type="button"
+                    className="cc-tag-remove"
+                    onClick={() => {
+                      const updated = formData.ccEmails.filter((_, i) => i !== index);
+                      updateField('ccEmails', updated);
+                    }}
+                  >❌</button>
+                </div>
+              ))}
+            </div>,
             React.createElement('input', {
               type: 'text',
               className: 'form-input',
-              value: formData.ccEmails,
+              value: ccInput,
               placeholder: 'Type to search',
               onChange: function (e) {
                 const value = e.target.value;
-                updateField('ccEmails', value);
                 setCcInput(value);
               }
             }),
@@ -443,15 +457,12 @@ const CreateTicketPage = function (props) {
                   className: 'cc-suggestion-item',
                   onClick: function () {
                     const email_add = email.match(/<([^>]+)>/)?.[1] || '';
-                    const emails = formData.ccEmails.split(',').map(e => e.trim());
-                    emails[emails.length - 1] = email_add;
-                    const updated = emails.filter(Boolean).join(', ');
-
-                    skipSearchRef.current = true;
-
-                    updateField('ccEmails', updated);
-                    setCcInput(updated);
-                    setCcSuggestions([]);
+                    if (!formData.ccEmails.includes(email_add)) {
+                      const updated = [...formData.ccEmails, email_add];
+                      updateField('ccEmails', updated);
+                      setCcInput('');
+                      setCcSuggestions([]);
+                    }
                   }
                 }, email);
               })
