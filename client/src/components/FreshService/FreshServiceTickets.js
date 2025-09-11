@@ -504,7 +504,6 @@ const TicketDetailsPage = function (props) {
           attachmentsValues: [],
           removedAttachments: []
         });
-        setCcEmails([]);
         return API.call({
           method: "get",
           url: "/freshservice/tickets/" + id + "/conversations/"
