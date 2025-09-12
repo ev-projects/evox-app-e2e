@@ -427,6 +427,10 @@ const TicketDetailsPage = function (props) {
       .then((result) => {
         console.log('✅ Conversations loaded successfully');
         setConversations(result.data.content.conversations || []);
+
+        if (result.data.content.conversations.length > 0 && result.data.content.conversations[0].cc_emails && result.data.content.conversations[0].cc_emails.length > 0) {
+          setCcEmails(result.data.content.conversations[0].cc_emails);
+        }
       })
       .catch((e) => {
         console.error('❌ Failed to load conversations:', e);
@@ -600,13 +604,11 @@ const TicketDetailsPage = function (props) {
                   React.createElement('div', { className: 'conversation-header' },
                     //React.createElement('span', { className: 'conversation-user' }, 'User ' + conv.user_id),
                     React.createElement('span', { className: 'conversation-date' },
-                      formatDate(conv.createdAt || conv.created_at))
+                      formatDate(conv.createdAt || conv.created_at) +
+                        (conv.cc_emails && conv.cc_emails.length
+                          ? ' | CC: ' + conv.cc_emails.join(', ')
+                          : ''))
                   ),
-                  // React.createElement('div', { className: 'conversation-body' },
-                  //   React.createElement(SafeTextRenderer, {
-                  //     text: conv.bodyText || conv.body || 'No content'
-                  //   })
-                  // )
                   React.createElement('div', {
                     className: 'conversation-body',
                     dangerouslySetInnerHTML: { __html: conv.bodyText || conv.body || 'No content' }
