@@ -40,6 +40,7 @@ import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
 import MyTeamSchedule from "../container/MyTeam/MyTeamSchedule";
 
 import MyRequests from "../container/MyRequests/MyRequests";
+import MyRequestsDispute from "../container/MyRequestsDispute/MyRequestsDispute";
 
 import DtrSummary from "../container/MyTeam/DtrSummary";
 import DtrSummaryNew from "../container/MyTeam/DtrSummaryNew";
@@ -230,6 +231,9 @@ const RoutesList = (props) => {
           
           
           />
+        </ProtectedRoute>
+        <ProtectedRoute exact path={global.links.my_request_dispute}>
+          <MyRequestsDispute level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} />
         </ProtectedRoute>
 
 

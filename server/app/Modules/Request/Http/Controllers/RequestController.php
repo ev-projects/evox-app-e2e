@@ -461,9 +461,59 @@ class RequestController extends Controller
         }
     }
 
+    /**
+     * Shows a list of Dispute Requests.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function requestListDisputes(RequestFilterRequest $request){
+        try {
+            log_activity( trans('messages.request_display_attempt') );
+            $request_types = [
+                'all'                   => 0,
+                'alteration'            => 1,
+                'overtime'              => 2,
+                'rest_day_work'         => 3,
+                // 'change_schedule'       => 4,
+                // 'alter_logs_punches'    => 5,
+            ];
 
-    // public function test_send_mail(){
-        
-    // }
+            $statuses = ['pending', 'approved', 'cancelled', 'declined'];
+
+            if(!isset($request->valid_from)){
+                $cutoff = $this->payroll_cutoff->get_payroll_cutoff();
+                $request->merge(['valid_from' => $cutoff->start_date]);
+                $request->merge(['valid_to' => $cutoff->end_date]);
+            }
+
+            $dispute_list = [];
+            $dispute_count = [];
+            foreach ($statuses as $status) {
+                // call SP to get employee's dispute requests
+                $response = call_sp("EV_SP_PD_Employee_Report", [
+                    $status,
+                    $request->valid_from,
+                    $request->valid_to,
+                    $request_types[$request->request_type],
+                    auth()->user()->id
+                ]);
+                $dispute_count[$status] = count($response[0]);
+
+                if ($request->status === $status) {
+                    $dispute_list = $response[0];
+                }
+            }
+
+            return success_response(
+                trans('messages.request_display_success'),
+                [
+                    "dispute_list" => $dispute_list,
+                    "dispute_count" => $dispute_count
+                ]
+            );
+
+        } catch(Exception $e){
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
 
 }

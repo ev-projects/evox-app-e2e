@@ -24,6 +24,7 @@
     dtr_logs                        :  "/app/dtr_logs/",
     profile                         :  "/app/profile/",
     my_request                      :  "/app/account/MyRequests",
+    my_request_dispute              :  "/app/account/MyRequestsDispute",
     my_overall_request              :  "/app/account/MyOverallRequests",
     ev_learning                     :  "/app/EVLearning",
     ev_learning_secure_coding       :  "/app/EVLearning/Secure_Coding",
