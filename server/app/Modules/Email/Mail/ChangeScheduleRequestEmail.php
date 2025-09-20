@@ -39,7 +39,7 @@ class ChangeScheduleRequestEmail extends Mailable
         $this->schedule         = $this->change_schedule->schedule()->first();
 
         foreach( $this->schedule->schedule_details()->get() as $schedule_detail){
-            $this->schedule_details[ $schedule_detail->day ] = $schedule_detail->getFormattedDetail();
+            $this->schedule_details[ $schedule_detail->day ] = $schedule_detail->getFormattedDetailPOV($recepient);
         }
         
         $this->department       = EvoxSubDepartment::where("Id", $this->user->SubDepartmentID)->first();
