@@ -397,9 +397,9 @@ const TicketDetailsPage = function (props) {
       .then((result) => {
         console.log('✅ Single ticket loaded successfully');
         setTicket(result.data.content);
-        if (result.data.content.cc_emails) {
-          setCcEmails(result.data.content.cc_emails);
-        }
+        // if (result.data.content.cc_emails) {
+        //   setCcEmails(result.data.content.cc_emails);
+        // }
         //setConversations(result.data.content.conversations || []);
       })
       .catch((e) => {
@@ -428,9 +428,9 @@ const TicketDetailsPage = function (props) {
         console.log('✅ Conversations loaded successfully');
         setConversations(result.data.content.conversations || []);
 
-        if (result.data.content.conversations.length > 0 && result.data.content.conversations[0].cc_emails && result.data.content.conversations[0].cc_emails.length > 0) {
-          setCcEmails(result.data.content.conversations[0].cc_emails);
-        }
+        // if (result.data.content.conversations.length > 0 && result.data.content.conversations[0].cc_emails && result.data.content.conversations[0].cc_emails.length > 0) {
+        //   setCcEmails(result.data.content.conversations[0].cc_emails);
+        // }
       })
       .catch((e) => {
         console.error('❌ Failed to load conversations:', e);
@@ -637,56 +637,56 @@ const TicketDetailsPage = function (props) {
         },
           React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
 
-          React.createElement('div', { className: 'form-group cc-email-autocomplete' },
-            React.createElement('label', { className: 'form-label' }, 'CC Emails (Optional)'),
-            React.createElement('div', { className: 'cc-email-wrapper' },
-              <div className="cc-tags">
-                {ccEmails.map((email, index) => (
-                  <div key={index} className="cc-tag">
-                    {email}
-                    <button
-                      type="button"
-                      className="cc-tag-remove"
-                      onClick={() => {
-                        const updated = ccEmails.filter((_, i) => i !== index);
-                        setCcEmails(updated);
-                      }}
-                    >❌</button>
-                  </div>
-                ))}
-              </div>,
-              React.createElement('input', {
-                type: 'text',
-                className: 'form-input',
-                value: ccInput,
-                placeholder: 'Type to search',
-                onChange: function (e) {
-                  const value = e.target.value;
-                  setCcInput(value);
-                }
-              }),
-              ccSuggestions.length > 0 && React.createElement('div', { className: 'cc-suggestions' },
-                ccSuggestions.map(function (email, index) {
-                  return React.createElement('div', {
-                    key: index,
-                    className: 'cc-suggestion-item',
-                    onClick: function () {
-                      const email_add = email.match(/<([^>]+)>/)?.[1] || '';
-                      if (!ccEmails.includes(email_add)) {
-                        const updated = [...ccEmails, email_add];
-                        setCcEmails(updated);
-                        setCcInput('');
-                        setCcSuggestions([]);
-                      }
-                    }
-                  }, email);
-                })
-              )
-            ),
-            // errors.ccEmails && React.createElement('div', { className: 'error-message' },
-            //   '⚠️ ' + errors.ccEmails
-            // )
-          ),
+          // React.createElement('div', { className: 'form-group cc-email-autocomplete' },
+          //   React.createElement('label', { className: 'form-label' }, 'CC Emails (Optional)'),
+          //   React.createElement('div', { className: 'cc-email-wrapper' },
+          //     <div className="cc-tags">
+          //       {ccEmails.map((email, index) => (
+          //         <div key={index} className="cc-tag">
+          //           {email}
+          //           <button
+          //             type="button"
+          //             className="cc-tag-remove"
+          //             onClick={() => {
+          //               const updated = ccEmails.filter((_, i) => i !== index);
+          //               setCcEmails(updated);
+          //             }}
+          //           >❌</button>
+          //         </div>
+          //       ))}
+          //     </div>,
+          //     React.createElement('input', {
+          //       type: 'text',
+          //       className: 'form-input',
+          //       value: ccInput,
+          //       placeholder: 'Type to search',
+          //       onChange: function (e) {
+          //         const value = e.target.value;
+          //         setCcInput(value);
+          //       }
+          //     }),
+          //     ccSuggestions.length > 0 && React.createElement('div', { className: 'cc-suggestions' },
+          //       ccSuggestions.map(function (email, index) {
+          //         return React.createElement('div', {
+          //           key: index,
+          //           className: 'cc-suggestion-item',
+          //           onClick: function () {
+          //             const email_add = email.match(/<([^>]+)>/)?.[1] || '';
+          //             if (!ccEmails.includes(email_add)) {
+          //               const updated = [...ccEmails, email_add];
+          //               setCcEmails(updated);
+          //               setCcInput('');
+          //               setCcSuggestions([]);
+          //             }
+          //           }
+          //         }, email);
+          //       })
+          //     )
+          //   ),
+          //   // errors.ccEmails && React.createElement('div', { className: 'error-message' },
+          //   //   '⚠️ ' + errors.ccEmails
+          //   // )
+          // ),
 
           React.createElement('form', { onSubmit: handleReplySubmit },
             <Editor
