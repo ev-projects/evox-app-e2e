@@ -147,6 +147,10 @@ const CreateTicketPage = function (props) {
     <span style="display: inline-block;">Employee ID: ${props.user.emp_num}</span><br>
     <span style="display: inline-block;">Country: ${props.user.country}</span>
   `;
+  const [ccInput, setCcInput] = useState('');
+  const [ccSuggestions, setCcSuggestions] = useState([]);
+  const ccDebounceRef = useRef(null);
+  const skipSearchRef = useRef(false);
 
   var [formData, setFormData] = useState({
     subject: '',
@@ -164,6 +168,7 @@ const CreateTicketPage = function (props) {
     removedAttachments: [],
     subCategoriesList: [],
     itemCategoriesList: [],
+    ccEmails: [],
   });
 
   var [errors, setErrors] = useState({});
@@ -180,6 +185,46 @@ const CreateTicketPage = function (props) {
       return { ...prev, subject: prefix + prev.userSubject };
     });
   }, [formData.selectedWorkspace, formData.selectedSubCategory, formData.selectedItemCategory, formData.userSubject]);
+
+  useEffect(() => {
+    if (skipSearchRef.current) {
+      skipSearchRef.current = false; // Reset flag
+      return;
+    }
+
+    if (ccDebounceRef.current) clearTimeout(ccDebounceRef.current);
+
+    if (!ccInput || ccInput.trim() === '') {
+      setCcSuggestions([]);
+      return;
+    }
+
+    ccDebounceRef.current = setTimeout(() => {
+      const terms = ccInput.split(',');
+      const lastTerm = terms[terms.length - 1].trim();
+
+      if (lastTerm.length < 2) return;
+
+      API.call({
+        method: "get",
+        url: "/freshservice/users/suggestions",
+        params: {
+          keyword: lastTerm
+        }
+      })
+        .then((result) => {
+          setCcSuggestions(result.data);
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        })
+        .finally(function () {
+          setLoading(false);
+        });
+    }, 1000);
+
+    return () => clearTimeout(ccDebounceRef.current);
+  }, [ccInput]);
 
   const fileInputRef = useRef(null);
 
@@ -223,7 +268,8 @@ const CreateTicketPage = function (props) {
         status: 2,
         workspace_id: formData.selectedWorkspaceId,
         attachments: formData.attachmentsValues,
-        removed_attachments: formData.removedAttachments
+        removed_attachments: formData.removedAttachments,
+        cc_emails: formData.ccEmails
       };
 
       API.call({
@@ -250,6 +296,7 @@ const CreateTicketPage = function (props) {
             removedAttachments: [],
             subCategoriesList: [],
             itemCategoriesList: [],
+            ccEmails: [],
           });
           setTimeout(function () { setSuccess(false); }, 3000);
         })
@@ -372,6 +419,57 @@ const CreateTicketPage = function (props) {
           }),
           errors.userSubject && React.createElement('div', { className: 'error-message' },
             '⚠️ ' + errors.userSubject
+          ),
+        ),
+
+        React.createElement('div', { className: 'form-group cc-email-autocomplete' },
+          React.createElement('label', { className: 'form-label' }, 'CC Emails (Optional)'),
+          React.createElement('div', { className: 'cc-email-wrapper' },
+            <div className="cc-tags">
+              {formData.ccEmails.map((email, index) => (
+                <div key={index} className="cc-tag">
+                  {email}
+                  <button
+                    type="button"
+                    className="cc-tag-remove"
+                    onClick={() => {
+                      const updated = formData.ccEmails.filter((_, i) => i !== index);
+                      updateField('ccEmails', updated);
+                    }}
+                  >❌</button>
+                </div>
+              ))}
+            </div>,
+            React.createElement('input', {
+              type: 'text',
+              className: 'form-input',
+              value: ccInput,
+              placeholder: 'Type to search',
+              onChange: function (e) {
+                const value = e.target.value;
+                setCcInput(value);
+              }
+            }),
+            ccSuggestions.length > 0 && React.createElement('div', { className: 'cc-suggestions' },
+              ccSuggestions.map(function (email, index) {
+                return React.createElement('div', {
+                  key: index,
+                  className: 'cc-suggestion-item',
+                  onClick: function () {
+                    const email_add = email.match(/<([^>]+)>/)?.[1] || '';
+                    if (!formData.ccEmails.includes(email_add)) {
+                      const updated = [...formData.ccEmails, email_add];
+                      updateField('ccEmails', updated);
+                      setCcInput('');
+                      setCcSuggestions([]);
+                    }
+                  }
+                }, email);
+              })
+            )
+          ),
+          errors.ccEmails && React.createElement('div', { className: 'error-message' },
+            '⚠️ ' + errors.ccEmails
           )
         ),
 
