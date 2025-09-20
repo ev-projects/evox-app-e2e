@@ -226,7 +226,11 @@ class MyRequestsDispute extends Component {
                                       <p>Out: {newEndTime}</p>
                                     </div>
                                   );
-                                  const [currStartTime, currEndTime] = item.fourth_column.split(',');
+                                  let currStartTime = '';
+                                  let currEndTime = '';
+                                  if (item.fourth_column) {
+                                    [currStartTime, currEndTime] = item.fourth_column.split(',');
+                                  }
                                   fifthColumn.push(
                                     <div>
                                       <span className="alter-logs-old">Old</span>
