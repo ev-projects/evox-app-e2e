@@ -309,6 +309,15 @@ const Sidebar = (props) => {
                 </li>
               )}
 
+              {Authenticator.scanLevel(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]) && (
+                <li className="nav-item">
+                  <Link className="nav-link" to={global.links.my_request_dispute}>
+                    <i className="nav-icon fa fa-handshake-o" aria-hidden="true"></i>
+                    <p> My Dispute Requests</p>
+                  </Link>
+                </li>
+              )}
+
               <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
                     <i className="nav-icon fa fa-ticket" />
@@ -855,7 +864,6 @@ const Sidebar = (props) => {
               )}
 
               {/* ADMIN Links */}
-              {console.log(Authenticator.scanLevel("Admin"))}
               {Authenticator.scanLevel("Admin") && (
                 <li className="admin-sidebar nav-item has-treeview ">
                   <a className="nav-link nav-link-main">

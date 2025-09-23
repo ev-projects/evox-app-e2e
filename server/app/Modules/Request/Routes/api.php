@@ -30,6 +30,9 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
     # Request List
     Route::get('/request-list',     'RequestController@requestlist');
 
+    # Request List Disputes
+    Route::get('/request-list-disputes',     'RequestController@requestListDisputes');
+
     # Request List Number
     Route::get('/request-numbers',     'RequestController@requestlistNumbers');
     Route::get('/request-numbers_dashboard',     'RequestController@requestlistNumbers_dashboard');

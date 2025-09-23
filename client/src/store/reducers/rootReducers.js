@@ -40,6 +40,7 @@ import dtrMultiLogsSummaryReducers from "./dtr/dtrMultiLogsSummaryReducers"
 import dtrLogsReducers from "./dtr/dtrLogsReducers";
 
 import myRequestListReducers from "./filters/myRequestListReducers";
+import myDisputeRequestListReducers from "./filters/myDisputeRequestListReducers";
 import dpaListReducers from "./filters/dpaListReducers";
 
 import dashboardReducers from "./dashboard/dashboardReducers";
@@ -90,6 +91,7 @@ const rootReducer = combineReducers({
     registerUser        : registerUserReducers,  
     sync                : syncReducers,  
     myRequestList       : myRequestListReducers,
+    myDisputeRequestList : myDisputeRequestListReducers,
     dpaList             : dpaListReducers,
     myTeamList          : myTeamListReducers,
     myDepartmentsTeamsList          : myDepartmentsTeamsListReducers,
