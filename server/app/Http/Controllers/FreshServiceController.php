@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Ixudra\Curl\Facades\Curl;
+use App\Modules\User\Models\User;
 
 class FreshServiceController extends Controller
 {
@@ -117,7 +118,8 @@ class FreshServiceController extends Controller
                 'subject' => $request->subject,
                 'workspace_id' => intval($request->workspace_id),
                 'email' => $me->email,
-                'attachments' => $request->attachments
+                'attachments' => $request->attachments,
+                'cc_emails' => $request->cc_emails,
             ])->asJson();
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
@@ -201,7 +203,8 @@ class FreshServiceController extends Controller
             $req->withData([
                 'body' => $request->body,
                 'user_id' => $request->requester_id,
-                'attachments' => $request->attachments
+                'attachments' => $request->attachments,
+                'cc_emails' => $request->cc_emails,
             ])->asJson();
             $res = $req->post();
             if ($res->status != JsonResponse::HTTP_OK) {
@@ -356,6 +359,24 @@ class FreshServiceController extends Controller
         } catch (\Exception $e) {
             log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
             return error_response($e->getMessage(), []);
+        }
+    }
+
+    public function getUserSuggestions(Request $request)
+    {
+        try {
+            $keyword = $request->query('keyword');
+            $users = User::where('email', 'like', "%{$keyword}%")->where('is_active', 1)->get();
+
+            $user_data = [];
+            foreach ($users as $user) {
+                $user_data[] = sprintf('%s %s <%s> - %s', $user->first_name, $user->last_name, $user->email, $user->job_title);
+            }
+
+            return response()->json($user_data);
+        } catch (Exception $e) {
+            log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
+            return error_response(trans('No user matched, please try again.'), $e);
         }
     }
 }

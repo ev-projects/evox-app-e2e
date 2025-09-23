@@ -374,6 +374,12 @@ const TicketDetailsPage = function (props) {
   var [attachments, setAttachments] = useState([]);
   var [attachmentsValues, setAttachmentsValues] = useState([]);
   var [removedAttachments, setRemovedAttachments] = useState([]);
+  var [ccEmails, setCcEmails] = useState([]);
+  
+  const [ccInput, setCcInput] = useState('');
+  const [ccSuggestions, setCcSuggestions] = useState([]);
+  const ccDebounceRef = useRef(null);
+  const skipSearchRef = useRef(false);
 
   useEffect(function () {
     if (!ticket.id) return;
@@ -391,6 +397,9 @@ const TicketDetailsPage = function (props) {
       .then((result) => {
         console.log('✅ Single ticket loaded successfully');
         setTicket(result.data.content);
+        // if (result.data.content.cc_emails) {
+        //   setCcEmails(result.data.content.cc_emails);
+        // }
         //setConversations(result.data.content.conversations || []);
       })
       .catch((e) => {
@@ -418,6 +427,10 @@ const TicketDetailsPage = function (props) {
       .then((result) => {
         console.log('✅ Conversations loaded successfully');
         setConversations(result.data.content.conversations || []);
+
+        // if (result.data.content.conversations.length > 0 && result.data.content.conversations[0].cc_emails && result.data.content.conversations[0].cc_emails.length > 0) {
+        //   setCcEmails(result.data.content.conversations[0].cc_emails);
+        // }
       })
       .catch((e) => {
         console.error('❌ Failed to load conversations:', e);
@@ -427,6 +440,46 @@ const TicketDetailsPage = function (props) {
         setConversationsLoading(false);
       });
   }, [ticket.id]);
+
+  useEffect(() => {
+    if (skipSearchRef.current) {
+      skipSearchRef.current = false; // Reset flag
+      return;
+    }
+
+    if (ccDebounceRef.current) clearTimeout(ccDebounceRef.current);
+
+    if (!ccInput || ccInput.trim() === '') {
+      setCcSuggestions([]);
+      return;
+    }
+
+    ccDebounceRef.current = setTimeout(() => {
+      const terms = ccInput.split(',');
+      const lastTerm = terms[terms.length - 1].trim();
+
+      if (lastTerm.length < 2) return;
+
+      API.call({
+        method: "get",
+        url: "/freshservice/users/suggestions",
+        params: {
+          keyword: lastTerm
+        }
+      })
+        .then((result) => {
+          setCcSuggestions(result.data);
+        })
+        .catch((e) => {
+          dispatch(Formatter.alert_error(e));
+        })
+        .finally(function () {
+          setLoading(false);
+        });
+    }, 1000);
+
+    return () => clearTimeout(ccDebounceRef.current);
+  }, [ccInput]);
 
   var handleReplySubmit = function (e) {
     e.preventDefault();
@@ -439,7 +492,8 @@ const TicketDetailsPage = function (props) {
       body: reply,
       attachments: attachmentsValues,
       removed_attachments: removedAttachments,
-      requester_id: ticket.requester_id
+      requester_id: ticket.requester_id,
+      cc_emails: ccEmails
     }
 
     API.call({
@@ -472,9 +526,6 @@ const TicketDetailsPage = function (props) {
       })
       .catch((e) => {
         console.error('Reply failed:', e);
-        // if (e.status === 401) {
-        //   dispatch({'type': 'SHOW_MODAL_LOGIN'})
-        // }
         dispatch(Formatter.alert_error(e));
       })
       .finally(function () {
@@ -553,13 +604,11 @@ const TicketDetailsPage = function (props) {
                   React.createElement('div', { className: 'conversation-header' },
                     //React.createElement('span', { className: 'conversation-user' }, 'User ' + conv.user_id),
                     React.createElement('span', { className: 'conversation-date' },
-                      formatDate(conv.createdAt || conv.created_at))
+                      formatDate(conv.createdAt || conv.created_at) +
+                        (conv.cc_emails && conv.cc_emails.length
+                          ? ' | CC: ' + conv.cc_emails.join(', ')
+                          : ''))
                   ),
-                  // React.createElement('div', { className: 'conversation-body' },
-                  //   React.createElement(SafeTextRenderer, {
-                  //     text: conv.bodyText || conv.body || 'No content'
-                  //   })
-                  // )
                   React.createElement('div', {
                     className: 'conversation-body',
                     dangerouslySetInnerHTML: { __html: conv.bodyText || conv.body || 'No content' }
@@ -587,6 +636,58 @@ const TicketDetailsPage = function (props) {
           }
         },
           React.createElement('h4', { style: { marginBottom: '12px', color: '#374151' } }, 'Add Reply'),
+
+          // React.createElement('div', { className: 'form-group cc-email-autocomplete' },
+          //   React.createElement('label', { className: 'form-label' }, 'CC Emails (Optional)'),
+          //   React.createElement('div', { className: 'cc-email-wrapper' },
+          //     <div className="cc-tags">
+          //       {ccEmails.map((email, index) => (
+          //         <div key={index} className="cc-tag">
+          //           {email}
+          //           <button
+          //             type="button"
+          //             className="cc-tag-remove"
+          //             onClick={() => {
+          //               const updated = ccEmails.filter((_, i) => i !== index);
+          //               setCcEmails(updated);
+          //             }}
+          //           >❌</button>
+          //         </div>
+          //       ))}
+          //     </div>,
+          //     React.createElement('input', {
+          //       type: 'text',
+          //       className: 'form-input',
+          //       value: ccInput,
+          //       placeholder: 'Type to search',
+          //       onChange: function (e) {
+          //         const value = e.target.value;
+          //         setCcInput(value);
+          //       }
+          //     }),
+          //     ccSuggestions.length > 0 && React.createElement('div', { className: 'cc-suggestions' },
+          //       ccSuggestions.map(function (email, index) {
+          //         return React.createElement('div', {
+          //           key: index,
+          //           className: 'cc-suggestion-item',
+          //           onClick: function () {
+          //             const email_add = email.match(/<([^>]+)>/)?.[1] || '';
+          //             if (!ccEmails.includes(email_add)) {
+          //               const updated = [...ccEmails, email_add];
+          //               setCcEmails(updated);
+          //               setCcInput('');
+          //               setCcSuggestions([]);
+          //             }
+          //           }
+          //         }, email);
+          //       })
+          //     )
+          //   ),
+          //   // errors.ccEmails && React.createElement('div', { className: 'error-message' },
+          //   //   '⚠️ ' + errors.ccEmails
+          //   // )
+          // ),
+
           React.createElement('form', { onSubmit: handleReplySubmit },
             <Editor
               // apiKey="ooiknxilulphmr12emasyl0fguerpmwsxgmhq05ej7tm06c6"
