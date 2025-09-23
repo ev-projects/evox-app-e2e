@@ -23,6 +23,7 @@ function PoliciesDocumentUpload(props) {
     const [files, setFiles] = useState([]);
     const [invalidfiles, setinvalidFiles] = useState([]);
     const [vlaidatefiles, setValidateFiles] = useState(false);
+    const [validateFileSize, setValidateFileSize] = useState('');
     const [vlaidatecountry, setValidateCountry] = useState(false);
     const [validatetitle, setValidateTitle] = useState(false);
     const [vlaidatedepartment, setValidateDepartment] = useState(false);
@@ -48,6 +49,7 @@ function PoliciesDocumentUpload(props) {
     const removeFile = (fileToRemove) => {
       setFiles(prevFiles => prevFiles.filter(file => file !== files[fileToRemove]));
       setInputKey((prevKey) => prevKey + 1); 
+      setValidateFileSize('');
     };
 
   // Display the selected file names
@@ -91,9 +93,16 @@ function PoliciesDocumentUpload(props) {
   };
 
   const handleUpload = async (e) => {
-    e.preventDefault(); 
-    console.log(userdepartment[0].Id);
-    console.log(formData.DepartmentId)
+    e.preventDefault();
+
+    const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+    // Check for oversized files
+    const oversizedFiles = files.filter(file => file.size > MAX_FILE_SIZE);
+    if (oversizedFiles.length > 0) {
+      setValidateFileSize('File size too big. Max of 3MB only.');
+      return;
+    }
+
     if (files.length === 0 && (formData.GlobalType === 'Geo' && formData.CountryId === 0)) {
 
       setValidateFiles(true);
@@ -175,6 +184,7 @@ function PoliciesDocumentUpload(props) {
 
   const handleChange = (e) => {
     if(e.target.name === "FileData"){
+      setValidateFileSize('');
       setValidateFiles(false);
      
       // setFiles([]);
@@ -208,8 +218,6 @@ function PoliciesDocumentUpload(props) {
       (existingFile) => existingFile.name === file.name && existingFile.size === file.size
       );
       });
-
-      console.log(uniqueFiles);
 
       // Update the state with the unique files
       setFiles((prevFiles) => [...prevFiles, ...uniqueFiles]);
@@ -410,10 +418,15 @@ function PoliciesDocumentUpload(props) {
           onChange={handleChange} />
           {/* <span className="icon-stack">Drag & Drop</span> */}
             {vlaidatefiles && (
-                      <label style={{ color: "red" }}>
-                        Please choose a valid file (pdf, doc, jpg, jpeg, png, xlsx)
-                      </label>
-                    )}
+              <label style={{ color: "red" }}>
+                Please choose a valid file (pdf, doc, jpg, jpeg, png, xlsx)
+              </label>
+            )}
+            {validateFileSize !== '' && (
+              <label style={{ color: "red" }}>
+                {validateFileSize}
+              </label>
+            )}
             {
               <ul className='mt-3 invalid'>
                 {invalidfiles.length > 0 && (<dt>Invalid Format List</dt>) }
