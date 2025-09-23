@@ -72,31 +72,35 @@ class RestDayWork extends Component {
         // If action is NULL, it means it's either store/update
         case null:
             let dateToCheck = moment( values.date ).format("YYYY-MM-DD");
-            let confirmMessage = '';
-            if (dateToCheck >= this.props.settings.request_payroll_cutoff.StartDate && dateToCheck <= this.props.settings.request_payroll_cutoff.EndDate) {
-              confirmMessage = "Are you sure you want to submit/update this request?";
+            if (this.props.settings.request_payroll_cutoff.Result === "0") {
+              // Show alert only
+              alert("Request not allowed at the moment. Please wait until DTR generation is complete.");
+              break;
             } else {
-              confirmMessage = "The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request. Are you sure you want to submit this request?";
-            }
+              let confirmMessage = '';
+              if (dateToCheck >= this.props.settings.request_payroll_cutoff.StartDate && dateToCheck <= this.props.settings.request_payroll_cutoff.EndDate) {
+                confirmMessage = "Are you sure you want to submit/update this request?";
+              } else {
+                confirmMessage = "The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request. Are you sure you want to submit this request?";
+              }
 
-            if (window.confirm(confirmMessage)) {
+              if (window.confirm(confirmMessage)) {
                 switch( values.method ) {
-
                   case "store":
-                      this.props.addRestDayWork( formData );
-                      break;
-            
+                    this.props.addRestDayWork( formData );
+                    break;
+
                   case "update":
-                      formData.append('_method', 'PUT')
-                      this.props.updateRestDayWork( values.id, formData );
-                      break;
+                    formData.append('_method', 'PUT')
+                    this.props.updateRestDayWork( values.id, formData );
+                    break;
 
                   default:
-                      break;
-
+                    break;
                 }
+              }
+              break;
             }
-            break;
 
         // If action is approve/decline/cancel, it means it's a change of Status
         case "approve":

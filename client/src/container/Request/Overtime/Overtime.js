@@ -75,8 +75,14 @@ class Overtime extends Component {
 
         // If action is NULL, it means it's either store/update
         case null:
-            let dateToCheck = moment( values.date ).format("YYYY-MM-DD");
+          let dateToCheck = moment( values.date ).format("YYYY-MM-DD");
+          if (this.props.settings.request_payroll_cutoff.Result === "0") {
+            // Show alert only
+            alert("Request not allowed at the moment. Please wait until DTR generation is complete.");
+            break;
+          } else {
             let confirmMessage = '';
+
             if (dateToCheck >= this.props.settings.request_payroll_cutoff.StartDate && dateToCheck <= this.props.settings.request_payroll_cutoff.EndDate) {
               confirmMessage = "Are you sure you want to submit/update this request?";
             } else {
@@ -84,23 +90,22 @@ class Overtime extends Component {
             }
 
             if (window.confirm(confirmMessage)) {
-                switch( values.method ) {
+              switch( values.method ) {
+                case "store":
+                  this.props.addOvertime( formData );
+                  break;
 
-                  case "store":
-                      this.props.addOvertime( formData );
-                      break;
-            
-                  case "update":
-                      formData.append('_method', 'PUT')
-                      this.props.updateOvertime( values.id, formData );
-                      break;
+                case "update":
+                  formData.append('_method', 'PUT')
+                  this.props.updateOvertime( values.id, formData );
+                  break;
 
-                  default:
-                      break;
-
-                }
+                default:
+                  break;
+              }
             }
             break;
+          }
 
         // If action is approve/decline/cancel, it means it's a change of Status
         case "approve":
