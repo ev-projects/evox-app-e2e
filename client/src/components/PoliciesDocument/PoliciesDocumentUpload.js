@@ -99,7 +99,7 @@ function PoliciesDocumentUpload(props) {
     // Check for oversized files
     const oversizedFiles = files.filter(file => file.size > MAX_FILE_SIZE);
     if (oversizedFiles.length > 0) {
-      setValidateFileSize('File size too big. Max of 3MB only.');
+      setValidateFileSize('File size too big. Max of 10MB only.');
       return;
     }
 
