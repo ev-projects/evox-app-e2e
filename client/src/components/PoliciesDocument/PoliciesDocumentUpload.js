@@ -95,11 +95,11 @@ function PoliciesDocumentUpload(props) {
   const handleUpload = async (e) => {
     e.preventDefault();
 
-    const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
     // Check for oversized files
     const oversizedFiles = files.filter(file => file.size > MAX_FILE_SIZE);
     if (oversizedFiles.length > 0) {
-      setValidateFileSize('File size too big. Max of 3MB only.');
+      setValidateFileSize('File size too big. Max of 10MB only.');
       return;
     }
 
