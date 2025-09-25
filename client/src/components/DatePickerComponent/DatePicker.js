@@ -222,7 +222,7 @@ const InputDateTime = (props) => {
                   showDateSelectOnly={ props.showDateSelectOnly != undefined ? props.showDateSelectOnly : false }
                   minDate={ props.minDate != undefined ? props.minDate : false }
                   maxDate={ props.maxDate != undefined ? props.maxDate : false }
-                  dateFormat="MMMM d, yyyy HH:mm"
+                  dateFormat="MMMM d, yyyy HH:mm:ss"
                   selected={ eval('field.value.' + props.name)}       
                   readOnly={ props.readOnly != undefined ? props.readOnly : false }
                   onChange={date => {form.setFieldValue(props.name, date); ;
