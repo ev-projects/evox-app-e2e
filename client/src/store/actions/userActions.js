@@ -513,3 +513,52 @@ export const addEvaSurvey = ( post_data ) => {
         });
     }
 }
+
+// get user code of conduct
+export const getUserCoc = () => {
+  return (dispatch, getState) => {
+    API.call({
+      method: "get",
+      url: "/user_coc/"
+    })
+    .then(result => {
+      dispatch({
+        'type'              : 'FETCH_USER_COC',
+        'data'              : result.data.content,
+        'is_coc_loaded'     : true
+      })
+      dispatch({'type': 'RELOAD_END'});
+    })
+    .catch(e => {
+        dispatch( Formatter.alert_error(  e, 3000 )  )
+    });
+  }
+}
+
+// acknowledge code of conduct
+export const acknowledgeCOC = () => {
+  return (dispatch, getState) => {
+    API.call({
+      method: "post",
+      url: "/acknowledge_coc/"
+    })
+    .then(result => {
+      if (result.status === 200) {
+        const closeButton = document.getElementsByClassName('close');
+        for (const element of closeButton) {
+          element.click();
+        }
+
+        dispatch( Formatter.alert_success( result, 5000 ));
+
+        dispatch({
+            'type'          : 'CLEAR_USER_COC',
+            'is_coc_loaded' : false
+        })
+      }
+    })
+    .catch(e => {
+        dispatch( Formatter.alert_error(  e, 3000 )  ) 
+    });
+  }
+}
