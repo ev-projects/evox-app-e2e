@@ -237,27 +237,29 @@ class Dashboard extends Component {
     if (!this.props.user.is_coc_loaded) {
       this.props.getUserCoc();
     }
-    if (this.props.user.user_coc && Object.keys(this.props.user.user_coc).length >= 1) {
-      const user_coc = this.props.user.user_coc;
-      if (user_coc.is_acknowledged === 1 && user_coc.is_completed === 0) {
-        const acknowledged_date = new Date(user_coc.acknowledged_at);
-        acknowledged_date.setDate(acknowledged_date.getDate() + 1);
-        const coc_today = new Date();
-        const coc_valid = (coc_today >= acknowledged_date);
+    if (this.props.settings?.coc_forms?.length >= 2) {
+      if (this.props.user.user_coc && Object.keys(this.props.user.user_coc).length >= 1) {
+        const user_coc = this.props.user.user_coc;
+        if (user_coc.is_acknowledged === 1 && user_coc.is_completed === 0) {
+          const acknowledged_date = new Date(user_coc.acknowledged_at);
+          acknowledged_date.setDate(acknowledged_date.getDate() + 1);
+          const coc_today = new Date();
+          const coc_valid = (coc_today >= acknowledged_date);
 
-        if (coc_valid) {
-          this.setState({ 
-            showCocModal: true,
-            coc_mode: 2
-          });
+          if (coc_valid) {
+            this.setState({
+              showCocModal: true,
+              coc_mode: 2
+            });
+          }
         }
+      } else if (this.props.user.user_coc === null) {
+        // if no cod record yet, show coc form 1
+        this.setState({
+          showCocModal: true,
+          coc_mode: 1
+        });
       }
-    } else if (this.props.user.user_coc === null) {
-      // if no cod record yet, show coc form 1
-      this.setState({ 
-        showCocModal: true,
-        coc_mode: 1
-      });
     }
 
     // alert(this.props.dashboard?.worktour);
