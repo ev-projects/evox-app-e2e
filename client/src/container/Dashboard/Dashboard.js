@@ -14,7 +14,7 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { getNhoSurvey, addNhoSurvey, addEvaSurvey, getEvaSurvey } from "../../store/actions/userActions";
+import { getNhoSurvey, addNhoSurvey, addEvaSurvey, getEvaSurvey, getUserCoc, acknowledgeCOC } from "../../store/actions/userActions";
 import { getUserAssets, addUserAsset } from '../../store/actions/userActions' ;
 import { Formik, ErrorMessage,getIn  } from 'formik';
 import { InputDate,InputTime } from '../../components/DatePickerComponent/DatePicker.js';
@@ -170,6 +170,9 @@ class Dashboard extends Component {
     opportunities: '',
     questions: '',
     showEvaModal: false,
+    showCocModal: false,
+    coc_mode: '',
+    isCocChecked: false
   };
 
   componentDidMount() {
@@ -228,6 +231,35 @@ class Dashboard extends Component {
     // if no eva survey yet, show eva modal
     if (this.props.user.user_eva && Object.keys(this.props.user.user_eva).length >= 1) {
       this.setState({ showEvaModal : true });
+    }
+
+    // fetch user code of conduct
+    if (!this.props.user.is_coc_loaded) {
+      this.props.getUserCoc();
+    }
+    if (this.props.settings?.coc_forms?.length >= 2) {
+      if (this.props.user.user_coc && Object.keys(this.props.user.user_coc).length >= 1) {
+        const user_coc = this.props.user.user_coc;
+        if (user_coc.is_acknowledged === 1 && user_coc.is_completed === 0) {
+          const acknowledged_date = new Date(user_coc.acknowledged_at);
+          acknowledged_date.setDate(acknowledged_date.getDate() + 2);
+          const coc_today = new Date();
+          const coc_valid = (coc_today >= acknowledged_date);
+
+          if (coc_valid) {
+            this.setState({
+              showCocModal: true,
+              coc_mode: 2
+            });
+          }
+        }
+      } else if (this.props.user.user_coc === null) {
+        // if no cod record yet, show coc form 1
+        this.setState({
+          showCocModal: true,
+          coc_mode: 1
+        });
+      }
     }
 
     // alert(this.props.dashboard?.worktour);
@@ -298,6 +330,8 @@ class Dashboard extends Component {
         }
       } else if (values.action === "eva") {
         this.props.addEvaSurvey(formData);
+      } else if (values.action === "coc") {
+        this.props.acknowledgeCOC();
       } else {
         this.props.addNhoSurvey(formData);
       }
@@ -308,6 +342,7 @@ class Dashboard extends Component {
     this.setState({ showModal: false });
     this.setState({ showItamModal: false });
     this.setState({ showEvaModal: false });
+    this.setState({ showCocModal: false });
   }
 
   handleJoyrideCallback = (data) => {
@@ -1083,6 +1118,89 @@ class Dashboard extends Component {
               </Modal.Body>
               {/* <Modal.Footer></Modal.Footer> */}
             </Modal>
+
+            <Modal className="remark-modal" show={this.state.showCocModal} size="xl">
+              <Modal.Header id="nho-modal-header">
+                <Modal.Title id="nho-modal-title">Code Of Conduct</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Formik
+                  enableReinitialize
+                  onSubmit={this.onSubmitHandler}
+                  initialValues={initialValue}
+                  >
+                  {({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                    <form onSubmit={handleSubmit}>
+                      <input type="hidden" name="modal_mode" value="itam" />
+                      <ContainerWrapper>
+                        <ContainerBody>
+                          <Content col="12" subtitle={<RequestSubtitle method={"store"} user={user} />}>
+                            <Row>
+                              <Col size="12">
+                                <div className="form-group survey-description">
+                                  {this.props.settings?.coc_forms?.[this.state.coc_mode - 1]?.content && (
+                                    <div
+                                      dangerouslySetInnerHTML={{
+                                        __html: this.props.settings.coc_forms[this.state.coc_mode - 1].content,
+                                      }}
+                                    />
+                                  )}
+                                </div>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col size="12">
+                                <br/>
+                                <span>
+                                  <div style={{ textAlign: "center" }}>
+                                    {(this.state.coc_mode === 1 || this.state.coc_mode === 2) && (
+                                      <>
+                                        {this.state.coc_mode === 1 && (
+                                          <>
+                                            <input
+                                              type="checkbox"
+                                              id="mandatoryCheckbox"
+                                              className="form-check-input"
+                                              checked={this.state.isCocChecked}
+                                              onChange={() =>
+                                                this.setState({ isCocChecked: !this.state.isCocChecked })
+                                              }
+                                            />
+                                            <label htmlFor="mandatoryCheckbox" className="form-check-label">
+                                              I understand that this action is mandatory.
+                                            </label>
+                                            <br />
+                                          </>
+                                        )}
+
+                                        <Button
+                                          type="submit"
+                                          className="btn btn-primary-2"
+                                          disabled={this.state.coc_mode === 1 && !this.state.isCocChecked}
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            setFieldValue("action", "coc");
+                                            handleSubmit(e);
+                                          }}
+                                          style={{ marginTop: "20px" }}
+                                        >
+                                          <i className="fa is-green fa-location-arrow" />{" "}
+                                          {this.state.coc_mode === 1 ? "I Agree" : "I Confirm"}
+                                        </Button>
+                                      </>
+                                    )}
+                                  </div>
+                                </span>
+                              </Col>
+                            </Row>
+                          </Content>
+                        </ContainerBody>
+                      </ContainerWrapper>
+                    </form>
+                  )}
+                </Formik>
+              </Modal.Body>
+            </Modal>
           </ContainerBody>
         </ContainerWrapper>
       </Wrapper>
@@ -1150,7 +1268,9 @@ const mapDispatchToProps = (dispatch) => {
       addUserAsset    : ( post_data ) => dispatch( addUserAsset( post_data) ),
       getUserAssets   : () => dispatch( getUserAssets() ),
       addEvaSurvey    : ( post_data ) => dispatch( addEvaSurvey( post_data ) ),
-      getEvaSurvey   : () => dispatch( getEvaSurvey() ),
+      getEvaSurvey    : () => dispatch( getEvaSurvey() ),
+      getUserCoc      : () => dispatch( getUserCoc() ),
+      acknowledgeCOC  : () => dispatch( acknowledgeCOC() ),
     }
 }
 

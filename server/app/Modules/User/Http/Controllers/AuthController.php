@@ -16,6 +16,7 @@ use App\Modules\Payroll\Resources\PayrollCutoffResource;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\User\Models\UtcTimelog;
 use App\Modules\User\Resources\CountryResource;
+use App\CodeOfConductForms;
 
 class AuthController extends Controller
 {
@@ -332,7 +333,8 @@ class AuthController extends Controller
             'country' =>  auth()->user()->country_id == 2 ? "philippines" : '',
             'countries' => CountryResource::collection(UtcTimelog::orderBy('country_name')->get() ),
             'request_payroll_cutoff' => call_sp('EV_SP_Validate_Request_Payroll_Period', [auth()->user()->id, null])[0][0],
-            'hr_list' => call_sp('EV_SP_Get_HR_Users', [])[0]
+            'hr_list' => call_sp('EV_SP_Get_HR_Users', [])[0],
+            'coc_forms' => CodeOfConductForms::where('country_id', auth()->user()->country_id)->orderBy('form_no', 'asc')->get(),
         ];
         
 

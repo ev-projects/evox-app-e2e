@@ -175,6 +175,21 @@ const userReducer = (state = initState, action) => {
                 is_eva_loaded: action.is_eva_loaded
             }
             break;
+
+        case "FETCH_USER_COC":
+            return {
+                ...state,
+                user_coc: action.data,
+                is_coc_loaded: action.is_coc_loaded
+            }
+            break;
+
+        case "CLEAR_USER_COC":
+            return {
+                ...state,
+                is_coc_loaded: action.is_coc_loaded
+            }
+            break;
         /**  */
         
         
