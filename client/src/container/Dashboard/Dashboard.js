@@ -242,7 +242,7 @@ class Dashboard extends Component {
         const user_coc = this.props.user.user_coc;
         if (user_coc.is_acknowledged === 1 && user_coc.is_completed === 0) {
           const acknowledged_date = new Date(user_coc.acknowledged_at);
-          acknowledged_date.setDate(acknowledged_date.getDate() + 1);
+          acknowledged_date.setDate(acknowledged_date.getDate() + 2);
           const coc_today = new Date();
           const coc_valid = (coc_today >= acknowledged_date);
 
