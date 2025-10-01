@@ -141,7 +141,12 @@ class syncBhrLeaves extends Command
 
             // Sort leaves based on lastChanged field
             usort($bhr_leaves_array, function($a, $b) {
-                return $a->status->lastChanged <=> $b->status->lastChanged;
+                // return $a->status->lastChanged <=> $b->status->lastChanged;
+                $cmp = $a->status->lastChanged <=> $b->status->lastChanged;
+                if ($cmp === 0) {
+                    return $a->id <=> $b->id; // sort by ID ascending
+                }
+                return $cmp;
             });
 
             // Binding of the Leaves fetched from BHr within the Date Range to the DTR within the Date Range.
