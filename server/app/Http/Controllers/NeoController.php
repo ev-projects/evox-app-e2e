@@ -6,6 +6,7 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Ixudra\Curl\Facades\Curl;
 use Auth;
+use App\Modules\User\Models\User;
 
 class NeoController extends Controller
 {
@@ -53,8 +54,29 @@ class NeoController extends Controller
                 ->get();
 
             if ($response->status === 200) {
-                return $response->content;
+                $data = json_decode($response->content, true); // Decode JSON into an associative array
+
+                if (!empty($data['data']['users'])) {
+                    foreach ($data['data']['users'] as $index => $user) {
+                        $initiatedById = $user['lastInitiatedBy'] ?? null;
+
+                        if ($initiatedById) {
+                            $initiator = User::where('id', $initiatedById)->first();
+
+                            if ($initiator) {
+                                $data['data']['users'][$index]['initiatedBy'] = $initiator->first_name . ' ' . $initiator->last_name;
+                            } else {
+                                $data['data']['users'][$index]['initiatedBy'] = null;
+                            }
+                        } else {
+                            $data['data']['users'][$index]['initiatedBy'] = null;
+                        }
+                    }
+                }
+                // Return enriched JSON
+                return response()->json($data);
             }
+
             return response()->json($default_content);
         } catch (Exception $e) {
             return response()->json($e);

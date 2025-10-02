@@ -43,6 +43,8 @@ const NeoOnboarding = ( props ) => {
                         <th>Email</th>
                         <th>Department</th>
                         <th>Hire Date</th>
+                        <th>Initiated By</th>
+                        <th>Initiation Date</th>
                         <th style={{ textAlign: "center" }}>Actions</th>
                       </tr>
                     </thead>
@@ -54,8 +56,10 @@ const NeoOnboarding = ( props ) => {
                           <td>{user.email}</td>
                           <td>{user.department}</td>
                           <td>{user.dateHired ? moment( user.dateHired ).format("MMM DD, YYYY") : null}</td>
+                          <td>{user.initiatedBy}</td>
+                          <td>{user.lastInitiatedAt ? moment( user.lastInitiatedAt ).format("MMM DD, YYYY") : null}</td>
                           <td style={{ textAlign: "center" }}>
-                            <Button type="submit" className="btn btn-primary-2" onClick={() => handleSendLink(user.userGuid)}><i className="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;Send Link</Button>
+                            <Button type="submit" className="btn btn-primary-2" onClick={() => handleSendLink(user.userGuid)} disabled={user.lastInitiatedBy && user.lastInitiatedAt}><i className="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;Send Link</Button>
                           </td>
                         </tr>
                       ))}
