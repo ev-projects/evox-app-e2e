@@ -17,6 +17,7 @@ use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\User\Models\UtcTimelog;
 use App\Modules\User\Resources\CountryResource;
 use App\CodeOfConductForms;
+use App\EvoxIndiaPayrollCutoff;
 
 class AuthController extends Controller
 {
@@ -326,8 +327,30 @@ class AuthController extends Controller
 
         $bhr_details = $this->bhr->get_user( auth()->user()->bhr_num ? auth()->user()->bhr_num : '');
         // dd(UtcTimelog::where('id','!=',"0"));
+        if (auth()->user()->country_id === 1 || auth()->user()->country_id === 4) {
+            // Get the latest Payroll Cutoff of India and Morocco
+            $india_latest_cutoff = EvoxIndiaPayrollCutoff::orderBy('End_Date', 'desc')->first();
+            if ($india_latest_cutoff) {
+                $year = Carbon::parse($india_latest_cutoff->End_Date)->format('Y');
+                $month_label = Carbon::parse($india_latest_cutoff->End_Date)->format('F');
+
+                $current_payroll_cutoff = [
+                    'id' => $india_latest_cutoff->Id,
+                    'start_date' => $india_latest_cutoff->Start_Date,
+                    'end_date' => $india_latest_cutoff->End_Date,
+                    'month' => $india_latest_cutoff->Cutoff_Month,
+                    'month_label' => $month_label,
+                    'name' => $month_label . ' ' . $year,
+                    'year' => $india_latest_cutoff->Cutoff_Year
+                ];
+            } else {
+                $current_payroll_cutoff = [];
+            }
+        } else {
+            $current_payroll_cutoff = new PayrollCutoffResource($this->payroll_cutoff->get_payroll_cutoff());
+        }
         $result['settings'] = [
-            'current_payroll_cutoff'  => new PayrollCutoffResource($this->payroll_cutoff->get_payroll_cutoff()),
+            'current_payroll_cutoff'  => $current_payroll_cutoff,
             'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num ),
             // 'country' =>  $bhr_details ? $bhr_details->country : '',
             'country' =>  auth()->user()->country_id == 2 ? "philippines" : '',

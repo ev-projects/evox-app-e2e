@@ -1,0 +1,313 @@
+/*
+ * Dashboard css File
+*/
+.dtr-wrapper{}
+table .center{
+	text-align: center;
+}
+.dtr-table th {
+    padding: 10px 3px!important;
+    border: 1px solid #eaeaea!important;
+    vertical-align: middle!important;
+    font-size: .75rem !important;
+}
+.dtr-filter{padding: 0 !important; margin: 0 0 20px 0; z-index: 1000}
+.dtr-filter > div{padding:0 1% 0 0;}
+.dtr-table tr{background: #fff}
+.dtr-table td{border: 1px solid #eaeaea;padding: 3px 3px !important}
+.body {
+}
+.dtr-schedule .col{width: 50%; padding: 0}
+.month {
+    font-size: 12px;
+    line-height: 10px;
+}
+
+.day{
+	font-size: 2em;
+    color: #82af13;
+    font-weight: bold;
+    line-height: 100%;
+}
+
+.dayname {
+	font-size: 12px;
+}
+
+.present{
+	color: #82af13;
+}
+
+.absent{
+	color: red;
+}
+
+.rest-day{
+	color: gray;
+}
+
+.vacation_leave, .sick_leave{
+	color : rgba(49, 106, 197, 0.93);
+}
+.absent-bg-color{
+	background: #fcefec!important;
+}
+.rest_day-bg-color{
+	background: #efefef !important;
+}
+.sh-bg-color{background: #fbf8ec !important}
+.lh-bg-color{
+	background: #e9f3fb !important;
+}
+
+
+.dtr-log .justify-content-center {
+    color: #000;
+    font-size: .875rem;
+    margin: 0;
+}
+
+.month.justify-content-center {
+    color: #999;
+    font-size: .5rem !important;
+}
+.table td.dtr-schedule .row {
+    margin: 2px 0 !important;
+    font-size: .65rem !important;
+}
+.dtr-item{font-size:16px !important}
+.lh > .center{
+	background-color: black !important;
+}
+.dtr-status>div>div{
+    font-size: .75rem !important;
+}
+
+.dtr-table .requests-list li {
+    font-size: .75rem !important;
+    margin: 3px 0;
+}
+.year-dropdown {
+float: left;
+}
+.month-dropdown {
+float: left;
+
+}
+.payroll-cutoff-dropdown {
+float: left;
+
+}
+.dtr-filter {
+    width: 101% !important;
+    float: none;
+    margin-bottom: 20px;
+
+}
+.SummaryBlock {
+    margin-bottom: 20px;
+    padding: 0 10px;
+    width: 100%;
+    padding-top: 20px;
+}
+.SummaryBlock .col-1 {
+    padding: 0 3px !important;
+    max-width: 7%;
+    flex: 0 0 7%;
+}
+.SummaryBlock button{display: none}
+
+.SummaryBlock > div{padding: 0 5px !important}
+.SummaryBlock .toast-header {
+    font-size: .75em;
+    text-align: center;
+    background-position: center 10px;
+    background-repeat: no-repeat;
+    /* padding-top: 18px; */
+    padding-top: 45px;
+    display: block;
+    padding-left: 0;
+    padding-right: 0;
+    border:0;
+}
+.SummaryBlock .late .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-late.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .ut .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-ut.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .nsd .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-nd.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .ul .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-absent.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .ot .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-ot.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+.SummaryBlock .otnd .toast-header{
+                                    background-image: url(https://evox2.eastvantage.com/images/icn/icn-ot.png);
+                                    background-size: 25px;
+                                 
+                                                            
+                                }
+
+
+/* 
+.SummaryBlock .ut .toast-body{ padding-top: 27px;}
+.SummaryBlock .nsd .toast-body{ padding-top: 27px;}
+.SummaryBlock .ul .toast-body{ padding-top: 27px;}
+.SummaryBlock .ot .toast-body{ padding-top: 27px;}
+.SummaryBlock .otnd .toast-body{ padding-top: 27px;} */
+
+
+
+.SummaryBlock .toast{box-shadow: none !important; text-align: center;}
+.SummaryBlock .toast-body {
+    padding: 0 0 5px 0;
+    background: none;
+    color: #000;
+    font-size: 1em;
+    font-weight: bold;
+}
+.SummaryBlock .holidays {
+    border: 1px #eee solid;
+    margin: 0px;
+    padding: 10px 10px 0 !important;
+    overflow: hidden;
+}
+
+.SummaryBlock .holidays .col-3{margin: 0; padding:0;}
+.SummaryBlock .holidays .col-3 .toast{border:0; box-shadow: none !important;}
+.SummaryBlock .holidays h5 {
+    font-size: .875em !important;
+    color: #666!important;
+    position: relative;
+    text-transform: uppercase;
+    top: -11px;
+    margin-bottom: 3px;
+    padding-top: 7px;
+}
+
+.SummaryBlock .holidays h5 span{
+    font-size: 2.5em;
+    position: relative;
+    top: 4px;
+    display: inline-block;
+    margin-right: 10px;
+    
+}
+
+.SummaryBlock .holidays h5 i{
+    font-size: 21px;
+    position: relative;
+    top: 4px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.SummaryBlock .holidays .col-3 .toast{background: none;}
+.SummaryBlock .holidays .toast-header{padding-top: 0}
+
+.btn-update-sched{
+    margin-right: 5px;
+}
+
+.btn-update-sched a{
+    color: white !important;
+    text-decoration: none;
+}
+.btn-update-sched a:hover{
+    text-decoration: none;
+}
+.dtr-table>thead>tr>td, .dtr-table>thead>tr>th {
+
+    background: #0097A7  !important;
+    color: #fff !important;
+    font-size: .75rem !important;
+}
+@media only screen and (max-width: 575px) {
+.content .col-lg-12, .content .col-12{padding: 5px 0 !important}
+.dtr-schedule .col{width: 100%; padding: 0}
+
+.SummaryBlock{padding: 0}
+    .SummaryBlock .toast-header {font-size: 11px;}
+  
+.SummaryBlock > div{padding: 2px 3px !important}
+.SummaryBlock > div .toast-header{padding-top: 0; background: none !important }
+.SummaryBlock .col-4 {
+    margin: 0 !important;
+    padding: 0 3px;
+}
+.SummaryBlock .holidays {
+    width: 100%;
+    margin: 5px 0;
+}
+.SummaryBlock .holidays.col-sm-4 {
+    margin-top: 0;
+    padding-top: 5px;
+}
+.SummaryBlock .col-sm-2 {
+    margin: 0 !important;
+    padding: 0 3px;
+    max-width: 16.666667%;
+    flex: 0 0 16.666667%;
+}
+.SummaryBlock .col-sm-4 {
+    flex: 0 0 31.333333%;
+    max-width: 31.333333%;
+}
+}
+@media only screen and (max-width: 650px) {
+
+}
+@media only screen and (min-width: 576px){
+
+  .SummaryBlock .col-sm-2 {
+    margin: 0 !important;
+    padding: 0 3px;
+}
+
+  .dtr-schedule .col{width: 100%; padding: 0}
+}
+
+.cutoff-text{
+    color: #0097A7;
+    font-size: 14px;
+}
+
+.cutoff-text-border{
+   border: #000;
+   border-bottom: solid;
+   border-width: 2px;
+   /* border-radius: 4px; */
+   padding: 1px 2px 1px 2px;
+   float: left;
+   
+}
+
+.toggle-outlook-dtr{
+    background-color: #105396 !important;
+    border-color: #888 !important;
+    margin-left: 1rem !important;
+}
+
+.dtr-schedule-toggle-on{
+    color:#bcf44c !important;
+    font-weight: bold
+}

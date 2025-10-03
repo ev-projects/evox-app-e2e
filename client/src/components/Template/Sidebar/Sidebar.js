@@ -72,11 +72,23 @@ const Sidebar = (props) => {
             </li> */}
 
               {/*  EMPLOYEE Links */}
-              {Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], 'dtr_access') && (
+              {Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], 'dtr_access') && user.country === "Philippines" && (
                 <li className="nav-item">
                   <Link
                     className="nav-link"
                     to={global.links.dtr + user.id + "/"}
+                  >
+                    <i className="nav-icon fa fa-clock-o nav-icon" />
+                    <p> Daily Time Record</p>
+                  </Link>
+                </li>
+              )}
+
+              {Authenticator.scanLevel_Feature(["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"], 'dtr_access') && (user.country === "India" || user.country === "Morocco") && (
+                <li className="nav-item">
+                  <Link
+                    className="nav-link"
+                    to={global.links.dtr_in_mar + user.id + "/"}
                   >
                     <i className="nav-icon fa fa-clock-o nav-icon" />
                     <p> Daily Time Record</p>

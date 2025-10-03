@@ -16,6 +16,7 @@ use App\Modules\Payroll\Resources\PayrollCutoffResource;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\EvoxIndiaPayrollCutoff;
 
 class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
     
@@ -72,16 +73,38 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
 
             $user = get_authenticated_user( $user_id );
             // $user = User::find(3153);
-            // Gets all the Payroll Cutoff that started after the User's Date Hired
-            $payroll_cutoff_collection = PayrollCutoff::whereRaw("( end_date >= '". $user->date_hired ."' )")->get();
+            if ($user->country_id === 1 || $user->country_id === 4) {
+                // Gets all the Payroll Cutoff of India and Morocco
+                $india_cutoff_collection = EvoxIndiaPayrollCutoff::get();
 
-            foreach( $payroll_cutoff_collection as $payroll_cutoff ) {
-                $year = Carbon::parse($payroll_cutoff->end_date)->format('Y');
-                $month = Carbon::parse($payroll_cutoff->end_date)->format('m');
+                foreach($india_cutoff_collection as $india_cutoff) {
+                    $year = Carbon::parse($india_cutoff->End_Date)->format('Y');
+                    $month = Carbon::parse($india_cutoff->End_Date)->format('m');
+                    $month_label = Carbon::parse($india_cutoff->End_Date)->format('F');
 
-                $result[ $year ][ $month ]['label'] = Carbon::parse($payroll_cutoff->end_date)->format('F');
-                $result[ $year ][ $month ]['data'][$payroll_cutoff->id] = new PayrollCutoffResource($payroll_cutoff);
-                
+                    $result[ $year ][ $month ]['label'] = $month_label;
+                    $restructured_cutoff = [
+                        'id' => $india_cutoff->Id,
+                        'start_date' => $india_cutoff->Start_Date,
+                        'end_date' => $india_cutoff->End_Date,
+                        'month' => str_pad((string) $india_cutoff->Cutoff_Month, 2, '0', STR_PAD_LEFT),
+                        'month_label' => $month_label,
+                        'name' => $month_label . ' ' . $year,
+                        'year' => (string) $india_cutoff->Cutoff_Year
+                    ];
+                    $result[ $year ][ $month ]['data'][$india_cutoff->Id] = $restructured_cutoff;
+                }
+            } else {
+                // Gets all the Payroll Cutoff that started after the User's Date Hired
+                $payroll_cutoff_collection = PayrollCutoff::whereRaw("( end_date >= '". $user->date_hired ."' )")->get();
+
+                foreach( $payroll_cutoff_collection as $payroll_cutoff ) {
+                    $year = Carbon::parse($payroll_cutoff->end_date)->format('Y');
+                    $month = Carbon::parse($payroll_cutoff->end_date)->format('m');
+
+                    $result[ $year ][ $month ]['label'] = Carbon::parse($payroll_cutoff->end_date)->format('F');
+                    $result[ $year ][ $month ]['data'][$payroll_cutoff->id] = new PayrollCutoffResource($payroll_cutoff);
+                }
             }
 
             log_to_file('info', 'Success', [$result]);

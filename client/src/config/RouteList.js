@@ -21,6 +21,7 @@ import TemplateEdit from "../container/Schedule/TemplateEdit";
 import TemplateList from "../container/Schedule/TemplateList";
 import PageNotFound from "../container/PageNotFound";
 import DailyTimeRecord from "../container/DailyTimeRecord";
+import DailyTimeRecordIndiaMorocco from "../container/DailyTimeRecordIndiaMorocco";
 import DailyTimeRecordPuncher from "../container/DailyTimeRecordPuncher";
 import DtrPunch from "../container/DtrPunch";
 import EVLearning from "../container/EVLearning/EVLearning";
@@ -158,6 +159,11 @@ const RoutesList = (props) => {
         { /* Employee Links */ }
         <ProtectedRoute exact path={global.links.dtr+":id"} >
           <DailyTimeRecord 
+          level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.dtr_in_mar+":id"} >
+          <DailyTimeRecordIndiaMorocco
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} />
         </ProtectedRoute>
 
