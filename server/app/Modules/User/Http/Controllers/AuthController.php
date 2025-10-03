@@ -338,10 +338,10 @@ class AuthController extends Controller
                     'id' => $india_latest_cutoff->Id,
                     'start_date' => $india_latest_cutoff->Start_Date,
                     'end_date' => $india_latest_cutoff->End_Date,
-                    'month' => $india_latest_cutoff->Cutoff_Month,
+                    'month' => str_pad((string) $india_latest_cutoff->Cutoff_Month, 2, '0', STR_PAD_LEFT),
                     'month_label' => $month_label,
                     'name' => $month_label . ' ' . $year,
-                    'year' => $india_latest_cutoff->Cutoff_Year
+                    'year' => (string) $india_latest_cutoff->Cutoff_Year
                 ];
             } else {
                 $current_payroll_cutoff = [];
