@@ -1,26 +1,26 @@
 
-import { viewEmployeeDtr, getFilterForDtr, setSelectedPayrollCutoff,getUserDtrSummary } from '../../store/actions/dtr/dtrActions.js';
-import { fetchUser } from '../../store/actions/userActions.js'
-import { setRedirect } from '../../store/actions/redirectActions.js';
+import { viewEmployeeDtr, getFilterForDtr, setSelectedPayrollCutoff,getUserDtrSummary } from '../../store/actions/dtr/dtrActions';
+import { fetchUser } from '../../store/actions/userActions'
+import { setRedirect } from '../../store/actions/redirectActions';
 
 import React, { Component } from "react";
 import "./DailyTimeRecordIndiaMorocco.css";
 
 import { Container,Row,Col,Table,Image,Card,Spinner, Form,Button,InputGroup,FormControl,Toast  } from 'react-bootstrap';
-import  BackButton from '../../components/Template/BackButton/index.js'
+import  BackButton from '../../components/Template/BackButton'
 
 import moment from 'moment';
 import Select from "react-select";
 import { connect } from 'react-redux';
-import DtrFormatter from '../../services/DtrFormatter.js';
+import DtrFormatter from '../../services/DtrFormatter';
 import { Link } from "react-router-dom"; 
 import { ContainerHeader,Content,ContainerWrapper, ContainerBody } from '../../components/GridComponent/AdminLte.js';
-import RequestSubtitle from "../../components/RequestComponent/RequestButtons/RequestSubtitle.js";
+import RequestSubtitle from "../../components/RequestComponent/RequestButtons/RequestSubtitle";
 
-import Formatter from '../../services/Formatter.js';
-import Wrapper from '../../components/Template/Wrapper/index.js';
-import Validator from '../../services/Validator.js';
-import Authenticator from '../../services/Authenticator.js';
+import Formatter from '../../services/Formatter';
+import Wrapper from '../../components/Template/Wrapper';
+import Validator from '../../services/Validator';
+import Authenticator from '../../services/Authenticator';
 
 class DailyTimeRecordIndiaMorocco extends Component {
 
