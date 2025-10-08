@@ -141,7 +141,7 @@ class DailyTimeRecordIndiaMorocco extends Component {
 
           // If there's NOT selected Payroll Cutoff OR there's a force reset of Initial State, use the default payroll cutoff instance.
           } else {
-            this.setPayrollCutoffInstance( nextProps.settings.current_payroll_cutoff );
+            this.setPayrollCutoffInstance( nextProps.settings.current_payroll_cutoff_in_mar );
           }
       }
 

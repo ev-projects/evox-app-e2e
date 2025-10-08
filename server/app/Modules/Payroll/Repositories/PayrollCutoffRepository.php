@@ -73,7 +73,7 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
 
             $user = get_authenticated_user( $user_id );
             // $user = User::find(3153);
-            if ($user->country_id === 1 || $user->country_id === 4) {
+            if ($user->country_id == 1 || $user->country_id == 4) {
                 // Gets all the Payroll Cutoff of India and Morocco
                 $india_cutoff_collection = EvoxIndiaPayrollCutoff::get();
 
