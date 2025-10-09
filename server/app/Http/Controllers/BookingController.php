@@ -440,6 +440,22 @@ class BookingController extends Controller
                     ];
                 }
                 if($page_type == 2){
+                    // Sort celebrations by date in ascending order
+                    usort($response[0], function ($a, $b) {
+                        return strtotime($a->date) <=> strtotime($b->date);
+                    });
+
+                    foreach ($response[0] as $key => $value) {
+                        // Prepend 0 if date is single digit
+                        $celebration = explode(' ', $value->date);
+                        $month = $celebration[0];
+                        $day = str_pad($celebration[1], 2, '0', STR_PAD_LEFT);
+                        $value->date = $month . ' ' . $day;
+
+                        // Transform display's first char to upper case
+                        $value->display = ucfirst($value->display);
+                    }
+
                     $summarized_response["team_birthday"] = $response[0];
                 }
                 if($page_type == 3){
