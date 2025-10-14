@@ -150,7 +150,7 @@ class syncBhrLeaves extends Command
             });
 
             // Binding of the Leaves fetched from BHr within the Date Range to the DTR within the Date Range.
-            $result = $this->dtr->bind_leaves_to_dtr( $bhr_leaves_array, $country_id );
+            $result = $this->dtr->bind_leaves_to_dtr( $bhr_leaves_array, $country_id, $start_date, $end_date );
 
             return success_response(
                 trans('messages.'.__FUNCTION__.'_success'), 
