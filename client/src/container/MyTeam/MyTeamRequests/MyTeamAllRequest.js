@@ -50,48 +50,70 @@ class MyTeamAllRequests extends Component {
 
 
 
-  onSubmitHandler = (values) => {
-    var formData = { url: "my_team_requests"  };
-    // console.log(values)
-    switch(values.action) {
+  onSubmitHandler = async (values) => {
+    const formData = { url: "my_team_requests" };
+
+    switch (values.action) {
       case "bulk_action":
-        for (var key in values) {
-            if( values[key] != null && values[key] != ""  ) {
-                switch( key ) {
-                  case "valid_from":
-                  case "valid_to":
-                    formData[key] = moment( values[key] ).format("YYYY-MM-DD")
-                    break;
-                  default:
-                    formData[key] = values[key];
-                    break;
-                }
-            } 
+        for (const key in values) {
+          if (values[key] != null && values[key] !== "") {
+            switch (key) {
+              case "valid_from":
+              case "valid_to":
+                formData[key] = moment(values[key]).format("YYYY-MM-DD");
+                break;
+              default:
+                formData[key] = values[key];
+                break;
+            }
+          }
         }
-        this.props.bulkRequest( formData );
+
+        try {
+          // ✅ Wait for the bulk request to complete
+          await this.props.bulkRequest(formData);
+
+          // ✅ Then fetch the request list
+          await this.props.fetchRequestList(formData);
+        } catch (error) {
+          console.error("Bulk request failed:", error);
+          // Optionally: show error in UI
+        }
+
+        // ✅ Reset values after bulk action
         values.checkedList = [];
         values.action = '';
         break;
-    default:
-        for (var key in values) {
-          if( values[key] != null && values[key] != ""  ) {
-              switch( key ) {
-                case "valid_from":
-                case "valid_to":
-                  formData[key] = moment( values[key] ).format("YYYY-MM-DD")
-                  break;
-                case "checked":
-                  break;
-                default:
-                  formData[key] = values[key];
-                  break;
-              }
-          } 
-      }
+
+      default:
+        for (const key in values) {
+          if (values[key] != null && values[key] !== "") {
+            switch (key) {
+              case "valid_from":
+              case "valid_to":
+                formData[key] = moment(values[key]).format("YYYY-MM-DD");
+                break;
+              case "checked":
+                break;
+              default:
+                formData[key] = values[key];
+                break;
+            }
+          }
+        }
+
+        try {
+          // ✅ Just fetch normally
+          await this.props.fetchRequestList(formData);
+        } catch (error) {
+          console.error("Fetch request list failed:", error);
+        }
+
+        break;
     }
-    this.props.fetchRequestList( formData );
-    // this.props.fetchStatusNumbers( formData );
-  }
+
+    // this.props.fetchStatusNumbers(formData); // Optional
+  };
 
 
   componentDidMount(){

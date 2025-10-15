@@ -294,16 +294,18 @@ export const fetchStatusNumbers_dashboard = (
 // actions for the bulk update of the requests
 export const bulkRequest = (post_data) => {
   return (dispatch, getState) => {
-    API.call({
+    return API.call({
       method: "post",
       url: "/request/bulk-request/",
       data: post_data,
     })
       .then((result) => {
         dispatch(Formatter.alert_success(result));
+        return result; // allow chaining
       })
       .catch((e) => {
         dispatch(Formatter.alert_error(e));
+        throw e; // rethrow for error handling in calling function
       });
   };
 };
