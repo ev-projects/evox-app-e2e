@@ -1250,7 +1250,17 @@ class Dashboard extends Component {
                               <p>Fifteen years ago, Eastvantage began as a small team with a bold vision — <b>to connect talent, technology, and opportunity across borders.</b> Today, we’ve grown into a global family united by shared purpose and culture.</p>
                               <p>This October 29, we celebrate 15 years of impact, growth, and collaboration through our anniversary theme: <b>🧵 Woven Across Borders — stitched together by our team, our clients, and our shared culture.</b></p>
                               <p>Be part of this milestone event as we look back on our journey and forward to the exciting chapters ahead.</p>
-                              <div style={{ textAlign: "center", marginTop: "20px" }}><img src="/images/eva_2.png" style={{ maxWidth: "50%", height: "auto" }} alt="EVA 2025 Theme" /></div>
+                              <div style={{ textAlign: "center", marginTop: "20px" }}>
+                                <a
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    this.openPopup("https://events.teams.microsoft.com/event/ed4c4f6b-61d0-4782-88ad-b6b42d2e44cd@ac1e81b8-89df-4ff5-9a1b-a0d231273335");
+                                  }}
+                                >
+                                  <img src="/images/eva_2.png" style={{ maxWidth: "50%", height: "auto", cursor: "pointer" }} alt="EVA 2025 Theme" />
+                                </a>
+                              </div>
                               <div style={{ textAlign: "center", marginTop: "20px" }}><img src="/images/eva_3.png" style={{ maxWidth: "50%", height: "auto" }} alt="EVA 2025 Calendar" /></div>
 
                               <div className="text-center" style={{ marginTop: "50px" }}>
