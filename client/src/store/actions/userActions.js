@@ -562,3 +562,52 @@ export const acknowledgeCOC = () => {
     });
   }
 }
+
+// get user EVA registration
+export const getEvaReg = () => {
+    return (dispatch, getState) => {
+        API.call({
+          method: "get",
+          url: "/eva_registration/"
+        })
+        .then(result => {
+          dispatch({
+            'type'              : 'FETCH_USER_EVA_REG',
+            'data'              : result.data.content,
+            'is_eva_reg_loaded' : true
+          })
+          dispatch({'type': 'RELOAD_END'});
+        })
+        .catch(e => {
+          dispatch( Formatter.alert_error(  e, 3000 )  )
+        });
+    }
+}
+
+// submit eva registration
+export const submitEvaReg = () => {
+  return (dispatch, getState) => {
+    API.call({
+      method: "post",
+      url: "/eva_registration/",
+    })
+    .then(result => {
+      if (result.status === 200) {
+        const closeButton = document.getElementsByClassName('close');
+        for (const element of closeButton) {
+          element.click();
+        }
+
+        dispatch( Formatter.alert_success( result, 5000 ));
+
+        dispatch({
+          'type'              : 'CLEAR_USER_EVA_REG',
+          'is_eva_reg_loaded' : false
+        })
+      }
+    })
+    .catch(e => {
+      dispatch( Formatter.alert_error(  e, 3000 )  ) 
+    });
+  }
+}

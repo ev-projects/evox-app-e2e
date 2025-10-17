@@ -14,7 +14,7 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { getNhoSurvey, addNhoSurvey, addEvaSurvey, getEvaSurvey, getUserCoc, acknowledgeCOC } from "../../store/actions/userActions";
+import { getNhoSurvey, addNhoSurvey, addEvaSurvey, getEvaSurvey, getUserCoc, acknowledgeCOC, getEvaReg, submitEvaReg } from "../../store/actions/userActions";
 import { getUserAssets, addUserAsset } from '../../store/actions/userActions' ;
 import { Formik, ErrorMessage,getIn  } from 'formik';
 import { InputDate,InputTime } from '../../components/DatePickerComponent/DatePicker.js';
@@ -172,7 +172,8 @@ class Dashboard extends Component {
     showEvaModal: false,
     showCocModal: false,
     coc_mode: '',
-    isCocChecked: false
+    isCocChecked: false,
+    showEvaRegModal: false,
   };
 
   componentDidMount() {
@@ -260,6 +261,16 @@ class Dashboard extends Component {
           coc_mode: 1
         });
       }
+    }
+
+    // check if user has eva registration
+    if (!this.props.user.is_eva_reg_loaded) {
+      this.props.getEvaReg();
+    }
+
+    // if user does not have eva registration yet, show eva reg modal
+    if (this.props.user.user_eva_reg === null) {
+      this.setState({ showEvaRegModal : true });
     }
 
     // alert(this.props.dashboard?.worktour);
@@ -380,6 +391,21 @@ class Dashboard extends Component {
     //   this.setState({ run: false });
     // }
   };
+
+  openPopup = (url) => {
+    // call api to save user id upon clicking the eva registration link
+    this.props.submitEvaReg();
+
+    // open window popup for the eva registration
+    const popup = window.open(url, 'popupWindow', 'width=600,height=400');
+    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+      alert("Popup was blocked by the browser!");
+      return false;
+    } else {
+      popup.focus();
+      return true;
+    }
+  }
 
   render() {
     const { run, steps, stepIndex } = this.state;
@@ -1201,6 +1227,63 @@ class Dashboard extends Component {
                 </Formik>
               </Modal.Body>
             </Modal>
+
+            <Modal className="remark-modal" show={this.state.showEvaRegModal} size="xl">
+              <Modal.Header id="nho-modal-header">
+                <Modal.Title id="nho-modal-title">EVA Registration</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Formik
+                  enableReinitialize
+                  onSubmit={this.onSubmitHandler}
+                  initialValues={initialValue}
+                  >
+                  {({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                    <form onSubmit={handleSubmit}>
+                      <input type="hidden" name="modal_mode" value="itam" />
+                      <Content col="12" subtitle={<RequestSubtitle method={"store"} user={user} />}>
+                        <Row>
+                          <Col size="12">
+                            <div className="form-group">
+                              <h1>CELEBRATE 15 YEARS OF EASTVANTAGE</h1>
+                              <img src="/images/eva_1.png" width="100%" alt="EVA 2025 15 Years" /><br/><br/>
+                              <p>Fifteen years ago, Eastvantage began as a small team with a bold vision — <b>to connect talent, technology, and opportunity across borders.</b> Today, we’ve grown into a global family united by shared purpose and culture.</p>
+                              <p>This October 29, we celebrate 15 years of impact, growth, and collaboration through our anniversary theme: <b>🧵 Woven Across Borders — stitched together by our team, our clients, and our shared culture.</b></p>
+                              <p>Be part of this milestone event as we look back on our journey and forward to the exciting chapters ahead.</p>
+                              <div style={{ textAlign: "center", marginTop: "20px" }}><img src="/images/eva_2.png" style={{ maxWidth: "50%", height: "auto" }} alt="EVA 2025 Theme" /></div>
+                              <div style={{ textAlign: "center", marginTop: "20px" }}><img src="/images/eva_3.png" style={{ maxWidth: "50%", height: "auto" }} alt="EVA 2025 Calendar" /></div>
+
+                              <div className="text-center" style={{ marginTop: "50px" }}>
+                                <p style={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "center" }}>How to register:</p>
+                                <ol style={{ textAlign: "left", maxWidth: "600px", margin: "0 auto" }}>
+                                  <li>Click the button above or this link:&nbsp;
+                                    <a 
+                                      href="#" 
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        this.openPopup("https://events.teams.microsoft.com/event/ed4c4f6b-61d0-4782-88ad-b6b42d2e44cd@ac1e81b8-89df-4ff5-9a1b-a0d231273335");
+                                      }}
+                                    >
+                                      <b>REGISTRATION LINK</b>
+                                    </a>
+                                  </li>
+                                  <li>Select “Register.”</li>
+                                  <li>Fill out the registration form; please register the email address you’ll use to join the event.</li>
+                                  <li>Click “Register” again to confirm.</li>
+                                  <li>You’ll receive an email confirmation once successfully registered.</li>
+                                  <li>The event will be reflected on your calendar.</li>
+                                </ol>
+                                <p style={{ fontWeight: "bold", fontSize: "1.2rem", textAlign: "center", marginTop: "30px" }}>Let’s celebrate 15 years of growth, grit, and global connection — together, let’s weave new memories across borders</p>
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </Content>
+                    </form>
+                  )}
+                </Formik>
+              </Modal.Body>
+            </Modal>
           </ContainerBody>
         </ContainerWrapper>
       </Wrapper>
@@ -1271,6 +1354,8 @@ const mapDispatchToProps = (dispatch) => {
       getEvaSurvey    : () => dispatch( getEvaSurvey() ),
       getUserCoc      : () => dispatch( getUserCoc() ),
       acknowledgeCOC  : () => dispatch( acknowledgeCOC() ),
+      getEvaReg       : () => dispatch( getEvaReg() ),
+      submitEvaReg    : () => dispatch( submitEvaReg() ),
     }
 }
 
