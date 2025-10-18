@@ -84,6 +84,10 @@ Route::post('nho_survey', 'NewHireOrientationController@store')->middleware('jwt
 Route::get('eva_survey', 'EvaController@index')->middleware('jwtauth', 'auth.apikey');
 Route::post('eva_survey', 'EvaController@store')->middleware('jwtauth', 'auth.apikey');
 
+// EVA Registration
+Route::get('eva_registration', 'EvaController@getEvaRegistration')->middleware('jwtauth', 'auth.apikey');
+Route::post('eva_registration', 'EvaController@saveEvaRegistration')->middleware('jwtauth', 'auth.apikey');
+
 // COC Agreement
 Route::get('user_coc', 'CodeOfConductController@index')->middleware('jwtauth', 'auth.apikey');
 Route::post('acknowledge_coc', 'CodeOfConductController@store')->middleware('jwtauth', 'auth.apikey');

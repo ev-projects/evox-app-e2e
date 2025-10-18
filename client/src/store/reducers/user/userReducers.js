@@ -190,6 +190,21 @@ const userReducer = (state = initState, action) => {
                 is_coc_loaded: action.is_coc_loaded
             }
             break;
+
+        case "FETCH_USER_EVA_REG":
+            return {
+                ...state,
+                user_eva_reg: action.data,
+                is_eva_reg_loaded: action.is_eva_reg_loaded
+            }
+            break;
+
+        case "CLEAR_USER_EVA_REG":
+            return {
+                ...state,
+                is_eva_reg_loaded: action.is_eva_reg_loaded
+            }
+            break;
         /**  */
         
         

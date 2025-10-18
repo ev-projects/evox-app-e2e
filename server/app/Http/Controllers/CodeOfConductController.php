@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\CodeOfConduct;
+use App\EvaRegistration;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
@@ -11,7 +12,13 @@ class CodeOfConductController extends Controller
 {
     public function index()
     {
-        $coc_get = CodeOfConduct::where('user_id', Auth::user()->id)->where('deleted_at', null)->first();
+        $eva_reg = EvaRegistration::where('user_id', Auth::user()->id)->where('deleted_at', null)->first();
+        // eva registration popup will be prioritized
+        if (!$eva_reg) {
+            $coc_get = [];
+        } else {
+            $coc_get = CodeOfConduct::where('user_id', Auth::user()->id)->where('deleted_at', null)->first();
+        }
         return success_response(
             trans('Code of Conduct agreement successfully fetched!'),
             $coc_get,

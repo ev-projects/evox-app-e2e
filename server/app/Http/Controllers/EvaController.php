@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\EvaSurvey;
+use App\EvaRegistration;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
@@ -55,6 +56,36 @@ class EvaController extends Controller
 
             if ($eva_update) {
                 return response()->json(['message' => 'Thank you for completing the EVA Survey! Your response has been successfully submitted.', 'status' => 200], 200);
+            }
+        } catch(Exception $e) {
+            return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    public function getEvaRegistration()
+    {
+        $eva_get = EvaRegistration::where('user_id', Auth::user()->id)->where('deleted_at', null)->first();
+        return success_response(
+            trans('EVA registration record successfully fetched!'),
+            $eva_get,
+            JsonResponse::HTTP_OK
+        );
+    }
+
+    public function saveEvaRegistration()
+    {
+        try {
+            $data = [
+                'user_id' => Auth::user()->id,
+                'eva_year' => date("Y"),
+                'eva_quarter' => 3, // should use ceil(10 / 3) to get the actual quarter
+                'is_attending' => 1
+            ];
+
+            $user_eva_reg = EvaRegistration::create($data);
+
+            if ($user_eva_reg) {
+                return response()->json(['message' => 'Thank you for your interest in our upcoming EVA! Your response has been successfully submitted.', 'status' => 200], 200);
             }
         } catch(Exception $e) {
             return error_response( trans('messages.error_default'), $e );
