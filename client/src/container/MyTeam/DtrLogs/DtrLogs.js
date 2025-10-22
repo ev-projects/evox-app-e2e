@@ -167,6 +167,7 @@ class DtrLogs extends Component {
                                   <th scope="col">SL</th>
                                   <th scope="col">VL</th>
                                   <th scope="col">UL</th>
+                                  <th scope="col">Other Leave</th>
                                   <th scope="col">Late</th>
                                   <th scope="col">Undertime</th>
                                   <th scope="col">ND</th>
@@ -195,6 +196,7 @@ class DtrLogs extends Component {
                                             <td>{list.payroll_items?.sl}</td>
                                             <td>{list.payroll_items?.vl}</td>
                                             <td>{list.payroll_items?.ul}</td>
+                                            <td>{list.payroll_items?.other_leave}</td>
                                             <td>{list.payroll_items?.late}</td>
                                             <td>{list.payroll_items?.undertime}</td>
                                             <td>{list.payroll_items?.night_diff}</td>

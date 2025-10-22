@@ -349,7 +349,8 @@ class ReportController extends Controller
                         'overtime_night_diff' => $dtr_log->overtime_night_diff > 0 ? seconds_to_time(round($dtr_log->overtime_night_diff * 3600),true):"",
                         'night_diff' => $dtr_log->night_diff > 0 ? seconds_to_time(round($dtr_log->night_diff * 3600),true):"",
                         'ul' => $dtr_log->ul > 0 ? round($dtr_log->ul):"",
-                        'rendered_hours' => $dtr_log->rendered_hours > 0 ? seconds_to_time(round($dtr_log->rendered_hours * 3600),true):""
+                        'rendered_hours' => $dtr_log->rendered_hours > 0 ? seconds_to_time(round($dtr_log->rendered_hours * 3600),true):"",
+                        'other_leave' => ($dtr_log->leave_type !== null && $dtr_log->amount > 0) ? "{$dtr_log->leave_type}({$dtr_log->amount})" : null,
                     ),
                     'timezone' => $dtr_log->country_time_zone,
                     'holidays' => $holidays,
@@ -418,7 +419,8 @@ class ReportController extends Controller
                     'overtime_night_diff' => $dtr_log->overtime_night_diff > 0 ? seconds_to_time(round($dtr_log->overtime_night_diff * 3600),true):"",
                     'night_diff' => $dtr_log->night_diff > 0 ? seconds_to_time(round($dtr_log->night_diff * 3600),true):"",
                     'ul' => $dtr_log->ul > 0 ? round($dtr_log->ul):"",
-                    'rendered_hours' => $dtr_log->rendered_hours > 0 ? seconds_to_time(round($dtr_log->rendered_hours * 3600),true):""
+                    'rendered_hours' => $dtr_log->rendered_hours > 0 ? seconds_to_time(round($dtr_log->rendered_hours * 3600),true):"",
+                    'other_leave' => ($dtr_log->leave_type !== null && $dtr_log->amount > 0) ? "{$dtr_log->leave_type}({$dtr_log->amount})" : null,
                 ),
                 'timezone' => $pov_timezone,
                 'holidays' => $holidays,
