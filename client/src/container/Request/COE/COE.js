@@ -122,9 +122,8 @@ class COE extends Component {
         <Formik 
           enableReinitialize
           onSubmit={this.onSubmitHandler} 
-          validationSchema={validationSchema} 
-          initialValues={initialValue}
-          context={{ isHR: this.props.user.lvl_name.includes("HR") }}>
+          validationSchema={getValidationSchema(this.props.user.lvl_name.includes("HR"))}
+          initialValues={initialValue}>
         {
         ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
           <form onSubmit={handleSubmit}>
@@ -136,7 +135,7 @@ class COE extends Component {
                     <Col size="4">   
                       <div className="form-group">
                         <label>Requesting For:</label>
-                        <select name="form_whom" value={ values.for_whom } className="form-control" onChange={(e) => {
+                        <select name="for_whom" value={ values.for_whom } className="form-control" onChange={(e) => {
                           const selectedValue = e.target.value;
                           setFieldValue("for_whom", selectedValue);
 
@@ -293,6 +292,28 @@ const validationSchema = Yup.object().shape({
       otherwise: (schema) => schema.notRequired(),
     }),
 });
+
+const getValidationSchema = (isHR) =>
+  Yup.object().shape({
+    purpose_index: Yup.string().required("This field is required").nullable(),
+    show_compensation: Yup.string().required("This field is required").nullable(),
+
+    for_whom: Yup.string()
+      .nullable()
+      .when([], {
+        is: () => isHR,
+        then: (schema) => schema.required("This field is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+
+    employee_name: Yup.string()
+      .nullable()
+      .when("for_whom", {
+        is: (forWhom) => isHR && Number(forWhom) === 2,
+        then: (schema) => schema.required("Employee name is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+  });
 
 const mapStateToProps = (state) => {
   return {
