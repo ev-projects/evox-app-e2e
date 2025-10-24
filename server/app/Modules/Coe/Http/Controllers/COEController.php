@@ -52,7 +52,11 @@ class COEController extends Controller
      */
     public function create(COERequest $request){
         try {
-            $user = auth()->user();
+            if ($request->for_whom == 2 && !empty($request->employee_id)) {
+                $user = User::find($request->employee_id);
+            } else {
+                $user = auth()->user();
+            }
             $coe_bhr_fields = CoeBhrFields::where('country_id', $user->country_id)->orderBy('field_label')->get();
             $additional_fields = [];
             foreach($coe_bhr_fields as $coef) {
@@ -97,6 +101,30 @@ class COEController extends Controller
         } catch(Exception $e){
             log_to_file( 'info', $e->getMessage(), [], "coelog");
             return error_response( trans('messages.error_default'), $e );
+        }
+    }
+
+    /**
+     * Shows list of user suggestions based on keyword
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUsers(Request $request) {
+        try {
+            $keyword = $request->query('keyword');
+            $users = User::where('first_name', 'like', "%{$keyword}%")->orWhere('last_name', 'like', "%{$keyword}%")->get();
+
+            $user_data = [];
+            foreach ($users as $user) {
+                $user_data[] = [
+                    'id' => $user->id,
+                    'name' => $user->first_name . ' ' . $user->last_name
+                ];
+            }
+
+            return response()->json($user_data);
+        } catch (Exception $e) {
+            log_to_file('critical', 'API Call Failed!', $e->getMessage(), "fs");
+            return error_response(trans('No user matched, please try again.'), $e);
         }
     }
 }

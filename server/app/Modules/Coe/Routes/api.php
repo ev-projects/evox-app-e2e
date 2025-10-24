@@ -19,4 +19,7 @@ Route::group(['prefix' => 'request/coe', 'middleware' => ['jwtauth', 'auth.apike
 
     # Create employee COE
     Route::post('/', 'COEController@create');
+
+    # List employee suggestions
+    Route::get('/user/', 'COEController@getUsers');
 });

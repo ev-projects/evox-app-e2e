@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from 'react-redux';
 import { Form  } from 'react-bootstrap';
 import Select from "react-select";
+import API from "../../../services/API";
 
 import "./COE.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
@@ -27,7 +28,9 @@ class COE extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      action: null
+      action: null,
+      employeeSuggestions: [],
+      loadingEmployees: false,
     }
   }
 
@@ -55,6 +58,39 @@ class COE extends Component {
     this.props.addCOE( formData );
   }
 
+  debounceTimeout = null;
+  searchEmployees = (query) => {
+    // Clear previous timeout
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout);
+    }
+
+    // Set a new timeout
+    this.debounceTimeout = setTimeout(async () => {
+      if (!query || query.length < 2) {
+        this.setState({ employeeSuggestions: [] });
+        return;
+      }
+
+      this.setState({ loadingEmployees: true });
+
+      try {
+        const result = await API.call({
+          method: "get",
+          url: "/request/coe/user/",
+          params: {
+            keyword: query
+          }
+        });
+
+        this.setState({ employeeSuggestions: result.data, loadingEmployees: false });
+      } catch (error) {
+        this.props.dispatch(Formatter.alert_error(error));
+        this.setState({ employeeSuggestions: [], loadingEmployees: false });
+      }
+    }, 1000);
+  };
+
   // Set the setAction Function for Setting of the Approval Action to be proceeded
   setAction = (action) => {
     this.setState({'action':action});
@@ -74,7 +110,10 @@ class COE extends Component {
         action:             null,
         purpose_index:      this.props.purpose_index != undefined ? this.props.purpose_index : '',
         purpose_note:       this.props.purpose_note != undefined ? this.props.purpose_note : '',
-        show_compensation:  this.props.show_compensation != undefined ? this.props.show_compensation : ''
+        show_compensation:  this.props.show_compensation != undefined ? this.props.show_compensation : '',
+        for_whom:           null,
+        employee_name:      null,
+        employee_id:        null,
     }
 
     // Sets the default title for hte Request. Checks aswell if it's for approval.
@@ -84,13 +123,92 @@ class COE extends Component {
           enableReinitialize
           onSubmit={this.onSubmitHandler} 
           validationSchema={validationSchema} 
-          initialValues={initialValue}>
+          initialValues={initialValue}
+          context={{ isHR: this.props.user.lvl_name.includes("HR") }}>
         {
         ({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
           <form onSubmit={handleSubmit}>
             <ContainerWrapper>
               <ContainerBody>
                 <Content col="6"  title={title} subtitle={<RequestSubtitle method={'store'} user={this.props.instance.user} />}>
+                  {this.props.user.lvl_name && this.props.user.lvl_name.includes("HR") && (
+                  <Row>
+                    <Col size="4">   
+                      <div className="form-group">
+                        <label>Requesting For:</label>
+                        <select name="form_whom" value={ values.for_whom } className="form-control" onChange={(e) => {
+                          const selectedValue = e.target.value;
+                          setFieldValue("for_whom", selectedValue);
+
+                          // Clear purpose_note if index is 6 or 10
+                          if (Number(selectedValue) !== 2) {
+                            setFieldValue("employee_name", "");
+                          }
+                        }}>
+                            <option></option>
+                            <option value="1">Myself</option>
+                            <option value="2">Another Employee</option>
+                        </select>
+                        <Form.Control.Feedback type="invalid">
+                            <ErrorMessage component="div" name="for_whom" className="input-feedback" />
+                        </Form.Control.Feedback> 
+                      </div>
+                    </Col>
+                    {Number(values.for_whom) === 2 && (
+                    <Col size="6">
+                      <div className="form-group" style={{ position: "relative" }}>
+                        <label>Search Employee:</label>
+                        <input
+                          type="text"
+                          name="employee_name"
+                          value={values.employee_name}
+                          className="form-control"
+                          onChange={async (e) => {
+                            const val = e.target.value;
+                            setFieldValue("employee_name", val);
+                            await this.searchEmployees(val);
+                          }}
+                          autoComplete="off"
+                        />
+                        {/* Suggestion dropdown */}
+                        {this.state.employeeSuggestions.length > 0 && (
+                          <ul className="suggestions-dropdown" style={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            right: 0,
+                            background: "#fff",
+                            border: "1px solid #ccc",
+                            zIndex: 1000,
+                            listStyle: "none",
+                            margin: 0,
+                            padding: 0,
+                            maxHeight: "150px",
+                            overflowY: "auto"
+                          }}>
+                            {this.state.employeeSuggestions.map((emp) => (
+                              <li
+                                key={emp.id}
+                                style={{ padding: "6px 10px", cursor: "pointer" }}
+                                onClick={() => {
+                                  setFieldValue("employee_name", emp.name);
+                                  setFieldValue("employee_id", emp.id);
+                                  this.setState({ employeeSuggestions: [] });
+                                }}
+                              >
+                                {emp.name}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        <Form.Control.Feedback type="invalid">
+                            <ErrorMessage component="div" name="employee_name" className="input-feedback" />
+                        </Form.Control.Feedback> 
+                      </div>
+                    </Col>
+                    )}
+                  </Row>
+                  )}
                   <Row>
                     <Col size="4">   
                       <div className="form-group">
@@ -160,16 +278,28 @@ class COE extends Component {
 /** Form Validation */
 
 const validationSchema = Yup.object().shape({
-  purpose_index:           Yup.string().required("This field is required").nullable(),
-  show_compensation:       Yup.string().required("This field is required").nullable(),
-  });
+  purpose_index:      Yup.string().required("This field is required").nullable(),
+  show_compensation:  Yup.string().required("This field is required").nullable(),
+  for_whom: Yup.string().when("$isHR", {
+    is: true,
+    then: (schema) => schema.required("This field is required").nullable(),
+    otherwise: (schema) => schema.notRequired().nullable(),
+  }),
+  employee_name: Yup.string()
+    .nullable()
+    .when(["for_whom", "$isHR"], {
+      is: (forWhom, isHR) => isHR && Number(forWhom) === 2,
+      then: (schema) => schema.required("Employee name is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+});
 
 const mapStateToProps = (state) => {
   return {
-    constant          : state.constant,
-    instance          : state.coe.instance,
-    purpose_index              : null,
-		user			        : state.user
+    constant        : state.constant,
+    instance        : state.coe.instance,
+    purpose_index   : null,
+		user            : state.user,
   }
 }
 const mapDispatchToProps = (dispatch) => {
