@@ -516,4 +516,12 @@ class RequestController extends Controller
         }
     }
 
+    public function requestValidityChecker()
+    {
+        return success_response(
+            "Request validity checking completed!",
+            call_sp('EV_SP_Validate_Request_Payroll_Period', [auth()->user()->id, null])[0][0]
+        );
+    }
+
 }

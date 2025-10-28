@@ -44,6 +44,9 @@ Route::group(['prefix' => 'request', 'middleware' => ['jwtauth', 'auth.apikey']]
     # Find existing Request Collections
     Route::get('/', 'RequestController@find'); 
 
+    # Check Request Validity
+    Route::get('/request-validity-check', 'RequestController@requestValidityChecker'); 
+
 
     # API Call for Overtime
     Route::group(['prefix' => 'overtime'], function () {
