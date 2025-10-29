@@ -52,7 +52,7 @@ class COEController extends Controller
      */
     public function create(COERequest $request){
         try {
-            if ($request->for_whom == 2 && !empty($request->employee_id)) {
+            if (!empty($request->employee_id)) {
                 $user = User::find($request->employee_id);
             } else {
                 $user = auth()->user();
@@ -111,7 +111,7 @@ class COEController extends Controller
     public function getUsers(Request $request) {
         try {
             $keyword = $request->query('keyword');
-            $users = User::where('first_name', 'like', "%{$keyword}%")->orWhere('last_name', 'like', "%{$keyword}%")->get();
+            $users = User::where('country_id', auth()->user()->country_id)->where('first_name', 'like', "%{$keyword}%")->orWhere('last_name', 'like', "%{$keyword}%")->get();
 
             $user_data = [];
             foreach ($users as $user) {

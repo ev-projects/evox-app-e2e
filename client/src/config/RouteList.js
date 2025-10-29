@@ -35,6 +35,7 @@ import Overtime from "../container/Request/Overtime";
 import RestDayWork from "../container/Request/RestDayWork";
 import WorkFromHome from "../container/Request/WorkFromHome";
 import COE from "../container/Request/COE/COE";
+import COEHR from "../container/Request/COEHR/COEHR";
 
 import MyTeamRequests from "../container/MyTeam/MyTeamRequests";
 import MyTeamSchedule from "../container/MyTeam/MyTeamSchedule";
@@ -295,6 +296,13 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.coe+":id?"}>
           <COE onApproval={false} 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
+          feature={['request_coe']}
+          />
+        </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.coe_hr+":id?"}>
+          <COEHR onApproval={false} 
+          level={["Admin","HR"]} 
           feature={['request_coe']}
           />
         </ProtectedRoute>

@@ -750,20 +750,36 @@ const Sidebar = (props) => {
               {Authenticator.scanLevel(["Admin", "HR", "PH_HR", "IND_HR", "MAR_HR"]) && (
                 <li className="nav-item has-treeview ">
                   <a className="nav-link nav-link-main">
-                    <i className="nav-icon fa fa-address-book" /><p>NEO<i className="right fa fa-chevron-left" /></p>
+                    <i className="nav-icon fa fa-users" />
+                    <p>
+                      HR
+                      <i className="right fa fa-chevron-left" />
+                    </p>
                   </a>
                   <ul className="nav nav-treeview">
-                    <li className="nav-item">
-                      <Link className="nav-link" to={global.links.neo_report_onboarding}>
-                        <i className="nav-icon fa fa-users" />
-                        <p className="blue"> Onboarding List</p>
-                      </Link>
+                    <li className="nav-item has-treeview ">
+                      <a className="nav-link">
+                        <i className="nav-icon fa fa-address-book" /><p>NEO<i className="right fa fa-chevron-left" /></p>
+                      </a>
+                      <ul className="nav nav-treeview">
+                        <li className="nav-item">
+                          <Link className="nav-link" to={global.links.neo_report_onboarding}>
+                            <i className="nav-icon fa fa-users" />
+                            <p className="blue"> Onboarding List</p>
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link className="nav-link" to={global.links.neo_report_submissions}>
+                            <i className="nav-icon fa fa-envelope" />
+                            <p className="blue"> Submission Report</p>
+                          </Link>
+                        </li>
+                      </ul>
                     </li>
-
                     <li className="nav-item">
-                      <Link className="nav-link" to={global.links.neo_report_submissions}>
-                        <i className="nav-icon fa fa-envelope" />
-                        <p className="blue"> Submission Report</p>
+                      <Link className="nav-link" to={global.links.coe_hr} >
+                        <i className="nav-icon fa fa-certificate nav-icon" />
+                        <p>Certificate Of Employment</p>
                       </Link>
                     </li>
                   </ul>
