@@ -779,7 +779,7 @@ const Sidebar = (props) => {
                     <li className="nav-item">
                       <Link className="nav-link" to={global.links.coe_hr} >
                         <i className="nav-icon fa fa-certificate nav-icon" />
-                        <p>Certificate Of Employment</p>
+                        <p>Employee COE</p>
                       </Link>
                     </li>
                   </ul>
