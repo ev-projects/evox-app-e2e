@@ -24,6 +24,7 @@ class COE extends Model
         'other_allowance',
         'other_allowance_currency_code',
         'show_compensation',
+        'requested_by',
     ];
 
     public function getPurposeAttribute()

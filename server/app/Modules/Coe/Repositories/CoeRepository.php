@@ -105,6 +105,7 @@ class COERepository implements COERepositoryInterface{
                 'other_allowance' => "",
                 'other_allowance_currency_code' => '',
                 'show_compensation' => $request->show_compensation,
+                'requested_by' => auth()->user()->id,
             ]);
             //$de_minimis = str_to_float($employee['4206.4']);
             $allowances = [];
