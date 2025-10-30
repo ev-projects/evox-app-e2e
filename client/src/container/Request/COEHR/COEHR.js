@@ -109,6 +109,7 @@ class COEHR extends Component {
         purpose_note:       this.props.purpose_note != undefined ? this.props.purpose_note : '',
         show_compensation:  this.props.show_compensation != undefined ? this.props.show_compensation : '',
         employee_name:      null,
+        employee_id:        '',
     }
 
     // Sets the default title for hte Request. Checks aswell if it's for approval.
@@ -129,6 +130,7 @@ class COEHR extends Component {
                     <Col size="8">
                       <div className="form-group" style={{ position: "relative" }}>
                         <label>Search Employee:</label>
+                        <input type="hidden" name="employee_id" value={values.employee_id} />
                         <input
                           type="text"
                           name="employee_name"
@@ -137,6 +139,7 @@ class COEHR extends Component {
                           onChange={async (e) => {
                             const val = e.target.value;
                             setFieldValue("employee_name", val);
+                            setFieldValue("employee_id", "");
                             await this.searchEmployees(val);
                           }}
                           autoComplete="off"
@@ -174,6 +177,9 @@ class COEHR extends Component {
                         )}
                         <Form.Control.Feedback type="invalid">
                             <ErrorMessage component="div" name="employee_name" className="input-feedback" />
+                        </Form.Control.Feedback> 
+                        <Form.Control.Feedback type="invalid">
+                            <ErrorMessage component="div" name="employee_id" className="input-feedback" />
                         </Form.Control.Feedback> 
                       </div>
                     </Col>
@@ -250,6 +256,13 @@ const validationSchema = Yup.object().shape({
   purpose_index:      Yup.string().required("This field is required").nullable(),
   show_compensation:  Yup.string().required("This field is required").nullable(),
   employee_name:      Yup.string().required("Employee name is required").nullable(),
+  employee_id:       Yup.string()
+    .nullable()
+    .when("employee_name", {
+      is: (name) => !!name && name.trim() !== "",
+      then: (schema) => schema.required("Please select an employee from the suggestions"),
+      otherwise: (schema) => schema.nullable(),
+    }),
 });
 
 const mapStateToProps = (state) => {
