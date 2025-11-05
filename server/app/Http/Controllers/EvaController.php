@@ -12,7 +12,7 @@ class EvaController extends Controller
 {
     public function index()
     {
-        $eva_get = EvaSurvey::where('user_id', Auth::user()->id)->where('is_submitted', 0)->where('deleted_at', null)->first();
+        $eva_get = EvaSurvey::where('user_id', Auth::user()->id)->where('is_submitted', 0)->where('eva_year', 2025)->where('eva_quarter', 3)->where('deleted_at', null)->first();
         return success_response(
             trans('EVA survey successfully fetched!'),
             $eva_get,
@@ -29,7 +29,7 @@ class EvaController extends Controller
     public function store(Request $request)
     {
         try {
-            $user_eva = EvaSurvey::where('user_id', Auth::user()->id)->where('is_submitted', 0)->where('deleted_at', null)->first();
+            $user_eva = EvaSurvey::where('user_id', Auth::user()->id)->where('is_submitted', 0)->where('eva_year', 2025)->where('eva_quarter', 3)->where('deleted_at', null)->first();
             $fields = [
                 'attended_via',
                 'job_performance_clarity',
