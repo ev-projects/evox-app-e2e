@@ -219,7 +219,7 @@ class AuthController extends Controller
             $code = $request->code;
             $redirect_uri = env('MSGRAPH_LANDING_URL');
             $grant_type = "authorization_code";
-            $client_secret = env('MSGRAPH_SECRET_ID');
+            $client_secret = env('MSGRAPH_CLIENT_SECRET');
             $token_request = ms_get_access_token($tenant_id, array(
                 'client_id' => $client_id,
                 'scope' => $scope,
@@ -230,13 +230,13 @@ class AuthController extends Controller
             ));
 
             if (!$token_request or !isset($token_request->access_token)) {
-                return error_response( "Microsoft login failed, please try again.", [], 403);
+                return error_response( "Microsoft login failed, please try again. 1", [], 403);
             }
 
             $me = ms_call_api($token_request->access_token, 'GET', 'me');
 
             if (!$me) {
-                return error_response( "Microsoft login failed, please try again.", [], JsonResponse::HTTP_NOT_FOUND);
+                return error_response( "Microsoft login failed, please try again. 2", [], JsonResponse::HTTP_NOT_FOUND);
             }
             
             $user = User::where('email', $me->mail)->first();
@@ -265,7 +265,7 @@ class AuthController extends Controller
                 'expires_in' => auth()->factory()->getTTL() * 60
             ];
 
-            $result = $this->get_default_payload( $result );
+            //$result = $this->get_default_payload( $result );
 
             log_to_file('info', 'Success', [], 'user');
             return success_response( trans('messages.login_success'), $result );

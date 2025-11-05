@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
-import { logIn } from '../../store/actions/userActions'
+import { logIn, authenticateMSClient } from '../../store/actions/userActions'
 import { showAlert } from '../../store/actions/settings/alertActions'
 import { Redirect } from "react-router-dom";
 import Validator from "../../services/Validator";
@@ -24,13 +24,18 @@ class Login extends Component {
     if ( Validator.isValid( this.props.location?.search ) && new URLSearchParams(this.props.location.search).get('redirect') != null) {
         this.props.showAlert( "Please login to access the link.", 3000 );
     }
+
+    if ( Validator.isValid( this.props.location?.search ) && new URLSearchParams(this.props.location.search).get('code') != null) {
+      const queryParams = new URLSearchParams(this.props.location.search);
+      const code = queryParams.get('code');
+      this.props.authenticateMSClient(code);
+    }
 }
 
   render = () => {  
 
-    const { user } = this.props
+    const { user } = this.props;
 
-    let googleLoginUrl = process.env.REACT_APP_BACKED_ROOT_URL + "/google-login";
     let msLoginUrl = process.env.REACT_APP_BACKED_ROOT_URL + "/microsoft-login";
 
     // Check if there's a redirect link and if so, use that redirect link instead of the default dashboard link.
@@ -92,10 +97,10 @@ class Login extends Component {
                                       <Button className="login_btn" variant="secondary" size="lg" href={googleLoginUrl}>
                                         <i class="fa fa-google" /> Log In with Google
                                       </Button>*/}
-                                      {/*<br />
+                                      <br />
                                       <Button className="login_btn" variant="secondary" size="lg" href={msLoginUrl}>
                                         <i class="fa fa-windows" /> Log In with Microsoft
-                                      </Button>*/}
+                                      </Button>
                                   </form>
                                   )}
                               </Formik>
@@ -144,6 +149,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
       logIn: ( credentials ) => dispatch( logIn(credentials) ),
+      authenticateMSClient: ( code ) => dispatch( authenticateMSClient(code) ),
       showAlert: ( message, timeout ) => dispatch( showAlert( message, timeout ) ),
     }
 }

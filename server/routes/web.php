@@ -23,8 +23,8 @@ Route::get('/', function () {
 
 
 Route::group(['middleware' => ['web', 'guest']], function () {
-    Route::get('/google-login', 'Auth\LoginController@redirectToGoogle')->name('login');
-    Route::get('/google-callback', 'Auth\LoginController@handleGoogleCallback');
+    //Route::get('/google-login', 'Auth\LoginController@redirectToGoogle')->name('login');
+    //Route::get('/google-callback', 'Auth\LoginController@handleGoogleCallback');
 
 
     Route::get('/microsoft-login', 'Auth\LoginController@redirectToMS')->name('login');
