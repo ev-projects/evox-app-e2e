@@ -111,7 +111,9 @@ class COEController extends Controller
     public function getUsers(Request $request) {
         try {
             $keyword = $request->query('keyword');
-            $users = User::where('country_id', auth()->user()->country_id)
+            $users = User::when(auth()->user()->LevelId != 5, function ($query) {
+                    return $query->where('country_id', auth()->user()->country_id);
+                })
                 ->where(function ($query) use ($keyword) {
                     $query->where('first_name', 'like', "%{$keyword}%")->orWhere('last_name', 'like', "%{$keyword}%");
                 })
