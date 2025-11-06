@@ -15,12 +15,12 @@ const NeoOnboarding = ( props ) => {
     dispatch(fetchNeoOnboardingUsers(props.user.country));
   }, []);
 
-  const handleSendLink = (guid) => {
+  const handleSendLink = async (guid) => {
     // call api to send the neo link to the user
-    dispatch(sendNeoOnboardingLink(guid, props.user.id, props.user.country));
+    await dispatch(sendNeoOnboardingLink(guid, props.user.id, props.user.country));
 
     // Refresh the onboarding list
-    dispatch(fetchNeoOnboardingUsers(props.user.country));
+    await dispatch(fetchNeoOnboardingUsers(props.user.country));
   }
 
   return (
