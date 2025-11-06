@@ -8,7 +8,7 @@ import Formatter from "../../../services/Formatter";
 // Fetch Neo Onboarding Users
 export const fetchNeoOnboardingUsers = ( country ) => {
     return async (dispatch, getState) => {
-      API.call({
+      return API.call({
         method: "get",
         url: "/get_neo_onboarding_users/",
         params: {
@@ -33,7 +33,7 @@ export const fetchNeoOnboardingUsers = ( country ) => {
 // Send Neo Onboarding Link to User
 export const sendNeoOnboardingLink = ( guid, user_id, country ) => {
   return async (dispatch, getState) => {
-    API.call({
+    return API.call({
       method: "post",
       url: "/send_onboarding_link/",
       params: {
