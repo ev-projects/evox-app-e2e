@@ -97,9 +97,9 @@ class Login extends Component {
                                       <Button className="login_btn" variant="secondary" size="lg" href={googleLoginUrl}>
                                         <i class="fa fa-google" /> Log In with Google
                                       </Button>*/}
-                                      <br />
-                                      <Button className="login_btn" variant="secondary" size="lg" href={msLoginUrl}>
-                                        <i class="fa fa-windows" /> Log In with Microsoft
+                                      <hr />
+                                      <Button className="login_btn ms_login_btn" variant="custom" size="lg" href={msLoginUrl} style={{ backgroundColor: '#005493', fontWeight: 700 }}>
+                                        <i class="fa fa-windows" /> Log In with Eastvantage Email
                                       </Button>
                                   </form>
                                   )}
