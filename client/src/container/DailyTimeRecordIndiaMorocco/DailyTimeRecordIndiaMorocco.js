@@ -4,7 +4,7 @@ import { fetchUser } from '../../store/actions/userActions'
 import { setRedirect } from '../../store/actions/redirectActions';
 
 import React, { Component } from "react";
-import "./DailyTimeRecord.css";
+import "./DailyTimeRecordIndiaMorocco.css";
 
 import { Container,Row,Col,Table,Image,Card,Spinner, Form,Button,InputGroup,FormControl,Toast  } from 'react-bootstrap';
 import  BackButton from '../../components/Template/BackButton'
@@ -22,7 +22,7 @@ import Wrapper from '../../components/Template/Wrapper';
 import Validator from '../../services/Validator';
 import Authenticator from '../../services/Authenticator';
 
-class DailyTimeRecord extends Component {
+class DailyTimeRecordIndiaMorocco extends Component {
 
     constructor(props){
         super(props);
@@ -141,7 +141,7 @@ class DailyTimeRecord extends Component {
 
           // If there's NOT selected Payroll Cutoff OR there's a force reset of Initial State, use the default payroll cutoff instance.
           } else {
-            this.setPayrollCutoffInstance( nextProps.settings.current_payroll_cutoff_ph );
+            this.setPayrollCutoffInstance( nextProps.settings.current_payroll_cutoff_in_mar );
           }
       }
 
@@ -450,7 +450,6 @@ const DtrSummaryHolidays = ( props  ) => {
 
 // Component for the DTR Summary Block
 const DtrSummaryBlock = ( props  ) => { 
-  console.log();
   var holidaycolumn = [];
   var data = props.computations.data.reg;
       
@@ -544,4 +543,4 @@ const mapDispatchToProps = (dispatch) => {
     setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(DailyTimeRecord);
+export default connect(mapStateToProps, mapDispatchToProps)(DailyTimeRecordIndiaMorocco);

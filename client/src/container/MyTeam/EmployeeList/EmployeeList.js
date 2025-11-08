@@ -277,7 +277,9 @@ const MyTeamListTable = (props) => {
                         <span>
                           {Authenticator.scanFeature("view_employee_dtr") &&
                             <Link to={{
-                                pathname: global.links.dtr + user.id,
+                                pathname: (user.country_id === "1" || user.country_id === "4")
+                                  ? global.links.dtr_in_mar + user.id
+                                  : global.links.dtr + user.id,
                                 resetInitialState: true
                               }}
                                 title="View DTR"
