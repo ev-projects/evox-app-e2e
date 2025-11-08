@@ -1,17 +1,15 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
 import { Form  } from 'react-bootstrap';
-import Select from "react-select";
+import API from "../../../services/API";
 
-import "./COE.css";
+import "./COEHR.css";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody,Row,Col } from '../../../components/GridComponent/AdminLte.js';
-import moment from 'moment';
 /** Form Manipulation */
 import { Formik, ErrorMessage, getIn  } from 'formik';
 import * as Yup from 'yup';
 
 import Formatter from "../../../services/Formatter";
-import DateFormatter from "../../../services/DateFormatter";
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 
@@ -21,13 +19,15 @@ import RequestSubtitle from "../../../components/RequestComponent/RequestButtons
 
 import { addCOE, fetchCOE } from "../../../store/actions/requests/coeActions";
 
-class COE extends Component {
+class COEHR extends Component {
 
   // Set the default constructor with Action state in null
   constructor(props) {
     super(props);
     this.state = {
-      action: null
+      action: null,
+      employeeSuggestions: [],
+      loadingEmployees: false,
     }
   }
 
@@ -55,6 +55,39 @@ class COE extends Component {
     this.props.addCOE( formData );
   }
 
+  debounceTimeout = null;
+  searchEmployees = (query) => {
+    // Clear previous timeout
+    if (this.debounceTimeout) {
+      clearTimeout(this.debounceTimeout);
+    }
+
+    // Set a new timeout
+    this.debounceTimeout = setTimeout(async () => {
+      if (!query || query.length < 2) {
+        this.setState({ employeeSuggestions: [] });
+        return;
+      }
+
+      this.setState({ loadingEmployees: true });
+
+      try {
+        const result = await API.call({
+          method: "get",
+          url: "/request/coe/user/",
+          params: {
+            keyword: query
+          }
+        });
+
+        this.setState({ employeeSuggestions: result.data, loadingEmployees: false });
+      } catch (error) {
+        this.props.dispatch(Formatter.alert_error(error));
+        this.setState({ employeeSuggestions: [], loadingEmployees: false });
+      }
+    }, 1000);
+  };
+
   // Set the setAction Function for Setting of the Approval Action to be proceeded
   setAction = (action) => {
     this.setState({'action':action});
@@ -74,7 +107,9 @@ class COE extends Component {
         action:             null,
         purpose_index:      this.props.purpose_index != undefined ? this.props.purpose_index : '',
         purpose_note:       this.props.purpose_note != undefined ? this.props.purpose_note : '',
-        show_compensation:  this.props.show_compensation != undefined ? this.props.show_compensation : ''
+        show_compensation:  this.props.show_compensation != undefined ? this.props.show_compensation : '',
+        employee_name:      null,
+        employee_id:        '',
     }
 
     // Sets the default title for hte Request. Checks aswell if it's for approval.
@@ -91,6 +126,64 @@ class COE extends Component {
             <ContainerWrapper>
               <ContainerBody>
                 <Content col="6"  title={title} subtitle={<RequestSubtitle method={'store'} user={this.props.instance.user} />}>
+                  <Row>
+                    <Col size="8">
+                      <div className="form-group" style={{ position: "relative" }}>
+                        <label>Search Employee:</label>
+                        <input type="hidden" name="employee_id" value={values.employee_id} />
+                        <input
+                          type="text"
+                          name="employee_name"
+                          value={values.employee_name}
+                          className="form-control"
+                          onChange={async (e) => {
+                            const val = e.target.value;
+                            setFieldValue("employee_name", val);
+                            setFieldValue("employee_id", "");
+                            await this.searchEmployees(val);
+                          }}
+                          autoComplete="off"
+                        />
+                        {/* Suggestion dropdown */}
+                        {this.state.employeeSuggestions.length > 0 && (
+                          <ul className="suggestions-dropdown" style={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            right: 0,
+                            background: "#fff",
+                            border: "1px solid #ccc",
+                            zIndex: 1000,
+                            listStyle: "none",
+                            margin: 0,
+                            padding: 0,
+                            maxHeight: "150px",
+                            overflowY: "auto"
+                          }}>
+                            {this.state.employeeSuggestions.map((emp) => (
+                              <li
+                                key={emp.id}
+                                style={{ padding: "6px 10px", cursor: "pointer" }}
+                                onClick={() => {
+                                  setFieldValue("employee_name", emp.name);
+                                  setFieldValue("employee_id", emp.id);
+                                  this.setState({ employeeSuggestions: [] });
+                                }}
+                              >
+                                {emp.name}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        <Form.Control.Feedback type="invalid">
+                            <ErrorMessage component="div" name="employee_name" className="input-feedback" />
+                        </Form.Control.Feedback> 
+                        <Form.Control.Feedback type="invalid">
+                            <ErrorMessage component="div" name="employee_id" className="input-feedback" />
+                        </Form.Control.Feedback> 
+                      </div>
+                    </Col>
+                  </Row>
                   <Row>
                     <Col size="4">   
                       <div className="form-group">
@@ -162,6 +255,14 @@ class COE extends Component {
 const validationSchema = Yup.object().shape({
   purpose_index:      Yup.string().required("This field is required").nullable(),
   show_compensation:  Yup.string().required("This field is required").nullable(),
+  employee_name:      Yup.string().required("Employee name is required").nullable(),
+  employee_id:       Yup.string()
+    .nullable()
+    .when("employee_name", {
+      is: (name) => !!name && name.trim() !== "",
+      then: (schema) => schema.required("Please select an employee from the suggestions"),
+      otherwise: (schema) => schema.nullable(),
+    }),
 });
 
 const mapStateToProps = (state) => {
@@ -169,7 +270,7 @@ const mapStateToProps = (state) => {
     constant        : state.constant,
     instance        : state.coe.instance,
     purpose_index   : null,
-		user            : state.user,
+    user            : state.user,
   }
 }
 const mapDispatchToProps = (dispatch) => {
@@ -179,12 +280,4 @@ const mapDispatchToProps = (dispatch) => {
       setRedirect           : ( link ) => dispatch( setRedirect( link ) ),
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(COE);
-
-
-
-
-
-
-
-
+export default connect(mapStateToProps, mapDispatchToProps)(COEHR);

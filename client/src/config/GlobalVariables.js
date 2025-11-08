@@ -38,6 +38,7 @@
     rest_day_work                   :  "/app/request/RestDayWork/",
     work_from_home                  :  "/app/request/WorkFromHome/",
     coe                             :  "/app/request/CertificateOfEmployment/",
+    coe_hr                          :  "/app/request/CertificateOfEmploymentHR/",
     alter_log_punch                 :  "/app/request/AlterLogPunch/",
 
     // Team Links

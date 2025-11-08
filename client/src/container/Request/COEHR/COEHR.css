@@ -1,0 +1,9 @@
+p.note {
+    text-align: left !important;
+}
+p.note a {
+    color: #82af13 !important;
+}
+.suggestions-dropdown li:hover {
+  background-color: #f0f0f0;
+}
