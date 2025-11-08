@@ -10,7 +10,7 @@ use App\Modules\User\Models\User;
 
 class NeoController extends Controller
 {
-    const COUNTRIES = [1 => "India", 2 => "Philippines", 3 => "Morocco", 4 => "Bulgaria", 5 => "Belgium"];
+    const COUNTRIES = [1 => "India", 2 => "Philippines", 3 => "Bulgaria", 4 => "Morocco", 5 => "Belgium"];
     const COUNTRY_API_KEYS = [
         "Philippines" => 'NEO_API_KEY_PH',
         "India"       => 'NEO_API_KEY_IN',
