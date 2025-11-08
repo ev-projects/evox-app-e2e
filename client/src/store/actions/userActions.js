@@ -132,7 +132,9 @@ export const authenticateMSClient = (code) => {
 
             // Set the Returned token on localStorage
             localStorage.setItem("access_token", result.data.content.access_token);
+            window.location.href = process.env.REACT_APP_PUBLIC_URL + "/login";
             // Dispatch Login Success
+            /*
             dispatch({
                 'type'      : 'LOGIN_SUCCESS', 
                 'payload'   : result.data.content.payload,
@@ -149,7 +151,7 @@ export const authenticateMSClient = (code) => {
             dispatch({
                 'type'      : 'RENDER_SETTINGS', 
                 'settings'   : result.data.content.settings
-            })
+            })*/
             
 
             // Dispatch Alert of Login Success

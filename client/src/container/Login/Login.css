@@ -50,6 +50,9 @@ button:focus {
 .login_btn {
 	width: 100%;
 }
+.ms_login_btn {
+	color: #fff !important;
+}
 
 .login-wrapper .card {background: transparent !important; }
 .login-wrapper .col-md-5{

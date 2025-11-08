@@ -20,9 +20,8 @@ class ModalLogin extends Component {
 
   render = () => {  
 
-    const { user } = this.props
+    const { user } = this.props;
 
-    let googleLoginUrl = process.env.REACT_APP_BACKED_ROOT_URL + "/google-login";
     let msLoginUrl = process.env.REACT_APP_BACKED_ROOT_URL + "/microsoft-login";
 
     return (
@@ -74,10 +73,10 @@ class ModalLogin extends Component {
                                       <Button className="login_btn" variant="secondary" size="lg" href={googleLoginUrl}>
                                         <i class="fa fa-google" /> Log In with Google
                               </Button>*/}
-                                      {/*<br />
-                                      <Button className="login_btn" variant="secondary" size="lg" href={msLoginUrl}>
-                                        <i class="fa fa-windows" /> Log In with Microsoft
-                                      </Button>*/}
+                                      <hr />
+                                      <Button className="login_btn ms_login_btn" variant="secondary" size="lg" href={msLoginUrl} style={{ backgroundColor: '#005493', fontWeight: 700 }}>
+                                        <i class="fa fa-windows" /> Log In with Eastvantage Email
+                                      </Button>
                                   </form>
                                   )}
                               </Formik>
