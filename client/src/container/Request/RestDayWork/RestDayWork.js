@@ -14,7 +14,9 @@ import * as Yup from 'yup';
 
 import PageLoading from "../../PageLoading";
 
+import Formatter from "../../../services/Formatter";
 import DateFormatter from "../../../services/DateFormatter";
+import API from "../../../services/API";
 
 import { fetchRestDayWork, 
          addRestDayWork, 
@@ -31,6 +33,14 @@ import RequestSubtitle from "../../../components/RequestComponent/RequestButtons
 import Authenticator from "../../../services/Authenticator";
 
 class RestDayWork extends Component {
+
+  // Set the default constructor with Action state in null
+  constructor(props) {
+    super(props);
+    this.state = {
+      requestValidity: null,
+    }
+  }
 
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
   onSubmitHandler = (values) => {
@@ -72,13 +82,13 @@ class RestDayWork extends Component {
         // If action is NULL, it means it's either store/update
         case null:
             let dateToCheck = moment( values.date ).format("YYYY-MM-DD");
-            if (this.props.settings.request_payroll_cutoff.Result === "0") {
+            if (this.state.requestValidity?.Result === "0") {
               // Show alert only
               alert("Request not allowed at the moment. Please wait until DTR generation is complete.");
               break;
             } else {
               let confirmMessage = '';
-              if (dateToCheck >= this.props.settings.request_payroll_cutoff.StartDate && dateToCheck <= this.props.settings.request_payroll_cutoff.EndDate) {
+              if (dateToCheck >= this.state.requestValidity?.StartDate && dateToCheck <= this.state.requestValidity?.EndDate) {
                 confirmMessage = "Are you sure you want to submit/update this request?";
               } else {
                 confirmMessage = "The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request. Are you sure you want to submit this request?";
@@ -112,6 +122,24 @@ class RestDayWork extends Component {
             }
             break;
     }
+  }
+
+  componentDidMount() {
+    // Call request validity checker
+    API.call({
+      method: "get",
+      url: "/request/request-validity-check/",
+    })
+    .then(result => {
+      if (result.status === 200 && result.data?.content) {
+        this.setState({
+          requestValidity: result.data.content,
+        });
+      }
+    })
+    .catch(e => {
+      this.props.dispatch(Formatter.alert_error(e, 3000));
+    });
   }
   
   componentWillMount(){
@@ -354,6 +382,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
+      dispatch,
       fetchRestDayWork         : ( id ) => dispatch( fetchRestDayWork( id ) ),
       addRestDayWork           : ( post_data ) => dispatch( addRestDayWork( post_data ) ),
       updateRestDayWork        : ( id, post_data ) => dispatch( updateRestDayWork( id, post_data ) ),

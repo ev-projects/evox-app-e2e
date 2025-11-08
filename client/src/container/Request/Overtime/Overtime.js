@@ -15,6 +15,7 @@ import PageLoading from "../../PageLoading";
 
 import Formatter from "../../../services/Formatter";
 import DateFormatter from "../../../services/DateFormatter";
+import API from "../../../services/API";
 
 import { setRedirect } from '../../../store/actions/redirectActions';
 
@@ -38,7 +39,8 @@ class Overtime extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      action: null
+      action: null,
+      requestValidity: null,
     }
   }
 
@@ -76,14 +78,14 @@ class Overtime extends Component {
         // If action is NULL, it means it's either store/update
         case null:
           let dateToCheck = moment( values.date ).format("YYYY-MM-DD");
-          if (this.props.settings.request_payroll_cutoff.Result === "0") {
+          if (this.state.requestValidity?.Result === "0") {
             // Show alert only
             alert("Request not allowed at the moment. Please wait until DTR generation is complete.");
             break;
           } else {
             let confirmMessage = '';
 
-            if (dateToCheck >= this.props.settings.request_payroll_cutoff.StartDate && dateToCheck <= this.props.settings.request_payroll_cutoff.EndDate) {
+            if (dateToCheck >= this.state.requestValidity?.StartDate && dateToCheck <= this.state.requestValidity?.EndDate) {
               confirmMessage = "Are you sure you want to submit/update this request?";
             } else {
               confirmMessage = "The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request. Are you sure you want to submit this request?";
@@ -122,6 +124,24 @@ class Overtime extends Component {
   // Set the setAction Function for Setting of the Approval Action to be proceeded
   setAction = (action) => {
     this.setState({'action':action});
+  }
+
+  componentDidMount() {
+    // Call request validity checker
+    API.call({
+      method: "get",
+      url: "/request/request-validity-check/",
+    })
+    .then(result => {
+      if (result.status === 200 && result.data?.content) {
+        this.setState({
+          requestValidity: result.data.content,
+        });
+      }
+    })
+    .catch(e => {
+      this.props.dispatch(Formatter.alert_error(e, 3000));
+    });
   }
 
   componentWillMount(){
@@ -323,6 +343,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
+      dispatch,
       fetchOvertime   : ( id ) => dispatch( fetchOvertime( id ) ),
       addOvertime     : ( post_data ) => dispatch( addOvertime( post_data ) ),
       updateOvertime  : ( id, post_data ) => dispatch( updateOvertime( id, post_data ) ),
