@@ -225,9 +225,9 @@ class Dashboard extends Component {
     }
 
     // check if user has eva survey
-    // if (!this.props.user.is_eva_loaded) {
-    //   this.props.getEvaSurvey();
-    // }
+    if (!this.props.user.is_eva_loaded) {
+      this.props.getEvaSurvey();
+    }
 
     // if no eva survey yet, show eva modal
     if (this.props.user.user_eva && Object.keys(this.props.user.user_eva).length >= 1) {
@@ -264,9 +264,9 @@ class Dashboard extends Component {
     }
 
     // check if user has eva registration
-    if (!this.props.user.is_eva_reg_loaded) {
-      this.props.getEvaReg();
-    }
+    // if (!this.props.user.is_eva_reg_loaded) {
+    //   this.props.getEvaReg();
+    // }
 
     // if user does not have eva registration yet, show eva reg modal
     if (this.props.user.user_eva_reg === null) {
@@ -917,7 +917,7 @@ class Dashboard extends Component {
                             <Row>  
                               <Col size="12"> 
                                 <div className="form-group survey-description">
-                                  <p>Your feedback is important to us and these will help improve our EVA Q2 experience. Rating is 1 to 5 where 5 is the highest.</p>
+                                  <p>Your feedback is important to us and these will help improve our EVA Q3 experience. Rating is 1 to 5 where 5 is the highest.</p>
                                   <p>5 - Highly Satisfied<br/>4 - Satisfied<br/>3 - Neutral<br/>2 - Dissatisfied<br/>1 - Highly Dissatisfied<br/></p>
                                   <p className="survey-note">Note: All information is required so please ensure that all fields are completed.</p>
                                 </div>
@@ -959,7 +959,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">1. I attended EVA Q2 2025</label><br/>
+                                  <label className="nho-required survey-label">1. I attended EVA Q3 2025</label><br/>
                                   <input name="attended_via" type="radio" value="Virtual" onChange={handleChange}/><label htmlFor="attended_via">&nbsp;Virtual&nbsp;</label>
                                   <input name="attended_via" type="radio" value="Onsite" onChange={handleChange}/><label htmlFor="attended_via">&nbsp;Onsite&nbsp;</label>
                                   <Form.Control.Feedback type="invalid">
@@ -1031,7 +1031,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">6. How would you rate Microsoft Teams as the platform used for Q2 EVA?</label><br/>
+                                  <label className="nho-required survey-label">6. How would you rate Microsoft Teams as the platform used for Q3 EVA?</label><br/>
                                   <input name="platform_link" type="radio" value="1" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;1&nbsp;</label>
                                   <input name="platform_link" type="radio" value="2" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;2&nbsp;</label>
                                   <input name="platform_link" type="radio" value="3" onChange={handleChange}/><label htmlFor="platform_link">&nbsp;3&nbsp;</label>
@@ -1091,7 +1091,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">10. Overall, how satisfied are you with the Q2 2025 EVA experience?</label><br/>
+                                  <label className="nho-required survey-label">10. Overall, how satisfied are you with the Q3 2025 EVA experience?</label><br/>
                                   <input name="overall_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;1&nbsp;</label>
                                   <input name="overall_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;2&nbsp;</label>
                                   <input name="overall_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="overall_satisfaction">&nbsp;3&nbsp;</label>
@@ -1117,7 +1117,7 @@ class Dashboard extends Component {
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
-                                  <label className="nho-required survey-label">12. Do you have questions for the Eastvantage HR Team?</label>
+                                  <label className="nho-required survey-label">12. Do you have questions for the Eastvantage Operations Team?</label>
                                   <textarea className="form-control" rows="3" name="questions" onChange={handleChange} value={values.questions}></textarea>
                                   <Form.Control.Feedback type="invalid">
                                     <ErrorMessage component="div" name="questions" className="input-feedback" />
@@ -1127,9 +1127,20 @@ class Dashboard extends Component {
                             </Row>
                             <Row>
                               <Col size="12">
+                                <div className="text-center my-3" style={{ fontSize: '0.9rem', color: '#333' }}>
+                                  <strong>Thank you for attending the Q3 EVA Townhall!</strong><br />
+                                  Complete the survey to receive a special token sent directly to your registered Eastvantage email.<br />
+                                  <span style={{ color: '#d9534f', fontWeight: 'bold' }}>
+                                    ⚠️ Important:
+                                  </span> Only employees who have both attended the Townhall and completed the survey will be eligible to receive the token.
+                                </div>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col size="12" className="d-flex justify-content-center">
                                 <br/>
                                 <span>
-                                  <div style={{'float': 'right'}}>
+                                  <div>
                                     <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'eva');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Submit</Button>
                                   </div>
                                 </span>
