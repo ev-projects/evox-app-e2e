@@ -394,7 +394,7 @@ console.log(this.state.store_departments);
                           <i className="fa fa-filter" /> Filter
                         </Button>
                         </Col>
-                        {Authenticator.scanLevel(["DivisionHead", "Division Head"]) && (
+                        {Authenticator.scanLevel(["DivisionHead", "Division Head", "HR"]) && (
 
                                           <Col>
                                           {/* <Button 
