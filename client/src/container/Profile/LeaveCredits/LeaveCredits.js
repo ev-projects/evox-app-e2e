@@ -28,21 +28,24 @@ const LeaveCredits = ( props ) => {
         <React.Fragment>
             { profile.leave_credits?.length > 0 ? 
                 <div className="col-lg-12" >
-                        <Row className="leave-credits">
-                            { profile.leave_credits.map(function (leave_credit, i) {
-                                if( ["vacation_leave", "sick_leave"].includes( Formatter.title_to_slug( leave_credit.type ))  ) {
-                                        return (
-                                        <Col>
-                                            <div className="leave-card">
-                                                <span className="leave-card-type">{leave_credit.type}</span> <br/>
-                                                <span> <LeaveIcon type={leave_credit.type} /> <span className="leave-card-balance">{leave_credit.balance}</span></span> <br/>
-                                                <span className="leave-card-note">DAYS AVAILABLE</span> 
-                                            </div>
-                                        </Col>)   
-                                }
-                            })
-                            }
-                        </Row>
+                  <Row className="leave-credits">
+                    { profile.leave_credits.map(function (leave_credit, i) {
+                      if (leave_credit.balance > 0) {
+                        return (
+                          <Col key={i} xs={12} className="mb-3">
+                            <div className="leave-card">
+                              <span className="leave-card-type">{leave_credit.type}</span> <br />
+                              <span>
+                                <LeaveIcon type={leave_credit.type} />{" "}
+                                <span className="leave-card-balance">{leave_credit.balance}</span>
+                              </span> <br />
+                              <span className="leave-card-note">DAYS AVAILABLE</span>
+                            </div>
+                          </Col>
+                        );
+                      }
+                    })}
+                  </Row>
                 </div>
                 :
                 null
