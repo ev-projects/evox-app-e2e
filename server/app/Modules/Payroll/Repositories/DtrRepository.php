@@ -1090,7 +1090,7 @@ class DtrRepository implements DtrRepositoryInterface{
     // }
 
 
-    public function bind_leaves_to_dtr( array $bhr_leaves_array, $country_id = null)
+    public function bind_leaves_to_dtr( array $bhr_leaves_array, $country_id = null, $start_date = null, $end_date = null)
     {
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr_leaves");
 
@@ -1129,6 +1129,12 @@ class DtrRepository implements DtrRepositoryInterface{
                             }
                             // Iterate each DTR in order to bind the Leave on each DTR.
                             foreach( $dtr_collection as $dtr ) {
+                                // Skip if $start_date or $end_date is provided and $dtr->date is out of bounds
+                                if (($start_date && $dtr->date < $start_date) || ($end_date && $dtr->date > $end_date)) {
+                                    log_to_file('info', "Skipping DTR on {$dtr->date} - Outside of range {$start_date} to {$end_date}", [], "dtr_leaves");
+                                    continue;
+                                }
+
                                 # Setting the Amount of Leave from the Leave request for the Corresponding Date
                                 $amount = ( is_valid( $row->dates ) && property_exists($row->dates, $dtr->date) ) ? (float) $row->dates->{$dtr->date} : 0 ;
 
