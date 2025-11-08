@@ -57,6 +57,7 @@ class ExportDTRLog implements FromCollection,  WithHeadings, WithMapping
                 isset($data["payroll_items"]["sl"]) ? $data["payroll_items"]["sl"]: null,
                 isset($data["payroll_items"]["vl"]) ? $data["payroll_items"]["vl"]: null,
                 isset($data["payroll_items"]["ul"]) ?$data["payroll_items"]["ul"] : null,
+                isset($data["payroll_items"]["other_leave"]) ?$data["payroll_items"]["other_leave"] : null,
                 isset($data["payroll_items"]["late"]) ? $data["payroll_items"]["late"]: null,
                 isset($data["payroll_items"]["undertime"]) ? $data["payroll_items"]["undertime"]: null,
                 isset($data["payroll_items"]["night_diff"]) ? $data["payroll_items"]["night_diff"]: null,
@@ -109,6 +110,8 @@ class ExportDTRLog implements FromCollection,  WithHeadings, WithMapping
             "VL",
 
             "UL",
+
+            "OTHER LEAVE",
 
             "LATE",
 
