@@ -985,14 +985,12 @@ class UserRepository implements UserRepositoryInterface{
            
             $user_collection =  $user->users_handled()
                                 
-                                ->where('is_active', 1)
-                                ->whereHas('roles', function( $query ) {
-                                    $query->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
-                                })
+                                ->where('users.is_active', 1)
+                                ->where('users.LevelId', '!=', 7)
                                 ->doesntHave("defaultSchedule")
-                                ->join('departments', 'departments.id', '=', 'users.department_id')
-                                ->select('users.id','emp_num','first_name','last_name', 'email','departments.department_name')
-                                ->orderBy('departments.department_name', 'asc')
+                                ->join('EVOX_SUB_DEPARTMENT', 'EVOX_SUB_DEPARTMENT.Id', '=', 'users.SubDepartmentID')
+                                ->select('users.id','users.emp_num','users.first_name','users.last_name', 'users.email','EVOX_SUB_DEPARTMENT.Name as department_name')
+                                ->orderBy('EVOX_SUB_DEPARTMENT.Name', 'asc')
                                 ->get(); 
            
             
