@@ -915,7 +915,7 @@ class User extends Authenticatable implements JWTSubject
 
         
     
-    return user::whereIn('id', $ids);
+    return user::whereIn('users.id', $ids);
     }
 
     return [];
