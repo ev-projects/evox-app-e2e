@@ -855,9 +855,10 @@ class UserRepository implements UserRepositoryInterface{
     public function get_all_supervisors(){
         try {
             $users = User::where('is_active', 1)
-                            ->whereHas('roles', function( $query ) {
-                                $query->whereIn('name', [ get_constant('USER_ROLES.supervisor')])->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
-                            })
+                            // ->whereHas('roles', function( $query ) {
+                            //     $query->whereIn('name', [ get_constant('USER_ROLES.supervisor')])->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
+                            // })
+                        ->whereNotIn('LevelId', [0, 4, 7]) // exclude Employees, Admin, Client
                         ->get();
      
             return $users;

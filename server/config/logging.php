@@ -258,6 +258,14 @@ return [
             'permission' => 0666,
         ],
 
+        'invalid_check_ins_notif' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/invalid_check_ins_notif.log'),
+            'level' => 'debug',
+            'days' => 90,
+            'permission' => 0666,
+        ],
+
 
     ],
 
