@@ -51,13 +51,14 @@ class sendSupervisorReminderInvalidCheckIns extends Command
     {
         try {
             $supervisor_collection = $this->user->get_all_supervisors();
-            #print_r($supervisor_collection);
+
             foreach ($supervisor_collection as $u) {
                 $check_ins_collection = $this->user->get_users_under_supervisee_active_with_invalid_check_ins($u->id);
-                #print_r(count($check_ins_collection)."\n");
+
                 if (count($check_ins_collection) > 0) {
                     $list_of_check_in_reminders = [$u, $check_ins_collection];
                     $this->email->sendSupervisorReminderInvalidCheckInsEmail($list_of_check_in_reminders);
+                    log_to_file('info', "Invalid Check-ins Email Notification", $list_of_check_in_reminders, "invalid_check_ins_notif");
                 }
             }
        
