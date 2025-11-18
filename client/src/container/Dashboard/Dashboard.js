@@ -14,7 +14,7 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { getNhoSurvey, addNhoSurvey, addEvaSurvey, getEvaSurvey, getUserCoc, acknowledgeCOC, getEvaReg, submitEvaReg } from "../../store/actions/userActions";
+import { getNhoSurvey, addNhoSurvey, addEvaSurvey, getEvaSurvey, getUserCoc, acknowledgeCOC, getEvaReg, submitEvaReg, getHappinessSurvey, addHappinessSurvey } from "../../store/actions/userActions";
 import { getUserAssets, addUserAsset } from '../../store/actions/userActions' ;
 import { Formik, ErrorMessage,getIn  } from 'formik';
 import { InputDate,InputTime } from '../../components/DatePickerComponent/DatePicker.js';
@@ -174,6 +174,7 @@ class Dashboard extends Component {
     coc_mode: '',
     isCocChecked: false,
     showEvaRegModal: false,
+    showHappinessSurveyModal: false,
   };
 
   componentDidMount() {
@@ -273,6 +274,16 @@ class Dashboard extends Component {
       this.setState({ showEvaRegModal : true });
     }
 
+    // check if user has happiness survey record
+    if (!this.props.user.is_happiness_survey_loaded) {
+      this.props.getHappinessSurvey();
+    }
+
+    // if user does not have happiness survey yet, show happiness survey modal
+    if (this.props.user.user_happiness_survey === null) {
+      this.setState({ showHappinessSurveyModal : true });
+    }
+
     // alert(this.props.dashboard?.worktour);
     // const user = localStorage.getItem('user');
     // const userid = user ? JSON.parse(user) : null;
@@ -343,6 +354,8 @@ class Dashboard extends Component {
         this.props.addEvaSurvey(formData);
       } else if (values.action === "coc") {
         this.props.acknowledgeCOC();
+      } else if (values.action === "happiness") {
+        this.props.addHappinessSurvey(formData);
       } else {
         this.props.addNhoSurvey(formData);
       }
@@ -442,6 +455,32 @@ class Dashboard extends Component {
       overall_satisfaction: null,
       opportunities: null,
       questions: null,
+      focused_motivated: null,
+      growing_professionally: null,
+      work_understanding: null,
+      superior_relationship: null,
+      superior_feedback: null,
+      superior_approachability: null,
+      management_rewards: null,
+      colleagues_relationship: null,
+      ev_greatness: null,
+      will_recommend_ev: null,
+      policies_welfare: null,
+      safe_to_express: null,
+      it_system_satisfaction: null,
+      hr_response_satisfaction: null,
+      payroll_response_satisfaction: null,
+      ev_development_attention: null,
+      opportunities_satisfaction: null,
+      trainings_satisfaction: null,
+      healthcare_satisfaction: null,
+      work_flexibility: null,
+      salary_level: null,
+      compensation_performance: null,
+      salary_on_time: null,
+      salary_computation: null,
+      new_normal_setup: null,
+      happiness_suggestion: null,
     };
     const hr_list = this.props.settings.hr_list;
     const equipment_list = this.state.equipment_list;
@@ -1305,6 +1344,442 @@ class Dashboard extends Component {
                 </Formik>
               </Modal.Body>
             </Modal>
+
+            <Modal className="remark-modal" show={this.state.showHappinessSurveyModal} size="xl">
+              <Modal.Header id="nho-modal-header" closeButton>
+                <Modal.Title id="nho-modal-title">Happiness Survey 2025</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Formik
+                  enableReinitialize
+                  onSubmit={this.onSubmitHandler}
+                  validationSchema={validationSchemaHappiness}
+                  initialValues={initialValue}
+                  >
+                  {({values,errors,setFieldValue,field,touched,handleSubmit,handleReset,handleChange}) => (
+                    <form onSubmit={handleSubmit}>
+                      <input type="hidden" name="modal_mode" value="itam" />
+                      <ContainerWrapper>
+                        <ContainerBody>
+                          <Content col="12" subtitle={<RequestSubtitle method={"store"} user={user} />}>
+                            <Row>  
+                              <Col size="12"> 
+                                <div className="form-group survey-description">
+                                  <p>As we wrap up 2025, let’s take a moment to celebrate the energy, collaboration, and heart we’ve poured into this year. 
+                                    🎉 Whether it was a challenge conquered, or a milestone achieved, we did it together — and that’s worth a virtual high-five ✋🤚! 
+                                    Now, as we gear up for an even brighter 2026, we want to hear from you. Your experiences, ideas, and reflections are key to building a workplace where happiness thrives. 
+                                    We invite you to take part in our 2025 Annual Happiness Survey — a quick 5-minute pulse check that helps us understand what’s working and where we can grow. 
+                                    Let’s co-create a culture that celebrates joy, purpose, and connection.<br/><br/>
+                                    <b>#ChooseHappiness #Happiness2025</b>
+                                  </p>
+                                  <p>5 - Highly Satisfied<br/>4 - Satisfied<br/>3 - Neutral<br/>2 - Dissatisfied<br/>1 - Highly Dissatisfied<br/></p>
+                                  <p className="survey-note">Note: All information is required so please ensure that all fields are completed.</p>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">1. I am focused and motivated to do my job.</label><br/>
+                                  <input name="focused_motivated" type="radio" value="1" onChange={handleChange}/><label htmlFor="focused_motivated">&nbsp;1&nbsp;</label>
+                                  <input name="focused_motivated" type="radio" value="2" onChange={handleChange}/><label htmlFor="focused_motivated">&nbsp;2&nbsp;</label>
+                                  <input name="focused_motivated" type="radio" value="3" onChange={handleChange}/><label htmlFor="focused_motivated">&nbsp;3&nbsp;</label>
+                                  <input name="focused_motivated" type="radio" value="4" onChange={handleChange}/><label htmlFor="focused_motivated">&nbsp;4&nbsp;</label>
+                                  <input name="focused_motivated" type="radio" value="5" onChange={handleChange}/><label htmlFor="focused_motivated">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="focused_motivated" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">2. I see myself growing professionally with Eastvantage.</label><br/>
+                                  <input name="growing_professionally" type="radio" value="1" onChange={handleChange}/><label htmlFor="growing_professionally">&nbsp;1&nbsp;</label>
+                                  <input name="growing_professionally" type="radio" value="2" onChange={handleChange}/><label htmlFor="growing_professionally">&nbsp;2&nbsp;</label>
+                                  <input name="growing_professionally" type="radio" value="3" onChange={handleChange}/><label htmlFor="growing_professionally">&nbsp;3&nbsp;</label>
+                                  <input name="growing_professionally" type="radio" value="4" onChange={handleChange}/><label htmlFor="growing_professionally">&nbsp;4&nbsp;</label>
+                                  <input name="growing_professionally" type="radio" value="5" onChange={handleChange}/><label htmlFor="growing_professionally">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="growing_professionally" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">3. My role is clear and I understand how my work impacts the Client and Eastvantage business goals.</label><br/>
+                                  <input name="work_understanding" type="radio" value="1" onChange={handleChange}/><label htmlFor="work_understanding">&nbsp;1&nbsp;</label>
+                                  <input name="work_understanding" type="radio" value="2" onChange={handleChange}/><label htmlFor="work_understanding">&nbsp;2&nbsp;</label>
+                                  <input name="work_understanding" type="radio" value="3" onChange={handleChange}/><label htmlFor="work_understanding">&nbsp;3&nbsp;</label>
+                                  <input name="work_understanding" type="radio" value="4" onChange={handleChange}/><label htmlFor="work_understanding">&nbsp;4&nbsp;</label>
+                                  <input name="work_understanding" type="radio" value="5" onChange={handleChange}/><label htmlFor="work_understanding">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="work_understanding" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="4">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">4. My Supervisor and I have a good working relationship that is based on trust and respect.</label><br/>
+                                  <input name="superior_relationship" type="radio" value="1" onChange={handleChange}/><label htmlFor="superior_relationship">&nbsp;1&nbsp;</label>
+                                  <input name="superior_relationship" type="radio" value="2" onChange={handleChange}/><label htmlFor="superior_relationship">&nbsp;2&nbsp;</label>
+                                  <input name="superior_relationship" type="radio" value="3" onChange={handleChange}/><label htmlFor="superior_relationship">&nbsp;3&nbsp;</label>
+                                  <input name="superior_relationship" type="radio" value="4" onChange={handleChange}/><label htmlFor="superior_relationship">&nbsp;4&nbsp;</label>
+                                  <input name="superior_relationship" type="radio" value="5" onChange={handleChange}/><label htmlFor="superior_relationship">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="superior_relationship" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">5. My Supervisor monitors my work and gives me regular feedback.</label><br/>
+                                  <input name="superior_feedback" type="radio" value="1" onChange={handleChange}/><label htmlFor="superior_feedback">&nbsp;1&nbsp;</label>
+                                  <input name="superior_feedback" type="radio" value="2" onChange={handleChange}/><label htmlFor="superior_feedback">&nbsp;2&nbsp;</label>
+                                  <input name="superior_feedback" type="radio" value="3" onChange={handleChange}/><label htmlFor="superior_feedback">&nbsp;3&nbsp;</label>
+                                  <input name="superior_feedback" type="radio" value="4" onChange={handleChange}/><label htmlFor="superior_feedback">&nbsp;4&nbsp;</label>
+                                  <input name="superior_feedback" type="radio" value="5" onChange={handleChange}/><label htmlFor="superior_feedback">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="superior_feedback" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">6. Senior leaders are approachable and open to employees' ideas.</label><br/>
+                                  <input name="superior_approachability" type="radio" value="1" onChange={handleChange}/><label htmlFor="superior_approachability">&nbsp;1&nbsp;</label>
+                                  <input name="superior_approachability" type="radio" value="2" onChange={handleChange}/><label htmlFor="superior_approachability">&nbsp;2&nbsp;</label>
+                                  <input name="superior_approachability" type="radio" value="3" onChange={handleChange}/><label htmlFor="superior_approachability">&nbsp;3&nbsp;</label>
+                                  <input name="superior_approachability" type="radio" value="4" onChange={handleChange}/><label htmlFor="superior_approachability">&nbsp;4&nbsp;</label>
+                                  <input name="superior_approachability" type="radio" value="5" onChange={handleChange}/><label htmlFor="superior_approachability">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="superior_approachability" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">7. Management recognizes and rewards strong job performance.</label><br/>
+                                  <input name="management_rewards" type="radio" value="1" onChange={handleChange}/><label htmlFor="management_rewards">&nbsp;1&nbsp;</label>
+                                  <input name="management_rewards" type="radio" value="2" onChange={handleChange}/><label htmlFor="management_rewards">&nbsp;2&nbsp;</label>
+                                  <input name="management_rewards" type="radio" value="3" onChange={handleChange}/><label htmlFor="management_rewards">&nbsp;3&nbsp;</label>
+                                  <input name="management_rewards" type="radio" value="4" onChange={handleChange}/><label htmlFor="management_rewards">&nbsp;4&nbsp;</label>
+                                  <input name="management_rewards" type="radio" value="5" onChange={handleChange}/><label htmlFor="management_rewards">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="management_rewards" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">8. My colleagues and I have a good working relationship that is based on trust and respect.</label><br/>
+                                  <input name="colleagues_relationship" type="radio" value="1" onChange={handleChange}/><label htmlFor="colleagues_relationship">&nbsp;1&nbsp;</label>
+                                  <input name="colleagues_relationship" type="radio" value="2" onChange={handleChange}/><label htmlFor="colleagues_relationship">&nbsp;2&nbsp;</label>
+                                  <input name="colleagues_relationship" type="radio" value="3" onChange={handleChange}/><label htmlFor="colleagues_relationship">&nbsp;3&nbsp;</label>
+                                  <input name="colleagues_relationship" type="radio" value="4" onChange={handleChange}/><label htmlFor="colleagues_relationship">&nbsp;4&nbsp;</label>
+                                  <input name="colleagues_relationship" type="radio" value="5" onChange={handleChange}/><label htmlFor="colleagues_relationship">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="colleagues_relationship" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">9. EV is a great company to work with.</label><br/>
+                                  <input name="ev_greatness" type="radio" value="1" onChange={handleChange}/><label htmlFor="ev_greatness">&nbsp;1&nbsp;</label>
+                                  <input name="ev_greatness" type="radio" value="2" onChange={handleChange}/><label htmlFor="ev_greatness">&nbsp;2&nbsp;</label>
+                                  <input name="ev_greatness" type="radio" value="3" onChange={handleChange}/><label htmlFor="ev_greatness">&nbsp;3&nbsp;</label>
+                                  <input name="ev_greatness" type="radio" value="4" onChange={handleChange}/><label htmlFor="ev_greatness">&nbsp;4&nbsp;</label>
+                                  <input name="ev_greatness" type="radio" value="5" onChange={handleChange}/><label htmlFor="ev_greatness">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="ev_greatness" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">10. I will recommend and refer others to apply at Eastvantage.</label><br/>
+                                  <input name="will_recommend_ev" type="radio" value="1" onChange={handleChange}/><label htmlFor="will_recommend_ev">&nbsp;1&nbsp;</label>
+                                  <input name="will_recommend_ev" type="radio" value="2" onChange={handleChange}/><label htmlFor="will_recommend_ev">&nbsp;2&nbsp;</label>
+                                  <input name="will_recommend_ev" type="radio" value="3" onChange={handleChange}/><label htmlFor="will_recommend_ev">&nbsp;3&nbsp;</label>
+                                  <input name="will_recommend_ev" type="radio" value="4" onChange={handleChange}/><label htmlFor="will_recommend_ev">&nbsp;4&nbsp;</label>
+                                  <input name="will_recommend_ev" type="radio" value="5" onChange={handleChange}/><label htmlFor="will_recommend_ev">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="will_recommend_ev" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">11. Eastvantage policies keep employee welfare in mind.</label><br/>
+                                  <input name="policies_welfare" type="radio" value="1" onChange={handleChange}/><label htmlFor="policies_welfare">&nbsp;1&nbsp;</label>
+                                  <input name="policies_welfare" type="radio" value="2" onChange={handleChange}/><label htmlFor="policies_welfare">&nbsp;2&nbsp;</label>
+                                  <input name="policies_welfare" type="radio" value="3" onChange={handleChange}/><label htmlFor="policies_welfare">&nbsp;3&nbsp;</label>
+                                  <input name="policies_welfare" type="radio" value="4" onChange={handleChange}/><label htmlFor="policies_welfare">&nbsp;4&nbsp;</label>
+                                  <input name="policies_welfare" type="radio" value="5" onChange={handleChange}/><label htmlFor="policies_welfare">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="policies_welfare" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">12. I feel safe to express my ideas and opinions without fear of being judged, harassed or bullied.</label><br/>
+                                  <input name="safe_to_express" type="radio" value="1" onChange={handleChange}/><label htmlFor="safe_to_express">&nbsp;1&nbsp;</label>
+                                  <input name="safe_to_express" type="radio" value="2" onChange={handleChange}/><label htmlFor="safe_to_express">&nbsp;2&nbsp;</label>
+                                  <input name="safe_to_express" type="radio" value="3" onChange={handleChange}/><label htmlFor="safe_to_express">&nbsp;3&nbsp;</label>
+                                  <input name="safe_to_express" type="radio" value="4" onChange={handleChange}/><label htmlFor="safe_to_express">&nbsp;4&nbsp;</label>
+                                  <input name="safe_to_express" type="radio" value="5" onChange={handleChange}/><label htmlFor="safe_to_express">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="safe_to_express" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">13. I am satisfied with the system and connectivity support given by the I.T. department.</label><br/>
+                                  <input name="it_system_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="it_system_satisfaction">&nbsp;1&nbsp;</label>
+                                  <input name="it_system_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="it_system_satisfaction">&nbsp;2&nbsp;</label>
+                                  <input name="it_system_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="it_system_satisfaction">&nbsp;3&nbsp;</label>
+                                  <input name="it_system_satisfaction" type="radio" value="4" onChange={handleChange}/><label htmlFor="it_system_satisfaction">&nbsp;4&nbsp;</label>
+                                  <input name="it_system_satisfaction" type="radio" value="5" onChange={handleChange}/><label htmlFor="it_system_satisfaction">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="it_system_satisfaction" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">14. I am satisfied with the timely response and action taken by the HR department when I raise a concern about my employment and welfare.</label><br/>
+                                  <input name="hr_response_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="hr_response_satisfaction">&nbsp;1&nbsp;</label>
+                                  <input name="hr_response_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="hr_response_satisfaction">&nbsp;2&nbsp;</label>
+                                  <input name="hr_response_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="hr_response_satisfaction">&nbsp;3&nbsp;</label>
+                                  <input name="hr_response_satisfaction" type="radio" value="4" onChange={handleChange}/><label htmlFor="hr_response_satisfaction">&nbsp;4&nbsp;</label>
+                                  <input name="hr_response_satisfaction" type="radio" value="5" onChange={handleChange}/><label htmlFor="hr_response_satisfaction">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="hr_response_satisfaction" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">15. I am satisfied with the timely response and action taken by the Payroll department when I raise a concern about my compensation and benefits.</label><br/>
+                                  <input name="payroll_response_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="payroll_response_satisfaction">&nbsp;1&nbsp;</label>
+                                  <input name="payroll_response_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="payroll_response_satisfaction">&nbsp;2&nbsp;</label>
+                                  <input name="payroll_response_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="payroll_response_satisfaction">&nbsp;3&nbsp;</label>
+                                  <input name="payroll_response_satisfaction" type="radio" value="4" onChange={handleChange}/><label htmlFor="payroll_response_satisfaction">&nbsp;4&nbsp;</label>
+                                  <input name="payroll_response_satisfaction" type="radio" value="5" onChange={handleChange}/><label htmlFor="payroll_response_satisfaction">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="payroll_response_satisfaction" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">16. Eastvantage gives attention to my professional development.</label><br/>
+                                  <input name="ev_development_attention" type="radio" value="1" onChange={handleChange}/><label htmlFor="ev_development_attention">&nbsp;1&nbsp;</label>
+                                  <input name="ev_development_attention" type="radio" value="2" onChange={handleChange}/><label htmlFor="ev_development_attention">&nbsp;2&nbsp;</label>
+                                  <input name="ev_development_attention" type="radio" value="3" onChange={handleChange}/><label htmlFor="ev_development_attention">&nbsp;3&nbsp;</label>
+                                  <input name="ev_development_attention" type="radio" value="4" onChange={handleChange}/><label htmlFor="ev_development_attention">&nbsp;4&nbsp;</label>
+                                  <input name="ev_development_attention" type="radio" value="5" onChange={handleChange}/><label htmlFor="ev_development_attention">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="ev_development_attention" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">17. I am satisfied with the career advancement opportunities that are made available for me. </label><br/>
+                                  <input name="opportunities_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="opportunities_satisfaction">&nbsp;1&nbsp;</label>
+                                  <input name="opportunities_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="opportunities_satisfaction">&nbsp;2&nbsp;</label>
+                                  <input name="opportunities_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="opportunities_satisfaction">&nbsp;3&nbsp;</label>
+                                  <input name="opportunities_satisfaction" type="radio" value="4" onChange={handleChange}/><label htmlFor="opportunities_satisfaction">&nbsp;4&nbsp;</label>
+                                  <input name="opportunities_satisfaction" type="radio" value="5" onChange={handleChange}/><label htmlFor="opportunities_satisfaction">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="opportunities_satisfaction" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">18. I am satisfied with the investment that Eastvantage makes for training and learning programs.</label><br/>
+                                  <input name="trainings_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="trainings_satisfaction">&nbsp;1&nbsp;</label>
+                                  <input name="trainings_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="trainings_satisfaction">&nbsp;2&nbsp;</label>
+                                  <input name="trainings_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="trainings_satisfaction">&nbsp;3&nbsp;</label>
+                                  <input name="trainings_satisfaction" type="radio" value="4" onChange={handleChange}/><label htmlFor="trainings_satisfaction">&nbsp;4&nbsp;</label>
+                                  <input name="trainings_satisfaction" type="radio" value="5" onChange={handleChange}/><label htmlFor="trainings_satisfaction">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="trainings_satisfaction" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">19. I am satisfied with the healthcare and wellness related benefits offered by Eastvantage.</label><br/>
+                                  <input name="healthcare_satisfaction" type="radio" value="1" onChange={handleChange}/><label htmlFor="healthcare_satisfaction">&nbsp;1&nbsp;</label>
+                                  <input name="healthcare_satisfaction" type="radio" value="2" onChange={handleChange}/><label htmlFor="healthcare_satisfaction">&nbsp;2&nbsp;</label>
+                                  <input name="healthcare_satisfaction" type="radio" value="3" onChange={handleChange}/><label htmlFor="healthcare_satisfaction">&nbsp;3&nbsp;</label>
+                                  <input name="healthcare_satisfaction" type="radio" value="4" onChange={handleChange}/><label htmlFor="healthcare_satisfaction">&nbsp;4&nbsp;</label>
+                                  <input name="healthcare_satisfaction" type="radio" value="5" onChange={handleChange}/><label htmlFor="healthcare_satisfaction">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="healthcare_satisfaction" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">20. I am happy with the work flexibility offered by Eastvantage.</label><br/>
+                                  <input name="work_flexibility" type="radio" value="1" onChange={handleChange}/><label htmlFor="work_flexibility">&nbsp;1&nbsp;</label>
+                                  <input name="work_flexibility" type="radio" value="2" onChange={handleChange}/><label htmlFor="work_flexibility">&nbsp;2&nbsp;</label>
+                                  <input name="work_flexibility" type="radio" value="3" onChange={handleChange}/><label htmlFor="work_flexibility">&nbsp;3&nbsp;</label>
+                                  <input name="work_flexibility" type="radio" value="4" onChange={handleChange}/><label htmlFor="work_flexibility">&nbsp;4&nbsp;</label>
+                                  <input name="work_flexibility" type="radio" value="5" onChange={handleChange}/><label htmlFor="work_flexibility">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="work_flexibility" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">21. Eastvantage salary is in line with the industry standard for my role.</label><br/>
+                                  <input name="salary_level" type="radio" value="1" onChange={handleChange}/><label htmlFor="salary_level">&nbsp;1&nbsp;</label>
+                                  <input name="salary_level" type="radio" value="2" onChange={handleChange}/><label htmlFor="salary_level">&nbsp;2&nbsp;</label>
+                                  <input name="salary_level" type="radio" value="3" onChange={handleChange}/><label htmlFor="salary_level">&nbsp;3&nbsp;</label>
+                                  <input name="salary_level" type="radio" value="4" onChange={handleChange}/><label htmlFor="salary_level">&nbsp;4&nbsp;</label>
+                                  <input name="salary_level" type="radio" value="5" onChange={handleChange}/><label htmlFor="salary_level">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="salary_level" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">22. My compensation is in line with my work performance.</label><br/>
+                                  <input name="compensation_performance" type="radio" value="1" onChange={handleChange}/><label htmlFor="compensation_performance">&nbsp;1&nbsp;</label>
+                                  <input name="compensation_performance" type="radio" value="2" onChange={handleChange}/><label htmlFor="compensation_performance">&nbsp;2&nbsp;</label>
+                                  <input name="compensation_performance" type="radio" value="3" onChange={handleChange}/><label htmlFor="compensation_performance">&nbsp;3&nbsp;</label>
+                                  <input name="compensation_performance" type="radio" value="4" onChange={handleChange}/><label htmlFor="compensation_performance">&nbsp;4&nbsp;</label>
+                                  <input name="compensation_performance" type="radio" value="5" onChange={handleChange}/><label htmlFor="compensation_performance">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="compensation_performance" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">23. I normally get my salary on time.</label><br/>
+                                  <input name="salary_on_time" type="radio" value="1" onChange={handleChange}/><label htmlFor="salary_on_time">&nbsp;1&nbsp;</label>
+                                  <input name="salary_on_time" type="radio" value="2" onChange={handleChange}/><label htmlFor="salary_on_time">&nbsp;2&nbsp;</label>
+                                  <input name="salary_on_time" type="radio" value="3" onChange={handleChange}/><label htmlFor="salary_on_time">&nbsp;3&nbsp;</label>
+                                  <input name="salary_on_time" type="radio" value="4" onChange={handleChange}/><label htmlFor="salary_on_time">&nbsp;4&nbsp;</label>
+                                  <input name="salary_on_time" type="radio" value="5" onChange={handleChange}/><label htmlFor="salary_on_time">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="salary_on_time" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">24. My payslip computation is usually accurate.</label><br/>
+                                  <input name="salary_computation" type="radio" value="1" onChange={handleChange}/><label htmlFor="salary_computation">&nbsp;1&nbsp;</label>
+                                  <input name="salary_computation" type="radio" value="2" onChange={handleChange}/><label htmlFor="salary_computation">&nbsp;2&nbsp;</label>
+                                  <input name="salary_computation" type="radio" value="3" onChange={handleChange}/><label htmlFor="salary_computation">&nbsp;3&nbsp;</label>
+                                  <input name="salary_computation" type="radio" value="4" onChange={handleChange}/><label htmlFor="salary_computation">&nbsp;4&nbsp;</label>
+                                  <input name="salary_computation" type="radio" value="5" onChange={handleChange}/><label htmlFor="salary_computation">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="salary_computation" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">25. How well does Eastvantage support you in this new normal set-up? On remote work, hybrid, and office work, whichever is applicable.</label><br/>
+                                  <input name="new_normal_setup" type="radio" value="1" onChange={handleChange}/><label htmlFor="new_normal_setup">&nbsp;1&nbsp;</label>
+                                  <input name="new_normal_setup" type="radio" value="2" onChange={handleChange}/><label htmlFor="new_normal_setup">&nbsp;2&nbsp;</label>
+                                  <input name="new_normal_setup" type="radio" value="3" onChange={handleChange}/><label htmlFor="new_normal_setup">&nbsp;3&nbsp;</label>
+                                  <input name="new_normal_setup" type="radio" value="4" onChange={handleChange}/><label htmlFor="new_normal_setup">&nbsp;4&nbsp;</label>
+                                  <input name="new_normal_setup" type="radio" value="5" onChange={handleChange}/><label htmlFor="new_normal_setup">&nbsp;5&nbsp;</label>
+                                  <Form.Control.Feedback type="invalid">
+                                      <ErrorMessage component="div" name="new_normal_setup" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row className="mb-2rem">
+                              <Col size="12">
+                                <div className="form-group">
+                                  <label className="nho-required survey-label">26. How can Eastvantage further increase your happiness with your job?</label>
+                                  <textarea className="form-control" rows="3" name="happiness_suggestion" onChange={handleChange} value={values.happiness_suggestion}></textarea>
+                                  <Form.Control.Feedback type="invalid">
+                                    <ErrorMessage component="div" name="happiness_suggestion" className="input-feedback" />
+                                  </Form.Control.Feedback>
+                                </div>
+                              </Col>
+                            </Row><br/>
+                            <Row>
+                              <Col size="12" className="d-flex justify-content-center"><br/>
+                                <span>
+                                  <div>
+                                    <Button type="submit" className="btn btn-primary-2" onClick={(e)=>{ setFieldValue('action', 'happiness');  handleSubmit(e); }}><i className="fa  is-green fa-location-arrow" /> Submit</Button>
+                                  </div>
+                                </span>
+                              </Col>
+                            </Row>
+                          </Content>
+                        </ContainerBody>
+                      </ContainerWrapper>
+                    </form>
+                  )}
+                </Formik>
+              </Modal.Body>
+            </Modal>
           </ContainerBody>
         </ContainerWrapper>
       </Wrapper>
@@ -1357,6 +1832,35 @@ const validationSchemaEVA = Yup.object().shape({
     questions:                  Yup.string().required("This field is required").nullable(),
 });
 
+const validationSchemaHappiness = Yup.object().shape({
+    focused_motivated:              Yup.string().required("This field is required").nullable(),
+    growing_professionally:         Yup.string().required("This field is required").nullable(),
+    work_understanding:             Yup.string().required("This field is required").nullable(),
+    superior_relationship:          Yup.string().required("This field is required").nullable(),
+    superior_feedback:              Yup.string().required("This field is required").nullable(),
+    superior_approachability:       Yup.string().required("This field is required").nullable(),
+    management_rewards:             Yup.string().required("This field is required").nullable(),
+    colleagues_relationship:        Yup.string().required("This field is required").nullable(),
+    ev_greatness:                   Yup.string().required("This field is required").nullable(),
+    will_recommend_ev:              Yup.string().required("This field is required").nullable(),
+    policies_welfare:               Yup.string().required("This field is required").nullable(),
+    safe_to_express:                Yup.string().required("This field is required").nullable(),
+    it_system_satisfaction:         Yup.string().required("This field is required").nullable(),
+    hr_response_satisfaction:       Yup.string().required("This field is required").nullable(),
+    payroll_response_satisfaction:  Yup.string().required("This field is required").nullable(),
+    ev_development_attention:       Yup.string().required("This field is required").nullable(),
+    opportunities_satisfaction:     Yup.string().required("This field is required").nullable(),
+    trainings_satisfaction:         Yup.string().required("This field is required").nullable(),
+    healthcare_satisfaction:        Yup.string().required("This field is required").nullable(),
+    work_flexibility:               Yup.string().required("This field is required").nullable(),
+    salary_level:                   Yup.string().required("This field is required").nullable(),
+    compensation_performance:       Yup.string().required("This field is required").nullable(),
+    salary_on_time:                 Yup.string().required("This field is required").nullable(),
+    salary_computation:             Yup.string().required("This field is required").nullable(),
+    new_normal_setup:               Yup.string().required("This field is required").nullable(),
+    happiness_suggestion:           Yup.string().required("This field is required").nullable(),
+});
+
 const mapStateToProps = (state) => {
   return {
     user: state.user,
@@ -1367,16 +1871,18 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-      addNhoSurvey    : ( post_data ) => dispatch( addNhoSurvey( post_data ) ),
-      getNhoSurvey    : () => dispatch( getNhoSurvey() ),
-      addUserAsset    : ( post_data ) => dispatch( addUserAsset( post_data) ),
-      getUserAssets   : () => dispatch( getUserAssets() ),
-      addEvaSurvey    : ( post_data ) => dispatch( addEvaSurvey( post_data ) ),
-      getEvaSurvey    : () => dispatch( getEvaSurvey() ),
-      getUserCoc      : () => dispatch( getUserCoc() ),
-      acknowledgeCOC  : () => dispatch( acknowledgeCOC() ),
-      getEvaReg       : () => dispatch( getEvaReg() ),
-      submitEvaReg    : () => dispatch( submitEvaReg() ),
+      addNhoSurvey          : ( post_data ) => dispatch( addNhoSurvey( post_data ) ),
+      getNhoSurvey          : () => dispatch( getNhoSurvey() ),
+      addUserAsset          : ( post_data ) => dispatch( addUserAsset( post_data) ),
+      getUserAssets         : () => dispatch( getUserAssets() ),
+      addEvaSurvey          : ( post_data ) => dispatch( addEvaSurvey( post_data ) ),
+      getEvaSurvey          : () => dispatch( getEvaSurvey() ),
+      getUserCoc            : () => dispatch( getUserCoc() ),
+      acknowledgeCOC        : () => dispatch( acknowledgeCOC() ),
+      getEvaReg             : () => dispatch( getEvaReg() ),
+      submitEvaReg          : () => dispatch( submitEvaReg() ),
+      getHappinessSurvey    : () => dispatch ( getHappinessSurvey() ),
+      addHappinessSurvey    : ( post_data ) => dispatch( addHappinessSurvey( post_data ) ),
     }
 }
 

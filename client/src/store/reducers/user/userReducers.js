@@ -205,6 +205,21 @@ const userReducer = (state = initState, action) => {
                 is_eva_reg_loaded: action.is_eva_reg_loaded
             }
             break;
+
+        case "FETCH_USER_HAPPINESS_SURVEY":
+            return {
+                ...state,
+                user_happiness_survey: action.data,
+                is_happiness_survey_loaded: action.is_happiness_survey_loaded
+            }
+            break;
+
+        case "CLEAR_USER_HAPPINESS_SURVEY":
+            return {
+                ...state,
+                is_happiness_survey_loaded: action.is_happiness_survey_loaded
+            }
+            break;
         /**  */
         
         
