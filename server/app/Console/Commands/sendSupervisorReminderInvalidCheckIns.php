@@ -57,7 +57,7 @@ class sendSupervisorReminderInvalidCheckIns extends Command
 
                 if (count($check_ins_collection) > 0) {
                     $list_of_check_in_reminders = [$u, $check_ins_collection];
-                    $this->email->sendSupervisorReminderInvalidCheckInsEmail($u, $check_ins_collection);
+                    $this->email->sendSupervisorReminderInvalidCheckInsEmail($list_of_check_in_reminders);
                     log_to_file('info', "Invalid Check-ins Email Notification", $list_of_check_in_reminders, "invalid_check_ins_notif");
                 }
             }
