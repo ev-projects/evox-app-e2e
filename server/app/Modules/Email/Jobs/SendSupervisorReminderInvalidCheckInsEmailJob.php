@@ -19,16 +19,19 @@ class SendSupervisorReminderInvalidCheckInsEmailJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
   
-    protected $reminder;
+    // protected $reminder;
+    protected $supervisor_id;
+    protected $invalid_checkin_ids;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Array $reminder)
+    public function __construct($supervisor_id, $invalid_checkin_ids)
     { 
-        $this->reminder = $reminder;
-       
+        // $this->reminder = $reminder;
+        $this->supervisor_id = $supervisor_id;
+        $this->invalid_checkin_ids = $invalid_checkin_ids;
     }
 
     /**
@@ -39,10 +42,14 @@ class SendSupervisorReminderInvalidCheckInsEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-           
-                Mail::send( new SupervisorReminderInvalidCheckInsEmail( $this->reminder ) );
- 
-            
+            $supervisor = User::find($this->supervisor_id);
+            $invalid_check_ins = User::whereIn('emp_num', $this->invalid_checkin_ids)->get()->toArray();
+            // Mail::send( new SupervisorReminderInvalidCheckInsEmail( $supervisor, $invalid_check_ins ) );
+            Mail::to($supervisor->email)
+                ->queue(new SupervisorReminderInvalidCheckInsEmail(
+                    $supervisor->id,   // only ID
+                    $invalid_check_ins // safe array
+                ));           
         } catch (Exception $e) {
             error_log($e->getMessage());
             log_error($e, 'emails');

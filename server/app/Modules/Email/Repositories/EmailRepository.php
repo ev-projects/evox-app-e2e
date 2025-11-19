@@ -395,11 +395,11 @@ class EmailRepository implements EmailRepositoryInterface{
         }
     }
 
-    public function sendSupervisorReminderInvalidCheckInsEmail( $reminder){
+    public function sendSupervisorReminderInvalidCheckInsEmail( $u, $check_ins_collection){
         try {
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
 
-            SendSupervisorReminderInvalidCheckInsEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
+            SendSupervisorReminderInvalidCheckInsEmailJob::dispatch( $u->id, collect($check_ins_collection)->pluck('emp_num')->toArray() )->delay( Carbon::now()->addSeconds(2) );
 
 
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");

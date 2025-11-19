@@ -9,7 +9,7 @@
         
         
         <div style="padding: 0px 25px 10px 25px;">
-          <p><strong>Dear {{ $recepient->getFullName() }},</strong><br></p>
+          <p><strong>Dear {{ $supervisor->getFullName() }},</strong><br></p>
           <p>Listed below are employees who did not check-in properly for two consecutive days:</p>
         </div>
         <div style="padding: 0px 25px 0px 25px;">
@@ -21,9 +21,9 @@
               </tr>
               @foreach($invalid_check_ins as $employee)
                 <tr>
-                  <td>{{ $employee->emp_num }}</td>
-                  <td>{{ $employee->employee_name }}</td>
-                  <td>{{ $employee->department_name }}</td>
+                  <td>{{ $employee['emp_num'] }}</td>
+                  <td>{{ $employee['first_name'] }}</td>
+                  <td>{{ $employee['last_name'] }}</td>
                 </tr>
               @endforeach
            </table>

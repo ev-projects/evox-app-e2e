@@ -44,7 +44,7 @@ interface EmailRepositoryInterface
 
     public function sendSupervisorReminderRequestsEmail( $reminder);
 
-    public function sendSupervisorReminderInvalidCheckInsEmail( $reminder);
+    public function sendSupervisorReminderInvalidCheckInsEmail( $u, $check_ins_collection);
 
 
 }
