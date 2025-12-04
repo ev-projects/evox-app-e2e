@@ -613,3 +613,53 @@ export const submitEvaReg = () => {
     });
   }
 }
+
+// get user Happiness survey
+export const getHappinessSurvey = () => {
+  return (dispatch, getState) => {
+    API.call({
+      method: "get",
+      url: "/happiness_survey/"
+    })
+    .then(result => {
+      dispatch({
+        'type'                        : 'FETCH_USER_HAPPINESS_SURVEY',
+        'data'                        : result.data.content,
+        'is_happiness_survey_loaded'  : true
+      })
+      dispatch({'type': 'RELOAD_END'});
+    })
+    .catch(e => {
+      dispatch( Formatter.alert_error(  e, 3000 )  )
+    });
+  }
+}
+
+// submission of Happiness Survey
+export const addHappinessSurvey = ( post_data ) => {
+  return (dispatch, getState) => {
+    API.call({
+      method: "post",
+      url: "/happiness_survey/",
+      data: post_data
+    })
+    .then(result => {
+      if (result.status === 200) {
+        const closeButton = document.getElementsByClassName('close');
+        for (const element of closeButton) {
+          element.click();
+        }
+
+        dispatch( Formatter.alert_success( result, 5000 ));
+
+        dispatch({
+          'type'                        : 'CLEAR_USER_HAPPINESS_SURVEY',
+          'is_happiness_survey_loaded'  : false
+        })
+      }
+    })
+    .catch(e => {
+      dispatch( Formatter.alert_error(  e, 3000 )  ) 
+    });
+  }
+}

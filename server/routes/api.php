@@ -107,3 +107,8 @@ Route::group(['prefix' => 'freshservice/', 'middleware' => ['jwtauth', 'auth.api
     });
     Route::get('users/suggestions', 'FreshServiceController@getUserSuggestions');
 });
+
+
+// Happiness Survey
+Route::get('happiness_survey', 'HappinessController@getHappinessSurvey')->middleware('jwtauth', 'auth.apikey');
+Route::post('happiness_survey', 'HappinessController@addHappinessSurvey')->middleware('jwtauth', 'auth.apikey');
