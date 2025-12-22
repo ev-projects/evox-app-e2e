@@ -141,7 +141,7 @@ canClockOut(clock_in) {
                   }
               
                    // If the DTR date is beyond the current date, don't show the DTR row by returning null.
-                  if( moment().diff(moment(dtr.date)) < 0 ) {
+                  if( moment().add(2, 'hours').diff(moment(dtr.date)) < 0 ) {
                     return null;
                   }
 
