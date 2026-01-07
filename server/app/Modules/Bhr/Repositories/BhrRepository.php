@@ -433,7 +433,7 @@ class BhrRepository implements BhrRepositoryInterface{
             $end_point = 'time_off/whos_out/?start='.$start_date.'&end='.$end_date;
 
             // Iterate the BHr Call Result PHL
-            foreach( bhr_api_call('GET', $end_point, $data = array(), $send_as_json = false,) as $row ) {
+            foreach( bhr_api_call('GET', $end_point, [], false) ?? [] as $row ) {
 
                 // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
                 if( $row->type == 'holiday' ) {
@@ -442,7 +442,7 @@ class BhrRepository implements BhrRepositoryInterface{
             }
           
             // Iterate the BHr Call Result IND
-            foreach( bhr_api_call('GET', $end_point, $data = array(), $send_as_json = false, $country = "India") as $row ) {
+            foreach( bhr_api_call('GET', $end_point, [], false, "India") ?? [] as $row ) {
 
                 // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
                 if( $row->type == 'holiday' ) {
@@ -451,7 +451,7 @@ class BhrRepository implements BhrRepositoryInterface{
             }
 
             // Iterate the BHr Call Result BULGARIA
-            foreach( bhr_api_call('GET', $end_point, $data = array(), $send_as_json = false, $country = "Bulgaria") as $row ) {
+            foreach( bhr_api_call('GET', $end_point, [], false, "Bulgaria") ?? [] as $row ) {
 
                 // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
                 if( $row->type == 'holiday' ) {
@@ -460,7 +460,7 @@ class BhrRepository implements BhrRepositoryInterface{
             }
 
             // Iterate the BHr Call Result MOROCCO
-            foreach( bhr_api_call('GET', $end_point, $data = array(), $send_as_json = false, $country = "Morocco") as $row ) {
+            foreach( bhr_api_call('GET', $end_point, [], false, "Morocco") ?? [] as $row ) {
 
                 // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
                 if( $row->type == 'holiday' ) {
@@ -469,7 +469,7 @@ class BhrRepository implements BhrRepositoryInterface{
             }
 
             // Iterate the BHr Call Result BELGIUM
-            foreach( bhr_api_call('GET', $end_point, $data = array(), $send_as_json = false, $country = "Belgium") as $row ) {
+            foreach( bhr_api_call('GET', $end_point, [], false, "Belgium") ?? [] as $row ) {
 
                 // If the current Iteration's Type Attribute is a 'holiday', proceed on checking for possible Holiday transaction.
                 if( $row->type == 'holiday' ) {
