@@ -14,8 +14,8 @@ export const biometrixLog = ( post_data, id ) => {
             data: post_data
         })
         .then(result => {
-            var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
-            var to = moment().format("YYYY-MM-DD");
+            var from =  moment().add(2, 'hours').subtract(1, 'days').format("YYYY-MM-DD") ;
+            var to = moment().add(2, 'hours').format("YYYY-MM-DD");
             $(".nav-clock.dropdown-toggle.btn.btn-primary").click();
             API.call({
                 method: "get",

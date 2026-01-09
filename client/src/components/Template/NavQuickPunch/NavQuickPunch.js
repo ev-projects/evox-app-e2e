@@ -75,8 +75,8 @@ class NavQuickPunch extends Component {
 
  
     const user = this.props.user;
-    var from =  moment().subtract(1, 'days').format("YYYY-MM-DD") ;
-    var to = moment().format("YYYY-MM-DD");
+    var from =  moment().add(2, 'hours').subtract(1, 'days').format("YYYY-MM-DD") ;
+    var to = moment().add(2, 'hours').format("YYYY-MM-DD");
   
     if (this.props.user !=null && this.props.user.id !=null && this.state.NavHasLoaded == false){
       this.props.getRecentDtr(this.props.user.id, from , to );
