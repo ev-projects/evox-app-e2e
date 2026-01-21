@@ -132,7 +132,7 @@ class ScheduleController extends Controller
                 if( in_array( $request->action, get_constant('ASSIGN_DEPARTMENT_ACTIONS') ) ){
 
                     // Get the department owner of the schedule
-                    $department = $schedule->owner()->first();
+                    $department = $schedule->owner();
 
                     // Iterate the Department Users and apply the schedule to user default schedule
                     foreach( $department->users()->get() as $user ){
