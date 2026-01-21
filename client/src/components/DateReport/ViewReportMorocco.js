@@ -293,6 +293,8 @@ const getDaysInMonth = (year, month) => {
                     <th className="tableheader" rowspan="2">Paid Holiday</th>
                     <th className="tableheader" rowspan="2">Regular OverTime</th>
                     <th className="tableheader" rowspan="2">Regular OverTime NightDiff</th>
+                    <th className="tableheader" rowspan="2">Rest Day Work</th>
+                    <th className="tableheader" rowspan="2">Rest Day Work NightDiff</th>
                     <th className="tableheader" rowspan="2">Rest Day OverTime</th>
                     <th className="tableheader" rowspan="2">Rest Day OverTime NightDiff</th>
                     <th className="tableheader" rowspan="2">Legal Holiday OverTime</th>
@@ -327,6 +329,8 @@ const getDaysInMonth = (year, month) => {
                       <td>{report.PaidHoliday}</td>
                       <td>{report.RegularOverTime}</td>
                       <td>{report.RegularOverTimeNightDiff}</td>
+                      <td>{report.RestDayWork}</td>
+                      <td>{report.RestDayWorkNightDiff}</td>
                       <td>{report.RestDayOverTime}</td>
                       <td>{report.RegularOverTimeNightDiff}</td>
                       <td>{report.LegalHolidayOverTime}</td>
