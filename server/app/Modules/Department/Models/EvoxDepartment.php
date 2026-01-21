@@ -10,6 +10,7 @@ use App\Modules\Schedule\Models\Schedule;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Department\Models\Announcement;
 use App\Modules\Department\Models\DepartmentOnSchedule;
+use App\Modules\Department\Models\EvoxSubDepartment;
 // use App\Modules\Department\Models\AnnouncementDepartment;
 
 class EvoxDepartment extends Model
@@ -27,7 +28,8 @@ class EvoxDepartment extends Model
 
         return $this->hasMany(Announcement::class, 'dep_id', 'Id');
     }
-public function departments_announcements_presented()
+
+    public function departments_announcements_presented()
     {
         return $this->hasMany(Announcement::class, 'present_dep_id', 'Id');
     }
@@ -47,5 +49,17 @@ public function departments_announcements_presented()
     
 
         return $offset_string->format('P');
+    }
+
+    public function users()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            EvoxSubDepartment::class,
+            'DepartmentId',      // FK on sub_departments → departments
+            'SubDepartmentId',   // FK on users → sub_departments
+            'Id',                // PK on departments
+            'Id'                 // PK on sub_departments
+        );
     }
 }

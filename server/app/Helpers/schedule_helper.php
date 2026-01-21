@@ -104,7 +104,7 @@ if (! function_exists('generate_schedule_name')) {
                         
                         // $department = Department::findOrFail( $data['bind_id'] );
                         // $department = EvoxDepartment::where("Id", $data['bind_id']->department_id)->first();
-                        $department = EvoxSubDepartment::where("Id", $data['bind_id']->department_id)->first();
+                        $department = EvoxDepartment::where("Id", $data['bind_id'])->first();
                         
 
                         // Generate a Default Format: [{source_type}]  - {Department Name} ({id})

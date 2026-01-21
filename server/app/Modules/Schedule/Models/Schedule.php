@@ -177,7 +177,7 @@ class Schedule extends Model{
                 break;
             case "department":
                 // return $this->hasOne(EvoxDepartment::class, 'id', 'bind_id');
-                return EvoxDepartment::find($this->bind_id )->first();
+                return EvoxDepartment::find($this->bind_id);
                 break;
             
         }
