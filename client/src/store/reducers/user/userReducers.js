@@ -54,10 +54,14 @@ const userReducer = (state = initState, action) => {
         /**  */
 
         case "FETCH_USER_SUCCESS":
-            message = "Reload User Success!"
+            message = "Reload User Success!";
+            localStorage.setItem("user_server_timestamp", action.user.user_server_timestamp);//based on code from API code, "user_server_timestamp" was already converted to User Local Time
+            localStorage.setItem("user_server_timestamp_mils", action.user.user_server_timestamp_mils);//based on code from API code, "user_server_timestamp_mils" was already converted to User Local Time
+            localStorage.setItem("user_local_offset_mils", action.user.user_offset_seconds * 1000);
+            localStorage.setItem("user_local_timestamp_mils", action.user.user_server_timestamp_mils);//based on code from API code, "user_server_timestamp_mils" was already converted to User Local Time
             return {
                 ...action.user,
-                payload : action.test,
+                payload : action.payload,
             }
             break;
 
