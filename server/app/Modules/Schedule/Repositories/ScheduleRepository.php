@@ -45,8 +45,8 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule->valid_from       = ( isset( $data['valid_from'] ) && is_valid( $data['valid_from'] ) ) ? $data['valid_from'] : null;
             $schedule->valid_to         = ( isset( $data['valid_to'] ) && is_valid( $data['valid_to'] ) ) ? $data['valid_to'] : null;
             $schedule->rest_days        = get_rest_days( $data['work_days'] );
-            $schedule->updated_by       = ( isset( $data['bind_id'] ) && is_valid( $data['bind_id'] ) ) ? $data['bind_id'] : auth()->user()->id ;
-            $schedule->created_by       = ( isset( $data['bind_id'] ) && is_valid( $data['bind_id'] ) ) ? $data['bind_id'] : auth()->user()->id ;
+            $schedule->updated_by       = auth()->user()->id;
+            $schedule->created_by       = auth()->user()->id;
             $schedule                   = $this->set_schedule_valid_date($schedule, $data);
             $schedule->save();
 
