@@ -184,6 +184,7 @@ export const logOut = () => {
             localStorage.removeItem("session_id");
             dispatch({'type': 'CLEAR_RECENT_DTR_INSTANCE'})
             dispatch({'type': 'LOGOUT_SUCCESS'})
+            sessionStorage.removeItem("hasSeenReferralModal");
             window.location.reload();
             // Dispatch Alert of Login Success
             dispatch( Formatter.alert_success( result, 3000 )  );

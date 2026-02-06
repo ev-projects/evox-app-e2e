@@ -223,3 +223,23 @@ table {
 .form-group input[type=radio] {
   transform: scale(1.5);
 }
+
+.txt-green {
+  color: #82af13 !important;
+}
+
+.pdf-wrapper {
+  max-width: 1130px;
+  margin: 0 auto;
+}
+.pdf-wrapper iframe {
+  width: 100%;
+  height: 730px;
+  border: none;
+  display: block;
+}
+.modal-body-rct {
+  position: relative;
+  flex: 1 1 auto;
+  font-size: 16px !important;
+}

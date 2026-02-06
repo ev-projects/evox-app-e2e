@@ -18,6 +18,7 @@ use App\Modules\User\Models\UtcTimelog;
 use App\Modules\User\Resources\CountryResource;
 use App\CodeOfConductForms;
 use App\EvoxIndiaPayrollCutoff;
+use App\PopupFlags;
 
 class AuthController extends Controller
 {
@@ -361,6 +362,7 @@ class AuthController extends Controller
             // 'request_payroll_cutoff' => call_sp('EV_SP_Validate_Request_Payroll_Period', [auth()->user()->id, null])[0][0],
             'hr_list' => call_sp('EV_SP_Get_HR_Users', [])[0],
             'coc_forms' => CodeOfConductForms::where('country_id', auth()->user()->country_id)->orderBy('form_no', 'asc')->get(),
+            'popup_flags' => PopupFlags::pluck('status', 'key')->map(fn ($status) => (bool) $status),
         ];
         
 

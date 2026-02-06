@@ -175,6 +175,10 @@ class Dashboard extends Component {
     isCocChecked: false,
     showEvaRegModal: false,
     showHappinessSurveyModal: false,
+    showReferralBannerModal:
+      this.props.user?.country === "Philippines" &&
+      this.props.settings.popup_flags?.referral_banner === true &&
+      !sessionStorage.getItem("hasSeenReferralModal"),
   };
 
   componentDidMount() {
@@ -363,10 +367,13 @@ class Dashboard extends Component {
   }
 
   onHide = () => {
+    sessionStorage.setItem("hasSeenReferralModal", "true");
+
     this.setState({ showModal: false });
     this.setState({ showItamModal: false });
     this.setState({ showEvaModal: false });
     this.setState({ showCocModal: false });
+    this.setState({ showReferralBannerModal: false });
   }
 
   handleJoyrideCallback = (data) => {
@@ -962,39 +969,6 @@ class Dashboard extends Component {
                                 </div>
                               </Col>
                             </Row><br/>
-                            {/* <Row className="mb-2rem">
-                              <Col size="12"> 
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">1. Year</label>
-                                  <select className="form-control" name="eva_year" onChange={handleChange} style={{ display: 'block' }}>
-                                      <option value="">- Select Year -</option>
-                                      <option value="2025">2025</option>
-                                      <option value="2024">2024</option>
-                                      <option value="2023">2023</option>
-                                  </select>
-                                  <Form.Control.Feedback type="invalid">
-                                    <ErrorMessage component="div" name="eva_year" className="input-feedback" />
-                                  </Form.Control.Feedback><br/>
-                                </div>
-                              </Col>
-                            </Row><br/>
-                            <Row className="mb-2rem">
-                              <Col size="12">
-                                <div className="form-group">
-                                  <label className="nho-required survey-label">2. Quarter</label><br/>
-                                  <select className="form-control" name="eva_quarter" onChange={handleChange} style={{ display: 'block' }}>
-                                      <option value="">- Select Quarter -</option>
-                                      <option value="1">Quarter 1</option>
-                                      <option value="2">Quarter 2</option>
-                                      <option value="3">Quarter 3</option>
-                                      <option value="4">Quarter 4</option>
-                                  </select>
-                                  <Form.Control.Feedback type="invalid">
-                                    <ErrorMessage component="div" name="eva_quarter" className="input-feedback" />
-                                  </Form.Control.Feedback><br/>
-                                </div>
-                              </Col>
-                            </Row><br/> */}
                             <Row className="mb-2rem">
                               <Col size="12">
                                 <div className="form-group">
@@ -1343,6 +1317,33 @@ class Dashboard extends Component {
                   )}
                 </Formik>
               </Modal.Body>
+            </Modal>
+
+            <Modal className="remark-modal" show={this.state.showReferralBannerModal} onHide={this.state.allowModalClose ? this.onHide : null} size="xl">
+              <Modal.Header id="nho-modal-header" closeButton>
+                <Modal.Title id="nho-modal-title">SPECIAL REFERRAL DRIVE: Earn upto ₱35,000 per Hire!</Modal.Title>
+              </Modal.Header>
+              <div className="modal-body-rct">
+                <div col="12" subtitle={<RequestSubtitle method={"store"} user={user} />}>
+                  <Row>
+                    <Col size="12">
+                      <div>
+                        <div style={{ textAlign: "center" }}>
+                          <div className="pdf-wrapper">
+                            <iframe
+                              src="/images/ERP_EVOX_Banner.pdf#toolbar=0&navpanes=0&scrollbar=0"
+                              width="100%"
+                              height="730px"
+                              style={{ border: "none" }}
+                              title="Special Referral Drive"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+              </div>
             </Modal>
 
             <Modal className="remark-modal" show={this.state.showHappinessSurveyModal} size="xl">
