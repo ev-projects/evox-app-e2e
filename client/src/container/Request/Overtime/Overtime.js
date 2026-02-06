@@ -38,15 +38,11 @@ class Overtime extends Component {
   // Set the default constructor with Action state in null
   constructor(props) {
     super(props);
-    this.state = {
-      action: null,
-      requestValidity: null,
-    }
   }
 
 
   // Set the onSubmitHandler for submissions and check inside the function whether it's for Store/Update/Approve/Cancel/Decline
-  onSubmitHandler = (values) => {
+  onSubmitHandler = async (values) => {
 
     // Setting of Form Data to be passed in the submission
     var formData = new FormData();
@@ -78,16 +74,17 @@ class Overtime extends Component {
         // If action is NULL, it means it's either store/update
         case null:
           let dateToCheck = moment( values.date ).format("YYYY-MM-DD");
-          if (this.state.requestValidity?.Result === "0") {
+          let requestValidity = await this.checkRequestValidity(dateToCheck);
+          if (requestValidity.Result === "0") {
             // Show alert only
             alert("Request not allowed at the moment. Please wait until DTR generation is complete.");
             break;
           } else {
             let confirmMessage = '';
 
-            if (dateToCheck >= this.state.requestValidity?.StartDate && dateToCheck <= this.state.requestValidity?.EndDate) {
+            if (requestValidity.Result === "1" && dateToCheck >= requestValidity.StartDate && dateToCheck <= requestValidity.EndDate) {
               confirmMessage = "Are you sure you want to submit/update this request?";
-            } else {
+            } else if (requestValidity.Result === "2") {
               confirmMessage = "The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request. Are you sure you want to submit this request?";
             }
 
@@ -121,27 +118,28 @@ class Overtime extends Component {
     }
   }
 
+  checkRequestValidity = async (date) => {
+    try {
+      const result = await API.call({
+        method: "get",
+        url: "/request/request-validity-check/",
+        params: { 'date': date }
+      });
+
+      if (result.status === 200 && result.data?.content) {
+        return result.data.content;
+      }
+
+      return null;
+    } catch (e) {
+      this.props.dispatch(Formatter.alert_error(e, 3000));
+      throw e;
+    }
+  };
+
   // Set the setAction Function for Setting of the Approval Action to be proceeded
   setAction = (action) => {
     this.setState({'action':action});
-  }
-
-  componentDidMount() {
-    // Call request validity checker
-    API.call({
-      method: "get",
-      url: "/request/request-validity-check/",
-    })
-    .then(result => {
-      if (result.status === 200 && result.data?.content) {
-        this.setState({
-          requestValidity: result.data.content,
-        });
-      }
-    })
-    .catch(e => {
-      this.props.dispatch(Formatter.alert_error(e, 3000));
-    });
   }
 
   componentWillMount(){
