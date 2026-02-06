@@ -474,6 +474,7 @@ class DtrRepository implements DtrRepositoryInterface{
                        
                         $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
                         $dtr->source_type_tagging   =  ( is_valid($schedule) ) ? $schedule->source_type : $dtr->source_type_tagging;
+                        $dtr->updated_at            = Carbon::now();
                         $dtr->update();
 
 
