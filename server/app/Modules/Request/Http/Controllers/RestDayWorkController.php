@@ -36,6 +36,8 @@ class RestDayWorkController extends Controller
      */
     public function store(RestDayWorkRequest $request){
         try {
+            $requester = auth()->user();
+
             if ($request->request_mode === 'dispute') {
                 // check if the exact dtr is rest day, if not return error message
                 $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
@@ -150,7 +152,8 @@ class RestDayWorkController extends Controller
                 // decline the original request
                 $rest_day_work = RestDayWork::findOrFail($id);
                 $rest_day_work->update([
-                    'status' => 'declined'
+                    'status' => 'declined',
+                    'updated_by' => auth()->user()->id
                 ]);
 
                 return success_response(

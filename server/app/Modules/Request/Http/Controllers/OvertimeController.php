@@ -40,6 +40,8 @@ class OvertimeController extends Controller
      */
     public function store(OvertimeRequest $request){
         try {
+            $requester = auth()->user();
+
             if ($request->request_mode === 'dispute') {
                 $overtime_dispute = $this->insertToOvertimeDispute($request);
                 $this->email->sendOvertimeDisputeEmail($overtime_dispute);
@@ -139,7 +141,8 @@ class OvertimeController extends Controller
                 // decline the original request
                 $overtime = Overtime::findOrFail($id);
                 $overtime->update([
-                    'status' => 'declined'
+                    'status' => 'declined',
+                    'updated_by' => auth()->user()->id
                 ]);
 
                 return success_response(

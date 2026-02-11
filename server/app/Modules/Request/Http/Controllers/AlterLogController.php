@@ -40,6 +40,8 @@ class AlterLogController extends Controller
      */
     public function store(AlterLogRequest $request){
         try {
+            $requester = auth()->user();
+
             if ($request->request_mode === 'dispute') {
                 $alter_log_dispute = $this->insertToAlterLogDispute($request);
                 $this->email->sendAlterLogDisputeEmail($alter_log_dispute);
@@ -133,7 +135,8 @@ class AlterLogController extends Controller
                 // decline the original request
                 $alter_log = AlterLog::findOrFail($id);
                 $alter_log->update([
-                    'status' => 'declined'
+                    'status' => 'declined',
+                    'updated_by' => auth()->user()->id
                 ]);
 
                 return success_response(
