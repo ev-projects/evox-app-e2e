@@ -14,6 +14,7 @@ use App\Modules\Request\Http\Requests\RestDayWorkRequest;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
+use App\Modules\Request\Models\RestDayWork;
 
 class RestDayWorkController extends Controller
 {   
@@ -35,10 +36,7 @@ class RestDayWorkController extends Controller
      */
     public function store(RestDayWorkRequest $request){
         try {
-            // call request validity checker
-            $request_validity = request_validity_checker($request->user_id, $request->date);
-
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+            if ($request->request_mode === 'dispute') {
                 // check if the exact dtr is rest day, if not return error message
                 $dtr_check = Dtr::where("date",  $request->date)->where("user_id", Auth::user()->id)->first();
 
@@ -146,8 +144,20 @@ class RestDayWorkController extends Controller
             // call request validity checker
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
-                return error_response( trans('messages.invalid_request_approval') );
+            if ($request_validity == 2) {
+                $rdw_dispute = $this->insertToRestDayWorkDispute($request);
+
+                // decline the original request
+                $rest_day_work = RestDayWork::findOrFail($id);
+                $rest_day_work->update([
+                    'status' => 'declined'
+                ]);
+
+                return success_response(
+                    trans('messages.dispute_approve_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
             } else {
                 log_activity( trans('messages.approve_rest_day_work_attempt') );
 

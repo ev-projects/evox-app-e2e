@@ -14,6 +14,7 @@ use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
+use App\Modules\Request\Models\Overtime;
 
 class OvertimeController extends Controller
 {   
@@ -39,10 +40,7 @@ class OvertimeController extends Controller
      */
     public function store(OvertimeRequest $request){
         try {
-            // call request validity checker
-            $request_validity = request_validity_checker($request->user_id, $request->date);
-
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+            if ($request->request_mode === 'dispute') {
                 $overtime_dispute = $this->insertToOvertimeDispute($request);
                 $this->email->sendOvertimeDisputeEmail($overtime_dispute);
                 return success_response(
@@ -135,8 +133,20 @@ class OvertimeController extends Controller
             // call request validity checker
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
-                return error_response( trans('messages.invalid_request_approval') );
+            if ($request_validity == 2) {
+                $overtime_dispute = $this->insertToOvertimeDispute($request);
+
+                // decline the original request
+                $overtime = Overtime::findOrFail($id);
+                $overtime->update([
+                    'status' => 'declined'
+                ]);
+
+                return success_response(
+                    trans('messages.dispute_approve_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
             } else {
                 log_activity( trans('messages.approve_overtime_attempt') );
 

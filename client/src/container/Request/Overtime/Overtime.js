@@ -83,8 +83,10 @@ class Overtime extends Component {
             let confirmMessage = '';
 
             if (requestValidity.Result === "1" && dateToCheck >= requestValidity.StartDate && dateToCheck <= requestValidity.EndDate) {
+              formData.set('request_mode', 'regular');
               confirmMessage = "Are you sure you want to submit/update this request?";
             } else if (requestValidity.Result === "2") {
+              formData.set('request_mode', 'dispute');
               confirmMessage = "The request date exceeds the current payroll cut-off period. This request will be recorded as a dispute and will not be considered as a regular payroll request. Are you sure you want to submit this request?";
             }
 

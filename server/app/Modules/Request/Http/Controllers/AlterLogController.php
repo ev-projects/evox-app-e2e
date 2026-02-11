@@ -40,10 +40,7 @@ class AlterLogController extends Controller
      */
     public function store(AlterLogRequest $request){
         try {
-            // call request validity checker
-            $request_validity = request_validity_checker($request->user_id, $request->date);
-
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+            if ($request->request_mode === 'dispute') {
                 $alter_log_dispute = $this->insertToAlterLogDispute($request);
                 $this->email->sendAlterLogDisputeEmail($alter_log_dispute);
 
@@ -130,11 +127,17 @@ class AlterLogController extends Controller
             // call request validity checker
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+            if ($request_validity == 2) {
                 $alter_log_dispute = $this->insertToAlterLogDispute($request);
 
+                // decline the original request
+                $alter_log = AlterLog::findOrFail($id);
+                $alter_log->update([
+                    'status' => 'declined'
+                ]);
+
                 return success_response(
-                    trans('messages.invalid_request'),
+                    trans('messages.dispute_approve_success'),
                     [],
                     JsonResponse::HTTP_CREATED
                 );
