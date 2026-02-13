@@ -279,14 +279,14 @@ class Dashboard extends Component {
     }
 
     // check if user has happiness survey record
-    if (!this.props.user.is_happiness_survey_loaded) {
-      this.props.getHappinessSurvey();
-    }
+    // if (!this.props.user.is_happiness_survey_loaded) {
+    //   this.props.getHappinessSurvey();
+    // }
 
     // if user does not have happiness survey yet, show happiness survey modal
-    if (this.props.user.user_happiness_survey === null) {
-      this.setState({ showHappinessSurveyModal : true });
-    }
+    // if (this.props.user.user_happiness_survey === null && this.props.settings.popup_flags?.happiness_survey === true) {
+    //   this.setState({ showHappinessSurveyModal : true });
+    // }
 
     // alert(this.props.dashboard?.worktour);
     // const user = localStorage.getItem('user');
@@ -1346,7 +1346,7 @@ class Dashboard extends Component {
               </div>
             </Modal>
 
-            <Modal className="remark-modal" show={this.state.showHappinessSurveyModal} size="xl">
+            {/* <Modal className="remark-modal" show={this.state.showHappinessSurveyModal} size="xl">
               <Modal.Header id="nho-modal-header" closeButton>
                 <Modal.Title id="nho-modal-title">Happiness Survey 2025</Modal.Title>
               </Modal.Header>
@@ -1780,7 +1780,7 @@ class Dashboard extends Component {
                   )}
                 </Formik>
               </Modal.Body>
-            </Modal>
+            </Modal> */}
           </ContainerBody>
         </ContainerWrapper>
       </Wrapper>
