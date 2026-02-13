@@ -199,13 +199,13 @@ class Dashboard extends Component {
       // if hire date is still within the user's first two weeks and has no NHO survey yet, then show survey modal
       if (nho_survey_valid && (this.props.user.user_nho_survey && Object.keys(this.props.user.user_nho_survey).length <= 0)) {
         this.setState({ showModal : true });
-      }
 
-      // don't allow closing of modal if the user is already on the 2nd week
-      const new_start_date = new Date(this.props.user.date_hired);
-      new_start_date.setDate(new_start_date.getDate() + 7);
-      if (today >= new_start_date && today <= end_date) {
-        this.setState({ allowModalClose: false });
+        // don't allow closing of modal if the user is already on the 2nd week
+        const new_start_date = new Date(this.props.user.date_hired);
+        new_start_date.setDate(new_start_date.getDate() + 7);
+        if (today >= new_start_date && today <= end_date) {
+          this.setState({ allowModalClose: false });
+        }
       }
     }
 
@@ -279,14 +279,14 @@ class Dashboard extends Component {
     }
 
     // check if user has happiness survey record
-    // if (!this.props.user.is_happiness_survey_loaded) {
-    //   this.props.getHappinessSurvey();
-    // }
+    if (!this.props.user.is_happiness_survey_loaded) {
+      this.props.getHappinessSurvey();
+    }
 
-    // if user does not have happiness survey yet, show happiness survey modal
-    // if (this.props.user.user_happiness_survey === null && this.props.settings.popup_flags?.happiness_survey === true) {
-    //   this.setState({ showHappinessSurveyModal : true });
-    // }
+    // if user does not have happiness survey yet and this popup is still active, show happiness survey modal
+    if (this.props.user.user_happiness_survey === null && this.props.settings.popup_flags?.happiness_survey === true) {
+      this.setState({ showHappinessSurveyModal : true });
+    }
 
     // alert(this.props.dashboard?.worktour);
     // const user = localStorage.getItem('user');
@@ -1319,7 +1319,7 @@ class Dashboard extends Component {
               </Modal.Body>
             </Modal>
 
-            <Modal className="remark-modal" show={this.state.showReferralBannerModal} onHide={this.state.allowModalClose ? this.onHide : null} size="xl">
+            <Modal className="remark-modal" show={this.state.showReferralBannerModal} onHide={this.onHide} size="xl">
               <Modal.Header id="nho-modal-header" closeButton>
                 <Modal.Title id="nho-modal-title">SPECIAL REFERRAL DRIVE: Earn upto ₱35,000 per Hire!</Modal.Title>
               </Modal.Header>
@@ -1346,7 +1346,7 @@ class Dashboard extends Component {
               </div>
             </Modal>
 
-            {/* <Modal className="remark-modal" show={this.state.showHappinessSurveyModal} size="xl">
+            <Modal className="remark-modal" show={this.state.showHappinessSurveyModal} size="xl">
               <Modal.Header id="nho-modal-header" closeButton>
                 <Modal.Title id="nho-modal-title">Happiness Survey 2025</Modal.Title>
               </Modal.Header>
@@ -1780,7 +1780,7 @@ class Dashboard extends Component {
                   )}
                 </Formik>
               </Modal.Body>
-            </Modal> */}
+            </Modal>
           </ContainerBody>
         </ContainerWrapper>
       </Wrapper>
