@@ -200,9 +200,9 @@ class RequestController extends Controller
     public function bulkRequest(Request $request){
         try {
             log_activity( trans('messages.bulk_request_change_status_attempt') );
-            $data = array();
             $has_dispute = false;
             foreach ( $request->checkedList as $value ) {
+                $data = [];
                 $request_bulk = explode(".", $value);
                 $model = null;
 
@@ -215,15 +215,17 @@ class RequestController extends Controller
                         $request_validity = request_validity_checker($overtime_model->user_id, $overtime_model->date);
 
                         if ($request_validity === "2") {
-                            $data = [
-                                'user_id' => $overtime_model->user_id,
-                                'date' => $overtime_model->date,
-                                'amount' => $overtime_model->amount,
-                                'type' => $overtime_model->type,
-                                'employee_note' => $overtime_model->employee_note,
-                                'approver_note' => $overtime_model->approver_note,
-                            ];
-                            $overtime_dispute = $this->insertToOvertimeDispute($data);
+                            if($request->bulk_action =="approve"){
+                                $data = [
+                                    'user_id' => $overtime_model->user_id,
+                                    'date' => $overtime_model->date,
+                                    'amount' => $overtime_model->amount,
+                                    'type' => $overtime_model->type,
+                                    'employee_note' => $overtime_model->employee_note,
+                                    'approver_note' => $overtime_model->approver_note,
+                                ];
+                                $overtime_dispute = $this->insertToOvertimeDispute($data);
+                            }
 
                             // decline the original request
                             $overtime_model->update([
@@ -259,17 +261,19 @@ class RequestController extends Controller
                         $request_validity = request_validity_checker($alterlog_model->user_id, $alterlog_model->date);
 
                         if ($request_validity === "2") {
-                            $data = [
-                                'user_id' => $alterlog_model->user_id,
-                                'date' => $alterlog_model->date,
-                                'current_time_in' => $alterlog_model->current_time_in,
-                                'current_time_out' => $alterlog_model->current_time_out,
-                                'new_time_in' => $alterlog_model->new_time_in,
-                                'new_time_out' => $alterlog_model->new_time_out,
-                                'employee_note' => $alterlog_model->employee_note,
-                                'approver_note' => $alterlog_model->approver_note,
-                            ];
-                            $alterlog_dispute = $this->insertToAlterLogDispute($data);
+                            if($request->bulk_action =="approve"){
+                                $data = [
+                                    'user_id' => $alterlog_model->user_id,
+                                    'date' => $alterlog_model->date,
+                                    'current_time_in' => $alterlog_model->current_time_in,
+                                    'current_time_out' => $alterlog_model->current_time_out,
+                                    'new_time_in' => $alterlog_model->new_time_in,
+                                    'new_time_out' => $alterlog_model->new_time_out,
+                                    'employee_note' => $alterlog_model->employee_note,
+                                    'approver_note' => $alterlog_model->approver_note,
+                                ];
+                                $alterlog_dispute = $this->insertToAlterLogDispute($data);
+                            }
 
                             // decline the original request
                             $alterlog_model->update([
@@ -333,16 +337,18 @@ class RequestController extends Controller
                         $request_validity = request_validity_checker($rdw_model->user_id, $rdw_model->date);
 
                         if ($request_validity === "2") {
-                            $data = [
-                                'user_id' => $rdw_model->user_id,
-                                'date' => $rdw_model->date,
-                                'start_time' => $rdw_model->start_time,
-                                'end_time' => $rdw_model->end_time,
-                                'break_time' => $rdw_model->break_time,
-                                'employee_note' => $rdw_model->employee_note,
-                                'approver_note' => $rdw_model->approver_note,
-                            ];
-                            $rdw_dispute = $this->insertToRestDayWorkDispute($data);
+                            if($request->bulk_action =="approve"){
+                                $data = [
+                                    'user_id' => $rdw_model->user_id,
+                                    'date' => $rdw_model->date,
+                                    'start_time' => $rdw_model->start_time,
+                                    'end_time' => $rdw_model->end_time,
+                                    'break_time' => $rdw_model->break_time,
+                                    'employee_note' => $rdw_model->employee_note,
+                                    'approver_note' => $rdw_model->approver_note,
+                                ];
+                                $rdw_dispute = $this->insertToRestDayWorkDispute($data);
+                            }
 
                             // decline the original request
                             $rdw_model->update([
@@ -368,12 +374,14 @@ class RequestController extends Controller
                   }                
             }
 
+            $messageKey = 'messages.bulk_request_update';
+            if ($request->bulk_action === 'approve' && $has_dispute) {
+                $messageKey = 'messages.bulk_approve_with_dispute';
+            }
+
             return success_response(
-                trans($has_dispute 
-                    ? 'messages.bulk_approve_with_dispute' 
-                    : 'messages.bulk_request_update'
-                ),
-                $request->bulk_action 
+                trans($messageKey),
+                $request->bulk_action
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
