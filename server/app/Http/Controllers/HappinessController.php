@@ -11,7 +11,7 @@ class HappinessController extends Controller
 {
     public function getHappinessSurvey()
     {
-        $happiness_survey_get = HappinessSurvey::where('user_id', Auth::user()->id)->where('year', 2025)->where('deleted_at', null)->first();
+        $happiness_survey_get = HappinessSurvey::where('user_id', Auth::user()->id)->where('year', date('Y'))->where('deleted_at', null)->first();
         return success_response(
             trans('Happiness survey successfully fetched!'),
             $happiness_survey_get,
@@ -61,7 +61,7 @@ class HappinessController extends Controller
                 $data[$field] = $request->$field;
             }
             $data['user_id'] = Auth::user()->id;
-            $data['year'] = '2025';
+            $data['year'] = date('Y');
             $data['created_at'] = Carbon::now();
             $data['updated_at'] = Carbon::now();
 

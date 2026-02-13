@@ -491,6 +491,8 @@ class Dashboard extends Component {
     };
     const hr_list = this.props.settings.hr_list;
     const equipment_list = this.state.equipment_list;
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
 
     return (
       <Wrapper {...this.props}>
@@ -1348,7 +1350,7 @@ class Dashboard extends Component {
 
             <Modal className="remark-modal" show={this.state.showHappinessSurveyModal} size="xl">
               <Modal.Header id="nho-modal-header" closeButton>
-                <Modal.Title id="nho-modal-title">Happiness Survey 2025</Modal.Title>
+                <Modal.Title id="nho-modal-title">Happiness Survey {currentYear}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Formik
@@ -1366,12 +1368,12 @@ class Dashboard extends Component {
                             <Row>  
                               <Col size="12"> 
                                 <div className="form-group survey-description">
-                                  <p>As we wrap up 2025, let’s take a moment to celebrate the energy, collaboration, and heart we’ve poured into this year. 
+                                  <p>As we wrap up {currentYear}, let’s take a moment to celebrate the energy, collaboration, and heart we’ve poured into this year. 
                                     🎉 Whether it was a challenge conquered, or a milestone achieved, we did it together — and that’s worth a virtual high-five ✋🤚! 
-                                    Now, as we gear up for an even brighter 2026, we want to hear from you. Your experiences, ideas, and reflections are key to building a workplace where happiness thrives. 
-                                    We invite you to take part in our 2025 Annual Happiness Survey — a quick 5-minute pulse check that helps us understand what’s working and where we can grow. 
+                                    Now, as we gear up for an even brighter {nextYear}, we want to hear from you. Your experiences, ideas, and reflections are key to building a workplace where happiness thrives. 
+                                    We invite you to take part in our {currentYear} Annual Happiness Survey — a quick 5-minute pulse check that helps us understand what’s working and where we can grow. 
                                     Let’s co-create a culture that celebrates joy, purpose, and connection.<br/><br/>
-                                    <b>#ChooseHappiness #Happiness2025</b>
+                                    <b>#ChooseHappiness #Happiness{currentYear}</b>
                                   </p>
                                   <p>5 - Highly Satisfied<br/>4 - Satisfied<br/>3 - Neutral<br/>2 - Dissatisfied<br/>1 - Highly Dissatisfied<br/></p>
                                   <p className="survey-note">Note: All information is required so please ensure that all fields are completed.</p>
