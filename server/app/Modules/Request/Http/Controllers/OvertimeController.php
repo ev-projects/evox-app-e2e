@@ -79,14 +79,31 @@ class OvertimeController extends Controller
      */
     public function update(OvertimeRequest $request, $id){
         try {
-            log_activity( trans('messages.update_overtime_attempt') );
+            if ($request->request_mode === 'dispute') {
+                $overtime_dispute = $this->insertToOvertimeDispute($request);
 
-            $overtime = $this->overtime->find( $id );
+                // decline the original request
+                $overtime = Overtime::findOrFail($id);
+                $overtime->update([
+                    'status' => 'declined',
+                    'updated_by' => auth()->user()->id
+                ]);
 
-            return success_response(
-                trans('messages.update_overtime_success'), 
-                new OvertimeResource( $this->overtime->update( $request->all(), $id ) ) 
-            );
+                return success_response(
+                    trans('messages.dispute_request_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                log_activity( trans('messages.update_overtime_attempt') );
+
+                $overtime = $this->overtime->find( $id );
+
+                return success_response(
+                    trans('messages.update_overtime_success'), 
+                    new OvertimeResource( $this->overtime->update( $request->all(), $id ) ) 
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

@@ -75,12 +75,29 @@ class AlterLogController extends Controller
      */
     public function update(AlterLogRequest $request, $id){
         try {
-            log_activity( trans('messages.update_alter_log_attempt') );
+            if ($request->request_mode === 'dispute') {
+                $alter_log_dispute = $this->insertToAlterLogDispute($request);
 
-            return success_response(
-                trans('messages.update_alter_log_success'), 
-                new AlterLogResource( $this->alter_log->update( $request->all(), $id ) ) 
-            );
+                // decline the original request
+                $alter_log = AlterLog::findOrFail($id);
+                $alter_log->update([
+                    'status' => 'declined',
+                    'updated_by' => auth()->user()->id
+                ]);
+
+                return success_response(
+                    trans('messages.dispute_request_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                log_activity( trans('messages.update_alter_log_attempt') );
+
+                return success_response(
+                    trans('messages.update_alter_log_success'), 
+                    new AlterLogResource( $this->alter_log->update( $request->all(), $id ) ) 
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

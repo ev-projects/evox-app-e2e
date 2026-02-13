@@ -90,14 +90,31 @@ class RestDayWorkController extends Controller
      */
     public function update(RestDayWorkRequest $request, $id){
         try {
-            log_activity( trans('messages.update_rest_day_work_attempt') );
+            if ($request->request_mode === 'dispute') {
+                $rdw_dispute = $this->insertToRestDayWorkDispute($request);
 
-            $rest_day_work = $this->rest_day_work->find( $id );
+                // decline the original request
+                $rest_day_work = RestDayWork::findOrFail($id);
+                $rest_day_work->update([
+                    'status' => 'declined',
+                    'updated_by' => auth()->user()->id
+                ]);
 
-            return success_response(
-                trans('messages.update_rest_day_work_success'), 
-                new RestDayWorkResource( $this->rest_day_work->update( $request->all(), $id ) ) 
-            );
+                return success_response(
+                    trans('messages.dispute_request_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                log_activity( trans('messages.update_rest_day_work_attempt') );
+
+                $rest_day_work = $this->rest_day_work->find( $id );
+
+                return success_response(
+                    trans('messages.update_rest_day_work_success'), 
+                    new RestDayWorkResource( $this->rest_day_work->update( $request->all(), $id ) ) 
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

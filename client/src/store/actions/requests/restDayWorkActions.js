@@ -21,7 +21,7 @@ export const addRestDayWork = ( post_data ) => {
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
+            dispatch( Formatter.alert_success( result, 10000 ));
             // dispatch(fetchRequestList({
             //     status:           "pending",
             //     valid_from:       null,
@@ -75,7 +75,7 @@ export const updateRestDayWork = ( id, post_data ) => {
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
+            dispatch( Formatter.alert_success( result, 10000 ));
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
@@ -98,7 +98,7 @@ export const updateRestDayWorkStatus = ( id, post_data, status, user_id, fromdat
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
+            dispatch( Formatter.alert_success( result, 10000 ));
             dispatch(fetchRequestList({
                 status:           "pending",
                 valid_from:       fromdate,
