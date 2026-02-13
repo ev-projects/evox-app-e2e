@@ -22,7 +22,7 @@ export const addAlterLog = ( post_data ) => {
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
+            dispatch( Formatter.alert_success( result, 10000 ));
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
@@ -46,7 +46,7 @@ export const updateAlterLog = ( id, post_data ) => {
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
+            dispatch( Formatter.alert_success( result, 10000 ));
             
             dispatch({
                 'type'      : 'SET_REDIRECT',
@@ -71,7 +71,7 @@ export const updateAlterLogStatus = ( id, post_data, status, user_id, fromdate, 
             data: post_data
         })
         .then(result => {
-            dispatch( Formatter.alert_success( result, 3000 ));
+            dispatch( Formatter.alert_success( result, 10000 ));
             dispatch(fetchRequestList({
                 status:           "pending",
                 valid_from:       fromdate,

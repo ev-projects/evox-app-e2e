@@ -200,45 +200,99 @@ class RequestController extends Controller
     public function bulkRequest(Request $request){
         try {
             log_activity( trans('messages.bulk_request_change_status_attempt') );
-            $data = array();
+            $has_dispute = false;
             foreach ( $request->checkedList as $value ) {
+                $data = [];
                 $request_bulk = explode(".", $value);
+                $model = null;
 
                 switch ( $request_bulk[1] ) {
 
                     # Overtime
                     case "overtimes":
-                        if($request->bulk_action =="approve"){
+                        $overtime_model = $this->overtime->find($request_bulk[0]);
+                        // call request validity checker
+                        $request_validity = request_validity_checker($overtime_model->user_id, $overtime_model->date);
 
-                            $overtime = $this->overtime->approve( $data , $request_bulk[0] );
-                            $dtr = $overtime->dtr()->first() ;
-                            if($dtr!=null){
-                                $this->dtr->compute_payroll_items( $dtr );
+                        if ($request_validity === "2") {
+                            if($request->bulk_action =="approve"){
+                                $data = [
+                                    'user_id' => $overtime_model->user_id,
+                                    'date' => $overtime_model->date,
+                                    'amount' => $overtime_model->amount,
+                                    'type' => $overtime_model->type,
+                                    'employee_note' => $overtime_model->employee_note,
+                                    'approver_note' => $overtime_model->approver_note,
+                                ];
+                                $overtime_dispute = $this->insertToOvertimeDispute($data);
                             }
 
-                        }elseif($request->bulk_action =="deny"){
+                            // decline the original request
+                            $overtime_model->update([
+                                'status' => 'declined',
+                                'updated_by' => auth()->user()->id
+                            ]);
+                            $has_dispute = true;
+                        } else {
+                            if($request->bulk_action =="approve"){
 
-                            $overtime = $this->overtime->decline( $data , $request_bulk[0]);
-                            $dtr = $overtime->dtr()->first() ;
-                            if($dtr!=null){
-                                $this->dtr->compute_payroll_items( $dtr );
+                                $overtime = $this->overtime->approve( $data , $request_bulk[0] );
+                                $dtr = $overtime->dtr()->first() ;
+                                if($dtr!=null){
+                                    $this->dtr->compute_payroll_items( $dtr );
+                                }
+
+                            }elseif($request->bulk_action =="deny"){
+
+                                $overtime = $this->overtime->decline( $data , $request_bulk[0]);
+                                $dtr = $overtime->dtr()->first() ;
+                                if($dtr!=null){
+                                    $this->dtr->compute_payroll_items( $dtr );
+                                }
+
                             }
-
                         }
                       break;
 
                     #Alter Log
                     case "alter_logs":
-                        if($request->bulk_action =="approve"){
+                        $alterlog_model = $this->alter_log->find($request_bulk[0]);
+                        // call request validity checker
+                        $request_validity = request_validity_checker($alterlog_model->user_id, $alterlog_model->date);
 
-                            $alter_log = $this->alter_log->approve( $data , $request_bulk[0] );
-                            $dtr = $this->dtr->apply_alter_log_to_dtr( $alter_log );
+                        if ($request_validity === "2") {
+                            if($request->bulk_action =="approve"){
+                                $data = [
+                                    'user_id' => $alterlog_model->user_id,
+                                    'date' => $alterlog_model->date,
+                                    'current_time_in' => $alterlog_model->current_time_in,
+                                    'current_time_out' => $alterlog_model->current_time_out,
+                                    'new_time_in' => $alterlog_model->new_time_in,
+                                    'new_time_out' => $alterlog_model->new_time_out,
+                                    'employee_note' => $alterlog_model->employee_note,
+                                    'approver_note' => $alterlog_model->approver_note,
+                                ];
+                                $alterlog_dispute = $this->insertToAlterLogDispute($data);
+                            }
 
-                        }elseif($request->bulk_action =="deny"){
+                            // decline the original request
+                            $alterlog_model->update([
+                                'status' => 'declined',
+                                'updated_by' => auth()->user()->id
+                            ]);
+                            $has_dispute = true;
+                        } else {
+                            if($request->bulk_action =="approve"){
 
-                            $alter_log = $this->alter_log->decline( $data , $request_bulk[0]);
-                            $dtr = $this->dtr->remove_alter_log_from_dtr( $alter_log );
+                                $alter_log = $this->alter_log->approve( $data , $request_bulk[0] );
+                                $dtr = $this->dtr->apply_alter_log_to_dtr( $alter_log );
 
+                            }elseif($request->bulk_action =="deny"){
+
+                                $alter_log = $this->alter_log->decline( $data , $request_bulk[0]);
+                                $dtr = $this->dtr->remove_alter_log_from_dtr( $alter_log );
+
+                            }
                         }
                         break;
                     #Alter Log
@@ -278,24 +332,56 @@ class RequestController extends Controller
 
                     # Rest Day Works
                     case "rest_day_works":
-                        if($request->bulk_action =="approve"){
+                        $rdw_model = $this->rest_day_work->find($request_bulk[0]);
+                        // call request validity checker
+                        $request_validity = request_validity_checker($rdw_model->user_id, $rdw_model->date);
 
-                            $rest_day_work =  $this->rest_day_work->approve( $data , $request_bulk[0] );
-                            $dtr = $this->dtr->apply_rest_day_work_to_dtr( $rest_day_work );
+                        if ($request_validity === "2") {
+                            if($request->bulk_action =="approve"){
+                                $data = [
+                                    'user_id' => $rdw_model->user_id,
+                                    'date' => $rdw_model->date,
+                                    'start_time' => $rdw_model->start_time,
+                                    'end_time' => $rdw_model->end_time,
+                                    'break_time' => $rdw_model->break_time,
+                                    'employee_note' => $rdw_model->employee_note,
+                                    'approver_note' => $rdw_model->approver_note,
+                                ];
+                                $rdw_dispute = $this->insertToRestDayWorkDispute($data);
+                            }
 
-                        }elseif($request->bulk_action =="deny"){
+                            // decline the original request
+                            $rdw_model->update([
+                                'status' => 'declined',
+                                'updated_by' => auth()->user()->id
+                            ]);
+                            $has_dispute = true;
+                        } else {
+                            if($request->bulk_action =="approve"){
 
-                            $rest_day_work = $this->rest_day_work->decline( $data , $request_bulk[0] );
-                            $dtr = $this->dtr->remove_rest_day_from_dtr( $rest_day_work );
+                                $rest_day_work =  $this->rest_day_work->approve( $data , $request_bulk[0] );
+                                $dtr = $this->dtr->apply_rest_day_work_to_dtr( $rest_day_work );
 
+                            }elseif($request->bulk_action =="deny"){
+
+                                $rest_day_work = $this->rest_day_work->decline( $data , $request_bulk[0] );
+                                $dtr = $this->dtr->remove_rest_day_from_dtr( $rest_day_work );
+
+                            }
                         }
                       break;
                     default:
                   }                
             }
 
+            $messageKey = 'messages.bulk_request_update';
+            if ($request->bulk_action === 'approve' && $has_dispute) {
+                $messageKey = 'messages.bulk_approve_with_dispute';
+            }
+
             return success_response(
-                trans('messages.bulk_request_update'),$request->bulk_action 
+                trans($messageKey),
+                $request->bulk_action
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -516,11 +602,98 @@ class RequestController extends Controller
         }
     }
 
-    public function requestValidityChecker()
+    public function requestValidityChecker(Request $request)
     {
         return success_response(
             "Request validity checking completed!",
-            call_sp('EV_SP_Validate_Request_Payroll_Period', [auth()->user()->id, null])[0][0]
+            call_sp('EV_SP_Validate_Request_Payroll_Period', [auth()->user()->id, $request->date])[0][0]
+        );
+    }
+
+    public function insertToAlterLogDispute($request)
+    {
+        // call SP to store request on dispute table
+        $auth_user_offset =  Auth::user() && Auth::user()->country_timezone_to_offset() ? string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): 0;
+        $alter_log_dispute = [
+            ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+            ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+            ( isset( $request['current_time_in'] ) && is_valid( $request['current_time_in'] ) ) ? $request['current_time_in'] : null,
+            ( isset( $request['current_time_out'] ) && is_valid( $request['current_time_out'] ) ) ? $request['current_time_out'] : null,
+            ( isset( $request['new_time_in'] ) && is_valid( $request['new_time_in'] ) ) ? $request['new_time_in'] : null,
+            ( isset( $request['new_time_out'] ) && is_valid( $request['new_time_out'] ) ) ? $request['new_time_out'] : null,
+            ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+            ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+            "approved",
+            auth()->user()->id,
+            auth()->user()->id
+        ];
+        call_sp('EV_SP_PD_Autoamtion_AlterLog', $alter_log_dispute);
+        return array(
+            'user_id' => $alter_log_dispute[0],
+            'date' => $alter_log_dispute[1],
+            'current_time_in' => $alter_log_dispute[2],
+            'current_time_out' => $alter_log_dispute[3],
+            'new_time_in' => $alter_log_dispute[4],
+            'new_time_out' => $alter_log_dispute[5],
+            'employee_note' => $alter_log_dispute[6],
+        );
+    }
+
+    public function insertToOvertimeDispute($request)
+    {
+        // call SP to store request on dispute table
+        $overtime_dispute = [
+            ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+            ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+            null,
+            ( isset( $request['amount'] ) && is_valid( $request['amount'] ) ) ? $request['amount'] : 0,
+            ( isset( $request['type'] ) && is_valid( $request['type'] ) ) ? $request['type'] : null,
+            ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+            ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+            "approved",
+            auth()->user()->id,
+            auth()->user()->id,
+        ];
+        call_sp('EV_SP_PD_Autoamtion_Overtimes', $overtime_dispute);
+        return array(
+            'user_id' => $overtime_dispute[0],
+            'date' => $overtime_dispute[1],
+            'amount' => $overtime_dispute[3],
+            'type' => $overtime_dispute[4],
+            'employee_note' => $overtime_dispute[5],
+        );
+    }
+
+    public function insertToRestDayWorkDispute($request)
+    {
+        $start_time = ( isset( $request['start_time'] ) && is_valid( $request['start_time'] ) ) ? add_time_to_timestamp( $request['date'], $request['start_time'] ) : 0;
+        $end_time = ( isset( $request['end_time'] )   && is_valid( $request['end_time'] ) ) ? add_time_to_timestamp( $request['date'], $request['end_time'] ) : 0;
+
+        # Checks if the Start-Time is greater than the End-Time, adds another day for the End-Time.
+        if( $start_time >= $end_time ) {
+            $end_time = add_days_to_timestamp( $end_time, 1 );
+        }
+        $rdw_dispute = [
+            ( isset( $request['user_id'] ) && is_valid( $request['user_id'] ) ) ? $request['user_id'] : auth()->user()->id,
+            ( isset( $request['date'] ) && is_valid( $request['date'] ) ) ? $request['date'] : null,
+            $start_time,
+            $end_time,
+            ( isset( $request['break_time'] ) && is_valid( $request['break_time'] ) ) ? $request['break_time'] : 0,
+            ( isset( $request['employee_note'] ) && is_valid( $request['employee_note'] ) ) ? $request['employee_note'] : null,
+            ( isset( $request['approver_note'] ) && is_valid( $request['approver_note'] ) ) ? $request['approver_note'] : null,
+            "approved",
+            auth()->user()->id,
+            auth()->user()->id,
+        ];
+        // call SP to store request on dispute table
+        call_sp('EV_SP_PD_Autoamtion_RestDay', $rdw_dispute);
+        return array(
+            'user_id' => $rdw_dispute[0],
+            'date' => $rdw_dispute[1],
+            'start_time' => $request['start_time'],
+            'end_time' => $request['end_time'],
+            'break_time' => $rdw_dispute[4],
+            'employee_note' => $rdw_dispute[5],
         );
     }
 

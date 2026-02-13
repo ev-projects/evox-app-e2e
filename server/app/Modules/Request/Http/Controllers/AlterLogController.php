@@ -40,10 +40,9 @@ class AlterLogController extends Controller
      */
     public function store(AlterLogRequest $request){
         try {
-            // call request validity checker
-            $request_validity = request_validity_checker($request->user_id, $request->date);
+            $requester = auth()->user();
 
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+            if ($request->request_mode === 'dispute') {
                 $alter_log_dispute = $this->insertToAlterLogDispute($request);
                 $this->email->sendAlterLogDisputeEmail($alter_log_dispute);
 
@@ -76,12 +75,29 @@ class AlterLogController extends Controller
      */
     public function update(AlterLogRequest $request, $id){
         try {
-            log_activity( trans('messages.update_alter_log_attempt') );
+            if ($request->request_mode === 'dispute') {
+                $alter_log_dispute = $this->insertToAlterLogDispute($request);
 
-            return success_response(
-                trans('messages.update_alter_log_success'), 
-                new AlterLogResource( $this->alter_log->update( $request->all(), $id ) ) 
-            );
+                // decline the original request
+                $alter_log = AlterLog::findOrFail($id);
+                $alter_log->update([
+                    'status' => 'declined',
+                    'updated_by' => auth()->user()->id
+                ]);
+
+                return success_response(
+                    trans('messages.dispute_request_success'),
+                    [],
+                    JsonResponse::HTTP_CREATED
+                );
+            } else {
+                log_activity( trans('messages.update_alter_log_attempt') );
+
+                return success_response(
+                    trans('messages.update_alter_log_success'), 
+                    new AlterLogResource( $this->alter_log->update( $request->all(), $id ) ) 
+                );
+            }
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -130,11 +146,18 @@ class AlterLogController extends Controller
             // call request validity checker
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
-            if (!$request_validity || $request_validity == 0 || $request_validity == 2) {
+            if ($request_validity == 2) {
                 $alter_log_dispute = $this->insertToAlterLogDispute($request);
 
+                // decline the original request
+                $alter_log = AlterLog::findOrFail($id);
+                $alter_log->update([
+                    'status' => 'declined',
+                    'updated_by' => auth()->user()->id
+                ]);
+
                 return success_response(
-                    trans('messages.invalid_request'),
+                    trans('messages.dispute_approve_success'),
                     [],
                     JsonResponse::HTTP_CREATED
                 );

@@ -256,6 +256,8 @@ return [
     'dispute_record_success' => 'Successfully fetched dispute record.',
     'dispute_status_success' => 'Successfully updated status of dispute record.',
     'dispute_export_success' => 'Successfully exported dispute summary.',
+    'dispute_approve_success' => 'Payroll report has been generated for this period. This request is considered a dispute. Please check the dispute report for further approval.',
+    'bulk_approve_with_dispute' => "Certain requests fall under a previous payroll cutoff and are marked as Disputed. Kindly review the Payroll Dispute Report for approval.",
 
     
     /**

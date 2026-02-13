@@ -300,7 +300,7 @@ export const bulkRequest = (post_data) => {
       data: post_data,
     })
       .then((result) => {
-        dispatch(Formatter.alert_success(result));
+        dispatch(Formatter.alert_success(result, 10000));
         return result; // allow chaining
       })
       .catch((e) => {
