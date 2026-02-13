@@ -199,13 +199,13 @@ class Dashboard extends Component {
       // if hire date is still within the user's first two weeks and has no NHO survey yet, then show survey modal
       if (nho_survey_valid && (this.props.user.user_nho_survey && Object.keys(this.props.user.user_nho_survey).length <= 0)) {
         this.setState({ showModal : true });
-      }
 
-      // don't allow closing of modal if the user is already on the 2nd week
-      const new_start_date = new Date(this.props.user.date_hired);
-      new_start_date.setDate(new_start_date.getDate() + 7);
-      if (today >= new_start_date && today <= end_date) {
-        this.setState({ allowModalClose: false });
+        // don't allow closing of modal if the user is already on the 2nd week
+        const new_start_date = new Date(this.props.user.date_hired);
+        new_start_date.setDate(new_start_date.getDate() + 7);
+        if (today >= new_start_date && today <= end_date) {
+          this.setState({ allowModalClose: false });
+        }
       }
     }
 
@@ -283,8 +283,8 @@ class Dashboard extends Component {
       this.props.getHappinessSurvey();
     }
 
-    // if user does not have happiness survey yet, show happiness survey modal
-    if (this.props.user.user_happiness_survey === null) {
+    // if user does not have happiness survey yet and this popup is still active, show happiness survey modal
+    if (this.props.user.user_happiness_survey === null && this.props.settings.popup_flags?.happiness_survey === true) {
       this.setState({ showHappinessSurveyModal : true });
     }
 
@@ -491,6 +491,8 @@ class Dashboard extends Component {
     };
     const hr_list = this.props.settings.hr_list;
     const equipment_list = this.state.equipment_list;
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
 
     return (
       <Wrapper {...this.props}>
@@ -1319,7 +1321,7 @@ class Dashboard extends Component {
               </Modal.Body>
             </Modal>
 
-            <Modal className="remark-modal" show={this.state.showReferralBannerModal} onHide={this.state.allowModalClose ? this.onHide : null} size="xl">
+            <Modal className="remark-modal" show={this.state.showReferralBannerModal} onHide={this.onHide} size="xl">
               <Modal.Header id="nho-modal-header" closeButton>
                 <Modal.Title id="nho-modal-title">SPECIAL REFERRAL DRIVE: Earn upto ₱35,000 per Hire!</Modal.Title>
               </Modal.Header>
@@ -1348,7 +1350,7 @@ class Dashboard extends Component {
 
             <Modal className="remark-modal" show={this.state.showHappinessSurveyModal} size="xl">
               <Modal.Header id="nho-modal-header" closeButton>
-                <Modal.Title id="nho-modal-title">Happiness Survey 2025</Modal.Title>
+                <Modal.Title id="nho-modal-title">Happiness Survey {currentYear}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Formik
@@ -1366,12 +1368,12 @@ class Dashboard extends Component {
                             <Row>  
                               <Col size="12"> 
                                 <div className="form-group survey-description">
-                                  <p>As we wrap up 2025, let’s take a moment to celebrate the energy, collaboration, and heart we’ve poured into this year. 
+                                  <p>As we wrap up {currentYear}, let’s take a moment to celebrate the energy, collaboration, and heart we’ve poured into this year. 
                                     🎉 Whether it was a challenge conquered, or a milestone achieved, we did it together — and that’s worth a virtual high-five ✋🤚! 
-                                    Now, as we gear up for an even brighter 2026, we want to hear from you. Your experiences, ideas, and reflections are key to building a workplace where happiness thrives. 
-                                    We invite you to take part in our 2025 Annual Happiness Survey — a quick 5-minute pulse check that helps us understand what’s working and where we can grow. 
+                                    Now, as we gear up for an even brighter {nextYear}, we want to hear from you. Your experiences, ideas, and reflections are key to building a workplace where happiness thrives. 
+                                    We invite you to take part in our {currentYear} Annual Happiness Survey — a quick 5-minute pulse check that helps us understand what’s working and where we can grow. 
                                     Let’s co-create a culture that celebrates joy, purpose, and connection.<br/><br/>
-                                    <b>#ChooseHappiness #Happiness2025</b>
+                                    <b>#ChooseHappiness #Happiness{currentYear}</b>
                                   </p>
                                   <p>5 - Highly Satisfied<br/>4 - Satisfied<br/>3 - Neutral<br/>2 - Dissatisfied<br/>1 - Highly Dissatisfied<br/></p>
                                   <p className="survey-note">Note: All information is required so please ensure that all fields are completed.</p>
