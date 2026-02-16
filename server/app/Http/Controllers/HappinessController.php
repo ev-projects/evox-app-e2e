@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\HappinessSurvey;
+use App\PopupFlags;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
@@ -12,6 +13,12 @@ class HappinessController extends Controller
     public function getHappinessSurvey()
     {
         $happiness_survey_get = HappinessSurvey::where('user_id', Auth::user()->id)->where('year', date('Y'))->where('deleted_at', null)->first();
+        
+        $popup_flag = PopupFlags::where('key', 'happiness_survey')->first();
+        if ($popup_flag && $popup_flag->status == 0) {
+            $happiness_survey_get = null;
+        }
+
         return success_response(
             trans('Happiness survey successfully fetched!'),
             $happiness_survey_get,
