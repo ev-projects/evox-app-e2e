@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Request\Http\Requests\ChangeScheduleRequest;
+use App\Modules\Request\Models\ChangeSchedule;
 use App\Modules\Schedule\Http\Requests\StoreScheduleRequest;
 
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
@@ -140,10 +141,15 @@ class ChangeScheduleController extends Controller
         try {
             log_activity( trans('messages.decline_change_schedule_attempt') );
 
+            $cs_request = ChangeSchedule::findOrFail($id);
+            $current_cs_status = $cs_request->status;
+
             $change_schedule = $this->change_schedule->decline( $request->all(), $id );
             
             // Add code to remove the Schedule on the specific DTRs.
-            $dtr = $this->dtr->remove_schedule_to_dtr( $change_schedule->user_id, $change_schedule->schedule()->first() );
+            if ($current_cs_status == "approved") {
+                $dtr = $this->dtr->remove_schedule_to_dtr( $change_schedule->user_id, $change_schedule->schedule()->first() );
+            }
 
             return success_response(
                 trans('messages.decline_change_schedule_success'), 

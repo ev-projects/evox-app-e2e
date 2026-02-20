@@ -544,20 +544,32 @@ class DtrRepository implements DtrRepositoryInterface{
                     // Gets the Best Schedule for the DTR
                     $best_schedule = $dtr->getBestSchedule();
 
-                    # Get the Schedule Details for the Day of the Specific Date. Returns null if not existing.
+                    # Get the Schedule Details for the Day of the Specific( Date. Returns null if not existing.
                     $schedule_detail = ( is_valid( $best_schedule ) ? $best_schedule->getPerDay( get_day_from_date( $dtr->date ) ) : null);
 
                     # Get the Parsed Schedule Detail to Date
                     $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $dtr->date ) : null);
 
+                    if (!is_valid($parsed_schedule_detail)) {
+                        log_to_file( 'warning', "Invalid parsed schedule detail", [$dtr, $parsed_schedule_detail], "dtr");
+                    }
                     # Update the DTR properties
-                    $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
-                    $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
-                    $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
-                    $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
-                    $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                    $is_rest_day                =  ( is_valid($schedule_detail) ) ? 0 : 1;
+                    if ($is_rest_day == 1) {
+                        $dtr->start_datetime        =  null;
+                        $dtr->end_datetime          =  null;
+                        $dtr->start_flexy_datetime  =  null;
+                        $dtr->end_flexy_datetime    =  null;
+                        $dtr->break_time            =  null;
+                    } else {
+                        $dtr->start_datetime        =  $parsed_schedule_detail['start_datetime'];
+                        $dtr->end_datetime          =  $parsed_schedule_detail['end_datetime'];
+                        $dtr->start_flexy_datetime  =  $parsed_schedule_detail['start_flexy_datetime'];
+                        $dtr->end_flexy_datetime    =  $parsed_schedule_detail['end_flexy_datetime'];
+                        $dtr->break_time            =  $parsed_schedule_detail['break_time'];
+                    }
 
-                    $dtr->is_rest_day           =  ( is_valid($schedule_detail) ) ? 0 : 1;
+                    $dtr->is_rest_day           =  $is_rest_day;
                     $dtr->source_type_tagging   =  ( is_valid($best_schedule) ) ? $best_schedule->source_type : $dtr->source_type_tagging;
 
                     $dtr->update();
