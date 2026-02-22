@@ -142,12 +142,12 @@ class ChangeScheduleController extends Controller
             log_activity( trans('messages.decline_change_schedule_attempt') );
 
             $cs_request = ChangeSchedule::findOrFail($id);
-            $current_cs_status = $cs_request->status;
+            $previous_cs_status = $cs_request->status;
 
             $change_schedule = $this->change_schedule->decline( $request->all(), $id );
             
             // Add code to remove the Schedule on the specific DTRs.
-            if ($current_cs_status == "approved") {
+            if ($previous_cs_status == "approved") {
                 $dtr = $this->dtr->remove_schedule_to_dtr( $change_schedule->user_id, $change_schedule->schedule()->first() );
             }
 

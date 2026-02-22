@@ -321,10 +321,12 @@ class RequestController extends Controller
                             }
 
                         }elseif($request->bulk_action =="deny"){
+                            $cs_request = ChangeSchedule::find($request_bulk[0]);
+                            $previous_cs_status = $cs_request ? $cs_request->status : "";
                             $change_schedule = $this->change_schedule->decline($data , $request_bulk[0] );
                             
                             $sched_schedule = $change_schedule->schedule()->first();
-                            if($sched_schedule!=null){
+                            if( $sched_schedule!=null && $previous_cs_status == "approved"){
                                 $dtr = $this->dtr->remove_schedule_to_dtr( $change_schedule->user_id, $change_schedule->schedule()->first() );
                             }
                         }
