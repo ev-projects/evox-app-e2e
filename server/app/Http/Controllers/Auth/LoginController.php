@@ -97,9 +97,9 @@ class LoginController extends Controller
 
     public function redirectToMS(Request $request)
     {
-        $tenant_id = env('MSGRAPH_TENANT_ID');
-        $client_id = env('MSGRAPH_CLIENT_ID');
-        $redirect_uri = urlencode(env('MSGRAPH_LANDING_URL'));
+        $tenant_id = config('services.microsoft.tenant_id');
+        $client_id = config('services.microsoft.client_id');
+        $redirect_uri = config('services.microsoft.redirect');
         $user_state = Str::random(30);
         $auth_url = "https://login.microsoftonline.com/{$tenant_id}/oauth2/v2.0/authorize?client_id={$client_id}&response_type=code&redirect_uri={$redirect_uri}&response_mode=query&scope=user.read&state={$user_state}";
 
@@ -128,10 +128,10 @@ class LoginController extends Controller
             return redirect()->away(env('FRONT_END_URL') . "login");
         }
 
-        $tenant_id = env('MSGRAPH_TENANT_ID');
-        $client_id = env('MSGRAPH_CLIENT_ID');
-        $client_secret = env('MSGRAPH_CLIENT_SECRET');
-        $redirect_uri = env('MSGRAPH_LANDING_URL');
+        $tenant_id = config('services.microsoft.tenant_id');
+        $client_id = config('services.microsoft.client_id');
+        $client_secret = config('services.microsoft.client_secret');
+        $redirect_uri = config('services.microsoft.redirect');
 
         $client = new Client();
 

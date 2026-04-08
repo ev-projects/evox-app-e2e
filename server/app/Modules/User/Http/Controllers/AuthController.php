@@ -215,13 +215,13 @@ class AuthController extends Controller
      */
     public function authenticateMSClient(Request $request){   
         try {
-            $tenant_id = env('MSGRAPH_TENANT_ID');
-            $client_id = env('MSGRAPH_CLIENT_ID');
+            $tenant_id = config('services.microsoft.tenant_id');
+            $client_id = config('services.microsoft.client_id');
+            $client_secret = config('services.microsoft.client_secret');
+            $redirect_uri = config('services.microsoft.redirect');
             $scope = 'User.Read';
             $code = $request->code;
-            $redirect_uri = env('MSGRAPH_LANDING_URL');
             $grant_type = "authorization_code";
-            $client_secret = env('MSGRAPH_CLIENT_SECRET');
             $token_request = ms_get_access_token($tenant_id, array(
                 'client_id' => $client_id,
                 'scope' => $scope,
