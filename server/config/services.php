@@ -41,4 +41,12 @@ return [
         'redirect' => env('GOOGLE_REDIRECT'),
     ],
 
+    'microsoft' => [
+        'api' => env('MSGRAPH_API', 'https://graph.microsoft.com/v1.0/'),
+        'tenant_id' => env('MSGRAPH_TENANT_ID'),
+        'client_id' => env('MSGRAPH_CLIENT_ID'),
+        'client_secret' => env('MSGRAPH_CLIENT_SECRET'),
+        'redirect' => env('MSGRAPH_LANDING_URL'),
+    ],
+
 ];

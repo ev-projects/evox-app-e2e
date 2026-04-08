@@ -78,8 +78,8 @@ if (! function_exists('ms_call_api')) {
 
             # Create the Response variable that handles the Curl Request
 
-            $link = 'MSGRAPH_API';
-            $request = Curl::to( env($link) . $api_endpoint )
+            $link = config('services.microsoft.api');
+            $request = Curl::to( $link . $api_endpoint )
                             ->withHeader('Authorization: Bearer ' . $access_token)
                             ->withTimeout(300)
                             ->withConnectTimeout(300)
