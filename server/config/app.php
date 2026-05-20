@@ -177,6 +177,11 @@ return [
         App\Modules\Department\Providers\AnnouncementServiceProvider::class,
 
         App\Modules\Client\Providers\ClientServiceProvider::class,
+
+        // Stefan Attendance API (Apr 30 2026 — sprint-02-plan.md §1)
+        App\Modules\Attendance\Providers\ModuleServiceProvider::class,
+        App\Modules\Attendance\Providers\AttendanceServiceProvider::class,
+        
         App\Modules\Team\Providers\TeamServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
