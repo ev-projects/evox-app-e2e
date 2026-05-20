@@ -13,9 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/opsschedule', 'OpsScheduleController@get');
-Route::get('/opsschedule/show/{ops_sched_id}', 'OpsScheduleController@show');
-Route::get('/opsschedule/list/{dept_id?}', 'OpsScheduleController@getList');
-Route::post('/opsschedule', 'OpsScheduleController@store');
-Route::put('/opsschedule/{ops_sched_id}', 'OpsScheduleController@update');
-Route::delete('/opsschedule/{ops_sched_id}', 'OpsScheduleController@delete');
+Route::group(['prefix' => 'opsschedule', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
+    Route::get('/', 'OpsScheduleController@get');
+    Route::get('/show/{ops_sched_id}', 'OpsScheduleController@show');
+    Route::get('/list/{dept_id?}', 'OpsScheduleController@getList');
+    Route::post('/', 'OpsScheduleController@store');
+    Route::put('/{ops_sched_id}', 'OpsScheduleController@update');
+    Route::delete('/{ops_sched_id}', 'OpsScheduleController@delete');
+});
