@@ -111,3 +111,6 @@ Route::group(['prefix' => 'freshservice/', 'middleware' => ['jwtauth', 'auth.api
 // Happiness Survey
 Route::get('happiness_survey', 'HappinessController@getHappinessSurvey')->middleware('jwtauth', 'auth.apikey');
 Route::post('happiness_survey', 'HappinessController@addHappinessSurvey')->middleware('jwtauth', 'auth.apikey');
+
+// Masters — lookup tables for the Stefan Attendance API (EVOX-254)
+Route::get('masters/departments', 'MastersController@departments')->middleware('jwtauth', 'auth.apikey');

@@ -164,7 +164,7 @@ class BhrRepository implements BhrRepositoryInterface{
                 $profile_picture = bhr_api_call('GET', 'employees/'.$bhr_user_number.'/photo/medium');
 
                 // Parse to base64_encode
-                $result = base64_encode($profile_picture);
+                $result = base64_encode($profile_picture->fileBase64);
                     
                 log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
                 log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");

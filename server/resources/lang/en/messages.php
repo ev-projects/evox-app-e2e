@@ -20,6 +20,17 @@ return [
     'token_absent'  => 'Session time-out. Please re-login.',
 
     /**
+     *  Stefan Attendance API (Apr 30 2026 — sprint-02-plan.md §1)
+     */
+    'attendance_fetch_success'         => 'Attendance fetched successfully.',
+    'attendance_geo_not_found'         => 'The requested geo (country) does not exist.',
+    'attendance_department_not_found'  => 'The requested department does not exist.',
+    'attendance_employee_not_found'    => 'The requested employee does not exist.',
+    'attendance_forbidden_geo'         => 'You are not allowed to read attendance for this geo.',
+    'attendance_forbidden_department'  => 'You are not allowed to read attendance for this department.',
+    'attendance_forbidden_employee'    => 'You are not allowed to read attendance for this employee.',
+
+    /**
      *  User Authentication
      */
     'user_email_not_found' => 'Sorry, looks like you entered the wrong email address. Kindly ask the HR which email address is registered on your profile.',
