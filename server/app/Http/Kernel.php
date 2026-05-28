@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
         \Spatie\Cors\Cors::class,
+        \App\Http\Middleware\CoverageMiddleware::class,
     ];
 
     /**
@@ -47,7 +48,7 @@ class Kernel extends HttpKernel
 
         'jwtauth' => [
             \App\Modules\User\Http\Middleware\JWTAuthentication::class,
-            \App\Http\Middleware\ComputeAPIProcessTime::class
+            \App\Http\Middleware\ComputeAPIProcessTime::class,
         ],
     ];
 
