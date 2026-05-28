@@ -39,17 +39,19 @@ class MastersController extends Controller
              */
             $departments = DB::table('EVOX_DEPARTMENT as d')
                 ->select([
-                    'd.Id   as id',
+                    'd.Id as id',
                     'd.Name as name',
                     DB::raw('(
                         SELECT u.country_id
-                        FROM   users u
-                        WHERE  u.department_id = d.Id
-                          AND  u.is_active = 1
-                          AND  u.deleted_at IS NULL
-                        GROUP  BY u.country_id
-                        ORDER  BY COUNT(*) DESC
-                        LIMIT  1
+                        FROM users u
+                        INNER JOIN EVOX_SUB_DEPARTMENT sd
+                            ON sd.Id = u.SubDepartmentID
+                        WHERE sd.DepartmentId = d.Id
+                        AND u.is_active = 1
+                        AND u.deleted_at IS NULL
+                        GROUP BY u.country_id
+                        ORDER BY COUNT(*) DESC
+                        LIMIT 1
                     ) as geo_id'),
                 ])
                 ->orderBy('d.Name', 'asc')
