@@ -16,6 +16,7 @@ use App\Modules\Attendance\Http\Requests\AttendanceByGeoRequest;
 use App\Modules\Attendance\Http\Requests\AttendanceByDepartmentRequest;
 use App\Modules\Attendance\Http\Requests\AttendanceByEmployeeRequest;
 use App\Modules\Attendance\Services\AttendanceGeoGate;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
@@ -113,7 +114,7 @@ class AttendanceController extends Controller
         try {
             $me = Auth::user();
 
-            $department = Department::find((int) $departmentId);
+            $department = DB::table('EVOX_DEPARTMENT')->where('Id', (int) $departmentId)->first();
             if (!$department) {
                 return error_response(
                     trans('messages.attendance_department_not_found'),
@@ -139,8 +140,8 @@ class AttendanceController extends Controller
                 trans('messages.attendance_fetch_success'),
                 [
                     'department' => [
-                        'id'              => $department->id,
-                        'department_name' => $department->department_name,
+                        'id'              => $department->Id,
+                        'department_name' => $department->Name,
                     ],
                     'date_range' => ['from' => $from, 'to' => $to],
                     'pagination' => [

@@ -55,11 +55,14 @@ class AttendanceRepository implements AttendanceRepositoryInterface
     public function byDepartment(int $departmentId, string $from, string $to, int $perPage): LengthAwarePaginator
     {
         try {
-            return User::where('department_id', $departmentId)
-                ->where('is_active', 1)
-                ->whereNull('deleted_at')
-                ->orderBy('last_name', 'asc')
-                ->orderBy('first_name', 'asc')
+            return User::query()
+                ->join('EVOX_SUB_DEPARTMENT as sd', 'sd.Id', '=', 'users.SubDepartmentID')
+                ->where('sd.DepartmentId', $departmentId)
+                ->where('users.is_active', 1)
+                ->whereNull('users.deleted_at')
+                ->orderBy('users.last_name')
+                ->orderBy('users.first_name')
+                ->select('users.*')
                 ->paginate($perPage);
         } catch (Exception $e) {
             log_error($e);

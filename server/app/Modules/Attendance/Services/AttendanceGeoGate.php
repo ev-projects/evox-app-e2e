@@ -69,11 +69,12 @@ class AttendanceGeoGate
         $allowed = $this->allowedGeoIds($user);
         if (empty($allowed)) { return false; }
 
-        $exists = DB::table('users')
-            ->where('department_id', $departmentId)
-            ->where('is_active', 1)
-            ->whereIn('country_id', $allowed)
-            ->whereNull('deleted_at')
+        $exists = DB::table('users as u')
+            ->join('EVOX_SUB_DEPARTMENT as sd', 'sd.Id', '=', 'u.SubDepartmentID')
+            ->where('sd.DepartmentId', $departmentId)
+            ->where('u.is_active', 1)
+            ->whereIn('u.country_id', $allowed)
+            ->whereNull('u.deleted_at')
             ->exists();
 
         return (bool) $exists;
