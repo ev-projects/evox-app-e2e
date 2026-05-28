@@ -12,21 +12,34 @@ class CoverageMiddleware
             return $next($request);
         }
 
-        // Ensure pcov exists
-        if (!function_exists('pcov\start')) {
+        if (!function_exists('xdebug_start_code_coverage')) {
             return $next($request);
         }
 
-        \pcov\start();
+        if (function_exists('xdebug_stop_code_coverage')) {
+            @xdebug_stop_code_coverage(true);
+        }
+
+        // Start lightweight coverage
+        xdebug_start_code_coverage();
 
         try {
-            $response = $next($request);
+            return $next($request);
+
         } finally {
-            \pcov\stop();
 
-            $data = \pcov\collect();
+            $data = xdebug_get_code_coverage();
 
-            \pcov\clear();
+            xdebug_stop_code_coverage(true);
+
+            // Keep only app code
+            $appPath = base_path('app');
+
+            $filtered = array_filter(
+                $data,
+                fn ($file) => str_starts_with($file, $appPath),
+                ARRAY_FILTER_USE_KEY
+            );
 
             $dir = storage_path('coverage');
 
@@ -34,16 +47,14 @@ class CoverageMiddleware
                 mkdir($dir, 0777, true);
             }
 
-            $path = $request->path();
-            $safePath = str_replace('/', '_', $path);
+            $safePath = str_replace('/', '_', $request->path());
+
             $file = $safePath . '_' . uniqid('e2e_', true) . '.json';
 
             file_put_contents(
-                storage_path('coverage/' . $file),
-                json_encode($data)
+                $dir . '/' . $file,
+                json_encode($filtered, JSON_PRETTY_PRINT)
             );
         }
-
-        return $response;
     }
 }
