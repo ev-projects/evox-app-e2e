@@ -111,6 +111,37 @@ describe('Dashboard Modal', () => {
 
   });
 
+  test('Does not show NHO Survey modal when already completed', () => {
+    const store = createStore(
+      () => ({
+        user: {
+          is_user_nho_valid: "1",
+          is_nho_loaded: true,
+          date_hired: new Date().toISOString(),
+          user_nho_survey: {},
+        },
+        settings: {
+          hr_list: [],
+        },
+      }),
+      applyMiddleware(thunk)
+    );
+
+    render(
+      <Provider store={store}>
+        <Dashboard />
+      </Provider>
+    );
+
+    expect(
+      screen.queryByText(/We Love To Hear Your Onboarding Experience/i)
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByText(/submit/i)
+    ).not.toBeInTheDocument();
+  });
+
   test("Shows ITAM modal when user is eligible", () => {
     const store = createStore(
       () => ({
