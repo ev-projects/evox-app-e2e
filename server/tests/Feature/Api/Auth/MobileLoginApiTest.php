@@ -21,9 +21,11 @@ class MobileLoginApiTest extends ApiTestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
-                'access_token',
-                'token_type',
-                'expires_in',
+                'content' => [
+                    'access_token',
+                    'token_type',
+                    'expires_in',
+                ]
             ]);
     }
 }

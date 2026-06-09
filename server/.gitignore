@@ -16,6 +16,7 @@ yarn-error.log
 # PHPUnit / Xdebug coverage
 coverage/
 storage/coverage/
+reports/
 
 # Clover / XML reports
 coverage.xml

@@ -52,7 +52,7 @@ abstract class ApiTestCase extends TestCase
             $this->headers()
         );
 
-        return $response->json('access_token');
+        return $response->json('content.access_token');
     }
 
     protected function authHeaders($token)

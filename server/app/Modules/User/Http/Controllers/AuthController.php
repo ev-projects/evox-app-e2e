@@ -47,6 +47,13 @@ class AuthController extends Controller
 
             // Get the Credentials inputted by the User.
             $credentials = request(['username', 'password']);
+            if (empty($credentials['username']) || empty($credentials['password'])) {
+                return error_response(
+                    trans('messages.validation_error'),
+                    [],
+                    JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+                );
+            }
             $credIsEmail = false;
             // Validate if the User Inputted is an E-mail. If yes, Check on the E-mail field. If not, default is the User.
             if( filter_var(request('username'), FILTER_VALIDATE_EMAIL) ) {
@@ -68,7 +75,7 @@ class AuthController extends Controller
 
             // Attempt to check the Credentials. If credentials not found, return User Not Found.
             if (!$token = auth()->attempt($credentials)) {
-                return error_response( trans('messages.user_password_incorrect'), [], JsonResponse::HTTP_NOT_FOUND);
+                return error_response( trans('messages.user_password_incorrect'), [], JsonResponse::HTTP_UNAUTHORIZED);
             }
 
             // Attempt to check if the User is active. If not active, return User not active.
@@ -112,6 +119,13 @@ class AuthController extends Controller
 
             // Get the Credentials inputted by the User.
             $credentials = request(['username', 'password']);
+            if (empty($credentials['username']) || empty($credentials['password'])) {
+                return error_response(
+                    trans('messages.validation_error'),
+                    [],
+                    JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+                );
+            }
             $credIsEmail = false;
             // Validate if the User Inputted is an E-mail. If yes, Check on the E-mail field. If not, default is the User.
             if( filter_var(request('username'), FILTER_VALIDATE_EMAIL) ) {

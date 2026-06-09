@@ -20,7 +20,9 @@ class MicrosoftLoginApiTest extends ApiTestCase
         $response
             ->assertStatus(403)
             ->assertJsonStructure([
-                'message',
+                'error' => [
+                    'message',
+                ]
             ]);
     }
 
@@ -38,7 +40,9 @@ class MicrosoftLoginApiTest extends ApiTestCase
         $response
             ->assertStatus(403)
             ->assertJson([
-                'message' => 'Microsoft login failed, please try again. 1',
+                'error' => [
+                    'message' => 'Microsoft login failed, please try again. 1',
+                ]
             ]);
     }
 
@@ -56,7 +60,9 @@ class MicrosoftLoginApiTest extends ApiTestCase
         $response
             ->assertStatus(404)
             ->assertJson([
-                'message' => 'Microsoft login failed, please try again. 2',
+                'error' => [
+                    'message' => 'Microsoft login failed, please try again. 2',
+                ]
             ]);
     }
 
@@ -74,7 +80,7 @@ class MicrosoftLoginApiTest extends ApiTestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
+                'content' => [
                     'access_token',
                     'token_type',
                     'expires_in',
@@ -98,7 +104,7 @@ class MicrosoftLoginApiTest extends ApiTestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
+                'content' => [
                     'access_token',
                 ]
             ]);
@@ -117,8 +123,10 @@ class MicrosoftLoginApiTest extends ApiTestCase
 
         $response
             ->assertStatus(404)
-            ->assertJson([
-                'message' => 'user_email_not_found',
+            ->assertJsonStructure([
+                'error' => [
+                    'message' => 'user_email_not_found',
+                ]
             ]);
     }
 
@@ -148,8 +156,10 @@ class MicrosoftLoginApiTest extends ApiTestCase
 
         $response
             ->assertStatus(404)
-            ->assertJson([
-                'message' => 'user_not_active',
+            ->assertJsonStructure([
+                'error' => [
+                    'message' => 'user_not_active',
+                ]
             ]);
     }
 
@@ -167,7 +177,7 @@ class MicrosoftLoginApiTest extends ApiTestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
+                'content' => [
                     'access_token',
                 ]
             ]);
@@ -187,7 +197,7 @@ class MicrosoftLoginApiTest extends ApiTestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
+                'content' => [
                     'access_token',
                     'token_type',
                     'expires_in',
