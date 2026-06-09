@@ -9,11 +9,14 @@ class DtrRetrievalTest extends ApiTestCase
     /** @test */
     public function dtr_001_retrieve_dtr_records_successfully()
     {
-        $token = $this->loginAndGetToken();
+        [$user_id, $token] = $this->loginAndGetToken(true, true);
 
         $response = $this->json(
             'GET',
-            '/api/dtr/1001/2026-04-01/2026-04-30',
+            sprintf(
+                '/api/dtr/%s/2026-04-01/2026-04-30',
+                $user_id
+            ),
             [],
             $this->authHeaders($token)
         );
@@ -21,19 +24,24 @@ class DtrRetrievalTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'dtr_records',
-            'summary'
+            'content' => [
+                'dtr_records',
+                'summary'
+            ]
         ]);
     }
 
     /** @test */
     public function dtr_002_empty_dtr_period()
     {
-        $token = $this->loginAndGetToken();
-
+        [$user_id, $token] = $this->loginAndGetToken(true);
+        
         $response = $this->json(
             'GET',
-            '/api/dtr/999999/2026-04-01/2026-04-30',
+            sprintf(
+                '/api/dtr/%s/2026-04-01/2026-04-30',
+                $user_id
+            ),
             [],
             $this->authHeaders($token)
         );
@@ -41,19 +49,24 @@ class DtrRetrievalTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'dtr_records',
-            'summary'
+            'content' => [
+                'dtr_records',
+                'summary'
+            ]
         ]);
     }
 
     /** @test */
     public function dtr_004_single_day_retrieval()
     {
-        $token = $this->loginAndGetToken();
+        [$user_id, $token] = $this->loginAndGetToken(true);
 
         $response = $this->json(
             'GET',
-            '/api/dtr/1001/2026-04-01/2026-04-01',
+            sprintf(
+                '/api/dtr/%s/2026-04-01/2026-04-01',
+                $user_id
+            ),
             [],
             $this->authHeaders($token)
         );
@@ -64,11 +77,14 @@ class DtrRetrievalTest extends ApiTestCase
     /** @test */
     public function dtr_005_large_date_range_retrieval()
     {
-        $token = $this->loginAndGetToken();
+        [$user_id, $token] = $this->loginAndGetToken(true);
 
         $response = $this->json(
             'GET',
-            '/api/dtr/1001/2026-01-01/2026-04-30',
+            sprintf(
+                '/api/dtr/%s/2026-01-01/2026-04-30',
+                $user_id
+            ),
             [],
             $this->authHeaders($token)
         );

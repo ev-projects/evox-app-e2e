@@ -7,21 +7,61 @@ use Tests\ApiTestCase;
 class DtrSummaryTest extends ApiTestCase
 {
     /** @test */
-    public function sum_001_summary_totals_match_records()
+    public function sum_001_dtr_summary()
     {
-        $token = $this->loginAndGetToken();
+        $token = $this->loginAndGetToken(false, true);
 
         $response = $this->json(
             'GET',
-            '/api/dtr/1001/2026-04-01/2026-04-30',
-            [],
+            '/api/report/dtr_summary/new_team',
+            [
+                'page'          => 1,
+                'valid_from'    => '2026-01-16',
+                'valid_to'      => '2026-02-15',
+                'is_active'     => 1
+            ],
             $this->authHeaders($token)
         );
 
         $response->assertStatus(200);
+        
+        $response->assertJsonStructure([
+            'content' => [
+                'current_page',
+                'dtrItems',
+                'has_next_page',
+                'last_page'
+            ]
+        ]);
+    }
 
-        $data = $response->json();
+    /** @test */
+    public function sum_002_dtr_multi_logs_summary()
+    {
+        $token = $this->loginAndGetToken(false, true);
 
-        $this->assertArrayHasKey('summary', $data);
+        $response = $this->json(
+            'GET',
+            '/api/report/dtr_summary/multi_logs',
+            [
+                'page'          => 1,
+                'valid_from'    => '2026-01-16',
+                'valid_to'      => '2026-02-15',
+                'is_active'     => 1,
+                'department_id' => 117
+            ],
+            $this->authHeaders($token)
+        );
+        
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'content' => [
+                'current_page',
+                'dtrItems',
+                'has_next_page',
+                'last_page'
+            ]
+        ]);
     }
 }

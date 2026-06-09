@@ -9,11 +9,14 @@ class DtrPunchTest extends ApiTestCase
     /** @test */
     public function punch_001_retrieve_punch_records()
     {
-        $token = $this->loginAndGetToken();
+        [$user_id, $token] = $this->loginAndGetToken(true, true);
 
         $response = $this->json(
             'GET',
-            '/api/dtr/punch/1001/2026-04-01/2026-04-30',
+            sprintf(
+                '/api/dtr/punch/%s/2026-04-01/2026-04-30',
+                $user_id
+            ),
             [],
             $this->authHeaders($token)
         );
@@ -24,11 +27,14 @@ class DtrPunchTest extends ApiTestCase
     /** @test */
     public function dtrpunch_001_retrieve_dtr_with_punches()
     {
-        $token = $this->loginAndGetToken();
+        [$user_id, $token] = $this->loginAndGetToken(true, true);
 
         $response = $this->json(
             'GET',
-            '/api/dtr/dtrpunch/1001/2026-04-01/2026-04-30',
+            sprintf(
+                '/api/dtr/dtrpunch/%s/2026-04-01/2026-04-30',
+                $user_id
+            ),
             [],
             $this->authHeaders($token)
         );

@@ -40,19 +40,33 @@ abstract class ApiTestCase extends TestCase
         );
     }
 
-    protected function loginAndGetToken()
+    protected function loginAndGetToken(bool $returnArray = false, bool $useClientEnv = false)
     {
         $response = $this->json(
             'POST',
             '/api/auth/login',
             [
-                'username' => 'active.user',
-                'password' => 'CorrectPassword123',
+                'username' => $useClientEnv
+                    ? env('CLIENT_USER_EMAIL', 'active.user')
+                    : 'active.user',
+
+                'password' => $useClientEnv
+                    ? env('CLIENT_USER_PASSWORD', 'CorrectPassword123')
+                    : 'CorrectPassword123',
             ],
             $this->headers()
         );
 
-        return $response->json('content.access_token');
+        $accessToken = $response->json('content.access_token');
+
+        if ($returnArray) {
+            return [
+                $response->json('content.user.id'),
+                $accessToken,
+            ];
+        }
+
+        return $accessToken;
     }
 
     protected function authHeaders($token)

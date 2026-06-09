@@ -9,11 +9,14 @@ class DtrCutoffFilterTest extends ApiTestCase
     /** @test */
     public function cutoff_001_retrieve_cutoff_filters()
     {
-        $token = $this->loginAndGetToken();
+        [$user_id, $token] = $this->loginAndGetToken(true, true);
 
         $response = $this->json(
             'GET',
-            '/api/payroll/cutoff/get_filter_for_dtr/1001',
+            sprintf(
+                '/api/payroll/cutoff/get_filter_for_dtr/%s',
+                $user_id
+            ),
             [],
             $this->authHeaders($token)
         );
@@ -21,9 +24,63 @@ class DtrCutoffFilterTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            'years',
-            'months',
-            'cutoffs'
+            'content' => [
+                '*' => [
+                    '*' => [
+                        'label',
+                        'data' => [
+                            '*' => [
+                                'id',
+                                'name',
+                                'start_date',
+                                'end_date',
+                                'year',
+                                'month',
+                                'month_label',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    /** @test */
+    public function cutoff_001_retrieve_cutoff_filters_02()
+    {
+        [$user_id, $token] = $this->loginAndGetToken(true);
+
+        $response = $this->json(
+            'GET',
+            sprintf(
+                '/api/payroll/cutoff/get_filter_for_dtr/%s',
+                $user_id
+            ),
+            [],
+            $this->authHeaders($token)
+        );
+        
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'content' => [
+                '*' => [
+                    '*' => [
+                        'label',
+                        'data' => [
+                            '*' => [
+                                'id',
+                                'name',
+                                'start_date',
+                                'end_date',
+                                'year',
+                                'month',
+                                'month_label',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\API\DTR;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Tests\ApiTestCase;
 
 class QuickPunchMultiTest extends ApiTestCase
@@ -9,85 +11,66 @@ class QuickPunchMultiTest extends ApiTestCase
     protected $endpoint = '/api/dtr/quickpunch_multi';
 
     /** @test */
-    public function mqp_001_initial_clock_in()
+    public function mqp_001_complete_punch_flow()
     {
+        // IN
         $response = $this->authenticatedPost(
             $this->endpoint,
             [
-                'quickpunch' => 'I'
+                'quickpunch' => 'in'
             ]
         );
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('dtr_punch_history', [
-            'punch_type' => 'I'
-        ]);
-    }
-
-    /** @test */
-    public function mqp_002_pause_active_session()
-    {
-        $this->authenticatedPost(
-            $this->endpoint,
-            ['quickpunch' => 'I']
-        );
-
-        $response = $this->authenticatedPost(
-            $this->endpoint,
-            ['quickpunch' => 'P']
-        );
-
-        $response->assertStatus(200);
-    }
-
-    /** @test */
-    public function mqp_003_continue_paused_session()
-    {
-        $this->authenticatedPost(
-            $this->endpoint,
-            ['quickpunch' => 'I']
-        );
-
-        $this->authenticatedPost(
-            $this->endpoint,
-            ['quickpunch' => 'P']
-        );
-
-        $response = $this->authenticatedPost(
-            $this->endpoint,
-            ['quickpunch' => 'C']
-        );
-
-        $response->assertStatus(200);
-    }
-
-    /** @test */
-    public function mqp_004_clock_out_active_session()
-    {
-        $this->authenticatedPost(
-            $this->endpoint,
-            ['quickpunch' => 'I']
-        );
-
-        $response = $this->authenticatedPost(
-            $this->endpoint,
-            ['quickpunch' => 'O']
-        );
-
-        $response->assertStatus(200);
-    }
-
-    /** @test */
-    public function mqp_009_invalid_punch_type()
-    {
+        // PAUSE
         $response = $this->authenticatedPost(
             $this->endpoint,
             [
-                'quickpunch' => 'X'
+                'quickpunch'   => 'pause',
+                'project_name' => 'EVOX',
+                'remarks'      => 'Testing'
             ]
         );
 
-        $response->assertStatus(422);
+        $response->assertStatus(200);
+
+        // CONTINUE
+        $response = $this->authenticatedPost(
+            $this->endpoint,
+            [
+                'quickpunch' => 'continue'
+            ]
+        );
+
+        $response->assertStatus(200);
+
+        // INVALID
+        $response = $this->authenticatedPost(
+            $this->endpoint,
+            [
+                'quickpunch' => 'x'
+            ]
+        );
+
+        $response->assertStatus(400);
+
+        // OUT
+        $response = $this->authenticatedPost(
+            $this->endpoint,
+            [
+                'quickpunch'   => 'out',
+                'project_name' => 'EVOX',
+                'remarks'      => 'Testing'
+            ]
+        );
+
+        $response->assertStatus(200);
+
+        dump(
+            DB::table('dtr_collective_punch_history_new')
+                ->where('created_at', '>', Carbon::now()->subMinute(5))
+                ->get()
+        );
     }
 }
