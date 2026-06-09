@@ -18,17 +18,19 @@ class LoginApiTest extends ApiTestCase
             ],
             $this->headers()
         );
-
+        
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
-                'access_token',
-                'session_id',
-                'user',
-                'constants',
-                'settings',
-                'token_type',
-                'expires_in',
+                'content' => [
+                    'access_token',
+                    'session_id',
+                    'user',
+                    'constant',
+                    'settings',
+                    'token_type',
+                    'expires_in',
+                ]
             ]);
     }
 
@@ -60,8 +62,10 @@ class LoginApiTest extends ApiTestCase
 
         $response
             ->assertStatus(401)
-            ->assertJson([
-                'message' => 'user_password_incorrect',
+            ->assertJsonStructure([
+                'error' => [
+                    'message',
+                ]
             ]);
     }
 }

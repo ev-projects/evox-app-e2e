@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\Auth;
 
+use Carbon\Carbon;
 use Tests\ApiTestCase;
 
 class PayloadApiTest extends ApiTestCase
@@ -20,15 +21,20 @@ class PayloadApiTest extends ApiTestCase
         $response
             ->assertStatus(200)
             ->assertJsonStructure([
-                'user',
-                'constants',
-                'settings',
+                'content' => [
+                    'user',
+                    'constant',
+                    'settings',
+                ]
             ]);
     }
 
     public function test_payload_002_expired_token()
     {
-        $expiredToken = 'expired.jwt.token';
+        $expiredToken = $this->loginAndGetToken();
+
+        // Simulate time passing beyond TTL
+        Carbon::setTestNow(Carbon::now()->addMinutes(61));
 
         $response = $this->json(
             'POST',
@@ -40,7 +46,11 @@ class PayloadApiTest extends ApiTestCase
         $response
             ->assertStatus(401)
             ->assertJson([
-                'message' => 'token_expired',
+                'error' => [
+                    'content' => [
+                        'code' => 'token_expired'
+                    ]
+                ]
             ]);
     }
 
@@ -52,11 +62,14 @@ class PayloadApiTest extends ApiTestCase
             [],
             $this->authHeaders('invalid-token')
         );
-
         $response
             ->assertStatus(401)
             ->assertJson([
-                'message' => 'token_invalid',
+                'error' => [
+                    'content' => [
+                        'code' => 'token_invalid'
+                    ]
+                ]
             ]);
     }
 
@@ -72,7 +85,11 @@ class PayloadApiTest extends ApiTestCase
         $response
             ->assertStatus(401)
             ->assertJson([
-                'message' => 'token_absent',
+                'error' => [
+                    'content' => [
+                        'code' => 'token_absent'
+                    ]
+                ]
             ]);
     }
 }
