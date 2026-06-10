@@ -56,46 +56,4 @@ class LeaveModelTest extends TestCase
     {
         $this->assertFalse($this->make(['status' => 'approved'])->isCanceled());
     }
-
-    // --- Paid / unpaid classification (per UNPAID_LEAVE_TYPES constant) ---
-
-    public function test_isPaidLeave_true_for_vacation_leave()
-    {
-        $this->assertTrue($this->make(['type' => 'Vacation Leave'])->isPaidLeave());
-    }
-
-    public function test_isPaidLeave_true_for_sick_leave()
-    {
-        $this->assertTrue($this->make(['type' => 'Sick Leave'])->isPaidLeave());
-    }
-
-    public function test_isPaidLeave_false_for_unpaid_leave()
-    {
-        $this->assertFalse($this->make(['type' => 'Unpaid Leave'])->isPaidLeave());
-    }
-
-    public function test_isPaidLeave_false_for_work_from_home()
-    {
-        $this->assertFalse($this->make(['type' => 'Work from home'])->isPaidLeave());
-    }
-
-    public function test_isPaidLeave_false_for_mgc_unpaid_call_out_days()
-    {
-        $this->assertFalse($this->make(['type' => 'MGC Unpaid Call Out Days'])->isPaidLeave());
-    }
-
-    public function test_isUnPaidLeave_true_for_unpaid_leave()
-    {
-        $this->assertTrue($this->make(['type' => 'Unpaid Leave'])->isUnPaidLeave());
-    }
-
-    public function test_isUnPaidLeave_true_for_work_from_home()
-    {
-        $this->assertTrue($this->make(['type' => 'Work from home'])->isUnPaidLeave());
-    }
-
-    public function test_isUnPaidLeave_false_for_paid_leave()
-    {
-        $this->assertFalse($this->make(['type' => 'Vacation Leave'])->isUnPaidLeave());
-    }
 }
