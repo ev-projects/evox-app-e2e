@@ -48,7 +48,7 @@ class DtrCutoffFilterTest extends ApiTestCase
     /** @test */
     public function cutoff_001_retrieve_cutoff_filters_02()
     {
-        [$user_id, $token] = $this->loginAndGetToken(true);
+        [$user_id, $token] = $this->loginAndGetToken(true, true);
 
         $response = $this->json(
             'GET',

@@ -44,7 +44,7 @@ abstract class TestCase extends BaseTestCase
         return '20' . $user->emp_num;
     }
  
-    protected function timeAt(string $time): string
+    protected function timeAt(string $time, string $timezone = 'UTC'): string
     {
         return $this->scenarioDate() . ' ' . $time;
     }

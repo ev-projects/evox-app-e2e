@@ -42,7 +42,11 @@ class MiddlewareTest extends ApiTestCase
         $response
             ->assertStatus(401)
             ->assertJson([
-                'message' => 'token_absent',
+                'error' => [
+                    'content' => [
+                        'code' => 'token_absent',
+                    ]
+                ]
             ]);
     }
 }

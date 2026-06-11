@@ -67,10 +67,10 @@ class QuickPunchMultiTest extends ApiTestCase
 
         $response->assertStatus(200);
 
-        dump(
-            DB::table('dtr_collective_punch_history_new')
-                ->where('created_at', '>', Carbon::now()->subMinute(5))
-                ->get()
-        );
+        $history = DB::table('dtr_collective_punch_history_new')
+            ->where('created_at', '>', Carbon::now()->subMinute(5))
+            ->get();
+
+        $this->assertNotEmpty($history);
     }
 }

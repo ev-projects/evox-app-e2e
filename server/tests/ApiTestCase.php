@@ -2,7 +2,9 @@
 
 namespace Tests;
 
+use App\Modules\User\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 abstract class ApiTestCase extends TestCase
 {
@@ -67,6 +69,13 @@ abstract class ApiTestCase extends TestCase
         }
 
         return $accessToken;
+    }
+
+    protected function tokenForUserId(int $userId): string
+    {
+        $user = User::findOrFail($userId);
+
+        return JWTAuth::fromUser($user);
     }
 
     protected function authHeaders($token)

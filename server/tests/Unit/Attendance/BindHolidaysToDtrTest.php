@@ -23,21 +23,36 @@ class BindHolidaysToDtrTest extends TestCase
         $user = $this->user();
         $date = $this->scenarioDate();
 
-        $dtr = Dtr::firstOrCreate(
-            [
-                'user_id' => $user->id,
-                'date' => $date,
-            ]
-        );
+        $dtr = Dtr::firstOrCreate([
+            'user_id' => $user->id,
+            'date'    => $date,
+        ]);
 
-        $holiday = Holiday::firstOrCreate(
+        $type = $user->country_id == 2
+            ? (rand(0, 1) ? 'lh' : 'sh')
+            : 'sh';
+
+        $countryPrefixes = [
+            1 => 'IND',
+            2 => 'PHL',
+            3 => 'BGR',
+            4 => 'MAR',
+            5 => 'BE',
+        ];
+
+        $alphaThree = $countryPrefixes[$user->country_id] ?? 'UNK';
+
+        $holiday = Holiday::updateOrCreate(
             [
-                'date' => $date,
+                'date'       => $date,
                 'country_id' => $user->country_id,
             ],
             [
-                'name' => 'Test Holiday (Regular)',
+                'name' => '[' . $alphaThree . '] Test Holiday (' .
+                    ($type === 'lh' ? 'Regular' : 'Special') .
+                    ')',
                 'is_predefined' => 0,
+                'type'          => $type,
             ]
         );
 
