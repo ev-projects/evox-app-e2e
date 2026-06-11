@@ -1,0 +1,2 @@
+#!/bin/sh
+php "$(dirname "$0")/phpunit-7.phar" --bootstrap vendor/autoload.php "$@"

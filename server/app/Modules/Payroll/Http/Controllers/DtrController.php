@@ -445,7 +445,8 @@ class DtrController extends Controller
             }elseif($request->quickpunch=='continue'){
                 $biometrics->CheckType = 'C';
             }else{
-                return error_response( trans('messages.error_default'), $e );
+                throw new Exception("Unknown multi-punch action.");
+                //return error_response( trans('messages.error_default'), $e );
             }
 
             $biometrics->Userid          = '20'.Auth::user()->emp_num;
