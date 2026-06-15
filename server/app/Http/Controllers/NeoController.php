@@ -176,9 +176,9 @@ class NeoController extends Controller
             if ($response->status === 200) {
                 return $response->content;
             }
-            return false;
+            return response()->json([], 200);
         } catch (Exception $e) {
-            return false;
+            return response()->json([], 200);
         }
     }
 
@@ -203,9 +203,9 @@ class NeoController extends Controller
             if ($response->status === 200) {
                 return $response->content;
             }
-            return false;
+            return response()->json([], 200);
         } catch (Exception $e) {
-            return false;
+            return response()->json([], 200);
         }
     }
 
