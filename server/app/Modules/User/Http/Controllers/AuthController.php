@@ -104,7 +104,6 @@ class AuthController extends Controller
             log_to_file('info', 'Success', [], 'user');
             return success_response( trans('messages.login_success'), $result );
         } catch(Exception $e){
-            dd($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
