@@ -52,37 +52,46 @@ class AppServiceProvider extends ServiceProvider
 
         // Validation for Unique Payroll Cutoff Dates.
         Validator::extend('unique_payroll_cutoff', function ($attribute, $value, $parameters, $validator) {
-            $inputs = $validator->getData();      
-            $query_count = DB::table($parameters[0])->where(function ($query) use ($inputs) {
-                            $query
-                                # If there record between "start_date"
-                                ->where(function ($query) use ($inputs) {
-                                    $query->whereDate('start_date', '<=' ,$inputs['start_date'])
-                                    ->whereDate('end_date', '>=' ,$inputs['start_date']);
-                                })
-                                # If there record between "end_date" date
-                                ->orwhere(function ($query) use ($inputs) {
-                                    $query->whereDate('start_date', '<=' ,$inputs['end_date'])
-                                    ->whereDate('end_date', '>=' ,$inputs['end_date']);
-                                })
-                                # If there record within submitted dates
-                                ->orwhere(function ($query) use ($inputs) {
-                                    $query->whereDate('start_date', '<=' ,$inputs['start_date'])
-                                    ->whereDate('end_date', '>=' ,$inputs['end_date']);
-                                })
-                                # If there is dates between submitted dates
-                                ->orwhere(function ($query) use ($inputs) {
-                                    $query->whereDate('start_date', '>=' ,$inputs['start_date'])
-                                    ->whereDate('end_date', '<=' ,$inputs['end_date']);
-                                });
-                            })->where('id', '<>', request()->route('id') ?? null)
-                            ->whereNull('deleted_at')
-                        ->get()->count();
-            if($query_count>0){
-                return false;
+
+            $inputs = $validator->getData();
+
+            // Null guard - let the 'required' rule handle missing end_date
+            if (empty($inputs['end_date'])) {
+                return true;
             }
-          
-            return true;
+
+            $query_count = DB::table($parameters[0])
+                ->where(function ($query) use ($inputs) {
+
+                    // start_date falls within existing range
+                    $query->where(function ($query) use ($inputs) {
+                        $query->whereDate('start_date', '<=', $inputs['start_date'])
+                            ->whereDate('end_date', '>=', $inputs['start_date']);
+                    })
+
+                    // end_date falls within existing range
+                    ->orWhere(function ($query) use ($inputs) {
+                        $query->whereDate('start_date', '<=', $inputs['end_date'])
+                            ->whereDate('end_date', '>=', $inputs['end_date']);
+                    })
+
+                    // existing range contains submitted range
+                    ->orWhere(function ($query) use ($inputs) {
+                        $query->whereDate('start_date', '<=', $inputs['start_date'])
+                            ->whereDate('end_date', '>=', $inputs['end_date']);
+                    })
+
+                    // existing range is within submitted range
+                    ->orWhere(function ($query) use ($inputs) {
+                        $query->whereDate('start_date', '>=', $inputs['start_date'])
+                            ->whereDate('end_date', '<=', $inputs['end_date']);
+                    });
+                })
+                ->where('id', '<>', request()->route('id') ?? null)
+                ->whereNull('deleted_at')
+                ->count();
+
+            return $query_count === 0;
         });
     }
 

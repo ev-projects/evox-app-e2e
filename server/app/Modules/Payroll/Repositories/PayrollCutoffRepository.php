@@ -146,7 +146,7 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
     public function find($id)
     {
         try {
-            $payroll_cutoff = PayrollCutoff::find($id);
+            $payroll_cutoff = PayrollCutoff::findOrFail($id);
             log_to_file('info', 'Success', [$payroll_cutoff]);
             return $payroll_cutoff;
 
