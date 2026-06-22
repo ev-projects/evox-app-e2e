@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Modules\User\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -100,5 +101,13 @@ abstract class ApiTestCase extends TestCase
             'Content-Type' => 'application/json',
             'X-Authorization' => 'invalid-api-key',
         ];
+    }
+
+    protected function scenarioDate(): string
+    {
+        return getenv('PAYROLL_DATE')
+            ?: ($_SERVER['PAYROLL_DATE'] ?? null)
+            ?: ($_ENV['PAYROLL_DATE'] ?? null)
+            ?: Carbon::today()->format('Y-m-d');
     }
 }
