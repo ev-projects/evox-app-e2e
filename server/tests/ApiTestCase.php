@@ -110,4 +110,12 @@ abstract class ApiTestCase extends TestCase
             ?: ($_ENV['PAYROLL_DATE'] ?? null)
             ?: Carbon::today()->format('Y-m-d');
     }
+
+    protected function disputeScenarioDate(): string
+    {
+        return getenv('DISPUTE_PAYROLL_DATE')
+            ?: ($_SERVER['DISPUTE_PAYROLL_DATE']
+                ?? $_ENV['DISPUTE_PAYROLL_DATE']
+                ?? now()->subMonth()->toDateString());
+    }
 }

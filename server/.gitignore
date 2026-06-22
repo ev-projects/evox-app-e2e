@@ -17,6 +17,7 @@ yarn-error.log
 coverage/
 storage/coverage/
 reports/
+/storage/framework/laravel-excel/
 
 # Clover / XML reports
 coverage.xml
