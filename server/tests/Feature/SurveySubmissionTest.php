@@ -9,6 +9,8 @@ use App\EvaSurvey;
 use Carbon\Carbon;
 use App\NhoSurvey;
 use App\EvaRegistration;
+use App\HappinessSurvey;
+use App\PopupFlags;
 
 class SurveySubmissionTest extends TestCase
 {
@@ -162,6 +164,62 @@ class SurveySubmissionTest extends TestCase
             'attended_via' => 'Virtual',
             'opportunities' => 'More team engagement activities',
         ]);
+    }
+
+    public function test_it_returns_happiness_survey_when_popup_is_enabled()
+    {
+        $this->withoutMiddleware();
+
+        $user = User::find(1593);
+
+        $survey = HappinessSurvey::create([
+            'user_id' => $user->id,
+            'year' => date('Y'),
+            'deleted_at' => null,
+        ]);
+
+        PopupFlags::unguard();
+        PopupFlags::updateOrCreate(
+            ['key' => 'happiness_survey'],
+            ['status' => 1, 'description' => 'Happiness Survey']
+        );
+        PopupFlags::reguard();
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/happiness_survey');
+
+        $response->assertStatus(200);
+
+        $content = json_decode($response->getContent(), true);
+        $this->assertEquals($survey->id, $content['content']['id']);
+    }
+
+    public function test_it_returns_null_when_popup_is_disabled()
+    {
+        $this->withoutMiddleware();
+
+        $user = User::find(1593);
+
+        HappinessSurvey::create([
+            'user_id' => $user->id,
+            'year' => date('Y'),
+            'deleted_at' => null,
+        ]);
+
+        PopupFlags::unguard();
+        PopupFlags::updateOrCreate(
+            ['key' => 'happiness_survey'],
+            ['status' => 0, 'description' => 'Happiness Survey']
+        );
+        PopupFlags::reguard();
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/happiness_survey');
+
+        $response->assertOk(200);
+
+        $content = json_decode($response->getContent(), true);
+        $this->assertNull($content['content']);
     }
     
     public function test_user_can_create_happiness_survey()
