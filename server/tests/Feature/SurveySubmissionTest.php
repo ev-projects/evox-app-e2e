@@ -7,10 +7,41 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Modules\User\Models\User;
 use App\EvaSurvey;
 use Carbon\Carbon;
+use App\NhoSurvey;
+use App\EvaRegistration;
 
 class SurveySubmissionTest extends TestCase
 {
     use DatabaseTransactions;
+
+    public function test_index_returns_user_survey_when_exists()
+    {
+        $this->withoutMiddleware();
+
+        $user = User::find(1593);
+
+        NhoSurvey::create([
+            'user_id' => $user->id,
+            'nho_date' => "2026-02-14",
+        ]);
+
+        $response = $this->actingAs($user, 'web')
+            ->getJson('/api/nho_survey');
+
+        $response->assertOk();
+
+        $response->assertJsonStructure([
+            'id',
+            'user_id',
+            'nho_date'
+        ]);
+
+        $this->assertEquals($user->id, $response->json('user_id'));
+
+        $this->assertDatabaseHas('nho_survey', [
+            'user_id' => $user->id
+        ]);
+    }
 
     public function test_user_can_create_nho_survey()
     {
@@ -49,6 +80,40 @@ class SurveySubmissionTest extends TestCase
             'suggestions' => 'Everything was good',
             'nho_overall_feedback' => 'Excellent onboarding',
         ]);
+    }
+
+    public function test_index_returns_eva_survey_for_authenticated_user()
+    {
+        $this->withoutMiddleware();
+
+        $user = User::find(1593);
+
+        EvaSurvey::create([
+            'user_id' => $user->id,
+            'is_submitted' => 0,
+            'eva_year' => 2025,
+            'eva_quarter' => 3,
+            'deleted_at' => null,
+        ]);
+
+        $response = $this->actingAs($user, 'web')
+            ->getJson('/api/eva_survey');
+
+        $response->assertOk();
+
+        $response->assertJsonStructure([
+            'message',
+            'content'
+        ]);
+
+        $response->assertJson([
+            'message' => trans('EVA survey successfully fetched!')
+        ]);
+
+        $this->assertEquals(
+            $user->id,
+            $response->json('content.user_id')
+        );
     }
     
     public function test_user_can_create_eva_survey()
@@ -148,6 +213,61 @@ class SurveySubmissionTest extends TestCase
             'healthcare_satisfaction' => 4,
             'salary_on_time' => 5,
             'happiness_suggestion' => 'Keep improving employee engagement programs.',
+        ]);
+    }
+
+    public function test_get_eva_registration_returns_record_when_exists()
+    {
+        $this->withoutMiddleware();
+
+        $user = User::find(1593);
+
+        EvaRegistration::create([
+            'user_id' => $user->id,
+            'deleted_at' => null,
+        ]);
+
+        $response = $this->actingAs($user, 'web')
+            ->getJson('/api/eva_registration');
+
+        $response->assertOk();
+
+        $response->assertJsonStructure([
+            'message',
+            'content'
+        ]);
+
+        $response->assertJson([
+            'message' => trans('EVA registration record successfully fetched!')
+        ]);
+
+        $this->assertEquals(
+            $user->id,
+            $response->json('content.user_id')
+        );
+    }
+
+    public function test_save_eva_registration_successfully_creates_record()
+    {
+        $this->withoutMiddleware();
+
+        $user = User::find(1593);
+
+        $response = $this->actingAs($user, 'web')
+            ->postJson('/api/eva_registration');
+
+        $response->assertStatus(200);
+
+        $response->assertJson([
+            'message' => 'Thank you for your interest in our upcoming EVA! Your response has been successfully submitted.',
+            'status' => 200
+        ]);
+
+        $this->assertDatabaseHas('eva_registration', [
+            'user_id' => $user->id,
+            'eva_year' => date('Y'),
+            'eva_quarter' => 3,
+            'is_attending' => 1
         ]);
     }
 }

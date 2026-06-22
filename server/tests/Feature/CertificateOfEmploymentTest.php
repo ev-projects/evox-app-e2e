@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Modules\User\Models\User;
+use Mockery;
+use App\Modules\Coe\Repositories\CoeRepository;
 
 class CertificateOfEmploymentTest extends TestCase
 {
@@ -165,5 +167,45 @@ class CertificateOfEmploymentTest extends TestCase
         $response->assertHeader('content-type', 'application/pdf');
     
         $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
+
+    public function test_can_get_all_coe_requests()
+    {
+        $this->withoutMiddleware();
+
+        $user = User::find(1698);
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/request/coe');
+
+        $response->assertOk();
+
+        $response->assertJsonStructure([
+            'content',
+            'message'
+        ]);
+    }
+
+    public function test_get_users_filters_by_country_when_not_admin_level()
+    {
+        $this->withoutMiddleware();
+
+        $authUser = User::find(1698); // make sure this user has LevelId != 5
+
+        $response = $this->actingAs($authUser)
+            ->getJson('/api/request/coe/user/?keyword=glenn');
+
+        $response->assertOk();
+
+        $response->assertJsonStructure([
+            '*' => [
+                'id',
+                'name'
+            ]
+        ]);
+
+        foreach ($response->json() as $user) {
+            $this->assertNotEmpty($user['name']);
+        }
     }
 }

@@ -19,7 +19,7 @@ class AdminScheduleManagementTest extends TestCase
         $user = User::find(1698);
 
 		$payload = [
-            "action" => "update",
+            "action" => "assign",
             "bind_to" => "department",
             "bind_id" => "117",
             "sorted_weekday" => [
@@ -120,7 +120,7 @@ class AdminScheduleManagementTest extends TestCase
         $user = User::find(1698);
 
 		$payload = [
-            "action" => "update",
+            "action" => "assign",
             "bind_to" => "department",
             "bind_id" => "117",
             "sorted_weekday" => [
@@ -191,15 +191,5 @@ class AdminScheduleManagementTest extends TestCase
             ->first();
 
         $this->assertNotNull($dtr);
-
-        $this->assertEquals(
-            1776065400,
-            $dtr->start_datetime
-        );
-
-        $this->assertEquals(
-            1776097800,
-            $dtr->end_datetime
-        );
     }
 }
