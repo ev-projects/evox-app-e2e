@@ -193,32 +193,6 @@ const RoutesList = (props) => {
           />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.room_list}>
-          <Roomlist />
-        </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.room_master + ":id"}>
-          <RoomMaster/>
-        </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.meeting_calander + ":id"}>
-          {/* <Test/> */}
-          <Meetingcalander/>
-         </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.location_list}>
-          <Locationlist/>
-        </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.location_master + ":id"}>
-          <LocationMaster/>
-        </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.meetingroom_approval + ":id"}>
-          <Meetingroomapproval />
-        </ProtectedRoute>
-
-        {/* <ProtectedRoute exact path={global.links.job_referal}>
-          <Referjobs />
-        </ProtectedRoute> */}
-        <ProtectedRoute exact path={global.links.requirement_list}>
-        <ItRequirementList/>
-        </ProtectedRoute>
         <ProtectedRoute exact path={global.links.my_request}>
           <MyRequests 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
