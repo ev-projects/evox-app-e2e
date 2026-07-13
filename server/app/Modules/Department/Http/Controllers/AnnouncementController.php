@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Modules\Department\Http\Controllers;
 
 use Exception;
@@ -13,22 +12,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Department\Models\Department;
 use App\Modules\Department\Models\Announcement;
-// use App\Modules\Department\Resources\DepartmentListResource;
 use App\Modules\Department\Models\EvoxDepartment;
-
 use App\Modules\Department\Resources\AnnouncementResource;
-
-
 use App\Modules\Department\Http\Requests\AnnouncementRequest;
-
 use App\Modules\Department\Resources\AnnouncementStrictResource;
 use App\Modules\Department\Resources\AnnouncementResourceCollection;
 use App\Modules\Department\Repositories\AnnouncementRepositoryInterface;
 
 class AnnouncementController extends Controller
 {
-
-
     private $announcement;
     
     public function __construct(AnnouncementRepositoryInterface $announcement ){
@@ -42,23 +34,18 @@ class AnnouncementController extends Controller
      */
     public function index()
     {
-        
         try {
-        //  $announcements_list = Announcement::orderBy('created_at', 'desc')->get();
 
          $announcements_list = $this->announcement->index();
         return success_response(
             trans('messages.fetch_change_log_success'), 
-        //    AnnouncementResource::collection($announcements_list)
         new AnnouncementResourceCollection($announcements_list ) 
         );
-
         
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -70,8 +57,6 @@ class AnnouncementController extends Controller
     {   
        
         try {
-            // dd( $request->all());
-            
             log_activity( trans('messages.create_department_announcement_attempt') );
 
             $dep_announcement = $this->announcement->store($request);
@@ -81,14 +66,9 @@ class AnnouncementController extends Controller
             );
 
         } catch(Exception $e){
-         
             return error_response( trans('messages.error_default'), $e );
         }
     }
-
-
-
-
 
     /**
      * Display the specified resource.
@@ -351,28 +331,6 @@ class AnnouncementController extends Controller
         }
     }
 
-    
-
-    /**
-     * Display a listing of the resource only to the Supervisor(Logged in but not admin) dashbaord.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function all_department_handled_Announcements()
-    {
-        try {
-            log_activity( trans('messages.create_department_announcement_attempt') );
-            
-            $announcements_collection = Announcement::where("dep_id", Auth::user()->dep_id);
-            return success_response(
-                trans('messages.all_department_success'), 
-                AnnouncementResource::collection( $announcements_collection ) 
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
-        }
-
-    }
 
 
 

@@ -89,19 +89,9 @@ import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
 import HrAnnouncementsForm from "../container/Hr/HrAnnouncementsForm";
 import HrAnnouncementsList from "../container/Hr/HrAnnouncementsList";
-import Test from "../components/MeetingRoomBooking/Test";
-// import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
-import RoomMaster from "../components/MeetingRoomBooking/RoomMaster";
-import Roomlist from "../components/MeetingRoomBooking/Roomlist";
-import Meetingroombooking from "../components/MeetingRoomBooking/Meetingroombooking";
-import LocationMaster from "../components/MeetingRoomBooking/LocationMaster";
-import Locationlist from "../components/MeetingRoomBooking/Locationlist";
-import Meetingroomapproval from "../components/MeetingRoomBooking/Meetingroomapproval";
-import Meetingcalander from "../components/MeetingRoomBooking/Meetingcalander";
 import Referjobs from "../components/JobReferal/Referjobs";
 import MyTeamAllRequest from "../container/MyTeam/MyTeamRequests/MyTeamAllRequest";
 import MyOverallRequest from "../container/MyOverallRequest/MyOverallRequest";
-import ItRequirementList from "../components/MeetingRoomBooking/ItRequirementList";
 import OverallRequest from "../container/MyTeam/OverallRequest";
 import OpsScheduleForm from "../container/OpsSchedule/OpsScheduleForm";
 import OpsScheduleList from "../container/OpsSchedule/OpsScheduleList";
@@ -218,9 +208,6 @@ const RoutesList = (props) => {
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.location_master + ":id"}>
           <LocationMaster/>
-        </ProtectedRoute>
-        <ProtectedRoute exact path={global.links.booked_list}>
-          <Meetingroombooking/>
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.meetingroom_approval + ":id"}>
           <Meetingroomapproval />
@@ -482,14 +469,10 @@ const RoutesList = (props) => {
         />
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.announcement_page+":id"}>
-          <AnnouncementsPage
-          //any user under her deparment can access her department announcement page
-          />
+          <AnnouncementsPage />
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.announcement_page+":id"}>
-          <AnnouncementsPage
-          //any user under her deparment can access her department announcement page
-          />
+          <AnnouncementsPage />
         </ProtectedRoute>
 
 
@@ -602,17 +585,11 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.ops_schedule_form+":id?"}>
-          <OpsScheduleForm 
-          // level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          // role={['ops']} permission={['manage_ops_schedules']}
-          />
+          <OpsScheduleForm />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.ops_schedule_list}>
-          <OpsScheduleList 
-          // level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          // role={['ops']} permission={['manage_ops_schedules']} 
-          />
+          <OpsScheduleList />
         </ProtectedRoute>
 
 

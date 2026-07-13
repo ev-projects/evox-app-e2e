@@ -20,26 +20,6 @@ class DisputeController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -198,8 +178,6 @@ class DisputeController extends Controller
         }
     }
 
-    
-
     public function getpayrollcutoff(Request $request)
     {
         $result_sets = call_sp('EV_SP_Get_Payroll_Cutoff', [$request->fromdate,$request->todate]);
@@ -209,39 +187,5 @@ class DisputeController extends Controller
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Dispute  $dispute
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Dispute $dispute)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Dispute  $dispute
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Dispute $dispute)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Dispute  $dispute
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Dispute $dispute)
-    {
-        //
     }
 }

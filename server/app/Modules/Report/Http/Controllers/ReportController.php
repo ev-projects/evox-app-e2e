@@ -173,7 +173,6 @@ class ReportController extends Controller
             if ($end_date > $current_date) {
                 $end_date = $current_date;
             }
-            // $result = $this->report->get_dtr_summary($user_collection, $start_date, $end_date);
             $result = $this->report->get_dtr_summary_block($user_collection, $start_date, $end_date);
 
             # ADD THE SUMMARY COLUMNS NAME
@@ -244,7 +243,6 @@ class ReportController extends Controller
     public function export_team_dtr_summary(Request $request)
     {
 
-        //$result = $this->summary_list($request);
         $user_collection_paginated = [];
         $user_collection = $this->user->get_users_under_supervisee($request,  $request->valid_from, $request->valid_to);
         $current_page = $user_collection->currentPage();
@@ -254,9 +252,9 @@ class ReportController extends Controller
         }
         $for_export = $this->report->get_dtr_summary(new Collection($user_collection_paginated),  $request->valid_from, $request->valid_to);
         $content_array = $for_export['summary'];
-        if ($current_page == 1) { //create empty file
+        if ($current_page == 1) { # create empty file
             Storage::disk('local')->put('app/export/dtrsummary.temp', json_encode($content_array));
-        } else { //append to file
+        } else { # append to file
             $contents = Storage::disk('local')->get('app/export/dtrsummary.temp');
             $content_array = json_decode($contents);
             foreach ($for_export['summary'] as $sum) {
@@ -274,7 +272,6 @@ class ReportController extends Controller
                 $result
             );
         } else {
-            //$this->dtr_summary_export->data = $for_export;
             $contents = Storage::disk('local')->get('app/export/dtrsummary.temp');
             $content_array = json_decode($contents, true);
             $result = array(
@@ -368,7 +365,6 @@ class ReportController extends Controller
             return success_response(
                 trans('messages.' . __FUNCTION__ . '_success'),
                 ['data' => $results]
-                //new DtrLogResourceCollection($this->logs_list($request))
             );
         } catch (Exception $e) {
             log_to_file( 'error', $e->getMessage(), [$e], "dtr");
@@ -434,16 +430,7 @@ class ReportController extends Controller
                 )
             );
         }
-        /*$result = $this->logs_list($request);
-       
-        $result = [
-            'data' =>  $result
-        ];*/
-        /*return success_response(
-            trans('messages.' . __FUNCTION__ . '_success'),
-            new ExportDTRLog($results, $toggle_POV, $my_timezone)
-            //new DtrLogResourceCollection($this->logs_list($request))
-        );*/
+
         return Excel::download( new ExportDTRLog($results, $toggle_POV, $my_timezone), 'dtr_log.csv');
     }
 
@@ -454,21 +441,17 @@ class ReportController extends Controller
      */
     public function team_schedule(Request $request)
     {
-        // try {
-            // dd($request->all());
         $date_from = Carbon::now();
         $logged_user = auth()->user();
         
-
-
                                 $response = call_sp("EH_SP_Employee_List",[
                                     $logged_user->id, 
-                                    is_valid(  $logged_user->LevelId ) ?  $logged_user->LevelId: null, // level
+                                    is_valid(  $logged_user->LevelId ) ?  $logged_user->LevelId: null, # level
                                     $request->department_id,
                                     $request->department_id != null? $sub_department_id = $request->sub_department_id: null,
-                                    1, // active
-                                    $request->name, // name
-                                    null, // job_title
+                                    1, # active
+                                    $request->name, # name
+                                    null, # job_title
                                     1,
                                     999,
                                     1      
@@ -493,12 +476,11 @@ class ReportController extends Controller
                                 $user_list = is_valid($empKeys)? $result['query'][$empKeys[0]] : [];
                        
                                 $user_list =  User::whereIn('id', collect($user_list)->pluck('id')->all());
-                                // dd($user_list);
         $no_user_limit = get_constant("TEAM_SCHEDULE.records_per_date");
 
 
 
-        // Filter by name string
+        # Filter by name string
         if (is_valid(request()->get('name'))) {
             $user_list->whereRaw("(first_name LIKE '%" . request()->get('name') . "%' OR last_name LIKE '%" . request()->get('name') . "%')");
         }
@@ -533,7 +515,7 @@ class ReportController extends Controller
                     new DailyScheduleReources($result, $date = new Carbon($time_from))
                 );
             } else {
-                // Get Employee that is active or will be terminated in a certain time
+                # Get Employee that is active or will be terminated in a certain time
                 $user_list = $user_list->where(function ($query) use ($time_from, $time_to) {
                     $query
                         ->where('termination_date', '=', null)
@@ -562,14 +544,12 @@ class ReportController extends Controller
 
                 if (request()->get('scope_type') == "week") {
                     $result = $this->dtr->get_dtr_logs($user_collection, $time_from,  $time_to);
-                    // return $result;
                     return success_response(
                         trans('messages.' . __FUNCTION__ . '_success'),
                         new WeeklyScheduleResources($result, $show_more, $holiday_list, $user_collection)
                     );
                 } else {
                     $result = $this->dtr->get_dtr_logs($user_collection, $time_from,  $time_to);
-                    // return $result;
                     return success_response(
                         trans('messages.' . __FUNCTION__ . '_success'),
                         new TeamScheduleResources($result, $show_more, $holiday_list, $user_collection)
@@ -577,11 +557,6 @@ class ReportController extends Controller
                 }
             }
         }
-
-
-        // } catch(Exception $e){
-        //     return error_response( trans('messages.error_default'), $e );
-        // }
     }
 
 
@@ -615,22 +590,14 @@ class ReportController extends Controller
 
             $bhr_holidays_array = [];
 
-            // $bhr_holidays_array = Holiday::whereRaw("date > DATE_FORMAT(NOW(),'%Y-%m-%d')")->orderByRaw('Month(date),Day(date)')->get();
-
             $user = Auth::user();
             $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,1]);
             
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $bhr_holidays_array, "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
-            // dd($bhr_holidays_array);
+
             return $EH_SP_Dashboard[1];
-            // return success_response(
-            //     trans('messages.get_holidays_success'),
-            //     $EH_SP_Dashboard[1]
-            // );
         } catch (Exception $e) {
-            // DB::rollback();
-            
             log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
@@ -653,10 +620,10 @@ class ReportController extends Controller
 
             $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
 
-            // Start date as the start of the payroll cutoff
+            # Start date as the start of the payroll cutoff
             $start_date = $payroll_cutoff->start_date;
 
-            // End date as the date yesterday.
+            # End date as the date yesterday.
             $end_date = Carbon::yesterday()->format('Y-m-d');
             
 
@@ -683,10 +650,8 @@ class ReportController extends Controller
             log_activity(trans('messages.get_anniversary_birthday_attempt'));
             $user = Auth::user();
             $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,2]);
-            // dd( $EH_SP_Dashboard);
             return success_response(
                 trans('messages.get_anniversary_birthday_success'),
-                // new AnniversaryResources($this->report->get_team_birthday_anniversary())
                 $EH_SP_Dashboard[0]
             );
         } catch (Exception $e) {
@@ -751,12 +716,8 @@ class ReportController extends Controller
             $attendance = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 2, 1]);
             $attendance_stats = $attendance[0][0];
             $attendance_list = $attendance[1];
-            //$user_ids = [];
             $attendance_list_items = [];
             foreach($attendance_list as $i) {
-                /*if(!in_array($i->Id, $user_ids, true)){
-                    array_push($user_ids, $i->Id);
-                }*/
                 array_push($attendance_list_items, array(
                     'date'=> $i->LogDate,
                     'user_id' => $i->Id,
@@ -863,7 +824,6 @@ class ReportController extends Controller
                 return response()->json(['error' => ['message' => "Please selecte at least one department.", 'content' => "No department selected"]], 400);
             }
             $team_ids = $request->selectedTeams ?? null;
-            //return success_response('Test', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
             $attendance_summary = call_sp('EH_SP_Attendance_Summary', [$start_date, $end_date, $department_ids, $team_ids, $request->name, $me->id, 3, null]);
             $attendance_list = $attendance_summary[0];
             $attendance_stats = $attendance_summary[1];
@@ -886,19 +846,6 @@ class ReportController extends Controller
         }
     }
 
-    // public function export_old(Request $request, $start_date, $end_date)
-    // {
-    //     $user_collection = $this->user->get_users_under_supervisee($request, $start_date, $end_date);
-    //     $data =  $this->report->get_team_attendance_summary($user_collection,  $start_date, $end_date);
-    //     $array = (array) $data['dtr_collection'];
-    //     $list = $this->getDetailsOfSummary($array['team_attendance_summary']);
-    //     ob_end_clean();
-    //     ob_start();
-
-    //     return Excel::download(new TeamSummaryAttendanceExport($data, $list), 'users.xlsx');
-    // }
-
-
     public function getDetailsOfSummary($data)
     {
         try {
@@ -911,7 +858,7 @@ class ReportController extends Controller
                 $has_leave = false;
                 $has_rest_day_work = false;
 
-                // If DTR has holidays, tick the has_holiday flag
+                # If DTR has holidays, tick the has_holiday flag
                 if ($dtr->holidays()->get()->count() > 0) {
                     $status = 'Holiday';
                     $has_holiday = true;
@@ -919,13 +866,13 @@ class ReportController extends Controller
 
                 $leave = $dtr->leaves()->first();
 
-                // If DTR has valid leave, tick the has_leave flag
+                # If DTR has valid leave, tick the has_leave flag
                 if (is_valid($leave) && $leave->isApproved() && $leave->amount > 0) {
                     $status = $dtr->leaves()->get()->first()->type;
                     $has_leave = true;
                 }
 
-                // If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
+                # If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
                 if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
                     $status = 'Rest Day Work';
                     $has_rest_day_work = true;
@@ -937,15 +884,15 @@ class ReportController extends Controller
                     # Check if there is a schedule for the DTR
                     if ($dtr->hasSchedule()) {
 
-                        // If DTR has Log, set status as Present
+                        # If DTR has Log, set status as Present
                         if ($dtr->hasValidTimelogs()) {
                             $status = 'Present';
 
-                            // else, set status as Absent
+                            # else, set status as Absent
                         } else {
                             $status = 'Absent';
 
-                            // if inside sched = absent
+                            # if inside sched = absent
                             if ($dtr->checkCurrentTime()) {
                                 $status = 'Absent';
                             } else {
@@ -953,20 +900,20 @@ class ReportController extends Controller
                             }
                         }
 
-                        // If the DTR is Rest Day, set status as Rest Day
+                        # If the DTR is Rest Day, set status as Rest Day
                     } elseif ($dtr->isRestDay()) {
                         $status = 'Rest Day';
 
-                        // else, set as No Schedule
+                        # else, set as No Schedule
                     } else {
                         $status = 'No Schedule';
                     }
                 }
 
-                // Fetch User of the DTR
+                # Fetch User of the DTR
                 $user = $dtr->user()->first();
 
-                // Assemble the array details for the Team Attendance Summary
+                # Assemble the array details for the Team Attendance Summary
                 array_push(
                     $team_attendance_summary,
                     [
@@ -1009,7 +956,7 @@ class ReportController extends Controller
 
 
 
-                // If DTR has holidays, tick the has_holiday flag
+                # If DTR has holidays, tick the has_holiday flag
                 if ($dtr->holidays()->get()->count() > 0) {
                     $status = 'H';
                     $has_holiday = true;
@@ -1017,14 +964,13 @@ class ReportController extends Controller
 
                 $leave = $dtr->leaves()->first();
 
-                // If DTR has valid leave, tick the has_leave flag
+                # If DTR has valid leave, tick the has_leave flag
                 if (is_valid($leave) && $leave->isApproved() && $leave->amount > 0) {
-                    // $status = $dtr->leaves()->get()->first()->type;
                     $status = $dtr->leavesToAcronym(true);
                     $has_leave = true;
                 }
 
-                // If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
+                # If DTR is rest day and has rest day work, tick the has_rest_day_Work flag
                 if ($dtr->isRestDay() && $dtr->source_type_tagging == get_constant('DTR_SOURCE_TYPE_TAGGING.rest_day_work')) {
                     $status = 'P-RDW';
                     $has_rest_day_work = true;
@@ -1036,15 +982,15 @@ class ReportController extends Controller
                     # Check if there is a schedule for the DTR
                     if ($dtr->hasSchedule()) {
 
-                        // If DTR has Log, set status as Present
+                        # If DTR has Log, set status as Present
                         if ($dtr->hasValidTimelogs()) {
                             $status = 'P';
 
-                            // else, set status as Absent
+                            # else, set status as Absent
                         } else {
                             $status = 'A';
 
-                            // if inside sched = absent
+                            # if inside sched = absent
                             if ($dtr->checkCurrentTime()) {
                                 $status = 'A';
                             } else {
@@ -1052,17 +998,17 @@ class ReportController extends Controller
                             }
                         }
 
-                        // If the DTR is Rest Day, set status as Rest Day
+                        # If the DTR is Rest Day, set status as Rest Day
                     } elseif ($dtr->isRestDay()) {
                         $status = 'RD';
 
-                        // else, set as No Schedule
+                        # else, set as No Schedule
                     } else {
                         $status = 'X';
                     }
                 }
 
-                // Fetch User of the DTR
+                # Fetch User of the DTR
                 $user = $dtr->user()->first();
 
 
@@ -1186,19 +1132,19 @@ class ReportController extends Controller
                     }
 
 
-                    ///////////////CALCULATION for VL 
+                    # CALCULATION for VL 
                     $VL_key = array_search('VL', $information_array);
                     if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "VL") {
                         $ordered_excel_row[$keyd][$VL_key] += 1;
                     }
 
-                    ///////////////CALCULATION for SL 
+                    # CALCULATION for SL 
                     $SL_key = array_search('SL', $information_array);
                     if (isset($row["dates"][$keyp]) && $row["dates"][$keyp]["status"] == "SL") {
                         $ordered_excel_row[$keyd][$SL_key] += 1;
                     }
 
-                    //////////////CALCULATION for A 
+                    # CALCULATION for A 
                     $A_key = array_search('Absent', $information_array);
                     if (isset($row["dates"][$keyp])) {
                         if ($row["dates"][$keyp]["status"] == "A") {
@@ -1211,18 +1157,15 @@ class ReportController extends Controller
                         if ($row["dates"][$keyp]["status"] == "X") {
                             $ordered_excel_row[$keyd][$A_key] += 1;
                         }
-                        // if( $row["dates"][$keyp]["status"] == "Xd"){
-                        //     $ordered_excel_row[$keyd][$A_key] += 1;
-                        // }
 
                     }
 
-                    //////////////CALCULATION for Unplanned_Leaves 
+                    # CALCULATION for Unplanned_Leaves 
                     $UnplL_key = array_search('Unplanned_Leaves', $information_array);
                     $ordered_excel_row[$keyd][$UnplL_key] =
                         ($ordered_excel_row[$keyd][$A_key] + $ordered_excel_row[$keyd][$SL_key]);
 
-                    //////////////CALCULATION for Present_Days 
+                    # CALCULATION for Present_Days 
                     $P_key = array_search('Present_Days', $information_array);
                     if (isset($row["dates"][$keyp])) {
                         if ($row["dates"][$keyp]["status"] == "P") {
@@ -1240,32 +1183,32 @@ class ReportController extends Controller
                     }
 
 
-                    //////////////CALCULATION for Scheduled_Days 
+                    # CALCULATION for Scheduled_Days 
                     $SchDa_key = array_search('Scheduled_Days', $information_array);
                     $ordered_excel_row[$keyd][$SchDa_key] =
                         ($ordered_excel_row[$keyd][$UnplL_key] + $ordered_excel_row[$keyd][$P_key]);
 
-                    //////////////CALCULATION for Scheduled_+_VL 
+                    # CALCULATION for Scheduled_+_VL 
                     $Sch_VL_key = array_search('Scheduled_+_VL', $information_array);
                     $ordered_excel_row[$keyd][$Sch_VL_key] =
                         ($ordered_excel_row[$keyd][$SchDa_key] + $ordered_excel_row[$keyd][$VL_key]);
 
 
-                    //////////////CALCULATION for Planned 
+                    # CALCULATION for Planned 
                     $Plan_key = array_search('Planned', $information_array);
                     if ($ordered_excel_row[$keyd][$Sch_VL_key] > 0) {
                         $ordered_excel_row[$keyd][$Plan_key] =
                             ($ordered_excel_row[$keyd][$VL_key] / $ordered_excel_row[$keyd][$Sch_VL_key]) * 100;
                     }
 
-                    //////////////CALCULATION for Unplanned 
+                    # CALCULATION for Unplanned 
                     $UnPlan_key = array_search('Unplanned', $information_array);
                     if ($ordered_excel_row[$keyd][$SchDa_key] > 0) {
                         $ordered_excel_row[$keyd][$UnPlan_key] =
                             ($ordered_excel_row[$keyd][$UnplL_key] / $ordered_excel_row[$keyd][$SchDa_key]) * 100;
                     }
 
-                    //////////////CALCULATION for Attendance_Rate 
+                    # CALCULATION for Attendance_Rate 
                     $AR_key = array_search('Attendance_Rate', $information_array);
                     if ($ordered_excel_row[$keyd][$SchDa_key] > 0) {
                         $ordered_excel_row[$keyd][$AR_key] =
@@ -1321,8 +1264,6 @@ class ReportController extends Controller
     {
 
         try {
-            // $total_row = [];
-
             $disregard = $this->disregard;
 
             $segregated_count_rows = [];
@@ -1335,7 +1276,6 @@ class ReportController extends Controller
                 $account_name = $row[$info_key];
                 $segregated_accounts[$account_name][] = $row;
             }
-
 
             foreach ($segregated_accounts as $seg_key => $segregated_account_rows) {
                 foreach ($this->new_added as $new_col){
@@ -1354,7 +1294,7 @@ class ReportController extends Controller
                         }
                     } else {
 
-                        if ((in_array($info, $disregard)) && $info ==  "FullName") { // Replaced as headcount in excel
+                        if ((in_array($info, $disregard)) && $info ==  "FullName") { # Replaced as headcount in excel
 
                             $segregated_account_total[$seg_key][] = $segregated_count_rows;
                         }
@@ -1387,7 +1327,7 @@ class ReportController extends Controller
       
         try {
             $me = Auth::user();
-            $user_sup_id = $me->id; // basically user id
+            $user_sup_id = $me->id;
             if($request->sup_id){
                 $user_sup_id = $request->sup_id;
             }
@@ -1447,7 +1387,7 @@ class ReportController extends Controller
    
         try {    
             $me = Auth::user();       
-            $user_sup_id = $me->id; // basically user id
+            $user_sup_id = $me->id;
             if($request->sup_id){
                 $user_sup_id = $request->sup_id;
             }
@@ -1585,14 +1525,10 @@ class ReportController extends Controller
         }
     }
 
-    // Export HalfDay Conflit Report
+    # Export HalfDay Conflit Report
     public function dtr_half_day_mismatch( Request $request ){   
         try {
-
           return $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
-           
-        //  return $res = Excel::download(new ExportDTRMismatch($result), 'DtrConflitReport.csv');
-          
 
         }catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -1644,10 +1580,6 @@ class ReportController extends Controller
                 $result_sets = call_sp('EVOX_PAYROLL_REPORT', [$request->timeoff_month,$request->timeoff_year]);
                 $user_timeoff = $result_sets[0];
                 $user_timeoff_new = $result_sets[1];
-                // $user_timeoff_belgium = $result_sets[2];
-                // $user_timeoff_moroco = $result_sets[3];
-            
-
                 
                 if($request->export == 1){
                     if($request->timeoff_month - 1 == 0){
@@ -1671,8 +1603,6 @@ class ReportController extends Controller
                 }else{
                 $report = [];
                 $report1 = [];
-                // $report2 = [];
-                // $report3 = [];
                 $newrow = 0;
                 foreach($user_timeoff as $timeoff) {
                     $report[] = array(
@@ -1712,53 +1642,11 @@ class ReportController extends Controller
                     $newrow = 1;
                 }
 
-                // foreach($user_timeoff_belgium as $timeoff) {
-                //     $newhire = 1;
-                //     $newrow  == 0 ? $newhire = 1 : $newhire = 0;
-                //     $report2[] = array(
-                //         "Sno" => $timeoff->Sno,
-                //         "Employee_Name" => $timeoff->Employee_Name,
-                //         "Employee_status" => $timeoff->Employment_Status,
-                //         "Account" => $timeoff->Account,
-                //         "startdate" =>$timeoff->HireDate,
-                //         "presentdays" =>$timeoff->PresentDays,
-                //         "AvaiPaid" => $timeoff->Paid_Leave,
-                //         "AvaiLWP" => $timeoff->LWP_Leave,
-                //         "MaxLv" => $timeoff->Max_Leave_Eligible,
-                //         "PrePais" => $timeoff->Pre_LWP_Leave,
-                //         "PreLWP" => $timeoff->Pre_LWP_Leave,
-                //         "CloseBal"=> $timeoff->Close_Leave_Balance,
-                //         "NewHire" => $newhire,
-                //     );
-                //     $newrow = 1;
-                // }
-                // foreach($user_timeoff_moroco as $timeoff) {
-                //     $newhire = 1;
-                //     $newrow  == 0 ? $newhire = 1 : $newhire = 0;
-                //     $report3[] = array(
-                //         "Sno" => $timeoff->Sno,
-                //         "Employee_Name" => $timeoff->Employee_Name,
-                //         "Employee_status" => $timeoff->Employment_Status,
-                //         "Account" => $timeoff->Account,
-                //         "startdate" =>$timeoff->HireDate,
-                //         "presentdays" =>$timeoff->PresentDays,
-                //         "AvaiPaid" => $timeoff->Paid_Leave,
-                //         "AvaiLWP" => $timeoff->LWP_Leave,
-                //         "MaxLv" => $timeoff->Max_Leave_Eligible,
-                //         "PrePais" => $timeoff->Pre_LWP_Leave,
-                //         "PreLWP" => $timeoff->Pre_LWP_Leave,
-                //         "CloseBal"=> $timeoff->Close_Leave_Balance,
-                //         "NewHire" => $newhire,
-                //     );
-                //     $newrow = 1;
-                // }
                     $final_report = array_merge($report,$report1);
 
                     $response = [];
                     $response['timeoffItems'] =  $report ;
                     $response['timeoffItemsnew'] = $report1;
-                    // $response['timeoffItemsbelgium'] = $report2;
-                    // $response['timeoffItemsmoroco'] = $report3;
                     return success_response(
                         trans('messages.' . __FUNCTION__ . '_success'),
                         $response

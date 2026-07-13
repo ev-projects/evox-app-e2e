@@ -421,45 +421,6 @@ if (! function_exists('timestamp_to_time')) {
     }
 }
 
-if (! function_exists('timestamp_to_time_old')) {   
-    /**
-     * This function returns a converted Timestamp to Time
-     *
-     * @param  timestamp timestamp
-     * @return datetime
-     */
-    function timestamp_to_time_old( $timestamp ) 
-    {
-        try {
-            
-            return ( is_valid( $timestamp ) ) ? date('H:i:s', $timestamp) : null;
-        }catch(Exception $e){
-            throw $e;
-        }
-    }
-}
-
-
-if (! function_exists('merge_date_and_time')) {   
-    /**
-     * This function returns a Merged Date and Time variable.
-     *
-     * @param  date|timestamp $date
-     * @param  time|timestamp $time
-     * @return timestamp
-     */
-    function merge_date_and_time( $date, $time ) 
-    {
-        try {
-            return ( ( !is_int($date)      ? strtotime($date) : $date ) + 
-                     ( !is_int($time)      ? strtotime($time) : $time )
-                    );
-        }catch(Exception $e){
-            throw $e;
-        }
-    }
-}
-
 
 
 if (! function_exists('add_days_to_timestamp')) {   
