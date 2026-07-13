@@ -16,7 +16,6 @@ use App\Modules\User\Repositories\UtcTimeLogRepository;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('demo-generate-pdf','PDFController@demoGeneratePDF');
 Route::get('/', function () {
     return view('welcome');
 });

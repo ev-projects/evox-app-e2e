@@ -18,27 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::get('Getroom', 'RoomController@GetroomDetails')->middleware('jwtauth', 'auth.apikey');
-Route::get('Getroomcal', 'RoomController@GetroomDetailscal')->middleware('jwtauth', 'auth.apikey');
-Route::get('Getroomlist/{roomid}', 'RoomController@Getroomlist')->middleware('jwtauth', 'auth.apikey');
-Route::get('Getbookingroom/{roomid}', 'BookingController@GetBookingRoomDetails')->middleware('jwtauth', 'auth.apikey');
-Route::post('storebooking', 'BookingController@storeBookingRoomDetails')->middleware('jwtauth', 'auth.apikey');
-Route::post('storeroom', 'RoomController@storeRoomDetails')->middleware('jwtauth', 'auth.apikey');
-Route::put('UpdateRoomdetails/{roomid}', 'RoomController@UpdateRoomdetails')->middleware('jwtauth', 'auth.apikey');
-Route::get('DeleteRoomdetails/{roomid}', 'RoomController@DeleteRoomdetails')->middleware('jwtauth', 'auth.apikey');
-Route::post('validatedate', 'BookingController@validatedate')->middleware('jwtauth', 'auth.apikey');
-Route::post('storelocation', 'LocationController@storeLocationDetails')->middleware('jwtauth', 'auth.apikey');
-Route::get('getlocation/{locationid?}', 'LocationController@GetlocationDetails')->middleware('jwtauth', 'auth.apikey');
-Route::get('getlocationcal', 'LocationController@GetlocationDetailscal')->middleware('jwtauth', 'auth.apikey');
-Route::put('UpdateLocationDetails/{roomid}', 'LocationController@UpdateLocationDetails')->middleware('jwtauth', 'auth.apikey');
-Route::get('DeleteLocationDetails/{roomid}', 'LocationController@DeleteLocationDetails')->middleware('jwtauth', 'auth.apikey');
-Route::get('GetBookeddetailsByid/{userid?}', 'BookingController@GetBookeddetailsByid')->middleware('jwtauth', 'auth.apikey');
-Route::put('Roomapproval/{userid?}', 'BookingController@Roomapproval')->middleware('jwtauth', 'auth.apikey');
-Route::get('GetBookeddetails', 'BookingController@GetBookeddetails')->middleware('jwtauth', 'auth.apikey');
-Route::get('Getroomlistlocation_wise/{roomid}', 'RoomController@Getroomlistlocation_wise')->middleware('jwtauth', 'auth.apikey');
-Route::get('Gettodayleaves', 'BookingController@get_today_leave_list')->middleware('jwtauth', 'auth.apikey');
-Route::get('Gettommorowleaves', 'BookingController@get_tommorow_leave_list')->middleware('jwtauth', 'auth.apikey');
-Route::get('Getitrequirement', 'BookingController@get_itrequirement_roomlist')->middleware('jwtauth', 'auth.apikey');
+Route::get('Gettodayleaves', 'DashboardController@get_today_leave_list')->middleware('jwtauth', 'auth.apikey');
+Route::get('Gettommorowleaves', 'DashboardController@get_tommorow_leave_list')->middleware('jwtauth', 'auth.apikey');
 Route::post('sync_users', 'SyncController@syncusers')->middleware('auth.apikey');
 Route::post('sync_users_hris', 'SyncController@syncusers_HRIS')->middleware('auth.apikey');
 Route::post('sync_holidays', 'SyncController@syncholidays')->middleware('auth.apikey');
@@ -46,8 +27,7 @@ Route::post('sync_leaves', 'SyncController@syncleaves')->middleware('auth.apikey
 Route::post('sync_timeoff_allocation', 'SyncController@timeoff_allocation_HRIS')->middleware('auth.apikey');
 Route::post('sync_timeoff_allocation_new', 'SyncController@timeoff_allocation_HRIS_New')->middleware('auth.apikey');
 Route::post('sync_timeoff_allocation_fail_sync', 'SyncController@timeoff_allocation_HRIS_fail_sync')->middleware('auth.apikey');
-// Route::get('sendemail', 'BookingController@sendemail');
-Route::get('get_dashboard_all/{page_type}', 'BookingController@get_dashboard_all')->middleware('jwtauth', 'auth.apikey');
+Route::get('get_dashboard_all/{page_type}', 'DashboardController@get_dashboard_all')->middleware('jwtauth', 'auth.apikey');
 Route::get('get_redis_notifications/{user_id}', 'RedisController@get_redis_notifications')->middleware('jwtauth', 'auth.apikey');
 
 // PayRoll Dispute

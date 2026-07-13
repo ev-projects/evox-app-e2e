@@ -1,1 +1,1 @@
-export { default } from './SummaryDashboard.js';
+export { default } from './SummaryDashbord.js';

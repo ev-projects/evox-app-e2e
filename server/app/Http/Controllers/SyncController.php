@@ -15,26 +15,6 @@ use Illuminate\Support\Facades\Hash;
 class SyncController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -83,8 +63,6 @@ class SyncController extends Controller
                 }
                
             }
-        // $data = $request->all();
-        // return $data;
         } catch (Exception $e) {
         return error_response(trans('messages.error_default'), $e);
         }
@@ -96,25 +74,14 @@ class SyncController extends Controller
 
             $validator = Validator::make($request->all(), [
                 "firstName" => 'required',
-                // "bestEmail" => 'required',
                 "lastName"=>'required',
                 "employeeNumber"=>'required',
                 "bhrNumber"=>'required',
                 "status"=>'required'
             ]);
             if ($validator->fails()) {
-            //   return response()->json(['errors'=>$validator->messages()]);
               return error_response(trans('messages.error_default'), $validator->messages());
             }else{
-    
-                // $result = DB::select('call EH_SP_User_Sync_HRIS("'.$request->bestEmail.'", '.$request->employeeNumber.'
-                // ,'.$request->bhrNumber.', "'.$request->userName.'","'.Hash::make( get_constant('DEFAULT_PASSWORD') ).'","'.$request->firstName.'", "'.$request->middleName.'"
-                // ,"'.$request->lastName.'", "'.$request->nickname.'","'.$request->employmentHistoryStatus.'", "'.$request->hireDate.'"
-                // ,'.$request->status.', "'.$request->jobTitle.'","'.$request->country.'", "'.$request->dateOfBirth.'"
-                // ,"'.is_valid($request->terminationDate)?? "NULL".'", "'.$request->department.'","'.$request->mobilePhone.'", '.$request->supervisorId.'
-                // ,"'.$request->Subdepartmentname.'",'.$request->subdepartmentsupervisorId.',"'.$request->division.'")');    
-                
-            
                     $termination_date = $request->terminationDate == "0000-00-00" 
                             || 
                             $request->terminationDate == "None"
@@ -173,21 +140,10 @@ class SyncController extends Controller
                 }
                
             }
-        // $data = $request->all();
-        // return $data;
         } catch (Exception $e) {
-        //     return response()->json([
-                                
-        //         'status' => '405',
-        //         'message' => "Insert Failed = " . $e->getMessage(),
-    
-        // ]);
          return error_response(trans('messages.error_default'), $e);
-        
         }
     }
-
-   
 
     public function syncholidays(Request $request){
         try {
@@ -233,8 +189,6 @@ class SyncController extends Controller
         }
     }
 
-
-
     public function timeoff_allocation_HRIS_New(Request $request)
     {
         try {
@@ -247,7 +201,6 @@ class SyncController extends Controller
             if ($validator->fails()) {
               return error_response(trans('messages.error_default'), $validator->messages());
             }else{
-              
                 
                 $result =  call_sp("EV_SP_Timeoff_Allocation", 
                 [
@@ -288,7 +241,6 @@ class SyncController extends Controller
         }
     }
 
-
     public function timeoff_allocation_HRIS(Request $request)
     {
         try {
@@ -323,8 +275,6 @@ class SyncController extends Controller
         
         }
     }
-
-
     
     public function timeoff_allocation_HRIS_fail_sync(Request $request)
     {
@@ -364,50 +314,5 @@ class SyncController extends Controller
          return error_response(trans('messages.error_default'), $e);
         
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

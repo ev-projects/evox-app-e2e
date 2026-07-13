@@ -1,1 +1,1 @@
-export { default } from './EVLearning.js.js';
+export { default } from './EVLearning.js';
