@@ -28,8 +28,4 @@ interface ScheduleRepositoryInterface
     public function replicate_schedule_policy( Schedule $schedule, Schedule $schedule_to_copy );
 
     public function replicate_schedule( Schedule $schedule, Schedule $schedule_to_copy );
-
-    public function apply_drupal_evox_data_to_default_schedule( array $drupal_evox_default_schedule_array );
-
-    public function apply_drupal_evox_data_to_temporary_schedule( array $drupal_evox_temporary_schedule_array );
 }
