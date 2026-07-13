@@ -234,14 +234,6 @@ return [
             'permission' => 0666,
         ],
 
-        'drupal_migration' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/drupal_migration.log'),
-            'level' => 'debug',
-            'days' => 90,
-            'permission' => 0666,
-        ],
-
         'cron_errors' => [
             'driver' => 'daily',
             'path' => storage_path('logs/cron_errors.log'),
