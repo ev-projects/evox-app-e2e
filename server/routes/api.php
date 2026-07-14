@@ -20,13 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('Gettodayleaves', 'DashboardController@get_today_leave_list')->middleware('jwtauth', 'auth.apikey');
 Route::get('Gettommorowleaves', 'DashboardController@get_tommorow_leave_list')->middleware('jwtauth', 'auth.apikey');
-Route::post('sync_users', 'SyncController@syncusers')->middleware('auth.apikey');
-Route::post('sync_users_hris', 'SyncController@syncusers_HRIS')->middleware('auth.apikey');
-Route::post('sync_holidays', 'SyncController@syncholidays')->middleware('auth.apikey');
-Route::post('sync_leaves', 'SyncController@syncleaves')->middleware('auth.apikey');
-Route::post('sync_timeoff_allocation', 'SyncController@timeoff_allocation_HRIS')->middleware('auth.apikey');
-Route::post('sync_timeoff_allocation_new', 'SyncController@timeoff_allocation_HRIS_New')->middleware('auth.apikey');
-Route::post('sync_timeoff_allocation_fail_sync', 'SyncController@timeoff_allocation_HRIS_fail_sync')->middleware('auth.apikey');
 Route::get('get_dashboard_all/{page_type}', 'DashboardController@get_dashboard_all')->middleware('jwtauth', 'auth.apikey');
 Route::get('get_redis_notifications/{user_id}', 'RedisController@get_redis_notifications')->middleware('jwtauth', 'auth.apikey');
 
