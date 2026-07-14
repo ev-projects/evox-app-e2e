@@ -1,7 +1,7 @@
 <?php 
 
 
-namespace App\Modules\Request;
+namespace App\Modules\Request\Traits;
 
 use Exception;
 use Illuminate\Support\Facades\DB;
