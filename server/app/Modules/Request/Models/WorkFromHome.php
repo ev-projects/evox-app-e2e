@@ -3,6 +3,10 @@
 namespace App\Modules\Request\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Request\Traits\ApprovalTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+
 
 class WorkFromHome extends Model
 {

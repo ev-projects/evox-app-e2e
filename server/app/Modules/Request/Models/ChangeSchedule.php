@@ -3,7 +3,7 @@
 namespace App\Modules\Request\Models;
 
 use App\Modules\Payroll\Models\Dtr;
-use App\Modules\Request\ApprovalTrait;
+use App\Modules\Request\Traits\ApprovalTrait;
 use App\Modules\Schedule\Models\Schedule;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
