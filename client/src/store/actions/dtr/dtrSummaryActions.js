@@ -4,34 +4,6 @@ import { trackPromise } from "react-promise-tracker";
 import Formatter from "../../../services/Formatter";
 import exportFromJSON from 'export-from-json'  
 
-
-// Fetch Request List
-export const fetchDtrSummary = ( data = null ) => {
-    return (dispatch, getState) => {
-        API.call({
-            method: "get",
-            url: "/report/dtr_summary/team",
-            params : data
-        })
-        .then(result => {
-            dispatch({
-                'type'      : 'FETCH_DTR_SUMMARY_SUCCESS', 
-                'dtrSummary'  : result.data.content,
-            })
-            if (result.data.content.has_next_page) {
-                var btnGenerate = document.getElementById('btn-generate');
-                btnGenerate.click();
-            }
-        })
-        .catch(e => {
-            dispatch( {
-                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
-                'e'  : e,
-            } ) 
-        });
-    }
-}
-
 // Fetch Request new List
 export const fetchNewDtrSummary = ( data = null ) => {
     return (dispatch, getState) => {
@@ -90,36 +62,7 @@ export const fetchDtrConflict = ( data = null ) => {
     }
 }
 
-// Fetch Request new List
-export const fetchDtrMismatch = ( data = null ) => {
-    return (dispatch, getState) => {
-        API.call({
-            method: "get",
-            url: "/dtr/export_confilt_dtr",
-            params : data
-        })
-        .then(result => {
-            dispatch({
-                'type'      : 'FETCH_NEW_DTR_SUMMARY_SUCCESS', 
-                'dtrSummary'  : result.data.content,
-            })
-        })
-        .catch(e => {
-            dispatch( {
-                'type'      : 'FETCH_DTR_SUMMARY_BATCH_ERROR', 
-                'e'  : e,
-            } ) 
-        });
-    }
-}
-
-
-
-
-
-
 export const exportDtrSummary = ( data = null ) => {
-    // console.log('Params', data)
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -127,7 +70,6 @@ export const exportDtrSummary = ( data = null ) => {
             params : data
         })
         .then(result => {
-            // console.log(result.data.content)
             if (result.data.content) {
                 dispatch({
                     'type'      : 'FETCH_DTR_EXPORT_BACTH_SUCCESS', 
@@ -177,7 +119,6 @@ export const fetchDtrMultiLogsSummary = ( data = null ) => {
 }
 
 export const exportDtrMultiLogsSummary = ( data = null) => {
-    // console.log('Params', data)
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -199,9 +140,7 @@ export const exportDtrMultiLogsSummary = ( data = null) => {
     }
 }
 
-
 export const exportNewDtrSummary1 = ( data = null) => {
-    // console.log('Params', data)
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -213,12 +152,6 @@ export const exportNewDtrSummary1 = ( data = null) => {
             const fileName = 'Dtr_Conflict_Report'  ;
             const exportType = 'csv';
             exportFromJSON({ data, fileName,exportType });
-            // console.log(result.data.content)
-           
-                // dispatch({
-                //     'type'      : 'FETCH_DTR_CONFLICT_EXPORT_SUCCESS',
-                //     'data'      : result.data
-                // })
         })
         .catch(e => {
             dispatch( {
@@ -230,7 +163,6 @@ export const exportNewDtrSummary1 = ( data = null) => {
 }
 
 export const exportNewDtrSummary = ( data = null) => {
-    // console.log('Params', data)
     return (dispatch, getState) => {
         API.call({
             method: "get",
@@ -264,5 +196,3 @@ export const exportNewDtrSummary = ( data = null) => {
         });
     }
 }
-
-

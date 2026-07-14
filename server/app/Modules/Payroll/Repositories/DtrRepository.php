@@ -168,115 +168,6 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-
-    /**
-     *  Responsible for Generating DTR for a specific user starting from a specific date
-     */
-    public function generate_dtr2( $date , $emp_id )
-    {
-        DB::beginTransaction();
-        try {
-            $days = 7;
-            $dates = get_succeeding_days( $date , $days ) ;
-
-            log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $date ], "dtr");
-
-            $emp_nump = $emp_id;
-
-            # THIS SQL CREATES RECORD OF 7 DAYS RECORDS OF DTR
-            $records_to_be_insert =  "SELECT ".$emp_nump." as user_id," . implode(" as date UNION ALL SELECT  ".$emp_nump." as user_id,", $dates);
-
-
-            # THIS SQL CREATES A RELATION
-            $record_that_dont_exist = " FROM (" .$records_to_be_insert ." ) as table1
-            LEFT JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id
-            LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id
-                AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
-            LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id
-            LEFT JOIN schedule_details as sched_details ON sched_details.schedule_id = sched.id
-                AND ( sched_details.day = LOWER(SUBSTRING(DAYNAME(table1.date),1, 3)) or sched_details.day='all')
-            LEFT JOIN users on table1.user_id = users.id
-            WHERE dtr.date is NULL AND dtr.user_id is NULL AND table1.date >= users.date_hired AND is_active = 1
-            AND ( change_sched.status = 'approved' OR change_sched.status is null )
-            GROUP BY table1.date";
-
-            $delete_sched_pol = "DELETE dtr_policies from dtr_policies JOIN dtrs ON dtrs.id = dtr_policies.dtr_id WHERE dtrs.date in ( ". implode(" ,", $dates) ." ) AND dtrs.user_id = ".  $emp_nump .";";
-
-            $insert_sched_policy =  "INSERT INTO dtr_policies (dtr_id, policy, value) SELECT dtr.id,sched_pol.policy, sched_pol.value  FROM (" .$records_to_be_insert ." ) as table1
-            JOIN dtrs as dtr on dtr.date = table1.date AND dtr.user_id = table1.user_id
-            LEFT JOIN ( SELECT * FROM schedules GROUP BY id ORDER BY updated_at DESC ) as sched on table1.user_id = sched.bind_id
-                AND (table1.date >= sched.valid_from AND sched.valid_to is null or table1.date <= sched.valid_to) AND sched.bind_to = 'user'
-            LEFT JOIN change_schedules as change_sched ON change_sched.schedule_id = sched.id
-            LEFT JOIN users on table1.user_id = users.id
-            LEFT JOIN schedule_policies as sched_pol ON sched_pol.schedule_id = sched.id
-            WHERE table1.date >= users.date_hired AND is_active = 1
-            AND ( change_sched.status = 'approved' OR change_sched.status is null )
-            GROUP BY table1.date,sched_pol.policy";
-
-            $columns_to_selected[] = "table1.user_id";
-
-            $columns_to_selected[] = "table1.date";
-
-            $columns_to_selected[] = "sched_details.break_time as break_time";
-
-            # Make sure the start time has correct date
-            $start_time = "sched_details.start_time";
-            $columns_to_selected[] = check_column_exist( $start_time , "unix_timestamp( table1.date ) + ". $start_time ) . " as start_datetime";
-
-            # Make sure end time is always greater than the start time
-            $end_time = "sched_details.end_time";
-            $columns_to_selected[] = check_column_exist( $end_time ,check_column_end_datetime( "unix_timestamp( table1.date ) + ". $start_time , "unix_timestamp( table1.date ) + " . $end_time) ) ." as end_datetime";
-
-            # Make sure flexy time is always greater that on duty / start time
-            $start_flexy_time = "sched_details.start_flexy_time";
-            $columns_to_selected[] = check_column_exist( $start_flexy_time ,check_column_start_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $end_time , "unix_timestamp( table1.date ) + " . $start_flexy_time) ) ." as start_flexy_datetime";
-
-            # Make sure the end flexy time is greater than on duty, off duty and start flexy time
-            $end_flexy_time = "sched_details.end_flexy_time";
-            $columns_to_selected[] = check_column_exist( $end_flexy_time ,check_column_end_flexy_time( "unix_timestamp( table1.date ) + ". $start_time ,"unix_timestamp( table1.date ) + ". $start_flexy_time , "unix_timestamp( table1.date ) + " . $end_time, "unix_timestamp( table1.date ) + " .$end_flexy_time) ) ." as start_flexy_datetime";
-
-            $columns_to_selected[] = check_if_restday( "table1.date" , "sched.rest_days") . " as is_rest_day";
-
-            $columns_to_selected[] = "NOW() as created_at";
-            $columns_to_selected[] = "NOW() as updated_at";
-
-            $insert_sql_raw = "INSERT INTO dtrs ( user_id, date, break_time, start_datetime, end_datetime, start_flexy_datetime, end_flexy_datetime, is_rest_day, created_at, updated_at) SELECT ". implode( "," ,$columns_to_selected ). $record_that_dont_exist . ";";
-
-            $sql_raw = $insert_sql_raw. $delete_sched_pol. $insert_sched_policy;
-
-            $result = DB::unprepared( $sql_raw );
-            DB::commit();
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [] , "dtr");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
-
-            return $result;
-        } catch (Exception $e) {
-            DB::rollback();
-            log_to_file( 'info', get_constant('LOG_ROLLBACK'), [],  "dtr");
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
-
-            throw $e;
-        }
-    }
-
-    /**
-     *  Responsible for Generating DTR for a new hired user
-     */
-    public function generate_dtr_on_new_hire($user )
-    {
-        $days = 10;
-        $dates = get_succeeding_days( $user->date_hired, $days ) ;
-
-        $user_collection = new Collection();
-        $user_collection->push((object)User::findOrFail($user->id));
-        $this->generate_dtr( $user_collection, $dates );
-
-
-    }
-
-
-
     /**
      *  Responsible for Applying of Schedule to DTR.
      * @param User|user_id $user_or_user_id
@@ -871,7 +762,6 @@ class DtrRepository implements DtrRepositoryInterface{
     {
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "dtr_leaves");
 
-        /*DB::beginTransaction();*/
         try {
 
             $result = new Collection;
@@ -934,14 +824,6 @@ class DtrRepository implements DtrRepositoryInterface{
                                     $leave_data['employee_note'],
                                     $leave_data['manager_note'],
                                     $leave_data['approved_by']]);
-
-                                # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
-                                /*if ($bhr_leave_status == "approved") {
-                                    $approved_leave_insert_array[] = implode(",", $leave_insert_values);
-                                } else {
-                                    $leave_insert_array[] = implode(",", $leave_insert_values);
-                                }*/
-
                             }
 
                             $processed_data[] = [
@@ -960,50 +842,9 @@ class DtrRepository implements DtrRepositoryInterface{
                     continue;
                 }
             }
-            #print_r($processed_data);
-            /*
-            $merged_leave_insert_array = array_merge($leave_insert_array, $approved_leave_insert_array);
-            if (!count($merged_leave_insert_array)) {
-                throw new Exception("Leave Sync was not able to process any data, please check the logs file.");
-            }
-            # Creates the Customized Query for Batch inserting the To-be-generated Leaves.
-            $leave_insert_query = "INSERT INTO leaves (
-                                                dtr_id,
-                                                type,
-                                                status,
-                                                amount,
-                                                employee_note,
-                                                manager_note,
-                                                updated_by,
-                                                updated_at,
-                                                created_at)
-                                            VALUES (".implode( "), (", $merged_leave_insert_array ).")
-                                            ON DUPLICATE KEY UPDATE
-                                                dtr_id          = VALUES(dtr_id),
-                                                type            = VALUES(type),
-                                                status          = VALUES(status),
-                                                amount          = VALUES(amount),
-                                                employee_note   = VALUES(employee_note),
-                                                manager_note    = VALUES(manager_note),
-                                                created_at      = IF(created_at IS NULL, VALUES(created_at), created_at),
-                                                updated_at      = VALUES(updated_at)";
-
-            #dd($processed_data, $approved_leave_insert_array, $leave_insert_array, $merged_leave_insert_array);
-            # Executes the Batch Insert Query
-            $result = [
-                "result" => DB::insert($leave_insert_query),
-                "total_dtr_count" => count( $leave_insert_array ),
-                "dtr_leaves"   => $leave_insert_array
-            ];
-
-            log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $result, "dtr_leaves");
-            log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr");
-            DB::commit();
-            */
             return $processed_data;
 
         } catch (Exception $e) {
-            /*DB::rollback();*/
             log_to_file( 'critical', '['. $e->getMessage() . ']' . __FUNCTION__ , [$e], "dtr_leaves");
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "dtr_leaves");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "dtr_leaves");
@@ -1062,11 +903,6 @@ class DtrRepository implements DtrRepositoryInterface{
 
                             # Append the imploded Leaves Insert Values into the Main Array that would be Batch Executed later once the Iteration is done.
                             $leave_insert_array[] = implode(",", $leave_insert_values);
-
-                            /*foreach( $dtr_collection as $dtr ) {
-                                $this->compute_payroll_items( $dtr );
-                            }*/
-
                         }
 
                         $processed_data[] = [
@@ -1245,81 +1081,6 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-    public function new_get_dtr_logs(Collection $user_collection, string $start_date, string $end_date){
-        try {  
-            $user_collection_paginated = [];
-            $result = 
-            DtrSummaryReport::whereIn('user_id', $user_collection->pluck('id')->toArray())
-                ->select(
-                    DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),
-                                                IF(users.middle_name IS NOT NULL,users.middle_name,''),
-                                                IF(users.last_name IS NOT NULL,users.last_name,'')) 
-                                                AS EmployeeName"),
-                    'users.emp_num',
-                    'users.email',
-                    'users.username',
-                    DB::raw("sum(drt_summary_report.unpaid_leave) as ul"),
-                    DB::raw("sum(drt_summary_report.on_leave) as vl_sl"),
-                    DB::raw("sum(drt_summary_report.reg_late) as reg_late"),
-                    DB::raw("sum(drt_summary_report.reg_undertime) as reg_under_time"),
-                    DB::raw("sum(drt_summary_report.reg_rendered_hours 
-                                                            + IF(drt_summary_report.render_status=1,drt_summary_report.reg_rendered_hours_overlapp,0)) 
-                                                            -sum(drt_summary_report.reg_night_diff + 
-                                                            IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as reg_rendered_hr"),
-                    DB::raw("sum(drt_summary_report.reg_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.reg_night_diff_overlapp,0)) as reg_night_dif"),
-                    DB::raw("sum(drt_summary_report.reg_overtime) as reg_over_time"),
-                    DB::raw("sum(drt_summary_report.reg_overtime_night_diff) as reg_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.rd_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.rd_rendered_hours_overlapp,0)) - sum(drt_summary_report.rd_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.rd_night_diff_overlapp,0)) as rd_rendered_hr"),
-
-                    DB::raw("sum(drt_summary_report.rd_overtime) as rd_over_time"),
-                    DB::raw("sum(drt_summary_report.rd_overtime_night_diff) as rd_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.lh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.lh_rendered_hours_overlapp,0)) 
-                                                            -sum(drt_summary_report.lh_night_diff 
-                                                            + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as lh_rendered_hr"),
-                    DB::raw("sum(drt_summary_report.lh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.lh_night_diff_overlapp,0)) as lh_night_dif"),
-                    DB::raw("sum(drt_summary_report.lh_overtime) as lh_over_time"),
-                    DB::raw("sum(drt_summary_report.lh_overtime_night_diff) as lh_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.sh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.sh_rendered_hours_overlapp,0)) 
-                                                            -sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as sh_rendered_hr"),
-                    DB::raw("sum(drt_summary_report.sh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.sh_night_diff_overlapp,0)) as sh_night_dif"),
-                    DB::raw("sum(drt_summary_report.sh_overtime) as sh_over_time"),
-                    DB::raw("sum(drt_summary_report.sh_overtime_night_diff) as sh_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.dsh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dsh_rendered_hours_overlapp,0)) 
-                                                            -sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as dsh_rendered_hr"),
-                    DB::raw("sum(drt_summary_report.dsh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dsh_night_diff_overlapp,0)) as dsh_night_dif"),
-                    DB::raw("sum(drt_summary_report.dsh_overtime) as dsh_over_time"),
-                    DB::raw("sum(drt_summary_report.dsh_overtime_night_diff) as dsh_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.dlh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.dlh_rendered_hours_overlapp,0)) 
-                                                            -sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as dlh_rendered_hr"),
-                    DB::raw("sum(drt_summary_report.dlh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.dlh_night_diff_overlapp,0)) as dlh_night_dif"),
-                    DB::raw("sum(drt_summary_report.dlh_overtime) as dlh_over_time"),
-                    DB::raw("sum(drt_summary_report.dlh_overtime_night_diff) as dlh_over_night_dif"),
-                    DB::raw("sum(drt_summary_report.slh_rendered_hours + IF(drt_summary_report.render_status=1,drt_summary_report.slh_rendered_hours_overlapp,0)) 
-                                                            -sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as slh_rendered_hr"),
-                    DB::raw("sum(drt_summary_report.slh_night_diff + IF(drt_summary_report.nigdiff_stauts=1,drt_summary_report.slh_night_diff_overlapp,0)) as slh_night_dif"),
-                    DB::raw("sum(drt_summary_report.slh_overtime) as slh_over_time"),
-                    DB::raw("sum(drt_summary_report.slh_overtime_night_diff) as slh_over_night_dif")
-                )
-
-                ->whereIn('user_id', $user_collection->pluck('id')->toArray())
-
-                ->join('users', 'users.id', '=', 'drt_summary_report.user_id')
-                ->join('users_supervisors', 'users_supervisors.user_id', '=', 'drt_summary_report.user_id')
-                ->join('departments', 'users.department_id', '=', 'departments.id');
-
-            $result->whereBetween('drt_summary_report.login_date', [$start_date,  $end_date]);
-        
-            $result->groupBy('users.first_name', 'users.middle_name', 'users.last_name', 'users.emp_num', 'users.email', 'users.username', 'users.id');
-            
-            return $result;
-
-        } catch (Exception $e) {
-            return error_response(trans('messages.error_default'), $e);
-        }
-        
-    }
-
-
     /**
      *  Responsible for the Computing the Payroll items of the DTR.
      * @param Dtr $dtr
@@ -1349,9 +1110,6 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-
-
-
     /**
      * Gets the leaves binded from the specific DTR collections
      * @param Collection $dtr_collection
@@ -1367,15 +1125,9 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-
-
-
-
     ###############################################################################################
     ##################################### Protected functions #####################################
     ###############################################################################################
-
-
 
     /**
      *  Responsible for Applying the Biometrics Parameter to their Respective DTR
@@ -1386,8 +1138,6 @@ class DtrRepository implements DtrRepositoryInterface{
     {
         DB::beginTransaction();
         try {
-
-
             # Sets the Result as null by default.
             $result = null;
 
@@ -1395,7 +1145,6 @@ class DtrRepository implements DtrRepositoryInterface{
             if ($dtr_id) {
                 $dtr = Dtr::find($dtr_id);
             } else {
-
                 $bio_timestamp = datetime_to_timestamp( $biometrics->CheckTime ) +  string_offset_to_seconds(Auth::user()->country_timezone_to_offset());
                 $dtr = Dtr::select('dtrs.*')
                             ->join('users', 'dtrs.user_id', '=', 'users.id')
@@ -1433,7 +1182,6 @@ class DtrRepository implements DtrRepositoryInterface{
                 $dtr->update();
                 $result = $dtr;
 
-
                 $dtr_prev = Dtr::where("user_id", Auth::user()->id)->where('date', Carbon::parse($biometrics->CheckTime)->subDay(1)->format("Y-m-d"))->first();;
                 if($dtr_prev == null &&  Auth::user()->date_hired){
                     if(Auth::user()->date_hired <Carbon::parse($biometrics->CheckTime)->subDay(1)->format("Y-m-d") ){
@@ -1449,13 +1197,10 @@ class DtrRepository implements DtrRepositoryInterface{
 
                 }
 
-
                 DB::commit();
                 log_to_file( 'info', "Biometrics Synced to DTR." , ['dtr'=>$dtr, 'biometrics'=> $biometrics], "biometrics");
             } else {
                 if (Auth::user()) {
-                 
-              
                     $startDate = Carbon::now()->subDay(30);
 
                     $endDate = Carbon::now();
@@ -1469,13 +1214,11 @@ class DtrRepository implements DtrRepositoryInterface{
                         $start_generated_date = Carbon::createFromFormat('Y-m-d',Auth::user()->date_hired);
                         $days = 30;
                     }
-                   
                     
                     $dates = get_succeeding_days_basic(  $start_generated_date , $days ) ;
                     $user_collection = new Collection();
                     $user_collection->push((object)User::findOrFail(Auth::user()->id));
                     $result = $this->generate_dtr( $user_collection, $dates );
-
                     
                     $result =$this->apply_biometrics_to_dtr($biometrics);
 
@@ -1525,11 +1268,9 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-
     ###############################################################################################
     ##################################### Private functions #####################################
     ###############################################################################################
-
 
     /**
      *  Responsible for fetching the Time-off for the current DTR Instance.
@@ -1580,9 +1321,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 }
                
             }
-
             return $parsed_schedule_detail;
-
 
         } catch (Exception $e) {
             log_error($e);
@@ -1590,98 +1329,9 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-
-
     ###############################################################################################
     ##################################### Validation functions ####################################
     ###############################################################################################
-
-
-
-    /**
-     *  Responsible for Applying of Schedule to DTR.
-     * @param User|user_id $user_or_user_id
-     * @param Schedule $schedule
-     * @param $bypass
-     *
-     * @return array $result
-     */
-    public function apply_dtr_to_simcorp_dtr( $user, $bypass = false ,  $valid_from, $valid_to , $sched_policy)
-    {
-        DB::beginTransaction();
-        try {
-
-
-
-            $result = [
-                'updated' => [],
-                'not_updated' => []
-            ];
-
-            $user = ( $user->id instanceof User ) ? $user->id : User::findOrFail($user->id);
-            if( is_valid( $user ) ) {
-
-                    $dtr_collection = $user->dtr($valid_from, $valid_to)->get();
-
-
-                foreach( $dtr_collection as $dtr ) {
-                    
-                    # Default Flag
-                    $to_update_flag = true;
-
-                    if( !$bypass  && ($dtr->isTemporary() || $dtr->isChangeSchedule() || $dtr->isRestDayWork()) ) {
-                        $to_update_flag = false;
-                        $result['not_updated'][] = $dtr;
-                    }
-       
-
-                    if( ($dtr->rest_day_work()->where('status','=','pending')->get()->count() > 0  
-                    && ($dtr->holidays()->count() > 0) )){
-                        $to_update_flag = false;
-                       
-                    }
-                    if( ($dtr->rest_day_work()->where('status','=','approved')->get()->count() == 0  
-                    && ($dtr->holidays()->count() > 0) )){
-                        $to_update_flag = false;
-                    }
-                    if($dtr->isRestDay() && $dtr->rest_day_work()->where('status','=','approved')->get()->count() > 0 && !($dtr->holidays()->count() > 0) ){
-                        $to_update_flag = false;
-                    }
-                    if (!($dtr->hasSchedule())){
-                        $to_update_flag = false;
-                    }
-                    if( $to_update_flag ) {
-
-                        
-                                $dtr->time_in                  =$dtr->start_datetime;
-                                $dtr->time_out                 =$dtr->end_datetime ;
-
-                                $dtr->update();
-
-                                $dtr->policies()->delete();
-
-                                $this->save_dtr_policies( $dtr,  $sched_policy);
-
-                                $this->compute_payroll_items( $dtr );
-                                
-
-                                
-
-                    $result['updated'][] = $dtr;
-                    }
-
-                }
-            }
-
-            DB::commit();
-          
-            return $result;
-
-        } catch (Exception $e) {
-          
-            throw $e;
-        }
-    }
 
     /**
      * apply_punch_to_history
@@ -1700,9 +1350,7 @@ class DtrRepository implements DtrRepositoryInterface{
                 ->format('Y-m-d');
 
             foreach ($biometrics_collection as $biometrics) {
-
                 try {
-
                     $same_day = false;
                     $dtr_punch_date_check = $user->punch($date_prev, $date)
                         ->whereNotNull('log_out_type')
@@ -1871,7 +1519,6 @@ class DtrRepository implements DtrRepositoryInterface{
         }
     }
 
-
     public function remove_alter_to_punch(  $alter_punch_log){
         DB::beginTransaction();
         try{
@@ -1890,5 +1537,4 @@ class DtrRepository implements DtrRepositoryInterface{
             throw $e;
         }
     }
-
 }
