@@ -23,7 +23,6 @@ use App\Modules\Request\Repositories\OvertimeRepositoryInterface;
 use App\Modules\Schedule\Repositories\ScheduleRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 
-use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Request\Repositories\RestDayWorkRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\Request\Repositories\ChangeScheduleRepositoryInterface;
@@ -38,7 +37,6 @@ class CronController extends Controller
     protected $overtime;
     protected $schedule;
     protected $biometrics;
-    protected $drupal_evox;
 
 
     public function __construct(BhrRepositoryInterface $bhr,
@@ -48,7 +46,6 @@ class CronController extends Controller
                                 OvertimeRepositoryInterface $overtime,
                                 ScheduleRepositoryInterface $schedule,
                                 BiometricsRepositoryInterface $biometrics,
-                                DrupalEvoxRepositoryInterface $drupal_evox,
                                 RestDayWorkRepositoryInterface $rest_day_work,
                                 ChangeScheduleRepositoryInterface $change_schedule,
                                 AlterLogRepositoryInterface $alter_log,
@@ -60,7 +57,6 @@ class CronController extends Controller
         $this->overtime = $overtime;
         $this->schedule = $schedule;
         $this->biometrics = $biometrics;
-        $this->drupal_evox = $drupal_evox;
         $this->rest_day_work    = $rest_day_work;
         $this->change_schedule  = $change_schedule;
         $this->alter_log        = $alter_log;
@@ -412,278 +408,6 @@ class CronController extends Controller
                 JsonResponse::HTTP_CREATED
             );
         } catch(\Throwable $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-
-
-    /**
-     * Syncs the DTR from Existing EVOX to this new EVOX
-     *  1. Fetch DTR from EVOX base from the Start & End Date
-     *  2. Update/Generate the DTR for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sync_dtr($start_date = null, $end_date = null){
-        try {
-
-            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
-            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $start_datetime = Carbon::yesterday()->format('Y-m-d H:i:s');
-                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d H:i:s');
-            } else {
-                $start_datetime = Carbon::parse($start_date)->format('Y-m-d H:i:s');
-                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d H:i:s');
-            }
-
-            $drupal_evox_dtr_array = $this->drupal_evox->get_dtr( $start_datetime, $end_datetime );
-
-            $result = $this->dtr->apply_drupal_evox_data_to_dtr( $drupal_evox_dtr_array );
-
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'),
-                $result,
-                JsonResponse::HTTP_CREATED
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-
-
-    /**
-     * Syncs the Alter Logs from Existing EVOX to this new EVOX
-     *  1. Fetch Alter Logs from EVOX base from the Start & End Date
-     *  3. Update/Generate the Alter Logs for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sync_alter_log($start_date = null, $end_date = null){
-        try {
-            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
-            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $start_datetime = Carbon::yesterday()->format('Y-m-d');
-                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d');
-            } else {
-                $start_datetime = Carbon::parse($start_date)->format('Y-m-d');
-                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d');
-            }
-
-            $drupal_evox_alter_log_array = $this->drupal_evox->get_alter_log( $start_datetime, $end_datetime );
-
-            $to_compute_items = $this->alter_log->apply_drupal_evox_data_to_alter_log( $drupal_evox_alter_log_array );
-
-            if( count($to_compute_items) > 0 ){
-
-                foreach( $to_compute_items as $alter_log ){
-
-                    // Fetch the DTR instance from the Overtime
-                    $dtr = $alter_log->dtr()->first();
-
-                    // Compute only if the DTR is existing.
-                    if( $dtr != null ) {
-                        $this->dtr->compute_payroll_items( $dtr );
-                    }
-                }
-            }
-
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'),
-                $to_compute_items
-            );
-
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-    /*
-     * Syncs the Overtime from Existing EVOX to this new EVOX
-     *  1. Fetch Overtime Requests from EVOX base from the Start & End Date
-     *  2. Update/Generate the Request for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sync_overtime($start_date = null, $end_date = null){
-        try {
-
-            // If Start Date and End Date is not set, Fetch the date yesterday
-            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $start_datetime = Carbon::yesterday()->format('Y-m-d H:i:s');
-                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d H:i:s');
-            } else {
-                $start_datetime = Carbon::parse($start_date)->format('Y-m-d H:i:s');
-                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d H:i:s');
-            }
-
-            // Fetch the Drupal Overtime Data
-            $drupal_evox_overtime_array = $this->drupal_evox->get_overtime( $start_datetime, $end_datetime);
-
-            // Apply the Drupal Overtime Data to EVOX
-            $to_compute_items = $this->overtime->apply_drupal_evox_data_to_overtime( $drupal_evox_overtime_array );
-
-            // Iterate the to-be-computed Overtime Instance
-            if( count($to_compute_items) > 0 ){
-
-                foreach( $to_compute_items as $overtime ){
-
-                    // Fetch the DTR instance from the Overtime
-                    $dtr = $overtime->dtr()->first();
-
-                    // Compute only if the DTR is existing.
-                    if( $dtr != null ) {
-                        $this->dtr->compute_payroll_items( $dtr );
-                    }
-                }
-            }
-
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'),
-                $to_compute_items,
-                JsonResponse::HTTP_CREATED
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-
-    /**
-     * Syncs the Rest Day Work from Existing EVOX to this new EVOX
-     *  1. Fetch Rest Day Work from EVOX base from the Start & End Date
-     *  3. Update/Generate the Rest Day Work for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sync_rest_day_work($start_date = null, $end_date = null){
-        try {
-
-            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
-            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $start_datetime = Carbon::yesterday()->format('Y-m-d');
-                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d');
-            } else {
-                $start_datetime = Carbon::parse($start_date)->format('Y-m-d');
-                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d');
-            }
-
-            $drupal_evox_rest_day_work_array = $this->drupal_evox->get_rest_day_work( $start_datetime, $end_datetime );
-
-            $to_compute_items = $this->rest_day_work->apply_drupal_evox_data_to_rest_day_work( $drupal_evox_rest_day_work_array );
-
-            if( count($to_compute_items) > 0 ){
-
-                foreach( $to_compute_items as $rest_day_work ){
-
-                    // Fetch the DTR instance from the Overtime
-                    $dtr = $rest_day_work->dtr()->first();
-
-                    // Compute only if the DTR is existing.
-                    if( $dtr != null ) {
-                        $this->dtr->compute_payroll_items( $dtr );
-                    }
-                }
-            }
-
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'),
-                $to_compute_items
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-
-
-
-
-    /**
-     * Syncs the Change Schedule from Existing EVOX to this new EVOX
-     *  1. Fetch Change Schedule from EVOX base from the Start & End Date
-     *  3. Update/Generate the Change Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sync_change_schedule($start_date = null, $end_date = null){
-        try {
-
-            // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
-            if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
-                $start_datetime = Carbon::yesterday()->format('Y-m-d');
-                $end_datetime = Carbon::yesterday()->endOfDay()->format('Y-m-d');
-            } else {
-                $start_datetime = Carbon::parse($start_date)->format('Y-m-d');
-                $end_datetime = Carbon::parse($end_date)->endOfDay()->format('Y-m-d');
-            }
-
-            $drupal_evox_default_schedule_array = $this->drupal_evox->get_change_schedule( $start_datetime, $end_datetime );
-
-            $to_compute_items = $this->change_schedule->apply_drupal_evox_data_to_change_schedule( $drupal_evox_default_schedule_array );
-
-            if( count($to_compute_items) > 0 ){
-
-                foreach( $to_compute_items as $change_of_schedule ){
-
-                    // Fetch the DTR instance from the Overtime
-                    $dtr = $change_of_schedule->dtr()->first();
-
-                    // Compute only if the DTR is existing.
-                    if( $dtr != null ) {
-                        $this->dtr->compute_payroll_items( $dtr );
-                    }
-                }
-            }
-
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'),
-                $to_compute_items
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-
-
-    /**
-     * Syncs the Default Schedule from Existing EVOX to this new EVOX
-     *  1. Fetch Default Schedule from EVOX base from the Start & End Date
-     *  2. Update/Generate the Default Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sync_default_schedule($is_initial_sync = false){
-        try {
-
-            // Fetch the Drupal Default Schedule Data
-            $drupal_evox_default_schedule_array = $this->drupal_evox->get_default_schedule( $is_initial_sync );
-
-            // Apply the Drupal Default Schedule Data to EVOX
-            $schedule_collection = $this->schedule->apply_drupal_evox_data_to_default_schedule( $drupal_evox_default_schedule_array );
-
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'),
-                $schedule_collection,
-                JsonResponse::HTTP_CREATED
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-
-
-    /**
-     * Syncs the Temporary Schedule from Existing EVOX to this new EVOX
-     *  1. Fetch Temporary Schedule from EVOX base from the Start & End Date
-     *  2. Update/Generate the Temporary Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sync_temporary_schedule($is_initial_sync = false){
-        try {
-
-            // Fetch the Drupal Temporary Schedule Data
-            $drupal_evox_temporary_schedule_array = $this->drupal_evox->get_temporary_schedule( $is_initial_sync );
-
-            // Apply the Drupal Temporary Schedule Data to EVOX
-            $schedule_collection = $this->schedule->apply_drupal_evox_data_to_temporary_schedule( $drupal_evox_temporary_schedule_array );
-
-            return success_response(
-                trans('messages.'.__FUNCTION__.'_success'),
-                $schedule_collection,
-                JsonResponse::HTTP_CREATED
-            );
-        } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
     }

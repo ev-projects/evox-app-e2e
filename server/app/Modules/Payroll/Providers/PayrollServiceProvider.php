@@ -4,8 +4,6 @@ namespace App\Modules\Payroll\Providers;
 
 use App\Modules\Payroll\Repositories\BiometricsRepository;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
-use App\Modules\Payroll\Repositories\DrupalEvoxRepository;
-use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrReportRepository;
 use App\Modules\Payroll\Repositories\DtrReportRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepository;
@@ -28,7 +26,6 @@ class PayrollServiceProvider extends ServiceProvider
         $this->app->bind( DtrRepositoryInterface::class, DtrRepository::class );
         $this->app->bind( BiometricsRepositoryInterface::class, BiometricsRepository::class );
         $this->app->bind( PayrollCutoffRepositoryInterface::class, PayrollCutoffRepository::class );
-        $this->app->bind( DrupalEvoxRepositoryInterface::class, DrupalEvoxRepository::class );
         $this->app->bind( HolidayRepositoryInterface::class, HolidayRepository::class );
     }
 
