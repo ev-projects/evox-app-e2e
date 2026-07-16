@@ -45,12 +45,7 @@ class UtcTimeLogRepository implements UtcTimeLogRepositoryInterface{
             $utc_collection  = UtcTimelog::all();
         
             foreach($utc_collection as $utc){
-
-                // $real_offset = $utc->get_country_timezone_to_offset();
-
                 $static_offset =  $utc->time_difference;
-
-                // $real_offset_seconds = string_offset_to_seconds($real_offset);
 
                 $static_offset_seconds = string_offset_to_seconds($static_offset);
 
@@ -68,7 +63,6 @@ class UtcTimeLogRepository implements UtcTimeLogRepositoryInterface{
                         }
                     }
                     if($check_offset_seconds != $static_offset_seconds && $adjustment_has_checked == false ){
-                        // dump($day->copy()->timezone( $utc->timezone ), $check_offset,$check_offset_seconds, $static_offset_seconds, $adjustment_has_checked == false);
                         $adjustment_has_checked = true;
                         $utc->time_difference_adjusted = $check_offset;
                         $utc->start_adjustment = $day->copy()->subDays(1)->format('Y-m-d');
@@ -81,23 +75,13 @@ class UtcTimeLogRepository implements UtcTimeLogRepositoryInterface{
            
                 $utc->update();
             }
-            
-           
-
-            
-            // log_to_file( 'info', 'User Profile successfully updated', [$utc], 'user_profile');
-            // log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , $utc, "user_profile");
-            // log_to_file( 'info', get_constant('LOG_GAP'), [], "user_profile");
 
             DB::commit();
-            // return $utc;
 
         } catch (Exception $e) {
 
             DB::rollback();
             log_error($e);
-            // log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "user_profile");
-            // log_to_file( 'info', get_constant('LOG_GAP'), [], "user_profile");
 
             throw $e;
         }

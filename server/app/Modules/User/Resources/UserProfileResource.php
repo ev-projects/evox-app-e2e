@@ -62,8 +62,6 @@ class UserProfileResource extends JsonResource
             'dpa_ticked_at' => $this->dpa_ticked_at,
             'full_name' => $this->getFullName(),
             'user_has_schedule' => $this->getHasSchedule(),
-
-            // "timezone" => $this->timezone,
             "user_offset_seconds" => string_offset_to_seconds($offset),
             "user_server_time" =>  timestamp_to_datetime(Carbon::now()->timestamp),
             "user_server_date" =>  timestamp_to_date(Carbon::now()->timestamp),
@@ -95,7 +93,6 @@ class UserProfileResource extends JsonResource
 
             
              $evox_departments_handled = [];
-            //  dd("");
              $evox_departments_handled=  $this->evox_departments_handled();
 
              $evox_departments_handled_strict = [];
@@ -111,7 +108,7 @@ class UserProfileResource extends JsonResource
                 $level_item = $this->level()->select('LevelId','Name','LevelId','IsAdmin','ISHR','IsPayRoll','CountryId','IsActive')->first()->toArray();
                 $level_item["Name"] = $this->level_type();
             }
-                // dd( $evox_departments_handled);
+
             return array_merge( 
                 $main_info, 
                 array('permissions' => $permissions),

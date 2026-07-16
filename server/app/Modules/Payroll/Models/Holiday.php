@@ -29,7 +29,6 @@ class Holiday extends Model
     ############################ Custom Helpers ############################
     ########################################################################
 
-
     /**
      * 
      *  Fetch the correct date for the Holiday
@@ -39,11 +38,7 @@ class Holiday extends Model
      * @return date $date
      */
     public function getProperDate( $basis_start_date = "", $basis_end_date = "")
-    {   
-        // $basis_start_date   = '2020-12-18';
-        // $basis_end_date     = '2021-01-19';
-        // $this->date         = '2020-01-20';
-
+    {
         $date = $this->date;
 
         // If the Holiday is Pre-defined and the Start and End Date has values, proceed on the conditions below.
@@ -79,8 +74,6 @@ class Holiday extends Model
         return $date;
     }
 
-
-
     public function get_holiday_within_date(){
         $date_from = Carbon::now();
         $date_to = Carbon::now()->addMonth(3);
@@ -89,6 +82,4 @@ class Holiday extends Model
         OR (is_predefined = 0 AND date >= '".$date_from->format("Y-m-d") ."' AND date <= '".$date_to->format("Y-m-d") ."' ) ")->orderByRaw('Month(date),Day(date)');
         return  $holiday->get();
     }
-
-
 }

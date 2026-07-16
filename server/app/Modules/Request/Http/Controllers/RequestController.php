@@ -109,12 +109,6 @@ class RequestController extends Controller
         try {
             log_activity( trans('messages.request_display_attempt') );
 
-            // if(!isset($request->valid_from)){
-            //     $cutoff = $this->payroll_cutoff->get_payroll_cutoff();
-            //     $request->merge(['valid_from' => $cutoff->start_date]);
-            //     $request->merge(['valid_to' => $cutoff->end_date]);
-            // }
-
             if($request->url== 'my_requests'){
                 $response = $user->requests_list('my_request',$request);
                 $my_req_proc = (new RequestResource($response["data"]))->resolve();
@@ -138,10 +132,6 @@ class RequestController extends Controller
                 );
             }
             if($request->url== 'my_team_requests'){
-                // return success_response(
-                //     trans('messages.request_display_success'), 
-                //       new RequestResource( $user->requests_list('my_request',$request) ) 
-                // );
                 $collection  = $user->requests_list('my_team_requests',$request);
                 $DAT = (new RequestResource( $collection["data"] ))->resolve();
         
@@ -161,7 +151,6 @@ class RequestController extends Controller
             }
 
         } catch(Exception $e){
-            // dump($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
@@ -185,9 +174,6 @@ class RequestController extends Controller
     public function requestlistNumbers_dashboard(Request $request){
         try {
             log_activity( trans('messages.request_number_display_attempt') );
-            // return success_response(
-            //     trans('messages.request_display_success'), $this->request->get_status_numbers_dashboard( $request )
-            // );
 
             return success_response(
                 trans('messages.request_display_success'), $this->request->get_status_numbers_only( Auth::user(),$this->payroll_cutoff->get_payroll_cutoff() )

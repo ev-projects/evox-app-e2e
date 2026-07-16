@@ -36,8 +36,6 @@ class RegisterUserRequest extends FormRequest
             'departments_handled.*'     => 'required|exists:departments,id',
             'roles'                     => 'required|array',
             'roles.*'                   => 'required|exists:roles,name',
-            // 'permissions'               => 'required|array',
-            // 'permissions.*'             => 'required|exists:permissions,name',
         ];
     }
 

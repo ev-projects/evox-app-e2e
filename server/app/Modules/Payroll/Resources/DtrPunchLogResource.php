@@ -19,7 +19,6 @@ class DtrPunchLogResource extends JsonResource
         if( ! is_null( $this->resource ) ) {
           
             $owner = User::find($this->user_id);
-            // dump($owner, $this->user_id, $this);
             $result = array(
                 'date' =>  $this->date ,
                 'time_in' =>timestamp_to_time($this->time_in),
@@ -30,14 +29,10 @@ class DtrPunchLogResource extends JsonResource
                 'remarks' =>$this->remarks,
                 'project_name' =>$this->project_name,
                 'owner_POV' => [
-
                     'time_in' => timestamp_to_time( $this->time_in , true ,  $owner),
-                    'time_out' => timestamp_to_time( $this->time_out , true ,  $owner),
-                   
-                   
+                    'time_out' => timestamp_to_time( $this->time_out , true ,  $owner),   
                 ],
             );
-            
         }
         
         return $result;

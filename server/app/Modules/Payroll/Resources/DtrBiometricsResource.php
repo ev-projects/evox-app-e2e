@@ -22,8 +22,6 @@ class DtrBiometricsResource extends JsonResource
         $result = null;
         
         if( ! is_null( $this->resource ) ) {
-
-
             $result =   array(
                 'id' => $this->id,
                 'user_id' => $this->user_id,

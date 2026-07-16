@@ -28,13 +28,9 @@ class DtrSummary
        );
     }
 
-
-
     ###############################################################################################
     ######################################## Main function ########################################
     ###############################################################################################
-
-
 
     /**
      *  Main function for triggering the Computation of the Summary.
@@ -97,8 +93,6 @@ class DtrSummary
                             ];
                         }
                     }
-
-               
                     
                     $this->compute_payroll_items_to_summary( $dtr_type, $grouped_payroll_items_array[ get_constant('PAYROLL_ITEM_TAGS.regular') ] );
                     
@@ -123,8 +117,6 @@ class DtrSummary
                 }elseif( $dtr->isAbsent() ){
                     $this->summary[  get_constant('DTR_TYPE.regular')  ][ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] +=  1;
                 }
-
-                
             }
 
             # Formats the Computed Payroll Items from SECONDS to HOUR.
@@ -148,13 +140,9 @@ class DtrSummary
         }
     }
 
-
-
     ###############################################################################################
     #################################### Computation functions ####################################
     ###############################################################################################
-
-
 
     /**
      * 
@@ -191,13 +179,9 @@ class DtrSummary
         }
     }
 
-
-
     ###############################################################################################
     ##################################### Validation functions ####################################
     ###############################################################################################
-
-
 
     /**
      * 
@@ -208,8 +192,6 @@ class DtrSummary
     {
         return ( in_array( $dtr_type, get_constant('DTR_TYPE.holiday') ) ) ? true : false;
     }
-    
-
 
     /**
      * 
@@ -225,7 +207,6 @@ class DtrSummary
      *  Reponsible for clearing out the DTR Summary Properties
      */
     private function clear_properties(){
-
         $this->summary = [
             get_constant('DTR_TYPE.regular') =>  [
                 get_constant('PAYROLL_ITEMS.late')                   => 0,
@@ -245,6 +226,4 @@ class DtrSummary
             ]
         ];
     }
-
-
 }

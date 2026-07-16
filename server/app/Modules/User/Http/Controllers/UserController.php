@@ -349,7 +349,6 @@ class UserController extends Controller
 
             return success_response(
                 trans('messages.show_my_team_list'), 
-                // new UserListResourceCollection( $user_collection ) 
                 $user_collection
             );
         } catch(Exception $e){
@@ -399,7 +398,6 @@ class UserController extends Controller
                     ]
                 );
 
-            // dd($sub_depts);
             return success_response(
                 trans('messages.show_sub_department_list'), 
                 $sub_depts[0]);
@@ -411,7 +409,6 @@ class UserController extends Controller
 
     public function sub_department_allocate( $user_id , Request $request){   
         try {
-            // dd( $user_id,$request->all());
 
             $action = $request->sp_action == "enable"? 0 : 1;
             
@@ -427,8 +424,6 @@ class UserController extends Controller
                 ]
             );
 
-            // dd($sub_depts);
-            // dd($updated_sub_depts);
             return success_response(
                 "Allocation Department to user", 
                 $updated_sub_depts[0]);
@@ -438,26 +433,6 @@ class UserController extends Controller
         }
     }
 
-    // public function sub_department_is_handled($user_id, $sub_dep_id){   
-    //     try {
-
-    //                 $sub_depts = call_sp('EH_SP_Team_Head_Allocation', 
-    //                 [
-    //                     $user_id, NULL, 4, NULL
-    //                 ]
-    //             );
-
-
-    //         // dd($sub_depts);
-    //         return success_response(
-    //             trans('messages.show_sub_department_list'), 
-    //             $sub_depts[0]);
-    //     } catch(Exception $e){
-        
-    //         return error_response( trans('messages.error_default'), $e );
-    //     }
-    // }
-
     public function my_team_list_under_selected_department( Request $request,  $id ){   
         try {
             $dept_ids = [];
@@ -466,7 +441,6 @@ class UserController extends Controller
             }
             $me = auth()->user();
 
-            //$sub_depts = call_sp('EH_SP_Attendance_Summary', [NULL, NULL, implode(',', $dept_ids), NULL, NULL, $me->id, 1, null])[0];
             $sub_depts = [];
             if (is_array($dept_ids)) {
                 foreach ($dept_ids as $depat_id) {
@@ -522,8 +496,6 @@ class UserController extends Controller
             $user_collection = $this->user->get_dpa_list( $request );
             return success_response(
                 trans('messages.get_dpa_list_success'), 
-                // new DpaUserListResourceCollection( $user_collection ),
-
                 $user_collection
             );
         } catch(Exception $e){
@@ -536,9 +508,6 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function dpa_list($request) {
-
-        // $user_collection = $this->user->get_users_under_supervisee( $request );
-     
         $result = $this->user->get_dpa_list( $request);
         
         return $result;
@@ -551,7 +520,6 @@ class UserController extends Controller
     public function export_dpa_list( Request $request ){
 
         $result = $this->dpa_list($request);
-        // dd( $result[0] );
 
         $this->dpa_list_export->data = $result["data"] ;
          return Excel::download( $this->dpa_list_export , 'dtrlogs.csv');
@@ -572,8 +540,6 @@ class UserController extends Controller
             ]), [
                 'id' => 'int'
             ]);
-//special conditions is assigned as admin included
-            // $this->user->adminRoleConditions( $id ,$request->get('roles'));
 
             AssignAllUserToAdminJob::dispatch( $id ,$request->get('roles') )->delay(Carbon::now()->addSeconds(2));
 
@@ -600,8 +566,6 @@ class UserController extends Controller
             ]), [
                 'id' => 'int'
             ]);
-
-            // dd($request->all());
 
             $user = $this->user->assign_level_features( $id ,$request->get('features'), $request->get('level') );
 
@@ -766,7 +730,7 @@ class UserController extends Controller
             $response = call_sp("EH_SP_Employee_List",
             
             [
-                $user->id, // vishnu user_id
+                $user->id,
                 is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
                 is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
                 is_valid( request()->get('sub_department_id') ) ? request()->get('sub_department_id'): null,
@@ -781,9 +745,8 @@ class UserController extends Controller
 
                 
             ); 
-            // dd($response);
+
             $result = $response[2] ? array_map(function($item) {
-                // dd($item);
                 return (object) array(
                     'id' => $item->id,
                     'full_name' => $item->Employee_Name,
@@ -905,8 +868,6 @@ class UserController extends Controller
                                     ]
                                 );
 
-                // dd($sub_depts);
-
             log_activity( trans('messages.list_role_attempt') );
                     return success_response(
                         trans('messages.list_role_success'),  
@@ -937,23 +898,6 @@ class UserController extends Controller
                                             "level_type"=>$user->level_type()
                                         ],
                             'features' => is_valid($user->LevelId) ? $feature_all_list : [],
-                        ]
-                    );
-
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
-     # This function returns user role
-     public function get_user_role_feature( $user_id ){   
-        try {
-            $user = User::find($user_id);
-            log_activity( trans('messages.list_role_attempt') );
-                    return success_response(
-                        trans('messages.list_role_success'),  
-                        [ 
-                            'roles' => $user->roles->pluck('name'),
-                            'permissions' => $user->permissions->pluck('name'),
                         ]
                     );
 
@@ -1019,27 +963,14 @@ class UserController extends Controller
      */
     public function generateDtrDate(GenerateDtrRequest $request){
         try {
-            // return $request->ids;
-            // $start_date =  new Carbon($request->start_date);
-            // $end_date = new Carbon($request->end_date);
-
             $ids = array_column($request->ids, 'value');
             $user_collection = new Collection();
-            # Fetches all the Active Users
-            // $user_collection = $this->user->get_all_active_users();
             foreach ($ids as $id) {
                 $user_collection->push((object)User::findOrFail($id));
-                // $user_collection->push((object)User::where('id', $id)->whereHas('roles', function( $query ) {
-                //     $query->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
-                // })->get());
             }
             
-            // return $user_collection ;
             # Generates the Date Range that would be generated as DTR for each Active Employees
             $date_array = generate_date_array($request->start_date, $request->end_date );
-            
-            # Test Data for Debugging
-            // $date_array = generate_date_array( "2021-08-02", '2021-08-08' );
             
             $result = $this->dtr->generate_dtr( $user_collection, $date_array );
                
@@ -1080,21 +1011,11 @@ class UserController extends Controller
 
     public function get_user_by_string_dispute(){ 
         # Get user
-
-        // $user = User::where('first_name', 'like', '%' . $string_name . '%')
-        // ->orWhere('last_name', 'like', '%' . $string_name . '%')
-        // ->join('EVOX_SUB_DEPARTMENT', 'users.SubDepartmentId', '=', 'EVOX_SUB_DEPARTMENT.Id')
-        // ->join('EVOX_DEPARTMENT', 'EVOX_SUB_DEPARTMENT.DepartmentId', '=', 'EVOX_DEPARTMENT.Id') // Joining the 'departments' table
-        // ->select('users.id', 'users.first_name', 'users.middle_name', 'users.last_name', 'users.emp_num', 'EVOX_DEPARTMENT.Name as department_name') // Select relevant fields from both tables
-        // ->get(); 
         try {
             $me = Auth::user();
             $user = $result_sets = call_sp('EV_SP_Payroll_Dispute', [null,null,null,null,null,$me->id,$me->LevelId,0,null]);
             log_activity( trans('messages.list_role_attempt') );
             return $user[0]; 
-            // return success_response(
-            //     trans('messages.list_role_success'), $user 
-            // );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }

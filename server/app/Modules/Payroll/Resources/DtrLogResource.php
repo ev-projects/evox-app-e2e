@@ -18,28 +18,13 @@ class DtrLogResource extends JsonResource
     public function toArray($request)
     {
         $result = null;
-        // dump("test");
         if( ! is_null( $this->resource ) ) {
             // Fetch the User related from the DTR
             $user = $this->user()->first();
 
             // Fetch the Department related from the User
-
-            
             # Create Resource for Payroll Items
             $payroll_items = [];
-
-
-            // foreach( $this->payroll_items()->get() as  $key => $payroll_item){
-                
-            //     // Sum the Payroll items
-            //     if(isset($payroll_items[ $payroll_item->item ])){
-            //         $payroll_items[ $payroll_item->item ] += $payroll_item->value;
-            //     }else{
-            //         $payroll_items[ $payroll_item->item] = $payroll_item->value;
-            //     }
-            // }
-
 
             # Create Resource for Holidays
             $holidays = [];
@@ -64,9 +49,6 @@ class DtrLogResource extends JsonResource
                 ->where('user_id','=',$this->resource->user_id)->get();
 
             # Convert the time to seconds to 00:00:00 format
-            // foreach( $payroll_items as  $key => $value){
-            //     $payroll_items[$key] = seconds_to_time($value,true);
-            // }
             foreach( $result as  $key => $value){
                 $payroll_items["late"] = $value->late > 0 ? seconds_to_time(round($value->late * 3600),true):"";
                 $payroll_items["undertime"] = $value->undertime > 0 ? seconds_to_time(round($value->undertime * 3600),true):"";
@@ -78,10 +60,7 @@ class DtrLogResource extends JsonResource
             }
 
             $leaves = $this->leaves()->get();
-            
-            // if( $this->isAbsent() ){
-            //     $payroll_items[ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] =  1;
-            // }else
+
             if( $this->onLeave()->count() > 0 )  {
                 $payroll_items[ get_constant('PAYROLL_ITEMS.'. text_to_slug( $leaves->first()->type ))  ] =  $leaves->first()->amount;
             }

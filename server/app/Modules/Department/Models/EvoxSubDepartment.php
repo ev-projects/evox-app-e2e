@@ -14,14 +14,7 @@ use App\Modules\Department\Models\DepartmentOnSchedule;
 
 class EvoxSubDepartment extends Model
 {
-    // use SoftDeletes;
-
     protected $guarded = [];
 
-    // protected static $logAttributes = ['department_name', 'description', 'schedule_id'];
-
     protected $table = 'EVOX_SUB_DEPARTMENT';
-
-    
-
 }

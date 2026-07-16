@@ -21,8 +21,6 @@ class EvoxDepartmentListResource extends JsonResource
             $result = array(
                 'id' => $this->id,
                 'department_name' => $this->department_name,
-                // 'description' => $this->description,
-                // 'schedule_active' => $this->departments_on_schedule_is_active(),
             );
         }
 

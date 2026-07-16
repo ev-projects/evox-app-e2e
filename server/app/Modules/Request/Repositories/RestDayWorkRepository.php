@@ -82,12 +82,10 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
               
 
                 $dtr_user_offset =  string_offset_to_seconds($rest_day_work->user()->first()->country_timezone_to_offset());
-
-                    //  dump( $rest_day_work);   
+ 
                 //optimize date 
                 $timestamp_start =  timestamp_to_date_default(   Carbon::parse( $rest_day_work->date)->timestamp+$rest_day_work->start_time+ $dtr_user_offset);
 
-                // dump( Carbon::parse( $rest_day_work->date), Carbon::parse( $rest_day_work->date)->timestamp);
                 if($rest_day_work->date !=   $timestamp_start){
                     $rest_day_work= $this->optimze_rest_day($rest_day_work->date, $timestamp_start,$rest_day_work);
                 }
@@ -390,12 +388,9 @@ class RestDayWorkRepository implements RestDayWorkRepositoryInterface{
             $difference_of_days = $date_of_schedule->diffInDays($date_of_read,false) ;
          
             if(   $difference_of_days != 0){
-                // add_days_to_timestamp();
                 if($rest_day_check != null){
                    $rest_day_check['start_time']        =  add_days_to_timestamp($rest_day_check['start_time'],$difference_of_days);
                    $rest_day_check['end_time']          =  add_days_to_timestamp($rest_day_check['end_time'],$difference_of_days);
-            
-                //    $rest_day_check['break_time']            =  $rest_day_check['break_time'];
                 }
                
             }

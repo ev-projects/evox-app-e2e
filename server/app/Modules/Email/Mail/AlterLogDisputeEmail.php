@@ -33,7 +33,6 @@ class AlterLogDisputeEmail extends Mailable
         $this->request       = $request;
         $this->user          = User::find($this->request['user_id']);
         $this->department    = EvoxSubDepartment::where("Id", $this->user->SubDepartmentID)->first();
-        //$this->approval_link = env('FRONT_END_URL') . 'app/payrolldispute/';
         $this->approval_link = env('FRONT_END_URL') . 'app/payrolldisputeview/';
 
         # If the App is on Production, send on the actual recepient email
@@ -53,7 +52,6 @@ class AlterLogDisputeEmail extends Mailable
      */
     public function build()
     {
-
         # Send on BCC Email Address depending on the App environment
         if (App::environment('production')) {
             $this->bcc(get_constant('BCC_EMAIL_ADDRESS'));

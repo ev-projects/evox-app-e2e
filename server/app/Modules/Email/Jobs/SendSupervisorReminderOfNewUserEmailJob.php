@@ -2,8 +2,6 @@
 
 namespace App\Modules\Email\Jobs;
 
-// use App\Modules\Email\Mail\RestDayWorkRequestEmail;
-
 use App\Modules\Email\Mail\SupervisorReminderOfNewUserEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -17,7 +15,6 @@ use Exception;
 class SendSupervisorReminderOfNewUserEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
   
     protected $reminder;
     
@@ -29,7 +26,6 @@ class SendSupervisorReminderOfNewUserEmailJob implements ShouldQueue
     public function __construct(Array $reminder)
     { 
         $this->reminder = $reminder;
-       
     }
 
     /**
@@ -40,13 +36,9 @@ class SendSupervisorReminderOfNewUserEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-           
-                Mail::send( new SupervisorReminderOfNewUserEmail( $this->reminder ) );
- 
-            
+                Mail::send( new SupervisorReminderOfNewUserEmail( $this->reminder ) ); 
             
         } catch (Exception $e) {
-
             log_error($e, 'emails');
             throw $e;
         }

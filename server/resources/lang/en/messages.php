@@ -307,20 +307,6 @@ return [
     // 'work_days' => ''
 
     /**
-     *  Change Logs
-     */
-    'create_change_log_attempt' => 'Create Change Log Attempt',
-    'create_change_log_success' => 'A new change log is now created!',
-    'fetch_change_log_success' => 'List of all change logs',
-
-    /**
-     *  Careers
-     */
-    'import_careers_attempt' => 'Import Careers Attempt',
-    'import_careers_success' => 'A new list of careers are now imported!',
-    'fetch_careers_success' => 'List of all imported careers!',
-
-    /**
      *  Policies
      */
     'fetch_policies_success' => 'List of all EV policies!',

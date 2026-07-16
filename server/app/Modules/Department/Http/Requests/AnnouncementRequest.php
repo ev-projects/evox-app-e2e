@@ -30,18 +30,9 @@ class AnnouncementRequest extends FormRequest
             'release_date' => 'required|date_format:Y-m-d',
             'expiry_date'=> 'required|date_format:Y-m-d',
             'title'  => 'required|string',
-            // 'headline'  => 'string',
-            // 'content'  => 'required',
-            // 'on_link'=> 'boolean',
-           
-            
             'link' => 'required_if:on_link,true',
             'selectedDepartments' => 'required_if:set_all,0',
             'country_id' => 'required_if:set_country_all,0',
-            // 'thumbnail' =>  'mimes:jpeg,png,jpg,gif'
-            // 'thumbnail' => 'required|image|size:1024' 
-
-            // 'inputFileWasDeleted'=> 'boolean',
         ];
     }
 
@@ -53,10 +44,7 @@ class AnnouncementRequest extends FormRequest
     public function messages()
     {
         return [
-          
-
             'link.required_if' => 'A URL :attribute must be set when "Redirect as Link" is set.',
-          
             'selectedDepartments.required_if' =>' :attribute must have atleast one department set.',
             'country_id.required_if' =>' :attribute must have selected a country or if set to Global Viewing.',
           ];

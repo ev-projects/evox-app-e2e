@@ -7,12 +7,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class DtrHoliday extends Model
 {
-
     protected $table = 'dtr_holidays';
     protected $guarded = [];
 
     public $timestamps = false;
-
-
-
 }
