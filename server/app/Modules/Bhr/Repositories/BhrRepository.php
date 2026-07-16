@@ -20,37 +20,25 @@ class BhrRepository implements BhrRepositoryInterface{
     ###################################### Public functions #######################################
     ###############################################################################################
 
-    
-
     /**
      *  Responsible for Fetching all the changed Users' number from BHr
      * @return array $bhr_user_number_array { inserted && changed }
      */
     public function get_changed_users( $since_date_to_sync ){
-        #print_r($since_date_to_sync);
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
-
-            //$since_date_to_sync = date('Y-m-d', strtotime($since_date_to_sync)) . 'T00:00:00-00:00';
-
             // Define the End Point for the API.
             $end_point = 'employees/changed?since=' . urlencode($since_date_to_sync);
             
             $last_changed_collection = collect([]);
             $bhr_employees = ( bhr_api_call('GET', $end_point) )->employees;
-            //log_to_file('info', "BHR Emp", [$bhr_employees,  __FUNCTION__], "sync_bhr_user");
+
             // Iterate the BHr Call Result
             foreach( $bhr_employees as $employee_sub_details ) {
                 $last_changed_collection->push(['id' => $employee_sub_details->id, 'lastChanged' => (new Carbon($employee_sub_details->lastChanged, "UTC"))->getTimestamp()]);
             }
 
-            #log_to_file( 'info', 'BHR Response Collection' . __FUNCTION__ , $last_changed_collection->values(), "bhrlog");
-
             $sorted_last_changed_collection = $last_changed_collection->sortBy('lastChanged');
-
-            #log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
-
-            #log_to_file( 'info', 'BHR Sorted Collection ' . __FUNCTION__ , $sorted_last_changed_collection->values(), "bhrlog");
 
             $bhr_user_number_array = [];
 
@@ -73,9 +61,6 @@ class BhrRepository implements BhrRepositoryInterface{
         }
     }
 
-
-
-
     /**
      *  Responsible for Fetching ALL the BHR Users' Number
      * @return Collection $bhr_user_number_collection
@@ -84,7 +69,6 @@ class BhrRepository implements BhrRepositoryInterface{
 
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
-
             $bhr_user_number_collection = new Collection;
 
             // Define the End Point for the API.
@@ -112,7 +96,6 @@ class BhrRepository implements BhrRepositoryInterface{
             throw $e;
         }
     }
-
 
     /**
      *  Responsible for Fetching the User's Detail via BHR User number
@@ -144,7 +127,6 @@ class BhrRepository implements BhrRepositoryInterface{
             throw $e;
         }
     }
-
 
     /**
      *  Responsible for Fetching the User's Profile Picture
@@ -231,7 +213,6 @@ class BhrRepository implements BhrRepositoryInterface{
         }
     }
 
-
     /**
      *  Responsible for Fetching the User's Detail via BHR User number
      * @param string $bhr_user_number
@@ -274,7 +255,6 @@ class BhrRepository implements BhrRepositoryInterface{
     public function get_report( string $report_id ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
-
             $result = [];
 
             if( is_valid($report_id) ){
@@ -285,11 +265,9 @@ class BhrRepository implements BhrRepositoryInterface{
             } else {
                 log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
             }
-
             return $result;
 
         } catch (Exception $e) {
-            
             log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
@@ -297,7 +275,6 @@ class BhrRepository implements BhrRepositoryInterface{
             throw $e;
         }
     }
-
 
     /**
      *  Responsible for Fetching the User's Leave Credits
@@ -308,7 +285,6 @@ class BhrRepository implements BhrRepositoryInterface{
     public function get_leave_credits( string $bhr_user_number, string $end_date ){
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "bhrlog");
         try {
-
             $result = null;
 
             if( is_valid($bhr_user_number) ){
@@ -322,11 +298,9 @@ class BhrRepository implements BhrRepositoryInterface{
             } else {
                 log_to_file( 'info', 'No Valid BHR Number', [], "bhrlog");
             }
-
             return $result;
 
         } catch (Exception $e) {
-            
             log_error($e);
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
@@ -346,7 +320,6 @@ class BhrRepository implements BhrRepositoryInterface{
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [ 'start_date' => $start_date, 'end_date' => $end_date], "bhrlog");
         DB::beginTransaction();
         try {
-
             $holidays_collection = new Collection;
 
             // Get the Holidays from BHr to be iterated. 
@@ -369,14 +342,11 @@ class BhrRepository implements BhrRepositoryInterface{
 
                 $existing_holiday = $existing_holiday_query->get();
 
-
                 $set_country_id = null;
-                
 
                 $acronym = null;
                 $acronym = $this->get_match("/\[([^\]]*)\]/", $row->name);
-
-                    // $acronym = $match[1];                 
+              
                 $check_utc_exist = UtcTimelog::where("alpha_three",$acronym  )->first();
                 if($check_utc_exist){
                     $set_country_id = $check_utc_exist-> country_id;
@@ -404,7 +374,6 @@ class BhrRepository implements BhrRepositoryInterface{
             DB::commit();
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "bhrlog");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "bhrlog");
-            // error_log("returning");
           
             return $holidays_collection;
 
@@ -549,8 +518,6 @@ class BhrRepository implements BhrRepositoryInterface{
     ##################################### Protected functions #####################################
     ###############################################################################################
 
-
-
     /**
      *  Description
      * @return bool
@@ -580,18 +547,4 @@ class BhrRepository implements BhrRepositoryInterface{
             return null;
         }
     }
-
-
-    //....
-
-
-    ###############################################################################################
-    ##################################### Validation functions ####################################
-    ###############################################################################################
-
-
-    //....
-
-
-
 }

@@ -27,7 +27,6 @@ class Leave extends Model
     ############################ Custom Helpers ############################
     ########################################################################
 
-
     /**
      * 
      *  Check if the Leave status is Requested
@@ -38,7 +37,6 @@ class Leave extends Model
         return ( $this->status == 'requested' ) ? true : false;
     }
 
-
     /**
      * 
      *  Check if the Leave status is Approved
@@ -48,7 +46,6 @@ class Leave extends Model
     {
         return ( $this->status == 'approved' ) ? true : false;
     }
-    
 
     /**
      * 
@@ -60,7 +57,6 @@ class Leave extends Model
         return ( $this->status == 'denied' ) ? true : false;
     }
 
-
     /**
      * 
      *  Check if the Leave status is Canceled.
@@ -70,7 +66,6 @@ class Leave extends Model
     {
         return ( $this->status == 'canceled' ) ? true : false;
     }
-
 
     /**
      * 

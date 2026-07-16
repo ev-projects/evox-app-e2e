@@ -8,8 +8,6 @@ use Carbon\Carbon;
 
 class DtrPunchResource extends JsonResource
 {
-
- 
     /**
      * Transform the resource into an array.
      *
@@ -19,7 +17,6 @@ class DtrPunchResource extends JsonResource
     public function toArray($request){    
         
         $result = null;
-        // dump($this);
         if( ! is_null( $this->resource ) ) {
             $result = array(
                 'id' => $this->id,
@@ -37,8 +34,6 @@ class DtrPunchResource extends JsonResource
                 'completed_today' =>( $this->log_out_type != null ? $this->log_out_type == "Log_out" : false ),
                 'remarks' =>$this->remarks,
                 'project_name' =>$this->project_name,
-                // 'completed_date' =>( $this->log_out_type != null ? $this->log_out_type : $this->log_in_type ),
-                // 'hour2' => ($this->time_in - ($this->time_out != null?$this->time_out: 0  )),
                 'hours' => $this->time_out != null && $this->time_in != null?seconds_to_time(($this->time_out - ($this->time_in != null?$this->time_in: 0  )) ,true) :null,
             );
         }

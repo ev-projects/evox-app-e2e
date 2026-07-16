@@ -14,8 +14,6 @@ class DtrPayrollItems extends Model
     protected static $logAttributes = ['dtr_id', 'type', 'items', 'value'];
 
     public $timestamps = false;
-
-    
     
     ########################################################################
     ############################ Custom Helpers ############################
@@ -110,5 +108,4 @@ class DtrPayrollItems extends Model
     {    
         return ( $this->item == get_constant('PAYROLL_ITEMS.rendered_hours') ) ? true : false;
     }
-
 }

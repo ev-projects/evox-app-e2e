@@ -85,21 +85,17 @@ class DepartmentController extends Controller
      */
     public function destroy($id){
         try {
-
-
             $deleted = $this->department->destroy_department($id);
             if($deleted){
                 $this->user->destroy_department_users($id);
             }
             return success_response(
                 trans('messages.soft_delete_department_success'), 
-                // new DepartmentResource( $department ) 
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
-
 
         /**
      * Deletes/SoftDelete an existing Department
@@ -107,8 +103,6 @@ class DepartmentController extends Controller
      */
     public function set_active_on_sched(Request $request, $id){
         try {
-         
-
             $department = Department::find($id);
             $department_has_set = $department->departments_on_schedule()->first();
             
@@ -119,7 +113,6 @@ class DepartmentController extends Controller
             }
             return success_response(
                 trans('messages.change_department_schedule_status'), 
-                // new DepartmentResource( $department ) $this->department->all();
                 DepartmentListResource::collection( $this->department->all()) 
             );
         } catch(Exception $e){
@@ -127,29 +120,20 @@ class DepartmentController extends Controller
         }
     }
 
-
-
     /**
      * Shows the Department Hanlders of the Department
      * @return \Illuminate\Http\JsonResponse
      */
     public function department_handlers($id){
         try {
-            // $user_collection = $this->department->find( $id )->department_supervisors()
-            //                                                  ->orderBy('first_name', 'asc')
-            //                                                  ->orderBy('last_name', 'asc')
-            //                                                  ->get();
-
             return success_response(
                 trans('messages.fetch_department_handlers_success'), 
-                // UserListResource::collection( $user_collection ) 
                 []
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
-
 
     /**
      * Shows the Department Hanlders of the Department
@@ -172,14 +156,12 @@ class DepartmentController extends Controller
         }
     }
 
-
     /**
      * Shows an existing Department
      * @return \Illuminate\Http\JsonResponse
      */
     public function default_schedule($id){
         try {
-            // dd("here");
             $schedule = $this->department->find( $id )->defaultSchedule()->first();
 
             return success_response(
@@ -190,8 +172,6 @@ class DepartmentController extends Controller
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
-
-    
 
     /**
      * Shows an existing Department
@@ -211,38 +191,12 @@ class DepartmentController extends Controller
         }
     }
 
-
-    /**
-     * update Department Handlers
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update_handlers( AssignDepartmentHandlersRequest $request, $id ){
-        try {
-            log_activity( trans('messages.department_assign_handlers_attempt') );
-            $department = $this->department->assign_handlers( $id, $request->get('user_id') );
-
-            return success_response(
-                trans('messages.department_assign_handlers_success'), 
-                new DepartmentResource( $department ) 
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
-        }
-    }
-
-
         /**
      * Get All Department
      * @return \Illuminate\Http\JsonResponse
      */
     public function get_department_all( Request $request ){
             try {
-                // $department = call_sp('EH_SP_Get_All_Department', []);
-    
-                // return success_response(
-                //     trans('messages.all_department_success'), 
-                //     $department[0]
-                // );
                 $me = Auth::user();
                 if(is_valid($me ->LevelId)){
                     if($me->LevelId != 0){
@@ -251,7 +205,7 @@ class DepartmentController extends Controller
                     $response = call_sp("EH_SP_Get_Department_By_UserId",
                     
                     [
-                        $me ->id, // vishnu this_id
+                        $me ->id,
                         null,
                         0,
                         1

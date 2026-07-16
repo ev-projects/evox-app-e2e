@@ -3,7 +3,6 @@
 namespace App\Modules\Coe\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Http\Controllers\Controller;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Coe\Http\Requests\COERequest;
@@ -68,7 +67,6 @@ class COEController extends Controller
             $employee = $this->bhr->get_user_bhr_field( $user->bhr_num, 'BHR_COE_USER_FIELDS', $additional_fields);
 
             if (!$employee) {
-                //log_to_file( 'info', "Employee could not be found.", [], "coelog");
                 return error_response( "Employee could not be found.", [], 404 );
             }
 
@@ -88,16 +86,13 @@ class COEController extends Controller
             } else {
                 log_to_file( 'warning', "Image does not exits.", [$image_file], "coelog");
             }
+
             // log action to audit_trail table
             log_to_audit_trail(['action' => 'Certificate of Employment', 'description' => 'has requested for certificate of employment', 'user_id' => $user->id, 'session_id' => $request->session_id, 'type' => 1]);
             $local_time = $coe->created_at->copy()->timezone($user->country_timezone_name())->format('F d, Y h:i:s A');;
             $pdf = PDF::loadView('pdfs.coe', compact('coe', 'allowances', 'coe_template', 'header_image', 'local_time'))->setPaper('a4', 'portrait');
             return $pdf->stream($coe->sequence_number . '.pdf');
-            
-            // return success_response(
-            //     trans('Create Success'), 
-            //     JsonResponse::HTTP_CREATED
-            // );
+
         } catch(Exception $e){
             log_to_file( 'info', $e->getMessage(), [], "coelog");
             return error_response( trans('messages.error_default'), $e );

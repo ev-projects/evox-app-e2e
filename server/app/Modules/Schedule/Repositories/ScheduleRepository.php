@@ -80,10 +80,6 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
 
             $schedule->name             = ( isset( $data['name'] ) && is_valid( $data['name'] ) ) ? $data['name'] : $schedule->name;    # Reuse the Schedule Name if no new input was found.
 
-            # Disabled the saving of Bind To and Bind ID since we dont need to update the bindings during update functions.
-            // $schedule->bind_to          = ( isset( $data['bind_to'] ) && is_valid( $data['bind_to'] ) ) ? $data['bind_to'] : null;
-            // $schedule->bind_id          = ( isset( $data['bind_id'] ) && is_valid( $data['bind_id'] ) ) ? $data['bind_id'] : null;
-
             $schedule->source_type      = ( isset( $data['source_type'] ) && is_valid( $data['source_type'] ) ) ? $data['source_type'] : null;
             $schedule->schedule_type    = ( isset( $data['schedule_type'] ) && is_valid( $data['schedule_type'] ) ) ? $data['schedule_type'] : null;
             $schedule->rest_days        = get_rest_days( $data['work_days'] );
@@ -93,13 +89,12 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             
             # Deleting the Details and Policies before inserting the new one.
            
-            // if($data["method"] != "approval"){
             $schedule->schedule_details()->delete();
             $schedule->schedule_policies()->delete();
             $this->save_schedule_details( $schedule, $data['schedule_details'] );
             $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
             $this->save_schedule_holiday_policies( $schedule, $data['schedule_policies'] );
-            // }
+
             DB::commit();
             log_to_file('info', 'Success', [$schedule]);
             return $schedule;
@@ -783,84 +778,6 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             log_error($e);
             throw $e;
         }
-    }
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     *  Responsible for parsing the Drupal Schedule to a $data variable that is being accepted by the update/store/assign_to_employee value
-     * @param object $drupal_evox_schedule
-     * 
-     * @return array $data
-     */
-    private function parse_drupal_evox_schedule( $drupal_evox_schedule, $user, $source_type ){
-  
-        // Construct the Data to be inserted as Schedule
-        $data = [
-            'bind_to'           => 'user',
-            'bind_id'           => $user->id,
-            'source_type'       => $source_type,
-            'schedule_type'     => $drupal_evox_schedule->schedule_type,
-            'valid_from'        => $drupal_evox_schedule->valid_from,
-            'valid_to'          => $drupal_evox_schedule->valid_to ?? null,
-            'work_days'         => explode(',', $drupal_evox_schedule->work_days),
-            'schedule_policies' => [
-                'allow_undertime'   => $drupal_evox_schedule->allow_undertime,
-                'allow_late'        => $drupal_evox_schedule->allow_late,
-                'allow_night_diff'  => $drupal_evox_schedule->allow_night_diff,
-            ]
-        ];
-
-        // Construct the Schedule Detail 
-        switch( $drupal_evox_schedule->schedule_type ){
-            case "standard":
-                $data['schedule_details'] = [
-                    'all' => [
-                        'start_time'    => $drupal_evox_schedule->standard_start_time,
-                        'end_time'      => $drupal_evox_schedule->standard_end_time,
-                        'break_time'    => $drupal_evox_schedule->standard_break_time,
-                    ]
-                ];
-                break;
-            case "flexible":
-                $data['schedule_details'] = [
-                    'all' => [
-                        'start_time'          => $drupal_evox_schedule->flexy_start_time,
-                        'end_time'            => $drupal_evox_schedule->flexy_end_time,
-                        'start_flexy_time'    => $drupal_evox_schedule->flexy_start_flexy_time,
-                        'end_flexy_time'      => $drupal_evox_schedule->flexy_end_flexy_time,
-                        'break_time'          => $drupal_evox_schedule->flexy_break_time,
-                    ]
-                ];
-                break;
-            case "customize":
-                $customized_schedule_details = [];
-                foreach( explode(',', $drupal_evox_schedule->work_days) as $work_day){
-                        $customized_schedule_details[$work_day] = [
-                        'start_time'          => $drupal_evox_schedule->{$work_day.'_start_time'},
-                        'end_time'            => $drupal_evox_schedule->{$work_day.'_end_time'},
-                        'start_flexy_time'    => $drupal_evox_schedule->{$work_day.'_start_flexy_time'},
-                        'end_flexy_time'      => $drupal_evox_schedule->{$work_day.'_end_flexy_time'},
-                        'break_time'          => $drupal_evox_schedule->{$work_day.'_break_time'}
-                    ];
-                }
-                $data['schedule_details'] = $customized_schedule_details;
-                break;
-        }
-
-        return $data;
     }
 
 }

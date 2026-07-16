@@ -3,7 +3,7 @@
 namespace App\Modules\Request\Models;
 
 use App\Modules\Payroll\Models\DtrPunchHistory;
-use App\Modules\Request\ApprovalTrait;
+use App\Modules\Request\Traits\ApprovalTrait;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,11 +16,8 @@ class AlterLogPunch extends Model
 
     protected $table = "alter_log_punches_new";
     protected $guarded = [];
-    
-    // protected static $logAttributes = ['user_id','date','current_time_in', 'current_time_out','new_time_in', 'new_time_out', 'employee_note' , 'approver_note', 'status'];
 
     protected $dates = [
-        // 'deleted_at',
         'created_at',
         'updated_at'
     ];

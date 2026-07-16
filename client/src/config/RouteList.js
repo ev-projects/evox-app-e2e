@@ -44,7 +44,6 @@ import MyTeamSchedule from "../container/MyTeam/MyTeamSchedule";
 import MyRequests from "../container/MyRequests/MyRequests";
 import MyRequestsDispute from "../container/MyRequestsDispute/MyRequestsDispute";
 
-import DtrSummary from "../container/MyTeam/DtrSummary";
 import DtrSummaryNew from "../container/MyTeam/DtrSummaryNew";
 import DtrSummaryConflictReport from "../container/MyTeam/DtrConflictReport";
 // Admin
@@ -99,7 +98,6 @@ import JobOpeningsUpdate from "../container/Admin/JobOpeningsUpdate/JobOpeningsU
 
 import DtrMultiLogsSummary from "../container/MyTeam/DtrMultiLogsSummary";
 
-
 import ViewReport from "../components/DateReport/ViewReport";
 import ViewReportMorocco from "../components/DateReport/ViewReportMorocco";
 import DisputeForm from "../components/PayrollDispute/DisputeForm";
@@ -127,9 +125,6 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.dashboard} >
           <Dashboard 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          
-          
-          
           />
         </ProtectedRoute>
 
@@ -145,8 +140,6 @@ const RoutesList = (props) => {
             }
       </ProtectedRoute>
 
-
-        
         { /* Employee Links */ }
         <ProtectedRoute exact path={global.links.dtr+":id"} >
           <DailyTimeRecord 
@@ -169,7 +162,6 @@ const RoutesList = (props) => {
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
           feature={["multi_login"]}/>
         </ProtectedRoute>
-        
 
         <ProtectedRoute exact path={global.links.ev_learning} >
           <EVLearning 
@@ -196,16 +188,11 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.my_request}>
           <MyRequests 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
-          
-          
           />
         </ProtectedRoute>
         <ProtectedRoute exact path={global.links.my_request_dispute}>
           <MyRequestsDispute level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} />
         </ProtectedRoute>
-
-
-        
 
         { /* Request Links */ }
         <ProtectedRoute exact path={global.links.overtime+":id?"}>
@@ -253,13 +240,6 @@ const RoutesList = (props) => {
           <PoliciesDocumentDownload />
         </ProtectedRoute>
 
-        {/* <ProtectedRoute exact path={global.links.work_from_home+":id?"}>
-          <WorkFromHome onApproval={false} 
-          level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
-          feature={[]}
-          />
-        </ProtectedRoute> */}
-
         <ProtectedRoute exact path={global.links.coe+":id?"}>
           <COE onApproval={false} 
           level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
@@ -275,12 +255,6 @@ const RoutesList = (props) => {
         </ProtectedRoute>
 
         { /* Team Links */ }
-        {/* <ProtectedRoute exact path={global.links.manage_teams}>
-          <ManageTeams 
-          level={["Department Head","DivisionHead","Board","HR","Payroll","Client"]} 
-          role={['supervisor']} permission={['manage_teams']}/>
-        </ProtectedRoute> */}
-
         <ProtectedRoute exact path={global.links.dpa_list}>
           <DPAList 
           level={["SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll"]} 
@@ -328,48 +302,26 @@ const RoutesList = (props) => {
             'manage_overtime_request'] }
           role={['supervisor', 'team_leader']} permission={['manage_schedule', 'team_leader_access']} />
         </ProtectedRoute>
-        
-        {/* <ProtectedRoute exact path={global.links.overallrequest}>
-          <OverallRequest />
-        </ProtectedRoute> */}
-
-        {/* <ProtectedRoute exact path={global.links.dtr_summary}>
-          <DtrSummary 
-          level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
-        </ProtectedRoute> */}
 
         <ProtectedRoute exact path={global.links.dtr_summary}>
-          {/* <DtrSummary 
-          level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
           <DtrSummaryNew 
          feature={['view_dtr_summary'] }
           role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_multi_logs_summary}>
-          {/* <DtrSummary 
-          level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
           <DtrMultiLogsSummary 
          feature={['view_dtr_summary'] }
           role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_conflict}>
-          {/* <DtrSummary 
-          level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
           <DtrSummaryConflictReport 
           feature={['view_dtr_summary'] }
           role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.dtr_summary_new}>
-          {/* <DtrSummary 
-          level={["Employee","SubDepartment Head","Department Head","DivisionHead","Board","Admin","HR","Payroll","Client"]} 
-          role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} /> */}
           <DtrSummaryNew 
           feature={['view_dtr_summary'] }
           role={['supervisor', 'team_leader']} permission={['view_dtr_summary', 'team_leader_access']} />
@@ -380,9 +332,6 @@ const RoutesList = (props) => {
           feature={['view_dtr_logs']} 
           role={['supervisor', 'team_leader', 'client']} permission={['view_dtr_logs', 'team_leader_access', 'client_access']} />
         </ProtectedRoute>
-
-        
-        
 
         { /* Schedule Links */ }
         <ProtectedRoute exact path={global.links.template_add} >
@@ -415,12 +364,8 @@ const RoutesList = (props) => {
 
         <ProtectedRoute path={global.links.schedule_assign_department} >
           <ScheduleAssignDepartment 
-
           />
         </ProtectedRoute>
-
-
-        
 
         {/* Report Links */}
         <ProtectedRoute exact path={global.links.team_attendance_summary}>
@@ -434,11 +379,9 @@ const RoutesList = (props) => {
             />
         </ProtectedRoute>
 
-
         {/* Announcement links */}
         <ProtectedRoute exact path={global.links.department_announcement_list}>
         <DepartmentAnnouncementsList  
-          
           feature = {['manage_announcement']}   
         />
         </ProtectedRoute>
@@ -448,8 +391,6 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.announcement_page+":id"}>
           <AnnouncementsPage />
         </ProtectedRoute>
-
-
 
         {/* Admin Links */}
         <ProtectedRoute exact path={global.links.payroll_cutoff}>
@@ -547,15 +488,11 @@ const RoutesList = (props) => {
           role={['admin']} permission={['access_department_list']} />
         </ProtectedRoute>
 
-
         <ProtectedRoute exact path={global.links.department_announcement_form+":id?"}>
           <DepartmentAnnouncementsForm
-            
             feature = {['manage_announcement']}    
             role={['supervisor', 'client']} permission={['manage_department_announcements','client_access']} 
          />
-
-         
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.ops_schedule_form+":id?"}>
@@ -565,7 +502,6 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.ops_schedule_list}>
           <OpsScheduleList />
         </ProtectedRoute>
-
 
         <ProtectedRoute exact path={global.links.manage_hr_announcements}>
           <HrAnnouncementsList  
@@ -638,8 +574,6 @@ const RoutesList = (props) => {
     </div>
   );
 
-  
-
   return (
     <div>
       <div style={{'display' : ( Validator.isValid( props.user.first_name ) ) ? 'block':'none'}}>
@@ -656,7 +590,6 @@ const RoutesList = (props) => {
     </div>
   );
 }
-
 
 const mapStateToProps = (state) => {
   return {

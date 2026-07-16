@@ -24,7 +24,6 @@ class SendFailedBHRSyncNoticeJob implements ShouldQueue
     public function __construct($user)
     {
         $this->user = $user;
-        //log_to_file('info', "New SendFailedBHRSyncNoticeJob", [$user,  __FUNCTION__], "emails");
     }
 
     /**

@@ -29,7 +29,6 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function all()
     {
         try {
-            // $department_collection = Department::orderBy('department_name', 'asc')->get();
             $department_collection = EvoxDepartment::select(
                 ["Id AS id",
                 'Name AS department_name', 
@@ -42,9 +41,6 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
              ->orderBy('Name', 'asc')
              ->get();
 
-            
-            
-            // dd($department_collection);
             log_to_file('info', 'Success', [$department_collection]);
             return $department_collection;
 
@@ -62,7 +58,6 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function all_with_announcements()
     {
         try {
-            // $department_collection = Department::has("departments_announcements")->orHas('departments_announcements_presented')->orderBy('department_name', 'asc')->get();
             $department_collection = EvoxDepartment::select(
                 ["Id AS id",
                 'Name AS department_name', 
@@ -82,7 +77,6 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
             throw $e;
         }
     }
-
     
     /**
      *  Responsible for fetching the Department with the ID given.
@@ -101,7 +95,6 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
             throw $e;
         }
     }
-
     
     /**
      *  Responsible for Disabling a Department with the ID given.
@@ -120,7 +113,6 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
             $department->disabled_on =  date('Y-m-d H:i:s');
             $department->save();
             $department->delete();
-            
 
             log_to_file('info', 'Success', [$department]);
             return true;
@@ -153,14 +145,10 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
         }
     }
 
-
     public function dashboard_annoucments(User $user)
     {
         try {
-
-            
             $announcements_collection = Announcement::where("department_id", $user->department_id);
-
 
             log_to_file('info', 'Success', [$announcements_collection]);
             return $announcements_collection;
@@ -170,12 +158,10 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
             throw $e;
         }
     }
-
    
     public function create_department_announcement( $id, array $user_id_array )
     {
         try {
-           
             return null;
 
         } catch (Exception $e) {
@@ -183,12 +169,10 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
             throw $e;
         }
     }
-    
 
     public function edit_department_announcement( $id, array $user_id_array )
     {
         try {
-           
             return null;
 
         } catch (Exception $e) {
@@ -200,7 +184,6 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     public function destroy_department_announcement( $id, array $user_id_array )
     {
         try {
-           
             return null;
 
         } catch (Exception $e) {
@@ -208,6 +191,4 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
             throw $e;
         }
     }
-
-
 }

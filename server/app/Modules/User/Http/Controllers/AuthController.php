@@ -280,8 +280,6 @@ class AuthController extends Controller
                 'expires_in' => auth()->factory()->getTTL() * 60
             ];
 
-            //$result = $this->get_default_payload( $result );
-
             log_to_file('info', 'Success', [], 'user');
             return success_response( trans('messages.login_success'), $result );
         } catch(Exception $e){
@@ -340,7 +338,6 @@ class AuthController extends Controller
         $result['constant'] = get_constant();
 
         $bhr_details = $this->bhr->get_user( auth()->user()->bhr_num ? auth()->user()->bhr_num : '');
-        // dd(UtcTimelog::where('id','!=',"0"));
 
         // Get the latest Payroll Cutoff of India and Morocco
         $india_latest_cutoff = EvoxIndiaPayrollCutoff::orderBy('End_Date', 'desc')->first();
@@ -369,10 +366,8 @@ class AuthController extends Controller
             'current_payroll_cutoff_ph'  => $current_payroll_cutoff_ph,
             'current_payroll_cutoff'  => (auth()->user()->country_id === 1 || auth()->user()->country_id === 4) ? $current_payroll_cutoff_in_mar : $current_payroll_cutoff_ph,
             'profile_picture' => $this->bhr->get_profile_picture( auth()->user()->bhr_num ),
-            // 'country' =>  $bhr_details ? $bhr_details->country : '',
             'country' =>  auth()->user()->country_id == 2 ? "philippines" : '',
             'countries' => CountryResource::collection(UtcTimelog::orderBy('country_name')->get() ),
-            // 'request_payroll_cutoff' => call_sp('EV_SP_Validate_Request_Payroll_Period', [auth()->user()->id, null])[0][0],
             'hr_list' => call_sp('EV_SP_Get_HR_Users', [])[0],
             'coc_forms' => CodeOfConductForms::where('country_id', auth()->user()->country_id)->orderBy('form_no', 'asc')->get(),
             'popup_flags' => PopupFlags::pluck('status', 'key')->map(fn ($status) => (bool) $status),

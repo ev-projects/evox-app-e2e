@@ -55,7 +55,6 @@ class AnnouncementController extends Controller
      */
     public function store(AnnouncementRequest $request)
     {   
-       
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
 
@@ -106,12 +105,6 @@ class AnnouncementController extends Controller
         if($called_announcement){
            $owner_pass=  $called_announcement->created_by ==$user->id;
         }
-       
-        // if(Auth::user()->permissions()->pluck('name')->contains('admin_manage_all_announcements') || Auth::user()->permissions()->pluck('name')->contains('manage_all_announcements')){
-        //     $manager_pass= true;
-        // }
-
-        // dd(Announcement::find($id));
 
         $parameter =  [     $user->LevelId, 
                                                         $user->id ,  
@@ -122,7 +115,7 @@ class AnnouncementController extends Controller
                                                         999
                                     ];
                                     $response =  call_sp("EH_SP_Dashboard", $parameter);
-                                    // dd($id,$called_announcement);
+
                                     $check_all = (array_filter($response[1], function($object) use ($called_announcement) { return $object->id == $called_announcement->id; }));
                                     if(count($check_all) > 0){
                                         return success_response(
@@ -130,7 +123,6 @@ class AnnouncementController extends Controller
                                             new AnnouncementResource(  $called_announcement) 
                                         );
                                     }
-                                //    dd("here");
         if($user->isLevel("Admin") ||  $owner_pass ) { 
             $dep_announcement =  $this->announcement->show($id);
         }
@@ -140,14 +132,12 @@ class AnnouncementController extends Controller
         if(  $dep_announcement == null){
             return error_response( trans('Your not allowed to see this announcement'), "You Dont Have the right to see this Announcement" );
         }
-      
 
         return success_response(
             trans('messages.create_department_announcement_success'), 
             new AnnouncementResource(  $dep_announcement ) 
         );
     } catch(Exception $e){
-        // dd($e);
         return error_response( trans('messages.error_default'), $e );
     }
     }
@@ -161,8 +151,6 @@ class AnnouncementController extends Controller
      */
     public function update(AnnouncementRequest $request, $id)
     {   
-        
-    // dd($request->all(),$id);
         try {
             log_activity( trans('messages.update_department_announcement_attempt') );
             $department =  EvoxDepartment::find(Auth::user()->department_id);
@@ -177,16 +165,11 @@ class AnnouncementController extends Controller
             else{
                 return error_response( trans('messages.error_default'), "You Dont Have the right update this Announcement" );
             }
-            
-
-           
-
         } catch(Exception $e){
             DB::rollback();
             return error_response( trans('messages.error_default'), $e );
         }
     }
-
 
       /**
      * Update the specified resource in storage.
@@ -243,29 +226,6 @@ class AnnouncementController extends Controller
         }
     }
 
-    /**
-     * Display a listing of the resource only to the users(Logged in but not admin) dashbaord.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    // public function dashboard_index(Request $request)
-    // {
-    //     // error_log("hererrrrr" . implode(" ", $request->all()));
-        
-       
-    //     try {
-    //         $announcements_list = $this->announcement->dashboard_index($request);
-    //     return success_response(
-    //         trans('got the dashboard items'), 
-    //         AnnouncementStrictResource::collection($announcements_list)
-    //     );
-
-        
-    //     } catch(Exception $e){
-    //         return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
-    //     }
-    // }
-
     public function dashboard_index(Request $request){
                 try {
                     $user = Auth::user();
@@ -289,26 +249,19 @@ class AnnouncementController extends Controller
             }
     }
 
-
     public function increment_dashboard_index(Request $request)
     {
-        // error_log("hererrrrr" . implode(" ", $request->all()));
-        
-       
         try {
             $announcements_list = $this->announcement->increment_dashboard_index($request);
         return success_response(
             trans('messages.fetch_change_log_success'), 
             AnnouncementStrictResource::collection($announcements_list)
         );
-
         
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
-    
-
 
     /**
      * Display a listing of the resource only to the users(Logged in but not admin) dashbaord.
@@ -317,33 +270,25 @@ class AnnouncementController extends Controller
      */
     public function handle_announcements_index()
     {
-
         try {
             $announcements_list = $this->announcement->handle_announcements_index();
         return success_response(
             trans('messages.fetch_change_log_success'), 
            AnnouncementResource::collection($announcements_list)
         );
-
         
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
 
-
-
-
     public function show_hr_strict($id)
     {
         log_activity( trans('messages.create_department_announcement_attempt') );
 
-
         if(Auth::user()->isLevel("HR")  ) { 
             $dep_announcement = Announcement::where('category', "HR")->find($id);
         }
-      
-      
 
         return success_response(
             trans('messages.create_department_announcement_success'), 

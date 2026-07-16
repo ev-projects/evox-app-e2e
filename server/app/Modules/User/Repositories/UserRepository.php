@@ -421,30 +421,6 @@ class UserRepository implements UserRepositoryInterface{
 
                     $supervisor->supervisee()->syncWithoutDetaching( $user_id_array );
 
-                    /**  Fetch the Supervisor Role to attach on the Supervisor  */
-                        // $supervisor_role = Role::findByName( get_constant('USER_ROLES.supervisor') );
-
-                        // Check if the Supervisor has already a Role
-                        // if( ! $supervisor->isLevel("Supervisor") ){
-
-                            // // Assign the Supervisor Role
-                            // $supervisor->assignRole( $supervisor_role );
-
-                            // // Total Permissions that are not synced yet on the Supervisor
-                            // $permissions_to_sync = [];
-
-                            // // Iterate and filter out all the Permissions that are already existing for the Supervisor.
-                            // foreach( $supervisor_role->permissions()->get() as $permission ){
-                            //     if( ! $supervisor->hasDirectPermission( $permission ) ) {
-                            //         $permissions_to_sync[] = $permission;
-                            //     }
-                            // }
-
-                            // // Assign the Supervisor's Permissions
-                            // $supervisor->givePermissionTo( $permissions_to_sync );
-                        // }
-                    /** */
-
                     $result[ $supervisor->id ] = $user_id_array;
 
                 } else {
@@ -604,77 +580,6 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
-    /**
-     *  Responsible for fetching all the Supervisee of the User
-     * @param $id
-     * @return User $user_collection
-     */
-    public function get_my_team_list( $id ){
-        try {
-            $user_collection = [];
-            if( get_authenticated_user( $id )  ) {
-
-                $user_collection = User::findOrFail( $id )->users_handled();
-
-                if( is_valid( request()->get('team_id') ) ) {
-                    $user_collection->join('team_users', 'team_users.user_id', '=', 'users.id')->where('team_id', '=', request()->get('team_id'));
-                }else{
-                    if( is_valid( request()->get('department_id') ) ) {
-                        $user_collection->where('department_id', '=', request()->get('department_id'));
-                    }
-                }
-
-                if( is_valid( request()->get('name') ) ) {
-                    $user_collection->whereRaw("(first_name LIKE '%".request()->get('name')."%' OR last_name LIKE '%".request()->get('name')."%')");
-                }
-
-                if( is_valid( request()->get('job_title') ) ) {
-                    $user_collection->where('job_title', 'like', '%' .request()->get('job_title'). '%');
-                }
-
-                if( is_valid( request()->get('status') ) ) {
-                    $user_collection->where('is_active', '=', request()->get('status') );
-                }
-
-
-                if( is_valid( request()->get('order_by') ) ) {
-                    $order = explode(":", request()->get('order_by'));
-
-                    switch ($order[0]) {
-                        case "name":
-                            $user_collection->orderBy('first_name',  $order[1])
-                                ->orderBy('last_name',  $order[1]);
-                            break;
-                        case "job_title":
-                            $user_collection->orderBy('job_title',  $order[1]);
-                            break;
-                        default:
-                            $user_collection->orderBy('first_name',  $order[1])
-                                ->orderBy('last_name',  $order[1]);
-                      }
-                }else{
-                    $user_collection->orderBy('emp_num',  'asc');
-                }
-
-
-                if( request()->get('page') == 'all' ){
-
-                    $user_collection->get();
-
-                } else {
-                    $user_collection = $user_collection->orderBy('first_name', 'asc')
-                                                        ->orderBy('last_name', 'asc')
-                                                        ->paginate(15);
-                }
-            }
-            log_to_file('info', 'Success', [$user_collection]);
-            return $user_collection;
-        } catch (Exception $e) {
-            log_error($e);
-            throw $e;
-        }
-    }
-
       /**
      *  Responsible for fetching all the Supervisee of the User
      * @param $id
@@ -692,7 +597,7 @@ class UserRepository implements UserRepositoryInterface{
                 $response = call_sp("EH_SP_Employee_List",
                 
                 [
-                    $user->id, // vishnu user_id
+                    $user->id,
                     is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
                     is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
                     (is_valid( request()->get('sub_department_id') ) 
@@ -712,9 +617,6 @@ class UserRepository implements UserRepositoryInterface{
 
 
                 ); 
-                // dd(request()->all(), is_valid( request()->get('order_by') ), $response);
-
-                // dd($response);
                 
                     $result = array(
                         "query" =>  $response ?? [],
@@ -749,13 +651,12 @@ class UserRepository implements UserRepositoryInterface{
                     
                     $perPageKeys = array_keys($perPageArrays);
                     $empKeys = array_keys($empArrays);
-                        // dd($result['query'][count($result['query'])-3]);
                 
                     $arr = [];
                     if( is_valid( request()->get('order_by') ) && is_valid($empKeys) && is_valid($result['query'][$empKeys[0]])  ) {
                         $arr =  $result['query'][count($result['query'])-3];
                         $order = explode(":", request()->get('order_by'));
-    // dd($order[0]);
+
                         switch ($order[0]) {
                             case "name":
                                 if( $order[1] ==  "asc"){
@@ -781,28 +682,13 @@ class UserRepository implements UserRepositoryInterface{
                                     });
                                 }
                           }
-                        //   dd($arr, $result['query'][count($result['query'])-3]);
                           $arr =   array_chunk($arr, 15)
                                 [is_valid( request()->get('page') ) ? ((int)request()->get('page')) - 1: 0];
            
                     }
 
-            
-                 
-                  
-                   
-                    
-
-                // dd($result['query'],   $perPageKeys[0], $empKeys) ;
-
                   
                 if( count($result['query']) > 2){
-                    // $paginate = $result['query'][count($result['query'])-2][0];
-                    
-                    // $collection["data"] = !is_valid($arr)? $result['query'][count($result['query'])-3] : $arr;
-// dd($result['query'], $empKeys, isset($empKeys), is_valid($empKeys));
-                    // dd($result['query'],$result['query'][$empKeys[0]]);
-
                     $paginate = $result['query'][$perPageKeys[0]][0];
                     $collection["data"] = !is_valid($arr)? (is_valid($empKeys) ?$result['query'][$empKeys[0]] : []) : $arr; 
                     $collection["pagination"] = [
@@ -812,11 +698,6 @@ class UserRepository implements UserRepositoryInterface{
                                                     'current_page' => !is_valid($arr)?((int) $paginate->CurrentPage) : (is_valid( request()->get('page') ) ? ((int)request()->get('page')): 1),
                                                     'last_page' => ((ceil($paginate->TotalCount /   $original_perpage_count)) ) 
                                                 ];
-
-                                                // if( ($paginate->TotalCount % $perpage_count) > 0 
-                                                // && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
-                                                //     $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
-                                                // }
                 }
      
             }
@@ -826,7 +707,6 @@ class UserRepository implements UserRepositoryInterface{
             return $collection;
         } catch (Exception $e) {
             log_error($e);
-            // dd($e);
             throw $e;
         }
     }
@@ -841,9 +721,6 @@ class UserRepository implements UserRepositoryInterface{
     public function get_all_active_users(){
         try {
             $users = User::where('is_active', 1)
-                        // ->whereHas('roles', function( $query ) {
-                        //     $query->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
-                        // })
                         ->where('LevelId', '!=', 7)
                         ->get();
             return $users;
@@ -863,9 +740,6 @@ class UserRepository implements UserRepositoryInterface{
     public function get_all_supervisors(){
         try {
             $users = User::where('is_active', 1)
-                            // ->whereHas('roles', function( $query ) {
-                            //     $query->whereIn('name', [ get_constant('USER_ROLES.supervisor')])->whereNotIn('name', [ get_constant('USER_ROLES.client')]);
-                            // })
                         ->whereNotIn('LevelId', [0, 4, 7]) // exclude Employees, Admin, Client
                         ->get();
      
@@ -944,45 +818,11 @@ class UserRepository implements UserRepositoryInterface{
 
 
             //paginate user collection to prevent request timeout
-
-            //return $user_collection->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
             if (is_valid($request->page)) {
                 return $user_collection/*->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)*/->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->paginate(100);
             } else {
                 return $user_collection/*->where('is_active', is_valid($request->is_active) ? $request->is_active : 1)*/->orderBy('departments.department_name')->orderby('date_hired', 'DESC')->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
             }
-        } catch (Exception $e) {
-            throw $e;
-        }
-    }
-    
-    
-     /**
-     *  Responsible for fetching all the Active Users under supervisee with inactive status
-     * @param Request $request
-     * @return User $user_collection ( Collection )
-     */
-    public function get_users_under_supervisee_with_inactive( Request $request , $start_date, $end_date ){
-        try {
-            $user_collection =  auth()->user()->users_handled(); 
-
-            if( is_valid( $request->department_id ) ){
-                $user_collection->where('department_id',$request->department_id );
-            } else {
-                $user_collection->whereRaw('department_id IS NOT NULL');
-            }
-            
-            if( is_valid( $request->name ) ){
-                $user_collection->whereRaw('(first_name like ? OR middle_name like ? OR last_name like ?)', array('%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%', '%'.trim( $request->name ).'%' ));
-            }
-            
-            // $user_collection->whereRaw('(is_active = 1 or termination_date BETWEEN "'. $start_date .'" AND "'. $end_date .'")');
-            
-            if( is_valid( $request->team_id ) ){
-                $user_collection->whereIn('id', Team::find( $request->team_id )->team_users()->pluck('id'));
-            }
-
-            return $user_collection->orderBy('last_name', 'asc')->orderBy('first_name', 'asc')->get();
         } catch (Exception $e) {
             throw $e;
         }
@@ -1025,13 +865,12 @@ class UserRepository implements UserRepositoryInterface{
             if( $request->export == "all"){
                 $perpage_count = 99999;
             }
-            // dd( $request ->all());
             $user = Auth::user();
 
             $response = call_sp("EH_SP_Employee_DPA_List",
               
             [
-                $user->id, // vishnu user_id
+                $user->id,
                 is_valid(  $user->LevelId ) ?  $user->LevelId: null, // level
                 is_valid( request()->get('department_id') ) ? request()->get('department_id'): null,
                 is_valid( request()->get('is_active') ) ? request()->get('is_active'): null, // active
@@ -1045,19 +884,11 @@ class UserRepository implements UserRepositoryInterface{
 
 
             ); 
-            // dd()
                 $result = array(
                     "query" =>  $response ?? [],
                 );
 
-                // dd($result['query'][0]);
             if( count($result['query']) > 1){
-                // $paginate = $result['query'][count($result['query'])-2][0];
-                
-                // $collection["data"] = $result['query'][count($result['query'])-2];
-
-                // $collection["data"]  = $collection["data"] ? array_map(function($item) {
-
                 $paginate = $result['query'][1][0];
 
                 $collection["data"] = $result['query'][0];
@@ -1083,12 +914,9 @@ class UserRepository implements UserRepositoryInterface{
 
             }
  
-        
-        // dd($collection);
             return  $collection;
 
         } catch (Exception $e) {
-            // dump ($e);
             throw $e;
         }
     }
@@ -1154,45 +982,6 @@ class UserRepository implements UserRepositoryInterface{
 
                     return false;
                 }
-
-            }
-
-        } catch (Exception $e) {
-            throw $e;
-        }
-
-    }
-
-        /**
-     *  Responsible for changing the password of the User
-     * @param $id
-     * @param array $data
-     * @return User $user
-     */
-    public function get_user_department( $id ){
-
-        try {
-            $user =  User::findOrFail( $id );
-
-            if( get_authenticated_user( $user->id ) ) {
-
-
-                // $user_count = DB::table('users')
-                // ->join('department_without_schedule_employees','users.department_id','=','department_without_schedule_employees.department_id')
-                // ->where('users.id','=', $user->id)
-                // ->where('department_without_schedule_employees.is_active','=',1)
-                // ->count();
-
-                $user_count = DB::table('user_has_permissions')
-                ->join('permissions','user_has_permissions.permission_id','=','permissions.id')
-                ->where('users.id','=', $user->id)
-                ->where('permissions.name','=','user_multi_login');
-
-                if($user_count == 0){
-                    return false;
-                }else{
-                    return true;
-                }           
 
             }
 
@@ -1318,8 +1107,6 @@ class UserRepository implements UserRepositoryInterface{
 
                 $data = [];
                 $removed_data = [];
-            // dd($user_owned_features,  $added, $removed);
-              
 
                 if(is_valid($removed)){
                     $bulk_of_feature_list = Features::whereIn('feature_name', $removed )->get()->pluck("id")->toArray();
@@ -1333,20 +1120,13 @@ class UserRepository implements UserRepositoryInterface{
 
                 if(is_valid($added)){
                     $bulk_of_feature_list = Features::whereIn('feature_name', $added)->get()->pluck("id")->toArray();
-                    // dd($added,Features::whereIn('feature_name', $added)->get(),$bulk_of_feature_list);
                     foreach($bulk_of_feature_list as $feature_id){
                         $data[$feature_id]= ["has_access"=> true];
                     }
                     UserFeatures::where('user_id', $user->id)->update(["has_access"=> false]);
                     $user->features()->syncWithoutDetaching( $data);
                 }
-                
 
-
-                // $user->syncPermissions( $features_array );
-            
-
-            // log_to_file('info', 'Success', [$id, $features_array], 'assign');
             return $user;
         } catch (Exception $e) {
             throw $e;
@@ -1391,38 +1171,6 @@ class UserRepository implements UserRepositoryInterface{
     }
 
 
-
-
-
-    /**
-     *  Responsible for fetching the specific User list of a Role
-     * @param string $role
-     * @return Collection $user_collection
-     */
-    public function list_via_role( $role ){
-        try {
-
-            if( request()->get('page') == 'all' ){
-                $user_collection = Role::findByName( $role )->users()->where('is_active', 1)
-                                                                     ->orderBy('first_name', 'asc')
-                                                                     ->orderBy('last_name', 'asc')
-                                                                     ->get();
-            } else {
-                $user_collection = Role::findByName( $role )->users()->where('is_active', 1)
-                                                                     ->orderBy('first_name', 'asc')
-                                                                     ->orderBy('last_name', 'asc')
-                                                                     ->paginate(15);
-            }
-
-            return $user_collection;
-        } catch (Exception $e) {
-            throw $e;
-        }
-    }
-
-
-
-
     /**
      *  Responsible for fetching the specific User list of a Department
      * @param string $role
@@ -1442,36 +1190,6 @@ class UserRepository implements UserRepositoryInterface{
                                                                               ->orderBy('first_name', 'asc')
                                                                               ->orderBy('last_name', 'asc')
                                                                               ->paginate(15);
-            }
-
-            return $user_collection;
-        } catch (Exception $e) {
-            throw $e;
-        }
-    }
-
-
-
-
-    /**
-     *  Responsible for fetching the specific User list of a Team
-     * @param string $team_id
-     * @return Collection $user_collection
-     */
-    public function list_via_team( $team_id ){
-        try {
-
-            if( request()->get('page') == 'all' ){
-                $user_collection = Team::find( $team_id )->team_users()
-                                                         ->orderBy('first_name', 'asc')
-                                                         ->orderBy('last_name', 'asc')
-                                                         ->get();
-
-            } else {
-                $user_collection = Team::find( $team_id )->team_users()
-                                                         ->orderBy('first_name', 'asc')
-                                                         ->orderBy('last_name', 'asc')
-                                                         ->paginate(15);
             }
 
             return $user_collection;

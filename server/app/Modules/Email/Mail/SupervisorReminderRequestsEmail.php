@@ -14,23 +14,19 @@ class SupervisorReminderRequestsEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-
     public $recepient;
     public $pending_requests;
-    
     
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    // public function __construct( User $recepient, RestDayWork $rest_day_work )
     public function __construct( $reminder )
     {   
         # Declare the variables to be used for this Email
         $this->recepient     = $reminder[0]; // the supervisor
         $this->pending_requests = $reminder[1];
-        #print_r(($this->department_requests));
 
         # If the App is on Production, send on the actual recepient email
         if( App::environment('production') ) {

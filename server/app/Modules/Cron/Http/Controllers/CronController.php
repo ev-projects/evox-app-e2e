@@ -38,7 +38,6 @@ class CronController extends Controller
     protected $schedule;
     protected $biometrics;
 
-
     public function __construct(BhrRepositoryInterface $bhr,
                                 PayrollCutoffRepositoryInterface $payroll_cutoff,
                                 UserRepositoryInterface $user,
@@ -116,7 +115,6 @@ class CronController extends Controller
         }
     }
 
-
     /**
      * Sync all the Users from BHr base from the last changed date
      * @return \Illuminate\Http\JsonResponse
@@ -191,24 +189,16 @@ class CronController extends Controller
 
                         # Added generating of Schedule for the newly inserted user using the User's department default schedule
                         if( is_valid( $department ) ) {
-
                             $schedule = $department->defaultSchedule()->first();
                             $this->schedule->copy_schedule_to_user( $schedule, $user );
-
-
                         }
-
 
                         $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
                         if( Carbon::parse( $user->date_hired )->lte( $nearest_saturday_date ) ){
-
                             # Generate DTR from the Date Hired up to the Saturday of this week.
                             $date_array = generate_date_array($user->date_hired,  $nearest_saturday_date );
                             $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                         }
-
-
-
                     }
                      # Assign admin as supervisor to new user
                     if( is_valid( $user ) )
@@ -218,7 +208,6 @@ class CronController extends Controller
                                 $admin->supervisee()->syncWithoutDetaching( $user );
                             }
                         }
-
 
                     $action = 'New User';
                 }
@@ -233,8 +222,6 @@ class CronController extends Controller
                     'name' =>  $user->first_name.' '.$user->last_name   ,
                     'action' =>  $action
                 );
-
-
             }
 
             # 4
@@ -245,18 +232,10 @@ class CronController extends Controller
                 $processed_user,
                 JsonResponse::HTTP_CREATED
             );
-
-
-
-
-
-
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
     }
-
-
 
     /**
      * Generates the Weekly DTR for all the Employees
@@ -264,7 +243,6 @@ class CronController extends Controller
      */
     public function generate_weekly_dtr($start_date = null, $end_date = null){
         try {
-
             // Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
                 $start_date =  Carbon::tomorrow();
@@ -272,7 +250,6 @@ class CronController extends Controller
             }
 
             # Fetches all the Active Users
-            // return $user_collection;
             if(is_valid( request()->get('id') )){
                 $user_collection = User::where("id",request()->get('id') )->get();
             }else{
@@ -280,9 +257,6 @@ class CronController extends Controller
             }
             # Generates the Date Range that would be generated as DTR for each Active Employees
             $date_array = generate_date_array($start_date, $end_date );
-
-            # Test Data for Debugging
-            // $date_array = generate_date_array( "2019-07-01", '2020-06-30' );
 
             $result = $this->dtr->generate_dtr( $user_collection, $date_array );
 
@@ -295,7 +269,6 @@ class CronController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
-
 
     /**
      * Syncs the Biometrics' Data to DTR with specific Number of Minutes (3 minutes as of now.)
@@ -312,11 +285,6 @@ class CronController extends Controller
                 $start_datetime = Carbon::now()->subMinutes(30)->format('Y-m-d H:i:s');
                 $end_datetime = Carbon::now()->format('Y-m-d H:i:s');
             }
-
-            # Test Data for Debugging
-            // $start_datetime = "2020-02-15 00:00:00";
-            // $end_datetime = "2020-02-29 18:20:00";
-            // $user_collection = User::get();
 
             $biometrics_collection = $this->biometrics->get_biometrics( $start_datetime, $end_datetime );
 
@@ -340,17 +308,12 @@ class CronController extends Controller
      */
     public function sync_holidays($start_date = null, $end_date = null){
         try {
-
             // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
                 $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
                 $start_date = $payroll_cutoff->start_date;
                 $end_date = $payroll_cutoff->end_date;
             }
-
-            # Test Data for Debugging
-            // $start_date = "2019-07-01";
-            // $end_date = "2020-06-30";
 
             // Sync the Holidays from BHr to EVOX within the Payroll Cutoff as Date Range.
             $this->bhr->sync_holidays( $start_date, $end_date );
@@ -368,7 +331,6 @@ class CronController extends Controller
         }
     }
 
-
     /**
      * Syncs the BHr's Submitted Leave Requests within the current Payroll Cutoff Date Range into the DTR affected.
      *  1. Fetch BHr Submitted Leave Requests
@@ -377,7 +339,6 @@ class CronController extends Controller
      */
     public function sync_leaves($start_date = null, $end_date = null){
         try {
-            
             // If Start Date and End Date is not set, Fetch the Current Cutoff that would be use as Date Range for Syncing of Holidays from BHR and Binding Holidays to DTR.
             if( !is_valid( $start_date ) && !is_valid( $end_date ) ) {
                 $payroll_cutoff = $this->payroll_cutoff->get_payroll_cutoff();
@@ -385,17 +346,8 @@ class CronController extends Controller
                 $end_date = $payroll_cutoff->end_date;
             }
 
-            # Test Data for Debugging
-            // $start_date = "2019-07-01";
-            // $end_date = "2020-06-30";
-
             // Fetch the Leaves from BHr within the Payroll Cutoff as Date Range.
             $bhr_leaves_array = $this->bhr->get_leaves( $start_date, $end_date );
-
-            // // Sort leaves based on lastChanged field
-            // usort($bhr_leaves_array, function($a, $b) {
-            //     return $a->status->lastChanged <=> $b->status->lastChanged;
-            // });
 
             // Binding of the Leaves fetched from BHr within the Date Range to the DTR within the Date Range.
             $superceded_result = $this->dtr->bind_superceded_leaves_to_dtr( $bhr_leaves_array );
@@ -411,48 +363,4 @@ class CronController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
-
-
-
-
-/**
-     * Syncs the Temporary Schedule from Existing EVOX to this new EVOX 
-     *  1. Fetch Temporary Schedule from EVOX base from the Start & End Date
-     *  2. Update/Generate the Temporary Schedule for the New EVOX using the details from the newly fetched from Existing EVOX
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function weekly_email_supervisor_notification(){
-        try {
-
-            // NOTE: Transferred to folder Command/sendSupervisorReminderNoSchedEmail.php called and set by cmd and set time by cron tab
-           
-            $supervisor_collection = $this->user->get_all_supervisors();
-
-            $list_of_reminders = [];
-            $i = 0;
-            foreach ($supervisor_collection as $supervisor){
-                
-                $employee_list = $this->user->get_users_under_supervisee_active_with_no_schedule( $supervisor);
-
-                $list_of_reminders[$i] = [  $supervisor,
-                                            $employee_list ];
-
-                if($employee_list->isNotEmpty() && is_valid($employee_list)){
-                    //note: keep the invoking of sendSupervisorReminderNoSchedEmail() per array to in which having the 
-                    // payload not go above the allowed max packets in mySql
-                    $this->email->sendSupervisorReminderNoSchedEmail($list_of_reminders[$i]);
-                }
-                
-                $i = $i +1 ;
-                
-            }
-            
-
-            
-           
-        } catch(Exception $e){
-            throw $e;
-        }
-    }
-
 }

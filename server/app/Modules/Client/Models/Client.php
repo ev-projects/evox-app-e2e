@@ -9,12 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
 {
-    // use SoftDeletes;
-
     protected $guarded = [];
     protected $table = 'employee_clients';
     protected $fillable = ['client_id','department_id','user_id'];
-    // protected static $logAttributes = ['department_name', 'description', 'schedule_id'];
 
     protected $dates = [
         'deleted_at'
@@ -34,14 +31,10 @@ class Client extends Model
     {
         return  $this->department_name;
     }
-    
-
 
     ########################################################################
     ############################ Relationships #############################
     ########################################################################
-
-
 
     # Fetch the Department's Default Schedule (Source type is Default)
     public function users(){
@@ -67,13 +60,11 @@ class Client extends Model
         return $this->belongsToMany(User::class, 'department_handlers', 'department_id', 'user_id');
     }
     
-    
     /**
      * //////////////////////////////////////////
      *          Handled/Handler Methods 
      * //////////////////////////////////////////
      */
-    
     
     # Fetch the Department User Handlers of the current Department Instance
     public function department_user_handlers()

@@ -102,22 +102,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     *  Gets the parsed Employee Number that would be used for Biometrics fetching
-     */
-    public function getBiometricsId()
-    {
-        return "20".$this->emp_num;
-    }
-    
- 
-
-    public function job_description(){
-        return [    
-            "first_name" => $this->first_name 
-        ];
-    }
-
-    /**
      *  Gets user info for displaying page or block
      */
     public function getUserInfo()
@@ -125,7 +109,6 @@ class User extends Authenticatable implements JWTSubject
         return [    "full_name" => $this->getFullName() , 
         
                     "department" =>  (is_valid( $this->SubDepartmentID ) ? EvoxSubDepartment::where("Id", $this->SubDepartmentID)->first()->Name : null ),
-
 
                     /// SEPARATE
                     "timezone" => $this->timezone,
@@ -141,13 +124,6 @@ class User extends Authenticatable implements JWTSubject
     ########################################################################
     ############################ Relationships #############################
     ########################################################################
-
-    
-    # Fetch the User's Supervisors
-    public function supervisors()
-    {            
-        return $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id');
-    }
 
 
     # Fetch the User's Supervisors
@@ -174,7 +150,6 @@ class User extends Authenticatable implements JWTSubject
 
         if(is_valid($this->SubDepartmentID)){
                 $sub = EvoxSubDepartment::find($this->SubDepartmentID);
-                // $sub = EvoxSubDepartment::find($this->SubDepartmentID);
                 return $sub->DepartmentId;
         }
   
@@ -229,40 +204,21 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first();
     }
 
-    public function country_zone_offset()
-    {
-        return $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first()->time_difference;
-    }
-
     public function country_timezone_name()
     {
-        
-
         return $timezone_name = $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first()->timezone;
-
- 
-       
 
         return $offset_string->format('P');
     }
 
     public function country_timezone_to_offset()
     {
-        
-
         $timezone_name = $this->hasOne(UtcTimelog::class, 'country_id', 'country_id')->first()->timezone;
 
         $offset_string = Carbon::now($timezone_name);
-       
 
         return $offset_string->format('P');
     }
-
-    // public function deparPPtment_schedule_active()
-    // {
-    //     return $this->department->first()->departments_on_schedule_is_active();
-    // }
-
 
      # Fetch  all of the User's Schedule 
      public function AllSchedules(){
@@ -274,12 +230,6 @@ class User extends Authenticatable implements JWTSubject
             'bind_to' => 'user',
             'id' => $schedule_id
         ]);
-
-        // return Schedule::where([
-        //     'bind_to' => 'user',
-        //     'user_id'=> $this->id,
-        //     'id' => $schedule_id
-        // ]);
     }
 
     # Fetch the User's Schedule (Source type is Default)
@@ -288,21 +238,6 @@ class User extends Authenticatable implements JWTSubject
             'bind_to' => 'user',
             'source_type' => get_constant('DTR_SOURCE_TYPE_TAGGING.default')
         ]);
-    }
-
-    # Fetch the User's Overtime Requests
-    public function overtimes(){
-        return $this->hasMany(Overtime::class, 'user_id', 'id');
-    }
-
-    # Fetch the User's AlterLog Requests
-    public function alter_log(){
-        return $this->hasMany(AlterLog::class, 'user_id', 'id');
-    }
-
-    # Fetch the User's Rest Day Work Requests
-    public function rest_day_works(){
-        return $this->hasMany(RestDayWork::class, 'user_id', 'id');
     }
 
     # Fetch the User's Schedule (Source type is Temporary)
@@ -350,15 +285,6 @@ class User extends Authenticatable implements JWTSubject
         } else {
             return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')->where($change_schedule_condition);
         }
-    }
-
-    # This is a duplicate function.
-    # Fetch the  Change Schedule
-    public function change_schedule($start_date, $end_date){
-        return $this->hasMany(ChangeSchedule::class, 'user_id', 'id')
-                    ->whereRaw("    ( valid_from BETWEEN '".$start_date."' AND '".$end_date."') OR 
-                                    ( valid_to BETWEEN '".$start_date."' AND '".$end_date."') OR
-                                    ( valid_to <= '".$start_date."' AND valid_from >= '".$end_date."')");  
     }
 
     # Fetch the User's DTR
@@ -500,11 +426,6 @@ class User extends Authenticatable implements JWTSubject
                 'alter_logs_punches'    => 5,
             ];
             $perpage_count = 10;
-
-            // if( $filter['use_filter'] == 1 && $filter['departmentselect'] == 1){
-            //     $filter['departmentselect'] = 0;
-            // }
-            // dump($filter['departmentselect']);
           
             if(isset($filter['valid_from'])){
                 $response =  call_sp("EH_SP_My_Team_Request", [
@@ -563,15 +484,6 @@ class User extends Authenticatable implements JWTSubject
                     );
                 }, $response[0]): [];
             }
-            
-            // $resultstatus =  ($filter['departmentselect'] == 1 ? $response[2] : $response[1]) ? array_map(function($item) {
-           
-            //     return (object) array(
-            //         'status' => $item->status,
-            //         'count' => $item->statusCount,
-            //     );
-
-            // }, $filter['departmentselect'] == 1 ? $response[2] : $response[1]): [];
 
             if ($filter['departmentselect'] == 1 ? $response[2] : $response[1]) {
                 $numbers = [
@@ -581,7 +493,6 @@ class User extends Authenticatable implements JWTSubject
                     'pending'  => $filter['departmentselect'] == 1 ? $response[2][3]->statusCount : $response[1][3]->statusCount,
                 ];
             }
-                       // dd($result ,$response[0],$response[2],$response[3]);
             $paginate =  $filter['departmentselect'] == 1 ? $response[3][0] : $response[2][0];
        
             $collection["data"] = [ "query" =>$result];
@@ -600,13 +511,6 @@ class User extends Authenticatable implements JWTSubject
                                             'current_page' => (int) $paginate->CurrentPage,
                                             'last_page' => ceil($paginate->TotalCount /  $perpage_count)
                                         ];
-            
-
-                                        // if( ($paginate->TotalCount % $perpage_count) > 0 
-                                        // && fmod($paginate->TotalCount /  $perpage_count, 1) !== 0.00){
-                                        //     $collection["pagination"][ 'last_page' ] = $collection["pagination"][ 'last_page' ] + 1;
-                                        // }
-                                        // dd($collection["data"]);
             return   $collection;
         }
         else {
@@ -712,12 +616,9 @@ class User extends Authenticatable implements JWTSubject
                 $alter_logs      ->whereIn('alter_logs.user_id',$id);
                 $alter_logs_punches ->whereIn('alter_log_punches.user_id',$id);
 
-
-                // dd($overtimes->where("`overtimes`.`updated_at`", null));
                 $features = $this->userFeatures();
                 if(!in_array("manage_alter_log_request",$features)){
                     $alter_logs      ->where("alter_logs.status", null);
-                    // $alter_logs_punches ->where("`alter_logs_punches`.`user_id`", null)
                 }
                 if(!in_array("manage_change_schedules_request",$features)){
                     $change_schedules->where("change_schedules.status", null);
@@ -803,7 +704,7 @@ class User extends Authenticatable implements JWTSubject
                 }
                 
             }
-            // dump("here2");
+
             if($filter['status']=='pending'){
                 $query->orderBy('created_at','desc');
             }else{
@@ -818,33 +719,12 @@ class User extends Authenticatable implements JWTSubject
             return   $result ;
         }
     }
-  
-    # Fetch the User's DTR
-    public function get_user_by_string($str = null){
-        return $this->where('first_name', 'like', '%' . $str . '%')->orWhere('last_name', 'like', '%' . $str . '%');
-    }
 
-    
     /**
      * //////////////////////////////////////////
      *          Handled/Handler Methods 
      * //////////////////////////////////////////
      */
-    
-    # Fetch the User Handlers of the current User Instance
-    public function user_handlers()
-    {            
-        /* Gets the following: 
-            1. Users that handles you via 'department_handlers' table
-            2. Users that handles the team you belong to via 'team_handlers' 
-         */
-        $team = $this->team()->first();
-        $user_id_array = array_merge( 
-            $this->belongsToMany(User::class, 'users_supervisors', 'user_id', 'supervisor_id')->pluck('id')->toArray(), 
-            ( is_valid( $team ) ) ? $team->team_handlers()->pluck('id')->toArray() : []
-        );
-        return User::whereIn('users.id', array_unique($user_id_array))->where('users.is_active', 1);
-    }
 
     # Fetch the Users Handled of the current User Instance 
     
@@ -894,13 +774,7 @@ class User extends Authenticatable implements JWTSubject
                 "query" =>  $response ?? [],
             );
 
-        //     $minus_e = 2;
-        // if( count($result['query']) ==5 ){
-        //    $minus_e = 3;
-        // }
         $id = [];
-        // $count = count($result['query']);
-        // $index = $count - $minus_e;
 
         for ($i = 0; $i < count($result["query"]); $i++) {
 
@@ -919,54 +793,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     return [];
-    }
-   
-    public function users_handled_old()
-    {   
-        // If the User has Client Role, get all the Users from his/her departments handled.
-        if( $this->isLevel("Client") ) { 
-            return User::whereIn('users.department_id', $this->departments_handled()->pluck('id')->toArray());
-
-
-        //HR and Payroll gets all the users
-        } elseif (
-                    !($this->isLevel("Admin")
-                    ||
-                   $this->isLevel("HR")
-                    ||
-                   $this->isLevel("Payroll"))
-                ) {
-            return User::whereNotNull("bhr_num");//practically all users
-
-        // If the User has Team Leader & Supervisor Role, get all the Users from the Department's Handled Team list AND the default users handled via users_supervivsors pivot table.
-        } elseif( $this->hasRole( get_constant('USER_ROLES.supervisor') ) && $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
-            $user_id_array = $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id')->pluck('id')->toArray();
-            foreach( $this->departments_handled()->get() as $departments ){ 
-                foreach( $departments->teams()->get() as $teams ){
-                    $user_id_array = array_merge( $user_id_array, $teams->team_users()->pluck('id')->toArray());
-                }
-            }
-            return User::whereIn('users.id', array_unique($user_id_array));
-          
-
-        // If the User has Supervisor Role, fetch the default users handled via the users_supervisors pivot table
-        } elseif( $this->hasRole( get_constant('USER_ROLES.supervisor') )  ) { 
-            return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
-          
-
-        // If the User has Team Leader Role, get all the Users from his/her teams being leaded.
-        } elseif( $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
-            $user_id_array = [];
-            foreach( $this->teams_handled()->get() as $teams ){
-                $user_id_array = array_merge( $user_id_array, $teams->team_users()->pluck('id')->toArray());
-            }
-            return User::whereIn('users.id', $user_id_array);
-  
-        // If not, fetch the default users handled via the users_supervisors pivot table
-        } else {
-            return $this->belongsToMany(User::class, 'users_supervisors', 'supervisor_id', 'user_id');
-        }
-            
     }
 
     # Fetch the User Teams Handled
@@ -999,45 +825,6 @@ class User extends Authenticatable implements JWTSubject
 
         return $teams_id_array->get();
     }
-
-    # Fetch the Selected Departments Teams
-    public function selected_departments_team($department_id_array)
-    {
-        // Fetch department team if Supervisor
-        if( $this->hasRole( get_constant('USER_ROLES.supervisor') ) || $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
-            $teams_id_array = Team::whereIn( "department_id" , $department_id_array );
-        } elseif( $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
-            $teams_id_array =  $this->belongsToMany(Team::class, 'team_handlers', 'user_id', 'team_id')->whereIn( "department_id" ,$department_id_array );
-        }
-
-
-        return $teams_id_array->get();
-    }
-
-    # Fetch the User Departments Handled
-    public function departments_handled()
-    {
-        /* Gets the following: 
-            1. Departments that you handle via 'department_handlers' table
-            2. Departments of the Teams you are handling via 'team_handlers' 
-        */
-        $departments_id_array = $this->belongsToMany(Department::class, 'department_handlers', 'user_id', 'department_id')->pluck('id')->toArray();
-        // foreach( $this->teams_handled()->get() as $team) {
-        //     $departments_id_array = array_merge( 
-        //         $departments_id_array, 
-        //         $team->deppppppppppartment()->pluck('id')->toArray() 
-        //     );
-        // }
-        foreach ($departments_id_array as $key => $department) {
-            $users = User::where('department_id', $department)->where('is_active', 1)->get();
-            if (count($users) <= 0) {
-                unset($departments_id_array[$key]);
-            }
-        }
-
-        return Department::whereIn('departments.id', array_unique($departments_id_array));
-    }
-
     
     # Fetch the User Departments Handled
     public function evox_departments_handled()
@@ -1050,7 +837,7 @@ class User extends Authenticatable implements JWTSubject
             $response = call_sp("EH_SP_Get_Department_By_UserId",
             
             [
-                $this->id, // vishnu this_id
+                $this->id,
                 null,
                 0,
                 1
@@ -1075,8 +862,6 @@ class User extends Authenticatable implements JWTSubject
         }
         return  [];
 
-        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
-
     }
 
     # Fetch the User Departments Handled
@@ -1090,7 +875,7 @@ class User extends Authenticatable implements JWTSubject
             $response = call_sp("EH_SP_Get_Department_By_UserId",
             
             [
-                $this->id, // vishnu this_id
+                $this->id,
                 null,
                 1,
                 1                
@@ -1115,8 +900,6 @@ class User extends Authenticatable implements JWTSubject
         }
         return  [];
 
-        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
-
     }
 
     // # Fetch the User Departments Handled
@@ -1130,13 +913,12 @@ class User extends Authenticatable implements JWTSubject
             $response = call_sp("EH_SP_Get_Department_By_UserId",
             
             [
-                $this->id, // vishnu this_id
+                $this->id,
                 $department_id
                 ,0
                 ,1
                 ]
             ); 
-            // dd($response[0]);
 
          
                 $result = $response[0] ? array_map(function($item) {
@@ -1158,16 +940,7 @@ class User extends Authenticatable implements JWTSubject
         }
         return  [];
 
-        // select from evox dep where headid  = garyid or id in (select dep id  in evox sub where head id = garyid)
-
     }
-
-    // # Fetch the User Departments Handled
-    // public function evox_sub_departments_handled()
-    // {
-      
-    //     return EvoxSubDepartment::where('HeadId', '=', $this->id)->where("IsActive", 1);
-    // }
 
     public function getHasSchedule(){
 
@@ -1215,7 +988,7 @@ class User extends Authenticatable implements JWTSubject
             $type = $this->level_type();
 
             if($type == "Payroll" || $type == "HR"){
-                $level_id =EvoxLevels::where("Name", $type)->first()->LevelId; //
+                $level_id =EvoxLevels::where("Name", $type)->first()->LevelId;
             }else if(stripos($type, 'payroll')!== false){
                 $level_id =EvoxLevels::where("Name", "Payroll")->first()->LevelId;
             }else if(stripos($type, 'hr')!== false){

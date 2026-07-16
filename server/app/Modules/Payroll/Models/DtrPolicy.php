@@ -7,7 +7,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class DtrPolicy extends Model
 {
-
     use LogsActivity;
 
     protected $guarded = [];
@@ -15,7 +14,6 @@ class DtrPolicy extends Model
     protected static $logAttributes = ['policy', 'value'];
 
     public $timestamps = false;
-
     
     ########################################################################
 
@@ -29,5 +27,4 @@ class DtrPolicy extends Model
     public function dtr(){
         return $this->belongsTo(Dtr::class);
     }
-
 }

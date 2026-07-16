@@ -12,22 +12,18 @@ use Illuminate\Database\Eloquent\Collection;
 interface DtrRepositoryInterface
 {
     public function generate_dtr( Collection $user_collection, array $date_array );
-
     
     public function apply_schedule_to_dtr( $user_or_user_id,  Schedule $schedule, $bypass = false );
 
     public function remove_schedule_to_dtr( $user_or_user_id,  Schedule $schedule );
 
-
     public function apply_alter_log_to_dtr( AlterLog $alter_log );
 
     public function remove_alter_log_from_dtr( AlterLog $alter_log );
     
-
     public function apply_rest_day_work_to_dtr( RestDayWork $rest_day_work );
 
     public function remove_rest_day_from_dtr( RestDayWork $rest_day_work );
-
 
     public function bind_holidays_to_dtr( string $start_date, string $end_date );
 
@@ -41,13 +37,7 @@ interface DtrRepositoryInterface
     
     public function compute_payroll_items(Dtr $dtr);
 
-    public function generate_dtr_on_new_hire($user );
-
     public function get_leaves_from_dtr( Collection $dtr_collection );
-
-    public function apply_dtr_to_simcorp_dtr( $user, $bypass = false ,  $valid_from, $valid_to , $sched_policy);
-
-    // public function check_if_use_logs( string $date , $user_id);
 
     public function apply_punch_to_history( string $date , int $user_id, Collection $biometrics, $request);
 

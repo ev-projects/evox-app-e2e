@@ -77,7 +77,6 @@ class FreshServiceController extends Controller
                 ->asJson();
             $res = $req->get();
             if ($res->status != JsonResponse::HTTP_OK) {
-                // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 $error = "Could not load tickets, please try again.";
                 if (isset($res->content->message))
@@ -107,7 +106,6 @@ class FreshServiceController extends Controller
             $res = null;
             $req = Curl::to(env('FRESHSERVICE_API_BASE_URL') . '/tickets?userEmail=' . urlencode($me->email))
                 ->withHeader('Accept: application/json')
-                //->withHeader('Content-Type: application/json')
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
                 ->returnResponseObject();
@@ -166,7 +164,6 @@ class FreshServiceController extends Controller
                 ->asJson();
             $res = $req->get();
             if ($res->status != JsonResponse::HTTP_OK) {
-                // throw new Exception('Curl Endpoint Invalid/Not Found', $result->status);
                 log_to_file('info', 'ERROR', ['error' => $res], "fs");
                 $error = "Could not load ticket detais, please try again.";
                 if (isset($res->content->message))
@@ -196,7 +193,6 @@ class FreshServiceController extends Controller
             $res = null;
             $req = Curl::to(env('FRESHSERVICE_API_BASE_URL') . '/tickets/' . $request->id . '/reply?userEmail=' . urlencode($me->email))
                 ->withHeader('Accept: application/json')
-                //->withHeader('Content-Type: application/json')
                 ->withTimeout(30)
                 ->withConnectTimeout(30)
                 ->returnResponseObject();

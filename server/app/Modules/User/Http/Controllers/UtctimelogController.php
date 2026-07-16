@@ -16,7 +16,6 @@ class UtctimelogController extends Controller
 
    }
 
-
        /**
      * This function check adjusment  the UTC for day light savings time
   
@@ -26,13 +25,10 @@ class UtctimelogController extends Controller
         try {
             log_activity( trans('messages.sync_utc_adjust_attemp') );
 
-            
-            
             $checked_utc = $this->utc_time_log->check_adjustment();
 
             return success_response(
                 trans('messages.sync_utc_adjust_success'),  
-                // new UserProfileResource( $this->profile->update( $user, $request ) )
             );
 
         } catch(Exception $e){

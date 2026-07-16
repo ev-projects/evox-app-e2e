@@ -20,12 +20,6 @@ class AnnouncementResource extends JsonResource
      */
     public function toArray($request)
     {
-
-      
-            // $endDate  = Carbon::now();
-            // $startDate = Carbon::now()->subDays(3);
-            // $dateToCheck = Carbon::parse( $this->release_date);
-
             $startDate  = Carbon::parse($this->release_date);
             $endDate = Carbon::parse($this->release_date)->addDays(3);
             $dateToCheck = Carbon::now();
@@ -34,7 +28,6 @@ class AnnouncementResource extends JsonResource
             if($this->created_by !=0){
                 $user = $this->creator();
 
-    
                 $owner = [
                     'id' => $user->id,
                     'emp_num' => $user->emp_num,
@@ -65,7 +58,6 @@ class AnnouncementResource extends JsonResource
                 }
 
             $result = null;
-                // dd($this->dep_id);
             if( ! is_null( $this->resource ) ) {
             $result = array(
                 'id' => $this->id,

@@ -52,8 +52,6 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
         Route::get('block/{user_id}/{start_date}/{end_date}', 'ReportController@dtr_summary_block');
 
         # Gets the DTR Summary of the User indicated. 
-        Route::get('team', 'ReportController@team_dtr_summary'); 
-
         Route::get('export', 'ReportController@export_team_dtr_summary');
 
         Route::get('new_team', 'ReportController@new_dtr_summary_report');
@@ -80,8 +78,4 @@ Route::group(['prefix' => 'report/', 'middleware' => ['jwtauth', 'auth.apikey']]
     Route::get('timeoff_allocation', 'ReportController@timeoff_allocation_report');
     Route::get('get_morocco_payroll_params', 'ReportController@getMoroccoPayrollParams');
 });
-
-Route::get('summaryreport1', 'ReportController@team_dtr_summaryreportnew');
-
-Route::get('exportsummaryreport1', 'ReportController@newdtrsummaryreportcsvexport');
 

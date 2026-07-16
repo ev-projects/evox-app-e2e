@@ -7,10 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TeamAttendanceSummaryResource extends JsonResource
 {
-
     public function __construct($resource)
     {
-        
         // Ensure you call the parent constructor
         parent::__construct($resource);
         $this->team_attendance_summary = $resource;
@@ -33,7 +31,6 @@ class TeamAttendanceSummaryResource extends JsonResource
             $has_leave = false;
             $has_rest_day_work = false;
             $hours = 0;
-
        
             if( $dtr->holidays()->get()->count() > 0 ){
                 $status = 'Holiday';
@@ -130,12 +127,9 @@ class TeamAttendanceSummaryResource extends JsonResource
                 "hours" => $hours > 0 ? seconds_to_time($hours,true) : null,
                 "status" => $status
             ]);
-
        }
-
 
         return $team_attendance_summary;
     }
-
 }
 

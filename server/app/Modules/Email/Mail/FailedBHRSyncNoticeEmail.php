@@ -23,10 +23,8 @@ class FailedBHRSyncNoticeEmail extends Mailable
     public function __construct($user)
     {
         $this->user = $user;
-        //log_to_file('info', "New FailedBHRSyncNoticeEmail", [$user,  __FUNCTION__], "emails");
         # If the App is on Production, send on the actual recepient email
         if( App::environment('production') ) {
-            #$this->to($this->recepient->email );
             $this->to( get_constant('EASTVANTAGE_DEV_EMAIL') );
         # If the App is NOT in Production, send on the email on Eastvantage Dev Eamil
         } else {

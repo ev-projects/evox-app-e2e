@@ -15,7 +15,6 @@ use App\Modules\Request\Models\ChangeSchedule;
 
 class Dtr extends Model
 {
-    
     use SoftDeletes, LogsActivity;
 
     protected $guarded = [];
@@ -32,7 +31,6 @@ class Dtr extends Model
     ############################ Custom Helpers ############################
     ########################################################################
 
-
     /**
      * 
      *  Check if the current DTR has a Complete Time-in and Time-out.
@@ -43,7 +41,6 @@ class Dtr extends Model
         return ( is_valid( $this->time_in ) && is_valid( $this->time_out ) ) ? true : false;
     }
 
-
     /**
      * 
      *  Check if the current DTR has a Valid Time-in and Time-out. (Time Out > Time In)
@@ -51,7 +48,6 @@ class Dtr extends Model
      */
     public function hasValidTimelogs()
     {
-        // && $this->time_out > $this->time_in logic for has valid time logs
         return ( $this->hasCompleteTimelogs() ) ? true : false;
     }
 
@@ -75,7 +71,6 @@ class Dtr extends Model
         return ( !is_null( $this->time_in ) || !is_null( $this->time_out ) ) ? true : false;
     }
 
-
     /**
      * 
      *  Check if the current DTR has a value
@@ -85,7 +80,6 @@ class Dtr extends Model
     {
         return ( !is_null( $this->time_in ) ) ? true : false;
     }
-
 
     /**
      * 
@@ -105,7 +99,6 @@ class Dtr extends Model
 
         return  $schedule;
     }
-
 
         /**
      * 
@@ -166,7 +159,6 @@ class Dtr extends Model
         
     }
 
-
     /**
      * 
      *  Check if the employee clock in on time
@@ -192,7 +184,6 @@ class Dtr extends Model
                 return true;
             }
         }
-        
 
         return false;
     }
@@ -231,7 +222,6 @@ class Dtr extends Model
         return false;
     }
 
-
     public function isIncompleteLog(){
         return ( !is_valid( $this->time_in ) && is_valid( $this->time_out ) );
     }
@@ -245,8 +235,6 @@ class Dtr extends Model
     {
         return ( is_valid( $this->start_datetime ) && is_valid( $this->end_datetime ) ) ? true : false;
     }
-
-    
 
     /**
      * 
@@ -275,9 +263,6 @@ class Dtr extends Model
         return ( $this->hasValidTimelogs() && 
                  timestamp_to_date( $this->time_in ) == timestamp_to_date( subtract_days_from_timestamp( $this->date, 1 ))
                ) ? true : false;
-               
-                //  Old Code:
-                //  timestamp_to_date( $this->time_in ) != timestamp_to_date( $this->time_out ) ) ? true : false;
     }
 
     /**
@@ -287,11 +272,7 @@ class Dtr extends Model
         return ( $this->hasValidTimelogs() && 
                  timestamp_to_date( $this->time_out ) == timestamp_to_date(add_days_to_timestamp( $this->date, 1 ))
                ) ? true : false;
-               
-                //  Old Code:
-                //  timestamp_to_date( $this->time_in ) != timestamp_to_date( $this->time_out ) ) ? true : false;
     }
-
 
     /**
      * 
@@ -303,7 +284,6 @@ class Dtr extends Model
         return ( $this->is_rest_day ) ? true : false;
     }
 
-
     /**
      * 
      *  Check if the Source Type Tagging is 'default'.
@@ -313,7 +293,6 @@ class Dtr extends Model
     {
         return ( $this->source_type_tagging == 'default' ) ? true : false;
     }
-
 
     /**
      * 
@@ -334,7 +313,6 @@ class Dtr extends Model
     {
         return ( $this->source_type_tagging == 'rest_day_work' ) ? true : false;
     }
-    
 
     /**
      * 
@@ -432,7 +410,6 @@ class Dtr extends Model
                 ) ? true : false;
     }
 
-
     /**
      * 
      *  Gets the Expected Time In base from the Start Datetime and Start Flexy Datetime.
@@ -463,7 +440,6 @@ class Dtr extends Model
     {
         return ( $this->hasValidTimelogs() ) ? (int) $this->time_out - $this->time_in : 0;
     }
-
 
     /**
      * 
@@ -602,7 +578,6 @@ class Dtr extends Model
             $change_schedule = $change_schedule->schedule()->first();
         }
 
-
         # Setting the Schedule that would be used for that specific Day.
         # Heirarchy: Temporary Schedule > Change Schedule > Default Schedule
         $schedule = ( is_valid( $temporary_schedule ) ? $temporary_schedule : 
@@ -615,7 +590,6 @@ class Dtr extends Model
         
         return $schedule;
     }
-
 
     ########################################################################
 
@@ -660,17 +634,8 @@ class Dtr extends Model
         (reg_overtime_night_diff + rd_overtime_night_diff + sh_overtime_night_diff + lh_overtime_night_diff + dlh_overtime_night_diff + dsh_overtime_night_diff + slh_overtime_night_diff)  as overtime_night_diff"))
                 ->where('login_date', '=' , $this->date )
                 ->where('user_id','=',$this->user_id);
-
-        // $this->leftJoin('drt_summary_report', function($join){
-        //     $join->on('dtrs.date', '=', 'drt_summary_report.login_date');
-        //     $join->on('dtrs.user_id', '=', 'drt_summary_report.user_id');
-       
-        // })
-        // // ->take(3)
-        // ->get();
     }
-    
-    
+
     /**
      * hasMany Relationship for DTR Payroll Items Model that are tagged as Underlapped.
      */
@@ -679,7 +644,6 @@ class Dtr extends Model
             'tag' => get_constant('PAYROLL_ITEM_TAGS.underlapped')
         ]);
     }
-
     
     /**
      * hasMany Relationship for DTR Payroll Items Model that are tagged as Overlapped.
@@ -695,7 +659,6 @@ class Dtr extends Model
      */
     public function holidays(){
         return $this->belongsToMany(Holiday::class, 'dtr_holidays', 'dtr_id', 'holiday_id');
-        
     }
 
     /**
@@ -723,7 +686,6 @@ class Dtr extends Model
                 if($this->isUnplanned()){
                     $acronym = "UL";
                 }else{
-                    // $acronym = "VL";
                     $acronym = $this->leaves()->get()->first()->type;
                 }
                 
@@ -751,7 +713,6 @@ class Dtr extends Model
                     ($this->getDtrType() == get_constant('DTR_TYPE.regular') );
     } 
 
-
     /**
      * Returns True if the current time is greater than the time in
      */
@@ -764,8 +725,6 @@ class Dtr extends Model
         }
         return True;
     } 
-
-
     
     /**
      * Returns DTR Status of a date
@@ -823,9 +782,7 @@ class Dtr extends Model
         }
 
         return $status;
-    } 
-
-
+    }
     
     /**
      * hasMany Relationship for Dtr Leaves model
@@ -833,14 +790,14 @@ class Dtr extends Model
     public function onLeave(){
         return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->where( 'type' , '<>' ,'Unpaid Leave' )->where( 'amount' , '>' ,0 );
     }
-    
+
     /**
      * hasMany Relationship for Dtr Leaves model
      */
     public function onUnpaidLeave(){
         return $this->hasMany(Leave::class)->where( 'status' , 'approved' )->where( 'type' , '=' ,'Unpaid Leave' )->where( 'amount' , '>' ,0 );
     }
-    
+
     /**
      * hasOne Relationship for Previous Dtr Model
      */
@@ -859,7 +816,6 @@ class Dtr extends Model
         ]);
     }
 
-
     /**
      * hasOne Relationship for the Alter Log
      */
@@ -868,7 +824,6 @@ class Dtr extends Model
             'date' => $this->date
         ]);
     }
-
 
     /**
      * hasOne Relationship for the Overtime
@@ -897,7 +852,6 @@ class Dtr extends Model
         ]);
     }
 
-
     public function summary_report_short(){
         $payroll_items = [];
         $result = DB::table('drt_summary_report')
@@ -915,9 +869,6 @@ class Dtr extends Model
                 ->where('user_id','=',$this->resource->user_id)->get();
 
             # Convert the time to seconds to 00:00:00 format
-            // foreach( $payroll_items as  $key => $value){
-            //     $payroll_items[$key] = seconds_to_time($value,true);
-            // }
             foreach( $result as  $key => $value){
                 $payroll_items["late"] = $value->late > 0 ? seconds_to_time(round($value->late * 3600),true):"";
                 $payroll_items["undertime"] = $value->undertime > 0 ? seconds_to_time(round($value->undertime * 3600),true):"";
@@ -930,14 +881,12 @@ class Dtr extends Model
             return $payroll_items;
     }
 
-
     public function get_dtr_history(){ 
 
         $dtr_history = DtrPunchHistory::where('date',$this->date)->where('user_id',$this->user_id);
 
         return  $dtr_history;
     }
-    
 
     ###############################################################################################
     ##################################### Validation functions ####################################
@@ -965,7 +914,4 @@ class Dtr extends Model
         $policy = $this->policies()->where("policy", $policy_name)->first();
         return ( is_valid($policy) ? (bool) $policy->value : null );
     }
-
-
-
 }

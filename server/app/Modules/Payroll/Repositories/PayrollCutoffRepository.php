@@ -25,10 +25,7 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
     ###############################################################################################
 
     public function __construct(){
-
     }
-
-
 
     /**
      *  Gets the Payroll Cutoff. Gets the current date's scope if there's no date parameter.
@@ -72,7 +69,6 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
             $result = [];
 
             $user = get_authenticated_user( $user_id );
-            // $user = User::find(3153);
             if ($user->country_id == 1 || $user->country_id == 4) {
                 // Gets all the Payroll Cutoff of India and Morocco
                 $india_cutoff_collection = EvoxIndiaPayrollCutoff::get();
@@ -115,9 +111,6 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
             throw $e;
         }
     }
-
-
-
     
     /**
      *  Responsible for fetching all the Payroll Cutoff
@@ -137,7 +130,6 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
         }
     }
 
-    
     /**
      *  Responsible for fetching the Payroll Cutoff with the ID given.
      * @param $id
@@ -211,10 +203,7 @@ class PayrollCutoffRepository implements PayrollCutoffRepositoryInterface{
             log_error($e);
             throw $e;
         }
-
-
     }
-
 
     /**
      *  Responsible for Soft-Deleting the Payroll Cutoff from Database

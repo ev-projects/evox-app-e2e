@@ -56,16 +56,6 @@ class MyDtrNotificationsResource extends JsonResource
                  
              // If the DTR has no Complete Time In and Time Out Logs
              } else {
-                 
-                /* // If the DTR Type is Regular, set the status to "Absent"
-                 if( $dtr_type == get_constant('DTR_TYPE.regular') ) {
-                    $status = "Absent";
-
-                // If the DTR Source Type Tagging is Rest Day Work, set the status to "RDW Incomplete"
-                } elseif( $dtr->source_type_tagging == "rest_day_work" ) {
-                    $status = "RDW Incomplete";
-                }*/
-
                 // If DTR has no clock out
                 if ( is_valid( $dtr->time_in ) && !is_valid( $dtr->time_out ) ){
                     $details = "No clock out";
@@ -93,9 +83,6 @@ class MyDtrNotificationsResource extends JsonResource
             // If the $status & $details are valid ( not "" ), add it on the final list. 
             if( is_valid( $status ) && is_valid( $details ) ){
                 $requests = [];
-                /*foreach( $dtr->alter_log()->get() as $alter_log){
-                    $requests[] = new AlterLogResource( $alter_log );
-                }*/
                 foreach ($this->dtr_requests as $dtr_request) {
                     if ($dtr->dtr_id == $dtr_request->dtr_id) {
                         $requests[] = [
