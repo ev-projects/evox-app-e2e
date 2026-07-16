@@ -852,6 +852,14 @@ class UserRepository implements UserRepositoryInterface{
         }
     }
 
+    public function get_all_bhr_synced_users(){
+        try {
+            return User::whereNotNull('bhr_num')->pluck('bhr_num');
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
     public function get_all_supervisors(){
         try {
             $users = User::where('is_active', 1)

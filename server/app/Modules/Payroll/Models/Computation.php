@@ -332,7 +332,7 @@ class Computation
             # If the Time-In exceeds the Expected Time-In, Compute for the Difference of Time-In - Expected Time-In.
             if( $this->dtr->time_in > $expected_time_in ){
                 $late = $this->dtr->time_in - ($expected_time_in + $this->owner_offset_seconds);
-                error_log(timestamp_to_datetime_old($this->dtr->time_in) ."-". timestamp_to_datetime_old($expected_time_in));
+                // error_log(timestamp_to_datetime_old($this->dtr->time_in) ."-". timestamp_to_datetime_old($expected_time_in));
             }
             
           

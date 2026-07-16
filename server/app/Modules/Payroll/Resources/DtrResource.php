@@ -156,10 +156,8 @@ class DtrResource extends JsonResource
                 $is_within_time_extended = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  21600) && $this->is_rest_day == 0 ;
 
             if($this->is_rest_day == 0 && $this->time_in && !$this->time_out){
-                $user_half_time = 12600 + $this->time_in; 
+                $user_half_time = 12600 + $this->time_in;
                 $after_time_half = Carbon::now()->timestamp < $user_half_time ;
-                error_log(Carbon::now()->timestamp);
-                error_log($user_half_time);
             }
            
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="../tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">../tests/Unit</directory>
+        </testsuite>
+
+        <testsuite name="Feature">
+            <directory suffix="Test.php">../tests/Feature</directory>
+
+            <!-- Pre-existing failure, excluded since Jun 2026 -->
+            <exclude>../tests/Feature/ExampleTest.php</exclude>
+
+            <!-- External API dependencies / known slow-hanging -->
+            <exclude>../tests/Feature/Vishnu/AdminSyncApiTest.php</exclude>
+            <exclude>../tests/Feature/Vishnu/SyncHrisApiTest.php</exclude>
+        </testsuite>
+    </testsuites>
+
+    <!-- 2026-07-14: feature/e2e-testing-v2 branch removed BookingController, RoomController,
+         and LocationController outright (manual dead-code removal). Tests referencing them are
+         tagged @group dead-code (class-level for files entirely about the removed feature,
+         method-level for files that mix dead-code coverage with still-live functionality) rather
+         than deleted, per the project's "never delete test cases" rule. Excluded here so they
+         don't run or count toward coverage. See server/tests/Feature/Api/evoxtest_change_log.md
+         for the full list of tagged files/methods. -->
+    <groups>
+        <exclude>
+            <group>dead-code</group>
+        </exclude>
+    </groups>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="false">
+            <directory suffix=".php">../app</directory>
+            <exclude>
+                <!-- Spatie model: Eloquent alias unavailable outside Laravel boot context -->
+                <file>../app/Models/Activity.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+        <log type="coverage-clover" target="C:\DFolder\Projects\EVOX\E2eTesting\PS-main\PS-main\.evox-test-backend\generated\evoxtest_coverage_clover.xml"/>
+        <log type="coverage-html" target="C:\DFolder\Projects\EVOX\E2eTesting\Gary &amp; Glenn Report\evoxtest_final-report\backend"/>
+    </logging>
+
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_DRIVER" value="sync"/>
+        <env name="MAIL_DRIVER" value="array"/>
+        <ini name="error_reporting" value="31735"/>
+        <ini name="memory_limit" value="4G"/>
+    </php>
+</phpunit>

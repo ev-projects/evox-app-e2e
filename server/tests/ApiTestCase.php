@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\User\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -20,6 +21,16 @@ abstract class ApiTestCase extends TestCase
         $this->apiKey = env('CLIENT_API_KEY');
 
         $this->seed(\UserTestSeeder::class);
+
+        // loginAndGetToken()/authenticatedPost() below hit the real /api/auth/login
+        // route on every call, which runs AuthController::get_default_payload() ->
+        // $this->bhr->get_user(...). The seeded 'active.user' fixture has no bhr_num,
+        // so that call goes out to live BHR with an empty employee id on every one of
+        // the 24+ test classes extending ApiTestCase. Bind the IoC mock here once so
+        // none of them need their own binding.
+        $this->app->bind(BhrRepositoryInterface::class, function () {
+            return new \Tests\Feature\Api\evoxtest_BhrMock();
+        });
     }
 
     protected function headers(array $extra = [])

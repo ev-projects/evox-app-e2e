@@ -85,7 +85,7 @@ class syncBhrUsers extends Command
                 $bhr_user_number_array = collect($this->bhr->get_all_bhr_user_numbers());
 
                 # Get all Users from EVOX which is originally synced from BHr (including inactive users)
-                $user_number_array = User::whereNotNull('bhr_num')->pluck('bhr_num');
+                $user_number_array = $this->user->get_all_bhr_synced_users();
 
                 # Merge both of the list to get the final list of users to merge.
                 $bhr_user_number_array = $bhr_user_number_array->merge($user_number_array);
@@ -102,7 +102,6 @@ class syncBhrUsers extends Command
             # 2.
             # Iterate the actual BHR User Numbers array
             foreach ($bhr_user_number_array as $bhr_user_number) {
-                print_r(["To Be Synced", $bhr_user_number]);
                 try {
 
                     # Fetch the User if it's already existing in the System

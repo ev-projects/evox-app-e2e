@@ -70,4 +70,6 @@ interface UserRepositoryInterface
     public function get_users_under_supervisee_active_with_invalid_check_ins($supervisor_id = null, $department_id = null);
 
     public function get_user_department ($id);
+
+    public function get_all_bhr_synced_users();
 }
