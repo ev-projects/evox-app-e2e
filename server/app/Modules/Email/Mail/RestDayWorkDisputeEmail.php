@@ -34,7 +34,6 @@ class RestDayWorkDisputeEmail extends Mailable
         $this->request       = $request;
         $this->user          = User::find($this->request['user_id']);
         $this->department    = EvoxSubDepartment::where("Id", $this->user->SubDepartmentID)->first();
-        //$this->approval_link = env('FRONT_END_URL') . 'request/approval/'.parse_request_to_hash_code( $this->rest_day_work, $this->recepient );
         $this->approval_link = env('FRONT_END_URL') . 'app/payrolldisputeview/';
 
         # If the App is on Production, send on the actual recepient email

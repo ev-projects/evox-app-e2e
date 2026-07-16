@@ -36,18 +36,6 @@ class GenerateDtrRequest extends FormRequest
     }
 
     /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
-    // public function messages()
-    // {
-    //     return [
-    //         'email.exists' => 'The email address does not exist.'
-    //     ];
-    // }
-
-    /**
      *  Manually throws the Validation error using our Templated Format
      */
     protected function failedValidation(Validator $validator) { 

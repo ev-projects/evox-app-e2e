@@ -29,7 +29,6 @@ class Biometrics extends Model
     {
         return ( $this->CheckType == "I" || $this->CheckType == "C"  ) ? true : false;
     }
-
     
     /**
      *      
@@ -40,7 +39,6 @@ class Biometrics extends Model
     {
         return ( $this->CheckType == "O" || $this->CheckType == "P"  ) ? true : false;
     }
-
 
     /**
      * 
@@ -61,8 +59,6 @@ class Biometrics extends Model
     {
         return subtract_time_from_timestamp( $this->CheckTime, "06:00" );
     }
-
-
     
     /**
      *      
@@ -74,8 +70,6 @@ class Biometrics extends Model
         return add_time_to_timestamp( $this->CheckTime, "06:00" );
     }
 
-    
-
     /**
      *      
      *  Gets the Time Type base on the CheckType
@@ -85,7 +79,6 @@ class Biometrics extends Model
     {
         return ( $this->isIn() ? 'time_in' : ( $this->isOut() ? 'time_out' : null ) );
     }
-
 
     /**
      *      
@@ -97,8 +90,6 @@ class Biometrics extends Model
         return  get_constant('QUICKPUNCH_TYPE.'.$this->CheckType);
     }
 
-
-
     /**
      *      
      *  Gets the Duty Type base on the CheckType
@@ -108,8 +99,6 @@ class Biometrics extends Model
     {
         return ( $this->isIn() ? 'start_datetime' : ( $this->isOut()  ? 'end_datetime' : null ) );
     }
-
-
 
     /**
      *      

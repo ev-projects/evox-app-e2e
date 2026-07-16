@@ -4,8 +4,6 @@ namespace App\Modules\Client\Repositories;
 
 use App\Modules\Client\Models\Client;
 use Exception;
-
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -18,24 +16,17 @@ class ClientRepository implements ClientRepositoryInterface{
     public function __construct(){
 
     }
+
     /**
      *  Responsible for fetching all the Departments
      * 
      * @return Collection $department_collection
      */
+
     public function all()
     {
-        // try {
-        //     $department_collection = Department::orderBy('department_name', 'asc')->get();
-        //     log_to_file('info', 'Success', [$department_collection]);
-        //     return $department_collection;
 
-        // } catch (Exception $e) {
-        //     log_error($e);
-        //     throw $e;
-        // }
     }
-
     
     /**
      *  Responsible for fetching the Department with the ID given.
@@ -57,7 +48,6 @@ class ClientRepository implements ClientRepositoryInterface{
             throw $e;
         }
     }
-
     
     /**
      *  Responsible for assigning the Department Handlers
@@ -81,16 +71,10 @@ class ClientRepository implements ClientRepositoryInterface{
                 $client = Client::firstOrCreate(['client_id' =>$client_id,'department_id'=> $department_id,'user_id' => $value['value']]);
             }
             return ;
-            // $department->department_supervisors()->sync( $user_id_array );
-
-            // log_to_file('info', 'Success', [$department->id . ' - ' . $department->department_name, $user_id_array], 'assign');
-            // return $department;
 
         } catch (Exception $e) {
             log_error($e);
             throw $e;
         }
     }
-
-
 }

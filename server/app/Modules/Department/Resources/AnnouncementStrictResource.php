@@ -20,7 +20,6 @@ class AnnouncementStrictResource extends JsonResource
      */
     public function toArray($request)
     {
-        
         $startDate  = Carbon::parse($this->release_date);
         $endDate = Carbon::parse($this->release_date)->addDays(3);
         $dateToCheck = Carbon::now();
@@ -115,11 +114,7 @@ class AnnouncementStrictResource extends JsonResource
 
                 'is_new' =>  $dateToCheck->between($startDate, $endDate),
 
-                
-              
                 'created_at' => $this->created_at->format('Y-m-d h:m:s'),
-
-        
             );
         }
 

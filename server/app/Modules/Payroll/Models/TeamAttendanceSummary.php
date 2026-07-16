@@ -24,13 +24,9 @@ class TeamAttendanceSummary
         $this->clear_properties();
     }
 
-
-
     ###############################################################################################
     ######################################## Main function ########################################
     ###############################################################################################
-
-
 
     /**
      *  Main function for triggering the Computation of the Summary.
@@ -42,10 +38,7 @@ class TeamAttendanceSummary
     public function get_summary(Collection $user_collection, string $start_date, string $end_date)
     {
         try {
-
             $this->clear_properties();
-
-
 
             $today = Carbon::now();
             $start_date = Carbon::parse($start_date);
@@ -97,7 +90,6 @@ class TeamAttendanceSummary
                     // If the termination date is between the date range, replace the end date's value by the termination date - 1 day for the final day
                     // change all date of end date termination date
                     if (is_valid($termination_date) && $termination_date->between($start_date, $end_date)) {
-                        // $end_date = $termination_date->subDays(1);
                         $end_date = $termination_date;
                     }
 
@@ -158,7 +150,6 @@ class TeamAttendanceSummary
 
                                 // If the DTR has NO Valid time logs, add .5 on the unplanned leaves and 1 on scheduled employees
                             } else {
-                                // $this->result['unplanned_leaves']['total_count'] += .5;
                                 $this->result['scheduled_employees']['total_count'] += 1;
                             }
 
@@ -192,9 +183,6 @@ class TeamAttendanceSummary
                                 $rendered_hours = $dtr->getTotalRenderedTime() / 3600 % 24;
 
                                 if ($rendered_hours > 5) {
-                                    // array_push($this->result['planned_leaves']['users'],$dtr);
-                                    // $this->result['planned_leaves']['total_count'] += 1;
-                                    // $this->result['attendance']['total_count'] += 1;
                                     array_push($this->result['scheduled_employees']['users'], $dtr);
                                     $this->result['scheduled_employees']['total_count'] += 1;
                                 } else {
@@ -204,9 +192,6 @@ class TeamAttendanceSummary
                                     } else {
                                         array_push($this->result['scheduled_employees']['users'], $dtr);
                                         array_push($this->result['planned_leaves']['users'], $dtr);
-                                        // $this->result['planned_leaves']['total_count'] += .5;
-                                        // $this->result['scheduled_employees']['total_count'] += .5;
-                                        // $this->result['attendance']['total_count'] += .5;
                                     }
                                 }
                                 // if not put the details to unplanned leave
@@ -225,7 +210,6 @@ class TeamAttendanceSummary
                                         array_push($this->result['scheduled_employees']['users'], $dtr);
                                         array_push($this->result['unplanned_leaves']['users'], $dtr);
                                         array_push($this->result['attendance']['users'], $dtr);
-                                        // $this->result['unplanned_leaves']['total_count'] += .5;
                                         $this->result['scheduled_employees']['total_count'] += 1;
                                     }
                                 }
@@ -273,20 +257,17 @@ class TeamAttendanceSummary
 
             // If the total headcount has at least 1, proceed on computing the percentage.
             if ($this->result['total_headcount'] > 0) {
-                // return $this->result['total_headcount'];
                 // Computation for the total days 
                 $total_days = $this->result['scheduled_employees']['total_count'] + $this->result['planned_leaves']['total_count'];
                 $this->result['days'] = $total_days;
                 // Computation for Scheduled Employee, Planned Leaves, and Unplanned Leaves if the total days are more than 0
                 if ($total_days > 0) {
-                    // return $total_days;
                     $this->result['scheduled_employees']['total_percentage'] = (float) number_format(($this->result['scheduled_employees']['total_count'] / $total_days) * 100, 2);
                     $this->result['planned_leaves']['total_percentage'] = (float) number_format(($this->result['planned_leaves']['total_count'] / $total_days) * 100, 2);
-                    // 
+
                     // Computation for Attendance's total count and percentage.
                     $this->result['attendance']['total_count'] = $this->result['scheduled_employees']['total_count'] - $this->result['unplanned_leaves']['total_count'];
-                    // \
-                    // return $this->result['scheduled_employees']['total_count'];
+
                     if ($this->result['scheduled_employees']['total_count'] == 0) {
                         $this->result['attendance']['total_percentage'] = 0;
                         $this->result['unplanned_leaves']['total_percentage'] = 0;
@@ -296,11 +277,9 @@ class TeamAttendanceSummary
                     }
                 }
 
-
                 // Parse the seconds to time for total rest day work and overtime data.
                 $this->result['total_rest_day_work']['total_hours'] = seconds_to_time($this->result['total_rest_day_work']['total_hours'], true);
                 $this->result['total_overtime']['total_hours'] = seconds_to_time($this->result['total_overtime']['total_hours'], true);
-
 
                 foreach ($this->result['scheduled_employees']['users'] as $scheduled) {
                     $key = array_search($scheduled->id, array_column($this->result['unplanned_leaves']['users'], 'id'));
@@ -330,9 +309,6 @@ class TeamAttendanceSummary
         }
     }
 
-
-
-
     /**
      *  Version 2 of Main function for triggering the Computation of the Summary.
      * @param Collection $user_collection
@@ -344,10 +320,7 @@ class TeamAttendanceSummary
     public function get_summary2(Collection $user_collection, string $start_date, string $end_date)
     {
         try {
-
             $this->clear_properties();
-
-
 
             $today = Carbon::now();
             $start_date = Carbon::parse($start_date);
@@ -376,10 +349,6 @@ class TeamAttendanceSummary
                     is_valid($user->termination_date) &&  ($date_hired->lt(Carbon::parse($user->termination_date)))
                     ? Carbon::parse($user->termination_date) : null;
 
-
-           
-                
-
                     // Increment the total headcount
                     $this->result['total_headcount']++;
 
@@ -392,13 +361,10 @@ class TeamAttendanceSummary
                     // If the termination date is between the date range, replace the end date's value by the termination date - 1 day for the final day
                     // change all date of end date termination date
                     if (is_valid($termination_date) && $termination_date->between($start_date, $end_date)) {
-                        // $end_date = $termination_date->subDays(1);
                         $end_date = $termination_date;
                     }
 
                     $dtr_collection = $user->dtr($start_date->format('Y-m-d'), $end_date->format('Y-m-d'))->get();
-
-                    // $this->result['dtr_collection'] = $this->result['dtr_collection']->merge($dtr_collection);
 
                     // Fetch the User's DTR base from the final start and end date
                     foreach ($dtr_collection  as $dtr) {
@@ -417,16 +383,11 @@ class TeamAttendanceSummary
                         // Payroll Items
                         $payroll_items_collection = $dtr->payroll_items()->get();
                         $summary_items = $dtr->get_summary_row()->first();
-                        // dd( $summary_items ,"here");
                         $status = '';
-                        // $schedule = array();
                         $has_holiday = false;
                         $has_leave = false;
-                        // $has_rest_day_work = false;
                         $is_unplanned = false;
                         $in_dtr = false;
-
-
 
                         $leave = $dtr->leaves()->first();
 
@@ -444,13 +405,11 @@ class TeamAttendanceSummary
                                 $this->result['planned_leaves']['users'][] = $dtr;
                                 $this->result['scheduled_employees']['users'][] = $dtr;
 
-
                                 $in_dtr = true;
                             }
 
                             $has_leave = true;
                         }
-
 
                         //considers holiday if given by BHR even without a set schedule
                         if ($dtr->holidays()->get()->count() > 0 && Carbon::now()->gte(Carbon::parse($dtr->date))) {
@@ -494,7 +453,6 @@ class TeamAttendanceSummary
 
                                         if (!$is_unplanned && $has_leave == false) {
 
-
                                         }
                                         if($user->permissions()->pluck('name')->contains('user_multi_login')){
                                             if($dtr->get_dtr_history()->latest()->first() != null){
@@ -502,12 +460,10 @@ class TeamAttendanceSummary
                                                     $status = "P";
                                                     $this->result['attendance']['users'][] = $dtr;
                                                 }
-                                               
                                             }
                                         }
                                     } else {
                                         $status = "TBD";
-
                                     }
                                 }
 
@@ -533,35 +489,22 @@ class TeamAttendanceSummary
                         // Fetch User of the DTR
                         $user = $dtr->user()->first();
 
-                        // foreach ($payroll_items_collection as $payroll_item) {
-
                           if($summary_items){
                               // If there is an approved rest day work and the current payroll item iterated is Rendered hours, add its value
                               if (
                                 is_valid($rest_day_work) && $rest_day_work->isApproved()
-                                // && $payroll_item->item == get_constant('PAYROLL_ITEMS.rendered_hours')
                             ) {
-                                // $this->result['total_rest_day_work']['total_hours'] += (int) $payroll_item->value;
-                                
                                 $this->result['total_rest_day_work']['total_hours'] += (int) ($summary_items->rendered_hours + $summary_items->night_diff) *3600;
-                                // dump( ($summary_items->rendered_hours + $summary_items->night_diff) *3600, $rest_day_work);
                                 $has_rest_day_work = true;
                             }
 
                             // If there is an approved overtime and the current payroll item iterated is overtime, add its value
                             if (
                                 is_valid($overtime) && $overtime->isApproved()
-                                // &&  in_array($payroll_item->item, [
-                                //     get_constant('PAYROLL_ITEMS.overtime'),
-                                //     get_constant('PAYROLL_ITEMS.overtime_night_diff')
-                                // ])
                             ) {
-                                // $this->result['total_overtime']['total_hours'] += (int) $payroll_item->value;
                                 $this->result['total_overtime']['total_hours'] += (int) ($summary_items->overtime + $summary_items->overtime_night_diff) *3600;
-                                // dump("over "+  $payroll_item->value);
                             }
                           }
-                        // };
                        
                         $employee_list_summary[$user->id][] = [
                             "date" => $dtr->date,
@@ -569,15 +512,12 @@ class TeamAttendanceSummary
                             "has_holiday" =>   $has_holiday,
                             "status" => $status
                         ];
-
                     }
-                
             }
             
             $this->result['dtr'] = $this->result['dtr_collection'];
             $this->result['total_list_count_dtr'] = $this->result['dtr_collection']->count();
             $this->result['dtr_collection'] = new TeamAttendanceSummaryResource($this->result['dtr_collection']);
-
 
             $this->result['scheduled_employees']['total_count'] = count($this->result['scheduled_employees']['users']);
             $this->result['scheduled_employees']['users'] = new TeamAttendanceSummaryResource($this->result['scheduled_employees']['users']);
@@ -587,7 +527,6 @@ class TeamAttendanceSummary
 
             $this->result['unplanned_leaves']['total_count']  = count($this->result['unplanned_leaves']['users']);
             $this->result['unplanned_leaves']['users'] = new TeamAttendanceSummaryResource($this->result['unplanned_leaves']['users']);
-
 
             $this->result['planned_leaves']['total_count']  = count($this->result['planned_leaves']['users']);
             $this->result['planned_leaves']['users'] = new TeamAttendanceSummaryResource($this->result['planned_leaves']['users']);
@@ -600,13 +539,11 @@ class TeamAttendanceSummary
 
             $this->result['total_overtime']['total_count'] = count($this->result['total_overtime']['users']);
             $this->result['total_overtime']['users'] = new TeamAttendanceSummaryResource($this->result['total_overtime']['users']);
-
             
             $this->result['total_rest_day_work']['total_hours'] = seconds_to_time($this->result['total_rest_day_work']['total_hours'], true);
             $this->result['total_overtime']['total_hours'] = seconds_to_time($this->result['total_overtime']['total_hours'], true);
             $this->result['stdd'] = $start_date->format('Y-m-d');
             $this->result['eddd'] = $end_date->format('Y-m-d');
-
 
             $this->result['employee_list_summary'] = $employee_list_summary;
 
@@ -623,8 +560,6 @@ class TeamAttendanceSummary
             try {
     
                 $this->clear_properties();
-    
-    
     
                 $today = Carbon::now();
                 $start_date = Carbon::parse($start_date);
@@ -732,7 +667,6 @@ class TeamAttendanceSummary
                                             $status = 'A';
     
                                             if (!$is_unplanned && $has_leave == false) {
-    
 
                                             }
                                             if($user->permissions()->pluck('name')->contains('user_multi_login')){
@@ -742,7 +676,6 @@ class TeamAttendanceSummary
                                             }
                                         } else {
                                             $status = "TBD";
-    
                                         }
                                     }
     
@@ -767,7 +700,6 @@ class TeamAttendanceSummary
     
                             // Fetch User of the DTR
                             $user = $dtr->user()->first();
-    
                    
                             // Re Overide status if has LEave
                             if($has_leave){
@@ -779,16 +711,8 @@ class TeamAttendanceSummary
                                 "has_holiday" =>   $has_holiday,
                                 "status" => $status
                             ];
-    
                         }
-                    
                 }
-                
-                // $this->result['dtr'] = $this->result['dtr_collection'];
-                // $this->result['total_list_count_dtr'] = $this->result['dtr_collection']->count();
-                // $this->result['dtr_collection'] = new TeamAttendanceSummaryResource($this->result['dtr_collection']);
-
-    
     
                 $this->result['employee_list_summary'] = $employee_list_summary;
     
@@ -800,11 +724,6 @@ class TeamAttendanceSummary
         }
     }
 
-
-
-
-
-
     ###############################################################################################
     #################################### Computation functions ####################################
     ###############################################################################################
@@ -813,8 +732,6 @@ class TeamAttendanceSummary
     ###############################################################################################
     ##################################### Validation functions ####################################
     ###############################################################################################
-
-
 
     /**
      *  Reponsible for clearing out the DTR Summary Properties

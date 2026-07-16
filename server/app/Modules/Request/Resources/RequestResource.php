@@ -26,12 +26,9 @@ class RequestResource extends JsonResource
             foreach($this->resource['query'] as $key => $request) {
                 switch ($request->table_name) {
                     case 'overtimes':
-                        // $request->fourth_column = seconds_to_time( $request->fourth_column );
                         $request->fifth_column = slug_to_text( $request->fifth_column );
                       break;
                     case 'rest_day_works':
-                      // $from =  strtotime($request->date_requested) + $request->fourth_column  ;
-                      // $to = strtotime($request->date_requested) + $request->fifth_column  ;
                       $from =  $request->fourth_column  ;
                       $to = $request->fifth_column  ;
 
@@ -40,30 +37,9 @@ class RequestResource extends JsonResource
                         // get_constant("TIMESTAMP.day")
                         $to = Carbon::parse($to)->addSeconds(get_constant("TIMESTAMP.day"))->format("Y-m-d H:i:00");
                       }
-                        // $request->fourth_column =timestamp_to_datetime( $from );
-                        // $request->fifth_column =  timestamp_to_datetime( $to );
 
                       break;
                     case 'change_schedules':
-                        /*$schedule = Schedule::find($request->fourth_column);
-                        
-                        if($schedule!=null){
-                            # Create Resource for Schedule Policies
-                            $schedule_policies = [];
-                            foreach( $schedule->schedule_policies()->get() as $schedule_policy){
-                                $schedule_policies[ $schedule_policy->policy ] = $schedule_policy->value;
-                            }
-
-                            $days = array(  "rest_day" =>  $schedule->rest_days,
-                                            "work_days" => get_work_days($schedule->rest_days));
-
-                            $request->fourth_column =  $days;
-                            $request->fifth_column =  $schedule_policies;
-                        } else {
-                          $request->fourth_column = json_decode($request->fourth_column, true);
-                          $request->fifth_column = json_decode($request->fifth_column, true);
-                        }*/
-
                         $request->fourth_column = json_decode($request->fourth_column, true);
                         $request->fifth_column = json_decode($request->fifth_column, true);
 
@@ -73,7 +49,6 @@ class RequestResource extends JsonResource
                       
                           $alter_log_punch = AlterLogPunch::find($request->fourth_column);
                           if ($alter_log_punch) {
-                            // dump($alter_log_punch, json_decode($alter_log_punch->old_punch));
                             $old_time_logs = json_decode($alter_log_punch->old_punch);
 
                                                   $result = [];
@@ -81,7 +56,7 @@ class RequestResource extends JsonResource
                                                   {
                                                       $result[$key] =   ($key+1).".[".timestamp_to_datetime_small($value->time_in)."|".timestamp_to_datetime_small($value->time_out)."]  " ;
                                                   }
-                                                  // $new_time_logs = array(   "new_time_in" =>  $alter_log_punch->new_punch,
+
                               $new_time_logs =  json_decode($alter_log_punch->new_punch);
 
                                                   $result1 = [];
@@ -98,7 +73,6 @@ class RequestResource extends JsonResource
 
                       break;
                     case 'alter_logs':
-                        // $alter_log = AlterLog::find($request->fourth_column);
                         $alter_log = $request->fourth_column ? explode(',', $request->fourth_column) : array(null, null);
                         $old_time_logs = array(   "current_time_in" =>  $alter_log[0],
                                                   "current_time_out" => $alter_log[1]

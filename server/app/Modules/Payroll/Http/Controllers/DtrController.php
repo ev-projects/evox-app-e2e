@@ -2,7 +2,6 @@
 
 namespace App\Modules\Payroll\Http\Controllers;
 
-
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

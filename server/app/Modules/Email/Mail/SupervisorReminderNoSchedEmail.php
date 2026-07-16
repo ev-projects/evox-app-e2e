@@ -14,17 +14,14 @@ class SupervisorReminderNoSchedEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-
     public $recepient;
     public $list_employees;
-    
     
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    // public function __construct( User $recepient, RestDayWork $rest_day_work )
     public function __construct( $reminder )
     {   
         # Declare the variables to be used for this Email

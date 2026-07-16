@@ -26,8 +26,6 @@ interface UserRepositoryInterface
     public function show( $id );
 
     public function show_via_bhr_number( $bhr_user_number );
-
-    public function get_my_team_list( $id );
     
     public function new_get_my_team_list( $id );
 
@@ -36,8 +34,6 @@ interface UserRepositoryInterface
     public function get_all_supervisors();
 
     public function get_users_under_supervisee( Request $request, $start_date, $end_date, $hired_strict = false, $country_strict = false);
-
-    public function get_users_under_supervisee_with_inactive( Request $request, $start_date, $end_date );
 
     public function get_users_under_supervisee_active_with_no_schedule(User $user);
 
@@ -57,8 +53,6 @@ interface UserRepositoryInterface
 
     public function assign_employees_to_user( $id, array $employee_id_array );
 
-    public function list_via_role( $role );
-
     public function list_via_department( $department_id );
 
     public function adminRoleConditions($user_id, array $request);
@@ -68,6 +62,4 @@ interface UserRepositoryInterface
     public function get_users_under_supervisee_active_with_requests($start_date, $end_date, $supervisor_id = null, $department_id = null);
 
     public function get_users_under_supervisee_active_with_invalid_check_ins($supervisor_id = null, $department_id = null);
-
-    public function get_user_department ($id);
 }

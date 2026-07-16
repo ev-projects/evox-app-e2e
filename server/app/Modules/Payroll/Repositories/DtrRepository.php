@@ -89,12 +89,8 @@ class DtrRepository implements DtrRepositoryInterface{
                                         updated_at              = VALUES(updated_at)";
 
                 # Executes the Batch Insert Query
-
-                
                 DB::insert($dtr_insert_query);
-                
             }
-
 
             # Apply the Schedule of the Dates that's been generated.
 
@@ -122,8 +118,6 @@ class DtrRepository implements DtrRepositoryInterface{
 
                         # Get the Parsed Schedule Detail to Date
                         $parsed_schedule_detail = ( is_valid( $schedule_detail ) ? $schedule_detail->getParsedDetailToDate( $date ) : null);
-
-
 
                         if($parsed_schedule_detail != null){
                             # Update the DTR properties
@@ -1271,34 +1265,6 @@ class DtrRepository implements DtrRepositoryInterface{
     ###############################################################################################
     ##################################### Private functions #####################################
     ###############################################################################################
-
-    /**
-     *  Responsible for fetching the Time-off for the current DTR Instance.
-     *
-     * @param Dtr $dtr
-     * @param Collection $dtr_leaves_collection (Leave)
-     * @return timestamp $timeoff
-     */
-    private function get_timeoff(Dtr $dtr, $dtr_leaves_collection){
-        try{
-            $timeoff = 0;
-
-            # Iterate the DTR Leave Collection
-            foreach( $dtr_leaves_collection as $leave ) {
-
-                # If the current Iterated Leave is Approved and is a Paid Leave,
-                if( $leave->isApproved() && $leave->isPaidLeave() ){
-                    $timeoff = (int) ( $leave->amount * ( $dtr->end_datetime - $dtr->start_datetime - $dtr->break_time ) );
-                }
-            }
-
-            return $timeoff;
-
-        } catch (Exception $e) {
-            log_error($e);
-            throw $e;
-        }
-    }
 
         /**
      *  Responsible for optimizing and comparing date schedule before applying to the current DTR Instance.

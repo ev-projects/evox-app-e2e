@@ -6,8 +6,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\User\Models\User;
 class DtrHalfDayMismacth extends JsonResource
 {
-
-   
     /**
      * Transform the resource into an array.
      *

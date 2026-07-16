@@ -15,7 +15,4 @@ class AnnouncementDepartment extends Model
         'department_ids'  => 'array',
         'department_exculded_ids'  => 'array'
     ];
-
-    
-
 }

@@ -26,14 +26,6 @@ class DtrResource extends JsonResource
 
             # Create Resource for Payroll Items
             $payroll_items = [];
-            // foreach( $this->payroll_items()->get() as  $key => $payroll_item){
-                
-            //     if(isset($payroll_items[ $payroll_item->item ])){
-            //         $payroll_items[ $payroll_item->item ] += $payroll_item->value;
-            //     }else{
-            //         $payroll_items[ $payroll_item->item] = $payroll_item->value;
-            //     }
-            // }
 
             $result = DB::table('drt_summary_report')
             ->select(DB::raw("reg_late as late,reg_undertime as undertime,
@@ -45,9 +37,6 @@ class DtrResource extends JsonResource
                 ->where('user_id','=',$this->resource->user_id)->get();
 
             # Convert the time to seconds to 00:00:00 format
-            // foreach( $payroll_items as  $key => $value){
-            //     $payroll_items[$key] = seconds_to_time($value,true);
-            // }
             foreach($result as  $key => $value){
                 $payroll_items["late"] = $value->late > 0 ? seconds_to_time(round($value->late * 3600),true):"";
                 $payroll_items["undertime"] = $value->undertime > 0 ? seconds_to_time(round($value->undertime * 3600),true):"";
@@ -134,13 +123,8 @@ class DtrResource extends JsonResource
                 $requests[] = new RestDayWorkResource( $rest_day_work );
             }
 
-            // foreach( $this->work_from_home()->get() as $work_from_home){
-            //     $requests[] = new WorkFromHomeResource( $work_from_home );
-            // }
-
             $now = Carbon::now()->timestamp;
 
-            
             $user_half_time = 0;
             $is_within_time = false;
             $after_time_half = false;
@@ -149,7 +133,6 @@ class DtrResource extends JsonResource
             if($this->end_flexy_datetime != null){
                 $checked_end_time =  $this->end_flexy_datetime;
             }
-         
             
             if($this->is_rest_day == 0){
                 $is_within_time = Carbon::now()->timestamp > ($this->start_datetime - 7200) && Carbon::now()->timestamp < ($checked_end_time +  10800) && $this->is_rest_day == 0 ;
@@ -161,13 +144,7 @@ class DtrResource extends JsonResource
                 error_log(Carbon::now()->timestamp);
                 error_log($user_half_time);
             }
-           
-
-
             }
-
-
-
 
             $owner = $this->user()->first();
             $result =  array_merge( 
@@ -193,9 +170,6 @@ class DtrResource extends JsonResource
                     'with_in_time_extended' => $is_within_time_extended,
                     'before_time_in_half' =>  $after_time_half ,
                     'user_half_timestamp' => $user_half_time,
-                    // 'on_multiple_login' => $on_multiple_log,
-                    // 'dtr_history' => $dtr_history,
-                    // 'timezone' =>  $owner->country_zone()->country_time_zone,
                 ), 
                 array('payroll_items' => $payroll_items),
                 array('policies' => $policies),
@@ -216,8 +190,6 @@ class DtrResource extends JsonResource
                 array('raw_time' => [
                     'start_datetime' =>  $this->start_datetime , true ,
                     'end_datetime' =>  $this->end_datetime , true ,
-                    // 'start_flexy_datetime' => timestamp_to_datetime( $this->start_flexy_datetime , true ,  $owner),
-                    // 'end_flexy_datetime' => timestamp_to_datetime( $this->end_flexy_datetime , true ,  $owner),
                 ])
             );
         }

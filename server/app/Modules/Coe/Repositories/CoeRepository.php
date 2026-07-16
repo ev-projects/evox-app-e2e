@@ -7,8 +7,6 @@ use App\Modules\Coe\Models\CoeBhrFields;
 use App\Modules\Coe\Models\CoeBhrFieldValues;
 use App\Modules\User\Models\User;
 use Exception;
-
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -52,8 +50,6 @@ class COERepository implements COERepositoryInterface{
             $sequence_number =  call_sp("EV_SP_COE_Generate_Sequence", [$employee['18']])[0][0]->GeneratedSequence;
             $coe_template = call_sp("EV_SP_COE_Get_Template", [$employee['18'], $user->id, $employee['4455']])[0][0];
             $reference_number ="COE-$user->emp_num-".$coe_template->template_code."-" .date('Ymd') . "-" . $sequence_number;
-            // $c = "AHAHA1,234.56789Hello";
-            // echo floatval(preg_replace("/[^0-9.]/", "", $c)) . "<br>";
             $address = "{$employee['address1']} {$employee['address2']} {$employee['city']}, {$employee['state']} {$employee['zipcode']} {$employee['country']}";
             /*
                 <field id="4206.4" type="text">De minimis (non-taxable) - Company pays</field>
@@ -80,8 +76,6 @@ class COERepository implements COERepositoryInterface{
                 <field id="4712.4" type="text">[MAR] Transportatlon Allowance - Company pays</field>
                 <field id="4712.7" type="new_benefit">[MAR] Transportatlon Allowance - Company pays - Currency code</field>
 
-
-
                 encrypt(str_to_float($employee['{bhr_field_id}'])."")
             */
             $salaryPattern = '!\d+\.*\d*!';
@@ -107,7 +101,7 @@ class COERepository implements COERepositoryInterface{
                 'show_compensation' => $request->show_compensation,
                 'requested_by' => auth()->user()->id,
             ]);
-            //$de_minimis = str_to_float($employee['4206.4']);
+
             $allowances = [];
             foreach($coe_bhr_fields as $coef) {
                 $fieldValue = str_to_float($employee[$coef->field_name]);

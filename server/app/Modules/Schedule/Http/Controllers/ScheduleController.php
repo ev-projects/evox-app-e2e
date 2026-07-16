@@ -157,7 +157,6 @@ class ScheduleController extends Controller
                                 case "assign":
                                     $user_schedule = $this->schedule->replicate_schedule( $user_schedule, $schedule );
                                     break;
-            
                             }
                             
                         // If the User Schedule DOES NOT exist, proceed on copying the whole department schedule to the user.
@@ -181,8 +180,6 @@ class ScheduleController extends Controller
         }
     }
 
-    
-
     /**
      * Fetches all the Template Schedule that exists
      * @return \Illuminate\Http\JsonResponse
@@ -190,7 +187,6 @@ class ScheduleController extends Controller
     public function templates() {
         try {
             log_activity( trans('messages.fetch_templates_schedule_attempt') );
-            // dd("here");
             $schedule_collection = $this->schedule->get_template_schedules();
 
             return success_response(

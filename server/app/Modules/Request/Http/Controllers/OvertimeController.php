@@ -187,7 +187,6 @@ class OvertimeController extends Controller
                 );
             }
         } catch(Exception $e){
-            // dd($e);
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }

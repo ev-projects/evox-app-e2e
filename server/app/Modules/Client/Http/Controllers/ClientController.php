@@ -17,13 +17,11 @@ use App\Modules\User\Models\User;
 
 class ClientController extends Controller
 {
-
     private $client;
     
     public function __construct(ClientRepositoryInterface $client){
         $this->client = $client;
     }
-
     
     /**
      * generate dtr date for emp.
@@ -33,7 +31,6 @@ class ClientController extends Controller
     public function assignEmployeesClient(AssignEmployeesClientRequest $request){
         try {
             
-            // return $request;
             $this->client->assign_clients($request->client_id,$request->department_id,$request->employee_user_id);
            
             return success_response(
@@ -52,7 +49,6 @@ class ClientController extends Controller
      */
     public function users($client_id, $department_id){
         try {
-            // return $department_id;
             $user_ids = $this->client->find($client_id,$department_id);
             $user_collection = [];
             if(count($user_ids) != 0){
@@ -67,5 +63,4 @@ class ClientController extends Controller
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
-
 }

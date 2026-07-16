@@ -39,8 +39,6 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
      */
     public function store(array $data)
     {
-
-    //    dd($data);
         DB::beginTransaction();
         try {   
             $auth_user_offset =  Auth::user() && Auth::user()->country_timezone_to_offset() ? string_offset_to_seconds(Auth::user()->country_timezone_to_offset()): 0; 
@@ -205,14 +203,12 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
             
             # Fetch the Alter Log base on the ID
             $alter_log_punch = AlterLogPunch::findOrFail($id);
-            // dd(  is_under_supervisee( $alter_log_punch->user_id ));
             // Authenticate the User first if the Alter Log Submitter is under the user logged in's supervisee
             if( is_under_supervisee( $alter_log_punch->user_id ) ) {
 
                 if(!empty($data)){
                     $this->update($data, $alter_log_punch);
                 }
-                // dd(   $alter_log_punch);
                 $alter_log_punch->approve();
             }
             
@@ -358,7 +354,6 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
                     ;
                 }
             }
-            // dd($message);
             return $message;
 
         } catch (Exception $e) {

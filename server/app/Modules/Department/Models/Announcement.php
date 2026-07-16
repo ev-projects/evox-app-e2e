@@ -14,7 +14,6 @@ class Announcement extends Model
     use SoftDeletes;
     protected $table = "announcements";
 
-
     public function announcements_departments()
     {
         return $this->belongsToMany(Department::class, 'departments_announcements', 'announcement_id', 'department_id');
@@ -22,7 +21,6 @@ class Announcement extends Model
 
     public function department()
     {
-      
         return Department::find($this->dep_id);
     }
 
@@ -39,15 +37,10 @@ class Announcement extends Model
             ->withTrashed()->first(); 
           }
       }
-       
     }
-
-
 
     public function announcement_clones_departments_old($not = true )
     {
-
-
          $dep_collection = Announcement::where('announcement_id', $this->id)->pluck('present_dep_id')->toArray();
 
          if($not){
@@ -63,12 +56,9 @@ class Announcement extends Model
 
     public function announcement_clones_departments($not = true )
     {
-        // dd("here");
-
          $dep_collection = Announcement::where('announcement_id', $this->id)->pluck('present_dep_id')->toArray();
 
          if($not){
-
             return EvoxDepartment::select(
                 ["Id AS id",
                 'Name AS department_name', 
@@ -84,7 +74,6 @@ class Announcement extends Model
          }
 
          if(!$not){
-
             return EvoxDepartment::select(
                 ["Id AS id",
                 'Name AS department_name', 

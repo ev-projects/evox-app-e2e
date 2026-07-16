@@ -9,11 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DepartmentOnSchedule extends Model
 {
-    // use SoftDeletes;
     protected $table = "department_without_schedule_employees";
 
-    protected $fillable = ['is_active']; 
-
-
-
+    protected $fillable = ['is_active'];
 }

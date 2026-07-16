@@ -186,35 +186,6 @@ class ReportController extends Controller
      * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function team_dtr_summary(Request $request)
-    {
-        try { 
-            $user_collection_paginated = [];
-            $user_collection = $this->user->get_users_under_supervisee($request,  $request->valid_from, $request->valid_to);
-            $current_page = $user_collection->currentPage();
-            $last_page = $user_collection->lastPage();
-            foreach ($user_collection as $user) {
-                array_push($user_collection_paginated, $user);
-            }
-
-            $result = $this->report->get_dtr_summary(new Collection($user_collection_paginated),  $request->valid_from, $request->valid_to);
-            $result['current_page'] = $current_page;
-            $result['last_page'] = $last_page;
-            $result['has_next_page'] = $current_page < $last_page;
-
-            return success_response(
-                trans('messages.' . __FUNCTION__ . '_success'),
-                $result
-            );
-        } catch (Exception $e) {
-            return error_response(trans('messages.error_default'), $e);
-        }
-    }
-
-    /**
-     * Returns the DTR Summary of the User by the User ID as Parameter with the Date Range.
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function export_team_dtr_summary(Request $request)
     {
         $user_collection_paginated = [];

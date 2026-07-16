@@ -281,7 +281,6 @@ class RequestRepository implements RequestRepositoryInterface{
                 0, 1, 999, $data->departmentselect, $data->showall]);
             }
             
-            // dd( $my_team_req);
             $target = 1;
             if(count($my_team_req) == 6){$target = 2;}
             if(is_valid($my_team_req[$target])){
@@ -292,13 +291,11 @@ class RequestRepository implements RequestRepositoryInterface{
                     "canceled" => $my_team_req[$target][1]->statusCount,
                 );
             }
-            // dd($numbers);
             return array( 'status_numbers' => $numbers  );
         }
 
             return array( 'status_numbers' => $numbers  );
         } catch (Exception $e) {
-            // dd($e);
             DB::rollback();
             log_error($e);
             dd($e);
@@ -309,7 +306,6 @@ class RequestRepository implements RequestRepositoryInterface{
 
         public function get_status_numbers_dashboard($data)
         {
-            // dd($data->all());
             try {
                 $numbers = array(
                     "alterlogpending" => 0,
@@ -408,7 +404,7 @@ class RequestRepository implements RequestRepositoryInterface{
 
                     
                 $EH_SP_Dashboard =  call_sp("EH_SP_Dashboard", [ $user->LevelId,$user->id,null, null,1]);
-                    // dd($EH_SP_Dashboard);
+
                 $numbers = [
                     "alterlogpending"   => (string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[3][0]->requestCount : $EH_SP_Dashboard[2][0]->requestCount), 
                     "overtimepending"   => (string)( isset($EH_SP_Dashboard[2][1]->MyTeamRequest) ?$EH_SP_Dashboard[3][1]->requestCount : $EH_SP_Dashboard[2][1]->requestCount),

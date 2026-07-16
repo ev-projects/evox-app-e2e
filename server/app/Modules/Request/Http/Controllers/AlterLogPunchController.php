@@ -13,7 +13,6 @@ use App\Http\Controllers\Controller;
 use App\Modules\Request\Models\AlterLogPunch;
 
 use App\Modules\Request\Http\Requests\AlterLogRequest;
-// use App\Modules\Request\Models\AlterLog;
 
 use App\Modules\Request\Resources\AlterLogPunchResource;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
@@ -46,7 +45,6 @@ class AlterLogPunchController extends Controller
                 return error_response(  $conflict );
             }  
 
-            // log_activity( trans('messages.create_alter_log_attempt') );
             $check_alters = AlterLogPunch::where('date',$request->date)->where("user_id",$request->user_id)->where("status","pending")->latest();
          
             if($check_alters->count() > 0){
@@ -71,8 +69,6 @@ class AlterLogPunchController extends Controller
 
 
         } catch(Exception $e){
-            // dd($e);
-
             return error_response( trans('messages.error_default'), $e );
         }
     }
@@ -83,8 +79,6 @@ class AlterLogPunchController extends Controller
      */
     public function update(Request $request, $id){
         try {
-            // log_activity( trans('messages.update_alter_log_attempt') );
-
             return success_response(
                 trans('messages.update_alter_log_success'), 
                 new AlterLogPunchResource( $this->alter_log_punch->update( $request->all(), $id ) ) 
@@ -100,8 +94,6 @@ class AlterLogPunchController extends Controller
      */
     public function destroy($id){
         try {
-            // log_activity( trans('messages.delete_hange_schedule_attempt') );
-
             return success_response(
                 trans('messages.delete_alter_log_success'), 
                 $this->alter_log_punch->destroy( $id ) 
@@ -118,7 +110,7 @@ class AlterLogPunchController extends Controller
     public function find($id){
         try {
             $alter_log_punch = $this->alter_log_punch->find( $id );
-            // dd($alter_log_punch);
+
             return success_response(
                 trans('messages.find_alter_log_success'), 
                 new AlterLogPunchResource( $alter_log_punch ) 
@@ -140,12 +132,9 @@ class AlterLogPunchController extends Controller
             if($conflict != ""){
                 return error_response(  $conflict );
             }
-
-            // log_activity( trans('messages.approve_alter_log_attempt') );
      
             $alter_log_punch = $this->alter_log_punch->approve( $request->all() , $id );
            
-            // Add code to apply the Alter Log on the specific DTR.
             $punch = $this->dtr->apply_alter_to_punch( $alter_log_punch );
 
             return success_response(
@@ -164,8 +153,6 @@ class AlterLogPunchController extends Controller
      */
     public function decline(Request $request, $id){
         try {
-            // log_activity( trans('messages.decline_alter_log_attempt') );
-
             $alter_log_punch = $this->alter_log_punch->decline( $request->all(),$id );
 
             // Add code to Remove the Alter Log from the specific DTR.
@@ -187,8 +174,6 @@ class AlterLogPunchController extends Controller
      */
     public function pending($id){
         try {
-            // log_activity( trans('messages.pending_alter_log_attempt') );
-
             return success_response(
                 trans('messages.pending_alter_log_success'), 
                 new AlterLogPunchResource( $this->alter_log_punch->pending( $id ) ) 
@@ -205,8 +190,6 @@ class AlterLogPunchController extends Controller
      */
     public function cancel($id){
         try {
-            // log_activity( trans('messages.cancel_alter_log_attempt') );
-
             return success_response(
                 trans('messages.cancel_alter_log_success'), 
                 new AlterLogPunchResource( $this->alter_log_punch->cancel( $id ) ) 

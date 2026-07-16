@@ -10,9 +10,6 @@ use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-
-
-
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -137,8 +134,7 @@ class EmailRepository implements EmailRepositoryInterface{
 
     public function sendOvertimeRequestChangeStatusEmail( Overtime $overtime ){
         try {
-                
-            
+
         } catch (Exception $e) {
 
             DB::rollback();
@@ -196,8 +192,7 @@ class EmailRepository implements EmailRepositoryInterface{
     }
 
     public function sendRestDayWorkRequestChangeStatusEmail( RestDayWork $rest_day_work ){
-        try {
-                
+        try {  
             
         } catch (Exception $e) {
 
@@ -208,7 +203,6 @@ class EmailRepository implements EmailRepositoryInterface{
             throw $e;
         }
     }
-
 
     public function sendAlterLogRequestEmail( AlterLog $alter_log ){
         try {
@@ -258,7 +252,6 @@ class EmailRepository implements EmailRepositoryInterface{
 
     public function sendAlterLogRequestChangeStatusEmail( AlterLog $alter_log ){
         try {
-                
             
         } catch (Exception $e) {
 
@@ -269,9 +262,6 @@ class EmailRepository implements EmailRepositoryInterface{
             throw $e;
         }
     }
-
-
-
 
     public function sendChangeScheduleRequestEmail( ChangeSchedule $change_schedule ){
         try {
@@ -297,8 +287,7 @@ class EmailRepository implements EmailRepositoryInterface{
     }
 
     public function sendChangeScheduleRequestChangeStatusEmail( ChangeSchedule $change_schedule ){
-        try {
-                
+        try {   
             
         } catch (Exception $e) {
 
@@ -310,19 +299,16 @@ class EmailRepository implements EmailRepositoryInterface{
         }
     }
 
-
     public function sendSupervisorReminderNoSchedEmail( $reminder){
         try {
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
 
             SendSupervisorReminderNoSchedEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
 
-
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
 
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
-            
             
         } catch (Exception $e) {
 
@@ -335,35 +321,19 @@ class EmailRepository implements EmailRepositoryInterface{
     }
 
     public function sendSupervisorReminderofNewUser( $new_user_list_for_reminder ){
-
-    
-
-       
         DB::beginTransaction();
         try {
             $result = [];
 
             foreach($new_user_list_for_reminder as $supervisor_bhr_number => $user_array ) {
-
-               
                 $supervisor = User::where('bhr_num', $supervisor_bhr_number)->first();
-                // error_log( $supervisor->first_name);
                 if( is_valid( $supervisor ) ) {
-
-
                             $reminder = [ $supervisor , $user_array ];
                              SendSupervisorReminderOfNewUserEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
-                        
-
-
                 } 
             }
 
             DB::commit();
-     
-
-    
-
         } catch (Exception $e) {
             error_log($e->getMessage());
             DB::rollback();
@@ -378,12 +348,10 @@ class EmailRepository implements EmailRepositoryInterface{
 
             SendSupervisorReminderRequestsEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
 
-
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
 
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
-            
             
         } catch (Exception $e) {
 
@@ -399,15 +367,12 @@ class EmailRepository implements EmailRepositoryInterface{
         try {
             log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "emails");
 
-            // SendSupervisorReminderInvalidCheckInsEmailJob::dispatch( $reminder )->delay( Carbon::now()->addSeconds(2) );
             SendSupervisorReminderInvalidCheckInsEmailJob::dispatchNow($reminder);
-
 
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
 
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
-            
             
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -425,12 +390,10 @@ class EmailRepository implements EmailRepositoryInterface{
 
             SendFailedBHRSyncNoticeJob::dispatch( $user )->delay( Carbon::now()->addSeconds(2) );
 
-
             log_to_file( 'info', get_constant('LOG_QUEUED') . __FUNCTION__ , [], "emails");
 
             log_to_file( 'info', get_constant('LOG_END') . __FUNCTION__ , [], "emails");
             log_to_file( 'info', get_constant('LOG_GAP'), [], "emails");
-            
             
         } catch (Exception $e) {
             error_log($e->getMessage());
