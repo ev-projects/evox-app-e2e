@@ -27,6 +27,18 @@ jobs:
       - name: Install Composer packages
         run: composer install --no-interaction --prefer-dist
 
+      - name: Create testing environment
+        working-directory: server
+        run: |
+          cat > .env.testing <<'EOF'
+          DB_CONNECTION=mysql
+          DB_HOST=10.10.4.24
+          DB_PORT=3307
+          DB_DATABASE=evox-app
+          DB_USERNAME=laraveluser
+          DB_PASSWORD=LaravelPass@20@#
+          EOF
+
       - name: Run PHPUnit
         run: |
           mkdir -p reports
