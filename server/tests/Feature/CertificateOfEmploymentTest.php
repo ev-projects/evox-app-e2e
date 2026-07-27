@@ -66,7 +66,7 @@ class CertificateOfEmploymentTest extends TestCase
     
         $response = $this->actingAs($user)
             ->post('/api/request/coe', $payload);
-
+$response->dump();
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/pdf');
     }
@@ -161,7 +161,7 @@ class CertificateOfEmploymentTest extends TestCase
             'purpose_index' => 1,
             'session_id' => 'test-session-id',
         ]);
-
+$response->dump();
         $response->assertStatus(200);
     
         $response->assertHeader('content-type', 'application/pdf');
