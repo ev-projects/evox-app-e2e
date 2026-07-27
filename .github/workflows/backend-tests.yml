@@ -37,6 +37,13 @@ jobs:
           DB_DATABASE=evox-app
           DB_USERNAME=laraveluser
           DB_PASSWORD=LaravelPass@20@#
+
+          DB_EVOX_LOGS_CONNECTION=mysql
+          DB_EVOX_LOGS_HOST=10.10.4.24
+          DB_EVOX_LOGS_PORT=3307
+          DB_EVOX_LOGS_DATABASE=evox-app
+          DB_EVOX_LOGS_USERNAME=laraveluser
+          DB_EVOX_LOGS_PASSWORD=LaravelPass@20@#
           EOF
 
       - name: Run PHPUnit
