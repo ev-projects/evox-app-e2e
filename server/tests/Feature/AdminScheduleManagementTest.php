@@ -74,6 +74,7 @@ class AdminScheduleManagementTest extends TestCase
         $response = $this->actingAs($user)->postJson('/api/schedule/assign', $payload);
 
         // Assert HTTP status
+        $response->dump();
         $response->assertOk();
 
         // Assert JSON response values
