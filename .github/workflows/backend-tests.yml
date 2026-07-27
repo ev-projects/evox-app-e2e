@@ -46,6 +46,11 @@ jobs:
           DB_EVOX_LOGS_PASSWORD=LaravelPass@20@#
           EOF
 
+      - name: Copy dompdf font cache
+        run: |
+          mkdir -p storage/fonts
+          cp -r /var/www/html/evox-app-e2e/server/storage/fonts/* storage/fonts/
+
       - name: Run PHPUnit
         run: |
           mkdir -p reports
