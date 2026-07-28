@@ -33,6 +33,45 @@ class AttendanceController extends Controller
     }
 
     /**
+     * GET /api/attendance/by-geo/
+     *
+     * Returns paginated attendance for every active employee in the given geo
+     * (country) over the requested date range. Pagination keyed on the user
+     * collection — each user object contains a "daily" array with one row
+     * per date in the requested range.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function byAll(AttendanceByGeoRequest $request)
+    {
+        try {
+            $perPage = $this->resolvePerPage($request);
+            $pageNumber = $this->resolvePage($request);
+            $paginated = $this->attendance->byAll($perPage, $pageNumber);
+
+            return success_response(
+                trans('messages.attendance_fetch_success'),
+                [
+                    'pagination' => [
+                        'total'        => $paginated->total(),
+                        'per_page'     => $paginated->perPage(),
+                        'current_page' => $paginated->currentPage(),
+                        'last_page'    => $paginated->lastPage(),
+                    ],
+                    'employees'  => EmployeeAttendanceResource::collection(
+                        collect($paginated->items())->map(function ($u) {
+                            $u->_attendance_rows = [];
+                            return $u;
+                        })
+                    ),
+                ]
+            );
+        } catch (Exception $e) {
+            return error_response(trans('messages.error_default'), $e, JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * GET /api/attendance/by-geo/{geoId}
      *
      * Returns paginated attendance for every active employee in the given geo
@@ -68,8 +107,8 @@ class AttendanceController extends Controller
 
             list($from, $to) = $this->resolveRange($request);
             $perPage = $this->resolvePerPage($request);
-
-            $paginated = $this->attendance->byGeo((int) $geoId, $from, $to, $perPage);
+            $pageNumber = $this->resolvePage($request);
+            $paginated = $this->attendance->byGeo((int) $geoId, $perPage, $pageNumber);
 
             return success_response(
                 trans('messages.attendance_fetch_success'),
@@ -133,8 +172,8 @@ class AttendanceController extends Controller
 
             list($from, $to) = $this->resolveRange($request);
             $perPage = $this->resolvePerPage($request);
-
-            $paginated = $this->attendance->byDepartment((int) $departmentId, $from, $to, $perPage);
+            $pageNumber = $this->resolvePage($request);
+            $paginated = $this->attendance->byDepartment((int) $departmentId, $perPage, $pageNumber);
 
             return success_response(
                 trans('messages.attendance_fetch_success'),
@@ -254,5 +293,12 @@ class AttendanceController extends Controller
         if ($perPage < 1)  { $perPage = 50; }
         if ($perPage > 200) { $perPage = 200; }
         return $perPage;
+    }
+
+    private function resolvePage($request): int
+    {
+        $page = (int) $request->query('page', 1);
+
+        return max($page, 1);
     }
 }
