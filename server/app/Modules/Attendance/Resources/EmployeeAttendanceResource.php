@@ -27,7 +27,6 @@ class EmployeeAttendanceResource extends JsonResource
             'bhr_number'        => $this->bhr_num,
             'first_name'        => $this->first_name,
             'last_name'         => $this->last_name,
-            'emp_num'           => $this->emp_num,
             'department_id'     => $this->department_id,
             'department_name'   => $this->department_name,
             'sub_department_id'     => $this->SubDepartmentID,
