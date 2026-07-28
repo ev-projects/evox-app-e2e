@@ -22,13 +22,20 @@ class EmployeeAttendanceResource extends JsonResource
         }
 
         return [
-            'id'            => $this->id,
-            'first_name'    => $this->first_name,
-            'last_name'     => $this->last_name,
-            'emp_num'       => $this->emp_num,
-            'department_id' => $this->department_id,
-            'country_id'    => $this->country_id,
-            'daily'         => AttendanceResource::collection(
+            'id'                => $this->id,
+            'employee_number'   => $this->emp_num,
+            'bhr_number'        => $this->bhr_num,
+            'first_name'        => $this->first_name,
+            'last_name'         => $this->last_name,
+            'emp_num'           => $this->emp_num,
+            'department_id'     => $this->department_id,
+            'department_name'   => $this->department_name,
+            'sub_department_id'     => $this->SubDepartmentID,
+            'sub_department_name'   => $this->sub_department_name,
+            'country_name'      => $this->country_name,
+            'joining_date'      => $this->date_hired,
+            'termination_date'  => $this->termination_date,
+            'daily'             => AttendanceResource::collection(
                 collect($this->_attendance_rows ?? [])
             ),
         ];
