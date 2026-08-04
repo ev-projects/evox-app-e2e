@@ -26,7 +26,7 @@ class AssignEmployeesClientValidationRejectionTest extends TestCase
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         $this->department = EvoxDepartment::first();
         if (!$this->user || !$this->department) {
-            $this->markTestSkipped('no user/department available in test DB');
+            $this->markTestIncomplete('no user/department available in test DB');
         }
     }
 

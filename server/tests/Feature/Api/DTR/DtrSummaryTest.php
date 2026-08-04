@@ -9,7 +9,7 @@ class DtrSummaryTest extends ApiTestCase
     /** @test */
     public function sum_001_dtr_summary()
     {
-        $token = $this->loginAndGetToken(false, true);
+        $token = $this->tokenForUserId(1698); // Gary Aure — supervisor, IsPrimeHead=1, sub-dept 403
 
         $response = $this->json(
             'GET',
@@ -38,7 +38,7 @@ class DtrSummaryTest extends ApiTestCase
     /** @test */
     public function sum_002_dtr_multi_logs_summary()
     {
-        $token = $this->loginAndGetToken(false, true);
+        $token = $this->tokenForUserId(1698); // Gary Aure — LevelId=1, pass sub-dept id 403
 
         $response = $this->json(
             'GET',
@@ -48,7 +48,7 @@ class DtrSummaryTest extends ApiTestCase
                 'valid_from'    => '2026-01-16',
                 'valid_to'      => '2026-02-15',
                 'is_active'     => 1,
-                'department_id' => 117
+                'department_id' => 403
             ],
             $this->authHeaders($token)
         );

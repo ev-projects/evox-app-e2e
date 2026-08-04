@@ -52,13 +52,14 @@ class ReportExtendedApiTest extends TestCase
         $this->assertContains($response->status(), [200, 400, 500]);
     }
 
-    // ─── dtr_summary/team ─────────────────────────────────────────────────────
+    // ─── dtr_summary/new_team ─────────────────────────────────────────────────
+    // No 'team' route exists — the correct endpoint is new_team (ReportController@new_dtr_summary_report).
 
     /** @test */
     public function test_team_dtr_summary_endpoint_is_reachable()
     {
         $response = $this->actingAs($this->user)
-            ->getJson('/api/report/dtr_summary/team');
+            ->getJson('/api/report/dtr_summary/new_team');
 
         $this->assertNotEquals(404, $response->status());
     }
@@ -67,7 +68,7 @@ class ReportExtendedApiTest extends TestCase
     public function test_team_dtr_summary_with_date_params()
     {
         $response = $this->actingAs($this->user)
-            ->getJson('/api/report/dtr_summary/team?start_date=2026-04-01&end_date=2026-04-30');
+            ->getJson('/api/report/dtr_summary/new_team?start_date=2026-04-01&end_date=2026-04-30');
 
         $this->assertContains($response->status(), [200, 400, 422]);
     }
@@ -165,7 +166,7 @@ class ReportExtendedApiTest extends TestCase
     {
         $otherUser = User::where('id', '!=', $this->userId)->where('is_active', 1)->first();
         if (!$otherUser) {
-            $this->markTestSkipped('No alternate active user found.');
+            $this->markTestIncomplete('No alternate active user found.');
         }
 
         $response = $this->actingAs($this->user)

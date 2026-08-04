@@ -26,17 +26,19 @@ abstract class TestCase extends BaseTestCase
     protected function scenarioUserEmail(): string
     {
         return getenv('PAYROLL_USER')
-            ?: $_SERVER['PAYROLL_USER']
-            ?: $_ENV['PAYROLL_USER']
+            ?: ($_SERVER['PAYROLL_USER'] ?? null)
+            ?: ($_ENV['PAYROLL_USER'] ?? null)
             ?: 'active@company.com';
     }
 
     protected function scenarioDate(): string
     {
-        return getenv('PAYROLL_DATE')
-            ?: $_SERVER['PAYROLL_DATE']
-            ?: $_ENV['PAYROLL_DATE']
-            ?: '2026-06-10';
+        $start = \Illuminate\Support\Facades\DB::table('payroll_cutoffs')
+            ->whereNull('deleted_at')
+            ->whereRaw('CURDATE() BETWEEN start_date AND end_date')
+            ->value('start_date');
+
+        return $start ?? '2026-06-10';
     }
 
     protected function biometricUserId(User $user): string

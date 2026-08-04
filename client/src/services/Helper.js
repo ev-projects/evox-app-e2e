@@ -1,6 +1,11 @@
-import moment, * as Moment from 'moment';
+import baseMoment from 'moment';
 import { extendMoment } from 'moment-range';
+
 import { format, getDate } from "date-fns";
+// HLP-MOM-1 fix: build ONE callable, range-enabled moment for the whole module.
+// The previous code did `extendMoment(Moment)` with the NAMESPACE object, which is not callable,
+// so every helper using it threw under strict interop (Jest today, webpack 5 after the upgrade).
+const moment = extendMoment(baseMoment);
 
 var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
@@ -39,7 +44,6 @@ export const getDaysArrayInWeek = function (startDate, endDate) {
 
 export const generateWeekList = (year = +moment().format("YYYY"), month = +moment().format("MM")) => {
     month = month - 1;
-    const moment = extendMoment(Moment);
     const startDate = moment([year, month]);
     const firstDay = moment(startDate).startOf('month').isoWeekday(1);
     const endDay = moment(startDate).endOf('month')
@@ -87,7 +91,6 @@ export const generateWeekList = (year = +moment().format("YYYY"), month = +momen
 
 
 export const generateWeekListCustom = (start_date, end_date, scope_type) => {
-    const moment = extendMoment(Moment);
     const day_range = moment.range(start_date.startOf('day'), end_date.startOf('day'));
     const firstDay = moment(start_date).startOf('day');
     const endDay = moment(end_date).startOf('day')

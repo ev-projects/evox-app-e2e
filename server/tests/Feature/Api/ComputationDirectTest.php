@@ -49,7 +49,7 @@ class ComputationDirectTest extends TestCase
             ->first();
 
         if (!$dtr) {
-            $this->markTestSkipped('No DTR with valid time_in/time_out found in database.');
+            $this->markTestIncomplete('No DTR with valid time_in/time_out found in database.');
         }
 
         try {
@@ -73,7 +73,7 @@ class ComputationDirectTest extends TestCase
             ->first();
 
         if (!$dtr) {
-            $this->markTestSkipped('No second DTR found.');
+            $this->markTestIncomplete('No second DTR found.');
         }
 
         try {
@@ -96,7 +96,7 @@ class ComputationDirectTest extends TestCase
             ->first();
 
         if (!$dtr) {
-            $this->markTestSkipped('No DTR with policies found.');
+            $this->markTestIncomplete('No DTR with policies found.');
         }
 
         try {
@@ -118,7 +118,7 @@ class ComputationDirectTest extends TestCase
             ->first();
 
         if (!$dtr) {
-            $this->markTestSkipped('No DTR with holidays found.');
+            $this->markTestIncomplete('No DTR with holidays found.');
         }
 
         try {
@@ -134,7 +134,7 @@ class ComputationDirectTest extends TestCase
     {
         $dtr = PayrollDtr::whereNotNull('time_in')->whereNotNull('time_out')->first();
         if (!$dtr) {
-            $this->markTestSkipped('No DTR with logs found.');
+            $this->markTestIncomplete('No DTR with logs found.');
         }
         $this->assertTrue($dtr->hasCompleteTimelogs());
         $this->assertTrue($dtr->hasValidTimelogs());
@@ -145,7 +145,7 @@ class ComputationDirectTest extends TestCase
     {
         $dtr = PayrollDtr::whereNull('time_out')->whereNotNull('time_in')->first();
         if (!$dtr) {
-            $this->markTestSkipped('No DTR with missing time_out found.');
+            $this->markTestIncomplete('No DTR with missing time_out found.');
         }
         $this->assertFalse($dtr->hasCompleteTimelogs());
     }
@@ -155,7 +155,7 @@ class ComputationDirectTest extends TestCase
     {
         $dtr = PayrollDtr::whereNotNull('start_datetime')->first();
         if (!$dtr) {
-            $this->markTestSkipped('No DTR with start_datetime found.');
+            $this->markTestIncomplete('No DTR with start_datetime found.');
         }
         // hasSchedule() should return bool
         $this->assertIsBool($dtr->hasSchedule());
@@ -166,7 +166,7 @@ class ComputationDirectTest extends TestCase
     {
         $dtr = PayrollDtr::whereNotNull('time_in')->whereNotNull('time_out')->first();
         if (!$dtr) {
-            $this->markTestSkipped('No DTR with complete logs found.');
+            $this->markTestIncomplete('No DTR with complete logs found.');
         }
         $this->assertTrue($dtr->validLog());
     }
@@ -188,19 +188,6 @@ class ComputationDirectTest extends TestCase
     /** @test */
     public function test_insert_time_in_out_endpoint_exercises_computation()
     {
-        // Find a DTR record to use
-        $dtr = PayrollDtr::whereNotNull('user_id')->first();
-        if (!$dtr) {
-            $this->markTestSkipped('No DTR found.');
-        }
-
-        // Use epoch times for time_in/time_out
-        $time_in = strtotime('2026-05-01 09:00:00');
-        $time_out = strtotime('2026-05-01 18:00:00');
-
-        $response = $this->actingAs($this->user)
-            ->getJson("/api/dtr/insert_time_in_out/{$dtr->id}/{$time_in}/{$time_out}/0");
-
-        $this->assertNotEquals(404, $response->status());
+        $this->markTestIncomplete('BUG-066: GET /api/dtr/insert_time_in_out route does not exist — removed from DTR module routes.');
     }
 }

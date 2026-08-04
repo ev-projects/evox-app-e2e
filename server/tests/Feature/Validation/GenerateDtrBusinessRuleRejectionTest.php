@@ -26,13 +26,13 @@ class GenerateDtrBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     /** @test */
     public function nonexistent_user_id_in_ids_is_documented_as_controller_layer_gap()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'GenerateDtrRequest never validates `ids` contents (no exists:users,id / no array type ' .
             'check) — a valid-shaped payload with a nonexistent user id in `ids` passes the ' .
             'FormRequest and reaches UserController::generateDtrDate, which calls User::findOrFail() ' .

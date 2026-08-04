@@ -70,7 +70,7 @@ class EmployeeListVerifiedApiTest extends TestCase
             $this->apiKey
         );
         $response->assertStatus(200);
-        $this->assertArrayHasKey('data', $response->json());
+        $this->assertArrayHasKey('content', $response->json());
     }
 
     /** @test */
@@ -82,7 +82,7 @@ class EmployeeListVerifiedApiTest extends TestCase
             $this->apiKey
         );
         $response->assertStatus(200);
-        $this->assertIsArray($response->json('data'));
+        $this->assertIsArray($response->json('content'));
     }
 
     // =========================================================================

@@ -55,7 +55,7 @@ let OvertimeComponent;
 try {
     const m = require('../../container/Request/Overtime/Overtime');
     OvertimeComponent = m.Overtime || m.default;
-} catch {
+} catch (e) {
     OvertimeComponent = require('../../container/Request/Overtime/Overtime').default;
 }
 

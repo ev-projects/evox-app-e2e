@@ -143,7 +143,8 @@ describe('HRTeamAttendanceSummary (Deep3)', () => {
         act(() => { ref.current.handleChangeDate(from, moment('2026-07-31'), 'month'); });
 
         expect(ref.current.state.scope_type).toBe('month');
-        expect(props.getTeamAttendanceSummary.mock.calls[0][0]).toBe(staleStart);   // stale arm
+        expect(props.getTeamAttendanceSummary.mock.calls[0][0]).toBe(from);          // FIXED: fresh arm
+        expect(props.getTeamAttendanceSummary.mock.calls[0][0]).not.toBe(staleStart);
         expect(ref.current.state.start_date).toBe(from);
 
         act(() => { ref.current.handleFilterChange({ target: { name: 'name', value: 'zed' } }); });

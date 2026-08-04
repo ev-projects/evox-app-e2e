@@ -60,7 +60,7 @@ let ChangeScheduleComponent;
 try {
     const m = require('../../container/Request/ChangeSchedule/ChangeSchedule');
     ChangeScheduleComponent = m.ChangeSchedule || m.default;
-} catch {
+} catch (e) {
     ChangeScheduleComponent = require('../../container/Request/ChangeSchedule/ChangeSchedule').default;
 }
 

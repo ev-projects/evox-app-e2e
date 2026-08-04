@@ -25,7 +25,7 @@ class UpdateUserProfileValidationRejectionTest extends TestCase
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         if (!$this->user) {
-            $this->markTestSkipped('no user available in test DB');
+            $this->markTestIncomplete('no user available in test DB');
         }
     }
 
@@ -59,14 +59,14 @@ class UpdateUserProfileValidationRejectionTest extends TestCase
     /** @test */ public function rejects_duplicate_email()
     {
         $other = User::where('is_active', 1)->where('id', '!=', $this->user->id)->whereNotNull('email')->first();
-        if (!$other) { $this->markTestSkipped('no second user available to test duplicate email'); }
+        if (!$other) { $this->markTestIncomplete('no second user available to test duplicate email'); }
         $this->putProfile($this->base(['email' => $other->email]))->assertStatus(422);
     }
 
     /** @test */ public function rejects_duplicate_mobile_number()
     {
         $other = User::where('is_active', 1)->where('id', '!=', $this->user->id)->whereNotNull('mobile_number')->first();
-        if (!$other) { $this->markTestSkipped('no second user with a mobile_number available to test duplicate'); }
+        if (!$other) { $this->markTestIncomplete('no second user with a mobile_number available to test duplicate'); }
         $this->putProfile($this->base(['mobile_number' => $other->mobile_number]))->assertStatus(422);
     }
 }

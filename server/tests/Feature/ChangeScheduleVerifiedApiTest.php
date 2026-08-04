@@ -217,7 +217,7 @@ class ChangeScheduleVerifiedApiTest extends TestCase
         // trans('messages.cancel_overtime_success') — this is the overtime cancellation
         // message, not a change-of-schedule message. Should be cancel_change_schedule_success.
         // Verified by Glenn Macasarte on July 1, 2026.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug B-001: cancel() uses trans(\'messages.cancel_overtime_success\') — ' .
             'wrong message key. Should be cancel_change_schedule_success. ' .
             'See ChangeScheduleController::cancel() (:186).'
@@ -230,7 +230,7 @@ class ChangeScheduleVerifiedApiTest extends TestCase
         // KNOWN BUG B-002: No server-side validation of schedule_details or
         // schedule_policies fields. A malformed payload throws an unhandled exception
         // rather than returning a 422. Cannot be safely asserted without causing a 500.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug B-002: No server-side validation of schedule_details / ' .
             'schedule_policies. Malformed payload throws unhandled exception. ' .
             'See ChangeScheduleController::store() (:40).'

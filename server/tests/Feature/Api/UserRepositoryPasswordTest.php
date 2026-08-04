@@ -112,7 +112,7 @@ class UserRepositoryPasswordTest extends TestCase
             ->first();
 
         if (!$supervisee) {
-            $this->markTestSkipped('No second user found for pivot test.');
+            $this->markTestIncomplete('No second user found for pivot test.');
         }
 
         $pivotArray = [

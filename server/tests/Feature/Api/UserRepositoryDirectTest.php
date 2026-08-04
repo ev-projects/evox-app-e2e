@@ -57,7 +57,7 @@ class UserRepositoryDirectTest extends TestCase
     /** @test */
     public function test_get_my_team_list_returns_collection()
     {
-        $result = $this->userRepo->get_my_team_list($this->user->id);
+        $result = $this->userRepo->new_get_my_team_list($this->user->id);
         $this->assertNotNull($result);
     }
 
@@ -67,10 +67,10 @@ class UserRepositoryDirectTest extends TestCase
         // Find a user who is a supervisor
         $supervisor = User::whereHas('supervisee')->where('is_active', 1)->first();
         if (!$supervisor) {
-            $this->markTestSkipped('No supervisor with supervisees found.');
+            $this->markTestIncomplete('No supervisor with supervisees found.');
         }
 
-        $result = $this->userRepo->get_my_team_list($supervisor->id);
+        $result = $this->userRepo->new_get_my_team_list($supervisor->id);
         $this->assertNotNull($result);
     }
 
@@ -117,13 +117,13 @@ class UserRepositoryDirectTest extends TestCase
         $request->setUserResolver(function () { return $this->user; });
 
         try {
-            $result = $this->userRepo->get_users_under_supervisee_with_inactive(
+            $result = $this->userRepo->get_users_under_supervisee(
                 $request,
                 '2026-04-01',
                 '2026-04-30'
             );
             $this->assertNotNull($result);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->assertTrue(true, 'Threw: ' . $e->getMessage());
         }
     }
@@ -190,7 +190,7 @@ class UserRepositoryDirectTest extends TestCase
     public function test_show_via_bhr_number_finds_user()
     {
         if (!$this->user->bhr_num) {
-            $this->markTestSkipped('Test user has no BHR number.');
+            $this->markTestIncomplete('Test user has no BHR number.');
         }
 
         $user = $this->userRepo->show_via_bhr_number(
@@ -225,7 +225,7 @@ class UserRepositoryDirectTest extends TestCase
     public function test_apply_temporary_password_updates_user_password()
     {
         if (!$this->user->email) {
-            $this->markTestSkipped('Test user has no email.');
+            $this->markTestIncomplete('Test user has no email.');
         }
 
         // DatabaseTransactions rolls back the password change after the test

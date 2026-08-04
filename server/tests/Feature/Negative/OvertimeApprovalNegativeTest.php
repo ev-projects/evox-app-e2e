@@ -74,17 +74,17 @@ class OvertimeApprovalNegativeTest extends TestCase
      * a self-approval should be 403; instead it returns 2xx while the status stays 'pending'.
      * @test
      */
-    public function self_approval_returns_false_success_status_stays_pending()
+    public function self_approval_is_gated_and_returns_403()
     {
+        // A27 FIXED: OvertimeController::approve() now blocks self-approval at controller level.
+        // withoutMiddleware() bypasses middleware but NOT this controller check.
+        // Employee approving their own overtime → 403 Forbidden.
         $this->withoutMiddleware();
         $ot = $this->makePendingOvertime($this->employee->id);
 
         $resp = $this->approveAs($this->employee, $ot);
 
-        // The endpoint does NOT reject the self-approval (no 403) — documents the missing gate.
-        $this->assertNotEquals(403, $resp->status(), 'self-approval unexpectedly gated (would be a fix)');
-        // And the request was NOT actually approved (silent no-op) — proves the false success.
-        $this->assertDatabaseHas('overtimes', ['id' => $ot->id, 'status' => 'pending']);
+        $this->assertEquals(403, $resp->status());
     }
 
     /**
@@ -99,7 +99,7 @@ class OvertimeApprovalNegativeTest extends TestCase
         $this->withoutMiddleware();
         $stranger = User::where('is_active', 1)->where('department_id', '!=', 56)
                         ->whereNotIn('id', [1593, 1698])->first();
-        if (!$stranger) $this->markTestSkipped('no cross-department user available');
+        if (!$stranger) $this->markTestIncomplete('no cross-department user available');
 
         $ot = $this->makePendingOvertime($stranger->id);
         $resp = $this->approveAs($this->supervisor, $ot);

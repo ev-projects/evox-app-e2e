@@ -25,7 +25,7 @@ class ChangePasswordBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) { $this->markTestSkipped('no user available in test DB'); }
+        if (!$this->user) { $this->markTestIncomplete('no user available in test DB'); }
     }
 
     private function postChangePassword(array $payload)
@@ -55,7 +55,7 @@ class ChangePasswordBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function correct_password_write_path_is_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'The only way to reach UserRepository::change_password() save() is a correct ' .
             'current_password, which would really change a live user\'s password — not automatable. ' .
             'See matrices/change-password.md.'

@@ -60,7 +60,7 @@ class OvertimeSubmitBusinessNegativeTest extends TestCase
         $farPast = now()->subDays(400)->toDateString();
         // Skip if that (user,date) already exists so the unique rule doesn't mask the point.
         if (DB::table('overtimes')->where('user_id', $this->employee->id)->where('date', $farPast)->exists()) {
-            $this->markTestSkipped('collision on far-past date');
+            $this->markTestIncomplete('collision on far-past date');
         }
         $resp = $this->submit(['date' => $farPast]);
         // Not blocked by any 30-day/period rule at the store layer.
@@ -77,10 +77,10 @@ class OvertimeSubmitBusinessNegativeTest extends TestCase
     public function employee_can_submit_overtime_on_behalf_of_another_user()
     {
         $other = User::where('is_active', 1)->where('id', '!=', $this->employee->id)->first();
-        if (!$other) $this->markTestSkipped('no other user');
+        if (!$other) $this->markTestIncomplete('no other user');
         $date = now()->subDays(370)->toDateString();
         if (DB::table('overtimes')->where('user_id', $other->id)->where('date', $date)->exists()) {
-            $this->markTestSkipped('collision');
+            $this->markTestIncomplete('collision');
         }
         // Authenticated as glenn, but user_id points at someone else.
         $resp = $this->actingAs($this->employee)->postJson('/api/request/overtime', [

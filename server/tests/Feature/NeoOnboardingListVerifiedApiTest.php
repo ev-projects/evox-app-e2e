@@ -185,7 +185,7 @@ class NeoOnboardingListVerifiedApiTest extends TestCase
         // request proceeds to the NEO server WITHOUT the x-api-key header.
         // Whether NEO server accepts or rejects is unknown — depends on NEO configuration.
         // Flag to Vishnu: should EVOX validate country before calling get_api_headers()?
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Open question: empty country causes get_api_headers() to return [] — ' .
             'EVOX sends request to external NEO server without x-api-key header. ' .
             'NEO server behaviour in this case is unknown. ' .

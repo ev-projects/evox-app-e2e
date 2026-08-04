@@ -190,7 +190,7 @@ class DpaListVerifiedApiTest extends TestCase
     {
         // KNOWN BUG: UserController::get_dpa_list returns HTTP 404 on SP failures
         // (should be 500 or 503). Marked as skipped until the bug is fixed.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug: UserController::get_dpa_list returns HTTP 404 (not 5xx) when ' .
             'EH_SP_Employee_DPA_List fails. See UserController.php:520 and registry doc Area 1.'
         );
@@ -212,7 +212,7 @@ class DpaListVerifiedApiTest extends TestCase
             '/api/user/export_dpa_list?export=filtered',
             $this->apiKey
         );
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->getStatusCode());
     }
 
     /** @test */
@@ -224,7 +224,7 @@ class DpaListVerifiedApiTest extends TestCase
             '/api/user/export_dpa_list?export=filtered&is_active=1&submitted_dpa=1',
             $this->apiKey
         );
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->getStatusCode());
     }
 
     // =========================================================================
@@ -243,7 +243,7 @@ class DpaListVerifiedApiTest extends TestCase
             '/api/user/export_dpa_list?export=all',
             $this->apiKey
         );
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->getStatusCode());
     }
 
     /** @test */
@@ -255,7 +255,7 @@ class DpaListVerifiedApiTest extends TestCase
             '/api/user/export_dpa_list?export=all&is_active=1',
             $this->apiKey
         );
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->getStatusCode());
     }
 
     /** @test */
@@ -267,6 +267,6 @@ class DpaListVerifiedApiTest extends TestCase
             '/api/user/export_dpa_list?export=all&submitted_dpa=0',
             $this->apiKey
         );
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->getStatusCode());
     }
 }

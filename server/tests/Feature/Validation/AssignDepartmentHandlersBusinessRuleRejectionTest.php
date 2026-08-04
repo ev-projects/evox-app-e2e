@@ -24,7 +24,7 @@ class AssignDepartmentHandlersBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) { $this->markTestSkipped('no user available in test DB'); }
+        if (!$this->user) { $this->markTestIncomplete('no user available in test DB'); }
     }
 
     private function postAssignHandlers(array $payload)
@@ -50,7 +50,7 @@ class AssignDepartmentHandlersBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function missing_user_id_gap_is_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'user_id.* has no `required` on the array itself; omitting user_id entirely passes ' .
             'validation and reaches DepartmentRepository::assign_handlers($id, null) — real ' .
             'write path, not safe to POST. See matrices/assign-department-handlers.md.'

@@ -36,7 +36,7 @@ class DepartmentEndpointsTest extends TestCase
     private function requireUser()
     {
         if (!$this->user) {
-            $this->markTestSkipped('No users in test DB.');
+            $this->markTestIncomplete('No users in test DB.');
         }
     }
 

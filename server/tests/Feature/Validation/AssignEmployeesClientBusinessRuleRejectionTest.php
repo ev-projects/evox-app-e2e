@@ -37,7 +37,7 @@ class AssignEmployeesClientBusinessRuleRejectionTest extends TestCase
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         $this->department = EvoxDepartment::first();
         if (!$this->user || !$this->department) {
-            $this->markTestSkipped('no user/department available in test DB');
+            $this->markTestIncomplete('no user/department available in test DB');
         }
     }
 
@@ -69,7 +69,7 @@ class AssignEmployeesClientBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function client_id_exists_gap_is_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'client_id has no exists:clients,id rule despite a defined error message; a non-' .
             'existent client_id still passes validation and reaches ClientRepository::' .
             'assign_clients(), which unconditionally forceDelete()s matching employee_clients ' .

@@ -8,7 +8,7 @@ class LogoutApiTest extends ApiTestCase
 {
     public function test_logout_001_successful_logout()
     {
-        $token = $this->loginAndGetToken();
+        $token = $this->tokenForUserId(1593);
 
         $response = $this->json(
             'POST',
@@ -22,7 +22,7 @@ class LogoutApiTest extends ApiTestCase
 
     public function test_logout_002_reuse_blacklisted_token()
     {
-        $token = $this->loginAndGetToken();
+        $token = $this->tokenForUserId(1593);
 
         $this->json(
             'POST',

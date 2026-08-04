@@ -155,7 +155,7 @@ class ReportControllerDeepTest extends TestCase
             ->first();
 
         if (!$userWithDtr) {
-            $this->markTestSkipped('No user with complete DTR records found.');
+            $this->markTestIncomplete('No user with complete DTR records found.');
         }
 
         // Call dtr_summary for the period where this DTR exists
@@ -177,7 +177,7 @@ class ReportControllerDeepTest extends TestCase
             ->first();
 
         if (!$userWithDtr) {
-            $this->markTestSkipped('No user with DTR data found.');
+            $this->markTestIncomplete('No user with DTR data found.');
         }
 
         $month = substr($userWithDtr->date, 0, 7);

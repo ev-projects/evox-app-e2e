@@ -22,7 +22,7 @@ class AssignScheduleValidationRejectionTest extends TestCase
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         if (!$this->user) {
-            $this->markTestSkipped('no user available in test DB');
+            $this->markTestIncomplete('no user available in test DB');
         }
     }
 

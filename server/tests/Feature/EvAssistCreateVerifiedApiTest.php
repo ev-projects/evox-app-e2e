@@ -58,13 +58,13 @@ class EvAssistCreateVerifiedApiTest extends TestCase
     /** @test */
     public function test_get_workspaces_returns_200_with_data()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     /** @test */
     public function test_get_workspaces_response_is_array_or_object()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     // =========================================================================
@@ -90,25 +90,25 @@ class EvAssistCreateVerifiedApiTest extends TestCase
     /** @test */
     public function test_get_user_suggestions_with_keyword_returns_200()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     /** @test */
     public function test_get_user_suggestions_returns_array()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     /** @test */
     public function test_get_user_suggestions_with_empty_keyword_does_not_500()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     /** @test */
     public function test_get_user_suggestions_with_single_char_keyword_does_not_500()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     // =========================================================================
@@ -133,7 +133,7 @@ class EvAssistCreateVerifiedApiTest extends TestCase
     /** @test */
     public function test_post_attachment_without_file_returns_validation_error()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     // =========================================================================
@@ -158,30 +158,30 @@ class EvAssistCreateVerifiedApiTest extends TestCase
     /** @test */
     public function test_post_create_ticket_with_missing_required_fields_returns_validation_error()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     /** @test */
     public function test_post_create_ticket_subject_too_short_returns_error()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     /** @test */
     public function test_post_create_ticket_description_too_short_returns_error()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     /** @test */
     public function test_post_create_ticket_invalid_priority_returns_error()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 
     /** @test */
     public function test_post_create_ticket_subject_at_255_char_limit_does_not_500()
     {
-        $this->markTestSkipped('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->markTestIncomplete('UNSAFE outgoing/sync: withoutMiddleware()+actingAs() would run the REAL body — live BHR/Freshservice external call and/or whole-DB write. Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
     }
 }

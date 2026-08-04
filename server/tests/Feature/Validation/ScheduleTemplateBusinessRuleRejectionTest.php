@@ -24,7 +24,7 @@ class ScheduleTemplateBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     /**
@@ -46,7 +46,7 @@ class ScheduleTemplateBusinessRuleRejectionTest extends TestCase
             ->where('source_type', '!=', 'template')
             ->first();
         if (!$existing) {
-            $this->markTestSkipped('no existing non-template schedule row to exercise the isTemplate() gate');
+            $this->markTestIncomplete('no existing non-template schedule row to exercise the isTemplate() gate');
         }
 
         // Otherwise-valid Update payload (source_type must be 'template' per UpdateScheduleRequest's

@@ -36,7 +36,7 @@ class AssignUserRolePermissionBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) { $this->markTestSkipped('no user available in test DB'); }
+        if (!$this->user) { $this->markTestIncomplete('no user available in test DB'); }
     }
 
     private function postAssign(array $payload)
@@ -68,7 +68,7 @@ class AssignUserRolePermissionBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function supervision_gate_and_queued_job_side_effect_are_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'AssignAllUserToAdminJob::dispatch() runs unconditionally BEFORE is_under_supervisee() ' .
             'and QUEUE_CONNECTION falls back to sync on this env, so any payload with a real role/' .
             'permission name has a synchronous side-effect regardless of authorization outcome — ' .
@@ -81,7 +81,7 @@ class AssignUserRolePermissionBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function empty_payload_role_strip_bug_is_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'An empty/omitted roles+permissions payload passes validation and silently strips ' .
             'the target user\'s entire role/permission set via sync([]) — real write, not safe ' .
             'to POST. See matrices/assign-roles-permissions.md REAL BUG section.'

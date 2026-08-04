@@ -9,7 +9,7 @@ class PayloadApiTest extends ApiTestCase
 {
     public function test_payload_001_valid_token()
     {
-        $token = $this->loginAndGetToken();
+        $token = $this->tokenForUserId(1593);
 
         $response = $this->json(
             'POST',
@@ -31,7 +31,7 @@ class PayloadApiTest extends ApiTestCase
 
     public function test_payload_002_expired_token()
     {
-        $expiredToken = $this->loginAndGetToken();
+        $expiredToken = $this->tokenForUserId(1593);
 
         // Simulate time passing beyond TTL
         Carbon::setTestNow(Carbon::now()->addMinutes(61));

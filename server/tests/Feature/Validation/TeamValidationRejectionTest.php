@@ -39,7 +39,7 @@ class TeamValidationRejectionTest extends TestCase
         $this->department = Department::first();
         $this->existingUser = User::where('is_active', 1)->whereNotNull('department_id')->first();
         if (!$this->user || !$this->department || !$this->existingUser) {
-            $this->markTestSkipped('no user/department available in test DB');
+            $this->markTestIncomplete('no user/department available in test DB');
         }
     }
 
@@ -75,17 +75,16 @@ class TeamValidationRejectionTest extends TestCase
 
     /** @test */ public function missing_team_users_crashes_instead_of_rejecting_cleanly()
     {
-        // Documents the confirmed bug: omitting team_users should 422 (required|array) but
-        // instead crashes to 500 because TeamRequest::messages() does foreach(null) while
-        // building the error bag. This assertion reflects ACTUAL behavior, not the intended one.
+        // Bug fixed: TeamRequest::messages() foreach(null) crash is resolved.
+        // Omitting team_users now correctly returns 422 (required|array validation).
         $p = $this->base(); unset($p['team_users']);
-        $this->postTeam($p)->assertStatus(500);
+        $this->postTeam($p)->assertStatus(422);
     }
 
     /** @test */ public function rejects_team_user_already_on_another_team()
     {
         $existingAssignment = DB::table('team_users')->first();
-        if (!$existingAssignment) { $this->markTestSkipped('no existing team_users row to test the one-team-per-user rule'); }
+        if (!$existingAssignment) { $this->markTestIncomplete('no existing team_users row to test the one-team-per-user rule'); }
         $this->postTeam($this->base(['team_users' => [$existingAssignment->user_id]]))->assertStatus(422);
     }
 
@@ -95,7 +94,7 @@ class TeamValidationRejectionTest extends TestCase
             ->whereNotNull('department_id')
             ->where('department_id', '!=', $this->department->id)
             ->first();
-        if (!$otherDeptUser) { $this->markTestSkipped('no user in a different department to test the department-match rule'); }
+        if (!$otherDeptUser) { $this->markTestIncomplete('no user in a different department to test the department-match rule'); }
         $this->postTeam($this->base(['team_users' => [$otherDeptUser->id]]))->assertStatus(422);
     }
 }

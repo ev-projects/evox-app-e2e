@@ -55,14 +55,16 @@ class AlterLogNegativeTest extends TestCase
         ], $this->apiKey);
     }
 
-    /** @test S5 — employee approves own: not gated (A27), silent no-op */
-    public function self_approval_is_not_gated_and_is_a_silent_noop()
+    /** @test S5/A27 FIXED — self-approval gate now active in controller */
+    public function self_approval_is_gated_and_returns_403()
     {
+        // A27 FIXED: AlterLogController::approve() now blocks self-approval at controller level
+        // (not middleware). withoutMiddleware() bypasses middleware but NOT this controller check.
+        // Employee approving their own alter-log → 403 Forbidden.
         $this->withoutMiddleware();
         $a = $this->makePending($this->employee->id);
         $resp = $this->approveAs($this->employee, $a);
-        $this->assertNotEquals(403, $resp->status());
-        $this->assertDatabaseHas('alter_logs', ['id' => $a->id, 'status' => 'pending']);
+        $this->assertEquals(403, $resp->status());
     }
 
     /** @test S1 — re-approve already-approved not blocked (A28) */
@@ -101,7 +103,7 @@ class AlterLogNegativeTest extends TestCase
             'employee_note'=> 'NEGATIVE-AUTOTEST impersonation',
         ], $this->apiKey);
         if (in_array($resp->status(), [500, 400])) {
-            $this->markTestSkipped('AlterLog store hit a dependency (' . $resp->status() . ') — documented.');
+            $this->markTestIncomplete('AlterLog store hit a dependency (' . $resp->status() . ') — documented.');
         }
         $impersonated = \DB::table('alter_logs')
             ->where('user_id', $this->supervisor->id)

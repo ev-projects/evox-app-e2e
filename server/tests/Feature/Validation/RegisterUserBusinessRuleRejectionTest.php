@@ -33,7 +33,7 @@ class RegisterUserBusinessRuleRejectionTest extends TestCase
         $this->department = Department::first();
         $this->role = Role::first();
         if (!$this->user || !$this->department || !$this->role) {
-            $this->markTestSkipped('no user/department/role available in test DB');
+            $this->markTestIncomplete('no user/department/role available in test DB');
         }
     }
 
@@ -61,7 +61,7 @@ class RegisterUserBusinessRuleRejectionTest extends TestCase
             ->where('id', '!=', $this->user->id)
             ->whereNotNull('email')
             ->value('email');
-        if (!$otherEmail) { $this->markTestSkipped('no second user with an email to collide with'); }
+        if (!$otherEmail) { $this->markTestIncomplete('no second user with an email to collide with'); }
 
         $before = DB::table('users')->count();
         $this->postRegister($this->base(['email' => $otherEmail]))->assertStatus(422);
@@ -79,7 +79,7 @@ class RegisterUserBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function email_format_gap_is_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'RegisterUserRequest has no email-format rule server-side; a syntactically-invalid-' .
             'but-unique "email" would pass validation and create a real user — unsafe to POST. ' .
             'See matrices/register-user.md REAL BUG section.'

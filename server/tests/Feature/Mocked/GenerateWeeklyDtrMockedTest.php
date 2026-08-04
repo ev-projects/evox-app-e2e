@@ -9,7 +9,7 @@
  *     (`User::where("id", id)->get()`) instead of `get_all_active_users()`.
  *   - Fakes `DtrRepositoryInterface::generate_dtr` so NO DTR row is actually generated/written —
  *     the fake just captures what it was asked to generate and returns a stub result.
- *   - Fakes BHR / Drupal-EVOX / Biometrics so nothing external can fire during controller resolution.
+ *   - Fakes BHR / Biometrics so nothing external can fire during controller resolution.
  *   - Asserts `get_all_active_users()` is NEVER called (proves the whole-DB path can't run here).
  *   - DatabaseTransactions rolls back anything incidental.
  *
@@ -28,7 +28,6 @@ use App\Modules\User\Models\User;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
-use App\Modules\Payroll\Repositories\DrupalEvoxRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 
 class GenerateWeeklyDtrMockedTest extends TestCase
@@ -42,10 +41,10 @@ class GenerateWeeklyDtrMockedTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware(); // safe: generate_dtr + externals are faked and the call is id-scoped
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
 
         // Fake the externals so controller resolution can never reach a live system.
-        foreach ([BhrRepositoryInterface::class, DrupalEvoxRepositoryInterface::class,
+        foreach ([BhrRepositoryInterface::class,
                   BiometricsRepositoryInterface::class] as $iface) {
             $this->app->instance($iface, Mockery::mock($iface));
         }

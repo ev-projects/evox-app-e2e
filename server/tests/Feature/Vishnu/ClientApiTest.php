@@ -129,7 +129,7 @@ class ClientApiTest extends TestCase
         $assignment = DB::table('employee_clients')->select('client_id', 'department_id')->first();
 
         if ($assignment === null) {
-            $this->markTestSkipped('No rows in clients table — get-users test skipped.');
+            $this->markTestIncomplete('Cat 1: No rows in employee_clients table — insert at least one client assignment to run this test.');
         }
 
         $response = $this->actingAs($this->user)

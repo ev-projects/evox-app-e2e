@@ -72,7 +72,7 @@ class UserApiExtendedTest extends TestCase
     {
         $schedule = Schedule::first();
         if (!$schedule) {
-            $this->markTestSkipped('No schedule found.');
+            $this->markTestIncomplete('No schedule found.');
         }
 
         $response = $this->actingAs($this->user)
@@ -211,7 +211,7 @@ class UserApiExtendedTest extends TestCase
         $response = $this->actingAs($this->user)
             ->getJson('/api/user/export_dpa_list');
 
-        $this->assertNotEquals(404, $response->status());
+        $this->assertNotEquals(404, $response->getStatusCode());
     }
 
     // ─── UserRepository: get_all_active_users ─────────────────────────────────

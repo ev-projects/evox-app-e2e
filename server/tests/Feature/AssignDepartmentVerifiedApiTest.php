@@ -243,7 +243,7 @@ class AssignDepartmentVerifiedApiTest extends TestCase
         // The `to` date is therefore NEVER required/validated in the frontend.
         // Backend validation should enforce this independently of frontend Yup schema.
         // This test is a marker — it does not reproduce the bug but documents it.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known Yup schema bug: `to` field validated when source_type=\'update\' ' .
             'but source_type is always \'default\' on ScheduleAssignDepartment. ' .
             'The actual condition should be source_type=\'temporary\'. ' .

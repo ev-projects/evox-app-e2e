@@ -69,7 +69,7 @@ class TeamAttendanceSummaryTest extends TestCase
             ->get();
 
         if ($users->isEmpty()) {
-            $this->markTestSkipped('No eligible users found.');
+            $this->markTestIncomplete('No eligible users found.');
         }
 
         $summary = new TeamAttendanceSummary();

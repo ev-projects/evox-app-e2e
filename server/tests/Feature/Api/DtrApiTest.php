@@ -57,7 +57,7 @@ class DtrApiTest extends TestCase
         // Use user ID 10 which has DTR from 2019-01-01 to 2026-05-31
         $targetUser = User::find(10);
         if (!$targetUser) {
-            $this->markTestSkipped('User ID 10 not found in test database.');
+            $this->markTestIncomplete('User ID 10 not found in test database.');
         }
 
         $response = $this->actingAs($this->user)

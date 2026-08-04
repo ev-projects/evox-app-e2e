@@ -31,13 +31,13 @@ class ChangeScheduleBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     /** @test */
     public function unvalidated_schedule_payload_is_documented_not_tested()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'ChangeScheduleController@store has no business-layer guard beyond FormRequest; the ' .
             'entire schedule_details/schedule_policies/work_days payload is read from ScheduleRepository' .
             '::store() without isset() guards, so probing it here risks a 500 or a partial write on ' .

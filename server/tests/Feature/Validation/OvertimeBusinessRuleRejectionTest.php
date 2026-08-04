@@ -22,7 +22,7 @@ class OvertimeBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     /** @test — duplicate (user_id,date) is rejected by Rule::unique('overtimes','date') */
@@ -30,7 +30,7 @@ class OvertimeBusinessRuleRejectionTest extends TestCase
     {
         $existing = DB::table('overtimes')->whereNull('deleted_at')
                       ->whereNotNull('date')->first();
-        if (!$existing) $this->markTestSkipped('no existing overtime row to collide with');
+        if (!$existing) $this->markTestIncomplete('no existing overtime row to collide with');
 
         // Otherwise-valid payload whose (user_id,date) collides with an existing row.
         // FormRequest unique rule fires BEFORE the controller -> 422, no row written.
@@ -52,7 +52,7 @@ class OvertimeBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function period_validity_gate_is_documented_as_db_layer()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Time-period gate (EV_SP_Validate_Request_Payroll_Period + 30-day window) requires the ' .
             'stored procedure + a live auth user; not unit-testable on the SP-less dump. See matrices/overtime.md.'
         );

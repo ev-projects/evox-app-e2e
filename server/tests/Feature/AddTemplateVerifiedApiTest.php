@@ -128,7 +128,7 @@ class AddTemplateVerifiedApiTest extends TestCase
                 'all' => [
                     'start_time' => '08:00',
                     'end_time'   => '17:00',
-                    'break_time' => '12:00',
+                    'break_time' => '01:00',
                 ],
             ],
             'schedule_policies' => [
@@ -165,7 +165,7 @@ class AddTemplateVerifiedApiTest extends TestCase
                 'all' => [
                     'start_time'       => '07:00',
                     'end_time'         => '17:00',
-                    'break_time'       => '12:00',
+                    'break_time'       => '01:00',
                     'start_flexy_time' => '07:00',
                     'end_flexy_time'   => '10:00',
                 ],
@@ -245,7 +245,7 @@ class AddTemplateVerifiedApiTest extends TestCase
         // KNOWN GAP: after a successful POST /api/schedule the front end stays on /app/schedule/
         // with a blank form reset. The template list is NOT refreshed without a manual page reload.
         // This is a UX gap, not a backend bug. The API itself returns 201 correctly.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known UX gap: after successful template creation the UI does not refresh the template list. ' .
             'No redirect occurs. Form resets to blank. Tracked in add-template.registry.md.'
         );

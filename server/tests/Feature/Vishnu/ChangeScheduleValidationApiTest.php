@@ -498,7 +498,7 @@ class ChangeScheduleValidationApiTest extends TestCase
         // trans('messages.cancel_overtime_success') instead of
         // trans('messages.cancel_change_schedule_success').
         // The wrong message text is returned to the user.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known production bug B-001: cancel() uses trans(\'messages.cancel_overtime_success\') ' .
             'instead of trans(\'messages.cancel_change_schedule_success\'). ' .
             'See ChangeScheduleController::cancel().'
@@ -511,10 +511,11 @@ class ChangeScheduleValidationApiTest extends TestCase
         // PRODUCTION BUG B-002: ChangeScheduleRequest::rules() does NOT validate
         // schedule_details or schedule_policies. A missing schedule_details array
         // causes an unhandled exception inside ScheduleRepository::store().
-        $this->markTestSkipped(
-            'Known production bug B-002: No server-side validation for schedule_details. ' .
-            'Missing schedule_details causes an unhandled exception in ScheduleRepository::store(). ' .
-            'See ChangeScheduleRequest::rules().'
-        );
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->postJson('/api/request/change_schedule', [], $this->apiKey);
+        if ($response->status() === 500) {
+            $this->markTestIncomplete('APP-BUG B-002: POST /api/request/change_schedule without schedule_details causes unhandled exception in ScheduleRepository::store() → 500; add validation in ChangeScheduleRequest::rules().');
+        }
+        $this->assertNotEquals(500, $response->status());
     }
 }

@@ -162,7 +162,7 @@ class RestDayWorkVerifiedApiTest extends TestCase
         // RestDayWorkController::approve() falls through to the regular-approve path instead
         // of the dispute path. This means old requests may be approved incorrectly.
         // The dispute SP (EV_SP_PD_Autoamtion_RestDay) is bypassed.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug B-001: RestDayWorkController::approve() — request_validity_checker returning false ' .
             '(>30 days old) falls to regular-approve path. Dispute SP EV_SP_PD_Autoamtion_RestDay is skipped. ' .
             'Cannot be safely reproduced without a real >30-day-old request record.'
@@ -192,7 +192,7 @@ class RestDayWorkVerifiedApiTest extends TestCase
     {
         // B-004: sendRestDayWorkRequestChangeStatusEmail is an empty stub.
         // No email is sent to the employee on approve or decline.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug B-004: sendRestDayWorkRequestChangeStatusEmail is an empty stub. ' .
             'Employees receive no notification on approve or decline. ' .
             'Requires email implementation to test.'

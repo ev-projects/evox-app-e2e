@@ -51,6 +51,7 @@ class DtrRepository3Test extends TestCase
     /** @test */
     public function test_generate_dtr2_creates_7_day_dtr_records_for_employee()
     {
+        $this->markTestSkipped('BUG-035: target method was deleted in the 2026-07-14 master dead-code pass');
         try {
             $result = $this->dtrRepo->generate_dtr2('2026-06-01', $this->user->id);
             // Returns true/false from DB::unprepared
@@ -63,6 +64,7 @@ class DtrRepository3Test extends TestCase
     /** @test */
     public function test_generate_dtr2_handles_user_with_existing_dtrs()
     {
+        $this->markTestSkipped('BUG-035: target method was deleted in the 2026-07-14 master dead-code pass');
         // Running twice for same date — ON DUPLICATE KEY UPDATE should handle it
         try {
             $this->dtrRepo->generate_dtr2('2026-05-01', $this->user->id); // first run
@@ -80,6 +82,7 @@ class DtrRepository3Test extends TestCase
     /** @test */
     public function test_generate_dtr_on_new_hire_executes_without_error()
     {
+        $this->markTestSkipped('BUG-035: target method was deleted in the 2026-07-14 master dead-code pass');
         try {
             $this->dtrRepo->generate_dtr_on_new_hire($this->user);
             $this->assertTrue(true, 'generate_dtr_on_new_hire completed');
@@ -95,6 +98,7 @@ class DtrRepository3Test extends TestCase
     /** @test */
     public function test_new_get_dtr_logs_returns_query_builder()
     {
+        $this->markTestSkipped('BUG-035: target method was deleted in the 2026-07-14 master dead-code pass');
         $users = User::where('is_active', 1)
             ->whereNotNull('country_id')
             ->take(3)
@@ -112,6 +116,7 @@ class DtrRepository3Test extends TestCase
     /** @test */
     public function test_new_get_dtr_logs_can_be_executed_as_query()
     {
+        $this->markTestSkipped('BUG-035: target method was deleted in the 2026-07-14 master dead-code pass');
         $users = User::where('is_active', 1)
             ->whereNotNull('country_id')
             ->take(2)
@@ -149,6 +154,7 @@ class DtrRepository3Test extends TestCase
     /** @test */
     public function test_bind_leaves_to_dtr_with_structured_leave_data()
     {
+        // BUG-079 skip REMOVED 2026-07-30: closeCursor() landed in pdo_helper.php (verified) — cursor no longer leaks.
         // Minimal leave structure matching what BHR sends
         $leaves = [
             [
@@ -180,7 +186,7 @@ class DtrRepository3Test extends TestCase
             ->get();
 
         if ($dtrs->isEmpty()) {
-            $this->markTestSkipped('No DTR records found for test user.');
+            $this->markTestIncomplete('No DTR records found for test user.');
         }
 
         try {

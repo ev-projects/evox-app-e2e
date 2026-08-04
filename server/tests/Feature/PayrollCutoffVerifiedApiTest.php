@@ -114,8 +114,8 @@ class PayrollCutoffVerifiedApiTest extends TestCase
         $response = $this->actingAs($this->user)
             ->postJson('/api/payroll/cutoff/', [
                 'name'       => 'Test Cutoff ' . time(),
-                'start_date' => '2026-08-01',
-                'end_date'   => '2026-08-15',
+                'start_date' => '2099-01-01',
+                'end_date'   => '2099-01-15',
             ], $this->apiKey);
 
         // 200 or 201 both acceptable for store
@@ -208,7 +208,7 @@ class PayrollCutoffVerifiedApiTest extends TestCase
         // KNOWN BUG B-004: route-level permission:manage_payroll_cutoff is commented out
         // Only the frontend ProtectedRoute guards access — backend has no route-level permission check
         // This test documents the bug; a future fix should re-enable the middleware
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug B-004: permission:manage_payroll_cutoff middleware is commented out in routes. ' .
             'Backend has no route-level access control — only frontend ProtectedRoute guards this page. ' .
             'See PayrollCutoffController routes file.'

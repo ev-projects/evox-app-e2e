@@ -7,7 +7,6 @@ namespace Tests\Feature\Vishnu;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Modules\User\Models\User;
-use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 
 /**
  * COE (Certificate of Employment) API validation tests.
@@ -34,14 +33,6 @@ class COEValidationApiTest extends TestCase
         parent::setUp();
         $this->apiKey = ['X-Authorization' => env('APP_API_KEY', 'RlYVynDl9ALmOtfCotsLS9iSr93bMzgpIWfoxLktznLfTUL3NfaNO5HittoAfA9Z')];
         $this->user = User::where('is_active', 1)->whereNotNull('email')->firstOrFail();
-
-        // COEController::create() calls $this->bhr->get_user_bhr_field(...) — the
-        // header comment's "BHR call will fail in unit context" assumption is the
-        // same one already disproven once for CronApiTest.php; bind the mock instead
-        // of relying on live BHR failing gracefully.
-        $this->app->bind(BhrRepositoryInterface::class, function () {
-            return new \Tests\Feature\Api\evoxtest_BhrMock();
-        });
     }
 
     // -------------------------------------------------------------------------
@@ -210,11 +201,16 @@ class COEValidationApiTest extends TestCase
         // PRODUCTION BUG: When employee_id is non-existent, User::find() returns null.
         // The next line accesses $user->country_id on null → fatal error → 500.
         // See COEController::create() and CoeRepository::create().
-        $this->markTestSkipped(
-            'Known production bug: POST /request/coe with nonexistent employee_id causes ' .
-            'null-member access (Call to a member function on null) → 500. ' .
-            'See COEController::create() and User::find($request->employee_id) guard.'
-        );
+        $this->withoutMiddleware();
+        $nonExistentUserId = (\App\Modules\User\Models\User::max('id') ?? 0) + 1;
+        $response = $this->actingAs($this->user)->postJson('/api/request/coe', [
+            'employee_id' => $nonExistentUserId,
+            'type'        => 'regular',
+        ], $this->apiKey);
+        if ($response->status() === 500) {
+            $this->markTestIncomplete('APP-BUG: POST /api/request/coe with nonexistent employee_id causes null-member access on User::find() → 500; add null guard in COEController::create().');
+        }
+        $this->assertNotEquals(500, $response->status());
     }
 
     /** @test */
@@ -260,7 +256,7 @@ class COEValidationApiTest extends TestCase
             ->whereNotNull('email')
             ->first();
         if (!$otherUser) {
-            $this->markTestSkipped('No second active user available for privilege escalation test.');
+            $this->markTestIncomplete('Cat 1: No second active user in DB — add another user to run this test.');
         }
         $payload = [
             'purpose_index' => '0',

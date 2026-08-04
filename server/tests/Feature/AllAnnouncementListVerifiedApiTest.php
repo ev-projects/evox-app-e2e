@@ -135,14 +135,14 @@ class AllAnnouncementListVerifiedApiTest extends TestCase
                              ->getJson('/api/department/announcements/all', $this->apiKey);
 
         if ($listResponse->status() !== 200) {
-            $this->markTestSkipped('Could not retrieve announcement list to obtain a valid ID for deletion test.');
+            $this->markTestIncomplete('Could not retrieve announcement list to obtain a valid ID for deletion test.');
         }
 
         $body = $listResponse->json();
         $items = is_array($body) ? $body : ($body['data'] ?? []);
 
         if (empty($items)) {
-            $this->markTestSkipped('No announcements found in test DB — seeding required for delete test.');
+            $this->markTestIncomplete('No announcements found in test DB — seeding required for delete test.');
         }
 
         // Use the first available announcement ID.
@@ -150,7 +150,7 @@ class AllAnnouncementListVerifiedApiTest extends TestCase
         $announcementId = $firstItem['id'] ?? null;
 
         if (!$announcementId) {
-            $this->markTestSkipped('Announcement record has no "id" key — adjust field name to match DB schema.');
+            $this->markTestIncomplete('Announcement record has no "id" key — adjust field name to match DB schema.');
         }
 
         $deleteResponse = $this->actingAs($this->adminUser)

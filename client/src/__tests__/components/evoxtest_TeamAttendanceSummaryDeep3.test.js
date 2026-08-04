@@ -154,9 +154,11 @@ describe('TeamAttendanceSummary (Deep3)', () => {
 
         expect(ref.current.state.scope_type).toBe('month');
         expect(props.getTeamAttendanceSummary).toHaveBeenCalledTimes(1);
-        // FINDING FE-TAS-1 (characterized): handleChangeDate calls handleSubmit() before setState
-        // flushes, so the fetch uses the PREVIOUS date range — navigating dates loads stale data.
-        expect(props.getTeamAttendanceSummary.mock.calls[0][0]).toBe(staleStart);
+        // FINDING FE-TAS-1 — FIXED 2026-08-04: handleChangeDate now passes the new dates straight
+        // into handleSubmit, so navigating the date range fetches THAT range, not the previous one.
+        // (This assertion was flipped from toBe(staleStart) when the fix landed — it is now the guard.)
+        expect(props.getTeamAttendanceSummary.mock.calls[0][0]).toBe(from);
+        expect(props.getTeamAttendanceSummary.mock.calls[0][0]).not.toBe(staleStart);
         expect(ref.current.state.start_date).toBe(from);      // state itself does update afterwards
     });
 
