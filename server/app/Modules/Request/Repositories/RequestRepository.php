@@ -298,7 +298,7 @@ class RequestRepository implements RequestRepositoryInterface{
         } catch (Exception $e) {
             DB::rollback();
             log_error($e);
-            dd($e);
+            // dd($e);
             throw $e;
         }
     }
@@ -423,7 +423,7 @@ class RequestRepository implements RequestRepositoryInterface{
 
 
             }catch (Exception $e) {
-                dd($e);
+                // dd($e);
                 log_error($e);
                 throw $e;
             }

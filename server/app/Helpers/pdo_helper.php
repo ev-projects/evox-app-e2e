@@ -30,6 +30,7 @@ if (! function_exists('call_sp')) {
 
             }
         } while ($stmt->nextRowset());
+         $stmt->closeCursor();
 
 
         // if (1 === count($results)) return $results[0];

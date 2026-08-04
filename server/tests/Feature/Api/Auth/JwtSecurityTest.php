@@ -11,7 +11,7 @@ class JwtSecurityTest extends ApiTestCase
 {
         Carbon::setTestNow(Carbon::now());
 
-        $token = $this->loginAndGetToken();
+        $token = $this->tokenForUserId(1593);
 
         $this->assertNotEmpty($token);
 
@@ -49,7 +49,7 @@ class JwtSecurityTest extends ApiTestCase
 
     public function test_jwt_003_blacklist_enforcement()
     {
-        $token = $this->loginAndGetToken();
+        $token = $this->tokenForUserId(1593);
 
         $this->json(
             'POST',

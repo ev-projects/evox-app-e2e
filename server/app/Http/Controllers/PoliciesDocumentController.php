@@ -19,6 +19,10 @@ class PoliciesDocumentController extends Controller
         // Base64 decode the uploaded file
         $fileData = $request->file('FileData');
 
+        if (!is_array($fileData) && !($fileData instanceof \Traversable)) {
+            return error_response('FileData is required and must be a file upload array.', new \Exception('FileData missing or invalid'));
+        }
+
         foreach($fileData as $d) {
 
             // Get the File Name of the uploaded file
@@ -71,9 +75,9 @@ class PoliciesDocumentController extends Controller
 
         return response()->json(['message' => 'File uploaded successfully!'], 200);
 
-        } catch(Exception $e){
+        } catch(\Throwable $e){
             log_to_file('error', 'UploadDocument', [$e], 'document_upload');
-            return error_response( trans('messages.error_default'), $e );
+            return error_response( trans('messages.error_default'), new \Exception($e->getMessage(), 0, ($e instanceof \Exception ? $e : null)) );
 
         }
     }

@@ -30,7 +30,7 @@ class OvertimeTest extends ApiTestCase
         );
 
         $response
-            ->assertStatus(200)
+            ->assertStatus(201)
             ->assertJsonStructure([
                 'message',
                 'content' => [
@@ -100,7 +100,7 @@ class OvertimeTest extends ApiTestCase
         );
 
         $response
-            ->assertStatus(200)
+            ->assertStatus(201)
             ->assertJson([
                 'message' => 'Your dispute request has been successfully submitted.',
                 'content' => [],

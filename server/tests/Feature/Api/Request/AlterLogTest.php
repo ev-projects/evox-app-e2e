@@ -62,7 +62,7 @@ class AlterLogTest extends ApiTestCase
         );
 
         $response
-            ->assertStatus(200)
+            ->assertStatus(201)
             ->assertJson([
                 'message' => 'Your dispute request has been successfully submitted.',
             ]);
@@ -93,7 +93,7 @@ class AlterLogTest extends ApiTestCase
         );
 
         $response
-            ->assertStatus(200)
+            ->assertStatus(201)
             ->assertJson([
                 'message' => 'A new Alteration Request is now created!',
             ])
@@ -116,7 +116,7 @@ class AlterLogTest extends ApiTestCase
         );
 
         $this->assertEquals(
-            '2026-06-16',
+            $this->scenarioDate(),
             $response->json('content.date')
         );
     }

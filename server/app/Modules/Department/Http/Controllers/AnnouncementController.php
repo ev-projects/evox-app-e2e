@@ -154,7 +154,7 @@ class AnnouncementController extends Controller
         try {
             log_activity( trans('messages.update_department_announcement_attempt') );
             $department =  EvoxDepartment::find(Auth::user()->department_id);
-            $check_announcement = $department->departments_announcements()->find($id);
+            $check_announcement = $department ? $department->departments_announcements()->find($id) : null;
             if($check_announcement || Auth::user()->isLevel("Admin")){
                 $dep_announcement = $this->announcement->update($request, $id);
             return success_response(

@@ -232,7 +232,7 @@ class CronController extends Controller
                 $processed_user,
                 JsonResponse::HTTP_CREATED
             );
-        } catch(Exception $e){
+        } catch(\Throwable $e){
             return error_response( trans('messages.error_default'), $e );
         }
     }

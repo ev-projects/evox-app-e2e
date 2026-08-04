@@ -27,12 +27,12 @@ class AnnouncementRequest extends FormRequest
     public function rules()
     {
         return [
-            'release_date' => 'required|date_format:Y-m-d',
-            'expiry_date'=> 'required|date_format:Y-m-d',
-            'title'  => 'required|string',
-            'link' => 'required_if:on_link,true',
-            'selectedDepartments' => 'required_if:set_all,0',
-            'country_id' => 'required_if:set_country_all,0',
+            'release_date'        => 'required|date_format:Y-m-d',
+    'expiry_date'         => 'required|date_format:Y-m-d',
+    'title'               => 'required|string|max:100',
+    'link'                => 'required_if:on_link,true|nullable|url',
+    'selectedDepartments' => 'required_if:set_all,0',
+    'country_id'          => 'required_if:set_country_all,0',
         ];
     }
 

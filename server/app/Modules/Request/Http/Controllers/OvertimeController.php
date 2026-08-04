@@ -149,6 +149,9 @@ class OvertimeController extends Controller
      */
     public function approve(OvertimeRequest $request, $id){
         try {
+             if ((int)$request->user_id === (int)auth()->id()) {
+            return error_response('You cannot approve your own request.', [], 403);
+        }
             // call request validity checker
             $request_validity = request_validity_checker($request->user_id, $request->date);
 
@@ -174,11 +177,14 @@ class OvertimeController extends Controller
 
 
                 $user =  User::find($overtime->user_id);
-                $has_multi =  $user->hasFeature("multi_login");
+                $has_multi =  $user ? $user->hasFeature("multi_login") : false;
 
                 if(!$has_multi){
                 // Call the function to compute for the Payroll Items (Which will automatically check for the Approved Overtime.)
-                $this->dtr->compute_payroll_items($overtime->dtr()->first());
+                 $dtr = $overtime->dtr()->first();
+    if ($dtr) {
+        $this->dtr->compute_payroll_items($dtr);
+    }
                 }
 
                 return success_response(
@@ -204,11 +210,12 @@ class OvertimeController extends Controller
             
 
             $user =  User::find($overtime->user_id);
-            $has_multi =  $user->hasFeature("multi_login");
+            $has_multi = $user ? $user->hasFeature("multi_login") : false;
 
             if(!$has_multi){
             // Call the function to compute for the Payroll Items (Which will automatically check for the Declined Overtime.)
-            $this->dtr->compute_payroll_items( $overtime->dtr()->first() );
+             $dtr = $overtime->dtr()->first();
+            if ($dtr) { $this->dtr->compute_payroll_items($dtr); }
             }
             return success_response(
                 trans('messages.decline_overtime_success'), 

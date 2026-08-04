@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\User\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -17,9 +18,31 @@ abstract class ApiTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->apiKey = env('CLIENT_API_KEY');
+        // Runtime API key — never static (see project standing rule). auth.apikey middleware
+        // (ejarnutowski/laravel-api-key) looks up X-Authorization against the api_keys table;
+        // env('CLIENT_API_KEY') was never defined anywhere, so every route behind that
+        // middleware rejected with a generic 401 regardless of JWT validity. DatabaseTransactions
+        // rolls this insert back after each test.
+        $this->apiKey = \Illuminate\Support\Str::random(64);
+        \Illuminate\Support\Facades\DB::table('api_keys')->insert([
+            'name'       => 'evox_e2e_' . strtolower(class_basename(static::class)) . '_' . now()->format('His') . '_' . uniqid(),
+            'key'        => $this->apiKey,
+            'active'     => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         $this->seed(\UserTestSeeder::class);
+
+        // loginAndGetToken()/authenticatedPost() below hit the real /api/auth/login
+        // route on every call, which runs AuthController::get_default_payload() ->
+        // $this->bhr->get_user(...). The seeded 'active.user' fixture has no bhr_num,
+        // so that call goes out to live BHR with an empty employee id on every one of
+        // the 24+ test classes extending ApiTestCase. Bind the IoC mock here once so
+        // none of them need their own binding.
+        $this->app->bind(BhrRepositoryInterface::class, function () {
+            return new \Tests\Feature\Api\evoxtest_BhrMock();
+        });
     }
 
     protected function headers(array $extra = [])
@@ -33,7 +56,7 @@ abstract class ApiTestCase extends TestCase
 
     protected function authenticatedPost(string $uri, array $payload = [])
     {
-        $token = $this->loginAndGetToken();
+        $token = $this->tokenForUserId(1593);
 
         return $this->json(
             'POST',

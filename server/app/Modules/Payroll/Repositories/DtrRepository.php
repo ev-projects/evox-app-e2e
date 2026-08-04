@@ -710,7 +710,7 @@ class DtrRepository implements DtrRepositoryInterface{
                         
 
                         $user =  $dtr->user()->first();
-                        error_log($user->username);
+                        // error_log($user->username);
                        if($user->country_id == $holiday->country_id || $holiday->country_id == null){
                         if($dtr->holidays()->count()  > 0){
                             if($dtr->holidays()->first()->country_id == null && $holiday->country_id != null){

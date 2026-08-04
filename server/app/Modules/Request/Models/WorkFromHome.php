@@ -7,7 +7,6 @@ use App\Modules\Request\Traits\ApprovalTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-
 class WorkFromHome extends Model
 {
     use ApprovalTrait, SoftDeletes, LogsActivity;

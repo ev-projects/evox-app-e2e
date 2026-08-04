@@ -95,7 +95,7 @@ class SyncBhrUsersPhoto extends Command
 
                         print_r(["To Be Synced", $bhr_user_number->bhr_num]);
                         try {
-                                
+                         if (!$bhr_user_number->bhr_num) { continue; }       
                         $profile_picture = $this->bhr->get_profile_picture($bhr_user_number->bhr_num) ;
                         $result =  call_sp(
                             "EV_Photo_Sync",

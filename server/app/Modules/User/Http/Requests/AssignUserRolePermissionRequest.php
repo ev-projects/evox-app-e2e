@@ -28,7 +28,9 @@ class AssignUserRolePermissionRequest extends FormRequest
     public function rules()
     {
         return [
+            'roles'              => 'nullable|array',
             'roles.*'             => 'exists:roles,name',
+            'permissions'          => 'nullable|array',
             'permissions.*'       => 'exists:permissions,name',
         ];
     }

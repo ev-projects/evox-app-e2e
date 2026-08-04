@@ -144,7 +144,7 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
         DB::beginTransaction();
         try {
 
-            $alter_log = AlterLog::findOrFail($id);
+            $alter_log = AlterLogPunch::findOrFail($id);
             
             if( get_authenticated_user( $alter_log->user_id ) ) {
 
@@ -269,7 +269,7 @@ class AlterLogPunchRepository implements AlterLogPunchRepositoryInterface{
     {
         try {
 
-            $alter_log = AlterLog::findOrFail($id);
+            $alter_log = AlterLogPunch::findOrFail($id);
             $alter_log->pending();
 
             return $alter_log;

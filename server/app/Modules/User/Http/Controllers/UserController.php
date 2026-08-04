@@ -379,6 +379,9 @@ class UserController extends Controller
         try {
 
                 $user = User::find($id);
+                if (!$user) {
+                return error_response(trans('messages.error_default'), new \Exception("User {$id} not found."));
+                }
                 $sub_dep = $user->evox_sub_departments_handled($department_id);
             return success_response(
                 trans('messages.show_sub_department_list'), 
@@ -541,11 +544,11 @@ class UserController extends Controller
                 'id' => 'int'
             ]);
 
-            AssignAllUserToAdminJob::dispatch( $id ,$request->get('roles') )->delay(Carbon::now()->addSeconds(2));
+            AssignAllUserToAdminJob::dispatch( $id ,$request->get('roles') ?? [] )->delay(Carbon::now()->addSeconds(2));
 
-            $this->user->assign_roles_to_user( $id , $request->get('roles'), );
+            $this->user->assign_roles_to_user( $id , $request->get('roles') ?? [] );
 
-            $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions'), $request->get('roles') );
+            $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions') ?? [], $request->get('roles') ?? []);
 
             
             return success_response(
@@ -760,12 +763,11 @@ class UserController extends Controller
                 $result
             );
         } catch(Exception $e){
-            dd($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
 
-    
+
 
     /**
      * Returns all the User List of Specific Department

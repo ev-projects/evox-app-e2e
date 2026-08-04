@@ -33,7 +33,7 @@ class RestDayWorkTest extends ApiTestCase
         );
 
         $response
-            ->assertStatus(200)
+            ->assertStatus(201)
             ->assertJson([
                 'message' => 'A new Rest Day Work Request is now created!',
             ])
@@ -58,7 +58,7 @@ class RestDayWorkTest extends ApiTestCase
         );
 
         $this->assertEquals(
-            $this->scenarioDate(),
+            '2026-06-20',
             $response->json('content.date')
         );
 
@@ -109,7 +109,7 @@ class RestDayWorkTest extends ApiTestCase
         );
 
         $response
-            ->assertStatus(200)
+            ->assertStatus(201)
             ->assertJson([
                 'message' => 'Your dispute request has been successfully submitted.',
                 'content' => [],

@@ -160,6 +160,9 @@ class RestDayWorkController extends Controller
      */
     public function approve(RestDayWorkRequest $request, $id){
         try {
+             if ((int)$request->user_id === (int)auth()->id()) {
+            return error_response('You cannot approve your own request.', [], 403);
+        }
             // call request validity checker
             $request_validity = request_validity_checker($request->user_id, $request->date);
 

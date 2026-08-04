@@ -139,15 +139,6 @@ class DashboardController extends Controller
                                             ]
 
                                             );
-            $result = array(
-            "query" =>  $response ?? [],
-            );
-
-
-
-
-            dd(  $result);
-
             $user_list = auth()->user()->users_handled();
 
             $booking = DB::table('leaves')

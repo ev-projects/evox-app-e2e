@@ -59,7 +59,7 @@ class TeamRequest extends FormRequest
         $message =  [];
 
         // Construct specific message for existing and unique validation error for each user.
-        foreach (request()->get('team_users') as $key => $value) {
+        foreach (request()->get('team_users', []) as $key => $value) {
 
             $user = User::find($value);
             

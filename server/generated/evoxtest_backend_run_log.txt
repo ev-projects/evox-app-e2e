@@ -1,0 +1,8 @@
+
+PHP Warning:  Declaration of Tests\Feature\Mocked\CronSyncMockedTest::get(string $uri) should be compatible with Illuminate\Foundation\Testing\TestCase::get($uri, array $headers = Array) in C:\DFolder\Projects\EVOX\E2eTesting\EVOX Code-Git\evox-app-e2e\server\tests\Feature\Mocked\CronSyncMockedTest.php on line 61
+
+Warning: Declaration of Tests\Feature\Mocked\CronSyncMockedTest::get(string $uri) should be compatible with Illuminate\Foundation\Testing\TestCase::get($uri, array $headers = Array) in C:\DFolder\Projects\EVOX\E2eTesting\EVOX Code-Git\evox-app-e2e\server\tests\Feature\Mocked\CronSyncMockedTest.php on line 61
+PHPUnit 7.5.20 by Sebastian Bergmann and contributors.
+
+EEEEEEE......................................................   61 / 2230 (  2%)
+FF..S^C

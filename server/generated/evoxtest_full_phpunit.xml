@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  EVOX-TEST-SUITE-FULL-2026-07-25 — Standalone backend run.
+  Runs all 330 PHPUnit files from the external FULL suite WITHOUT touching server/tests/.
+  Including both deployed-suite/ (211 files) and branch-tests/ (119 files).
+
+  IMPORTANT: server/tests/ is intentionally NOT listed here.
+  Both directories contain the same class names (Tests\Feature\*) — including
+  server/tests/ would cause PHP "Cannot redeclare class" fatal errors.
+
+  BHR/OOM exclusion: deployed-suite/CronApiTest.php calls live sync endpoints
+  (sync_users, sync_leaves, etc.) without a BHR IoC mock, which causes OOM under
+  Xdebug when BHR returns 5000+ employees. Excluded per standing rule.
+  branch-tests/Admin/Cron/submit.CronBranchTest.php is safe (uses Mockery IoC mocks).
+
+  Run from: C:\DFolder\Projects\EVOX\E2eTesting\EVOX Code-Git\evox-app-e2e\server\
+  Command: php vendor/bin/phpunit -c generated/evoxtest_full_phpunit.xml
+-->
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="../tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         processIsolation="false"
+         stopOnFailure="false">
+
+    <testsuites>
+        <!-- 211 files: deployed-suite — endpoint/validation/business-rule/happy-path/negative -->
+        <testsuite name="Full-Deployed">
+            <directory suffix="Test.php">C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\deployed-suite</directory>
+            <!-- BHR OOM risk: calls live sync_users/sync_leaves without IoC mock under Xdebug -->
+            <exclude>C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\deployed-suite\CronApiTest.php</exclude>
+            <!-- Root-level duplicates of Unit/ subfolder versions - same namespace+class, exclude to prevent "Cannot redeclare" -->
+            <exclude>C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\deployed-suite\BindHolidaysToDtrTest.php</exclude>
+            <exclude>C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\deployed-suite\BindLeavesToDtrTest.php</exclude>
+            <exclude>C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\deployed-suite\SyncBiometricsToDtrTest.php</exclude>
+            <exclude>C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\deployed-suite\DtrUpsertTest.php</exclude>
+            <exclude>C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\deployed-suite\DtrModelTest.php</exclude>
+            <exclude>C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\deployed-suite\LeaveModelTest.php</exclude>
+        </testsuite>
+        <!-- 119 files: branch-tests — per-branch + Unit helpers/models/resources/rules + roles -->
+        <testsuite name="Full-Branch">
+            <directory suffix="Test.php">C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\backend\branch-tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <groups>
+        <exclude>
+            <group>dead-code</group>
+        </exclude>
+    </groups>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="false">
+            <directory suffix=".php">../app</directory>
+            <exclude>
+                <!-- Spatie model: Eloquent alias unavailable outside Laravel boot context -->
+                <file>../app/Models/Activity.php</file>
+                <!-- Decommissioned 2026-06-21 -->
+                <file>../app/Http/Controllers/RoomController.php</file>
+                <file>../app/Http/Controllers/LocationController.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+        <log type="coverage-clover" target="C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\Coverage\evoxtest_coverage_clover_backend.xml"/>
+        <log type="coverage-html"   target="C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-25\Coverage\backend"/>
+    </logging>
+
+    <php>
+        <env name="APP_ENV"         value="testing"/>
+        <env name="BCRYPT_ROUNDS"   value="4"/>
+        <env name="CACHE_DRIVER"    value="array"/>
+        <env name="SESSION_DRIVER"  value="array"/>
+        <env name="QUEUE_DRIVER"    value="sync"/>
+        <env name="MAIL_DRIVER"     value="array"/>
+        <env name="PAYROLL_USER"    value="testPayroll@eastvantage.com"/>
+        <env name="CLIENT_USER_EMAIL"    value="glenn.macasarte@eastvantage.com"/>
+        <env name="CLIENT_USER_PASSWORD" value="{ev2010}"/>
+        <ini name="error_reporting" value="31735"/>
+        <ini name="memory_limit"    value="4G"/>
+    </php>
+
+</phpunit>
