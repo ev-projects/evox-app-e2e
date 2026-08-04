@@ -20,8 +20,8 @@ export const getDaysArrayInMonth = function (year, month) {
 export const getDaysArrayInWeek = function (startDate, endDate) {
     var date_list = [];
     var dates = [];
-    let currDate = Moment(startDate).startOf('day');
-    let lastDate = Moment(endDate).startOf('day');
+    let currDate = moment(startDate).startOf('day');
+    let lastDate = moment(endDate).startOf('day');
     date_list.push(currDate.format('YYYY-MM-DD'))
     dates.push(currDate.format('YYYY') + "-" + currDate.format('MM') + "-" + currDate.format('DD'));;
     while (currDate.add(1, 'days').diff(lastDate) < 0) {
@@ -37,7 +37,7 @@ export const getDaysArrayInWeek = function (startDate, endDate) {
     return { date_list: date_list, week_list: ['Monday', "Sunday"], dates: dates };
 };
 
-export const generateWeekList = (year = +Moment().format("YYYY"), month = +Moment().format("MM")) => {
+export const generateWeekList = (year = +moment().format("YYYY"), month = +moment().format("MM")) => {
     month = month - 1;
     const moment = extendMoment(Moment);
     const startDate = moment([year, month]);

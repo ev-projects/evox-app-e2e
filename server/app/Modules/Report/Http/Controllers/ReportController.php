@@ -962,7 +962,7 @@ class ReportController extends Controller
     # Export HalfDay Conflit Report
     public function dtr_half_day_mismatch( Request $request ){   
         try {
-          return $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
+          return $result = DB::select('call Half_Day_Conflict_Report(?, ?)', [$request->valid_from, $request->valid_to]);
 
         }catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -974,7 +974,7 @@ class ReportController extends Controller
         try {       
             $user_collection_paginated = [];    
          
-             $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
+             $result = DB::select('call Half_Day_Conflict_Report(?, ?)', [$request->valid_from, $request->valid_to]);
              $current_page = 1;
              $last_page = 1;
              foreach($result as $user) {

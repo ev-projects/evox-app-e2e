@@ -157,7 +157,7 @@ class syncBhrUsers extends Command
                     }
                 } catch (Exception $e) {
 print_r($e->getMessage());
-                    log_to_file('info', 'SYNC ERROR' . [$bhr_user_number, $e, __FUNCTION__], "sync_bhr_user");
+                    log_to_file('info', 'SYNC ERROR', [$bhr_user_number, $e->getMessage(), __FUNCTION__], "sync_bhr_user");
 
                     break;
                 }

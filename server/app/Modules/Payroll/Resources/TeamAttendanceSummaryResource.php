@@ -75,7 +75,7 @@ class TeamAttendanceSummaryResource extends JsonResource
 
 
                         if($dtr->get_dtr_history()->latest()->first() != null){
-                            if($dtr->get_dtr_history()->latest()->first()->log_out_type = "Log_out"){
+                            if($dtr->get_dtr_history()->latest()->first()->log_out_type == "Log_out"){
                                 $status = "Present";
                             }
                            

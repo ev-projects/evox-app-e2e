@@ -346,7 +346,6 @@ class UserRepository implements UserRepositoryInterface{
     public function update_bhr_user_country_to_evox(User $user, object $bhr_user, object  $utc){
 
         log_to_file( 'info', get_constant('LOG_START') . __FUNCTION__ , [], "user_sync");
-        error_log("sync_bhr_user_country");
         DB::beginTransaction();
         try {
 
@@ -861,6 +860,7 @@ class UserRepository implements UserRepositoryInterface{
         try {
 
            
+            $collection = array( "data" => array(), "pagination" => null );
             $perpage_count = 10;
             if( $request->export == "all"){
                 $perpage_count = 99999;
@@ -1178,18 +1178,22 @@ class UserRepository implements UserRepositoryInterface{
      */
     public function list_via_department( $department_id ){
         try {
+            $department = Department::find( $department_id );
+            if (!$department) {
+                return collect();
+            }
 
             if( request()->get('page') == 'all' ){
-                $user_collection = Department::find( $department_id )->users()->where('is_active', 1)
-                                                                              ->orderBy('first_name', 'asc')
-                                                                              ->orderBy('last_name', 'asc')
-                                                                              ->get();
+                $user_collection = $department->users()->where('is_active', 1)
+                                                       ->orderBy('first_name', 'asc')
+                                                       ->orderBy('last_name', 'asc')
+                                                       ->get();
 
             } else {
-                $user_collection = Department::find( $department_id )->users()->where('is_active', 1)
-                                                                              ->orderBy('first_name', 'asc')
-                                                                              ->orderBy('last_name', 'asc')
-                                                                              ->paginate(15);
+                $user_collection = $department->users()->where('is_active', 1)
+                                                       ->orderBy('first_name', 'asc')
+                                                       ->orderBy('last_name', 'asc')
+                                                       ->paginate(15);
             }
 
             return $user_collection;

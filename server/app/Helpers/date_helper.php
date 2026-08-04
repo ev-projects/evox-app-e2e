@@ -299,7 +299,7 @@ if (! function_exists('timestamp_to_datetime_small')) {
     {
     
         try {
-            if($use_OWNER = true && $owner != null ){
+            if($use_OWNER == true && $owner != null ){
                 $user = $owner;
                 $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone($user->country_timezone_name())->format("P"));
 

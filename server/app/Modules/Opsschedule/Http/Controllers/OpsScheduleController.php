@@ -111,7 +111,7 @@ class OpsScheduleController extends Controller
     public function show($ops_sched_id = null)
     {
         // get ops schedule instance using id from ops_schedules table
-        $ops_sched = OpsSchedule::find($ops_sched_id)->toArray();
+        $ops_sched = OpsSchedule::findOrFail($ops_sched_id)->toArray();
         $ops_sched['start_time'] = date('H:i', $ops_sched['start_time']);
         $ops_sched['end_time'] = date('H:i', $ops_sched['end_time']);
 
@@ -275,7 +275,7 @@ class OpsScheduleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $ops_sched = OpsSchedule::find($ops_sched_id);
+            $ops_sched = OpsSchedule::findOrFail($ops_sched_id);
             $ops_sched->delete();
             DB::commit();
 

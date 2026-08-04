@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Modules\Department\Models\EvoxDepartment;
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 class TeamScheduleExport implements FromCollection,WithHeadings
 {
