@@ -115,7 +115,7 @@ class AuthApiTest extends TestCase
             ->first();
 
         if (!$user) {
-            $this->markTestSkipped('No inactive users with null termination_date in test database.');
+            $this->markTestIncomplete('No inactive users with null termination_date in test database.');
         }
 
         $user->password = bcrypt('TestEvox2026!');

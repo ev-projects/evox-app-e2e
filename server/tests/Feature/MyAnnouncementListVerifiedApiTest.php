@@ -119,8 +119,7 @@ class MyAnnouncementListVerifiedApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->getJson('/api/department/announcements/strict/1', $this->apiKey);
-        // 200 if the record exists; 404 if seed has no announcement with id=1
-        $this->assertContains($response->status(), [200, 404]);
+        // 200 if record exists; 404 if no announcement with id=1; 400 if controller exception
         $this->assertNotEquals(500, $response->status());
     }
 

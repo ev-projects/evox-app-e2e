@@ -242,7 +242,7 @@ class OvertimeValidationApiTest extends TestCase
         // Get any existing overtime ID from the DB — falls back to 1 if none found
         $overtime = \DB::table('overtimes')->whereNull('deleted_at')->first();
         if (!$overtime) {
-            $this->markTestSkipped('No overtime records in DB to test find endpoint.');
+            $this->markTestIncomplete('Cat 1: No overtime records in DB — submit an overtime request first.');
         }
         $response = $this->actingAs($this->user)->getJson('/api/request/overtime/' . $overtime->id, $this->apiKey);
         $response->assertStatus(200);

@@ -26,7 +26,7 @@ class DisputeBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) { $this->markTestSkipped('no user available in test DB'); }
+        if (!$this->user) { $this->markTestIncomplete('no user available in test DB'); }
     }
 
     private function postDispute(array $payload)

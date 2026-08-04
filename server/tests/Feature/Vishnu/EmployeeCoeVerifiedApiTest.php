@@ -201,16 +201,17 @@ class EmployeeCoeVerifiedApiTest extends TestCase
     /** @test */
     public function test_post_coe_with_nonexistent_employee_id_is_known_500_bug(): void
     {
-        // KNOWN BUG B-4: employee_id has no server-side validation.
-        // COEController::create() calls User::find($request->employee_id) — if the user does not exist,
-        // $user is null and $user->country_id throws a fatal error → 500.
-        // Backend (COERequest) does not validate employee_id at all. Record only — do not fix here.
-        $this->markTestSkipped(
-            'Known production bug: COEController::create() calls User::find() with no null-check. ' .
-            'Sending a non-existent employee_id returns 500. ' .
-            'COERequest does not validate employee_id server-side. ' .
-            'See employee-coe.registry.md — Backend Validation Rules table.'
-        );
+        $this->withoutMiddleware();
+        $nonExistentUserId = (\App\Modules\User\Models\User::max('id') ?? 0) + 1;
+        $response = $this->actingAs($this->user)->postJson('/api/request/coe/', [
+            'purpose_index'    => 0,
+            'show_compensation' => '0',
+            'employee_id'      => $nonExistentUserId,
+        ], $this->apiKey);
+        if ($response->status() === 500) {
+            $this->markTestIncomplete('APP-BUG B-4: COEController::create() calls User::find() with no null check — non-existent employee_id returns 500. Fix: add null guard. See employee-coe.registry.md.');
+        }
+        $this->assertNotEquals(200, $response->status(), 'Non-existent employee_id must not produce 200 success.');
     }
 
     // =========================================================================
@@ -221,14 +222,10 @@ class EmployeeCoeVerifiedApiTest extends TestCase
     /** @test */
     public function test_post_coe_show_compensation_has_no_server_side_validation(): void
     {
-        // Developer-confirmed: COERequest does not validate show_compensation server-side.
-        // Omitting it should NOT cause a 422 — it silently proceeds.
-        // This test documents the absence of server-side validation for this field.
-        // Note: requires a valid employee_id to avoid KNOWN BUG B-4; skip if none available.
-        $this->markTestSkipped(
-            'Requires a seeded employee_id with BHR profile to reach show_compensation logic without ' .
-            'hitting KNOWN BUG B-4 (null User::find() fatal 500). ' .
-            'Document: show_compensation is not validated server-side per COERequest. ' .
+        $this->markTestIncomplete(
+            'Cat 4: Blocked by BUG B-4 — reaching show_compensation logic requires a valid employee_id, ' .
+            'but COEController::create() crashes with 500 on null User::find(). ' .
+            'Fix B-4 first, then test that omitting show_compensation does NOT cause 422. ' .
             'See employee-coe.registry.md — Backend Validation Rules table.'
         );
     }

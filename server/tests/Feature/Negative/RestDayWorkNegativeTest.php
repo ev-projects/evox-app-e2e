@@ -56,14 +56,16 @@ class RestDayWorkNegativeTest extends TestCase
         ], $this->apiKey);
     }
 
-    /** @test S5/A2 — employee approves own request: not gated (A27), silent no-op leaves it pending */
-    public function self_approval_is_not_gated_and_is_a_silent_noop()
+    /** @test S5/A27 FIXED — self-approval gate now active in controller */
+    public function self_approval_is_gated_and_returns_403()
     {
+        // A27 FIXED: RestDayWorkController::approve() now blocks self-approval at controller level.
+        // withoutMiddleware() bypasses middleware but NOT this controller check.
+        // Employee approving their own rest-day-work → 403 Forbidden.
         $this->withoutMiddleware();
         $r = $this->makePending($this->employee->id);
         $resp = $this->approveAs($this->employee, $r);
-        $this->assertNotEquals(403, $resp->status());
-        $this->assertDatabaseHas('rest_day_works', ['id' => $r->id, 'status' => 'pending']);
+        $this->assertEquals(403, $resp->status());
     }
 
     /** @test S1 — re-approving an already-approved request is not blocked (A28, no state guard) */
@@ -104,7 +106,7 @@ class RestDayWorkNegativeTest extends TestCase
         // or an SP dependency → 500). Only when it actually CREATES a row (2xx) can we observe whether
         // it honored the foreign payload user_id.
         if ($resp->status() >= 300) {
-            $this->markTestSkipped('RDW store did not create a row (' . $resp->status() . ': ' .
+            $this->markTestIncomplete('RDW store did not create a row (' . $resp->status() . ': ' .
                 substr($resp->getContent(), 0, 120) . ') — impersonation observation needs a 2xx create; documented in matrix.');
         }
         $row = \DB::table('rest_day_works')

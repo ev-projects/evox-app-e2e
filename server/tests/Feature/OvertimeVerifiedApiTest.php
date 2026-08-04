@@ -197,7 +197,7 @@ class OvertimeVerifiedApiTest extends TestCase
         // The decline is applied twice. Current production behaviour is likely idempotent
         // (sets status to 'declined' twice) but wastes a database query.
         // This test is skipped until the bug is fixed and a regression assertion can be written.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug B-001: OvertimeController::decline calls $this->overtime->decline() at lines 204 and 216. ' .
             'Decline is applied twice. Skip until fixed. See overtime.registry.md § Known bugs B-001.'
         );
@@ -243,7 +243,7 @@ class OvertimeVerifiedApiTest extends TestCase
         // KNOWN BUG B-003: OvertimeController::pending has NO supervisor check.
         // Any authenticated user can call this endpoint, not just supervisors.
         // Verdict: suspected gap — needs developer decision before a regression test can be written.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug B-003: OvertimeController::pending has no supervisor/role check. ' .
             'Any authenticated user can call it. Needs developer decision on expected behaviour. ' .
             'See overtime.registry.md § Known bugs B-003.'

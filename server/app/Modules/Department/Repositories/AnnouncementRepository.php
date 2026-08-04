@@ -130,7 +130,7 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     
         DB::beginTransaction();
         try {
-            $main_dep_id = 0;
+            $main_dep_id = null;
             log_activity(trans('messages.create_department_announcement_attempt'));
            
             if(is_valid(auth()->user()->SubDepartmentID)){
@@ -340,13 +340,11 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
 
                     $dep_announcement->thumbnail = $path;
                     $dep_announcement->update();
-                    error_log("upda");
                 }
                
                 if($request->thumbnail == null && $request->inputFileWasDeleted == "true" ){
                     $dep_announcement->thumbnail = null;
                     $dep_announcement->update();
-                    error_log("del");
                 }
                 
                 $saved_dep_announcement = $dep_announcement;
@@ -533,18 +531,18 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 })
                 ->get();
 
-                $list_dep = $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
-                    $query->where('release_date', '<=', $date_time);
-                    $query->where('expiry_date', '>', $date_time);
-                })
-                ->where(function ($query)  {
-                    $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
-                })
-                ->whereNotIn('id', $toExclude)
-               // only 6 but we get 7 to check if there is a next (show)
-                ->get();
+                $list_dep = $department
+                    ? $department->departments_announcements_presented()->latest()->where(function ($query) use ($date_time) {
+                        $query->where('release_date', '<=', $date_time);
+                        $query->where('expiry_date', '>', $date_time);
+                    })
+                    ->where(function ($query)  {
+                        $query->where('set_country_all',1)->orWhere("country_id", Auth::user()->country_id);
+                    })
+                    ->whereNotIn('id', $toExclude)
+                    ->get()
+                    : collect();
 
-                error_log($request->page);
                 return $announcements_list = $list_all->merge($list_dep)->sortByDesc('release_date')->forPage($request->page, 3);
             }
 

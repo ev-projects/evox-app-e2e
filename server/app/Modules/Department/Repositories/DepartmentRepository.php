@@ -133,6 +133,9 @@ class DepartmentRepository implements DepartmentRepositoryInterface{
     {
         try {
             $department = Department::find($id);
+            if (!$department) {
+            throw new \Exception("Department {$id} not found.");
+        }
 
             $department->department_supervisors()->sync( $user_id_array );
 

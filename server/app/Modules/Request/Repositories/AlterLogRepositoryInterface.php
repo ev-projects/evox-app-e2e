@@ -19,4 +19,6 @@ interface AlterLogRepositoryInterface
     public function pending( $id );
 
     public function cancel( $id );
+
+    public function where( array $parameter );
 }

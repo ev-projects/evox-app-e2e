@@ -34,7 +34,7 @@ class FreshServiceMockedTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     protected function tearDown(): void
@@ -49,7 +49,8 @@ class FreshServiceMockedTest extends TestCase
         $builder = Mockery::mock('Ixudra\Curl\Builder')->shouldIgnoreMissing();
         // all common fluent methods return the builder so the chain doesn't break
         foreach (['withHeader', 'withHeaders', 'withData', 'withContentType', 'asJson',
-                  'withResponseHeaders', 'withTimeout', 'containsFile', 'withOption'] as $m) {
+                  'withResponseHeaders', 'withTimeout', 'withConnectTimeout',
+                  'returnResponseObject', 'containsFile', 'withOption'] as $m) {
             $builder->shouldReceive($m)->andReturnSelf();
         }
         $builder->shouldReceive('get')->andReturn($response);

@@ -81,7 +81,7 @@ class MyDisputeRequestsVerifiedApiTest extends TestCase
         );
         $response->assertStatus(200);
         // Controller merges results from 4 SP calls — response data must be an array
-        $data = $response->json('data');
+        $data = $response->json('content');
         $this->assertNotNull($data);
         $this->assertIsArray($data);
     }
@@ -102,10 +102,10 @@ class MyDisputeRequestsVerifiedApiTest extends TestCase
     public function test_request_list_disputes_status_cancelled_returns_200(): void
     {
         // [DEVELOPER VETTING]: "Cancelled" toggle fires API immediately. Spelling open issue: cancelled vs canceled.
-        // Test uses "cancelled" (double-l) pending Network-tab confirmation.
+        // Validator uses "canceled" (single-l); double-l returns 422.
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson(
-            '/api/request/request-list-disputes?status=cancelled&page=1&request_type=all&url=my_requests_dispute',
+            '/api/request/request-list-disputes?status=canceled&page=1&request_type=all&url=my_requests_dispute',
             $this->apiKey
         );
         $response->assertStatus(200);

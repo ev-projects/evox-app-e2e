@@ -54,7 +54,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_approve_without_token_returns_401()
     {
-        $response = $this->postJson('/api/request/alter_log/approve/1', [], $this->apiKey);
+        $response = $this->putJson('/api/request/alter_log/approve/1', [], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -62,7 +62,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_decline_without_token_returns_401()
     {
-        $response = $this->postJson('/api/request/alter_log/decline/1', [], $this->apiKey);
+        $response = $this->putJson('/api/request/alter_log/decline/1', [], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -70,7 +70,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_cancel_without_token_returns_401()
     {
-        $response = $this->postJson('/api/request/alter_log/cancel/1', [], $this->apiKey);
+        $response = $this->putJson('/api/request/alter_log/cancel/1', [], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -102,7 +102,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_punch_approve_without_token_returns_401()
     {
-        $response = $this->postJson('/api/request/alter_log_punch/approve/1', [], $this->apiKey);
+        $response = $this->putJson('/api/request/alter_log_punch/approve/1', [], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -110,7 +110,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_punch_decline_without_token_returns_401()
     {
-        $response = $this->postJson('/api/request/alter_log_punch/decline/1', [], $this->apiKey);
+        $response = $this->putJson('/api/request/alter_log_punch/decline/1', [], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -275,11 +275,16 @@ class AlterLogValidationApiTest extends TestCase
     public function test_alter_log_find_existing_record_returns_200()
     {
         $this->withoutMiddleware();
-        $alterLog = AlterLog::where('user_id', $this->user->id)->whereNull('deleted_at')->first();
+        $alterLog = AlterLog::whereNull('deleted_at')->first();
         if (!$alterLog) {
-            $this->markTestSkipped('No AlterLog records exist for the test user.');
+            $this->markTestIncomplete('Cat 1: No AlterLog records in DB — create an alter_log entry first.');
         }
-        $response = $this->actingAs($this->user)->getJson('/api/request/alter_log/' . $alterLog->id, $this->apiKey);
+        // Authenticate as the alter log's owner so the endpoint returns 200
+        $owner = \App\Modules\User\Models\User::find($alterLog->user_id);
+        if (!$owner) {
+            $this->markTestIncomplete('Cat 1: AlterLog owner not found in DB.');
+        }
+        $response = $this->actingAs($owner)->getJson('/api/request/alter_log/' . $alterLog->id, $this->apiKey);
         $response->assertStatus(200);
         $response->assertJsonStructure(['message', 'content']);
     }
@@ -300,9 +305,9 @@ class AlterLogValidationApiTest extends TestCase
     public function test_alter_log_update_empty_payload_returns_422()
     {
         $this->withoutMiddleware();
-        $alterLog = AlterLog::where('user_id', $this->user->id)->where('status', 'pending')->whereNull('deleted_at')->first();
+        $alterLog = AlterLog::whereNull('deleted_at')->first();
         if (!$alterLog) {
-            $this->markTestSkipped('No pending AlterLog records exist for the test user.');
+            $this->markTestIncomplete('Cat 1: No AlterLog records in DB — create an alter_log entry first.');
         }
         $response = $this->actingAs($this->user)->postJson(
             '/api/request/alter_log/' . $alterLog->id,
@@ -316,9 +321,9 @@ class AlterLogValidationApiTest extends TestCase
     public function test_alter_log_update_missing_new_time_in_returns_422()
     {
         $this->withoutMiddleware();
-        $alterLog = AlterLog::where('user_id', $this->user->id)->where('status', 'pending')->whereNull('deleted_at')->first();
+        $alterLog = AlterLog::whereNull('deleted_at')->first();
         if (!$alterLog) {
-            $this->markTestSkipped('No pending AlterLog records exist for the test user.');
+            $this->markTestIncomplete('Cat 1: No AlterLog records in DB — create an alter_log entry first.');
         }
         $payload = [
             '_method'       => 'PUT',
@@ -341,9 +346,9 @@ class AlterLogValidationApiTest extends TestCase
         $this->withoutMiddleware();
         $alterLog = AlterLog::whereNull('deleted_at')->first();
         if (!$alterLog) {
-            $this->markTestSkipped('No AlterLog records exist.');
+            $this->markTestIncomplete('Cat 1: No AlterLog records in DB — create an alter_log entry first.');
         }
-        $response = $this->actingAs($this->user)->postJson(
+        $response = $this->actingAs($this->user)->putJson(
             '/api/request/alter_log/approve/' . $alterLog->id,
             [],
             $this->apiKey
@@ -357,7 +362,7 @@ class AlterLogValidationApiTest extends TestCase
         $this->withoutMiddleware();
         $alterLog = AlterLog::whereNull('deleted_at')->first();
         if (!$alterLog) {
-            $this->markTestSkipped('No AlterLog records exist.');
+            $this->markTestIncomplete('Cat 1: No AlterLog records in DB — create an alter_log entry first.');
         }
         $payload = [
             'user_id'       => $alterLog->user_id,
@@ -365,7 +370,7 @@ class AlterLogValidationApiTest extends TestCase
             'new_time_out'  => '2026-06-01 17:00:00',
             'employee_note' => 'Approve test',
         ];
-        $response = $this->actingAs($this->user)->postJson(
+        $response = $this->actingAs($this->user)->putJson(
             '/api/request/alter_log/approve/' . $alterLog->id,
             $payload,
             $this->apiKey
@@ -383,9 +388,9 @@ class AlterLogValidationApiTest extends TestCase
         $this->withoutMiddleware();
         $alterLog = AlterLog::whereNull('deleted_at')->first();
         if (!$alterLog) {
-            $this->markTestSkipped('No AlterLog records exist.');
+            $this->markTestIncomplete('Cat 1: No AlterLog records in DB — create an alter_log entry first.');
         }
-        $response = $this->actingAs($this->user)->postJson(
+        $response = $this->actingAs($this->user)->putJson(
             '/api/request/alter_log/decline/' . $alterLog->id,
             [],
             $this->apiKey
@@ -425,7 +430,7 @@ class AlterLogValidationApiTest extends TestCase
             'employee_note' => 'Nonexistent ID approve test',
             'approver_note' => 'Approved',
         ];
-        $response = $this->actingAs($this->user)->postJson('/api/request/alter_log/approve/999999', $payload, $this->apiKey);
+        $response = $this->actingAs($this->user)->putJson('/api/request/alter_log/approve/999999', $payload, $this->apiKey);
         $this->assertNotEquals(500, $response->status());
     }
 
@@ -433,7 +438,7 @@ class AlterLogValidationApiTest extends TestCase
     public function test_alter_log_cancel_nonexistent_id_does_not_500()
     {
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->postJson('/api/request/alter_log/cancel/999999', [], $this->apiKey);
+        $response = $this->actingAs($this->user)->putJson('/api/request/alter_log/cancel/999999', [], $this->apiKey);
         $this->assertNotEquals(500, $response->status());
     }
 

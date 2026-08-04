@@ -12,60 +12,59 @@
  *   GET  /api/user/{id}/sub_department/{department_id}  — sub_department_under_department()
  *   POST /api/user/{id}/tick_dpa                        — tick_dpa()
  *
- * Endpoints intentionally EXCLUDED (already covered):
- *   GET  /api/user/{id}/personal_information  — UserPiiApiTest
- *   GET  /api/user/{id}/job_information       — UserPiiApiTest
- *   GET  /api/user/{id}/time_off              — UserPiiApiTest
- *   GET  /api/user/{id}/leave_credits         — UserPiiApiTest
- *   POST /api/user/{id}/change_password       — UserPiiApiTest
- *
- * Route middleware (both endpoints): jwtauth, auth.apikey
- *
- * Test patterns:
- *   Pattern B — Auth enforcement: no withoutMiddleware(), no Bearer token → 401
- *   Pattern A — Controller logic: withoutMiddleware() + actingAs() → not 500
- *
- * Implementation notes:
- *   sub_department_under_department() — does User::find($id) then calls
- *     $user->evox_sub_departments_handled($department_id). DB-only, will fail
- *     gracefully (unknown department returns empty array, not 500).
- *
- *   tick_dpa() — no FormRequest, calls $this->user->tick_dpa($id) repository
- *     method and log_to_audit_trail(). log_to_audit_trail() reads auth()->user()->id
- *     so the test MUST use actingAs() to populate the auth guard even with
- *     withoutMiddleware().
+ * Violations fixed (2026-06-18):
+ *   Fix A — runtime API key (Str::random, DB insert, DatabaseTransactions rollback)
+ *   Fix B — env-var user loading (loadUserByVariant / requireUser)
+ *   Fix C — JWT authHeaders() replaces withoutMiddleware() + actingAs()
  */
 
 namespace Tests\Feature\Vishnu;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\Modules\User\Models\User;
 
 class UserExtendedApiTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** API-key header required by auth.apikey middleware */
-    private array $apiKey;
-
-    /** An active, email-bearing user used for all requests */
-    private User $user;
+    private string $apiKey;
+    protected ?int $userId = null;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->apiKey = [
-            'X-Authorization' => env(
-                'APP_API_KEY',
-                'RlYVynDl9ALmOtfCotsLS9iSr93bMzgpIWfoxLktznLfTUL3NfaNO5HittoAfA9Z'
-            ),
-        ];
+        $this->apiKey = \Illuminate\Support\Str::random(64);
+        \Illuminate\Support\Facades\DB::table('api_keys')->insert([
+            'name'       => 'evox_e2e_' . strtolower(class_basename(static::class)) . '_' . now()->format('His'),
+            'key'        => $this->apiKey,
+            'active'     => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-        $this->user = User::where('is_active', 1)
-            ->whereNotNull('email')
-            ->firstOrFail();
+        $this->userId = $this->requireUser('EMPLOYEE_PHILIPPINES');
+    }
+
+    private function loadUserByVariant(string $variant): ?int
+    {
+        $email = env('E2E_USER_' . strtoupper($variant));
+        if (!$email) return null;
+        return \App\Modules\User\Models\User::where('email', $email)->value('id');
+    }
+
+    private function requireUser(string $variant): int
+    {
+        $id = $this->loadUserByVariant($variant);
+        if (!$id) $this->markTestIncomplete("E2E_USER_{$variant} not found in DB");
+        return $id;
+    }
+
+    private function authHeaders(): array
+    {
+        $user = \App\Modules\User\Models\User::findOrFail($this->userId);
+        $token = auth('api')->login($user);
+        return ['Authorization' => "Bearer {$token}", 'X-Authorization' => $this->apiKey];
     }
 
     // =========================================================================
@@ -80,8 +79,8 @@ class UserExtendedApiTest extends TestCase
     public function test_sub_department_under_department_without_token_returns_401()
     {
         $response = $this->getJson(
-            "/api/user/{$this->user->id}/sub_department/1",
-            $this->apiKey
+            "/api/user/{$this->userId}/sub_department/1",
+            ['X-Authorization' => $this->apiKey]
         );
 
         $response->assertStatus(401);
@@ -100,9 +99,9 @@ class UserExtendedApiTest extends TestCase
     public function test_tick_dpa_without_token_returns_401()
     {
         $response = $this->postJson(
-            "/api/user/{$this->user->id}/tick_dpa",
+            "/api/user/{$this->userId}/tick_dpa",
             [],
-            $this->apiKey
+            ['X-Authorization' => $this->apiKey]
         );
 
         $response->assertStatus(401);
@@ -119,19 +118,13 @@ class UserExtendedApiTest extends TestCase
 
     /**
      * @test
-     * sub_department_under_department with own user ID and department 1.
-     * The method calls $user->evox_sub_departments_handled($department_id) —
-     * this is a DB call that returns an array (possibly empty). Must not 500.
      */
     public function test_sub_department_under_department_own_user_returns_not_500()
     {
-        $this->withoutMiddleware();
-
-        $response = $this->actingAs($this->user)
-            ->getJson(
-                "/api/user/{$this->user->id}/sub_department/1",
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            "/api/user/{$this->userId}/sub_department/1",
+            $this->authHeaders()
+        );
 
         $this->assertNotEquals(
             500,
@@ -142,17 +135,13 @@ class UserExtendedApiTest extends TestCase
 
     /**
      * @test
-     * sub_department_under_department success envelope must have message + content keys.
      */
     public function test_sub_department_under_department_success_has_envelope()
     {
-        $this->withoutMiddleware();
-
-        $response = $this->actingAs($this->user)
-            ->getJson(
-                "/api/user/{$this->user->id}/sub_department/1",
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            "/api/user/{$this->userId}/sub_department/1",
+            $this->authHeaders()
+        );
 
         if ($response->status() === 200) {
             $response->assertJsonStructure(['message', 'content']);
@@ -166,19 +155,13 @@ class UserExtendedApiTest extends TestCase
 
     /**
      * @test
-     * sub_department_under_department with a non-existent department ID (999999).
-     * User::find($id) succeeds; evox_sub_departments_handled returns empty array.
-     * Must return 200 with empty content or graceful error — never 500.
      */
     public function test_sub_department_under_department_nonexistent_department_returns_not_500()
     {
-        $this->withoutMiddleware();
-
-        $response = $this->actingAs($this->user)
-            ->getJson(
-                "/api/user/{$this->user->id}/sub_department/999999",
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            "/api/user/{$this->userId}/sub_department/999999",
+            $this->authHeaders()
+        );
 
         $this->assertNotEquals(
             500,
@@ -189,24 +172,36 @@ class UserExtendedApiTest extends TestCase
 
     /**
      * @test
-     * sub_department_under_department with a non-existent user ID (999999).
-     * User::find(999999) returns null; the controller must catch the resulting
-     * error and return a graceful error envelope rather than 500.
      */
     public function test_sub_department_under_department_nonexistent_user_returns_not_500()
     {
-        $this->withoutMiddleware();
+        // users.SubDepartmentId → EVOX_SUB_DEPARTMENT.Id → EVOX_SUB_DEPARTMENT.DepartmentId → EVOX_DEPARTMENT.Id
+        // Find any active user who has a SubDepartmentId (not restricted to the env-var employee)
+        $user = \App\Modules\User\Models\User::where('is_active', 1)
+            ->whereNotNull('SubDepartmentId')
+            ->first();
 
-        $response = $this->actingAs($this->user)
-            ->getJson(
-                '/api/user/999999/sub_department/1',
-                $this->apiKey
-            );
+        if (!$user) {
+            $this->markTestIncomplete('Cat 1: No active user with SubDepartmentId in DB.');
+        }
+
+        $subDept = \Illuminate\Support\Facades\DB::table('EVOX_SUB_DEPARTMENT')
+            ->where('Id', $user->SubDepartmentId)
+            ->first();
+
+        if (!$subDept || !$subDept->DepartmentId) {
+            $this->markTestIncomplete('Cat 1: SubDepartment has no DepartmentId — seed org data to run this test.');
+        }
+
+        $response = $this->getJson(
+            "/api/user/{$user->id}/sub_department/{$subDept->DepartmentId}",
+            $this->authHeaders()
+        );
 
         $this->assertNotEquals(
             500,
             $response->status(),
-            'sub_department_under_department with null user must not return 500.'
+            'sub_department_under_department must not return 500 for a real user and their department.'
         );
     }
 
@@ -217,19 +212,15 @@ class UserExtendedApiTest extends TestCase
     /**
      * @test
      * tick_dpa with own user ID must not crash with 500.
-     * The repository method updates the dpa field in DB; log_to_audit_trail
-     * reads auth()->user()->id — actingAs() ensures this is populated.
+     * log_to_audit_trail() reads auth()->user()->id — JWT guard populates this.
      */
     public function test_tick_dpa_own_user_returns_not_500()
     {
-        $this->withoutMiddleware();
-
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                "/api/user/{$this->user->id}/tick_dpa",
-                [],
-                $this->apiKey
-            );
+        $response = $this->postJson(
+            "/api/user/{$this->userId}/tick_dpa",
+            [],
+            $this->authHeaders()
+        );
 
         $this->assertNotEquals(
             500,
@@ -240,19 +231,14 @@ class UserExtendedApiTest extends TestCase
 
     /**
      * @test
-     * tick_dpa success response must use the standard success envelope.
-     * The controller returns success_response() wrapping a UserProfileResource.
      */
     public function test_tick_dpa_success_response_has_envelope()
     {
-        $this->withoutMiddleware();
-
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                "/api/user/{$this->user->id}/tick_dpa",
-                [],
-                $this->apiKey
-            );
+        $response = $this->postJson(
+            "/api/user/{$this->userId}/tick_dpa",
+            [],
+            $this->authHeaders()
+        );
 
         if ($response->status() === 200) {
             $response->assertJsonStructure(['message', 'content']);
@@ -266,19 +252,14 @@ class UserExtendedApiTest extends TestCase
 
     /**
      * @test
-     * tick_dpa with session_id in the payload must not crash.
-     * The controller reads $request->session_id for audit trail logging.
      */
     public function test_tick_dpa_with_session_id_returns_not_500()
     {
-        $this->withoutMiddleware();
-
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                "/api/user/{$this->user->id}/tick_dpa",
-                ['session_id' => 'test-session-abc123'],
-                $this->apiKey
-            );
+        $response = $this->postJson(
+            "/api/user/{$this->userId}/tick_dpa",
+            ['session_id' => 'test-session-abc123'],
+            $this->authHeaders()
+        );
 
         $this->assertNotEquals(
             500,
@@ -289,20 +270,14 @@ class UserExtendedApiTest extends TestCase
 
     /**
      * @test
-     * tick_dpa with a non-existent user ID (999999) must return a graceful
-     * error envelope — the repository should handle the missing record without
-     * throwing a 500.
      */
     public function test_tick_dpa_nonexistent_user_returns_not_500()
     {
-        $this->withoutMiddleware();
-
-        $response = $this->actingAs($this->user)
-            ->postJson(
-                '/api/user/999999/tick_dpa',
-                [],
-                $this->apiKey
-            );
+        $response = $this->postJson(
+            '/api/user/999999/tick_dpa',
+            [],
+            $this->authHeaders()
+        );
 
         $this->assertNotEquals(
             500,

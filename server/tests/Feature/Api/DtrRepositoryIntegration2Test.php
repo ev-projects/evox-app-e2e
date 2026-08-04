@@ -60,12 +60,12 @@ class DtrRepositoryIntegration2Test extends TestCase
             ->first();
 
         if (!$alterLog) {
-            $this->markTestSkipped('No approved alter log with time values found.');
+            $this->markTestIncomplete('No approved alter log with time values found.');
         }
 
         $dtr = $alterLog->dtr()->first();
         if (!$dtr) {
-            $this->markTestSkipped('Alter log has no associated DTR.');
+            $this->markTestIncomplete('Alter log has no associated DTR.');
         }
 
         $result = $this->dtrRepo->apply_alter_log_to_dtr($alterLog);
@@ -91,7 +91,7 @@ class DtrRepositoryIntegration2Test extends TestCase
             ->first();
 
         if (!$alterLog) {
-            $this->markTestSkipped('No non-approved alter log found.');
+            $this->markTestIncomplete('No non-approved alter log found.');
         }
 
         // Calling apply_alter_log_to_dtr on a non-approved log should return null
@@ -108,10 +108,22 @@ class DtrRepositoryIntegration2Test extends TestCase
     /** @test */
     public function test_applying_schedule_to_dtr_returns_updated_and_not_updated_arrays()
     {
-        $schedule = Schedule::whereNotNull('valid_from')->first();
+        // Narrow-range schedule (valid_to set, ≤14 day window) avoids mass DTR trigger chains.
+        // apply_schedule_to_dtr loops every DTR in [valid_from, valid_to] and fires a MySQL
+        // trigger per row — an unbounded range (e.g. valid_from=2019, no valid_to) processes
+        // thousands of rows and makes the suite appear to hang.
+        $schedule = Schedule::whereNotNull('valid_from')
+            ->whereNotNull('valid_to')
+            ->whereRaw('DATEDIFF(valid_to, valid_from) <= 14')
+            ->orderBy('created_at', 'desc')
+            ->first()
+            ?? Schedule::whereNotNull('valid_from')
+            ->where('valid_from', '>=', now()->subMonths(1)->toDateString())
+            ->orderBy('valid_from', 'desc')
+            ->first();
 
         if (!$schedule) {
-            $this->markTestSkipped('No schedule with valid_from found.');
+            $this->markTestIncomplete('No narrow-range schedule found (need valid_from within last month or valid_to within 14 days of valid_from).');
         }
 
         $result = $this->dtrRepo->apply_schedule_to_dtr($this->user, $schedule);
@@ -126,12 +138,21 @@ class DtrRepositoryIntegration2Test extends TestCase
     {
         // Default schedules (source_type='default') should NOT update DTRs
         // that already have a temporary or change schedule applied.
+        // Narrow-range guard: see test_applying_schedule_to_dtr_returns_updated_and_not_updated_arrays.
         $defaultSchedule = Schedule::where('source_type', 'default')
             ->whereNotNull('valid_from')
+            ->whereNotNull('valid_to')
+            ->whereRaw('DATEDIFF(valid_to, valid_from) <= 14')
+            ->orderBy('created_at', 'desc')
+            ->first()
+            ?? Schedule::where('source_type', 'default')
+            ->whereNotNull('valid_from')
+            ->where('valid_from', '>=', now()->subMonths(1)->toDateString())
+            ->orderBy('valid_from', 'desc')
             ->first();
 
         if (!$defaultSchedule) {
-            $this->markTestSkipped('No default schedule found.');
+            $this->markTestIncomplete('No narrow-range default schedule found.');
         }
 
         $result = $this->dtrRepo->apply_schedule_to_dtr($this->user, $defaultSchedule);
@@ -144,12 +165,21 @@ class DtrRepositoryIntegration2Test extends TestCase
     /** @test */
     public function test_applying_schedule_with_bypass_flag_overrides_hierarchy()
     {
+        // Narrow-range guard: see test_applying_schedule_to_dtr_returns_updated_and_not_updated_arrays.
         $schedule = Schedule::where('source_type', 'default')
             ->whereNotNull('valid_from')
+            ->whereNotNull('valid_to')
+            ->whereRaw('DATEDIFF(valid_to, valid_from) <= 14')
+            ->orderBy('created_at', 'desc')
+            ->first()
+            ?? Schedule::where('source_type', 'default')
+            ->whereNotNull('valid_from')
+            ->where('valid_from', '>=', now()->subMonths(1)->toDateString())
+            ->orderBy('valid_from', 'desc')
             ->first();
 
         if (!$schedule) {
-            $this->markTestSkipped('No default schedule found.');
+            $this->markTestIncomplete('No narrow-range default schedule found.');
         }
 
         // bypass=true forces update regardless of existing schedule type on DTR
@@ -170,25 +200,28 @@ class DtrRepositoryIntegration2Test extends TestCase
     /** @test */
     public function test_bind_holidays_to_dtr_for_a_known_date_range()
     {
-        // Use a past month that definitely has DTR records and potentially holidays
-        $result = $this->dtrRepo->bind_holidays_to_dtr('2026-01-01', '2026-01-31');
+        // 3-day window only — bind_holidays_to_dtr loops every DTR row in the range and does
+        // a SELECT + INSERT per row per holiday. A full month range processes thousands of rows
+        // under Xdebug coverage and stalls the suite.
+        $result = $this->dtrRepo->bind_holidays_to_dtr('2026-01-01', '2026-01-03');
 
-        // Should return a Collection (even if empty — no holidays in that range)
         $this->assertInstanceOf(Collection::class, $result);
     }
 
     /** @test */
     public function test_bind_holidays_to_dtr_for_current_month()
     {
-        $result = $this->dtrRepo->bind_holidays_to_dtr('2026-05-01', '2026-05-31');
+        // 3-day window — same reason as test_bind_holidays_to_dtr_for_a_known_date_range.
+        $result = $this->dtrRepo->bind_holidays_to_dtr('2026-05-01', '2026-05-03');
         $this->assertInstanceOf(Collection::class, $result);
     }
 
     /** @test */
     public function test_bind_holidays_to_dtr_cross_year_range()
     {
-        // Tests the month-date range wildcard logic in bind_holidays_to_dtr
-        $result = $this->dtrRepo->bind_holidays_to_dtr('2025-12-01', '2026-01-31');
+        // 4-day window spanning the year boundary — still exercises the cross-year wildcard
+        // logic in bind_holidays_to_dtr without processing a full 2-month DTR dataset.
+        $result = $this->dtrRepo->bind_holidays_to_dtr('2025-12-30', '2026-01-02');
         $this->assertInstanceOf(Collection::class, $result);
     }
 
@@ -204,12 +237,12 @@ class DtrRepositoryIntegration2Test extends TestCase
             ->first();
 
         if (!$alterLog) {
-            $this->markTestSkipped('No approved alter log found.');
+            $this->markTestIncomplete('No approved alter log found.');
         }
 
         $dtr = $alterLog->dtr()->first();
         if (!$dtr) {
-            $this->markTestSkipped('Alter log has no associated DTR.');
+            $this->markTestIncomplete('Alter log has no associated DTR.');
         }
 
         $originalTimeIn = $dtr->time_in;
@@ -237,7 +270,7 @@ class DtrRepositoryIntegration2Test extends TestCase
         $restDayWork = RestDayWork::where('status', 'approved')->first();
 
         if (!$restDayWork) {
-            $this->markTestSkipped('No approved rest day work found.');
+            $this->markTestIncomplete('No approved rest day work found.');
         }
 
         try {

@@ -281,4 +281,45 @@ class AlterLogRepository implements AlterLogRepositoryInterface{
 
 
 
+
+    public function where(array $parameter)
+    {
+        try {
+            $query_array = ['1 = 1'];
+            $wildcard_array = [];
+            if( count( $parameter ) > 0 ) {
+                if( isset( $parameter['valid_from'] ) && is_valid( $parameter['valid_from'] ) &&
+                    isset( $parameter['valid_to'] ) && is_valid( $parameter['valid_to'] ) ) {
+                    $query_array[] = "alter_logs.date BETWEEN ? AND ?";
+                    array_push( $wildcard_array, $parameter['valid_from'], $parameter['valid_to'] );
+                } else if( isset( $parameter['valid_from'] ) && is_valid( $parameter['valid_from'] ) ) {
+                    $query_array[] = "alter_logs.date >= ?";
+                    array_push( $wildcard_array, $parameter['valid_from'] );
+                } else if( isset( $parameter['valid_to'] ) && is_valid( $parameter['valid_to'] ) ) {
+                    $query_array[] = "alter_logs.date <= ?";
+                    array_push( $wildcard_array, $parameter['valid_to'] );
+                }
+                if( isset( $parameter['request_status'] ) && is_valid( $parameter['request_status'] ) ) {
+                    $query_array[] = "alter_logs.status = ?";
+                    array_push( $wildcard_array, $parameter['request_status'] );
+                }
+                if( isset( $parameter['user'] ) && is_valid( $parameter['user'] ) ) {
+                    $query_array[] = "(CONCAT(users.first_name,' ',users.middle_name,' ',users.last_name) LIKE ? OR users.email LIKE ? OR users.emp_num = ? OR users.id = ?)";
+                    array_push( $wildcard_array, '%'.$parameter['user'].'%', '%'.$parameter['user'].'%', $parameter['user'], $parameter['user'] );
+                }
+                if( isset( $parameter['show_owned'] ) && $parameter['show_owned'] ) {
+                    $query_array[] = "alter_logs.user_id = ?";
+                    array_push( $wildcard_array, auth()->user()->id );
+                }
+            }
+            $collection = AlterLog::select('alter_logs.*')
+                ->leftJoin('users', 'alter_logs.user_id', '=', 'users.id')
+                ->whereRaw( implode(' AND ', $query_array), $wildcard_array )
+                ->get();
+            return AlterLogResource::collection( $collection );
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
 }

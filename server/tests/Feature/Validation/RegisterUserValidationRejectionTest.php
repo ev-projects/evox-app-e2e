@@ -31,7 +31,7 @@ class RegisterUserValidationRejectionTest extends TestCase
         $this->department = Department::first();
         $this->role = Role::first();
         if (!$this->user || !$this->department || !$this->role) {
-            $this->markTestSkipped('no user/department/role available in test DB');
+            $this->markTestIncomplete('no user/department/role available in test DB');
         }
     }
 

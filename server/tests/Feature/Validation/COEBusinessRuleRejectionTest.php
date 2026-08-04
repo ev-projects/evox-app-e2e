@@ -27,13 +27,13 @@ class COEBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     /** @test */
     public function bhr_lookup_failure_gate_is_documented_not_tested()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'The only business-layer guard in COEController@create is a BHR lookup failure -> 404, ' .
             'which depends on live external BHR service state per user and is not controllable/safe ' .
             'from this suite. Every other payload with a non-empty purpose_index proceeds to a real ' .

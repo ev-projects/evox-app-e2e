@@ -22,7 +22,7 @@ class AlterLogBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     /** @test — duplicate (user_id,date) is rejected by Rule::unique('alter_logs','date') */
@@ -30,7 +30,7 @@ class AlterLogBusinessRuleRejectionTest extends TestCase
     {
         $existing = DB::table('alter_logs')->whereNull('deleted_at')
                       ->whereNotNull('date')->first();
-        if (!$existing) $this->markTestSkipped('no existing alter_log row to collide with');
+        if (!$existing) $this->markTestIncomplete('no existing alter_log row to collide with');
 
         // Otherwise-valid payload whose (user_id,date) collides with an existing row.
         // FormRequest unique rule fires BEFORE the controller -> 422, no row written.
@@ -51,7 +51,7 @@ class AlterLogBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function missing_time_order_rule_is_documented_not_tested()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'AlterLogRequest has no cross-field time-order rule (new_time_in <= new_time_out) — ' .
             'submitting an inverted pair would PASS validation and write a real row, so it is not ' .
             'safe to automate here. See matrices/alter-log.md finding.'
@@ -64,7 +64,7 @@ class AlterLogBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function dispute_mode_sp_path_is_documented_as_db_layer()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Dispute-mode branch calls EV_SP_PD_Autoamtion_AlterLog via a raw SP CALL; not safely ' .
             'unit-testable on the shared dump. See matrices/alter-log.md.'
         );

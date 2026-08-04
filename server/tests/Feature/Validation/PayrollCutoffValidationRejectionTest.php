@@ -24,7 +24,7 @@ class PayrollCutoffValidationRejectionTest extends TestCase
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         if (!$this->user) {
-            $this->markTestSkipped('no user available in test DB');
+            $this->markTestIncomplete('no user available in test DB');
         }
     }
 
@@ -74,7 +74,7 @@ class PayrollCutoffValidationRejectionTest extends TestCase
     {
         $existing = PayrollCutoff::whereNull('deleted_at')->first();
         if (!$existing) {
-            $this->markTestSkipped('no existing payroll_cutoffs row to collide with');
+            $this->markTestIncomplete('no existing payroll_cutoffs row to collide with');
         }
 
         $payload = $this->base([

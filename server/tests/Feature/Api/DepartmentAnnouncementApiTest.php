@@ -61,7 +61,7 @@ class DepartmentAnnouncementApiTest extends TestCase
     {
         $dept = Department::first();
         if (!$dept) {
-            $this->markTestSkipped('No department found.');
+            $this->markTestIncomplete('No department found.');
         }
 
         $response = $this->actingAs($this->user)->getJson("/api/department/{$dept->id}");
@@ -73,7 +73,7 @@ class DepartmentAnnouncementApiTest extends TestCase
     {
         $dept = Department::first();
         if (!$dept) {
-            $this->markTestSkipped('No department found.');
+            $this->markTestIncomplete('No department found.');
         }
 
         $response = $this->actingAs($this->user)->getJson("/api/department/{$dept->id}/department_handlers");
@@ -85,7 +85,7 @@ class DepartmentAnnouncementApiTest extends TestCase
     {
         $dept = Department::first();
         if (!$dept) {
-            $this->markTestSkipped('No department found.');
+            $this->markTestIncomplete('No department found.');
         }
 
         $response = $this->actingAs($this->user)->getJson("/api/department/{$dept->id}/users");
@@ -97,7 +97,7 @@ class DepartmentAnnouncementApiTest extends TestCase
     {
         $dept = Department::first();
         if (!$dept) {
-            $this->markTestSkipped('No department found.');
+            $this->markTestIncomplete('No department found.');
         }
 
         $response = $this->actingAs($this->user)->getJson("/api/department/{$dept->id}/default_schedule");
@@ -109,7 +109,7 @@ class DepartmentAnnouncementApiTest extends TestCase
     {
         $dept = Department::first();
         if (!$dept) {
-            $this->markTestSkipped('No department found.');
+            $this->markTestIncomplete('No department found.');
         }
 
         try {

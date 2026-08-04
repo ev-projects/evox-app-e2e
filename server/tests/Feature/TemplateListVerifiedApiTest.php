@@ -111,7 +111,7 @@ class TemplateListVerifiedApiTest extends TestCase
         // source_type != 'template', ScheduleController::destroy returns HTTP 200 with a
         // "not authorized" message body instead of HTTP 403.
         // This test documents the current (incorrect) behaviour — not the desired behaviour.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Requires a seed record with source_type != \'template\'. ' .
             'Documented known behaviour: backend returns HTTP 200 with a "not authorized" message ' .
             'instead of HTTP 403 when the record is not a template. ' .
@@ -126,7 +126,7 @@ class TemplateListVerifiedApiTest extends TestCase
         // is commented out on the DELETE /api/schedule/{id} route. Any authenticated user can
         // attempt to delete any template — there is no role/permission guard at the route level.
         // This test documents the gap; a separate security fix ticket is needed.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known security gap: permission:delete_schedule middleware is commented out. ' .
             'Any authenticated user can call DELETE /api/schedule/{id}. ' .
             'See template-list.registry.md [DEVELOPER VETTING].'

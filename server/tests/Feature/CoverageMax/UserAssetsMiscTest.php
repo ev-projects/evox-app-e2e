@@ -31,7 +31,7 @@ class UserAssetsMiscTest extends TestCase
     private function requireUser()
     {
         if (!$this->user) {
-            $this->markTestSkipped('No users in test DB.');
+            $this->markTestIncomplete('No users in test DB.');
         }
     }
 
@@ -102,6 +102,6 @@ class UserAssetsMiscTest extends TestCase
      */
     public function test_asset_export_body_needs_stored_procedures()
     {
-        $this->markTestSkipped('user/assetExport depends on EV_SP_Get_Assets, absent from the test DB.');
+        $this->markTestIncomplete('user/assetExport depends on EV_SP_Get_Assets, absent from the test DB.');
     }
 }

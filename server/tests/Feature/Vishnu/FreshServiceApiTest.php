@@ -136,13 +136,22 @@ class FreshServiceApiTest extends TestCase
     /** @test */
     public function test_workspaces_endpoint_returns_200_or_graceful_error()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/freshservice/workspaces', $this->apiKey);
+        $this->assertNotEquals(404, $response->status(), 'GET /api/freshservice/workspaces must exist.');
+        $this->assertNotEquals(500, $response->status());
     }
 
     /** @test */
     public function test_workspaces_success_response_has_message_and_content()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/freshservice/workspaces', $this->apiKey);
+        if ($response->status() === 200) {
+            $response->assertJsonStructure(['message', 'content']);
+        } else {
+            $this->assertNotNull($response->json('error'), 'Non-200 workspaces must use error envelope.');
+        }
     }
 
     // ─── External Curl endpoints — graceful failure (Pattern A) ──────────────
@@ -150,31 +159,41 @@ class FreshServiceApiTest extends TestCase
     /** @test */
     public function test_my_tickets_returns_error_response_not_500_when_external_api_unavailable()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/freshservice/tickets/my-tickets', $this->apiKey);
+        $this->assertNotEquals(500, $response->status(), 'FreshService Curl failure must return error_response, not 500.');
     }
 
     /** @test */
     public function test_create_ticket_returns_error_response_not_500_when_external_api_unavailable()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->postJson('/api/freshservice/tickets/', [], $this->apiKey);
+        $this->assertNotEquals(500, $response->status(), 'FreshService Curl failure must return error_response, not 500.');
     }
 
     /** @test */
     public function test_get_ticket_returns_error_response_not_500_when_external_api_unavailable()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/freshservice/tickets/999999', $this->apiKey);
+        $this->assertNotEquals(500, $response->status(), 'FreshService Curl failure must return error_response, not 500.');
     }
 
     /** @test */
     public function test_ticket_conversations_returns_error_response_not_500()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/freshservice/tickets/999999/conversations', $this->apiKey);
+        $this->assertNotEquals(500, $response->status(), 'FreshService Curl failure must return error_response, not 500.');
     }
 
     /** @test */
     public function test_ticket_reply_returns_error_response_not_500()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->postJson('/api/freshservice/tickets/999999/reply', [], $this->apiKey);
+        $this->assertNotEquals(500, $response->status(), 'FreshService Curl failure must return error_response, not 500.');
     }
 
     // ─── getUserSuggestions — DB-only (Pattern A) ────────────────────────────
@@ -182,19 +201,27 @@ class FreshServiceApiTest extends TestCase
     /** @test */
     public function test_user_suggestions_with_keyword_returns_200_and_json_array()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/freshservice/users/suggestions?keyword=Jo', $this->apiKey);
+        $response->assertStatus(200);
+        $this->assertIsArray($response->json(), 'User suggestions must return a JSON array.');
     }
 
     /** @test */
     public function test_user_suggestions_with_empty_keyword_returns_200_and_json_array()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/freshservice/users/suggestions?keyword=', $this->apiKey);
+        $this->assertNotEquals(500, $response->status());
     }
 
     /** @test */
     public function test_user_suggestions_with_nonsense_keyword_returns_200_and_empty_array()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/freshservice/users/suggestions?keyword=zzzzzzzzzzzzz_evox_test', $this->apiKey);
+        $response->assertStatus(200);
+        $this->assertIsArray($response->json());
     }
 
     // ─── File upload — no file provided → graceful error (Pattern A) ─────────
@@ -202,12 +229,16 @@ class FreshServiceApiTest extends TestCase
     /** @test */
     public function test_upload_image_without_file_returns_error_not_500()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->postJson('/api/freshservice/tickets/upload-image', [], $this->apiKey);
+        $this->assertNotEquals(500, $response->status(), 'upload-image without file must return graceful error, not 500.');
     }
 
     /** @test */
     public function test_save_attachment_without_file_returns_error_not_500()
     {
-        $this->markTestSkipped('UNSAFE sync: withoutMiddleware()+actingAs() would run the REAL sync body — live BHR call + whole-DB write (mass user/DTR/leave sync). Route existence + auth are proven by the without-token 401 test. Body execution is intentionally not run. See OUTGOING-CALL-SAFETY-AUDIT.md / finding A38.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->postJson('/api/freshservice/tickets/attachments', [], $this->apiKey);
+        $this->assertNotEquals(500, $response->status(), 'attachments without file must return graceful error, not 500.');
     }
 }

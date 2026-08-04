@@ -104,7 +104,7 @@ class ScheduleWriteTest extends TestCase
     {
         $schedule = Schedule::first();
         if (!$schedule) {
-            $this->markTestSkipped('No schedule found in database.');
+            $this->markTestIncomplete('No schedule found in database.');
         }
 
         $response = $this->actingAs($this->user)
@@ -132,7 +132,7 @@ class ScheduleWriteTest extends TestCase
             $schedule = Schedule::first();
         }
         if (!$schedule) {
-            $this->markTestSkipped('No schedule found in database.');
+            $this->markTestIncomplete('No schedule found in database.');
         }
 
         $response = $this->actingAs($this->user)
@@ -159,7 +159,7 @@ class ScheduleWriteTest extends TestCase
     {
         $schedule = Schedule::first();
         if (!$schedule) {
-            $this->markTestSkipped('No schedule found in database.');
+            $this->markTestIncomplete('No schedule found in database.');
         }
 
         $response = $this->actingAs($this->user)
@@ -198,7 +198,7 @@ class ScheduleWriteTest extends TestCase
     {
         $schedule = Schedule::first();
         if (!$schedule) {
-            $this->markTestSkipped('No schedule found in database.');
+            $this->markTestIncomplete('No schedule found in database.');
         }
 
         $response = $this->actingAs($this->user)

@@ -18,7 +18,19 @@ abstract class ApiTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->apiKey = env('CLIENT_API_KEY');
+        // Runtime API key — never static (see project standing rule). auth.apikey middleware
+        // (ejarnutowski/laravel-api-key) looks up X-Authorization against the api_keys table;
+        // env('CLIENT_API_KEY') was never defined anywhere, so every route behind that
+        // middleware rejected with a generic 401 regardless of JWT validity. DatabaseTransactions
+        // rolls this insert back after each test.
+        $this->apiKey = \Illuminate\Support\Str::random(64);
+        \Illuminate\Support\Facades\DB::table('api_keys')->insert([
+            'name'       => 'evox_e2e_' . strtolower(class_basename(static::class)) . '_' . now()->format('His') . '_' . uniqid(),
+            'key'        => $this->apiKey,
+            'active'     => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         $this->seed(\UserTestSeeder::class);
 
@@ -44,7 +56,7 @@ abstract class ApiTestCase extends TestCase
 
     protected function authenticatedPost(string $uri, array $payload = [])
     {
-        $token = $this->loginAndGetToken();
+        $token = $this->tokenForUserId(1593);
 
         return $this->json(
             'POST',

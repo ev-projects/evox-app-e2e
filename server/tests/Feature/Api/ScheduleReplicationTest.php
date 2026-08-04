@@ -90,7 +90,7 @@ class ScheduleReplicationTest extends TestCase
             ->first();
 
         if (!$templateSchedule) {
-            $this->markTestSkipped('No schedule with details and policies found.');
+            $this->markTestIncomplete('No schedule with details and policies found.');
         }
 
         $result = $this->scheduleRepo->copy_schedule_to_user($templateSchedule, $this->user);
@@ -108,7 +108,7 @@ class ScheduleReplicationTest extends TestCase
         $templateSchedule = Schedule::whereHas('schedule_details')->first();
 
         if (!$templateSchedule) {
-            $this->markTestSkipped('No schedule with details found.');
+            $this->markTestIncomplete('No schedule with details found.');
         }
 
         $originalDetailCount = $templateSchedule->schedule_details()->count();
@@ -132,7 +132,7 @@ class ScheduleReplicationTest extends TestCase
         $target = Schedule::whereDoesntHave('schedule_details')->first();
 
         if (!$source || !$target) {
-            $this->markTestSkipped('No suitable source or target schedule found.');
+            $this->markTestIncomplete('No suitable source or target schedule found.');
         }
 
         try {
@@ -152,7 +152,7 @@ class ScheduleReplicationTest extends TestCase
         $target = Schedule::whereDoesntHave('schedule_policies')->first();
 
         if (!$source || !$target) {
-            $this->markTestSkipped('No suitable schedules found for policy replication.');
+            $this->markTestIncomplete('No suitable schedules found for policy replication.');
         }
 
         try {
@@ -172,7 +172,7 @@ class ScheduleReplicationTest extends TestCase
         $target = Schedule::orderBy('id', 'desc')->first();
 
         if (!$source || !$target || $source->id == $target->id) {
-            $this->markTestSkipped('Need two different schedules.');
+            $this->markTestIncomplete('Need two different schedules.');
         }
 
         try {
@@ -199,7 +199,7 @@ class ScheduleReplicationTest extends TestCase
     {
         $schedule = Schedule::whereHas('schedule_details')->first();
         if (!$schedule) {
-            $this->markTestSkipped('No schedule with details found.');
+            $this->markTestIncomplete('No schedule with details found.');
         }
 
         $result = $this->scheduleRepo->show($schedule->id);

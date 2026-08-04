@@ -28,6 +28,7 @@ use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class CronSyncMockedTest extends TestCase
 {
@@ -40,7 +41,7 @@ class CronSyncMockedTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware(); // safe: all external deps are faked below before the controller resolves
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     protected function tearDown(): void
@@ -58,7 +59,9 @@ class CronSyncMockedTest extends TestCase
         return $m;
     }
 
-    public function get(string $uri)
+    // public + parent-compatible signature: overriding TestCase::get() with narrower
+    // visibility is a PHP fatal (surfaced on the 2026-07-27 box run; fix mirrors the box)
+    public function get($uri, array $headers = [])
     {
         return $this->actingAs($this->user)->getJson($uri);
     }
@@ -72,7 +75,7 @@ class CronSyncMockedTest extends TestCase
         $this->app->instance(BhrRepositoryInterface::class, $bhr);
 
         $dtr = Mockery::mock(DtrRepositoryInterface::class)->shouldIgnoreMissing();
-        $dtr->shouldReceive('bind_holidays_to_dtr')->once()->withAnyArgs()->andReturn([]);
+        $dtr->shouldReceive('bind_holidays_to_dtr')->once()->withAnyArgs()->andReturn(new EloquentCollection([]));
         $this->app->instance(DtrRepositoryInterface::class, $dtr);
 
         $r = $this->get('/api/cron/sync_holidays');
@@ -85,11 +88,11 @@ class CronSyncMockedTest extends TestCase
     public function sync_realtime_biometrics_runs_with_mocked_device()
     {
         $bio = Mockery::mock(BiometricsRepositoryInterface::class);
-        $bio->shouldReceive('get_biometrics')->once()->withAnyArgs()->andReturn(collect([]));
+        $bio->shouldReceive('get_biometrics')->once()->withAnyArgs()->andReturn(new EloquentCollection([]));
         $this->app->instance(BiometricsRepositoryInterface::class, $bio);
 
         $dtr = Mockery::mock(DtrRepositoryInterface::class)->shouldIgnoreMissing();
-        $dtr->shouldReceive('sync_biometrics_to_dtr')->once()->withAnyArgs()->andReturn([]);
+        $dtr->shouldReceive('sync_biometrics_to_dtr')->once()->withAnyArgs()->andReturn(new EloquentCollection([]));
         $this->app->instance(DtrRepositoryInterface::class, $dtr);
 
         $r = $this->get('/api/cron/sync_realtime_biometrics');

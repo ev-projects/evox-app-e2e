@@ -27,7 +27,7 @@ class AssignUserEmployeesBusinessRuleRejectionTest extends TestCase
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         $this->department = Department::first();
         if (!$this->user || !$this->department) {
-            $this->markTestSkipped('no user/department available in test DB');
+            $this->markTestIncomplete('no user/department available in test DB');
         }
     }
 
@@ -58,7 +58,7 @@ class AssignUserEmployeesBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function department_only_detach_bug_is_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'A payload with only a valid department_id and no user_id key passes validation ' .
             'and silently detaches every existing supervisee in that department — real, ' .
             'undoable write, not safe to POST. See matrices/assign-employees.md REAL BUG section.'

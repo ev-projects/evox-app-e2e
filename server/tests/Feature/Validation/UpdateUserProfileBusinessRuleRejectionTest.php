@@ -26,7 +26,7 @@ class UpdateUserProfileBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) { $this->markTestSkipped('no user available in test DB'); }
+        if (!$this->user) { $this->markTestIncomplete('no user available in test DB'); }
     }
 
     private function putProfile(array $payload)
@@ -60,7 +60,7 @@ class UpdateUserProfileBusinessRuleRejectionTest extends TestCase
             ->whereNull('deleted_at')
             ->whereNotNull('email')
             ->value('email');
-        if (!$otherEmail) { $this->markTestSkipped('no second active user with an email to collide with'); }
+        if (!$otherEmail) { $this->markTestIncomplete('no second active user with an email to collide with'); }
 
         $before = $this->snapshot();
         $this->putProfile($this->base(['email' => $otherEmail]))->assertStatus(422);
@@ -78,7 +78,7 @@ class UpdateUserProfileBusinessRuleRejectionTest extends TestCase
             ->whereNull('deleted_at')
             ->whereNotNull('mobile_number')
             ->value('mobile_number');
-        if (!$otherMobile) { $this->markTestSkipped('no second active user with a mobile_number to collide with'); }
+        if (!$otherMobile) { $this->markTestIncomplete('no second active user with a mobile_number to collide with'); }
 
         $before = $this->snapshot();
         $this->putProfile($this->base(['mobile_number' => $otherMobile]))->assertStatus(422);
@@ -94,7 +94,7 @@ class UpdateUserProfileBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function soft_deleted_collision_is_accept_path_not_rejection_documented_only()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Rule::unique(...)->whereNull(\'deleted_at\') means a soft-deleted user\'s email/' .
             'mobile_number is excluded from the uniqueness check — that is an accept-path ' .
             'behavior (no 422), not testable as a rejection. See matrices/update-profile.md.'
@@ -108,7 +108,7 @@ class UpdateUserProfileBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function email_format_gap_is_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'UpdateUserProfileRequest has no email-format rule server-side; a syntactically-' .
             'invalid-but-unique "email" would pass validation and overwrite a real profile — ' .
             'unsafe to PUT. See matrices/update-profile.md REAL BUG section.'

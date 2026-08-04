@@ -76,10 +76,11 @@ class CoeVerifiedApiTest extends TestCase
     {
         // COEController::all queries: COE::where('user_id', auth()->user()->id)
         //                                   ->orderBy('created_at', 'asc')->get()
+        // success_response wraps result in 'content' key (not 'data').
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/request/coe/', $this->apiKey);
         $response->assertStatus(200);
-        $this->assertIsArray($response->json('data'));
+        $this->assertIsArray($response->json('content'));
     }
 
     /** @test */
@@ -137,7 +138,7 @@ class CoeVerifiedApiTest extends TestCase
         // but is NOT in COERequest backend validation rules. Omitting it should ideally 422,
         // but the current implementation may silently proceed.
         // This test is marked as skipped — it documents the missing validation, not current behavior.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug BUG-002: show_compensation is Yup-required on the frontend but absent ' .
             'from COERequest backend validation rules. A POST without it may not 422. ' .
             'Fix: add show_compensation to COERequest::rules().'
@@ -152,7 +153,7 @@ class CoeVerifiedApiTest extends TestCase
         // controller starts, the catch block in the Redux action receives binary data, not JSON.
         // Formatter.alert_error() cannot parse it — the error is swallowed or shown as garbage.
         // This cannot be reproduced without mocking the BambooHR HTTP client.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug BUG-010: PDF arraybuffer response type prevents JSON error body parsing ' .
             'in the Redux catch block. Requires BambooHR HTTP client mock to reproduce. ' .
             'See COEController::create() and the Redux addCOE action.'
@@ -165,7 +166,7 @@ class CoeVerifiedApiTest extends TestCase
         // KNOWN BUG BUG-005 (Medium): EV_SP_COE_Generate_Sequence is called without a
         // wrapping DB transaction. Concurrent submissions from the same employee (or concurrent
         // employees at the same location) may produce duplicate sequence numbers.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug BUG-005: EV_SP_COE_Generate_Sequence has no transaction wrapping. ' .
             'Concurrent submissions may produce duplicate sequence numbers. ' .
             'Requires a parallel-request integration test — not safely reproducible in unit tests.'
@@ -178,7 +179,7 @@ class CoeVerifiedApiTest extends TestCase
         // KNOWN BUG BUG-004 (Low): COEController::create calls EV_SP_COE_Get_Template twice.
         // The first call is a debug-logging artifact — its result is discarded. Only the second
         // call's result is used for PDF rendering. No functional impact but wastes one DB round-trip.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug BUG-004: EV_SP_COE_Get_Template is called twice in COEController::create. ' .
             'First call result is discarded. Requires SP call counting via DB query log or mock.'
         );

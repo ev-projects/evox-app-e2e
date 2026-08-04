@@ -3,36 +3,21 @@
 // DRAFT — generated 2026-06-17, needs verification
 
 /**
- * DisputeBranchApiTest
+ * DisputeBranchApiTest — Vishnu Padmanabhan
  *
- * Goal: exercise the insertToOvertimeDispute and insertToRestDayWorkDispute code
- * paths so that EV_SP_PD_Autoamtion_Overtimes and EV_SP_PD_Autoamtion_RestDay
- * are called at least once during the test run, giving coverage to the three
- * previously-uncovered dispute branches (Rank 1, 2, 3 in the critical-gaps table).
+ * Covers overtime + rest_day_work dispute branches in OvertimeController and
+ * RestDayWorkController (request_mode=dispute + approve dispute branch).
  *
- * Dispute branch entry points:
- *   - OvertimeController::store    — triggered when request_mode === 'dispute'
- *   - OvertimeController::approve  — triggered when request_validity_checker() returns 2
- *   - RestDayWorkController::store — triggered when request_mode === 'dispute'
- *   - RestDayWorkController::approve — triggered when request_validity_checker() returns 2
- *
- * Test patterns:
- *   A — Controller logic: withoutMiddleware() + actingAs() → assert not 500
- *   B — Auth enforcement: no withoutMiddleware(), no Bearer token → 401
- *
- * Note: Pattern B for overtime/approve is also in OvertimeValidationApiTest.php.
- * The tests here are named differently (dispute-branch context) and kept for
- * completeness so this file is self-contained.
- *
- * Note: The SP name contains a typo in production (`Autoamtion` not `Automation`) —
- * tests deliberately rely on the existing SP name.
+ * Violations fixed (2026-06-18):
+ *   Fix A — runtime API key
+ *   Fix B — env-var user loading
+ *   Fix C — JWT authHeaders() replaces withoutMiddleware() + actingAs()
  */
 
 namespace Tests\Feature\Vishnu;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\Modules\User\Models\User;
 use App\Modules\Request\Models\Overtime;
 use App\Modules\Request\Models\RestDayWork;
 
@@ -40,38 +25,57 @@ class DisputeBranchApiTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private array $apiKey;
-    private User $user;
+    private string $apiKey;
+    protected ?int $userId = null;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->apiKey = [
-            'X-Authorization' => env(
-                'APP_API_KEY',
-                'RlYVynDl9ALmOtfCotsLS9iSr93bMzgpIWfoxLktznLfTUL3NfaNO5HittoAfA9Z'
-            ),
-        ];
+        $this->apiKey = \Illuminate\Support\Str::random(64);
+        \Illuminate\Support\Facades\DB::table('api_keys')->insert([
+            'name'       => 'evox_e2e_' . strtolower(class_basename(static::class)) . '_' . now()->format('His'),
+            'key'        => $this->apiKey,
+            'active'     => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-        $this->user = User::where('is_active', 1)
-            ->whereNotNull('email')
-            ->firstOrFail();
+        $this->userId = $this->requireUser('EMPLOYEE_PHILIPPINES');
+    }
+
+    private function loadUserByVariant(string $variant): ?int
+    {
+        $email = env('E2E_USER_' . strtoupper($variant));
+        if (!$email) return null;
+        return \App\Modules\User\Models\User::where('email', $email)->value('id');
+    }
+
+    private function requireUser(string $variant): int
+    {
+        $id = $this->loadUserByVariant($variant);
+        if (!$id) $this->markTestIncomplete("E2E_USER_{$variant} not found in DB");
+        return $id;
+    }
+
+    private function authHeaders(): array
+    {
+        $user = \App\Modules\User\Models\User::findOrFail($this->userId);
+        $token = auth('api')->login($user);
+        return ['Authorization' => "Bearer {$token}", 'X-Authorization' => $this->apiKey];
     }
 
     // ─── Pattern B — Auth enforcement ────────────────────────────────────────
 
     /**
      * @test
-     * PUT /api/request/overtime/approve/{id} without token must return 401.
-     * Dispute branch (validity==2) is inside approve — auth gate fires first.
      */
     public function test_overtime_approve_dispute_branch_without_token_returns_401()
     {
         $response = $this->putJson(
             '/api/request/overtime/approve/1',
             [],
-            $this->apiKey
+            ['X-Authorization' => $this->apiKey]
         );
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
@@ -79,15 +83,13 @@ class DisputeBranchApiTest extends TestCase
 
     /**
      * @test
-     * PUT /api/request/rest_day_work/approve/{id} without token must return 401.
-     * Dispute branch (validity==2) is inside approve — auth gate fires first.
      */
     public function test_rdw_approve_dispute_branch_without_token_returns_401()
     {
         $response = $this->putJson(
             '/api/request/rest_day_work/approve/1',
             [],
-            $this->apiKey
+            ['X-Authorization' => $this->apiKey]
         );
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
@@ -97,17 +99,11 @@ class DisputeBranchApiTest extends TestCase
 
     /**
      * @test
-     * POST /api/request/overtime with request_mode=dispute directly calls
-     * insertToOvertimeDispute() → EV_SP_PD_Autoamtion_Overtimes.
-     * The SP will fire; it may fail gracefully in the test environment.
-     * Assert: not 500, response has 'message' or 'error' key.
      */
     public function test_overtime_store_dispute_mode_calls_sp_and_does_not_return_500()
     {
-        $this->withoutMiddleware();
-
         $payload = [
-            'user_id'       => $this->user->id,
+            'user_id'       => $this->userId,
             'date'          => '2026-01-20',
             'type'          => 'pre_overtime',
             'amount'        => '01:00',
@@ -116,14 +112,11 @@ class DisputeBranchApiTest extends TestCase
             'session_id'    => 'phpunit-dispute-ot',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/request/overtime', $payload, $this->apiKey);
+        $response = $this->postJson('/api/request/overtime', $payload, $this->authHeaders());
 
         $this->assertNotEquals(500, $response->status(),
             'Overtime dispute-mode store must not throw 500 — SP failure must be caught.');
 
-        // Response envelope: success_response wraps as {message, content} or
-        // error_response wraps as {error}. Either is acceptable for coverage.
         $body = $response->json();
         $this->assertTrue(
             isset($body['message']) || isset($body['error']),
@@ -133,15 +126,11 @@ class DisputeBranchApiTest extends TestCase
 
     /**
      * @test
-     * Overtime dispute-mode store: on 201, envelope must have 'message' and 'content'.
-     * On non-201 (SP failed gracefully), envelope must have 'error'.
      */
     public function test_overtime_store_dispute_mode_response_envelope_shape()
     {
-        $this->withoutMiddleware();
-
         $payload = [
-            'user_id'      => $this->user->id,
+            'user_id'      => $this->userId,
             'date'         => '2026-01-21',
             'type'         => 'post_overtime',
             'amount'       => '00:30',
@@ -149,8 +138,7 @@ class DisputeBranchApiTest extends TestCase
             'session_id'   => 'phpunit-dispute-ot-2',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/request/overtime', $payload, $this->apiKey);
+        $response = $this->postJson('/api/request/overtime', $payload, $this->authHeaders());
 
         $this->assertNotEquals(500, $response->status());
 
@@ -168,20 +156,29 @@ class DisputeBranchApiTest extends TestCase
 
     /**
      * @test
-     * PUT /api/request/overtime/approve/{id} on an existing overtime record.
-     * request_validity_checker() will evaluate the user+date combination;
-     * if it returns 2 the dispute branch fires; otherwise the normal approve
-     * path runs. Either way, must not return 500.
      */
     public function test_overtime_approve_with_existing_record_does_not_return_500()
     {
-        $this->withoutMiddleware();
-
-        $overtime = Overtime::whereNull('deleted_at')->first();
+        // Employee submits → Supervisor approves (correct business flow)
+        $overtime = Overtime::where('user_id', $this->userId)
+            ->whereNull('deleted_at')
+            ->first();
 
         if (!$overtime) {
-            $this->markTestSkipped('No overtime records in DB — cannot test approve dispute branch.');
+            $this->markTestIncomplete('Cat 1: No overtime records for this user — submit an overtime request first.');
         }
+
+        $supervisorId = $this->loadUserByVariant('SUPERVISOR_PHILIPPINES');
+        if (!$supervisorId) {
+            $this->markTestIncomplete('Cat 2: E2E_USER_SUPERVISOR_PHILIPPINES not set — add this env var to server/.env.');
+        }
+
+        $supervisorUser = \App\Modules\User\Models\User::findOrFail($supervisorId);
+        $supervisorToken = auth('api')->login($supervisorUser);
+        $supervisorHeaders = [
+            'Authorization'   => "Bearer {$supervisorToken}",
+            'X-Authorization' => $this->apiKey,
+        ];
 
         $payload = [
             'user_id' => $overtime->user_id,
@@ -190,33 +187,25 @@ class DisputeBranchApiTest extends TestCase
             'amount'  => '01:00',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->putJson('/api/request/overtime/approve/' . $overtime->id, $payload, $this->apiKey);
+        $response = $this->putJson('/api/request/overtime/approve/' . $overtime->id, $payload, $supervisorHeaders);
 
         $this->assertNotEquals(500, $response->status(),
-            'Overtime approve (dispute or normal branch) must not throw 500.');
+            'Supervisor approving employee overtime must not throw 500.');
     }
 
     /**
      * @test
-     * PUT /api/request/overtime/approve on a non-existent ID:
-     * the normal branch reaches findOrFail and throws ModelNotFoundException,
-     * which is caught and returned as error_response — never 500.
-     * This also exercises the request_validity_checker() call path before the ID lookup.
      */
     public function test_overtime_approve_nonexistent_id_uses_error_envelope_not_500()
     {
-        $this->withoutMiddleware();
-
         $payload = [
-            'user_id' => $this->user->id,
+            'user_id' => $this->userId,
             'date'    => '2026-01-22',
             'type'    => 'pre_overtime',
             'amount'  => '01:00',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->putJson('/api/request/overtime/approve/999999', $payload, $this->apiKey);
+        $response = $this->putJson('/api/request/overtime/approve/999999', $payload, $this->authHeaders());
 
         $this->assertNotEquals(500, $response->status());
         $this->assertNotNull(
@@ -229,18 +218,11 @@ class DisputeBranchApiTest extends TestCase
 
     /**
      * @test
-     * POST /api/request/rest_day_work with request_mode=dispute directly calls
-     * insertToRestDayWorkDispute() → EV_SP_PD_Autoamtion_RestDay.
-     * The store method also does a DTR is_rest_day check before calling the SP;
-     * if no DTR row exists for that date the check is bypassed (dtr_check == null).
-     * Assert: not 500, response has 'message' or 'error' key.
      */
     public function test_rdw_store_dispute_mode_calls_sp_and_does_not_return_500()
     {
-        $this->withoutMiddleware();
-
         $payload = [
-            'user_id'       => $this->user->id,
+            'user_id'       => $this->userId,
             'date'          => '2026-01-25',
             'start_time'    => '08:00',
             'end_time'      => '17:00',
@@ -250,8 +232,7 @@ class DisputeBranchApiTest extends TestCase
             'session_id'    => 'phpunit-dispute-rdw',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/request/rest_day_work', $payload, $this->apiKey);
+        $response = $this->postJson('/api/request/rest_day_work', $payload, $this->authHeaders());
 
         $this->assertNotEquals(500, $response->status(),
             'RDW dispute-mode store must not throw 500 — SP failure must be caught.');
@@ -265,15 +246,11 @@ class DisputeBranchApiTest extends TestCase
 
     /**
      * @test
-     * RDW dispute-mode store: on 201, envelope has 'message' and 'content'.
-     * On non-201 (DTR is_rest_day==0 block, or SP failure), envelope has 'error'.
      */
     public function test_rdw_store_dispute_mode_response_envelope_shape()
     {
-        $this->withoutMiddleware();
-
         $payload = [
-            'user_id'    => $this->user->id,
+            'user_id'    => $this->userId,
             'date'       => '2026-01-26',
             'start_time' => '09:00',
             'end_time'   => '18:00',
@@ -282,8 +259,7 @@ class DisputeBranchApiTest extends TestCase
             'session_id'   => 'phpunit-dispute-rdw-2',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/request/rest_day_work', $payload, $this->apiKey);
+        $response = $this->postJson('/api/request/rest_day_work', $payload, $this->authHeaders());
 
         $this->assertNotEquals(500, $response->status());
 
@@ -301,18 +277,13 @@ class DisputeBranchApiTest extends TestCase
 
     /**
      * @test
-     * PUT /api/request/rest_day_work/approve/{id} on an existing RDW record.
-     * request_validity_checker() determines the branch; either the normal
-     * approve or the dispute branch runs. Must not return 500.
      */
     public function test_rdw_approve_with_existing_record_does_not_return_500()
     {
-        $this->withoutMiddleware();
-
         $rdw = RestDayWork::whereNull('deleted_at')->first();
 
         if (!$rdw) {
-            $this->markTestSkipped('No rest_day_work records in DB — cannot test approve dispute branch.');
+            $this->markTestIncomplete('Cat 1: No rest_day_work records in DB — submit a rest-day-work request first.');
         }
 
         $payload = [
@@ -323,8 +294,7 @@ class DisputeBranchApiTest extends TestCase
             'break_time' => '01:00',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->putJson('/api/request/rest_day_work/approve/' . $rdw->id, $payload, $this->apiKey);
+        $response = $this->putJson('/api/request/rest_day_work/approve/' . $rdw->id, $payload, $this->authHeaders());
 
         $this->assertNotEquals(500, $response->status(),
             'RDW approve (dispute or normal branch) must not throw 500.');
@@ -332,23 +302,18 @@ class DisputeBranchApiTest extends TestCase
 
     /**
      * @test
-     * PUT /api/request/rest_day_work/approve on a non-existent ID:
-     * the catch block returns error_response — must never be 500.
      */
     public function test_rdw_approve_nonexistent_id_uses_error_envelope_not_500()
     {
-        $this->withoutMiddleware();
-
         $payload = [
-            'user_id'    => $this->user->id,
+            'user_id'    => $this->userId,
             'date'       => '2026-01-27',
             'start_time' => '08:00',
             'end_time'   => '17:00',
             'break_time' => '01:00',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->putJson('/api/request/rest_day_work/approve/999999', $payload, $this->apiKey);
+        $response = $this->putJson('/api/request/rest_day_work/approve/999999', $payload, $this->authHeaders());
 
         $this->assertNotEquals(500, $response->status());
         $this->assertNotNull(

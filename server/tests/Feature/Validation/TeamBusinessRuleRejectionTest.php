@@ -34,7 +34,7 @@ class TeamBusinessRuleRejectionTest extends TestCase
         $this->department = Department::first();
         $this->existingUser = User::where('is_active', 1)->whereNotNull('department_id')->first();
         if (!$this->user || !$this->department || !$this->existingUser) {
-            $this->markTestSkipped('no user/department available in test DB');
+            $this->markTestIncomplete('no user/department available in test DB');
         }
     }
 
@@ -64,7 +64,7 @@ class TeamBusinessRuleRejectionTest extends TestCase
     public function rejects_user_already_on_a_team_via_raw_db_row_and_writes_nothing()
     {
         $existing = DB::table('team_users')->first();
-        if (!$existing) { $this->markTestSkipped('no existing team_users row to collide with'); }
+        if (!$existing) { $this->markTestIncomplete('no existing team_users row to collide with'); }
 
         $before = $this->counts();
         $this->postTeam($this->base(['team_users' => [$existing->user_id]]))->assertStatus(422);
@@ -80,7 +80,7 @@ class TeamBusinessRuleRejectionTest extends TestCase
             ->whereNotNull('department_id')
             ->where('department_id', '!=', $this->department->id)
             ->first();
-        if (!$otherDeptUser) { $this->markTestSkipped('no user in a different department to test the department-match rule'); }
+        if (!$otherDeptUser) { $this->markTestIncomplete('no user in a different department to test the department-match rule'); }
 
         $before = $this->counts();
         $this->postTeam($this->base(['team_users' => [$otherDeptUser->id]]))->assertStatus(422);

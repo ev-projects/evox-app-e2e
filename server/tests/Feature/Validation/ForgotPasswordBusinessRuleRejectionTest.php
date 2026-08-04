@@ -53,7 +53,7 @@ class ForgotPasswordBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function valid_email_write_and_email_send_is_documented_not_exercised()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'The only way to reach apply_temporary_password() + sendForgotPasswordRequestEmail() ' .
             'is a real, existing user email, which would irreversibly overwrite that user\'s ' .
             'password and send a real email — not automatable. See matrices/forgot-password.md.'

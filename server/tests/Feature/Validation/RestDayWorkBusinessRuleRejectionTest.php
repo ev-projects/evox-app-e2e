@@ -24,7 +24,7 @@ class RestDayWorkBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     /** @test — duplicate (user_id,date) is rejected by Rule::unique('rest_day_works','date') */
@@ -32,7 +32,7 @@ class RestDayWorkBusinessRuleRejectionTest extends TestCase
     {
         $existing = DB::table('rest_day_works')->whereNull('deleted_at')
                       ->whereNotNull('date')->first();
-        if (!$existing) $this->markTestSkipped('no existing rest_day_work row to collide with');
+        if (!$existing) $this->markTestIncomplete('no existing rest_day_work row to collide with');
 
         // Otherwise-valid payload whose (user_id,date) collides with an existing row.
         // FormRequest unique rule fires BEFORE the controller -> 422, no row written.
@@ -55,15 +55,15 @@ class RestDayWorkBusinessRuleRejectionTest extends TestCase
         // error_response(...) (default HTTP 400, NOT 422 — a controller-layer reject, not a
         // FormRequest one) BEFORE ->store() is ever called.
         $dtrUser = User::find(1);
-        if (!$dtrUser) $this->markTestSkipped('DTR fixture user (id=1) not present in test DB');
+        if (!$dtrUser) $this->markTestIncomplete('DTR fixture user (id=1) not present in test DB');
 
         $existingDtr = DB::table('dtrs')->where('user_id', 1)->where('date', '2019-01-01')
                           ->where('is_rest_day', 0)->first();
-        if (!$existingDtr) $this->markTestSkipped('expected workday DTR fixture row not present');
+        if (!$existingDtr) $this->markTestIncomplete('expected workday DTR fixture row not present');
 
         $collision = DB::table('rest_day_works')->where('user_id', 1)->where('date', '2019-01-01')
                         ->whereNull('deleted_at')->first();
-        if ($collision) $this->markTestSkipped('a rest_day_work already exists for the fixture date; would hit the unique rule instead of the DTR cross-check');
+        if ($collision) $this->markTestIncomplete('a rest_day_work already exists for the fixture date; would hit the unique rule instead of the DTR cross-check');
 
         $resp = $this->actingAs($dtrUser)->postJson('/api/request/rest_day_work', [
             'user_id'    => 1,
@@ -83,7 +83,7 @@ class RestDayWorkBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function dispute_mode_sp_path_is_documented_as_db_layer()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Dispute-mode branch calls EV_SP_PD_Autoamtion_RestDay via a raw SP CALL; not safely ' .
             'unit-testable on the shared dump (risk of breaking the DatabaseTransactions rollback ' .
             'guarantee). See matrices/rest-day-work.md.'

@@ -43,7 +43,7 @@ class AlterLogPunchNegativeTest extends TestCase
                 'created_by' => $ownerId,
             ]);
         } catch (\Throwable $e) {
-            $this->markTestSkipped('alter_log_punches_new create failed (schema): ' . $e->getMessage());
+            $this->markTestIncomplete('alter_log_punches_new create failed (schema): ' . $e->getMessage());
         }
     }
 

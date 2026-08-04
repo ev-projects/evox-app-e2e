@@ -45,7 +45,7 @@ class UserEndpointsTest extends TestCase
     private function requireUser()
     {
         if (!$this->user) {
-            $this->markTestSkipped('No users in test DB.');
+            $this->markTestIncomplete('No users in test DB.');
         }
     }
 
@@ -266,7 +266,7 @@ class UserEndpointsTest extends TestCase
         // transaction — aborting the whole PHPUnit run, not just this test. Auth coverage
         // is retained by test_list_via_role_without_token_returns_401; the controller body
         // can only be exercised on a DB that has the stored procedures loaded.
-        $this->markTestSkipped('role/{role}/users depends on stored procedures absent from the test DB.');
+        $this->markTestIncomplete('role/{role}/users depends on stored procedures absent from the test DB.');
     }
 
     /** @test */

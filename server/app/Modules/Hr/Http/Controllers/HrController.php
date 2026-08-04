@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Modules\Changelogs\Models\ChangeLogs;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 use App\Http\Controllers\Controller;
 
@@ -14,12 +15,16 @@ class HrController extends Controller
     // get all announcements
     public function announcements()
     {
-        $announcements = ChangeLogs::with('user')->orderBy('log_date', 'DESC')->get()->toArray();
+        try {
+            $announcements = ChangeLogs::with('user')->orderBy('log_date', 'DESC')->get()->toArray();
 
-        return success_response(
-            trans('messages.fetch_hr_announcements_success'), 
-            new Collection($announcements)
-        );
+            return success_response(
+                trans('messages.fetch_hr_announcements_success'),
+                new Collection($announcements)
+            );
+        } catch (\Throwable $e) {
+            return error_response(trans('messages.error_default'), new Exception($e->getMessage(), 0, $e));
+        }
     }
 
     // get announcement

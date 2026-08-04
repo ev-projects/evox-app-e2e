@@ -27,10 +27,7 @@ class DashboardApiTest extends TestCase
     // GET /api/get_dashboard_all/{page_type}
     // =========================================================================
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_without_token_returns_401()
     {
         $response = $this->getJson('/api/get_dashboard_all/3', $this->apiKey);
@@ -56,10 +53,7 @@ class DashboardApiTest extends TestCase
     // GET /api/get_dashboard_all/3 — announcements, no pagination
     // =========================================================================
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_page_type_3_returns_200_with_departments_and_announcements()
     {
         $this->withoutMiddleware();
@@ -73,10 +67,7 @@ class DashboardApiTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_page_type_3_departments_is_array()
     {
         $this->withoutMiddleware();
@@ -85,10 +76,7 @@ class DashboardApiTest extends TestCase
         $this->assertIsArray($response->json('data.departments'));
     }
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_page_type_3_announcements_is_array()
     {
         $this->withoutMiddleware();
@@ -101,10 +89,7 @@ class DashboardApiTest extends TestCase
     // PATTERN A — Pagination: page param returns <= 3 items
     // =========================================================================
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_page_type_3_with_page_param_returns_at_most_3_announcements()
     {
         $this->withoutMiddleware();
@@ -115,10 +100,7 @@ class DashboardApiTest extends TestCase
         $this->assertLessThanOrEqual(3, count($announcements));
     }
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_page_type_3_with_dep_id_param_returns_200()
     {
         $this->withoutMiddleware();
@@ -132,10 +114,7 @@ class DashboardApiTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_page_type_3_with_dep_id_all_treated_as_null_returns_200()
     {
         $this->withoutMiddleware();
@@ -154,10 +133,7 @@ class DashboardApiTest extends TestCase
     // GET /api/get_dashboard_all/3?page=9999
     // =========================================================================
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_page_type_3_with_very_high_page_does_not_500()
     {
         $this->withoutMiddleware();
@@ -226,17 +202,14 @@ class DashboardApiTest extends TestCase
     // Known production bug markers
     // =========================================================================
 
-    /**
-     * @test
-     * @group dead-code
-     */
+    /** @test */
     public function test_get_dashboard_all_page_type_1_is_known_bug_dd_call()
     {
         // PRODUCTION BUG: get_dashboard_all with page_type=1 (get_today_leave_list) has a
         // dd() debug dump call on line 350 of BookingController.php that would dump-and-die
         // in production if this code path were hit. The SP also receives 5 args instead of
         // the required 7 for EH_SP_Dashboard. This route is not safely testable.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known production bug: BookingController::get_today_leave_list() has an un-removed dd() call ' .
             'on line 350 and passes 5 args to EH_SP_Dashboard which expects 7. ' .
             'See BookingController::get_today_leave_list().'
@@ -250,7 +223,7 @@ class DashboardApiTest extends TestCase
         // If the Redis sidecar is unreachable, every notification request blocks a PHP-FPM
         // worker for 5 minutes. There is no circuit breaker or short-circuit fallback.
         // This cannot be reproduced in a unit test without mocking the HTTP client.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known production bug: RedisController curl timeout is 300 seconds with no circuit breaker. ' .
             'Requires HTTP client mock to test. See RedisController::get_redis_notifications().'
         );

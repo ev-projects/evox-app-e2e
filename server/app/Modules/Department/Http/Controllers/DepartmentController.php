@@ -162,7 +162,8 @@ class DepartmentController extends Controller
      */
     public function default_schedule($id){
         try {
-            $schedule = $this->department->find( $id )->defaultSchedule()->first();
+            $dept = $this->department->find( $id );
+            $schedule = $dept ? $dept->defaultSchedule()->first() : null;
 
             return success_response(
                 trans('messages.find_department_success'), 
@@ -180,7 +181,13 @@ class DepartmentController extends Controller
     public function assign_handlers( AssignDepartmentHandlersRequest $request, $id ){
         try {
             log_activity( trans('messages.department_assign_handlers_attempt') );
-            $department = $this->department->assign_handlers( $id, $request->get('user_id') );
+
+             $userIds = $request->get('user_id') ?? [];
+        if (!is_array($userIds)) {
+            $userIds = [$userIds];
+        }
+
+            $department = $this->department->assign_handlers( $id, $userIds );
 
             return success_response(
                 trans('messages.department_assign_handlers_success'), 

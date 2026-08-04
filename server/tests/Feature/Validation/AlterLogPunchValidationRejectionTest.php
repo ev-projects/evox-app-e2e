@@ -39,7 +39,7 @@ class AlterLogPunchValidationRejectionTest extends TestCase
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         if (!$this->user) {
-            $this->markTestSkipped('no user available in test DB');
+            $this->markTestIncomplete('no user available in test DB');
         }
     }
 
@@ -102,7 +102,7 @@ class AlterLogPunchValidationRejectionTest extends TestCase
     {
         $u = User::find(4391);
         if (!$u) {
-            $this->markTestSkipped('punch-history conflict fixture user (id=4391) not present in test DB');
+            $this->markTestIncomplete('punch-history conflict fixture user (id=4391) not present in test DB');
         }
 
         $resp = $this->actingAs($u)->postJson('/api/request/alter_log_punch', [

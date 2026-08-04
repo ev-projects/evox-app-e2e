@@ -27,10 +27,8 @@ import axios from 'axios';
 
 // ── imports ──────────────────────────────────────────────────────────────────
 import {
-  fetchDtrSummary,
   fetchNewDtrSummary,
   fetchDtrConflict,
-  fetchDtrMismatch,
   exportDtrSummary as exportDtrSummaryFromDtrSummaryActions,
   fetchDtrMultiLogsSummary,
   exportDtrMultiLogsSummary,
@@ -127,39 +125,6 @@ beforeEach(() => {
 // dtrSummaryActions
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 describe('dtrSummaryActions', () => {
-  test('fetchDtrSummary — success dispatches FETCH_DTR_SUMMARY_SUCCESS', async () => {
-    API.call.mockResolvedValueOnce({ data: { content: { has_next_page: false, items: [] } } });
-    const dispatch = jest.fn();
-    fetchDtrSummary(null)(dispatch, jest.fn());
-    await flushPromises();
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'FETCH_DTR_SUMMARY_SUCCESS' })
-    );
-  });
-
-  test('fetchDtrSummary — success with has_next_page clicks btn-generate', async () => {
-    const btn = document.createElement('button');
-    btn.id = 'btn-generate';
-    document.body.appendChild(btn);
-    const clickSpy = jest.spyOn(btn, 'click').mockImplementation(() => {});
-    API.call.mockResolvedValueOnce({ data: { content: { has_next_page: true } } });
-    const dispatch = jest.fn();
-    fetchDtrSummary({ page: 2 })(dispatch, jest.fn());
-    await flushPromises();
-    expect(clickSpy).toHaveBeenCalled();
-    document.body.removeChild(btn);
-  });
-
-  test('fetchDtrSummary — error dispatches FETCH_DTR_SUMMARY_BATCH_ERROR', async () => {
-    API.call.mockRejectedValueOnce({ status: 500 });
-    const dispatch = jest.fn();
-    fetchDtrSummary(null)(dispatch, jest.fn());
-    await flushPromises();
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'FETCH_DTR_SUMMARY_BATCH_ERROR' })
-    );
-  });
-
   test('fetchNewDtrSummary — success dispatches FETCH_NEW_DTR_SUMMARY_SUCCESS', async () => {
     API.call.mockResolvedValueOnce({ data: { content: { has_next_page: false } } });
     const dispatch = jest.fn();
@@ -196,26 +161,6 @@ describe('dtrSummaryActions', () => {
     API.call.mockRejectedValueOnce({ status: 500 });
     const dispatch = jest.fn();
     fetchDtrConflict(null)(dispatch, jest.fn());
-    await flushPromises();
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'FETCH_DTR_SUMMARY_BATCH_ERROR' })
-    );
-  });
-
-  test('fetchDtrMismatch — success dispatches FETCH_NEW_DTR_SUMMARY_SUCCESS', async () => {
-    API.call.mockResolvedValueOnce({ data: { content: {} } });
-    const dispatch = jest.fn();
-    fetchDtrMismatch(null)(dispatch, jest.fn());
-    await flushPromises();
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'FETCH_NEW_DTR_SUMMARY_SUCCESS' })
-    );
-  });
-
-  test('fetchDtrMismatch — error', async () => {
-    API.call.mockRejectedValueOnce({ status: 500 });
-    const dispatch = jest.fn();
-    fetchDtrMismatch(null)(dispatch, jest.fn());
     await flushPromises();
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'FETCH_DTR_SUMMARY_BATCH_ERROR' })

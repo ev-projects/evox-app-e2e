@@ -1,6 +1,7 @@
 // evoxtest_DtrDeep_frontend.test.js
-// DtrSummary.js and RecentDtr.js — same ref-based direct-handler-call pattern, targeting
-// componentDidMount auto-fetch chains and onSubmitHandler branches.
+// RecentDtr.js — ref-based direct-handler-call pattern, targeting onSubmitHandler branches.
+// (DtrSummary.js's own tests were removed — the component was deleted as dead code and
+// superseded by container/MyTeam/DtrSummaryNew, which is covered separately.)
 
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -21,7 +22,6 @@ jest.mock('../../components/DatePickerComponent/DatePicker.js', () => ({
 import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import DtrSummary from '../../container/MyTeam/DtrSummary/DtrSummary';
 import RecentDtr from '../../components/Dashboard/RecentDtr/RecentDtr';
 
 function renderWithRef(Component, props) {
@@ -34,43 +34,8 @@ function renderWithRef(Component, props) {
   return { ref, ...utils };
 }
 
-const settings = { current_payroll_cutoff: { start_date: '2026-03-01', end_date: '2026-03-31' } };
-
 beforeEach(() => {
   jest.clearAllMocks();
-});
-
-describe('DtrSummary — componentDidMount auto-fetch + handler branches', () => {
-  const defaultProps = {
-    fetchDtrSummary: jest.fn(),
-    exportDtrSummary: jest.fn(),
-    exportNewDtrSummary: jest.fn(),
-    dtrSummary: { instance: { column: {} } },
-    settings,
-  };
-
-  test('componentDidMount with departments_handled triggers onSubmitHandler and fetchDtrSummary', () => {
-    renderWithRef(DtrSummary, {
-      ...defaultProps,
-      user: { id: 1, departments_handled: [{ id: 5, department_name: 'Engineering' }] },
-    });
-    expect(defaultProps.fetchDtrSummary).toHaveBeenCalled();
-  });
-
-  test('componentDidMount with no departments_handled does not auto-fetch', () => {
-    renderWithRef(DtrSummary, { ...defaultProps, user: { id: 1, departments_handled: [] } });
-    expect(defaultProps.fetchDtrSummary).not.toHaveBeenCalled();
-  });
-
-  test('onSubmitHandler paginates using dtrSummary.pagination.has_next_page', () => {
-    const { ref } = renderWithRef(DtrSummary, {
-      ...defaultProps,
-      user: { id: 1, departments_handled: [] },
-      dtrSummary: { instance: { column: {} }, pagination: { current_page: 2, has_next_page: true } },
-    });
-    ref.current.onSubmitHandler({ valid_from: new Date('2026-03-01'), valid_to: new Date('2026-03-31'), department_id: 5 });
-    expect(defaultProps.fetchDtrSummary).toHaveBeenCalled();
-  });
 });
 
 describe('RecentDtr — handler branches', () => {

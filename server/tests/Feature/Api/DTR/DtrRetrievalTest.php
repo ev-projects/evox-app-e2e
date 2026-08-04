@@ -34,7 +34,7 @@ class DtrRetrievalTest extends ApiTestCase
     /** @test */
     public function dtr_002_empty_dtr_period()
     {
-        [$user_id, $token] = $this->loginAndGetToken(true);
+        [$user_id, $token] = [1593, $this->tokenForUserId(1593)];
         
         $response = $this->json(
             'GET',
@@ -59,7 +59,7 @@ class DtrRetrievalTest extends ApiTestCase
     /** @test */
     public function dtr_004_single_day_retrieval()
     {
-        [$user_id, $token] = $this->loginAndGetToken(true);
+        [$user_id, $token] = [1593, $this->tokenForUserId(1593)];
 
         $response = $this->json(
             'GET',
@@ -77,7 +77,7 @@ class DtrRetrievalTest extends ApiTestCase
     /** @test */
     public function dtr_005_large_date_range_retrieval()
     {
-        [$user_id, $token] = $this->loginAndGetToken(true);
+        [$user_id, $token] = [1593, $this->tokenForUserId(1593)];
 
         $response = $this->json(
             'GET',

@@ -105,7 +105,6 @@ import MyRequests from '../../container/MyRequests/MyRequests';
 import Overtime from '../../container/Request/Overtime/Overtime';
 import ChangeSchedule from '../../container/Request/ChangeSchedule/ChangeSchedule';
 import RestDayWork from '../../container/Request/RestDayWork/RestDayWork';
-import DtrSummary from '../../container/MyTeam/DtrSummary/DtrSummary';
 import AssetManagementForm from '../../components/AssetManagementForm/AssetManagementForm';
 import DailyTimeRecord from '../../container/DailyTimeRecord/DailyTimeRecord';
 import RecentDtr from '../../components/Dashboard/RecentDtr/RecentDtr';
@@ -158,15 +157,6 @@ describe('Real connect() wiring — mapStateToProps/mapDispatchToProps coverage'
 
   test('RestDayWork mounts via the real connected export', () => {
     expect(() => renderWithStore(<RestDayWork params={{}} />)).not.toThrow();
-  });
-
-  // NOTE: DtrSummary.js's own mapStateToProps never maps state.user, despite render()
-  // reading this.props.user.departments_handled directly (a latent app bug — not
-  // fixing app code here, just supplying it as an own-prop so mount doesn't crash).
-  test('DtrSummary mounts via the real connected export', () => {
-    expect(() =>
-      renderWithStore(<DtrSummary params={{}} user={{ id: 1, departments_handled: [] }} />)
-    ).not.toThrow();
   });
 
   test('AssetManagementForm mounts via the real connected export (create mode)', () => {

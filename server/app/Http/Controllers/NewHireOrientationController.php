@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Auth;
 use Carbon\Carbon;
+use Exception;
 
 class NewHireOrientationController extends Controller
 {
@@ -26,6 +27,21 @@ class NewHireOrientationController extends Controller
      */
     public function store(Request $request)
     {
+          $request->validate([
+        'nho_date'                        => 'required|date',
+        'onboarding_exp_rating'           => 'required|integer|min:1|max:5',
+        'recruitment_exp_rating'          => 'required|integer|min:1|max:5',
+        'schedule_awareness_rating'       => 'required|integer|min:1|max:5',
+        'topic_relevance_rating'          => 'required|integer|min:1|max:5',
+        'facilitator_id'                  => 'required|integer',
+        'facilitator_knowledge_rating'    => 'required|integer|min:1|max:5',
+        'facilitator_presentation_rating' => 'required|integer|min:1|max:5',
+        'facilitator_response_rating'     => 'required|integer|min:1|max:5',
+        'equipment_rating'                => 'required|integer|min:1|max:5',
+        'accessibility_rating'            => 'required|integer|min:1|max:5',
+        'welcome_rating'                  => 'required|integer|min:1|max:5',
+    ]);
+    
         try {
             $fields = [
                 'nho_date',

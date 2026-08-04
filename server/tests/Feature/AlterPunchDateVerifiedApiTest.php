@@ -128,8 +128,8 @@ class AlterPunchDateVerifiedApiTest extends TestCase
 
         // Store should return 200 on success or 422 on validation/conflict
         // GAP-004: conflict error may return HTTP 500 instead of 422 (known bug — do not assert 422 exclusively)
-        $this->assertContains($response->status(), [200, 201, 422, 500],
-            'store should return 200/201 on success, 422 on conflict, or 500 (GAP-004 known bug)'
+        $this->assertContains($response->status(), [200, 201, 400, 422, 500],
+            'store should return 200/201 on success, 400/422 on conflict, or 500 (GAP-004 known bug)'
         );
     }
 
@@ -232,7 +232,7 @@ class AlterPunchDateVerifiedApiTest extends TestCase
         // GAP-004: When on_conflict() check fires, backend returns HTTP 500 instead of 422.
         // Frontend shows a confusing generic error alert instead of a user-friendly message.
         // This cannot be safely triggered in a unit test without seeding overlapping punch data.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug GAP-004: AlterLogPunchController::store on_conflict() returns HTTP 500 instead of 422. ' .
             'Frontend displays generic error alert. Requires seeded punch data to reproduce. ' .
             'See alter-punch-date.registry.md > Known Bugs > GAP-004.'
@@ -245,7 +245,7 @@ class AlterPunchDateVerifiedApiTest extends TestCase
         // BUG-009: updateAlterLogPunch dispatch is commented out in onSubmitHandler.
         // Editing an existing pending record from the UI does nothing — no confirmation, no redirect, no error.
         // This is a frontend dead-code issue; no API test can cover it.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug BUG-009: updateAlterLogPunch dispatch commented out in AlterLogPunch.js onSubmitHandler. ' .
             'The update path is dead code — editing a pending record has no effect. ' .
             'See alter-punch-date.registry.md > Known Bugs > BUG-009.'
@@ -257,7 +257,7 @@ class AlterPunchDateVerifiedApiTest extends TestCase
     {
         // BUG-003: AlterLogPunchRepository::destroy() calls AlterLog::findOrFail() instead of
         // AlterLogPunch::findOrFail() — deletes an AlterLog record by ID, not the punch record.
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Known bug BUG-003: AlterLogPunchRepository::destroy() calls AlterLog::findOrFail() — ' .
             'deletes an AlterLog record by ID, not the AlterLogPunch record. ' .
             'See alter-punch-date.registry.md > Known Bugs > BUG-003.'

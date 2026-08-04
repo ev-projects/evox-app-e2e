@@ -27,7 +27,7 @@ class PayrollCutoffBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) $this->markTestSkipped('no user in test DB');
+        if (!$this->user) $this->markTestIncomplete('no user in test DB');
     }
 
     /**
@@ -40,7 +40,7 @@ class PayrollCutoffBusinessRuleRejectionTest extends TestCase
     public function rejects_range_containing_an_existing_cutoff()
     {
         $existing = DB::table('payroll_cutoffs')->whereNull('deleted_at')->orderBy('start_date')->first();
-        if (!$existing) $this->markTestSkipped('no existing payroll_cutoffs row to collide with');
+        if (!$existing) $this->markTestIncomplete('no existing payroll_cutoffs row to collide with');
 
         $resp = $this->actingAs($this->user)->postJson('/api/payroll/cutoff/', [
             'name'       => 'Containing Range Attempt',
@@ -63,7 +63,7 @@ class PayrollCutoffBusinessRuleRejectionTest extends TestCase
     {
         $rows = DB::table('payroll_cutoffs')->whereNull('deleted_at')->orderBy('start_date')->limit(2)->get();
         if ($rows->count() < 2) {
-            $this->markTestSkipped('need at least 2 existing payroll_cutoffs rows to test cross-row exclusion');
+            $this->markTestIncomplete('need at least 2 existing payroll_cutoffs rows to test cross-row exclusion');
         }
         [$rowA, $rowB] = [$rows[0], $rows[1]];
 

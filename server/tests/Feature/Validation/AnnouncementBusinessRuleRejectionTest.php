@@ -26,7 +26,7 @@ class AnnouncementBusinessRuleRejectionTest extends TestCase
         parent::setUp();
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
-        if (!$this->user) { $this->markTestSkipped('no user available in test DB'); }
+        if (!$this->user) { $this->markTestIncomplete('no user available in test DB'); }
     }
 
     private function postAnnouncement(array $payload)
@@ -69,7 +69,7 @@ class AnnouncementBusinessRuleRejectionTest extends TestCase
     /** @test */
     public function no_business_rule_beyond_formrequest_is_documented()
     {
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
             'Code inspection of AnnouncementController@store / AnnouncementRepository::store() ' .
             'found no uniqueness/overlap/period business rule beyond AnnouncementRequest — the ' .
             'FormRequest layer (already covered by AnnouncementValidationRejectionTest) is the ' .
