@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Modules\Department\Models\EvoxDepartment;
+// EXP-TSE-1 — this import was missing. EvoxSubDepartment is referenced in collection() below, so
+// the Team Schedule export threw "Class not found" on any row that had a sub-department, i.e. on
+// any real data. The export only appeared to work because no test ever exercised it.
 use App\Modules\Department\Models\EvoxSubDepartment;
 
 class TeamScheduleExport implements FromCollection,WithHeadings

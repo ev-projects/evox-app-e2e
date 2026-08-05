@@ -130,6 +130,8 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
     
         DB::beginTransaction();
         try {
+            // ANN-NULL-1 - seeded as 0, which is a real department id in this schema, so an
+            // announcement with no main department was silently attributed to department 0.
             $main_dep_id = null;
             log_activity(trans('messages.create_department_announcement_attempt'));
            
@@ -499,6 +501,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 })
                 ->whereNotIn('id', $toExclude);
             }
+            // ANN-NULL-1 - $announcements_list is only assigned inside the branches above, so a
+            // user matching none of them reached the return with the variable undefined and the
+            // request fatalled. Return an empty collection instead.
             if (!isset($announcements_list)) { return collect([]); }
             $announcements_list = $announcements_list->get()->sortByDesc('release_date')->take(6) ;
 
@@ -558,6 +563,9 @@ class AnnouncementRepository implements AnnouncementRepositoryInterface
                 ->whereNotIn('id', $toExclude);
             }
 
+            // ANN-NULL-1 - $announcements_list is only assigned inside the branches above, so a
+            // user matching none of them reached the return with the variable undefined and the
+            // request fatalled. Return an empty collection instead.
             if (!isset($announcements_list)) { return collect([]); }
             $announcements_list = $announcements_list
             // only 6 but we get 7 to check if there is a next (show)

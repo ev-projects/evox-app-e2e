@@ -1,0 +1,109 @@
+name: tests
+
+# What this does, and deliberately does not do
+#
+#   RUNS  the full Jest frontend suite - 251 suites / ~4,900 tests, about 2 minutes.
+#         This is the gate. If it goes red, something real broke.
+#   RUNS  a php -l syntax sweep over the whole server tree. Cheap, catches parse errors
+#         before anyone waits on a PHPUnit run.
+#
+#   DOES NOT run PHPUnit. The backend suites read a real MySQL database, and the only
+#   database that has EVOX data is the staging box, which is a LIVE-SERVER BACKUP DUMP.
+#   Pointing CI at it would be reckless even read-only, and there is no seeded test
+#   database to point at instead. Standing up one is the prerequisite for backend CI -
+#   see the note at the bottom of this file.
+#
+#   DOES NOT run Playwright. It needs a deployed environment, not a checkout.
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  frontend:
+    name: Jest (frontend)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      # react-scripts 3.3 predates npm's stricter peer resolution, so a plain `npm ci`
+      # fails on this dependency tree. --legacy-peer-deps is required, not optional.
+      - name: Install
+        run: npm ci --legacy-peer-deps
+
+      - name: Run the suite
+        env:
+          CI: true
+        run: npx react-scripts test --watchAll=false --maxWorkers=2
+
+      - name: Coverage summary
+        if: success()
+        env:
+          CI: true
+        run: npx react-scripts test --watchAll=false --maxWorkers=2 --coverage --coverageReporters=text-summary
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: client/coverage/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  php-lint:
+    name: php -l (backend syntax)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          coverage: none
+
+      # Every .php file under server/, excluding vendor. Reports every failure rather than
+      # stopping at the first, so one PR gives the whole list.
+      - name: Syntax sweep
+        run: |
+          fail=0
+          while IFS= read -r f; do
+            if ! php -l "$f" > /dev/null 2>&1; then
+              echo "SYNTAX ERROR: $f"
+              php -l "$f" || true
+              fail=1
+            fi
+          done < <(find server -name '*.php' -not -path 'server/vendor/*')
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::php -l found syntax errors (listed above)"
+            exit 1
+          fi
+          echo "php -l clean across $(find server -name '*.php' -not -path 'server/vendor/*' | wc -l) files"
+
+# ---------------------------------------------------------------------------
+# TO ADD BACKEND CI LATER
+#
+# The blocker is data, not tooling. The suites use DatabaseTransactions and roll back, but
+# they need a database that CONTAINS EVOX rows - users with levels, DTRs, payroll cut-offs,
+# the stored procedures and triggers. Options, cheapest first:
+#
+#   1. A sanitised schema+data dump committed as a fixture, loaded into a mysql:5.7 service
+#      container here. Best option. Needs someone to produce and scrub the dump.
+#   2. Seeders that build the minimum graph each suite needs. More work, but no PII leaves
+#      the staging box.
+#
+# Do NOT point this workflow at 10.10.4.24:3307. That host is a live-server backup dump.
+# ---------------------------------------------------------------------------

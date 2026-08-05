@@ -121,6 +121,10 @@ class TeamAttendanceSummary extends Component {
         start_date : start_date,
         end_date : end_date,
       });
+      // FE-TAS-1 - handleSubmit() was called with no arguments, so it read start_date and
+      // end_date from state. setState is asynchronous, so the fetch went out with the
+      // PREVIOUS range: navigating the date picker returned the range the manager had just
+      // left, and the screen looked current. The new dates are now passed explicitly.
       this.handleSubmit(start_date, end_date);
     }
 
