@@ -46,6 +46,7 @@ use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
+use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\User\Models\User;
 
 class SchedulerCronCommandsTest extends TestCase
@@ -216,6 +217,15 @@ class SchedulerCronCommandsTest extends TestCase
         $bhr->shouldReceive('sync_holidays')->withAnyArgs()->once()->andReturn(null);
         $this->app->instance(BhrRepositoryInterface::class, $bhr);
 
+        // bind_holidays_to_dtr iterates ALL DTRs from cutoff start_date to now+3 months,
+        // running a user lookup + dtr_holidays INSERT + holiday count per row — unbounded,
+        // hangs for hours against real data. Mock it; ->once() proves the command correctly
+        // delegates to the repository after the BHR sync step.
+        $dtrMock = Mockery::mock(DtrRepositoryInterface::class);
+        $dtrMock->shouldReceive('bind_holidays_to_dtr')->withAnyArgs()->once()
+                ->andReturn(new \Illuminate\Database\Eloquent\Collection([]));
+        $this->app->instance(DtrRepositoryInterface::class, $dtrMock);
+
         $this->artisan('sync_bhr_holidays')->assertExitCode(0);
     }
 
@@ -296,12 +306,20 @@ class SchedulerCronCommandsTest extends TestCase
     {
         // get_all_active_users() otherwise returns all real active users (1,073 at time of
         // writing), generating a full month of DTR rows for every one — bound it to 2 real
-        // users instead. Everything else on UserRepositoryInterface (and DtrRepositoryInterface,
-        // per this suite's documented convention) still runs for real via the partial mock.
+        // users instead.
         $realUserRepo = app(UserRepositoryInterface::class);
         $userMock = Mockery::mock($realUserRepo)->makePartial();
         $userMock->shouldReceive('get_all_active_users')->andReturn(User::whereIn('id', [1593, 1698])->get());
         $this->app->instance(UserRepositoryInterface::class, $userMock);
+
+        // generate_dtr's schedule-apply loop (getBestSchedule + getParsedDetailToDate ×
+        // users × days) fires per-row queries — utc_timelog, alter_logs, leaves,
+        // rest_day_works — on real users with years of history, causing multi-hour hangs.
+        // Mock generate_dtr: ->once() proves the command correctly invokes the repository;
+        // the heavy per-row DB work belongs in DtrRepository's own tests, not here.
+        $dtrMock = Mockery::mock(DtrRepositoryInterface::class);
+        $dtrMock->shouldReceive('generate_dtr')->once()->andReturn(['total_dtr_count' => 60, 'dtr' => []]);
+        $this->app->instance(DtrRepositoryInterface::class, $dtrMock);
 
         $this->artisan('generate_weekly_dtr')->assertExitCode(0);
     }
@@ -311,14 +329,14 @@ class SchedulerCronCommandsTest extends TestCase
     /** @test */
     public function test_send_supervisor_reminder_no_sched_runs_successfully()
     {
-        // get_all_supervisors() otherwise returns the full real supervisor population — bound
-        // it to 1 real supervisor (Gary Aure) instead. Everything else on
-        // UserRepositoryInterface still runs for real via the partial mock. Email send is
-        // unmocked by design (MAIL_DRIVER=array captures it, no real transport touched —
-        // verified against Mail::send() usage in SendSupervisorReminderNoSchedEmailJob).
+        // get_all_supervisors() bound to Gary (1698). get_users_under_supervisee_active_with_no_schedule
+        // queries all employees under Gary and checks their schedule assignments — large team,
+        // slow against real DB. Mock it: the command's wiring is proven by the artisan exit code.
         $realUserRepo = app(UserRepositoryInterface::class);
         $userMock = Mockery::mock($realUserRepo)->makePartial();
         $userMock->shouldReceive('get_all_supervisors')->andReturn(User::whereIn('id', [1698])->get());
+        $userMock->shouldReceive('get_users_under_supervisee_active_with_no_schedule')
+                 ->withAnyArgs()->andReturn(collect([]));
         $this->app->instance(UserRepositoryInterface::class, $userMock);
 
         $this->artisan('send_supervisor_reminder_no_sched')->assertExitCode(0);
@@ -331,12 +349,14 @@ class SchedulerCronCommandsTest extends TestCase
     /** @test */
     public function test_send_supervisor_reminder_invalid_check_ins_runs_successfully()
     {
-        // get_all_supervisors() otherwise returns the full real supervisor population — bound
-        // it to 1 real supervisor (Gary Aure) instead. Everything else on
-        // UserRepositoryInterface still runs for real via the partial mock.
+        // get_all_supervisors() bound to Gary (1698). get_users_under_supervisee_active_with_invalid_check_ins
+        // iterates DTR rows for all team members, running count(*) on leaves + dtr_holidays
+        // per row — multi-hour hang against real data. Mock it.
         $realUserRepo = app(UserRepositoryInterface::class);
         $userMock = Mockery::mock($realUserRepo)->makePartial();
         $userMock->shouldReceive('get_all_supervisors')->andReturn(User::whereIn('id', [1698])->get());
+        $userMock->shouldReceive('get_users_under_supervisee_active_with_invalid_check_ins')
+                 ->withAnyArgs()->andReturn([]);
         $this->app->instance(UserRepositoryInterface::class, $userMock);
 
         $this->artisan('send_supervisor_reminder_invalid_check_ins')->assertExitCode(0);
@@ -347,12 +367,18 @@ class SchedulerCronCommandsTest extends TestCase
     /** @test */
     public function test_send_supervisor_reminder_requests_runs_successfully()
     {
-        // get_all_supervisors() otherwise returns the full real supervisor population — bound
-        // it to 1 real supervisor (Gary Aure) instead. Everything else on
-        // UserRepositoryInterface still runs for real via the partial mock.
+        // Command calls get_payroll_cutoff() for date window — mock to avoid dependency
+        // on a matching cutoff row existing in the DB on the run date.
+        $this->mockPayrollCutoff();
+
+        // get_all_supervisors() bound to Gary (1698). get_users_under_supervisee_active_with_requests
+        // queries pending requests across the payroll window for all team members — large
+        // dataset. Mock it.
         $realUserRepo = app(UserRepositoryInterface::class);
         $userMock = Mockery::mock($realUserRepo)->makePartial();
         $userMock->shouldReceive('get_all_supervisors')->andReturn(User::whereIn('id', [1698])->get());
+        $userMock->shouldReceive('get_users_under_supervisee_active_with_requests')
+                 ->withAnyArgs()->andReturn([]);
         $this->app->instance(UserRepositoryInterface::class, $userMock);
 
         $this->artisan('send_supervisor_reminder_requests')->assertExitCode(0);

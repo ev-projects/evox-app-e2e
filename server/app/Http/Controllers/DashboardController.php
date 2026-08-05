@@ -146,7 +146,7 @@ class DashboardController extends Controller
 
 
 
-            dd(  $result);
+            // dd(  $result);
 
             $user_list = auth()->user()->users_handled();
 

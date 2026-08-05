@@ -2,6 +2,48 @@
 
 ---
 
+## 2026-08-05 — mock unbounded repository calls in SchedulerCronCommandsTest.php (5 tests)
+
+**File:** `tests/Feature/Vishnu/SchedulerCronCommandsTest.php`  
+**Category:** Cat 5 — Test Case Error (unbounded DB iteration causing multi-hour hangs)
+
+**Context:** Five tests in this class called real UserRepository / DtrRepository methods
+that iterate over all data (all employees, all DTR rows) for real users with years of history,
+causing multi-hour hangs observed during Part 1 coverage run. Queries seen in DB process list:
+`select * from alter_logs`, `select count(*) from leaves where dtr_id = ?`,
+`select count(*) from holidays inner join dtr_holidays where dtr_id = ?`,
+`select * from users where id = ?`, `insert into dtr_holidays`.
+
+**Fixes applied:**
+
+1. `test_generate_weekly_dtr_runs_successfully` — Mocked `DtrRepositoryInterface::generate_dtr`
+   (`->once()`). The generate_dtr schedule-apply loop (getBestSchedule + getParsedDetailToDate
+   × 60 iterations) fires per-row queries on `alter_logs`, `leaves`, `utc_timelog`.
+   Added `use App\Modules\Payroll\Repositories\DtrRepositoryInterface;` import.
+
+2. `test_send_supervisor_reminder_no_sched_runs_successfully` — Mocked
+   `get_users_under_supervisee_active_with_no_schedule` (returns `collect([])`). 
+   Command calls this for each supervisor; against real DB it scans all employees + schedules.
+
+3. `test_send_supervisor_reminder_invalid_check_ins_runs_successfully` — Mocked
+   `get_users_under_supervisee_active_with_invalid_check_ins` (returns `[]`).
+   This method runs `count(*) from leaves` + `count(*) from dtr_holidays` per DTR row for
+   all team members under Gary — loops hundreds/thousands of rows.
+
+4. `test_send_supervisor_reminder_requests_runs_successfully` — Mocked
+   `get_users_under_supervisee_active_with_requests` (returns `[]`) and added
+   `$this->mockPayrollCutoff()` call (command uses `get_payroll_cutoff()` for date window,
+   previously unmocked — would fail if no current cutoff row in DB on run date).
+
+5. `test_sync_bhr_holidays_runs_successfully` — Mocked `DtrRepositoryInterface::bind_holidays_to_dtr`
+   (`->once()`, returns empty EloquentCollection). `syncBhrHolidays::handle()` calls
+   `bind_holidays_to_dtr($cutoff_start, now()+3months)` — with mockPayrollCutoff start=2026-01-01
+   and end anchored 3 months from now (~2026-11-05), this iterates ALL DTRs across 10 months for
+   all active users, running a user lookup + `dtr_holidays` INSERT + holiday count per row.
+   BHR `sync_holidays` was already mocked; `bind_holidays_to_dtr` was the missing second mock.
+
+---
+
 ## 2026-07-16 — bind evoxtest_BhrMock in SyncApiTest.php, COEValidationApiTest.php, UserPiiApiTest.php
 
 **Context:** User asked for a full audit of every BHR mock file in the repo and confirmation

@@ -760,7 +760,7 @@ class UserController extends Controller
                 $result
             );
         } catch(Exception $e){
-            dd($e);
+            // dd($e);
             return error_response( trans('messages.error_default'), $e );
         }
     }
