@@ -43,15 +43,31 @@ jobs:
       - name: Install
         run: npm ci --legacy-peer-deps
 
+      # TZ is pinned deliberately - do not remove it.
+      #
+      # GitHub runners are UTC. Developer machines are not. Several suites assert dates that EVOX
+      # serialises through UTC, so their expected values differ depending on the runner's offset.
+      # The very first CI run caught one: evoxtest_ScheduleAssignDepartmentDeep2 characterises a
+      # real off-by-one-day bug (a user east of UTC picks 1 Aug, the app submits 31 Jul). That
+      # assertion is correct in Manila or India and wrong in UTC, so it failed here while passing
+      # locally.
+      #
+      # Asia/Manila is the right pin: it is where EVOX's users actually are, so the suite exercises
+      # the offsets real people hit, and the bug stays reproducible instead of hiding at UTC+0.
+      #
+      # RUN IT THE SAME WAY LOCALLY:
+      #   TZ=Asia/Manila CI=true npx react-scripts test --watchAll=false
       - name: Run the suite
         env:
           CI: true
+          TZ: Asia/Manila
         run: npx react-scripts test --watchAll=false --maxWorkers=2
 
       - name: Coverage summary
         if: success()
         env:
           CI: true
+          TZ: Asia/Manila
         run: npx react-scripts test --watchAll=false --maxWorkers=2 --coverage --coverageReporters=text-summary
 
       - name: Upload coverage
