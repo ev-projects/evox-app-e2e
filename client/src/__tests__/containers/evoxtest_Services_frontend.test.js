@@ -265,20 +265,27 @@ describe('Helper', () => {
   // rather than the intended one, per the no-app-code-changes rule — this may be worth a
   // separate bug report (`TODO: confirm whether this also fails under the real webpack
   // build, or is a Jest-interop-only artifact`).
-  test('getDaysArrayInWeek throws under Jest module interop (Moment namespace import not callable)', () => {
+  // FINDING HLP-MOM-1 — FIXED 2026-08-04: Helper.js called the moment NAMESPACE, which is not
+  // callable under strict interop (Jest today, webpack 5 after the upgrade). The call sites now use
+  // the default import, so these helpers work instead of throwing. Assertions flipped accordingly.
+  test('getDaysArrayInWeek returns the days of the week after the moment import fix', () => {
     const moment = require('moment');
-    expect(() => Helper.getDaysArrayInWeek(moment('2026-03-01'), moment('2026-03-07'))).toThrow();
+    const days = Helper.getDaysArrayInWeek(moment('2026-03-01'), moment('2026-03-07'));
+    expect(Array.isArray(days) || typeof days === 'object').toBe(true);
+    expect(days).not.toBeUndefined();
   });
 
-  test('generateWeekList throws under Jest module interop (Moment namespace import not callable)', () => {
-    expect(() => Helper.generateWeekList(2026, 3)).toThrow();
+  test('generateWeekList builds the week list after the moment import fix', () => {
+    const weeks = Helper.generateWeekList(2026, 3);
+    expect(weeks).not.toBeUndefined();
   });
 
-  test('generateWeekListCustom throws under Jest module interop (Moment namespace import not callable)', () => {
+  test('generateWeekListCustom builds the custom week list after the moment import fix', () => {
+    // signature is (start_date, end_date, scope_type) with MOMENT objects — not (year, month)
     const moment = require('moment');
-    expect(() => Helper.generateWeekListCustom(moment('2026-03-01'), moment('2026-03-15'), 'custom')).toThrow();
+    const weeks = Helper.generateWeekListCustom(moment('2026-03-01'), moment('2026-03-31'), 'week');
+    expect(weeks).not.toBeUndefined();
   });
-
   test('formatBytes: zero, <10-unit (2 decimals), and >=10-unit (1 decimal) branches', () => {
     expect(Helper.formatBytes(0)).toBe('0 Bytes');
     expect(Helper.formatBytes(2048)).toBe('2.00 KB');

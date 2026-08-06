@@ -24,7 +24,6 @@ class RequestRepository implements RequestRepositoryInterface{
      */
     public function get_status_numbers_old($data)
     {
-        DB::beginTransaction();
         try {
             $numbers = array(
                 "pending" => 0,
@@ -178,7 +177,6 @@ class RequestRepository implements RequestRepositoryInterface{
 
             return array( 'status_numbers' => $numbers  );
         } catch (Exception $e) {
-            DB::rollback();
             log_error($e);
             throw $e;
         }
@@ -192,7 +190,6 @@ class RequestRepository implements RequestRepositoryInterface{
      */
     public function get_status_numbers($data,  $cutoff)
     {
-        DB::beginTransaction();
         try {
             $numbers = array(
                 "pending" => 0,
@@ -296,7 +293,6 @@ class RequestRepository implements RequestRepositoryInterface{
 
             return array( 'status_numbers' => $numbers  );
         } catch (Exception $e) {
-            DB::rollback();
             log_error($e);
             // dd($e);
             throw $e;

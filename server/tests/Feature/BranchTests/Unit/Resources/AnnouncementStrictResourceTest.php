@@ -20,7 +20,11 @@ class AnnouncementStrictResourceTest extends TestCase
     /** Bounded probe: a recent announcement whose creator chain won't null-deref. */
     private function findMappableAnnouncement($withCreator = true)
     {
-        $q = Announcement::whereNotNull('created_at')->orderBy('id', 'desc')->limit(25);
+        // PROBE WIDENED 2026-08-06: was limit(25). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        $q = Announcement::whereNotNull('created_at')->orderBy('id', 'desc')->limit(400);
         $q = $withCreator ? $q->where('created_by', '!=', 0) : $q->where('created_by', 0);
         foreach ($q->get() as $a) {
             if (!$withCreator) return $a;

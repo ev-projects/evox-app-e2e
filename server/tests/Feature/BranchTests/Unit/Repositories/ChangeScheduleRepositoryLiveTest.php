@@ -106,8 +106,23 @@ class ChangeScheduleRepositoryLiveTest extends TestCase
         $this->assertSame('2026-07-01', (string) $schedule->valid_from);
     }
 
-    /** @test */
-    public function store_nulls_optional_fields_when_not_supplied()
+    /**
+     * FINDING CS-TRIG-1 — a change-schedule request WITHOUT dates cannot be stored at all.
+     *
+     * The repository explicitly supports null valid_from/valid_to (`is_valid(...) ? ... : null`),
+     * but the DB trigger EV_TR_ON_INSERT_Change_Schedule builds its notification text with
+     * CONCAT(..., New.valid_from, ' to ', New.valid_to). MySQL's CONCAT returns NULL when ANY
+     * argument is NULL, so the trigger writes NULL into a NOT NULL `Description` column and the
+     * INSERT dies with "Column 'Description' cannot be null".
+     *
+     * Impact: any path that submits a change schedule without both dates 500s at the database
+     * level, and the user sees a generic error. Fix options: (a) require both dates in the
+     * FormRequest/repository, or (b) make the trigger null-safe (COALESCE/IFNULL on the dates).
+     * FLIP this test to the plain null assertions once either fix lands.
+     *
+     * @test
+     */
+    public function store_without_dates_is_rejected_by_the_db_trigger_CS_TRIG_1()
     {
         $user = $this->anyActiveUser();
         if (!$user) $this->markTestSkipped('no active user in test DB');
@@ -115,10 +130,25 @@ class ChangeScheduleRepositoryLiveTest extends TestCase
 
         $payload = $this->schedulePayload();
         unset($payload['valid_from'], $payload['valid_to']);
+
+        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->repo->store($payload);
+    }
+
+    /** Optional-field nulling that does NOT involve the dates (safe against CS-TRIG-1). */
+    /** @test */
+    public function store_nulls_the_employee_note_when_not_supplied()
+    {
+        $user = $this->anyActiveUser();
+        if (!$user) $this->markTestSkipped('no active user in test DB');
+        $this->be($user);
+
+        $payload = $this->schedulePayload();
+        unset($payload['employee_note']);          // dates stay -> trigger stays happy
         $cs = $this->repo->store($payload);
 
-        $this->assertNull($cs->valid_from);
-        $this->assertNull($cs->valid_to);
+        $this->assertNull($cs->employee_note);
+        $this->assertSame('2026-07-01', (string) $cs->valid_from);
     }
 
     // ---------------------------------------------------------------------- update()
