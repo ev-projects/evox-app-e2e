@@ -10,26 +10,30 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\Authenticate;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\VerificationController;
 use App\Modules\User\Models\User;
 
 /**
- * Six zero-coverage classes, one method each — completing any of them completes the whole CLASS.
+ * Three zero-coverage middleware classes, one method each — covering one completes the whole CLASS.
  *
- *   EnsureUserHasRole          0/1   the role gate on registration and admin routes
- *   RedirectIfAuthenticated    0/1   keeps a signed-in user off the guest pages
- *   Authenticate               0/1   where an unauthenticated web request is sent
- *   ForgotPasswordController   0/1   constructor — applies the 'guest' middleware
- *   ResetPasswordController    0/1   constructor — applies the 'guest' middleware
- *   VerificationController     0/1   constructor — applies auth + signed + throttle
+ *   EnsureUserHasRole          0/1   the role gate. LIVE: 'role:admin' on POST /api/register
+ *   RedirectIfAuthenticated    0/1   LIVE: the 'guest' group in routes/web.php
+ *   Authenticate               0/1   LIVE: the 'auth' alias, used on 92 route groups
+ *
+ * WITHDRAWN 2026-08-06 — this suite originally also covered ForgotPasswordController,
+ * ResetPasswordController and VerificationController. Those are Laravel's default auth
+ * scaffolding: they have ZERO route references and Auth::routes() is never called, so no
+ * request can reach them. Testing them raised the class count while protecting nobody —
+ * the same mistake as the checkUndertime tests deleted earlier the same day. Gobi's
+ * dead-code analysis flagged them independently; verified here before removing.
+ *
+ * Each middleware below was checked to be reachable BEFORE writing its test, which is the
+ * order that should have been followed the first time.
  *
  * These decide WHO GETS IN, which makes them worth asserting precisely rather than smoke-testing.
  * Middleware is exercised directly with a real Request and a closure standing in for the rest of
  * the pipeline — no HTTP round trip, no routes involved, nothing written.
  */
-class MiddlewareAndAuthControllersTest extends TestCase
+class LiveMiddlewareTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -147,48 +151,4 @@ class MiddlewareAndAuthControllersTest extends TestCase
         $this->assertNotEmpty($target, 'a blank redirect target would loop the browser');
     }
 
-    // ─────────────────────────────── the three auth controllers
-
-    /** @test */
-    public function the_forgot_password_controller_is_gated_to_guests_only()
-    {
-        $controller = new ForgotPasswordController();
-
-        $names = array_column($controller->getMiddleware(), 'middleware');
-        $this->assertContains('guest', $names,
-            'a signed-in user must not be able to start a password reset for someone else');
-    }
-
-    /** @test */
-    public function the_reset_password_controller_is_gated_to_guests_only()
-    {
-        $controller = new ResetPasswordController();
-
-        $names = array_column($controller->getMiddleware(), 'middleware');
-        $this->assertContains('guest', $names);
-    }
-
-    /** @test */
-    public function the_verification_controller_requires_auth_a_signed_url_and_a_throttle()
-    {
-        $controller = new VerificationController();
-        $middleware = $controller->getMiddleware();
-        $names = array_column($middleware, 'middleware');
-
-        $this->assertContains('auth', $names, 'verification is not a public action');
-        $this->assertContains('signed', $names, 'the verify link must be signature-checked');
-        $this->assertContains('throttle:6,1', $names, 'verification resend must be rate limited');
-
-        // the signed + throttle guards are scoped, not global — assert the scoping, since applying
-        // 'signed' to every action would break resend, and forgetting it on verify would let anyone
-        // confirm anyone's address
-        foreach ($middleware as $entry) {
-            if ($entry['middleware'] === 'signed') {
-                $this->assertSame(['verify'], array_values($entry['options']['only'] ?? []));
-            }
-            if ($entry['middleware'] === 'throttle:6,1') {
-                $this->assertSame(['verify', 'resend'], array_values($entry['options']['only'] ?? []));
-            }
-        }
-    }
 }
