@@ -481,28 +481,16 @@ describe('My Team Requests - page lifecycle', () => {
         expect(sent.department_id).toBe('3');
     });
 
-    test('the_name_search_box_is_declared_with_an_invalid_input_type_so_nothing_typed_into_it_is_registered_by_the_form_FINDING_MTR_NAME_1', async () => {
-        const props = baseProps();
-        const { container } = renderScreen(props);
-        await flush();
-
-        const nameBox = container.querySelector('input[name="name"]');
-        // FINDING MTR-NAME-1 (characterised): the markup is
-        //   <input type="textfield" ... name="name" onChange={handleChange} value={values.name} />
-        // "textfield" is not a valid HTML input type. Browsers silently coerce it to "text"
-        // so production still works, but any engine that does NOT coerce (and React's own
-        // change plugin, which keys off element.type) stops treating it as a text field and
-        // the keystrokes never reach the form state. It also renders value={null}, which React
-        // warns about. Invalid markup on the busiest filter on the screen.
-        expect(nameBox.getAttribute('type')).toBe('textfield');
-
-        await act(async () => { typeInto(nameBox, 'ana'); });
-        await flush();
-        await act(async () => { fireEvent.click(btn(container, 'Filter')); });
-        await flush();
-
-        expect(lastFetchArgs(props).name).toBeUndefined();
-    });
+    // WITHDRAWN 2026-08-06 — the MTR-NAME-1 test that stood here asserted that typing into the
+    // name filter never reaches the form, because the markup says <input type="textfield">.
+    // That is a jsdom artefact, not a defect. `type` is an enumerated attribute whose
+    // invalid-value default is "text", so every real browser treats the box as an ordinary text
+    // input and the filter works. Only jsdom 11 leaves .type unnormalised, which is what stops
+    // React's change plugin tracking it.
+    //
+    // It was also FLAKY — it passed locally and failed in CI with Received: "ana", i.e. the
+    // typing did register. Same family as AAL_TYPE, MTAR-NAME-1 and _FINDING_DPA_BADINPUTTYPE,
+    // all retracted earlier. See the RETRACTED section of FINDINGS-REGISTER.md.
 
     test('turning_show_all_on_clears_the_chosen_department_and_reloads_the_whole_division', async () => {
         const props = baseProps();
