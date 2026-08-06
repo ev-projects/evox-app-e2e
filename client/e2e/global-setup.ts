@@ -3,8 +3,10 @@
  * browser storage state to e2e/.auth/<role>.json.
  *
  * Run automatically before the Playwright suite via globalSetup in playwright.config.ts.
- * Auth files are consumed by roles/*/traverse.spec.ts and roles/*/interactions.spec.ts
+ * Auth files are consumed by roles/<role>/traverse.spec.ts and roles/<role>/interactions.spec.ts
  * via test.use({ storageState: 'e2e/.auth/<role>.json' }).
+ * (NB: never write "slash-star-slash" glob patterns inside this block comment — the star-slash
+ * terminates the comment and the file stops parsing; that exact bug shipped and blocked all E2E.)
  *
  * Roles without a matching env var are skipped with a warning — their specs will fail
  * (storageState file absent) unless the env var is supplied.
