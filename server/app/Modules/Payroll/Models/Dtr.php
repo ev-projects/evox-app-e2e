@@ -188,39 +188,9 @@ class Dtr extends Model
         return false;
     }
 
-    /**
-     * 
-     *  Check if the employee is has undertime
-     * @return bool 
-     */
-    public function checkUndertime()
-    {
-        $undertime = $this->policies()->where('policy','=','allow_undertime')->where('value','=','1')->get()->count() > 0;
-
-        if( $undertime ){
-            if( $this->time_out <= $this->end_datetime ){
-                return true;
-            }elseif( $this->hasFlexibleSchedule() ){
-                if(  $this->time_in >= $this->start_datetime && $this->time_in <= $this->start_flexy_datetime ){
-                    $expected_out = $this->time_in  + ( $this->end_datetime - $this->start_datetime );
-
-                    if($expected_out > $this->end_flexy_datetime ){
-                        $expected_out = $this->end_flexy_datetime;
-                    }
-
-                    if( $expected_out > $this->time_out ){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-            }else{
-                return false;
-            }
-        }
-
-        return false;
-    }
+    // DEAD CODE REMOVED 2026-08-06: checkUndertime(). No caller anywhere in the application —
+    // verified across 8 angles, with exactly one occurrence of the name in all of app/ (its own
+    // declaration). Recoverable from git history; rationale in DEAD-CODE-CANDIDATES.md.
 
     public function isIncompleteLog(){
         return ( !is_valid( $this->time_in ) && is_valid( $this->time_out ) );
@@ -363,52 +333,17 @@ class Dtr extends Model
         return ( $this->time_in >= $this->start_flexy_datetime ) ? true : false;
     }
 
-    /**
-     * 
-     *  Check if the Time-Out is BEFORE or EQUAL the End-Datetime
-     * @return bool 
-     */
-    public function isTimedOutBeforeSchedule()
-    {
-        return ( $this->time_out <= $this->end_datetime ) ? true : false;
-    }
+    // DEAD CODE REMOVED 2026-08-06: isTimedOutBeforeSchedule(). No caller anywhere in the application —
+    // verified across 8 angles, with exactly one occurrence of the name in all of app/ (its own
+    // declaration). Recoverable from git history; rationale in DEAD-CODE-CANDIDATES.md.
 
-    /**
-     * 
-     *  Check if the Time-Out is:
-     *  - BETWEEN the End-Datetime and End-Flexy-Datetime if FLEXIBLE
-     *  - BEYOND or EQUAL the End-Datetime if STANDARD
-     * 
-     * @return bool 
-     */
-    public function isTimedOutBetweenSchedule()
-    {
-        return ( ($this->hasFlexibleSchedule() &&
-                  $this->time_out > $this->end_datetime && 
-                  $this->time_out < $this->end_flexy_datetime) 
-                ||
-                 (!$this->hasFlexibleSchedule() &&
-                  $this->time_out >= $this->end_datetime) 
-               ) ? true : false;
-    }
+    // DEAD CODE REMOVED 2026-08-06: isTimedOutBetweenSchedule(). No caller anywhere in the application —
+    // verified across 8 angles, with exactly one occurrence of the name in all of app/ (its own
+    // declaration). Recoverable from git history; rationale in DEAD-CODE-CANDIDATES.md.
 
-    /**
-     * 
-     *  Check if the Time-Out is:
-     *  - BEYOND or EQUAL the End-Flexy-Datetime if FLEXIBLE
-     *  - BEYOND or EQUAL the End-Datetime if STANDARD
-     * 
-     * @return bool 
-     */
-    public function isTimedOutAfterSchedule()
-    {
-        return ( ($this->hasFlexibleSchedule() &&
-                  $this->time_out >= $this->end_flexy_datetime)
-                ||
-                 (!$this->hasFlexibleSchedule() &&
-                  $this->time_out >= $this->end_datetime) 
-                ) ? true : false;
-    }
+    // DEAD CODE REMOVED 2026-08-06: isTimedOutAfterSchedule(). No caller anywhere in the application —
+    // verified across 8 angles, with exactly one occurrence of the name in all of app/ (its own
+    // declaration). Recoverable from git history; rationale in DEAD-CODE-CANDIDATES.md.
 
     /**
      * 
@@ -852,34 +787,9 @@ class Dtr extends Model
         ]);
     }
 
-    public function summary_report_short(){
-        $payroll_items = [];
-        $result = DB::table('drt_summary_report')
-            
-            ->select(DB::raw("unpaid_leave as ul,reg_late as late,reg_undertime as undertime,
-            ((reg_rendered_hours + rd_rendered_hours + sh_rendered_hours + lh_rendered_hours + dlh_rendered_hours + dsh_rendered_hours + slh_rendered_hours) + IF(nigdiff_stauts=1,reg_rendered_hours_overlapp
-            + rd_rendered_hours_overlapp + lh_rendered_hours_overlapp + sh_rendered_hours_overlapp + dlh_rendered_hours_overlapp + dsh_rendered_hours_overlapp + slh_rendered_hours_overlapp,0)) 
-            - (reg_night_diff + rd_night_diff + sh_night_diff + lh_night_diff + dlh_night_diff + dsh_night_diff + slh_night_diff + IF(nigdiff_stauts=1,reg_night_diff_overlapp
-            + rd_night_diff_overlapp + lh_night_diff_overlapp + sh_night_diff_overlapp + dlh_night_diff_overlapp + dsh_night_diff_overlapp + slh_night_diff_overlapp,0)) as rendered_hours,
-            (reg_night_diff + rd_night_diff + sh_night_diff + lh_night_diff + dlh_night_diff + dsh_night_diff + slh_night_diff) + IF(nigdiff_stauts=1,reg_night_diff_overlapp
-            + rd_night_diff_overlapp + lh_night_diff_overlapp + sh_night_diff_overlapp + dlh_night_diff_overlapp + dsh_night_diff_overlapp + slh_night_diff_overlapp,0) as night_diff,
-            (reg_overtime + rd_overtime + sh_overtime + lh_overtime + dlh_overtime + dsh_overtime + slh_overtime)  as overtime,
-            (reg_overtime_night_diff + rd_overtime_night_diff + sh_overtime_night_diff + lh_overtime_night_diff + dlh_overtime_night_diff + dsh_overtime_night_diff + slh_overtime_night_diff)  as overtime_night_diff"))
-                ->where('login_date', '=' , $this->resource->date )
-                ->where('user_id','=',$this->resource->user_id)->get();
-
-            # Convert the time to seconds to 00:00:00 format
-            foreach( $result as  $key => $value){
-                $payroll_items["late"] = $value->late > 0 ? seconds_to_time(round($value->late * 3600),true):"";
-                $payroll_items["undertime"] = $value->undertime > 0 ? seconds_to_time(round($value->undertime * 3600),true):"";
-                $payroll_items["overtime"] = $value->overtime > 0 ? seconds_to_time(round($value->overtime * 3600),true):"";
-                $payroll_items["overtime_night_diff"] = $value->overtime_night_diff > 0 ? seconds_to_time(round($value->overtime_night_diff * 3600),true):"";
-                $payroll_items["night_diff"] = $value->night_diff > 0 ? seconds_to_time(round($value->night_diff * 3600),true):"";
-                $payroll_items[ get_constant('PAYROLL_ITEMS.unpaid_leave')  ] = $value->ul > 0 ? round($value->ul):"";
-                $payroll_items["rendered_hours"] = $value->rendered_hours > 0 ? seconds_to_time(round($value->rendered_hours * 3600),true):"";
-            }
-            return $payroll_items;
-    }
+    // DEAD CODE REMOVED 2026-08-06: summary_report_short(). No caller anywhere in the application —
+    // verified across 8 angles, with exactly one occurrence of the name in all of app/ (its own
+    // declaration). Recoverable from git history; rationale in DEAD-CODE-CANDIDATES.md.
 
     public function get_dtr_history(){ 
 

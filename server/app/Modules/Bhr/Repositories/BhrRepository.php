@@ -518,26 +518,8 @@ class BhrRepository implements BhrRepositoryInterface{
     ##################################### Protected functions #####################################
     ###############################################################################################
 
-    /**
-     *  Description
-     * @return bool
-     */
-    protected function test()
-    {
-        DB::beginTransaction();
-        try {
-            # Sets the Result as null by default.
-            $result = null;
-
-            DB::commit();
-            log_to_file('info', 'Success', null);
-            return $result;
-        } catch (Exception $e) {
-            DB::rollback();
-            log_error($e);
-            throw $e;
-        }
-    }
+    // DEAD CODE REMOVED 2026-08-06: test(). A copy-paste scaffold that opened a transaction,
+    // set $result = null, committed, logged Success and returned null. No caller, no test.
 
     protected function get_match($regex,$content)
     {

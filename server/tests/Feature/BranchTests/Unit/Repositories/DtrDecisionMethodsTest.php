@@ -21,7 +21,7 @@ use App\Modules\Payroll\Models\DtrPayrollItems;
  *
  * SHAPE: the boolean predicates are pure attribute logic, so they are driven by UNSAVED in-memory
  * Dtr instances (same technique as DtrModelPredicatesTest) — no DB, no writes, no DatabaseTransactions.
- * `isOntime()`, `checkUndertime()` and `onTimeLog()` read the DTR's schedule policies through the
+ * `isOntime()` and `onTimeLog()` read the DTR's schedule policies through the
  * policies() hasMany, so the "policy IS present" arms bind an in-memory Dtr to the id of a REAL
  * probed dtr_policies row (bounded, ORDER BY id DESC LIMIT 1). The "policy is ABSENT" arms use an
  * unbound Dtr: Laravel's HasOneOrMany::addConstraints emits `dtr_id is null AND dtr_id is not null`,
@@ -29,25 +29,22 @@ use App\Modules\Payroll\Models\DtrPayrollItems;
  * No stored procedure is invoked anywhere in this file; nothing is ever written.
  *
  * ARMS COVERED
- *   isTimedOutBeforeSchedule   : out before end / out at end / out after end
- *   isTimedOutBetweenSchedule  : flexible in-window, flexible at both boundaries, standard >= end, standard short
- *   isTimedOutAfterSchedule    : flexible requires end_flexy, flexible short of end_flexy, standard >= end, standard short
  *   isOntime                   : no allow_late policy -> hasLog() true / false;
  *                                allow_late present -> in before start, in exactly at start, late on a FIXED
  *                                schedule, inside flexy grace, at the flexy boundary, past the flexy grace,
  *                                and the is_valid(time_in) guard with no punch
- *   checkUndertime             : no allow_undertime policy -> false; policy present -> out before end, out at
- *                                end, out past end on a FIXED schedule (else arm), flexible short day,
- *                                flexible full day, expected-out CAPPED at end_flexy, timed in after grace
  *   onTimeLog                  : no policies -> validLog() true / false; both policies -> full fixed day,
  *                                flexible full render, flexible short render, timed in past grace, late on a
  *                                fixed schedule, and the no-schedule early exit
  *   underlapped_payroll_items  : relation shape + tag binding + real rows all carry the underlapped tag
  *   overlapped_payroll_items   : relation shape + tag binding + real rows all carry the overlapped tag
- *   summary_report_short       : real drt_summary_report row -> full formatting loop; and the broken-state arm
  *
- * FINDING DTR-RES-1 (characterized, app NOT modified): Dtr::summary_report_short() reads
- * `$this->resource->date` and `$this->resource->user_id`. `resource` is a property of a Laravel
+ * REMOVED 2026-08-06: the tests for checkUndertime(), isTimedOutBefore/Between/AfterSchedule()
+ * and summary_report_short() were deleted together with the methods themselves. Those methods had
+ * no caller anywhere in the application, so the tests exercised code no user could reach — they
+ * raised the method-coverage figure without protecting anybody. Finding DTR-RES-1, which that
+ * suite characterized, is preserved in coverage-max/KNOWLEDGE-BASE/FINDINGS-REGISTER.md.
+ *
  * JsonResource, NOT of an Eloquent model — the whole method is a verbatim copy-paste of the summary
  * block in App\Modules\Payroll\Resources\DtrLogResource::toArray() (lines 37-59). On a Dtr,
  * `$this->resource` resolves to null, so the method either raises "Attempt to read property on null"
@@ -134,45 +131,8 @@ class DtrDecisionMethodsTest extends TestCase
     //  Time-out classification — pure in-memory, no DB touched at all
     // =====================================================================================
 
-    /** @test */
-    public function timed_out_before_schedule_marks_anyone_who_clocked_out_at_or_before_the_end_time()
-    {
-        // left at 16:00 on a 08:00-17:00 shift
-        $this->assertTrue($this->dtr($this->fixed(['time_out' => 57600]))->isTimedOutBeforeSchedule());
-        // left exactly at 17:00 — the boundary is inclusive
-        $this->assertTrue($this->dtr($this->fixed(['time_out' => self::END]))->isTimedOutBeforeSchedule());
-        // stayed until 18:00
-        $this->assertFalse($this->dtr($this->fixed(['time_out' => 64800]))->isTimedOutBeforeSchedule());
-    }
 
-    /** @test */
-    public function timed_out_between_schedule_separates_the_flexible_window_from_a_fixed_shift()
-    {
-        // FLEXIBLE 17:00-18:00 window: 17:30 sits strictly inside it
-        $this->assertTrue($this->dtr($this->flexible(['time_out' => 63000]))->isTimedOutBetweenSchedule());
-        // both flexible boundaries are EXCLUSIVE — 17:00 and 18:00 are not "between"
-        $this->assertFalse($this->dtr($this->flexible(['time_out' => self::END]))->isTimedOutBetweenSchedule());
-        $this->assertFalse($this->dtr($this->flexible(['time_out' => self::END_FLEXY]))->isTimedOutBetweenSchedule());
 
-        // FIXED shift: the second arm only needs time_out at or beyond the end time
-        $this->assertTrue($this->dtr($this->fixed(['time_out' => self::END]))->isTimedOutBetweenSchedule());
-        $this->assertTrue($this->dtr($this->fixed(['time_out' => 64800]))->isTimedOutBetweenSchedule());
-        $this->assertFalse($this->dtr($this->fixed(['time_out' => 57600]))->isTimedOutBetweenSchedule());
-    }
-
-    /** @test */
-    public function timed_out_after_schedule_requires_the_flexy_end_when_the_shift_is_flexible()
-    {
-        // FLEXIBLE: only clocking out at/after 18:00 counts as "after schedule"
-        $this->assertTrue($this->dtr($this->flexible(['time_out' => self::END_FLEXY]))->isTimedOutAfterSchedule());
-        $this->assertTrue($this->dtr($this->flexible(['time_out' => 68400]))->isTimedOutAfterSchedule());
-        // 17:30 is past the plain end time but still inside the flexible window -> NOT after schedule
-        $this->assertFalse($this->dtr($this->flexible(['time_out' => 63000]))->isTimedOutAfterSchedule());
-
-        // FIXED: the plain end time is the bar
-        $this->assertTrue($this->dtr($this->fixed(['time_out' => self::END]))->isTimedOutAfterSchedule());
-        $this->assertFalse($this->dtr($this->fixed(['time_out' => 57600]))->isTimedOutAfterSchedule());
-    }
 
     // =====================================================================================
     //  isOntime() / onTimeLog() — policy-driven
@@ -252,46 +212,9 @@ class DtrDecisionMethodsTest extends TestCase
     }
 
     // =====================================================================================
-    //  checkUndertime()
     // =====================================================================================
 
-    /** @test */
-    public function without_an_allow_undertime_policy_a_short_day_is_never_flagged_as_undertime()
-    {
-        // The policy gate is the first thing the method reads; with no policy it always returns false,
-        // even for someone who clearly left three hours early.
-        $this->assertFalse($this->dtr($this->fixed(['time_out' => 50400]))->checkUndertime());
-        $this->assertFalse($this->dtr($this->flexible(['time_in' => 30000, 'time_out' => 50400]))->checkUndertime());
-    }
 
-    /** @test */
-    public function allow_undertime_policy_flags_short_days_on_fixed_and_flexible_shifts()
-    {
-        $id = $this->dtrIdWithPolicy('allow_undertime');
-        if ($id === null) {
-            $this->markTestSkipped('no allow_undertime=1 row in dtr_policies in this test DB');
-        }
-
-        // FIXED shift, out at 16:40 -> undertime
-        $this->assertTrue($this->dtr($this->fixed(['time_out' => 60000]), $id)->checkUndertime());
-        // out exactly at 17:00 — the <= boundary still reports undertime (characterised as-is)
-        $this->assertTrue($this->dtr($this->fixed(['time_out' => self::END]), $id)->checkUndertime());
-        // FIXED shift, stayed past 17:00 -> the else arm returns false outright
-        $this->assertFalse($this->dtr($this->fixed(['time_out' => 64000]), $id)->checkUndertime());
-
-        // FLEXIBLE: in 08:20 -> expected out 17:20 (62400); leaving 17:05 is short -> undertime
-        $this->assertTrue($this->dtr($this->flexible(['time_in' => 30000, 'time_out' => 61500]), $id)->checkUndertime());
-        // ...leaving 17:46 covers the full 9h -> no undertime
-        $this->assertFalse($this->dtr($this->flexible(['time_in' => 30000, 'time_out' => 64000]), $id)->checkUndertime());
-
-        // CAP ARM: in 09:00 would owe until 18:00, but the flexy end is 17:30 (63000), so the
-        // expected out is capped at 17:30; leaving 17:13 is still short -> undertime
-        $capped = $this->flexible(['time_in' => self::START_FLEXY, 'time_out' => 62000], 63000);
-        $this->assertTrue($this->dtr($capped, $id)->checkUndertime());
-
-        // FLEXIBLE but clocked in 11:06, outside the grace window -> falls through to the final return
-        $this->assertFalse($this->dtr($this->flexible(['time_in' => 40000, 'time_out' => 64000]), $id)->checkUndertime());
-    }
 
     // =====================================================================================
     //  Tagged payroll-item relations (overnight shifts split their pay across two DTR days)
@@ -336,74 +259,6 @@ class DtrDecisionMethodsTest extends TestCase
         }
     }
 
-    // =====================================================================================
-    //  summary_report_short()
-    // =====================================================================================
 
-    /** @test */
-    public function summary_report_short_formats_the_daily_payroll_totals_for_a_real_summary_row()
-    {
-        try {
-            $row = DB::table('drt_summary_report')->orderBy('id', 'desc')->first();
-        } catch (\Throwable $e) {
-            $this->markTestSkipped('drt_summary_report is not readable in this test DB: ' . $e->getMessage());
-            return;
-        }
-        if (!$row) {
-            $this->markTestSkipped('drt_summary_report has no rows in this test DB');
-        }
 
-        // The method reads $this->resource->{date,user_id} (see FINDING DTR-RES-1), so the only way
-        // to reach its formatting loop on a Dtr is to supply that property explicitly.
-        $dtr = new Dtr();
-        $dtr->resource = (object) ['date' => $row->login_date, 'user_id' => $row->user_id];
-
-        $items = $dtr->summary_report_short();
-
-        $this->assertIsArray($items);
-        foreach (['late', 'undertime', 'overtime', 'overtime_night_diff', 'night_diff', 'rendered_hours',
-                  get_constant('PAYROLL_ITEMS.unpaid_leave')] as $key) {
-            $this->assertArrayHasKey($key, $items, "summary_report_short() must expose the '$key' total");
-        }
-
-        // Every total is either a formatted H:i:s string (positive) or an empty string (nothing to show);
-        // the unpaid-leave entry is a rounded day count.
-        foreach ($items as $key => $value) {
-            $this->assertTrue(
-                is_string($value) || is_numeric($value),
-                "payroll total '$key' should be a formatted string or a number"
-            );
-        }
-    }
-
-    /** @test */
-    public function summary_report_short_cannot_read_its_own_dtr_FINDING_DTR_RES_1()
-    {
-        // A perfectly normal DTR: the date and the employee are both set on the model itself.
-        $dtr = $this->dtr(['date' => '2026-01-01', 'user_id' => 1]);
-
-        $thrown = null;
-        $result = null;
-        try {
-            $result = $dtr->summary_report_short();
-        } catch (\Throwable $e) {
-            $thrown = $e;
-        }
-
-        // CHARACTERIZATION (app deliberately not fixed): because the method reads the JsonResource-only
-        // `$this->resource` property, it can never see $dtr->date / $dtr->user_id. It either raises a
-        // read-on-null diagnostic or silently returns nothing — never this DTR's real totals.
-        $this->assertTrue(
-            $thrown !== null || $result === [],
-            'summary_report_short() unexpectedly returned data for a DTR whose $resource is undefined'
-        );
-
-        if ($thrown !== null) {
-            $message = $thrown->getMessage();
-            $this->assertTrue(
-                stripos($message, 'on null') !== false || stripos($message, 'non-object') !== false,
-                'expected the undefined $resource property to be the cause, got: ' . $message
-            );
-        }
-    }
 }
