@@ -89,6 +89,9 @@ test.describe('findings verification — admin', () => {
       'BUG LIVE: Yup let the backwards range through to the submit confirm. ' +
       'If this failed, check for a validation error — the Yup ref fix may have landed.'
     ).toBe(true);
-    expect(attempted.length, 'the store request must have been attempted (and aborted)').toBeGreaterThan(0);
+    // filter to the payroll_cutoff endpoint — reads-over-POST background traffic could
+    // otherwise satisfy an unfiltered count (audit #9)
+    const pcfAttempts = attempted.filter(a => /payroll\/cutoff|payroll_cutoff/i.test(a));
+    expect(pcfAttempts.length, `the payroll_cutoff store request must have been attempted (and aborted). All aborted writes: ${attempted.join(' | ') || 'none'}`).toBeGreaterThan(0);
   });
 });

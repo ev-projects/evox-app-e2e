@@ -102,9 +102,14 @@ export default async function globalSetup(): Promise<void> {
     // staging is occasionally slow enough that the login form misses its timeout;
     // verified 2026-08-06: both "failed" accounts logged in fine on a retry. One retry
     // keeps a transient stall from silently dropping a role's auth state.
+    // Retry when the file was NOT refreshed by this attempt — an existence check alone
+    // would silently reuse a STALE file after a failed re-login (audit #15).
+    const beforeMtime = fs.existsSync(authFile) ? fs.statSync(authFile).mtimeMs : 0;
     await loginAndSave(email, authFile, baseURL);
-    if (!fs.existsSync(authFile)) {
+    const refreshed = fs.existsSync(authFile) && fs.statSync(authFile).mtimeMs > beforeMtime;
+    if (!refreshed) {
       console.log(`     retrying ${role.file} once…`);
+      if (fs.existsSync(authFile)) fs.unlinkSync(authFile); // never fall back to a stale state
       await loginAndSave(email, authFile, baseURL);
     }
   }

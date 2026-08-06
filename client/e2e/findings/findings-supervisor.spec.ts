@@ -54,7 +54,10 @@ test.describe('findings verification — supervisor', () => {
     await page.locator('.fa-angle-right.view-navigate').click();
     await page.waitForTimeout(4000); // give the report fetch time to fire
 
-    const fmt = (d: Date) => d.toISOString().slice(0, 10);
+    // LOCAL date, not toISOString (UTC): the app formats the request date with moment in
+    // local time, so a UTC-based expectation is one day off between local midnight and
+    // 08:00 UTC+8 — this exact bug made the test fail deterministically overnight (audit #4)
+    const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     const hits = captured.filter(c => c.includes(fmt(tomorrow)));
     expect(hits.length, `a request after "next" must carry tomorrow (${fmt(tomorrow)}); captured: ${captured.length} requests`).toBeGreaterThan(0);
@@ -72,6 +75,9 @@ test.describe('findings verification — supervisor', () => {
     await page.waitForTimeout(4000); // dashboard SP fetch is slow
     const todayTab = page.locator('a[role="tab"], a, button', { hasText: /Today \(\d+\)/ }).first();
     if (!(await todayTab.count())) test.skip(true, 'summary leaves tabs not on this dashboard variant');
+    // the card must actually be rendered — without this, the count-0 assertion below would
+    // also pass on a dashboard that failed to paint (audit #13)
+    await expect(todayTab, 'leaves card tab must be visible').toBeVisible();
     const label = await todayTab.innerText();
     const count = parseInt((label.match(/\((\d+)\)/) || [])[1] || '0', 10);
     test.skip(count > 0, `today has ${count} leaves — empty-state arm not reachable with live data`);
@@ -119,9 +125,13 @@ test.describe('findings verification — supervisor', () => {
     await assertHealthyPage(page);
     await waitForAppIdle(page);
     await page.waitForTimeout(2000);
-    const edit = page.locator('a[href*="/app/schedule/template/"]').first();
-    if (!(await edit.count())) test.skip(true, 'no template rows visible for this supervisor');
-    const href = await edit.getAttribute('href');
+    // MUST match a row link carrying a template ID — a bare prefix match grabs the SIDEBAR
+    // link to the list itself and the test proves nothing (audit blocker #3: the first
+    // version of this test did exactly that and its "verdict" was fabricated)
+    const hrefs = await page.locator('a[href*="/app/schedule/template/"]').evaluateAll(
+      els => els.map(e => (e as HTMLAnchorElement).getAttribute('href') || ''));
+    const href = hrefs.find(h => /\/app\/schedule\/template\/\d+\/?$/.test(h));
+    if (!href) test.skip(true, 'no template EDIT row (with a numeric id) visible for this supervisor');
     await page.goto(href!, { waitUntil: 'load', timeout: 30000 });
     await page.waitForTimeout(2000);
     const rootText = await page.locator('#root').innerText();

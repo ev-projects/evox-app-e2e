@@ -72,11 +72,14 @@ test.describe('findings verification — employee', () => {
     await page.locator('#change_password_id button[type="submit"]').click();
     await page.waitForTimeout(2500);
 
-    // characterization of the LIVE bug: the write is attempted despite garbage input.
-    // When the schema is wired correctly this fails (no request; errors render) — flip it.
-    expect(attempted.length,
-      'BUG LIVE: a mutating request should have been attempted (and was aborted). ' +
-      'If this failed, check whether validation errors now render — the fix has landed.'
+    // characterization of the LIVE bug: THE PASSWORD write is attempted despite garbage
+    // input. Filter to the change_password endpoint — EVOX serves several reads over POST,
+    // so an unfiltered count can be satisfied by background traffic (audit #9).
+    const pwAttempts = attempted.filter(a => /change_password/i.test(a));
+    expect(pwAttempts.length,
+      'BUG LIVE: the change_password request should have been attempted (and was aborted). ' +
+      'If this failed, check whether validation errors now render — the fix has landed. ' +
+      `All aborted writes: ${attempted.join(' | ') || 'none'}`
     ).toBeGreaterThan(0);
   });
 
@@ -89,26 +92,16 @@ test.describe('findings verification — employee', () => {
     await waitForAppIdle(page);
     await page.waitForTimeout(2000);
 
-    const submitBtn = page.locator('button', { hasText: /Submit Dispute/i }).first();
-    if (!(await submitBtn.count())) {
-      // button absent = original DSP-CRT-1 shape still fully live
-      test.info().annotations.push({ type: 'verdict', description: 'DSP-CRT-1 CONFIRMED: no Submit Dispute control rendered' });
-      return;
-    }
-    const disabled = await submitBtn.isDisabled();
-    const attempted = await armWriteBlocker(page);
-    if (!disabled) {
-      await submitBtn.click();
-      await page.waitForTimeout(2500);
-    }
-    test.info().annotations.push({
-      type: 'verdict',
-      description: `Submit Dispute present, disabled=${disabled}; attempted writes: ${attempted.length ? attempted.join(' | ') : 'none'}`,
-    });
-    // characterization of the LIVE defect: /storedispute is commented out in DisputeForm.js,
-    // so no create request can be attempted. When the create flow is restored this fails —
-    // flip it to expect the POST.
-    const storeAttempts = attempted.filter(a => a.includes('/storedispute'));
-    expect(storeAttempts, 'BUG LIVE: creating a dispute must not reach /storedispute (the flow is dead code)').toHaveLength(0);
+    // DSP-CRT-1 CONFIRMED in its ORIGINAL shape (observed on staging 2026-08-07): the
+    // create screen renders NO "Submit Dispute" control for an employee at all — the
+    // button in DisputeForm.js:1297 never mounts on this path. Creating a payroll dispute
+    // is impossible in this build. When the create flow is restored the count() goes >0,
+    // this fails, and the test flips into the regression guard for the restored flow.
+    const submitBtn = page.locator('button', { hasText: /Submit Dispute/i });
+    await page.waitForTimeout(3000); // give the form its render window before pinning absence
+    expect(await submitBtn.count(),
+      'BUG LIVE (DSP-CRT-1): no Submit Dispute control renders on the create screen. ' +
+      'If this failed, the create flow came back — verify and flip this test.'
+    ).toBe(0);
   });
 });

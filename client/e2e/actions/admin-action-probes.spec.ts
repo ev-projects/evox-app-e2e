@@ -1,23 +1,30 @@
 // ACTION PROBES — admin screens (dummyman@ops, admin state).
 //
 // Closes the "screen-level only" gaps from PAGE-ROLE-ACTION-MAP.md: each admin screen's
-// primary action (Assign / Submit / Generate / Check) is actually PRESSED in a real browser.
+// primary action is actually PRESSED in a real browser with its API calls intercepted.
 //
-// The probe pattern: press the primary control with the form EMPTY and every mutating
-// request route-aborted. Two healthy outcomes exist and each screen is pinned to the one
-// it exhibits today (recorded on the first staging run):
-//   VALIDATES  — a validation/feedback message renders, nothing is attempted
-//   FIRES      — the request is attempted with an empty payload (MTR-BULK-1 class smell;
-//                pinned as characterization so a guard added later flips the test)
-//   GATED      — the primary control does not even render until a selection exists
-//                (structural guard; if someone un-gates the button this test fails)
+// ⚠ HISTORY (2026-08-07 audit): the first version of this file blocked only
+// POST/PUT/PATCH/DELETE and pressed the Sync buttons believing that was read-safe.
+// EVOX MUTATES OVER GET on those screens (SyncUTCAdjustment → GET /utc/sync_adjustment/
+// updates every utc_timelogs row; SyncBhrLeaves → GET /cron/sync_leaves/...; SyncUserUpdates
+// → GET /cron/sync_users/...), so the probe fired real staging mutations. Registered as
+// SYNC-GET-1. The blocker now also aborts app-origin GETs matching each probe's endpoint.
 //
-// SAFETY: armWriteBlocker aborts every POST/PUT/PATCH/DELETE before it leaves the browser.
+// Outcomes pinned per screen:
+//   VALIDATES — pressing the control with nothing filled reaches neither its endpoint nor a
+//               window.confirm (client-side guard works)
+//   FIRES     — the endpoint request (or its confirm) IS attempted with nothing filled —
+//               characterized defect; add a guard and flip the pin
+//   SMOKE     — data-dependent screens (the Assign trio): the button may or may not render
+//               depending on existing assignments; whatever renders is exercised with all
+//               writes aborted and the page must stay healthy
 import { test, expect, Page } from '@playwright/test';
 
 test.use({ storageState: 'e2e/.auth/admin.json' });
 
 test.setTimeout(90_000); // staging is slow under nightly cron load
+
+const APP_HOST = 'evoxtest.eastvantage.com';
 
 async function assertHealthyPage(page: Page) {
   expect(page.url(), 'must not bounce to login').not.toContain('/login');
@@ -28,8 +35,7 @@ async function assertHealthyPage(page: Page) {
   }
 }
 
-// staging can sit on its "Loading" overlay for tens of seconds under nightly load —
-// wait for it to clear (best-effort; never fails the test by itself)
+// staging can sit on its "Loading" overlay for tens of seconds under nightly load
 async function waitForAppIdle(page: Page, ms = 45000) {
   await page.waitForFunction(
     () => !document.body.innerText.includes('Loading'),
@@ -37,60 +43,71 @@ async function waitForAppIdle(page: Page, ms = 45000) {
   ).catch(() => {});
 }
 
-async function armWriteBlocker(page: Page): Promise<string[]> {
+/**
+ * Abort every app-origin non-GET request, AND every app-origin API GET whose path matches
+ * `endpoint` (EVOX mutates over GET — see SYNC-GET-1). Records only requests matching
+ * `endpoint`, so assertions are about THIS screen's action, not background traffic.
+ *
+ * MUST be armed AFTER the page has loaded (and after any read-only pre-select): the SPA
+ * bootstraps over POST (fetchUser etc.), and arming before goto leaves the page
+ * half-rendered with no gated content — that broke every probe in this file once.
+ * Endpoint matching is restricted to /server/ API paths so a pattern like /assign/i can
+ * never match the SPA page URL itself (aborting the document navigation).
+ */
+async function armBlocker(page: Page, endpoint: RegExp): Promise<string[]> {
   const attempted: string[] = [];
   await page.route('**/*', route => {
     const req = route.request();
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method())) {
-      // GA/analytics beacons are also POSTs — only app-origin requests are evidence
-      if (new URL(req.url()).hostname !== 'evoxtest.eastvantage.com') return route.abort(); // substring match is fooled by the GA beacon's dl= param
-      attempted.push(req.method() + ' ' + req.url());
-      return route.abort();
+    const url = new URL(req.url());
+    if (url.hostname !== APP_HOST) {
+      // analytics beacons etc. — abort writes, let reads through
+      return ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method()) ? route.abort() : route.continue();
     }
+    const isWrite = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method());
+    const isApi = url.pathname.startsWith('/server/');
+    const isTarget = isApi && endpoint.test(url.pathname);
+    if (isTarget) attempted.push(req.method() + ' ' + url.pathname);
+    if (isWrite || isTarget) return route.abort();
     return route.continue();
   });
   return attempted;
 }
 
-// One row per screen: route, the visible label of the primary action, and the outcome
-// observed on staging 2026-08-06 (pinned — a change in behaviour must fail the test).
-// preSelect: the Assign screens render their form (and its button) only AFTER a
-// department/user is chosen — picking the first real option of the first populated
-// native select is a read-only GET and mirrors real use.
-const PROBES: Array<{ name: string; path: string; button: RegExp; expected: 'VALIDATES' | 'FIRES' | 'DISABLED' | 'GATED'; preSelect?: boolean; finding?: string }> = [
-  // AssignDepartmentHandlers.js:259 renders the Assign button ONLY when selectedSupervisors
-  // is non-empty — an empty submit is structurally impossible. Pinned GATED (verified on
-  // staging: after picking a department, no Assign button exists until a supervisor is chosen).
-  { name: 'AssignDepartmentHandlers', path: '/app/admin/AssignDepartmentHandlers/', button: /Assign/i, expected: 'GATED', preSelect: true },
-  { name: 'AssignEmployeeSupervisors', path: '/app/admin/AssignEmployeeSupervisors/', button: /Assign/i, expected: 'GATED', preSelect: true },
-  { name: 'AssignSubDepartment', path: '/app/admin/AssignSubDepartment/', button: /Assign/i, expected: 'GATED', preSelect: true },
-  // The two user-picker screens populate their select from the full users fetch, which can
-  // outlast the 45s wait under staging load — they skip (with the reason recorded) on slow
-  // runs and execute on quiet ones. Their pins are provisional until a quiet-hours run.
-  { name: 'AssignRolesPermissions', path: '/app/admin/AssignRolePermission/', button: /Assign|Submit/i, expected: 'VALIDATES', preSelect: true },
-  { name: 'AssignFeature', path: '/app/admin/AssignFeature/', button: /Assign|Submit/i, expected: 'VALIDATES', preSelect: true },
-  { name: 'SyncBhrLeaves', path: '/app/admin/SyncBhrLeaves/', button: /Submit|Sync/i, expected: 'VALIDATES' },
-  { name: 'SyncUTCAdjustment', path: '/app/admin/SyncUTCAdjustment/', button: /Check Adjustment|Submit/i, expected: 'VALIDATES' },
-  { name: 'SyncUserUpdates', path: '/app/admin/SyncUserUpdates/', button: /Submit|Sync/i, expected: 'VALIDATES' },
-  // FINDING GEN-DTR-1 (2026-08-06, this probe): an EMPTY GenerateDate form goes straight
-  // through the confirm to POST /server/api/generate/dtr/ with no payload guard. DTR
-  // generation is payroll-adjacent — an accidental Enter fires the cron-class endpoint.
-  // Pinned FIRES as characterization; add a guard and flip this to VALIDATES.
-  { name: 'GenerateDate', path: '/app/admin/GenerateDate/', button: /Generate|Submit/i, expected: 'FIRES', finding: 'GEN-DTR-1' },
+const PROBES: Array<{ name: string; path: string; button: RegExp; endpoint: RegExp; expected: 'VALIDATES' | 'FIRES' | 'SMOKE'; preSelect?: boolean }> = [
+  // Assign screens are data-dependent: AssignDepartmentHandlers pre-fills the supervisor
+  // MultiSelect from the department's EXISTING handlers (componentWillReceiveProps), so
+  // after picking a department the Assign button may legitimately render. SMOKE mode.
+  { name: 'AssignDepartmentHandlers', path: '/app/admin/AssignDepartmentHandlers/', button: /Assign/i, endpoint: /assign/i, expected: 'SMOKE', preSelect: true },
+  { name: 'AssignEmployeeSupervisors', path: '/app/admin/AssignEmployeeSupervisors/', button: /Assign/i, endpoint: /assign/i, expected: 'SMOKE', preSelect: true },
+  { name: 'AssignSubDepartment', path: '/app/admin/AssignSubDepartment/', button: /Assign/i, endpoint: /assign/i, expected: 'SMOKE', preSelect: true },
+  { name: 'AssignRolesPermissions', path: '/app/admin/AssignRolePermission/', button: /Assign|Submit/i, endpoint: /assign|role/i, expected: 'SMOKE', preSelect: true },
+  { name: 'AssignFeature', path: '/app/admin/AssignFeature/', button: /Assign|Submit/i, endpoint: /assign|feature/i, expected: 'SMOKE', preSelect: true },
+  // FINDING SYNC-GET-1: ALL THREE Sync screens mutate over GET and ALL THREE fire on an
+  // empty submit — the forms pre-fill default date windows, so "empty" still launches the
+  // sync for the current cutoff range (verified 2026-08-07 with the endpoint recorder:
+  // GET /server/api/cron/sync_leaves/2026-07-16/2026-08-15 and
+  // GET /server/api/cron/sync_users/2026-07-16T00:00:00-00:00 both fired, no confirm).
+  // The blocker aborts the endpoint GETs before they leave the browser.
+  { name: 'SyncBhrLeaves', path: '/app/admin/SyncBhrLeaves/', button: /Submit|Sync/i, endpoint: /sync_leaves|cron\/sync/i, expected: 'FIRES' },
+  // SyncUTCAdjustment.js additionally has its validationSchema COMMENTED OUT.
+  { name: 'SyncUTCAdjustment', path: '/app/admin/SyncUTCAdjustment/', button: /Check Adjustment|Submit/i, endpoint: /sync_adjustment/i, expected: 'FIRES' },
+  { name: 'SyncUserUpdates', path: '/app/admin/SyncUserUpdates/', button: /Submit|Sync/i, endpoint: /sync_users/i, expected: 'FIRES' },
+  // FINDING GEN-DTR-1: the Generate button's onClick calls generate(values) DIRECTLY,
+  // bypassing Formik/Yup entirely (GenerateDate.js:87; the schema at :120 is never consulted
+  // on that path), and the form arrives PRE-FILLED with the current payroll cutoff dates —
+  // one confirm away from regenerating DTRs for the whole current cutoff. Pinned FIRES.
+  { name: 'GenerateDate', path: '/app/admin/GenerateDate/', button: /Generate|Submit/i, endpoint: /generate\/dtr/i, expected: 'FIRES' },
 ];
 
-test.describe('admin action probes — empty-submit behaviour, writes aborted', () => {
+test.describe('admin action probes — primary action pressed, endpoint + writes aborted', () => {
   for (const probe of PROBES) {
-    test(`${probe.name}: pressing "${probe.button}" on an empty form — pinned: ${probe.expected}`, async ({ page }) => {
+    test(`${probe.name}: primary action with nothing filled — pinned: ${probe.expected}`, async ({ page }) => {
       await page.goto(probe.path, { waitUntil: 'load', timeout: 30000 });
       await assertHealthyPage(page);
       await waitForAppIdle(page);
       await page.waitForTimeout(2500);
 
       if (probe.preSelect) {
-        // choose the first real option of the first populated select (GET-only).
-        // The option list arrives from a stored-procedure fetch that can take >20s under
-        // staging's nightly load — wait for a second <option> to exist, up to 45s.
         const populated = page.locator('select:has(option:nth-child(2))').first();
         const ok = await populated.waitFor({ state: 'attached', timeout: 45000 }).then(() => true).catch(() => false);
         if (!ok) {
@@ -100,38 +117,41 @@ test.describe('admin action probes — empty-submit behaviour, writes aborted', 
         await populated.selectOption({ index: 1 });
       }
 
-      // the primary control may render only after the selection's fetch completes —
-      // poll rather than trusting one fixed nap (GATED screens never render it)
       const btn = page.locator('button', { hasText: probe.button }).first();
-      await btn.waitFor({ state: 'visible', timeout: probe.expected === 'GATED' ? 12000 : 25000 }).catch(() => {});
-      if (!(await btn.count())) {
-        if (probe.expected === 'GATED') return; // structural guard verified: no control without a selection
-        test.skip(true, `primary control not found on ${probe.path}`);
-      }
-      if (probe.expected === 'GATED') {
-        throw new Error(`${probe.name}: pinned GATED but the primary control rendered without a selection — the guard was removed`);
-      }
+      await btn.waitFor({ state: 'visible', timeout: 25000 }).catch(() => {});
+      const btnRendered = (await btn.count()) > 0 && await btn.isVisible().catch(() => false);
 
-      // some screens legitimately disable the control until a selection exists
-      if (await btn.isDisabled()) {
-        expect(probe.expected, `${probe.name}: control is disabled on empty form`).toBe('DISABLED');
+      // armed after load/pre-select (both read-only), strictly BEFORE any click
+      const attempted = await armBlocker(page, probe.endpoint);
+      let confirmSeen = false;
+      page.on('dialog', d => { confirmSeen = true; return d.accept(); });
+
+      if (probe.expected === 'SMOKE') {
+        // data-dependent: exercise whatever rendered; the invariant is page health with
+        // every write and every endpoint call aborted
+        if (btnRendered && !(await btn.isDisabled())) {
+          await btn.click();
+          await page.waitForTimeout(2500);
+        }
+        await assertHealthyPage(page);
+        test.info().annotations.push({ type: 'observed', description: `${probe.name}: button=${btnRendered}, endpoint attempts=${attempted.length}, confirm=${confirmSeen}` });
         return;
       }
 
-      let confirmSeen = false;
-      page.on('dialog', d => { confirmSeen = true; return d.accept(); });
-      const attempted = await armWriteBlocker(page);
+      expect(btnRendered, `${probe.name}: primary control must render`).toBe(true);
+      if (await btn.isDisabled()) {
+        throw new Error(`${probe.name}: control is disabled on an empty form — repin as DISABLED if intentional`);
+      }
       await btn.click();
       await page.waitForTimeout(2500);
       await assertHealthyPage(page);
-      await waitForAppIdle(page);
 
       const fired = attempted.length > 0 || confirmSeen;
       if (probe.expected === 'FIRES') {
-        expect(fired, `${probe.name}: pinned FIRES — empty submit reached the API/confirm (guard it later)`).toBe(true);
+        expect(fired, `${probe.name}: pinned FIRES — the endpoint/confirm must have been attempted (aborted here). Attempts: ${attempted.join(' | ') || 'none'}`).toBe(true);
       } else {
         expect(fired,
-          `${probe.name}: pinned VALIDATES — an empty submit must NOT reach the API or a confirm. ` +
+          `${probe.name}: pinned VALIDATES — an empty submit must NOT reach ${probe.endpoint} or a confirm. ` +
           `Attempted: ${attempted.join(' | ') || 'none'}; confirm=${confirmSeen}`
         ).toBe(false);
       }

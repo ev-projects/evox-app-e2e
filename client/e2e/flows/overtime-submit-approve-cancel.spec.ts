@@ -1,10 +1,12 @@
 // WRITE FLOW — Overtime: employee submits → supervisor approves → employee cancels.
 //
 // APPROVED BY VISHNU 2026-08-06: real writes on staging, glenn (employee) → gary
-// (supervisor), every artifact tagged E2E-TEST in the note fields, cleanup via the UI's
-// own Cancel so the request ends in a terminal state. Residue: one CANCELED overtime
-// request under glenn's name with an obvious E2E-TEST note. No payroll impact: the OT
-// date is next Monday (no DTR exists yet) and the request ends canceled.
+// (supervisor), every artifact tagged E2E-TEST in the note fields. Cleanup is a
+// SUPERVISOR DECLINE (an approved request offers its owner no Cancel). NB a declined
+// request is NOT terminal — RequestButtons offers Approve again — which is exactly what
+// lets this flow reuse ONE request forever. Residue: exactly one declined overtime
+// request under glenn (fixed far-future date, E2E-TEST note); the server's duplicate-date
+// rule blocks any second one, so residue cannot grow across runs or weeks.
 //
 // This is the first spec allowed to write. It is deliberately serial — three tests, one
 // request id threaded through. If a step fails, later steps skip and the failure message
@@ -15,16 +17,21 @@ test.describe.configure({ mode: 'serial' });
 test.setTimeout(120_000);
 
 const TAG = `E2E-TEST-${Date.now()}`;
-// next Monday, far enough to have no DTR and inert once canceled
-const otDate = (() => {
-  const d = new Date();
-  d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7));
-  return d;
-})();
+// FIXED far-future Monday (2027-06-07), not "next Monday": a rolling date would create a
+// NEW request every week (the duplicate-date rule only blocks same-date repeats) and grow
+// residue without bound (audit #6). One fixed date = one reusable request, forever.
+const otDate = new Date(2027, 5, 7);
 const fmtInput = (d: Date) => `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
 
 let requestId: string | null = null;
 let residueNote = 'no request created';
+let cleanupRan = false;
+
+// surface the residue state even when serial mode skips the cleanup step after an
+// earlier failure (audit #5: residueNote was otherwise only readable inside step 3)
+test.afterAll(() => {
+  if (!cleanupRan) console.log(`[RESIDUE] cleanup did not run — current staging state: ${residueNote}`);
+});
 
 async function pageAs(browser: Browser, role: string): Promise<Page> {
   const ctx = await browser.newContext({ storageState: `e2e/.auth/${role}.json` });
@@ -123,7 +130,9 @@ test.describe('overtime submit → approve → cancel (WRITES, E2E-TEST tagged)'
     // BUG-6 live. Assert healthy and let a failure carry the verdict text.
     await assertHealthyPage(page);
     const body = await page.locator('body').innerText();
-    expect(body, 'approval must not surface a raw error to the supervisor (BUG-6 check)').not.toMatch(/500|Server Error/);
+    // NOT /500/: the page renders our ms-timestamp tag, which contains "500" in ~1% of runs
+    // (audit #5). Match only explicit server-error phrasings.
+    expect(body, 'approval must not surface a raw error to the supervisor (BUG-6 check)').not.toMatch(/server error|internal error/i);
     residueNote = `APPROVED overtime request id=${requestId} (glenn, ${fmtInput(otDate)}, note ${TAG})`;
     await page.context().close();
   });
@@ -161,7 +170,8 @@ test.describe('overtime submit → approve → cancel (WRITES, E2E-TEST tagged)'
       'declined request must offer Approve again').toBeVisible({ timeout: 15000 });
     const declineStill = await page.locator('button', { hasText: /Decline/i }).first().isVisible().catch(() => false);
     expect(declineStill, `Decline must be gone after declining (residue if not: ${residueNote})`).toBe(false);
-    residueNote = `DECLINED (terminal) overtime request id=${requestId} — inert, tagged E2E-TEST`;
+    residueNote = `DECLINED overtime request id=${requestId} — inert while untouched (NB not terminal: a supervisor could re-approve), tagged E2E-TEST`;
+    cleanupRan = true;
     await page.context().close();
   });
 });
