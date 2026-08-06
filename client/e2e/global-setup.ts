@@ -91,7 +91,9 @@ export default async function globalSetup(): Promise<void> {
     const authFile = path.join(authDir, `${role.file}.json`);
     // Reuse a recent auth state instead of re-logging 15 accounts on every invocation —
     // saves ~2.5 min per run. Delete e2e/.auth/ (or set E2E_FORCE_LOGIN=1) to force fresh logins.
-    const maxAgeMs = 8 * 60 * 60 * 1000;
+    // 30 min, NOT longer: the JWT expires within the hour and an expired state renders the
+    // "LOGIN TO CONTINUE" modal on the app URL — tests then fail on the login-modal check.
+    const maxAgeMs = 30 * 60 * 1000;
     if (!process.env.E2E_FORCE_LOGIN && fs.existsSync(authFile)
         && Date.now() - fs.statSync(authFile).mtimeMs < maxAgeMs) {
       console.log(`  ↻  ${role.file}.json is fresh — reusing`);

@@ -11,12 +11,24 @@ import { test, expect, Page } from '@playwright/test';
 
 test.use({ storageState: 'e2e/.auth/ph-supervisor.json' });
 
+test.setTimeout(90_000); // staging is slow under nightly cron load
+
 async function assertHealthyPage(page: Page) {
   expect(page.url(), 'must not bounce to login').not.toContain('/login');
   const body = await page.locator('body').innerText();
+  expect(body, 'session must not have expired into the LOGIN TO CONTINUE modal').not.toContain('LOGIN TO CONTINUE');
   for (const sig of ['Fatal error', 'Parse error', 'Uncaught Error', 'Whoops']) {
     expect(body, 'no PHP error text').not.toContain(sig);
   }
+}
+
+// staging can sit on its "Loading" overlay for tens of seconds under nightly load —
+// wait for it to clear (best-effort; never fails the test by itself)
+async function waitForAppIdle(page: Page, ms = 45000) {
+  await page.waitForFunction(
+    () => !document.body.innerText.includes('Loading'),
+    undefined, { timeout: ms },
+  ).catch(() => {});
 }
 
 test.describe('findings verification — supervisor', () => {
@@ -27,6 +39,7 @@ test.describe('findings verification — supervisor', () => {
     // TODAY's date again instead of tomorrow's.
     await page.goto('/app/report/TeamAttendanceSummary/', { waitUntil: 'load', timeout: 30000 });
     await assertHealthyPage(page);
+    await waitForAppIdle(page);
     await expect(page.locator('.report-navigator')).toBeVisible({ timeout: 15000 });
     // let the initial (today) fetch settle so we only capture the navigation fetch
     await page.waitForTimeout(3000);
@@ -52,6 +65,7 @@ test.describe('findings verification — supervisor', () => {
     // the empty-state message is unreachable. Only verifiable when today truly has 0 leaves.
     await page.goto('/app/Dashboard', { waitUntil: 'load', timeout: 30000 });
     await assertHealthyPage(page);
+    await waitForAppIdle(page);
     // the summary lives under the "EVOX Summary" dashboard tab (DashboardTabs eventKey evox-summary)
     const summaryTab = page.locator('a[role="tab"]', { hasText: /Summary/i }).first();
     if (await summaryTab.count()) await summaryTab.click();
@@ -75,6 +89,7 @@ test.describe('findings verification — supervisor', () => {
     // live. This test locks the healthy behaviour in as the regression guard.
     await page.goto('/app/team/MyTeamSchedule', { waitUntil: 'load', timeout: 30000 });
     await assertHealthyPage(page);
+    await waitForAppIdle(page);
     const daySched = page.locator('.today-sched');
     await expect(daySched, 'day view is the default').toBeVisible({ timeout: 15000 });
 
@@ -102,6 +117,7 @@ test.describe('findings verification — supervisor', () => {
     // test-harness artifact. Discover a real template id from the list, open it, observe.
     await page.goto('/app/schedule/template/', { waitUntil: 'load', timeout: 30000 });
     await assertHealthyPage(page);
+    await waitForAppIdle(page);
     await page.waitForTimeout(2000);
     const edit = page.locator('a[href*="/app/schedule/template/"]').first();
     if (!(await edit.count())) test.skip(true, 'no template rows visible for this supervisor');
@@ -113,5 +129,6 @@ test.describe('findings verification — supervisor', () => {
     // for TemplateEdit in a real browser (ProtectedRoute injects params) — update register.
     expect(rootText.trim().length, `TemplateEdit at ${href} must render, not white-screen`).toBeGreaterThan(50);
     await assertHealthyPage(page);
+    await waitForAppIdle(page);
   });
 });

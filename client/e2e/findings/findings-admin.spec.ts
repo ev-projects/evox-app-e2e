@@ -6,12 +6,24 @@ import { test, expect, Page } from '@playwright/test';
 
 test.use({ storageState: 'e2e/.auth/admin.json' });
 
+test.setTimeout(90_000); // staging is slow under nightly cron load
+
 async function assertHealthyPage(page: Page) {
   expect(page.url(), 'must not bounce to login').not.toContain('/login');
   const body = await page.locator('body').innerText();
+  expect(body, 'session must not have expired into the LOGIN TO CONTINUE modal').not.toContain('LOGIN TO CONTINUE');
   for (const sig of ['Fatal error', 'Parse error', 'Uncaught Error', 'Whoops']) {
     expect(body, 'no PHP error text').not.toContain(sig);
   }
+}
+
+// staging can sit on its "Loading" overlay for tens of seconds under nightly load —
+// wait for it to clear (best-effort; never fails the test by itself)
+async function waitForAppIdle(page: Page, ms = 45000) {
+  await page.waitForFunction(
+    () => !document.body.innerText.includes('Loading'),
+    undefined, { timeout: ms },
+  ).catch(() => {});
 }
 
 async function armWriteBlocker(page: Page): Promise<string[]> {
@@ -19,6 +31,8 @@ async function armWriteBlocker(page: Page): Promise<string[]> {
   await page.route('**/*', route => {
     const req = route.request();
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method())) {
+      // GA/analytics beacons are also POSTs — only app-origin requests are evidence
+      if (new URL(req.url()).hostname !== 'evoxtest.eastvantage.com') return route.abort(); // substring match is fooled by the GA beacon's dl= param
       attempted.push(req.method() + ' ' + req.url() + ' ' + (req.postData() || '').slice(0, 300));
       return route.abort();
     }
@@ -36,6 +50,7 @@ test.describe('findings verification — admin', () => {
     // here); when the Yup refs are fixed, a validation error renders and nothing fires.
     await page.goto('/app/admin/PayrollCutoff/', { waitUntil: 'load', timeout: 30000 });
     await assertHealthyPage(page);
+    await waitForAppIdle(page);
     await page.waitForTimeout(2000);
 
     // the form opens from the subtitle button on the list header
