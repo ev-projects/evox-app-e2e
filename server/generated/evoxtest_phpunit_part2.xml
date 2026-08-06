@@ -32,6 +32,7 @@
         <whitelist processUncoveredFilesFromWhitelist="false">
             <directory suffix=".php">../app</directory>
             <exclude>
+                <directory suffix=".php">../app/Modules/*/Database/Migrations</directory>
                 <file>../app/Models/Activity.php</file>
             </exclude>
         </whitelist>
