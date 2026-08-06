@@ -1,0 +1,1386 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/container/EVLearning/EVLearning.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="..\..\..\prettify.css" />
+    <link rel="stylesheet" href="..\..\..\base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(..\..\..\sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="..\..\..\index.html">All files</a> / <a href="index.html">src/container/EVLearning</a> EVLearning.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>1/1</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/0</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/1</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>1/1</span>
+      </div>
+    </div>
+    <p class="quiet">
+      Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+    </p>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a>
+<a name='L338'></a><a href='#L338'>338</a>
+<a name='L339'></a><a href='#L339'>339</a>
+<a name='L340'></a><a href='#L340'>340</a>
+<a name='L341'></a><a href='#L341'>341</a>
+<a name='L342'></a><a href='#L342'>342</a>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a>
+<a name='L346'></a><a href='#L346'>346</a>
+<a name='L347'></a><a href='#L347'>347</a>
+<a name='L348'></a><a href='#L348'>348</a>
+<a name='L349'></a><a href='#L349'>349</a>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a>
+<a name='L364'></a><a href='#L364'>364</a>
+<a name='L365'></a><a href='#L365'>365</a>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a>
+<a name='L372'></a><a href='#L372'>372</a>
+<a name='L373'></a><a href='#L373'>373</a>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a>
+<a name='L379'></a><a href='#L379'>379</a>
+<a name='L380'></a><a href='#L380'>380</a>
+<a name='L381'></a><a href='#L381'>381</a>
+<a name='L382'></a><a href='#L382'>382</a>
+<a name='L383'></a><a href='#L383'>383</a>
+<a name='L384'></a><a href='#L384'>384</a>
+<a name='L385'></a><a href='#L385'>385</a>
+<a name='L386'></a><a href='#L386'>386</a>
+<a name='L387'></a><a href='#L387'>387</a>
+<a name='L388'></a><a href='#L388'>388</a>
+<a name='L389'></a><a href='#L389'>389</a>
+<a name='L390'></a><a href='#L390'>390</a>
+<a name='L391'></a><a href='#L391'>391</a>
+<a name='L392'></a><a href='#L392'>392</a>
+<a name='L393'></a><a href='#L393'>393</a>
+<a name='L394'></a><a href='#L394'>394</a>
+<a name='L395'></a><a href='#L395'>395</a>
+<a name='L396'></a><a href='#L396'>396</a>
+<a name='L397'></a><a href='#L397'>397</a>
+<a name='L398'></a><a href='#L398'>398</a>
+<a name='L399'></a><a href='#L399'>399</a>
+<a name='L400'></a><a href='#L400'>400</a>
+<a name='L401'></a><a href='#L401'>401</a>
+<a name='L402'></a><a href='#L402'>402</a>
+<a name='L403'></a><a href='#L403'>403</a>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a>
+<a name='L411'></a><a href='#L411'>411</a>
+<a name='L412'></a><a href='#L412'>412</a>
+<a name='L413'></a><a href='#L413'>413</a>
+<a name='L414'></a><a href='#L414'>414</a>
+<a name='L415'></a><a href='#L415'>415</a>
+<a name='L416'></a><a href='#L416'>416</a>
+<a name='L417'></a><a href='#L417'>417</a>
+<a name='L418'></a><a href='#L418'>418</a>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a>
+<a name='L425'></a><a href='#L425'>425</a>
+<a name='L426'></a><a href='#L426'>426</a>
+<a name='L427'></a><a href='#L427'>427</a>
+<a name='L428'></a><a href='#L428'>428</a>
+<a name='L429'></a><a href='#L429'>429</a>
+<a name='L430'></a><a href='#L430'>430</a>
+<a name='L431'></a><a href='#L431'>431</a>
+<a name='L432'></a><a href='#L432'>432</a>
+<a name='L433'></a><a href='#L433'>433</a>
+<a name='L434'></a><a href='#L434'>434</a>
+<a name='L435'></a><a href='#L435'>435</a>
+<a name='L436'></a><a href='#L436'>436</a>
+<a name='L437'></a><a href='#L437'>437</a>
+<a name='L438'></a><a href='#L438'>438</a>
+<a name='L439'></a><a href='#L439'>439</a>
+<a name='L440'></a><a href='#L440'>440</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { Component } from "react";
+import { Container,Col } from 'react-bootstrap';
+import "./EVLearning.css";
+import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../components/GridComponent/AdminLte.js';
+import Wrapper from "../../components/Template/Wrapper/Wrapper";
+import { Link } from "react-router-dom";
+class EVLearning extends Component {
+  render() {
+    return  &lt;Wrapper &gt;
+		&lt;div className="evlearning-margin"&gt;
+		&lt;ContainerWrapper&gt; 
+&nbsp;
+&nbsp;
+&lt;div className="el-title"&gt;Guidelines&lt;/div&gt;
+&lt;img src="/images/ev-learning.png" alt="User Image"/&gt;
+&lt;ol&gt;
+  &lt;li&gt;Make sure to register via your work email address before working on a course.&lt;/li&gt;
+  &lt;li&gt;Once the course is completed, please send the total hours spent plus the screenshot for completion per completed course or&amp;nbsp;forward the email notification that the e-learning site will send you after completing the course to happiness@eastvantage.com&lt;/li&gt;
+  &lt;li&gt;The targeted hours of completion is 10 hours until December 31 - spend a minimum of 1&amp;nbsp;hour&amp;nbsp;per month.&lt;/li&gt;
+  &lt;li&gt;If you are unable to access the website because it is generating errors, or if&amp;nbsp;the video is blocked,&amp;nbsp;please send an email to happiness@eastvantage.com &lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;ul className="el-nav"&gt;
+  &lt;li&gt;&lt;a href="#general"&gt;General&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#happiness"&gt;Happiness&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#crm"&gt;CRM/Business Support&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#tech"&gt;Tech/ICT&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#sales"&gt;Sales &amp;amp; Marketing&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#recruitment"&gt;Recruitment&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#ops"&gt;Operations&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#finance"&gt;Finance&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#project"&gt;Project Management&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#leadership"&gt;Leadership&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+{/* start list */}
+&lt;div className="list"&gt;
+&lt;a id="general" name="general" /&gt;
+  &lt;div className="el-title"&gt;General&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.coursera.org/?authMode=signup" target="_blank"&gt;Coursera&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/uva-darden-design-thinking-innovation" target="_blank"&gt;Design Thinking for Innovation&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/negotiation-skills" target="_blank"&gt;Negotiation Skills and Strategies&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/understanding-arguments" target="_blank"&gt;Critical Thinking&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/inductive-reasoning?recoOrder=11&amp;utm_medium=email&amp;utm_source=recommendations&amp;utm_campaign=juWqgKzNEempyReieZALEQ"&gt;Inductive Reasoning&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/creative-problem-solving?recoOrder=23&amp;utm_medium=email&amp;utm_source=recommendations&amp;utm_campaign=L-H_kO1EEemHRdu0lvjSqg"&gt;Creative Problem Solving&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/mindfulness" target="_blank"&gt;Mindfulness&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/mindshift?recoOrder=10&amp;utm_medium=email&amp;utm_source=recommendations&amp;utm_campaign=4EV2EIu5EemdOAf9ya7Q1g"&gt;Mindshift: Overcoming Obstacles&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/learn-chinese" target="_blank"&gt;Chinese for Beginners&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/learn-korean" target="_blank"&gt;Korean for Beginners&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/etudier-en-france" target="_blank"&gt;French - Intermediate&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/communicate-with-impact?utm_medium=email&amp;utm_source=marketing&amp;utm_campaign=A8asML8OEempyReieZALEQ" target="_blank"&gt;Communicate with Impact&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;Internal Resource&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt; 
+		&lt;Link className="nav-link" to={global.links.ev_learning_secure_coding}&gt;
+    
+                    Secure Coding - A Refresher
+                  &lt;/Link&gt;
+			&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://alison.com/" target="_blank"&gt;Alison Online Courses&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1471" target="_blank"&gt;Effective Business Writing&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1438" target="_blank"&gt;Critical Thinking for Managers&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1351" target="_blank"&gt;Introduction to Supply Chain Management&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/336" target="_blank"&gt;All About the Customer&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1472" target="_blank"&gt;Improve Your Business Writing and Presentation Skills&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/36321/engage-in-informational-interviews" target="_blank"&gt;Planning your Career Path&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/77683/welcome-to-motivation" target="_blank"&gt;Motivating Yourself and Others&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/courses/language" target="_blank"&gt;B&lt;/a&gt;&lt;a href="https://alison.com/topic/learn/50644/basic-spanish-learning-outcomes" target="_blank"&gt;asic Spanish&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/55409/learning-outcomes" target="_blank"&gt;Introduction to French&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/41296/all-my-colours-part-1" target="_blank"&gt;Basic German&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/50634/basic-spanish-learning-outcomes" target="_blank"&gt;Introduction to Spanish&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/65395/module-1-learning-outcomes" target="_blank"&gt;Introduction to Japanese&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/65533/module-1-learning-outcomes" target="_blank"&gt;Basic Japanese&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/50298/basic-chinese-first-contact-learning-outcomes" target="_blank"&gt;Introduction to Chinese&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/courses/german" target="_blank"&gt;Conversational German&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/courses/photography" target="_blank"&gt;Photography&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/courses/entrepreneurship" target="_blank"&gt;Toolkit for Entrepreneurship&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/76944/dealing-with-difficult-people-learning-outcomes" target="_blank"&gt;How to deal with difficult people&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/75022/introduction-to-persuasion-learning-outcomes" target="_blank"&gt;How to be an Influencer&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/microsoft-excel-2013-for-beginners-start-your-excel-journey"&gt;Learn how to use Basic MS excel&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/introduction-to-excel-2013-power-business-intelligence"&gt;Business Intelligence through MS excel&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/data-analysis-with-tables-and-pivottables-in-microsoft-excel-2013"&gt;Learn Data Analysis and Pivot Table on MS excel&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/75887/prerequisites-of-excel-2013-advanced-course"&gt;MS Excel&amp;nbsp;Advanced&amp;nbsp;Worksheets&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.futurelearn.com" target="_blank"&gt;Future Learn&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/successful-negotiation?utm_campaign=Courses+feed&amp;utm_medium=courses-feed&amp;utm_source=courses-feed&amp;utm_source=RakutenMarketing&amp;utm_medium=Affiliate&amp;utm_campaign=3347507:Class+Central&amp;utm_content=10:1&amp;utm_term=USNetwork&amp;ranMID=44015&amp;ranEAID=SAyYsTvLiGQ&amp;ranSiteID=SAyYsTvLiGQ-Vygt7AMn3FWb8zO0q2V5xQ"&gt;Successful Negotiations Strategies&lt;/a&gt; &lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/planning-your-personal-development" target="_blank"&gt;Planning Your Growth&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/creative-problem-solving" target="_blank"&gt;Using Creative Problem Solving for everyday life&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/mindfulness-life" target="_blank"&gt;Achieving&amp;nbsp;Mindfulness&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/programs/italian-for-beginners" target="_blank"&gt;Italian for Beginners&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/programs/spanish-for-beginners" target="_blank"&gt;Spanish for Beginners&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/introduction-to-korean" target="_blank"&gt;Korean for Beginners&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/german-intermediate-1" target="_blank"&gt;German - Intermediate&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/education-for-all" target="_blank"&gt;Diversity and Inclusion&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/logical-and-critical-thinking" target="_blank"&gt;Improving&amp;nbsp;your Logical and Critical Thinking Skills&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{/* end list */}{/* start list */}
+&lt;div className="list"&gt;&lt;a id="happiness" name="happiness" /&gt;
+  &lt;div className="el-title"&gt;Happiness&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.coursera.org/?authMode=signup" target="_blank"&gt;Coursera&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/the-science-of-well-being" target="_blank"&gt;The Science of Well-Being&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/learning-how-to-learn" target="_blank"&gt;Powerful Mental Tools&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/positive-psychiatry" target="_blank"&gt;Positive Mental Health&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/happiness" target="_blank"&gt;Achieve Happiness and Fulfillment&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://alison.com/" target="_blank"&gt;Alison Online Courses&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/109" target="_blank"&gt;Workstation Ergonomics&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/drug-free-workplace" target="_blank"&gt;A Drug-Free Workplace&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/stress-management-techniques-for-coping-with-stress-revised"&gt;Stress Management: Techniques in coping with stress&lt;/a&gt; &lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/achieving-personal-success"&gt;Achieving Personal Success&lt;/a&gt;&lt;em&gt; (new)&lt;/em&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.futurelearn.com" target="_blank"&gt;Future Learn&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/introduction-to-work-and-wellbeing-at-work" target="_blank"&gt;Well-being at Work&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{/* end list */}{/* start list */}
+&lt;div className="list"&gt;&lt;a id="crm" name="crm" /&gt;
+  &lt;div className="el-title"&gt;CRM / Business Support&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.coursera.org/?authMode=signup" target="_blank"&gt;Coursera&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&amp;nbsp;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.thetrainingbank.com/customer-focus/online-training/the-basics/" target="_blank"&gt;Basic CS Training&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="http://www.crmlearning.com/Handling-Difficult-Customers-C8830.aspx" target="_blank"&gt;Handling Difficult Customers&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/negotiation-skills-conflict?ranMID=40328&amp;ranEAID=SAyYsTvLiGQ&amp;ranSiteID=SAyYsTvLiGQ-.GU.4g6W9lWuCUXpgWlI_Q&amp;siteID=SAyYsTvLiGQ-.GU.4g6W9lWuCUXpgWlI_Q&amp;utm_content=10&amp;utm_medium=partners&amp;utm_source=linkshare&amp;utm_campaign=SAyYsTvLiGQ"&gt;Resolving Conflict in the Team&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://alison.com/" target="_blank"&gt;Alison Online Courses&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1471" target="_blank"&gt;Effective Business Writing&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1438" target="_blank"&gt;Critical Thinking for Managers&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1351" target="_blank"&gt;Introduction to Supply Chain Management&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/336" target="_blank"&gt;All About the Customer&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1472" target="_blank"&gt;Improve Your Business Writing and Presentation Skills&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/courses/language" target="_blank"&gt;Foreign Language Learning&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.classcentral.com/course/futurelearn-digital-skills-retail-9781" target="_blank"&gt;Digital Skills for Retail&amp;nbsp;&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.classcentral.com/course/futurelearn-digital-skills-grow-your-career-9776" target="_blank"&gt;Growing your career in Technology&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/microsoft-excel-2013-for-beginners-start-your-excel-journey"&gt;Learn how to use Basic MS excel&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/introduction-to-excel-2013-power-business-intelligence"&gt;Business Intelligence through MS excel&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/data-analysis-with-tables-and-pivottables-in-microsoft-excel-2013"&gt;Learn Data Analysis and Pivot Table on MS excel&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.futurelearn.com" target="_blank"&gt;Future Learn&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/intercultural-communication" target="_blank"&gt;Intercultural Communication&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/fashion-innovation" target="_blank"&gt;Innovations in the Fashion Industry&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/growing-as-a-manager" target="_blank"&gt;Growing as a Manager&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/planning-your-personal-development" target="_blank"&gt;Planning Your Growth&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/programs/blended-learning-essentials" target="_blank"&gt;Blended Manager's Toolkit&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/logical-and-critical-thinking"&gt;Logic and Critical Thinking&lt;/a&gt; &lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{/* end list */}{/* start list */}
+&lt;div className="list"&gt;&lt;a id="tech" name="tech" /&gt;
+  &lt;div className="el-title"&gt;ICT / Technology&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.coursera.org/?authMode=signup" target="_blank"&gt;Coursera&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/2-speed-it" target="_blank"&gt;Two Speed IT: How Companies Can Surf the Digital Wave&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/security-safety-globalized-world" target="_blank"&gt;Information Security&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/cyber-conflicts" target="_blank"&gt;International Cyber Conflicts&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/security-safety-globalized-world" target="_blank"&gt;Security &amp;amp; Safety Challenges&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/preparing-cloud-associate-cloud-engineer-exam?utm_medium=email&amp;utm_source=marketing&amp;utm_campaign=A8asML8OEempyReieZALEQ" target="_blank"&gt;Preparation for Google Cloud Associate Cloud Engineer Exam&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://alison.com/" target="_blank"&gt;Alison Online Courses&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/adobe-photoshop-cs6-essential-tools-revised"&gt;Adobe Photoshop CS6 Essential Tools&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/384"&gt;Google Apps for Business&lt;/a&gt; &lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.futurelearn.com" target="_blank"&gt;Future Learn&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/gdpr" target="_blank"&gt;Understanding GDPR&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/degrees/deakin-university/cyber-security"&gt;Cyber Security&lt;/a&gt;&lt;em&gt; (new)&lt;/em&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{/* end list */}
+{/* start list */}
+&lt;div className="list"&gt;&lt;a id="sales" name="sales" /&gt;
+  &lt;div className="el-title"&gt;Sales and Marketing&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt; &lt;span&gt;&lt;a href="https://www.coursera.org/?authMode=signup" target="_blank"&gt;Coursera&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/negotiation" target="_blank"&gt;Introduction to Negotiations&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/browse/business/marketing" target="_blank"&gt;Marketing Learning&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/uva-darden-market-analytics" target="_blank"&gt;Marketing Analytics&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/brand" target="_blank"&gt;Brand Management&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/bcg-uva-darden-digital-transformation" target="_blank"&gt;Digital Transformation&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/gamification" target="_blank"&gt;Gamification: Marketing tool&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/wharton-contagious-viral-marketing" target="_blank"&gt;Viral Marketing and How to Craft Contagious Content&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt; &lt;span&gt;&lt;a href="https://alison.com/" target="_blank"&gt;Alison Online Courses&lt;/a&gt;&lt;/span&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.classcentral.com/course/futurelearn-digital-skills-digital-marketing-9778" target="_blank"&gt;Growing your Career in Digital Marketing&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/social-media-analytics" target="_blank"&gt;Understanding Social Media Analytics&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/data-science-google-analytics" target="_blank"&gt;Introduction to Data Science with Google Analytics&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/uva-darden-marketing-analytics" target="_blank"&gt;Marketing Analytics&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/programs/digital-media-analytics" target="_blank"&gt;Digital Media Analytics&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="http://Online Business Success" target="_blank"&gt;Success in Online Business&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/social-media-analytics" target="_blank"&gt;Social Media Analytics: Using Data to Understand Public Conversations&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.open.ac.uk/account/createaccount?URL=https://www.open.edu/openlearn/free-courses/full-catalogue" target="_blank"&gt;The Open University&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/marketing-communications-strategic-function/content-section-0?active-tab=description-tab" target="_blank"&gt;Marketing Communications as a Strategic Function&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.open.edu/openlearn/money-business/marketing-the-21st-century/content-section-0?active-tab=description-tab" target="_blank"&gt;Marketing in the 21st Century&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/products-services-and-branding/content-section-0?active-tab=description-tab" target="_blank"&gt;Products, Services and Branding&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/social-marketing/content-section-0?active-tab=description-tab" target="_blank"&gt;Social Marketing&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.open.edu/openlearn/money-management/management/technology-innovation-and-management/content-section-0?active-tab=description-tab" target="_blank"&gt;Technology, Innovation and Management&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;p className="el-link-title"&gt; &lt;span&gt;&lt;a href="https://app.hubspot.com/signup-v2/crm/step/user-info" target="_blank"&gt;HubSpot Academy&lt;/a&gt;&amp;nbsp;&lt;/span&gt;&lt;/p&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/marketing-communications-strategic-function/content-section-0?active-tab=description-tab" target="_blank"&gt;C&lt;/a&gt;&lt;a href="https://app.hubspot.com/academy/6298623/tracks?categories=MARKETING&amp;status=ALL" target="_blank"&gt;ontent Strategy&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	&lt;p className="el-link-title"&gt; &lt;span&gt;&lt;a href="https://www.clickminded.com/mc-registration-seo-keyword-strategy-2/" target="_blank"&gt;ClickMinded&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
+		&lt;ul className="el-list-link"&gt;
+		  &lt;li&gt;&lt;a href="https://www.clickminded.com/mc-registration-seo-keyword-strategy-2/" target="_blank"&gt;SEO Mini-Course&lt;/a&gt;&lt;/li&gt;
+		
+	&lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;div className="el-links"&gt;
+  &lt;p className="el-link-title"&gt; &lt;span&gt;&lt;a href="https://courses.edx.org/register?next=%2Flogout" target="_blank"&gt;edX&lt;/a&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;ul className="el-list-link"&gt;
+		  
+	&lt;li&gt;&lt;a href="https://www.open.edu/openlearn/money-business/business-strategy-studies/social-marketing/content-section-0?active-tab=description-tab" target="_blank"&gt;M&lt;/a&gt;&lt;a href="https://www.edx.org/course/marketing-management-1" target="_blank"&gt;arketing Management 1&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href="https://www.edx.org/course/marketing-analytics-competitive-analysis-and-market-segmentation-0" target="_blank"&gt;Marketing Analytics: Competative Analysis and Market Segmentation&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href="https://www.edx.org/course/marketing-analytics" target="_blank"&gt;Marketing Analytics&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{/* end list */}{/* start list */}
+&lt;div className="list"&gt;
+  
+  &lt;a id="recruitment" name="recruitment" /&gt;
+  &lt;div className="el-title"&gt;HR / Recruitment&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;
+		&lt;a href="https://www.open.edu/openlearn/free-courses/full-catalogue" target="_blank"&gt;The Open University&lt;/a&gt;
+	  &lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-management/what-strategic-human-resource-management/content-section-0?intro%3D1&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNEHdykP30QplmhOr8oQGkRdyn6Rpw" href="https://www.open.edu/openlearn/money-management/what-strategic-human-resource-management/content-section-0?intro=1" target="_blank"&gt;What is Strategic HR?&lt;/a&gt;&amp;nbsp;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://alison.com/resume/courses/1487&amp;source=gmail&amp;ust=1569662027991000&amp;usg=AFQjCNGG2Tnv_sxbQhVKUowo6rasPclJuQ" href="https://alison.com/resume/courses/1487" target="_blank"&gt;Introduction to Modern Human Resource Management&lt;/a&gt;&amp;nbsp;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/facilitating-group-discussions/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNH30gZpVU7qEjT0FBJy1i8Pdy9Mgg" href="https://www.open.edu/openlearn/money-business/facilitating-group-discussions/content-section-0" target="_blank"&gt;Facilitating FGD's&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/education-development/key-skill-assessment-unit-problem-solving/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNE8ZLbU3QzjPqKK1DXm7uLymnVDUw" href="https://www.open.edu/openlearn/education-development/key-skill-assessment-unit-problem-solving/content-section-0" target="_blank"&gt;Problem Solving&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/education-development/key-skill-assessment-unit-working-others/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNFmR-JLfooBTWqAzytxR_CvzRzLIw" href="https://www.open.edu/openlearn/education-development/key-skill-assessment-unit-working-others/content-section-0" target="_blank"&gt;Working with Others&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/education-development/key-skills-making-difference/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNELD7TWH2EsFYQ2B95f8c67rMXPXA" href="https://www.open.edu/openlearn/education-development/key-skills-making-difference/content-section-0" target="_blank"&gt;Making a difference&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/education-development/succeed-the-workplace/content-section-overview&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNHjdlKX4oOijQ2KBwJygJ8QgQdeHg" href="https://www.open.edu/openlearn/education-development/succeed-the-workplace/content-section-overview" target="_blank"&gt;Succeed in the workplace&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/business-communication-writing-swot-analysis/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNF1f6eayzTJhE-LVfaxlIdwzG-qcw" href="https://www.open.edu/openlearn/money-business/business-communication-writing-swot-analysis/content-section-0" target="_blank"&gt;Writing SWOT Analysis&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/languages/learning-second-language/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNE0xjA5d_nMfycvN_CBYwun8a88ag" href="https://www.open.edu/openlearn/languages/learning-second-language/content-section-0" target="_blank"&gt;Learning a second language&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/business-strategy-studies/business-organisations-and-their-environments-culture/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNGAeLFasKuSoPNISPhjw0w1DK0uOw" href="https://www.open.edu/openlearn/money-business/business-strategy-studies/business-organisations-and-their-environments-culture/content-section-0" target="_blank"&gt;Business environment and Culture&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/business-strategy-studies/conversations-and-interviews/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNEQg7dQni-6fVW1bIzCaWGsH0em7A" href="https://www.open.edu/openlearn/money-business/business-strategy-studies/conversations-and-interviews/content-section-0" target="_blank"&gt;Interviewing skills&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/human-resources/human-resources-recruitment-and-selection/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNFF1LreYmu1vLBTtayVXoEcZuQvxg" href="https://www.open.edu/openlearn/money-business/human-resources/human-resources-recruitment-and-selection/content-section-0" target="_blank"&gt;Recruitment and Selection&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/developing-career-resilience/content-section-overview&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNGoNeds6bElLiQFm8F9ako4GJUeGQ" href="https://www.open.edu/openlearn/money-business/developing-career-resilience/content-section-overview" target="_blank"&gt;Developing Career resilience&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/developing-your-skills-hr-professional/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNGk8vdSezFO1RhqwGZo3zeKx5WsKQ" href="https://www.open.edu/openlearn/money-business/developing-your-skills-hr-professional/content-section-0" target="_blank"&gt;Developing your skills as an HR Professiona&lt;/a&gt;&lt;a href="https://www.open.edu/openlearn/money-business/developing-your-skills-hr-professional/content-section-0"&gt;l&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-management/discovering-development-management/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNFJ_MrhWhsPVTNK_uIY26H-u49B6g" href="https://www.open.edu/openlearn/money-management/discovering-development-management/content-section-0" target="_blank"&gt;Development Management&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/leadership-management/difference-and-challenge-teams/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNGky-3vxYILN_gscd1hbpIqVlsLAA" href="https://www.open.edu/openlearn/money-business/leadership-management/difference-and-challenge-teams/content-section-0" target="_blank"&gt;Differences and Conflict management&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/employee-engagement/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNH1dWcL8SrATRCNqUDKVFUJRonV9Q" href="https://www.open.edu/openlearn/money-business/employee-engagement/content-section-0" target="_blank"&gt;Employee Engagement&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-management/employment-relations-and-employee-engagement/content-section-0&amp;source=gmail&amp;ust=1569662027984000&amp;usg=AFQjCNELxkEGhekVwv3d9StoCxSdv_HBag" href="https://www.open.edu/openlearn/money-management/employment-relations-and-employee-engagement/content-section-0" target="_blank"&gt;Employment Relations and Employee Engagement&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/exploring-career-mentoring-and-coaching/content-section-overview&amp;source=gmail&amp;ust=1569662027985000&amp;usg=AFQjCNHWJZ-_0mlWoGWBLHNfx-CSisJgxA" href="https://www.open.edu/openlearn/money-business/exploring-career-mentoring-and-coaching/content-section-overview" target="_blank"&gt;Career mentoring and coaching&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a data-saferedirecturl="https://www.google.com/url?q=https://www.open.edu/openlearn/money-business/leadership-management/managing-relationships/content-section-0&amp;source=gmail&amp;ust=1569662027985000&amp;usg=AFQjCNFMUK52WjUCS__qpP0w_HGSVC4TpA" href="https://www.open.edu/openlearn/money-business/leadership-management/managing-relationships/content-section-0" target="_blank"&gt;Managing Relationships&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://alison.com/" target="_blank"&gt;Alison Online Courses&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/documenting-business-processes-and-information-systems-revised" target="_blank"&gt;Documenting Business Processes&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/courses/management-and-administration" target="_blank"&gt;Operations Management Certification&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/microsoft-excel-2013-for-beginners-start-your-excel-journey"&gt;Learn how to use Basic MS excel&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/introduction-to-excel-2013-power-business-intelligence"&gt;Business Intelligence through MS excel&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/data-analysis-with-tables-and-pivottables-in-microsoft-excel-2013"&gt;Learn Data Analysis and Pivot Table on MS excel&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.futurelearn.com" target="_blank"&gt;Future Learn&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/fundamentals-of-project-planning-and-management" target="_blank"&gt;Fundamentals of Project Management&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/project-management-principles-practices-systems" target="_blank"&gt;Principles of Project Management&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{/* end list */}{/* start list */}
+&lt;div className="list"&gt;&lt;a id="finance" name="finance" /&gt;
+  &lt;div className="el-title"&gt;Finance&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.coursera.org/?authMode=signup" target="_blank"&gt;Coursera&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/uva-darden-financial-accounting"&gt;Financial Accounting Fundamentals&lt;/a&gt; &lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/financial-accounting-basics"&gt;Financial Accounting Foundations&lt;/a&gt;&lt;em&gt; (new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/income-statement"&gt;Understanding Financial Statements: Company Performance&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/business-assessment"&gt;Accounting for Business Decision Making: Strategy Assessment and Control&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/interest-rate-models"&gt;Interest Rate&amp;nbsp;Models&lt;/a&gt;&lt;em&gt; (new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/erasmus-econometrics"&gt;Econometrics: Methods and Applications&lt;/a&gt; &lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://alison.com/" target="_blank"&gt;Alison Online Courses&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/topic/learn/78236/introduction-to-quickbooks-pro-learning-outcomes"&gt;Diploma in Quick Books Pro 2017&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/diploma-in-accounting-advanced-controls-and-transactions"&gt;Diploma in Accounting: Advanced Controls and Transactions&lt;/a&gt; &lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/diploma-in-accounting-core-practices-and-theory"&gt;Diploma in Accounting: Core Practices and Thoeries&lt;/a&gt; &lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/completing-the-accounting-cycle"&gt;Compelting the Accounting Cycle&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/accounting-control-and-monitoring-of-cash"&gt;Cash Control Monitoring&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/accounting-understanding-receivables-and-payables"&gt;Understanding Payables and Recievables&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/introduction-to-cash-accounting-revised"&gt;Introduction to Cash Accounting&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/accounting-merchandising-transactions"&gt;Merchandising Transactions&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/accounting-and-its-use-in-business-decisions"&gt;Accounting and It's Use for Business Decisions&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/course/adjustments-for-financial-reporting"&gt;Financial Reporting&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.futurelearn.com" target="_blank"&gt;Future Learn&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/programs/business-finance" target="_blank"&gt;Business and Finance Course&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/personal-financial-planning-and-budgeting"&gt;Financial Planning and Budgeting&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/understanding-financial-statements"&gt;Understanding Financial Statements&lt;/a&gt;&lt;em&gt; (new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/bookkeeping-financial-accounting"&gt;Bookkeeping for Personal and&amp;nbsp;Business Accounting&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/what-is-economics-in-the-world-of-global-logistics"&gt;Economics in&amp;nbsp;Global Logistics&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{/* end list */}{/* start list */}
+&lt;div className="list"&gt;&lt;a id="project" name="project" /&gt;
+  &lt;div className="el-title"&gt;Project Management&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.coursera.org/?authMode=signup" target="_blank"&gt;Coursera&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/specializations/pwc-analytics" target="_blank"&gt;Digital Product Management&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/specializations/agile-development" target="_blank"&gt;Agile Product Development&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/specializations/product-management" target="_blank"&gt;Software Product Development&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/project-risk-management" target="_blank"&gt;Managing Project Risks&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/uva-darden-getting-started-agile" target="_blank"&gt;Agile Design Thinking&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/uva-darden-running-design-sprints" target="_blank"&gt;Running Design Sprints&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{/* end list */}{/* start list */}
+&lt;div className="list"&gt;&lt;a id="leadership" name="leadership" /&gt;
+  &lt;div className="el-title"&gt;Leadership&lt;/div&gt;
+  &lt;div className="el-content"&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.coursera.org/?authMode=signup" target="_blank"&gt;Coursera&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/people-management?recoOrder=24&amp;utm_medium=email&amp;utm_source=recommendations&amp;utm_campaign=THbLIO7REemHRdu0lvjSqg"&gt;The Manager's Toolkit: Managing Effectivel&lt;/a&gt;&lt;a href="http://www.coursera.org/learn/people-management?recoOrder=24&amp;utm_medium=email&amp;utm_source=recommendations&amp;utm_campaign=THbLIO7REemHRdu0lvjSqg"&gt;y&lt;/a&gt;&amp;nbsp;&lt;em&gt;(new)&lt;/em&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/mindfulness" target="_blank"&gt;Mindfulness&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/mindshift" target="_blank"&gt;Paradigm Shift&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/motivate-people-teams" target="_blank"&gt;How to Inspire and Motivate&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/influencing-people" target="_blank"&gt;Influencing People&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/motivate-people-teams" target="_blank"&gt;Inspiring and Motivating&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/personality-types-at-work?recoOrder=19&amp;utm_medium=email&amp;utm_source=recommendations&amp;utm_campaign=Gix78Le0EempyReieZALEQ" target="_blank"&gt;Personality Types at Work&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.coursera.org/learn/feedback" target="_blank"&gt;Giving Helpful Feedback&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://alison.com/" target="_blank"&gt;Alison Online Courses&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1223" target="_blank"&gt;Managing Employee Performance&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1214" target="_blank"&gt;Effective Communication Skills as a Leader&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://alison.com/resume/courses/1228" target="_blank"&gt;Team Collaboration&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+	&lt;div className="el-links"&gt;
+	  &lt;div className="el-link-title"&gt;&lt;a href="https://www.futurelearn.com" target="_blank"&gt;Future Learn&lt;/a&gt;&lt;/div&gt;
+	  &lt;ul className="el-list-link"&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/introduction-to-engagement-and-motivation-at-work" target="_blank"&gt;Happiness for Your Teams&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/growing-as-a-manager" target="_blank"&gt;Growing as a Manager&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/courses/planning-your-personal-development" target="_blank"&gt;Planning Your Growth&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href="https://www.futurelearn.com/programs/blended-learning-essentials" target="_blank"&gt;Blended Manager's Toolkit&lt;/a&gt;&lt;/li&gt;
+	  &lt;/ul&gt;
+	&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;/ContainerWrapper&gt;
+		&lt;/div&gt;
+		
+	&lt;/Wrapper&gt;;
+  }
+}
+&nbsp;
+export default EVLearning;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Aug 05 2026 11:19:37 GMT+0530 (India Standard Time)
+</div>
+</div>
+<script src="..\..\..\prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="..\..\..\sorter.js"></script>
+<script src="..\..\..\block-navigation.js"></script>
+</body>
+</html>
