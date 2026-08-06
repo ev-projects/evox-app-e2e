@@ -18,6 +18,11 @@ use App\Modules\User\Models\User;
  */
 class ReportEndpointsTest extends TestCase
 {
+    // B1 — file-download routes return a Symfony BinaryFileResponse, and Laravel 5.7's
+    // TestResponse does not proxy status() to it, so ->status() fatals on any export test.
+    // Reading the underlying response works for BOTH BinaryFileResponse and JsonResponse,
+    // so it is used throughout this file rather than only on the download assertions.
+
     use DatabaseTransactions;
 
     private array $apiKey;
@@ -75,7 +80,7 @@ class ReportEndpointsTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->getJson("/api/report/dtr_summary/{$this->user->id}/{$this->monthStart()}/{$this->today()}", $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
     }
 
     /** @test */
@@ -85,7 +90,7 @@ class ReportEndpointsTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->getJson("/api/report/dtr_summary/999999/{$this->monthStart()}/{$this->today()}", $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
     }
 
     /** @test */
@@ -95,7 +100,7 @@ class ReportEndpointsTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->getJson("/api/report/dtr_summary/block/{$this->user->id}/{$this->monthStart()}/{$this->today()}", $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
     }
 
     /** @test */
@@ -105,7 +110,7 @@ class ReportEndpointsTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->postJson("/api/report/team_attendance_summary/{$this->monthStart()}/{$this->today()}", [], $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
     }
 
     /** @test */
@@ -115,6 +120,6 @@ class ReportEndpointsTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->getJson("/api/report/attendance/summary/export/{$this->monthStart()}/{$this->today()}", $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
     }
 }

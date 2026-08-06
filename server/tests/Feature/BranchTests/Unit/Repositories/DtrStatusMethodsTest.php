@@ -86,7 +86,25 @@ class DtrStatusMethodsTest extends TestCase
     private function sandboxUserId()
     {
         if ($this->sandboxUser === false) {
+            // CS-TRIG-1 — the sandbox user must have BOTH names populated.
+            //
+            // AFTER INSERT triggers on rest_day_works and change_schedules write a notification row
+            // into Redis_NC_UserRequests, whose Description is NOT NULL and is built with
+            //     CONCAT(UDV_Lead_Name, ' has requested ...', New.date)
+            // where UDV_Lead_Name is itself CONCAT(EMP.first_name,' ',EMP.last_name).
+            // MySQL CONCAT returns NULL if ANY argument is NULL, so a user missing either name
+            // yields a NULL Description, violates NOT NULL, and the trigger failure ROLLS BACK the
+            // user's original request insert.
+            //
+            // That is a real production defect, not a test artefact: any employee with a NULL
+            // first_name or last_name cannot file a rest-day-work or change-schedule request at
+            // all. It is registered as CS-TRIG-1 and is NOT fixed here. This constraint only stops
+            // the fixture from tripping over it, so the test can assert what it is actually about.
             $this->sandboxUser = DB::table('users')
+                ->whereNotNull('first_name')
+                ->whereNotNull('last_name')
+                ->where('first_name', '!=', '')
+                ->where('last_name', '!=', '')
                 ->whereNotExists(function ($q) {
                     $q->select(DB::raw(1))->from('dtrs')
                       ->whereRaw('dtrs.user_id = users.id')

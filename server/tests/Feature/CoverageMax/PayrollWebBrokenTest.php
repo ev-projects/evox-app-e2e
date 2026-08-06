@@ -17,6 +17,11 @@ use App\Modules\User\Models\User;
  */
 class PayrollWebBrokenTest extends TestCase
 {
+    // B1 — file-download routes return a Symfony BinaryFileResponse, and Laravel 5.7's
+    // TestResponse does not proxy status() to it, so ->status() fatals on any export test.
+    // Reading the underlying response works for BOTH BinaryFileResponse and JsonResponse,
+    // so it is used throughout this file rather than only on the download assertions.
+
     use DatabaseTransactions;
 
     private array $apiKey;
@@ -52,7 +57,7 @@ class PayrollWebBrokenTest extends TestCase
     public function test_demo_generate_pdf_route_is_registered()
     {
         $response = $this->get('/demo-generate-pdf');
-        $this->assertNotEquals(404, $response->status());
+        $this->assertNotEquals(404, $response->baseResponse->getStatusCode());
     }
 
     // ─── Broken routes — regression guards for the inventory findings ─────────
@@ -69,7 +74,7 @@ class PayrollWebBrokenTest extends TestCase
     {
         $response = $this->getJson('/api/masters/departments', $this->apiKey);
         // 401 (guarded) proves the route exists; a 404 would mean it was never registered.
-        $this->assertContains($response->status(), [401]);
+        $this->assertContains($response->baseResponse->getStatusCode(), [401]);
     }
 
     /**
@@ -82,7 +87,7 @@ class PayrollWebBrokenTest extends TestCase
     public function test_summaryreport1_is_broken_missing_method()
     {
         $response = $this->getJson('/api/summaryreport1');
-        $this->assertContains($response->status(), [404, 500]);
+        $this->assertContains($response->baseResponse->getStatusCode(), [404, 500]);
     }
 
     /**
@@ -93,6 +98,6 @@ class PayrollWebBrokenTest extends TestCase
     public function test_exportsummaryreport1_is_broken_missing_method()
     {
         $response = $this->getJson('/api/exportsummaryreport1');
-        $this->assertContains($response->status(), [404, 500]);
+        $this->assertContains($response->baseResponse->getStatusCode(), [404, 500]);
     }
 }

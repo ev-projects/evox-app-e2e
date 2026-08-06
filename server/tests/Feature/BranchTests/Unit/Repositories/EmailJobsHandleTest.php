@@ -23,6 +23,9 @@ use App\Modules\Email\Mail\AlterLogRequestEmail;
 use App\Modules\Email\Mail\ChangeScheduleRequestEmail;
 use App\Modules\Email\Mail\FailedBHRSyncNoticeEmail;
 use App\Modules\Email\Mail\ForgotPasswordRequestEmail;
+use App\Modules\Email\Mail\AlterLogDisputeEmail;
+use App\Modules\Email\Mail\OvertimeDisputeEmail;
+use App\Modules\Email\Mail\RestDayWorkDisputeEmail;
 use App\Modules\Email\Mail\OvertimeRequestEmail;
 use App\Modules\Email\Mail\RegisteredUserEmail;
 use App\Modules\Email\Mail\RestDayWorkRequestEmail;
@@ -151,7 +154,12 @@ class EmailJobsHandleTest extends TestCase
         (new SendRestDayWorkDisputeEmailJob($payload))->handle();
 
         // three dispute mails assembled and dispatched through the faked mailer
-        Mail::assertSentCount(3);
+        // B6 — Mail::assertSentCount() does not exist on Laravel 5.7's MailFake (it arrives in 5.8).
+        // Asserting each dispute mailable individually is also a stronger assertion than a count:
+        // it proves WHICH three were sent, so swapping one for another can no longer pass.
+        Mail::assertSent(OvertimeDisputeEmail::class);
+        Mail::assertSent(AlterLogDisputeEmail::class);
+        Mail::assertSent(RestDayWorkDisputeEmail::class);
     }
 
     // --------------------------------------------------------------------- auth jobs

@@ -106,7 +106,7 @@ class ZeroCoverageResourcesTest extends TestCase
         } else {
             $this->assertStringContainsString('/storage/', $out['thumbnail']);
         }
-        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}$/', $out['created_at']);
+        $this->assertRegExp('/^\d{4}-\d{2}-\d{2}$/', $out['created_at']);
 
         $this->assertNull((new DepartmentAnnouncementResource(null))->toArray($this->request));
     }

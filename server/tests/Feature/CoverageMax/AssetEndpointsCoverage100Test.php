@@ -32,6 +32,11 @@ use Illuminate\Support\Facades\DB;
 
 class AssetEndpointsCoverage100Test extends TestCase
 {
+    // B1 — file-download routes return a Symfony BinaryFileResponse, and Laravel 5.7's
+    // TestResponse does not proxy status() to it, so ->status() fatals on any export test.
+    // Reading the underlying response works for BOTH BinaryFileResponse and JsonResponse,
+    // so it is used throughout this file rather than only on the download assertions.
+
     use DatabaseTransactions;
 
     private array $apiKey;
@@ -81,8 +86,8 @@ class AssetEndpointsCoverage100Test extends TestCase
             'serial_no' => 'COV100-TEST',
             'asset_tag' => 'COV100-TAG',
         ], $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
-        if ($response->status() === 201 || $response->status() === 200) {
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
+        if ($response->baseResponse->getStatusCode() === 201 || $response->baseResponse->getStatusCode() === 200) {
             // 0 rows updated for a nonexistent id.
             $this->assertEquals(0, $response->json('content'));
         }
@@ -109,8 +114,8 @@ class AssetEndpointsCoverage100Test extends TestCase
             'asset_tag' => $asset->asset_tag,
         ], $this->apiKey);
 
-        $this->assertNotEquals(500, $response->status());
-        $this->assertContains($response->status(), [200, 201]);
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
+        $this->assertContains($response->baseResponse->getStatusCode(), [200, 201]);
         // update() returns the number of affected rows; a matching id affects exactly 1.
         $this->assertEquals(1, $response->json('content'));
 

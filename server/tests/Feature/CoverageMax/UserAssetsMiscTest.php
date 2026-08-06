@@ -16,6 +16,11 @@ use App\Modules\User\Models\User;
  */
 class UserAssetsMiscTest extends TestCase
 {
+    // B1 — file-download routes return a Symfony BinaryFileResponse, and Laravel 5.7's
+    // TestResponse does not proxy status() to it, so ->status() fatals on any export test.
+    // Reading the underlying response works for BOTH BinaryFileResponse and JsonResponse,
+    // so it is used throughout this file rather than only on the download assertions.
+
     use DatabaseTransactions;
 
     private array $apiKey;
@@ -70,7 +75,7 @@ class UserAssetsMiscTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->postJson("/api/user/{$this->user->id}/team_list_all/", [], $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
     }
 
     /** @test */
@@ -80,7 +85,7 @@ class UserAssetsMiscTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->postJson("/api/user/{$this->user->id}/team_list_all/", ['departments' => [1, 2]], $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
     }
 
     /** @test */
@@ -91,7 +96,7 @@ class UserAssetsMiscTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->postJson("/api/user/{$this->user->id}/tick_dpa", ['session_id' => 'covmax-test'], $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        $this->assertNotEquals(500, $response->baseResponse->getStatusCode());
     }
 
     /**

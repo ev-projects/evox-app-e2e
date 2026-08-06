@@ -45,7 +45,7 @@ class ZeroCoverageModelsReposTest extends TestCase
             $offset = $row->get_country_timezone_to_offset();
 
             // Carbon's 'P' format: +HH:MM / -HH:MM
-            $this->assertMatchesRegularExpression('/^[+-]\d{2}:\d{2}$/', $offset,
+            $this->assertRegExp('/^[+-]\d{2}:\d{2}$/', $offset,
                 "timezone '{$row->timezone}' produced an invalid offset");
         }
     }
@@ -87,6 +87,17 @@ class ZeroCoverageModelsReposTest extends TestCase
     /** @test */
     public function biometrics_repository_reads_a_bounded_window_unfiltered()
     {
+        // B5 (BUG-ENV-001) — biometrics live on a SEPARATE SQL Server instance, not MySQL.
+        // Without a SQL Server PDO driver this cannot connect, and the failure is environmental,
+        // not a defect. Skip loudly rather than reporting a false error: a skip says
+        // "not verified here", an error says "broken", and only one of those is true.
+        if (!extension_loaded('pdo_sqlsrv') && !extension_loaded('pdo_dblib')) {
+            $this->markTestSkipped(
+                'BUG-ENV-001: no SQL Server PDO driver (pdo_sqlsrv/pdo_dblib) in this environment — '
+                . 'BiometricsRepository reads the checkinout table on a separate MSSQL host.'
+            );
+        }
+
         $repo = new BiometricsRepository();
         // deliberately tiny window — the biometrics table is large
         $start = '2026-07-01 00:00:00';
