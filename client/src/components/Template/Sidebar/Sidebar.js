@@ -903,7 +903,6 @@ const Sidebar = (props) => {
                   </a>
                   <ul className="nav nav-treeview">
                     {Authenticator.scanLevel_Feature("Admin", [
-                      "biometric_sync",
                       "bhr_sync",
                     ]) && (
                       <li className="nav-item has-treeview ">
@@ -915,19 +914,6 @@ const Sidebar = (props) => {
                           </p>
                         </a>
                         <ul className="nav nav-treeview">
-                        {Authenticator.scanLevel_Feature("Admin", 
-                            "biometric_sync",
-                          ) && (
-                            <li className="nav-item">
-                              <Link
-                                className="nav-link"
-                                to={global.links.sync_biometrics}
-                              >
-                                <i className="nav-icon fa fa-bars nav-icon" />
-                                <p>Biometrics</p>
-                              </Link>
-                            </li>
-                          )}
                           {Authenticator.scanLevel_Feature("Admin", 
                               "bhr_sync",
                             ) && (

@@ -69,7 +69,6 @@ import DPAFormIndia from "../container/DPAFormIndia";
 import DPAList from "../container/MyTeam/DPAList";
 import RegisterUser from "../container/Admin/RegisterUser";
 import GenerateDate from "../container/Admin/GenerateDate";
-import SyncBiometrics from "../container/Admin/SyncBiometrics/SyncBiometrics";
 import EmployeeList from "../container/MyTeam/EmployeeList";
 import ManageTeams from "../container/MyTeam/ManageTeams";
 import TimeOff from "../container/Profile/TimeOff";
@@ -421,12 +420,6 @@ const RoutesList = (props) => {
           <AssignSubDepartment  
           level={["Admin"]} 
           role={['admin']} permission={['assign_employee_supervisors']} />
-        </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.sync_biometrics}>
-          <SyncBiometrics  
-          level={["Admin"]} 
-          role={['admin']} permission={['sync_biometrics']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.sync_bhr_leaves}>

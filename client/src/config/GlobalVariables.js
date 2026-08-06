@@ -82,7 +82,6 @@
     assign_employees_client          :  "/app/admin/AssignClientHandlers/",
     assign_employee_supervisors     :  "/app/admin/AssignEmployeeSupervisors/",
     assign_sub_department           :  "/app/admin/AssignSubDepartment/",
-    sync_biometrics                 :  "/app/admin/SyncBiometrics/",
     sync_bhr_leaves                 :  "/app/admin/SyncBhrLeaves/",
     sync_utc_adjustment             : "/app/admin/SyncUTCAdjustment/",
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",

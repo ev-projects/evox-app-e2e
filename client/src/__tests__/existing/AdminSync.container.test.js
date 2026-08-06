@@ -87,14 +87,6 @@ jest.mock('formik', () => ({
 // Import the four Admin Sync components
 // Each sync page is a standalone container; we test each separately.
 // ---------------------------------------------------------------------------
-let SyncBiometrics;
-try {
-    const m = require('../../container/Admin/SyncBiometrics/SyncBiometrics');
-    SyncBiometrics = m.SyncBiometrics || m.default;
-} catch (e) {
-    SyncBiometrics = require('../../container/Admin/SyncBiometrics/SyncBiometrics').default;
-}
-
 let SyncBhrLeaves;
 try {
     const m = require('../../container/Admin/SyncBhrLeaves/SyncBhrLeaves');
@@ -152,10 +144,6 @@ const baseProps = {
 // ---------------------------------------------------------------------------
 // Per-component default props (add action dispatchers specific to each page)
 // ---------------------------------------------------------------------------
-const biometricsProps = {
-    ...baseProps,
-    syncBiometrics: jest.fn(),
-};
 
 const bhrLeavesProps = {
     ...baseProps,
@@ -176,14 +164,6 @@ const utcAdjustmentProps = {
 // ---------------------------------------------------------------------------
 // Render helpers
 // ---------------------------------------------------------------------------
-function renderBiometrics(props = {}) {
-    return render(
-        <MemoryRouter>
-            <SyncBiometrics {...biometricsProps} {...props} />
-        </MemoryRouter>
-    );
-}
-
 function renderBhrLeaves(props = {}) {
     return render(
         <MemoryRouter>
@@ -207,81 +187,10 @@ function renderUTCAdjustment(props = {}) {
         </MemoryRouter>
     );
 }
+// SyncBiometrics tests removed 2026-08-06 — the manual biometric-sync page was retired
+// (routes, sidebar entry and container all removed). The scheduled cron still feeds
+// payroll via `php artisan sync_biometrix_logs`; only the on-demand UI is gone.
 
-// ===========================================================================
-// SyncBiometrics — container/Admin/SyncBiometrics/SyncBiometrics.js
-// Route: /app/admin/SyncBiometrics/
-// ===========================================================================
-describe('SyncBiometrics component', () => {
-    beforeEach(() => jest.clearAllMocks());
-
-    test('renders without crashing', () => {
-        expect(() => renderBiometrics()).not.toThrow();
-    });
-
-    test('renders Date From label', () => {
-        const { getByText } = renderBiometrics();
-        expect(getByText(/Date From/i)).toBeInTheDocument();
-    });
-
-    test('renders Date To label', () => {
-        const { getByText } = renderBiometrics();
-        expect(getByText(/Date To/i)).toBeInTheDocument();
-    });
-
-    test('renders valid_from date input', () => {
-        const { container } = renderBiometrics();
-        const input = container.querySelector('input[name="valid_from"]');
-        expect(input).not.toBeNull();
-    });
-
-    test('renders valid_to date input', () => {
-        const { container } = renderBiometrics();
-        const input = container.querySelector('input[name="valid_to"]');
-        expect(input).not.toBeNull();
-    });
-
-    test('renders Submit button', () => {
-        const { container } = renderBiometrics();
-        const btn = container.querySelector('button[type="submit"]');
-        expect(btn).not.toBeNull();
-    });
-
-    test('does not render results table when biometrics array is empty', () => {
-        const { queryByRole } = renderBiometrics({ sync: { biometrics: [], leaves: [], users: [] } });
-        // Table only renders when biometrics.length > 0; with empty array no table rows expected
-        expect(queryByRole('table')).toBeNull();
-    });
-
-    test('does not crash with populated biometrics array', () => {
-        expect(() =>
-            renderBiometrics({
-                sync: {
-                    biometrics: [
-                        {
-                            id: 1,
-                            date: '2026-06-01',
-                            time_in: '08:00',
-                            time_out: '17:00',
-                            user: { full_name: 'Juan dela Cruz', emp_num: '20001' },
-                        },
-                    ],
-                    leaves: [],
-                    users: [],
-                },
-            })
-        ).not.toThrow();
-    });
-
-    test('does not crash with null sync state', () => {
-        expect(() => renderBiometrics({ sync: null })).not.toThrow();
-    });
-});
-
-// ===========================================================================
-// SyncBhrLeaves — container/Admin/SyncBhrLeaves/SyncBhrLeaves.js
-// Route: /app/admin/SyncBhrLeaves/
-// ===========================================================================
 describe('SyncBhrLeaves component', () => {
     beforeEach(() => jest.clearAllMocks());
 
