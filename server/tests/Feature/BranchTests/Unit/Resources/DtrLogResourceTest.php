@@ -21,7 +21,11 @@ class DtrLogResourceTest extends TestCase
     /** Find a DTR whose user + timezone chain is intact (bounded probe over recent rows). */
     private function findLinkedDtr()
     {
-        foreach (Dtr::orderBy('id', 'desc')->limit(25)->get() as $dtr) {
+        // PROBE WIDENED 2026-08-06: was limit(25). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        foreach (Dtr::orderBy('id', 'desc')->limit(400)->get() as $dtr) {
             $user = $dtr->user()->first();
             if ($user && $user->country_zone()) {
                 return $dtr;

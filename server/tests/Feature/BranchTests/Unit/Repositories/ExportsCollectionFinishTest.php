@@ -58,7 +58,11 @@ class ExportsCollectionFinishTest extends TestCase
      */
     private function findExportableDtr()
     {
-        $candidates = Dtr::whereHas('user')->orderBy('id', 'desc')->limit(25)->get();
+        // PROBE WIDENED 2026-08-06: was limit(25). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        $candidates = Dtr::whereHas('user')->orderBy('id', 'desc')->limit(400)->get();
 
         foreach ($candidates as $dtr) {
             $user = $dtr->user()->first();

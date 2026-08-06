@@ -112,7 +112,11 @@ class ClientAndDepartmentModelsTest extends TestCase
         $this->assertInstanceOf(HasMany::class, $users);
         $this->assertSame('users.department_id', $users->getQualifiedForeignKeyName());
 
-        foreach ($users->limit(10)->get() as $u) {
+        // PROBE WIDENED 2026-08-06: was limit(10). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        foreach ($users->limit(400)->get() as $u) {
             $this->assertEquals($deptId, $u->department_id);
         }
 
@@ -120,7 +124,11 @@ class ClientAndDepartmentModelsTest extends TestCase
         $this->assertInstanceOf(HasMany::class, $teams);
         $this->assertSame('teams.department_id', $teams->getQualifiedForeignKeyName());
 
-        foreach ($teams->limit(10)->get() as $t) {
+        // PROBE WIDENED 2026-08-06: was limit(10). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        foreach ($teams->limit(400)->get() as $t) {
             $this->assertEquals($deptId, $t->department_id);
         }
     }
@@ -188,7 +196,11 @@ class ClientAndDepartmentModelsTest extends TestCase
         $expected = DB::table('department_handlers')->where('department_id', $deptId)
             ->pluck('user_id')->map('intval')->all();
 
-        foreach ($relation->limit(25)->get() as $supervisor) {
+        // PROBE WIDENED 2026-08-06: was limit(25). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        foreach ($relation->limit(400)->get() as $supervisor) {
             $this->assertContains((int) $supervisor->id, $expected);
         }
     }
@@ -414,7 +426,11 @@ class ClientAndDepartmentModelsTest extends TestCase
             ->where('announcement_id', $announcement->id)->limit(100)->pluck('department_id')
             ->map('intval')->all();
 
-        foreach ($relation->limit(25)->get() as $dept) {
+        // PROBE WIDENED 2026-08-06: was limit(25). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        foreach ($relation->limit(400)->get() as $dept) {
             $this->assertContains((int) $dept->id, $expected);
         }
     }

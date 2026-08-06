@@ -241,7 +241,11 @@ class CronDtrGenerationBranchTest extends TestCase
     private function uniquePredefinedHoliday()
     {
         $candidates = Holiday::where('is_predefined', 1)->whereNull('country_id')
-                             ->orderBy('id', 'desc')->limit(25)->get();
+                             // PROBE WIDENED 2026-08-06: was limit(25). A window that small gave up on databases
+                             // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+                             // NOTHING - which is why several classes with working tests reported 0% coverage.
+                             // Still bounded and indexed; no whole-table scan.
+                             ->orderBy('id', 'desc')->limit(400)->get();
 
         foreach ($candidates as $holiday) {
             $md = ($holiday->date instanceof \DateTimeInterface)

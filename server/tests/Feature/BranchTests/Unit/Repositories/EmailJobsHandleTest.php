@@ -70,7 +70,11 @@ class EmailJobsHandleTest extends TestCase
     /** A request row whose owner resolves a direct supervisor (needed for the send arm). */
     private function withSupervisor($modelClass)
     {
-        foreach ($modelClass::whereHas('user')->orderBy('id', 'desc')->limit(15)->get() as $row) {
+        // PROBE WIDENED 2026-08-06: was limit(15). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        foreach ($modelClass::whereHas('user')->orderBy('id', 'desc')->limit(400)->get() as $row) {
             $owner = $row->user()->first();
             if (!$owner) continue;
             try {
@@ -122,7 +126,11 @@ class EmailJobsHandleTest extends TestCase
     {
         // the is_valid($recepient) guard arm — the job must complete silently
         $orphan = null;
-        foreach (Overtime::whereHas('user')->orderBy('id')->limit(20)->get() as $row) {
+        // PROBE WIDENED 2026-08-06: was limit(20). A window that small gave up on databases
+        // holding thousands of qualifying rows, so the test marked itself incomplete and covered
+        // NOTHING - which is why several classes with working tests reported 0% coverage.
+        // Still bounded and indexed; no whole-table scan.
+        foreach (Overtime::whereHas('user')->orderBy('id')->limit(400)->get() as $row) {
             $owner = $row->user()->first();
             if (!$owner) continue;
             try {
