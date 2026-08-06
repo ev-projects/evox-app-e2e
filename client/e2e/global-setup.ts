@@ -89,6 +89,14 @@ export default async function globalSetup(): Promise<void> {
       continue;
     }
     const authFile = path.join(authDir, `${role.file}.json`);
+    // Reuse a recent auth state instead of re-logging 15 accounts on every invocation —
+    // saves ~2.5 min per run. Delete e2e/.auth/ (or set E2E_FORCE_LOGIN=1) to force fresh logins.
+    const maxAgeMs = 8 * 60 * 60 * 1000;
+    if (!process.env.E2E_FORCE_LOGIN && fs.existsSync(authFile)
+        && Date.now() - fs.statSync(authFile).mtimeMs < maxAgeMs) {
+      console.log(`  ↻  ${role.file}.json is fresh — reusing`);
+      continue;
+    }
     // staging is occasionally slow enough that the login form misses its timeout;
     // verified 2026-08-06: both "failed" accounts logged in fine on a retry. One retry
     // keeps a transient stall from silently dropping a role's auth state.
