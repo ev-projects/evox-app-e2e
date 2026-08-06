@@ -89,7 +89,14 @@ export default async function globalSetup(): Promise<void> {
       continue;
     }
     const authFile = path.join(authDir, `${role.file}.json`);
+    // staging is occasionally slow enough that the login form misses its timeout;
+    // verified 2026-08-06: both "failed" accounts logged in fine on a retry. One retry
+    // keeps a transient stall from silently dropping a role's auth state.
     await loginAndSave(email, authFile, baseURL);
+    if (!fs.existsSync(authFile)) {
+      console.log(`     retrying ${role.file} once…`);
+      await loginAndSave(email, authFile, baseURL);
+    }
   }
 
   console.log('\n[global-setup] Done.\n');
