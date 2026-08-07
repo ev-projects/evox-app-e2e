@@ -84,6 +84,6 @@
         <env name="CLIENT_USER_EMAIL" value="glenn.macasarte@eastvantage.com"/>
         <env name="CLIENT_USER_PASSWORD" value="{ev2010}"/>
         <ini name="error_reporting" value="31735"/>
-        <ini name="memory_limit" value="4G"/>
+        <ini name="memory_limit" value="6G"/>
     </php>
 </phpunit>
