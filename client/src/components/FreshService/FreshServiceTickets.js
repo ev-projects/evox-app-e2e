@@ -26,10 +26,6 @@ var formatDate = function (dateString) {
   }
 };
 
-// WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
-let WORKSPACE_CATEGORIES = {};
-
-// Simple API helper
 const apiCall = function (endpoint, options) {
   options = options || {};
   let fullUrl = process.env.REACT_APP_FRESHSERVICE_API_BASE_URL + endpoint;
