@@ -63,6 +63,18 @@
             <exclude>
                 <!-- Spatie model: Eloquent alias unavailable outside Laravel boot context -->
                 <file>../app/Models/Activity.php</file>
+                <!--
+                  Migrations are schema history, not application behaviour, and this suite never
+                  runs them: the test database is a live-server backup dump, so migrations are
+                  forbidden outright. 48 classes x 2 methods = 96 methods that no permitted test
+                  can ever cover, depressing the method figure by ~5 points and the class figure
+                  by ~8 for no diagnostic value.
+
+                  This exclusion was added to phpunit.xml on 6 Aug but NOT to this file, which is
+                  the config the 7-Aug run actually used - which is why that run showed methods at
+                  62.93% instead of ~68%. Keep the two in step.
+                -->
+                <directory suffix=".php">../app/Modules/*/Database/Migrations</directory>
             </exclude>
         </whitelist>
     </filter>
