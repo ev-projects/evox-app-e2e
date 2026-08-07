@@ -312,58 +312,6 @@ function DisputeForm(props) {
     }
   };
 
-  //   // Function to search for an employee and auto-populate details
-  const handleEmployeeSearch = async () => {
-    try {
-
-
-      API.call({
-        method: "get",
-        url: "/user/search-user-dispute/" + employeeName,
-      })
-        .then(result => {
-          if (result.data && Array.isArray(result.data) && result.data.length > 0) {
-            if (result.data.length > 0) {
-              alert("test1");
-              setEmployeeDetails(result.data[0]);
-              setFormData({
-                ...formData,
-                ["employee_id"]: result.data[0].id,
-                ["Rest_Day_200"]: 0,
-                ["Special_Holiday_200"]: 0,
-              });
-              setValidateName(true);
-              setValidateeid(true);
-            } else {
-              alert("test2");
-              setFormData({
-                ...formData,
-                ["employee_id"]: result.data[0].id,
-                ["Rest_Day_200"]: 0,
-                ["Special_Holiday_200"]: 0,
-              });
-              setValidateName(true);
-              setValidateeid(true);
-            }
-
-          } else {
-            setValidateName(false);
-            alert("test3");
-          }
-
-        })
-        .catch(e => {
-          alert("test4");
-          dispatch(Formatter.alert_error(e))
-        });
-
-      //   const response = await axios.get(process.env.REACT_APP_API_BASE_URL+'/user/search-user-dispute/'+employeeName);
-      //   setEmployeeDetails(response.data[0] || {}); // Assume first match for simplicity
-    } catch (error) {
-      console.error("Error fetching employee details:", error);
-    }
-  };
-
   // Function to handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -403,74 +351,6 @@ function DisputeForm(props) {
     } catch (error) {
       console.error("Error updating dispute:", error);
     }
-    // alert(formData5.Payroll_Period);
-    // if(!formData.dispute_type && !formData.description){
-    //   e.preventDefault();    
-    //   setFormvalidate1({
-    //     ...formvalidate,
-    //     ["dispute_type"]: "Please Enter DisputeType",
-    //     ["description"]: "Please Enter Description",
-
-    //   });
-    //   window.scrollTo(0, 0);
-    //   inputRef.current.focus();
-    // }else if(!formData.dispute_type){
-    //   e.preventDefault();    
-    //   setFormvalidate1({
-    //     ...formvalidate,
-    //     ["dispute_type"]: "Please Enter DisputeType",
-    //   });
-    //   window.scrollTo(0, 0);
-    //   inputRef.current.focus();
-    // }else if(!formData.description){
-    //   e.preventDefault();    
-    //   setFormvalidate1({
-    //     ...formvalidate,
-    //     ["description"]: "Please Enter Description",
-    //   });
-    //   window.scrollTo(0, 0);
-    //   inputRef1.current.focus();
-    // }else{
-    //   e.preventDefault();
-    //   const allEmpty = stringFields.every(field => formData[field] === "");
-    //   if(allEmpty){
-    //     e.preventDefault();   
-    //     dispatch(Formatter.alert_error_message("Please fill in at least one dispute value."));
-    //     window.scrollTo(0, 0);
-    //     inputref3.current.focus();
-    //   }
-    //   else if(!formData.employee_id){
-    //     e.preventDefault();
-    //     dispatch(Formatter.alert_error_message("Please select an employee."));
-    //     // setValidateeid(false);   
-    //   }else{
-    //     e.preventDefault();    
-    //     // setFormData({
-    //     //   ...formData,
-    //     //   ["Payroll_Period"]: inputref4.current.value,
-    //     // });
-    //   try {
-    //       API.call({
-    //           method: "post",
-    //           url: "/storedispute",
-    //           data: formData
-    //       })
-    //       .then(result => {
-    //           dispatch( Formatter.alert_success( result, 3000 ));
-    //         setEmployeeName('');
-    //         window.scrollTo(0, 0);
-    //         setUserid("");
-    //         handleblur();
-
-    //       })
-    //       .catch(e => {
-    //           dispatch( Formatter.alert_error( e ) ) 
-    //       });
-    //   } catch (error) {
-    //     console.error("Error submitting dispute:", error);
-    //   }
-    // }
-    // }
   };
 
   // Function to handle form submission
@@ -602,39 +482,9 @@ function DisputeForm(props) {
             <Content col="12" label="Create Room">
               <form onSubmit={!props.params.id ? handleSubmit : handleUpdate}>
                 {!props.params.id ? <h2>Create Dispute</h2> : (Authenticator.scanLevel("Payroll")) ? (<h2>Dispute Form</h2>) : <h2>Dispute Form</h2>}
-                {/* <input type='text'
-                   value={payroll && payroll}
-                   name='Payroll_Period'
-                   onBlur={handleChange}
-                   ref={inputref4}
-                   disabled
-                  //  style={{"visibility":"hidden"}}
-            ></input> */}
                 <Row>
-                  {/* {!props.params.id && (
-            <Col size="4">
-            <div className="form-group">
-								<label>Search Name:</label>
-								
-										<div>
-										<input type="textfield" className="form-control" 
-                    onChange={(e) => { setEmployeeName(e.target.value); if(e.target.value.length>2){dispatch(fetchUserDispute(e.target.value));} }} 
-                    onBlur={handleblur}
-                    ref={inputRef2}
-                    variant="primary" 
-                    placeholder="Enter Name..." 
-                    name="nameFilter" 
-                    value={employeeName} />
-                          
-										</div>
-								
-							</div>
-            </Col>
-          
-            )} */}
                   {!props.params.id && (
                     <Col size="4">
-                      {/* { userLists?.length > 0  ?  */}
                       <div>
                         <div className="form-group">
                           <label>Select User:</label>
@@ -669,22 +519,6 @@ function DisputeForm(props) {
                           </select>
                         </div>
                       </div>
-                      {/* : 
-								<div>
-									<div className="form-group">
-										<label>Select User:</label>
-										<select
-											className="form-control" 
-											name="selectedUser"
-											value={"Test"}
-											style={{ display: 'block' }}
-                                            disabled
-										>
-										<option    label="Select Name" />
-										</select>
-									</div>
-								</div>
-							 }  */}
                     </Col>
                   )}
                   <Col size="4">
@@ -700,75 +534,7 @@ function DisputeForm(props) {
                       )}
                     </div>
                   </Col>
-
                 </Row>
-                {/* <Row> */}
-
-                {/* <Col size="4">
-                <div className="form-group">
-                  <label>Payroll Period:</label>
-                  <select
-                      
-											className="form-control" 
-											name="Payroll_Period"
-											value={cutoffname}
-                      
-											onChange={(e) => { 
-                        const selectedOption = e.target.selectedOptions[0];
-                        setCutoffname(e.target.value);
-                        // alert(selectedOption.dataset.value1);
-                        setStartdate(selectedOption.dataset.value1);
-                        setEnddate(selectedOption.dataset.value2);
-                        setFormData({
-                          ...formData,
-                          ["Payroll_Cutoff"]:selectedOption.dataset.value1 + " To " + selectedOption.dataset.value2,
-                          ["Valid_From"]:selectedOption.dataset.value1,
-                          ["Valid_To"]:selectedOption.dataset.value2,
-                          ["Payroll_Period"]:e.target.value
-                        });
-                                                }}
-											style={{ display: 'block' }}
-										>
-										<option    label="Select Name" />
-										{ cutoff.map(function(cutoff){
-											return  <option key={cutoff.id} value={cutoff.name}   data-value1={cutoff.start_date}
-                      data-value2={cutoff.end_date} label={cutoff.name} />
-										})}
-										</select> */}
-                {/* <input
-                    type="text"
-                    placeholder="Enter Payroll Period"
-                    className="form-control"
-                    name='Payroll_Period'
-                    value={formData.Payroll_Period}
-                    onChange={handleChange}
-                  /> */}
-                {/* </div>
-              </Col> */}
-
-
-                {/* { validatename == true ? 
-            <Col size="3">
-           
-            <label></label>
-                <div className="form-group">
-                 {employeeDetails && ( <div> <p>Employee Number: {formData1.emp_num} <br></br> Department: {formData1.department_name}</p></div> )}
-                </div>
-              </Col> :
-               <Col size="3" className="mt-4">
-           
-               <label>Name Not Found....</label>
-                 </Col>
-            }
-              { validatename == true &&  <Col size="3" mt-2>
-              <label></label>
-                <div className="form-group">
-                 {employeeDetails && ( <div><p>First Name: {formData1.first_name} <br></br> Last Name: {formData1.last_name}</p></div> )}
-                </div>
-              </Col>
-                }
-                
-              </Row>               */}
                 <Row>
                   <Col size="3">
                     <div className="form-group">
@@ -784,21 +550,6 @@ function DisputeForm(props) {
                       />
                     </div>
                   </Col>
-                  {/* <Col size="3">
-                <div className="form-group">
-                  <label>Type of Dispute:* {formvalidate1.dispute_type && <span style={{"color" : "red"}}>{formvalidate1.dispute_type}</span>}</label>
-                  <input
-                    type="text"
-                    placeholder="Enter Type"
-                    className="form-control"
-                    name='dispute_type'
-                    value={formData.dispute_type}
-                    onChange={handleChange}
-                    disabled = {!props.params.id ? false : true }
-                    ref={inputRef}
-                  />
-                </div>
-              </Col> */}
                 </Row>
 
                 <Row>
@@ -1229,30 +980,6 @@ function DisputeForm(props) {
                     </span>
                   </div>
                 </span>
-
-                {/* <Row>
-             { !props.params.id ? 
-              <Col size="12">
-                <div className="form-group">
-                  <button type="submit" className="btn btn-primary" disabled={validbtn} >Submit Dispute </button>
-                  { validateeid === false ?
-                  <label style={{"color":"red"}}>*Employee ID Not Found</label> :
-                  ""}
-                </div>
-              </Col>
-              :              
-              (Authenticator.scanLevel("Payroll")) && ( 
-                <Col size="12">
-               <div className="form-group">
-                <button type="submit" className="btn btn-primary">Submit</button>
-                { validateeid === false ?
-                <label style={{"color":"red"}}>*Employee ID Not Found</label> :
-                ""}
-              </div>
-            </Col>
-            )
-             }
-            </Row> */}
               </form>
             </Content>
           </ContainerBody>
