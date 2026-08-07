@@ -3,8 +3,10 @@
  * browser storage state to e2e/.auth/<role>.json.
  *
  * Run automatically before the Playwright suite via globalSetup in playwright.config.ts.
- * Auth files are consumed by roles/*/traverse.spec.ts and roles/*/interactions.spec.ts
+ * Auth files are consumed by roles/<role>/traverse.spec.ts and roles/<role>/interactions.spec.ts
  * via test.use({ storageState: 'e2e/.auth/<role>.json' }).
+ * (NB: never write "slash-star-slash" glob patterns inside this block comment — the star-slash
+ * terminates the comment and the file stops parsing; that exact bug shipped and blocked all E2E.)
  *
  * Roles without a matching env var are skipped with a warning — their specs will fail
  * (storageState file absent) unless the env var is supplied.
@@ -87,7 +89,29 @@ export default async function globalSetup(): Promise<void> {
       continue;
     }
     const authFile = path.join(authDir, `${role.file}.json`);
+    // Reuse a recent auth state instead of re-logging 15 accounts on every invocation —
+    // saves ~2.5 min per run. Delete e2e/.auth/ (or set E2E_FORCE_LOGIN=1) to force fresh logins.
+    // 30 min, NOT longer: the JWT expires within the hour and an expired state renders the
+    // "LOGIN TO CONTINUE" modal on the app URL — tests then fail on the login-modal check.
+    const maxAgeMs = 30 * 60 * 1000;
+    if (!process.env.E2E_FORCE_LOGIN && fs.existsSync(authFile)
+        && Date.now() - fs.statSync(authFile).mtimeMs < maxAgeMs) {
+      console.log(`  ↻  ${role.file}.json is fresh — reusing`);
+      continue;
+    }
+    // staging is occasionally slow enough that the login form misses its timeout;
+    // verified 2026-08-06: both "failed" accounts logged in fine on a retry. One retry
+    // keeps a transient stall from silently dropping a role's auth state.
+    // Retry when the file was NOT refreshed by this attempt — an existence check alone
+    // would silently reuse a STALE file after a failed re-login (audit #15).
+    const beforeMtime = fs.existsSync(authFile) ? fs.statSync(authFile).mtimeMs : 0;
     await loginAndSave(email, authFile, baseURL);
+    const refreshed = fs.existsSync(authFile) && fs.statSync(authFile).mtimeMs > beforeMtime;
+    if (!refreshed) {
+      console.log(`     retrying ${role.file} once…`);
+      if (fs.existsSync(authFile)) fs.unlinkSync(authFile); // never fall back to a stale state
+      await loginAndSave(email, authFile, baseURL);
+    }
   }
 
   console.log('\n[global-setup] Done.\n');
