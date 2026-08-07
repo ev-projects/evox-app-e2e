@@ -41,7 +41,7 @@ class UserListResourcesTest extends TestCase
     use DatabaseTransactions;
 
     /** An unsaved User carrying just the fields these resources read. */
-    private function user(array $overrides = []): User
+    private function makeUser(array $overrides = []): User
     {
         $u = new User();
         foreach (array_merge([
@@ -66,7 +66,7 @@ class UserListResourcesTest extends TestCase
     /** @test */
     public function the_basic_user_list_maps_every_field_the_picker_needs()
     {
-        $out = (new UserListBasicResource($this->user()))->toArray(request());
+        $out = (new UserListBasicResource($this->makeUser()))->toArray(request());
 
         $this->assertSame(4242, $out['id']);
         $this->assertSame('E-4242', $out['emp_num']);
@@ -83,7 +83,7 @@ class UserListResourcesTest extends TestCase
     /** @test */
     public function a_user_with_no_middle_name_produces_a_full_name_without_a_double_space()
     {
-        $out = (new UserListBasicResource($this->user(['middle_name' => null])))->toArray(request());
+        $out = (new UserListBasicResource($this->makeUser(['middle_name' => null])))->toArray(request());
 
         $this->assertSame('Ana Cruz', $out['full_name']);
         $this->assertNull($out['middle_name']);
@@ -93,7 +93,7 @@ class UserListResourcesTest extends TestCase
     public function the_department_is_null_when_the_user_has_no_department_relation()
     {
         // `department` is unset on an in-memory model, so is_valid() sees null and the guard holds.
-        $out = (new UserListBasicResource($this->user()))->toArray(request());
+        $out = (new UserListBasicResource($this->makeUser()))->toArray(request());
 
         $this->assertNull($out['department'], 'a user with no department must not break the list');
         $this->assertArrayHasKey('department', $out, 'the key is always present, only its value varies');
@@ -102,7 +102,7 @@ class UserListResourcesTest extends TestCase
     /** @test */
     public function the_department_name_is_flattened_out_of_the_relation_when_one_exists()
     {
-        $user = $this->user();
+        $user = $this->makeUser();
         // setRelation is how Eloquent exposes a loaded relation; the resource reads ->department->department_name
         $user->setRelation('department', (object) ['department_name' => 'Delivery']);
 
@@ -116,7 +116,7 @@ class UserListResourcesTest extends TestCase
     /** @test */
     public function the_dpa_list_reports_never_ticked_users_as_not_applicable()
     {
-        $out = (new DpaUserListResource($this->user(['dpa_ticked_at' => null])))->toArray(request());
+        $out = (new DpaUserListResource($this->makeUser(['dpa_ticked_at' => null])))->toArray(request());
 
         $this->assertSame('N/A', $out['dpa_ticked_at'],
             'a user who has never accepted the DPA shows N/A, not null and not an empty string');
@@ -128,7 +128,7 @@ class UserListResourcesTest extends TestCase
     /** @test */
     public function a_ticked_dpa_timestamp_is_normalised_to_a_full_datetime_string()
     {
-        $out = (new DpaUserListResource($this->user([
+        $out = (new DpaUserListResource($this->makeUser([
             'dpa_ticked_at' => '2026-07-16 09:30:00',
         ])))->toArray(request());
 
@@ -140,7 +140,7 @@ class UserListResourcesTest extends TestCase
     {
         // Carbon::parse widens a bare date; the column is rendered to the second either way, so the
         // frontend never has to cope with two shapes.
-        $out = (new DpaUserListResource($this->user(['dpa_ticked_at' => '2026-07-16'])))->toArray(request());
+        $out = (new DpaUserListResource($this->makeUser(['dpa_ticked_at' => '2026-07-16'])))->toArray(request());
 
         $this->assertSame('2026-07-16 00:00:00', $out['dpa_ticked_at']);
     }
@@ -151,7 +151,7 @@ class UserListResourcesTest extends TestCase
         $sub = EvoxSubDepartment::orderBy('Id', 'desc')->first();
         if (!$sub) $this->markTestSkipped('no EVOX_SUB_DEPARTMENT row to resolve against');
 
-        $out = (new DpaUserListResource($this->user(['SubDepartmentID' => $sub->Id])))->toArray(request());
+        $out = (new DpaUserListResource($this->makeUser(['SubDepartmentID' => $sub->Id])))->toArray(request());
 
         $this->assertSame($sub->Name, $out['department'],
             'the DPA list shows the sub-department NAME, not its id');
@@ -177,7 +177,7 @@ class UserListResourcesTest extends TestCase
 
         $this->expectException(\Throwable::class);
 
-        (new DpaUserListResource($this->user(['SubDepartmentID' => $orphanId])))->toArray(request());
+        (new DpaUserListResource($this->makeUser(['SubDepartmentID' => $orphanId])))->toArray(request());
     }
 
     // ───────────────────────────────── the two collections
@@ -193,7 +193,7 @@ class UserListResourcesTest extends TestCase
     /** @test */
     public function the_user_list_collection_wraps_rows_with_a_full_pagination_block()
     {
-        $paged = $this->paginator([$this->user(), $this->user(['id' => 4243])], 2, 1, 7);
+        $paged = $this->paginator([$this->makeUser(), $this->makeUser(['id' => 4243])], 2, 1, 7);
 
         $out = (new UserListResourceCollection($paged))->toArray(request());
 
@@ -211,7 +211,7 @@ class UserListResourcesTest extends TestCase
     /** @test */
     public function the_dpa_collection_reports_the_same_pagination_contract()
     {
-        $paged = $this->paginator([$this->user()], 5, 2, 11);
+        $paged = $this->paginator([$this->makeUser()], 5, 2, 11);
 
         $out = (new DpaUserListResourceCollection($paged))->toArray(request());
 
@@ -247,7 +247,7 @@ class UserListResourcesTest extends TestCase
      */
     public function wrapping_an_unpaginated_collection_fatals_instead_of_degrading_FINDING_RESCOLL_PAGE_1()
     {
-        $plain = new Collection([$this->user()]);
+        $plain = new Collection([$this->makeUser()]);
 
         $this->expectException(\Throwable::class);
 
