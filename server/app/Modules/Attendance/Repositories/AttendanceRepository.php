@@ -31,18 +31,26 @@ class AttendanceRepository implements AttendanceRepositoryInterface
 {
     public function __construct() {}
 
-    /**
-     * {@inheritdoc}
-     */
-    public function byGeo(int $geoId, string $from, string $to, int $perPage): LengthAwarePaginator
+    public function byAll(int $perPage, int $page = 1): LengthAwarePaginator
     {
         try {
-            return User::where('country_id', $geoId)
-                ->where('is_active', 1)
-                ->whereNull('deleted_at')
-                ->orderBy('last_name', 'asc')
-                ->orderBy('first_name', 'asc')
-                ->paginate($perPage);
+            return User::query()
+                ->join('EVOX_SUB_DEPARTMENT as sd', 'sd.Id', '=', 'users.SubDepartmentID')
+                ->join('EVOX_DEPARTMENT as d', 'd.Id', '=', 'sd.DepartmentId')
+                ->leftJoin('utc_timelog as ut', 'ut.country_id', '=', 'users.country_id')
+                ->where('users.is_active', 1)
+                ->whereNull('users.deleted_at')
+                ->orderBy('users.last_name', 'asc')
+                ->orderBy('users.first_name', 'asc')
+                ->select([
+                    'users.*',
+                    'ut.country_name',
+                    'sd.Id as sub_department_id',
+                    'sd.Name as sub_department_name',
+                    'd.Id as department_id',
+                    'd.Name as department_name',
+                ])
+                ->paginate($perPage, ['*'], 'page', $page);
         } catch (Exception $e) {
             log_error($e);
             throw $e;
@@ -52,18 +60,57 @@ class AttendanceRepository implements AttendanceRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function byDepartment(int $departmentId, string $from, string $to, int $perPage): LengthAwarePaginator
+    public function byGeo(int $geoId, int $perPage, int $page = 1): LengthAwarePaginator
     {
         try {
             return User::query()
                 ->join('EVOX_SUB_DEPARTMENT as sd', 'sd.Id', '=', 'users.SubDepartmentID')
+                ->join('EVOX_DEPARTMENT as d', 'd.Id', '=', 'sd.DepartmentId')
+                ->leftJoin('utc_timelog as ut', 'ut.country_id', '=', 'users.country_id')
+                ->where('users.country_id', $geoId)
+                ->where('users.is_active', 1)
+                ->whereNull('users.deleted_at')
+                ->orderBy('users.last_name', 'asc')
+                ->orderBy('users.first_name', 'asc')
+                ->select([
+                    'users.*',
+                    'ut.country_name',
+                    'sd.Id as sub_department_id',
+                    'sd.Name as sub_department_name',
+                    'd.Id as department_id',
+                    'd.Name as department_name',
+                ])
+                ->paginate($perPage, ['*'], 'page', $page);
+        } catch (Exception $e) {
+            log_error($e);
+            throw $e;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function byDepartment(int $departmentId, int $perPage, int $page = 1): LengthAwarePaginator
+    {
+        try {
+            return User::query()
+                ->join('EVOX_SUB_DEPARTMENT as sd', 'sd.Id', '=', 'users.SubDepartmentID')
+                ->join('EVOX_DEPARTMENT as d', 'd.Id', '=', 'sd.DepartmentId')
+                ->leftJoin('utc_timelog as ut', 'ut.country_id', '=', 'users.country_id')
                 ->where('sd.DepartmentId', $departmentId)
                 ->where('users.is_active', 1)
                 ->whereNull('users.deleted_at')
                 ->orderBy('users.last_name')
                 ->orderBy('users.first_name')
-                ->select('users.*')
-                ->paginate($perPage);
+                ->select([
+                    'users.*',
+                    'ut.country_name',
+                    'sd.Id as sub_department_id',
+                    'sd.Name as sub_department_name',
+                    'd.Id as department_id',
+                    'd.Name as department_name',
+                ])
+                ->paginate($perPage, ['*'], 'page', $page);
         } catch (Exception $e) {
             log_error($e);
             throw $e;
