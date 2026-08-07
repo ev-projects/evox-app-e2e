@@ -33,7 +33,7 @@ class TeamAttendanceSummary extends Component {
         this.state = this.initialState;
     }
 
-    handleSubmit = () => {
+    handleSubmit = (start_date_override = null, end_date_override = null) => {
       var formData = {};
       var selectedDepartments = [];
       for ( var key in this.state) {
@@ -57,7 +57,7 @@ class TeamAttendanceSummary extends Component {
         } 
       }
       // console.log( formData);
-      this.props.getTeamAttendanceSummary( this.state.start_date, this.state.end_date, formData )
+      this.props.getTeamAttendanceSummary( start_date_override || this.state.start_date, end_date_override || this.state.end_date, formData )
     }
 
     handleExport = () => {
@@ -116,12 +116,16 @@ class TeamAttendanceSummary extends Component {
 
     // Handles the change of date that'll be triggered by the ReportNavigatorShort
     handleChangeDate = ( start_date, end_date, scope_type ) => {
-      this.state.scope_type = scope_type;
       this.setState({
+        scope_type : scope_type,
         start_date : start_date,
         end_date : end_date,
       });
-      this.handleSubmit();
+      // FE-TAS-1 - handleSubmit() was called with no arguments, so it read start_date and
+      // end_date from state. setState is asynchronous, so the fetch went out with the
+      // PREVIOUS range: navigating the date picker returned the range the manager had just
+      // left, and the screen looked current. The new dates are now passed explicitly.
+      this.handleSubmit(start_date, end_date);
     }
 
 

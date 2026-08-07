@@ -1,6 +1,11 @@
-import moment, * as Moment from 'moment';
+import baseMoment from 'moment';
 import { extendMoment } from 'moment-range';
+
 import { format, getDate } from "date-fns";
+// HLP-MOM-1 fix: build ONE callable, range-enabled moment for the whole module.
+// The previous code did `extendMoment(Moment)` with the NAMESPACE object, which is not callable,
+// so every helper using it threw under strict interop (Jest today, webpack 5 after the upgrade).
+const moment = extendMoment(baseMoment);
 
 var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
@@ -20,8 +25,8 @@ export const getDaysArrayInMonth = function (year, month) {
 export const getDaysArrayInWeek = function (startDate, endDate) {
     var date_list = [];
     var dates = [];
-    let currDate = Moment(startDate).startOf('day');
-    let lastDate = Moment(endDate).startOf('day');
+    let currDate = moment(startDate).startOf('day');
+    let lastDate = moment(endDate).startOf('day');
     date_list.push(currDate.format('YYYY-MM-DD'))
     dates.push(currDate.format('YYYY') + "-" + currDate.format('MM') + "-" + currDate.format('DD'));;
     while (currDate.add(1, 'days').diff(lastDate) < 0) {
@@ -37,9 +42,8 @@ export const getDaysArrayInWeek = function (startDate, endDate) {
     return { date_list: date_list, week_list: ['Monday', "Sunday"], dates: dates };
 };
 
-export const generateWeekList = (year = +Moment().format("YYYY"), month = +Moment().format("MM")) => {
+export const generateWeekList = (year = +moment().format("YYYY"), month = +moment().format("MM")) => {
     month = month - 1;
-    const moment = extendMoment(Moment);
     const startDate = moment([year, month]);
     const firstDay = moment(startDate).startOf('month').isoWeekday(1);
     const endDay = moment(startDate).endOf('month')
@@ -87,7 +91,6 @@ export const generateWeekList = (year = +Moment().format("YYYY"), month = +Momen
 
 
 export const generateWeekListCustom = (start_date, end_date, scope_type) => {
-    const moment = extendMoment(Moment);
     const day_range = moment.range(start_date.startOf('day'), end_date.startOf('day'));
     const firstDay = moment(start_date).startOf('day');
     const endDay = moment(end_date).startOf('day')

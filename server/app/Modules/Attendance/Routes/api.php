@@ -27,6 +27,9 @@ use Illuminate\Http\Request;
 # Attendance API
 Route::group(['prefix' => 'attendance', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
 
+    # Get all employees
+    Route::get('/all', 'AttendanceController@byAll');
+
     # Get attendance for all employees in a geo (country)
     Route::get('/by-geo/{geoId}', 'AttendanceController@byGeo')
         ->where('geoId', '[0-9]+');

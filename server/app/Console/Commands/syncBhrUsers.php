@@ -157,7 +157,11 @@ class syncBhrUsers extends Command
                     }
                 } catch (Exception $e) {
 print_r($e->getMessage());
-                    log_to_file('info', 'SYNC ERROR' . [$bhr_user_number, $e, __FUNCTION__], "sync_bhr_user");
+                    // CMD-STR-1 - was 'SYNC ERROR' . [ ... ], concatenating an ARRAY onto a string,
+                    // which PHP renders as the literal text "Array". The whole failure context was
+                    // lost from the sync log. Passed as the payload argument instead, and $e is now
+                    // ->getMessage() rather than the exception object.
+                    log_to_file('info', 'SYNC ERROR', [$bhr_user_number, $e->getMessage(), __FUNCTION__], "sync_bhr_user");
 
                     break;
                 }

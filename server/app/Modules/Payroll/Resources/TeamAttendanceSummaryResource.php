@@ -75,7 +75,10 @@ class TeamAttendanceSummaryResource extends JsonResource
 
 
                         if($dtr->get_dtr_history()->latest()->first() != null){
-                            if($dtr->get_dtr_history()->latest()->first()->log_out_type = "Log_out"){
+                            // BUG-9 — this was `=` (assignment), not `==`. It overwrote log_out_type
+                            // and always evaluated truthy, so EVERY employee with any DTR history was
+                            // reported Present. Absent people showed as present on the team summary.
+                            if($dtr->get_dtr_history()->latest()->first()->log_out_type == "Log_out"){
                                 $status = "Present";
                             }
                            

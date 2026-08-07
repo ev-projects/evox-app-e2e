@@ -9,9 +9,6 @@ import API from "../../services/API";
 import Formatter from "../../services/Formatter";
 import { fetchWorkSpaces } from '../../store/actions/freshservice/freshServiceActions';
 
-// WORKSPACE CATEGORIES DATA - Will be loaded from JSON file
-let WORKSPACE_CATEGORIES = {};
-
 // Simple API helper
 const apiCall = function (endpoint, options) {
   options = options || {};
@@ -105,28 +102,6 @@ const validateTicketData = function (data) {
 
   if (!data.selectedWorkspace) {
     errors.selectedWorkspace = 'Workspace must be selected';
-  }
-
-  if (data.selectedWorkspace && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
-    const allSubCategories = Object.keys(WORKSPACE_CATEGORIES[data.selectedWorkspace]);
-    const availableSubCategories = allSubCategories.filter(function (subCategory) {
-      return subCategory !== data.selectedWorkspace;
-    });
-
-    if (availableSubCategories.length > 0 && !data.selectedSubCategory) {
-      errors.selectedSubCategory = 'Category must be selected';
-    } else if (data.selectedSubCategory && !availableSubCategories.includes(data.selectedSubCategory)) {
-      errors.selectedSubCategory = 'Invalid category selected';
-    }
-  }
-
-  if (data.selectedWorkspace && data.selectedSubCategory && WORKSPACE_CATEGORIES[data.selectedWorkspace]) {
-    const itemCategories = WORKSPACE_CATEGORIES[data.selectedWorkspace][data.selectedSubCategory] || [];
-    if (itemCategories.length > 1 && !data.selectedItemCategory) {
-      errors.selectedItemCategory = 'Sub-category must be selected';
-    } else if (data.selectedItemCategory && !itemCategories.includes(data.selectedItemCategory)) {
-      errors.selectedItemCategory = 'Invalid sub-category selected';
-    }
   }
 
   return {
@@ -311,20 +286,20 @@ const CreateTicketPage = function (props) {
 
   var subCategoryOptions = formData.selectedWorkspace && formData.subCategoriesList
     ? formData.subCategoriesList.map(function (subcategory) {
-        return {
-          Id: subcategory.Id,
-          CategoryName: subcategory.CategoryName
-        };
-      })
+      return {
+        Id: subcategory.Id,
+        CategoryName: subcategory.CategoryName
+      };
+    })
     : [];
 
   var itemCategoryOptions = (formData.selectedWorkspace && formData.selectedSubCategory && formData.itemCategoriesList)
     ? formData.itemCategoriesList.map(function (itemcategory) {
-        return {
-          Id: itemcategory.Id,
-          SubCategoryName: itemcategory.SubCategoryName
-        };
-      })
+      return {
+        Id: itemcategory.Id,
+        SubCategoryName: itemcategory.SubCategoryName
+      };
+    })
     : [];
 
   return React.createElement('div', { className: 'card-fs' },

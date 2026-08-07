@@ -860,6 +860,7 @@ class UserRepository implements UserRepositoryInterface{
         try {
 
            
+            $collection = array( "data" => array(), "pagination" => null );
             $perpage_count = 10;
             if( $request->export == "all"){
                 $perpage_count = 99999;
@@ -1178,6 +1179,8 @@ class UserRepository implements UserRepositoryInterface{
     public function list_via_department( $department_id ){
         try {
             $department = Department::find( $department_id );
+            // USR-NULL-1 - Department::find() was called and immediately chained with ->users(),
+            // so an unknown department_id raised an Error on null. Resolved once and guarded.
             if (!$department) {
                 return collect();
             }

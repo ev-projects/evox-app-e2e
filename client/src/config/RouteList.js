@@ -88,7 +88,6 @@ import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
 
 import HrAnnouncementsForm from "../container/Hr/HrAnnouncementsForm";
 import HrAnnouncementsList from "../container/Hr/HrAnnouncementsList";
-import Referjobs from "../components/JobReferal/Referjobs";
 import MyTeamAllRequest from "../container/MyTeam/MyTeamRequests/MyTeamAllRequest";
 import MyOverallRequest from "../container/MyOverallRequest/MyOverallRequest";
 import OverallRequest from "../container/MyTeam/OverallRequest";

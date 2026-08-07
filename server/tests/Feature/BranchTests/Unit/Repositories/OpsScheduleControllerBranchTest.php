@@ -34,7 +34,12 @@ class OpsScheduleControllerBranchTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // The controller calls $request->image->storeAs($path, $name) with NO disk argument, so it
+        // writes to config('filesystems.default'). Fake that disk explicitly plus the usual pair,
+        // otherwise the upload escapes the fake, throws, and the controller answers 400.
+        Storage::fake(config('filesystems.default'));
         Storage::fake('local');
+        Storage::fake('public');
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->orderBy('id', 'desc')->first();
         if (!$this->user) $this->markTestSkipped('no active user in test DB');
@@ -186,7 +191,7 @@ class OpsScheduleControllerBranchTest extends TestCase
         $this->assertSame('', $row->scope);                           // ?? '' default arm
 
         $res = $this->actingAs($this->user)->put('/api/opsschedule/' . $id, [
-            'type' => 'image', 'image' => UploadedFile::fake()->create('u.png', 8),
+            'type' => 'image', 'image' => UploadedFile::fake()->image('u.png'),
         ]);
         $res->assertStatus(200);
         $this->assertStringContainsString("opsschedules/{$id}/", OpsSchedule::find($id)->path);
