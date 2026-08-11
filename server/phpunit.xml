@@ -16,6 +16,12 @@
         <testsuite name="Feature">
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
+
+        <!-- Opt-in data seeder: commits rows (no rollback). Skips unless RUN_SEED=1.
+             Run: RUN_SEED=1 vendor/bin/phpunit -\-testsuite Seed   (see tests/Seed/README.md) -->
+        <testsuite name="Seed">
+            <directory suffix="Test.php">./tests/Seed</directory>
+        </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="false">
