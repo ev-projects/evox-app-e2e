@@ -174,4 +174,46 @@ test.describe('overtime submit → approve → cancel (WRITES, E2E-TEST tagged)'
     cleanupRan = true;
     await page.context().close();
   });
+
+  test('4. glenn sees the status change in his notification menu (R-038 probe)', async ({ browser }) => {
+    // R-038 (RULE-PROTECTION-PLAN Lane A): "employee notified on status change". The
+    // NotificationMenu merges data.requestStatus entries, so after the approve+decline in
+    // steps 2-3 the employee's menu must carry a status entry for this overtime.
+    // Placed AFTER cleanup deliberately: serial mode skips later tests once one fails, so
+    // a selector break in this NEW probe must never be able to block the cleanup step.
+    test.skip(!requestId, 'no request id from step 1');
+    const page = await pageAs(browser, 'ph-employee');
+    await page.goto('/app/', { waitUntil: 'load', timeout: 30000 });
+    await assertHealthyPage(page);
+    await waitForAppIdle(page);
+
+    // the bell lives in the header as a react-bootstrap Dropdown; exact classname varies,
+    // so try the likely toggles in order and open the first that exists
+    let opened = false;
+    for (const sel of [
+      '[class*="notification"] .dropdown-toggle',
+      '.dropdown-toggle:has(i[class*="bell"])',
+      'i[class*="bell"]',
+      '[class*="notification"]',
+    ]) {
+      const toggle = page.locator(sel).first();
+      if (await toggle.isVisible().catch(() => false)) {
+        await toggle.click();
+        await page.waitForTimeout(2000);
+        opened = true;
+        break;
+      }
+    }
+    expect(opened, 'a notification bell/menu toggle must exist in the header').toBe(true);
+
+    // the menu merges requestsForApproval/requestStatus/announcements — the status entry
+    // for our overtime must mention the request type and a status word (R-038's substance)
+    const menuText = await page.locator('.dropdown-menu:visible, [class*="notification"]:visible').allInnerTexts()
+      .then(t => t.join('\n')).catch(() => '');
+    expect(menuText, 'notification menu must mention the overtime status change (R-038)')
+      .toMatch(/overtime/i);
+    expect(menuText, 'notification menu must carry a status word for the change (R-038)')
+      .toMatch(/approved|declined|status|update/i);
+    await page.context().close();
+  });
 });
