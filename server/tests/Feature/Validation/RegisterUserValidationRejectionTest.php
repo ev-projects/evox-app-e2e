@@ -11,9 +11,9 @@ namespace Tests\Feature\Validation;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use App\Modules\User\Models\User;
 use App\Modules\Department\Models\Department;
-use Spatie\Permission\Models\Role;
 
 class RegisterUserValidationRejectionTest extends TestCase
 {
@@ -21,7 +21,7 @@ class RegisterUserValidationRejectionTest extends TestCase
 
     private $user;
     private $department;
-    private $role;
+    private $roleName;
 
     protected function setUp(): void
     {
@@ -29,8 +29,8 @@ class RegisterUserValidationRejectionTest extends TestCase
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         $this->department = Department::first();
-        $this->role = Role::first();
-        if (!$this->user || !$this->department || !$this->role) {
+        $this->roleName = DB::table('roles')->value('name'); // raw query — no Spatie dependency
+        if (!$this->user || !$this->department || !$this->roleName) {
             $this->markTestIncomplete('no user/department/role available in test DB');
         }
     }
@@ -47,7 +47,7 @@ class RegisterUserValidationRejectionTest extends TestCase
             'last_name'           => 'RejectTest',
             'email'               => 'reject_test_' . time() . '_' . mt_rand(1000, 9999) . '@example.invalid',
             'departments_handled' => [$this->department->id],
-            'roles'               => [$this->role->name],
+            'roles'               => [$this->roleName],
         ], $override);
     }
 

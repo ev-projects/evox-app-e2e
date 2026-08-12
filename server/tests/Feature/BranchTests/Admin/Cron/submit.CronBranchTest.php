@@ -192,18 +192,10 @@ class CronSubmitBranchTest extends TestCase
 
     public function test_syncUsers__submit__sync_type_all__created_201()
     {
-        // CAT1 fixture-guard: sync_users() opens with Role::findByName('admin')->users()->get() (line ~138,
-        // inside try). If the 'admin' role row is absent, findByName() returns null and null->users() raises
-        // a PHP \Error (NOT \Exception) that the catch(Exception) does NOT trap -> unhandled -> 500. Skip
-        // gracefully when the fixture is missing, matching the suite's other fixture-guards.
-        // Guard mirrors the controller's ACTUAL lookup: sync_users() calls Role::findByName('admin').
-        // findByName() resolves by the model's default guard; where('name','admin')->exists() ignores guard,
-        // so it returned true while findByName() returned null -> null->users() -> \Error -> 500. Use the
-        // same lookup the controller uses so we skip cleanly when it can't resolve (absent OR guard mismatch).
-        $adminRole = null;
-        try { $adminRole = \Spatie\Permission\Models\Role::findByName('admin'); } catch (\Throwable $e) { $adminRole = null; }
-        if (is_null($adminRole)) {
-            $this->markTestIncomplete('CAT1: Role::findByName(\'admin\') did not resolve (absent or guard mismatch)');
+        // Controller now uses User::where('LevelId',4)->get() (Phase A replaced Role::findByName('admin')).
+        // Guard: skip cleanly if no Admin-level user exists in test DB.
+        if (!User::where('LevelId', 4)->where('is_active', 1)->exists()) {
+            $this->markTestIncomplete('no Admin-level user (LevelId=4) in test DB');
         }
 
         // Branch: request('sync_type')=='all' TRUE. BHR list mocked empty; the real
@@ -224,15 +216,9 @@ class CronSubmitBranchTest extends TestCase
 
     public function test_syncUsers__submit__since_param_scoped__created_201()
     {
-        // CAT1 fixture-guard (see sync_type_all): admin role row required by line ~138 or null->users() -> 500.
-        // Guard mirrors the controller's ACTUAL lookup: sync_users() calls Role::findByName('admin').
-        // findByName() resolves by the model's default guard; where('name','admin')->exists() ignores guard,
-        // so it returned true while findByName() returned null -> null->users() -> \Error -> 500. Use the
-        // same lookup the controller uses so we skip cleanly when it can't resolve (absent OR guard mismatch).
-        $adminRole = null;
-        try { $adminRole = \Spatie\Permission\Models\Role::findByName('admin'); } catch (\Throwable $e) { $adminRole = null; }
-        if (is_null($adminRole)) {
-            $this->markTestIncomplete('CAT1: Role::findByName(\'admin\') did not resolve (absent or guard mismatch)');
+        // Controller now uses User::where('LevelId',4)->get() (Phase A replaced Role::findByName('admin')).
+        if (!User::where('LevelId', 4)->where('is_active', 1)->exists()) {
+            $this->markTestIncomplete('no Admin-level user (LevelId=4) in test DB');
         }
 
         // Branches: is_valid($since_date_to_sync) TRUE (route param) + sync_type ELSE (get_changed_users).
@@ -252,15 +238,9 @@ class CronSubmitBranchTest extends TestCase
 
     public function test_syncUsers__submit__default_since_scoped__created_201()
     {
-        // CAT1 fixture-guard (see sync_type_all): admin role row required by line ~138 or null->users() -> 500.
-        // Guard mirrors the controller's ACTUAL lookup: sync_users() calls Role::findByName('admin').
-        // findByName() resolves by the model's default guard; where('name','admin')->exists() ignores guard,
-        // so it returned true while findByName() returned null -> null->users() -> \Error -> 500. Use the
-        // same lookup the controller uses so we skip cleanly when it can't resolve (absent OR guard mismatch).
-        $adminRole = null;
-        try { $adminRole = \Spatie\Permission\Models\Role::findByName('admin'); } catch (\Throwable $e) { $adminRole = null; }
-        if (is_null($adminRole)) {
-            $this->markTestIncomplete('CAT1: Role::findByName(\'admin\') did not resolve (absent or guard mismatch)');
+        // Controller now uses User::where('LevelId',4)->get() (Phase A replaced Role::findByName('admin')).
+        if (!User::where('LevelId', 4)->where('is_active', 1)->exists()) {
+            $this->markTestIncomplete('no Admin-level user (LevelId=4) in test DB');
         }
 
         // Branch: is_valid($since_date_to_sync) FALSE (no param) -> Carbon::today()->subDays(7) arm,

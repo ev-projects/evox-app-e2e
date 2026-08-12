@@ -7,7 +7,6 @@ require_once __DIR__ . '/../../Support/CallSpFake.php';
 use Tests\TestCase;
 use Tests\Support\CallSpFake;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Spatie\Permission\Models\Role;
 use App\Modules\User\Repositories\UserRepository;
 use App\Modules\User\Models\User;
 
@@ -99,9 +98,6 @@ class UserRepositoryBhrSyncSpFakeTest extends TestCase
 
     public function test_new_bhr_user_is_inserted_with_employee_role_and_country()
     {
-        try { Role::findByName(get_constant('USER_ROLES.employee')); }
-        catch (\Throwable $e) { $this->markTestIncomplete('employee role missing in test DB'); }
-
         $bhr = $this->bhrUser();
 
         $user = $this->repo->insert_bhr_user_to_evox($bhr, $this->utc());
@@ -111,16 +107,13 @@ class UserRepositoryBhrSyncSpFakeTest extends TestCase
         $this->assertSame($bhr->id, $user->bhr_num);
         $this->assertSame($bhr->bestEmail, $user->email);
         $this->assertSame(1, $user->country_id);               // matched via the utc collection
-        $this->assertTrue($user->hasRole(get_constant('USER_ROLES.employee')));
+        // hasRole() removed (assignRole() deleted from app code in Phase A; role not set on BHR sync)
         $this->assertSame('1990-01-01', (string) $user->birthdate);
         $this->assertSame([], CallSpFake::calls());
     }
 
     public function test_two_char_employee_number_is_zero_padded()
     {
-        try { Role::findByName(get_constant('USER_ROLES.employee')); }
-        catch (\Throwable $e) { $this->markTestIncomplete('employee role missing in test DB'); }
-
         $user = $this->repo->insert_bhr_user_to_evox(
             $this->bhrUser(['employeeNumber' => '42']),
             $this->utc()

@@ -11,7 +11,6 @@ use App\RoleLevelFeatures;
 use App\Modules\Team\Models\Team;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Payroll\Models\Dtr;
-use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\Overtime;
@@ -23,7 +22,6 @@ use App\Modules\Request\Models\WorkFromHome;
 
 
 use Illuminate\Database\Eloquent\Collection;
-use Spatie\Permission\Traits\HasPermissions;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -36,7 +34,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, HasRoles, HasPermissions, SoftDeletes, LogsActivity;
+    use Notifiable, SoftDeletes, LogsActivity;
     
     protected $fillable = [];
 
@@ -816,12 +814,9 @@ class User extends Authenticatable implements JWTSubject
     public function departments_team($department_id)
     {
         // Fetch department team if Supervisor
-        if( $this->hasRole( get_constant('USER_ROLES.supervisor') ) || $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
+        if( $this->isLevel('SubDepartment Head') || $this->isLevel('Client')  ) { 
             $teams_id_array = Team::where( "department_id" , $department_id );
-        } elseif( $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
-            $teams_id_array =  $this->belongsToMany(Team::class, 'team_handlers', 'user_id', 'team_id')->where( "department_id" ,$department_id );
-        }
-
+        }  
 
         return $teams_id_array->get();
     }

@@ -13,8 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log; 
 use Illuminate\Http\Request;
 
 class ProfileRepository implements ProfileRepositoryInterface{

@@ -73,7 +73,7 @@ class UserProfileResource extends JsonResource
             "current_offset" => $offset,
             "default_offset" => $this->country_zone()->time_difference,
             "lvl_name" => is_valid( $this->LevelId) ? $this->level_type(): null,
-            "use_multi" => is_valid( $this->LevelId) ?$this->permissions()->pluck('name')->contains('user_multi_login'): false,
+            "use_multi" => is_valid( $this->LevelId) ?$this->hasFeature("multi_login"): false,
 
             );
         if( $this->show_full_info ) {

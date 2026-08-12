@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
-use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Payroll\Resources\DtrResource;
@@ -135,7 +134,7 @@ class CronController extends Controller
             
             $utc = UtcTimelog::all();
             $user_supervisor_pivot_array = [];
-            $admin_collection = Role::findByName( 'admin' )->users()->get();
+            $admin_collection =  User::where('LevelId', 4)->where('is_active', 1)->get();
 
             // If a $since_date_to_sync has parameter, use it as since date to sync. If not, use the date yesterday.
             if( is_valid( $since_date_to_sync ) ){

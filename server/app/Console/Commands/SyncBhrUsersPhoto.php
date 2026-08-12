@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Modules\User\Models\User;
 use Illuminate\Http\JsonResponse;
-use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;

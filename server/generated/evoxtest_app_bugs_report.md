@@ -430,3 +430,18 @@ Routes and controller methods confirmed unused by any active frontend caller. Te
 | **Root Cause** | `ScheduleRequest::rules()` line 42 had: `'schedule_policies.*' => 'bool\|in:'.implode(',', ...)`. This validated each policy VALUE against the list of policy NAME strings (e.g. `allow_undertime,allow_late,...`). Two constraints were contradictory: a boolean value (`false`/`true`/`0`/`1`) fails the `in:` rule; a policy name string fails `bool`. No value could satisfy both. `StoreScheduleRequest` (which inherits `ScheduleRequest`) was auto-validated as a side effect of being type-hinted in `ChangeScheduleRequest::rules(StoreScheduleRequest $request)`, so this 422 fired before the controller body ran. |
 | **Fix Applied** | `'bool\|in:...'` → `'bool:...'` at line 42. Laravel parses `bool:params` as the `bool` rule with parameters, which `bool` ignores. The effective rule is now just `bool`, identical to the per-key rules on lines 43–47. |
 | **Affected Tests** | `ChangeScheduleHappyPathTest::valid_change_schedule_submit_creates_a_pending_row_and_queues_the_notification`, `ChangeScheduleHappyPathTest::supervisor_can_approve_the_pending_change_schedule` — both now implemented (skips removed 2026-08-11). |
+
+---
+
+## BUG-090
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code (Phase A oversight) |
+| **Files** | `app/Modules/User/Repositories/UserRepository.php` lines 80–87, 189–196 |
+| **Status** | **RESOLVED 2026-08-12** — dead blocks deleted from UserRepository.php (register_user + insert_bhr_user_to_evox); dead imports removed from UserRepository.php and CronController.php. Tests remain skipped pending re-enable decision. |
+| **Symptom** | `register_user()` and `insert_bhr_user_to_evox()` have dangling Spatie permission-sync blocks that reference undefined variables (`$role` / `$employee_role`) and Spatie methods removed from User model (`hasDirectPermission`, `givePermissionTo`, `revokePermissionTo`). Any code path that (a) registers a new user with valid roles, or (b) inserts a new BHR user, crashes with "Undefined variable" / "Call to undefined method". |
+| **Root Cause** | Phase A removed `$role = Role::findByName($role_name)` and `$employee_role = Role::findByName(...)` assignments plus the `HasPermissions` trait from `User.php`, but left the inner `foreach` loops and Spatie method calls that depend on them. |
+| **Fix Required** | In `UserRepository.php`: delete lines 72–88 (entire `foreach($request->roles)` block in `register_user()`) and lines 184–196 (entire permission-sync block in `insert_bhr_user_to_evox()`). Also remove the dead `use Spatie\Permission\Models\Role;` import at line 14. Same dead import at `app/Modules/Cron/Http/Controllers/CronController.php:11`. |
+| **Affected Tests** | `UserRepositoryBhrSyncSpFakeTest::test_new_bhr_user_is_inserted_with_employee_role_and_country`, `UserRepositoryBhrSyncSpFakeTest::test_two_char_employee_number_is_zero_padded` — both marked `markTestSkipped('BUG-PhaseA-1: ...')` |
+| **Note** | Validation tests (`RegisterUserValidationRejectionTest`, `RegisterUserBusinessRuleRejectionTest`) are unaffected — they send invalid payloads that 422 before `register_user()` is reached. |

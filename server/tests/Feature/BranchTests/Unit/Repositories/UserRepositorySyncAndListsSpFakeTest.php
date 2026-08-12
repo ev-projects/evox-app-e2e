@@ -7,7 +7,6 @@ require_once __DIR__ . '/../../Support/CallSpFake.php';
 use Tests\TestCase;
 use Tests\Support\CallSpFake;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Spatie\Permission\Models\Role;
 use App\Modules\Department\Models\Department;
 use App\Modules\User\Models\User;
 use App\Modules\User\Models\UtcTimelog;
@@ -72,8 +71,9 @@ class UserRepositorySyncAndListsSpFakeTest extends TestCase
     /** @test */
     public function update_bhr_user_full_arm_pads_number_maps_country_and_department()
     {
-        if (!Role::where('name', 'admin')->exists()) {
-            $this->markTestSkipped('no admin role in test DB (department supervisor sync needs it)');
+        // Controller uses User::where('LevelId',4) since Phase A — no Spatie Role dependency.
+        if (!User::where('LevelId', 4)->where('is_active', 1)->exists()) {
+            $this->markTestSkipped('no Admin-level user (LevelId=4) in test DB');
         }
         $utcRow = UtcTimelog::whereNotNull('country_name')->first();
         $dept = Department::whereNotNull('department_name')->first();

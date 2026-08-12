@@ -2,6 +2,75 @@
 
 ---
 
+## 2026-08-12 (s2) — Phase B: Remove Spatie\Permission from test files; Phase C: package removal
+
+### Spatie dead-code removal — Phase B (test files)
+
+**`tests/Feature/BranchTests/Admin/Cron/catch.CronBranchTest.php`**
+- Removed `use Spatie\Permission\Models\Role;` import.
+- Replaced `try { Role::findByName('admin') } catch` guard with `User::where('LevelId', 4)->where('is_active', 1)->exists()` guard — mirrors the controller's updated lookup after Phase A.
+
+**`tests/Feature/BranchTests/Admin/Cron/submit.CronBranchTest.php`**
+- Replaced all 3 identical `\Spatie\Permission\Models\Role::findByName('admin')` guards (lines ~204, ~233, ~261) with `User::where('LevelId', 4)->where('is_active', 1)->exists()` guard. Updated surrounding comments.
+
+**`tests/Feature/BranchTests/Unit/Repositories/UserRepositoryBhrSyncSpFakeTest.php`**
+- Removed `use Spatie\Permission\Models\Role;` import.
+- Removed `try { Role::findByName(get_constant('USER_ROLES.employee')) } catch` guards in `test_new_bhr_user_is_inserted_with_employee_role_and_country` and `test_two_char_employee_number_is_zero_padded`.
+- Removed `$user->hasRole()` assertion (assignRole deleted from app code in Phase A).
+- Added `markTestSkipped('BUG-PhaseA-1: ...')` to both insert tests — Phase A left `$employee_role` undefined in `insert_bhr_user_to_evox()` causing crash (see BUG-090).
+
+**`tests/Feature/BranchTests/Unit/Repositories/RepositoryCrudFinishTest.php`**
+- Removed `use Spatie\Permission\Models\Role;` import.
+- Replaced `private function supervisorRole()` to use `DB::table('roles')->where('name','supervisor')->first()` (raw query, no Spatie dependency).
+- Added `markTestSkipped('Spatie HasPermissions trait removed from User model in Phase A...')` to three permission-assignment tests: `assigning_permissions_without_the_admin_role_stores_exactly_the_requested_set`, `assigning_the_admin_role_silently_adds_every_supervisor_permission`, `assigning_admin_together_with_supervisor_lands_the_same_permission_set`. The `assigning_permissions_when_not_authorized_blows_up_on_an_undefined_user_FINDING_USR_PERM_1` test is NOT skipped (gate fails before Spatie code is reached; still valid).
+
+**`tests/Feature/BranchTests/Unit/Repositories/UserRepositorySyncAndListsSpFakeTest.php`**
+- Removed `use Spatie\Permission\Models\Role;` import.
+- Replaced `if (!Role::where('name','admin')->exists())` guard with `User::where('LevelId', 4)->where('is_active', 1)->exists()` guard.
+
+**`tests/Feature/Validation/RegisterUserBusinessRuleRejectionTest.php`**
+- Removed `use Spatie\Permission\Models\Role;` import.
+- Replaced `private $role` property with `private $roleName` (string).
+- Replaced `$this->role = Role::first()` with `$this->roleName = DB::table('roles')->value('name')` (raw query, no Spatie dependency; roles table retained as orphaned table).
+- Updated guard and payload to use `$this->roleName`.
+
+**`tests/Feature/Validation/RegisterUserValidationRejectionTest.php`**
+- Same changes as BusinessRuleRejectionTest above.
+- Added `use Illuminate\Support\Facades\DB;` import (was missing).
+
+### Spatie dead-code removal — Phase C (package + config)
+
+- `config/app.php`: Removed `Spatie\Permission\PermissionServiceProvider::class` from providers array.
+- `config/laravel-permission.php`: Archived as `config/laravel-permission.php.bak` (orphaned published config).
+- `bootstrap/cache/config.php`: Cleared (stale cache held the removed provider).
+- `composer remove spatie/laravel-permission`: Package removed from `vendor/`, `composer.lock`, and `composer.json`. `php artisan package:discover` + `config:cache` verified clean boot.
+
+### BHR insert test skips removed (2026-08-12)
+
+**`tests/Feature/BranchTests/Unit/Repositories/UserRepositoryBhrSyncSpFakeTest.php`**
+- Removed `markTestSkipped('BUG-PhaseA-1: ...')` from `test_new_bhr_user_is_inserted_with_employee_role_and_country` — dead permission-sync block in `insert_bhr_user_to_evox()` deleted in same session.
+- Removed `markTestSkipped('BUG-PhaseA-1: ...')` from `test_two_char_employee_number_is_zero_padded` — same fix.
+
+### Phase A completion — app code fixes (user-approved 2026-08-12)
+
+**`app/Modules/User/Repositories/UserRepository.php`**
+- Removed dead `use Spatie\Permission\Models\Role;` import (line 14).
+- Deleted dead `foreach($request->roles as $role_name)` permission-sync block in `register_user()` (was lines 71–88): `$role` variable undefined after Phase A removed `assignRole`; `hasDirectPermission()` and `givePermissionTo()` no longer exist on User.
+- Deleted dead permission-sync block in `insert_bhr_user_to_evox()` (was lines 184–196): `$employee_role` undefined; `hasDirectPermission()` and `revokePermissionTo()` no longer exist on User.
+
+**`app/Modules/Cron/Http/Controllers/CronController.php`**
+- Removed dead `use Spatie\Permission\Models\Role;` import (line 11) — `Role::` no longer called after Phase A replaced the admin-user lookup with `User::where('LevelId',4)`.
+
+Remaining: 4 historical migration files under `app/Modules/*/Database/Migrations/` still reference Spatie — left as-is (already executed, won't re-run in normal ops).
+
+### Bug Report
+- Added **BUG-090** (Cat 4): Phase A oversight — `$employee_role` undefined in `insert_bhr_user_to_evox()`, and `$role` undefined in `register_user()`. Dead `use Spatie\Permission\Models\Role;` imports remain in `CronController.php:11` and `UserRepository.php:14` (harmless, no `Role::` calls). Fix: remove dangling permission-sync blocks from both methods; remove dead imports. See `generated/evoxtest_app_bugs_report.md#BUG-090`.
+
+### CSV rows marked Fixed (U-3)
+- CSV rows 66, 67, 68 → `kind: Fixed`
+
+---
+
 ## 2026-08-11 (s4) — Group A Cat-5 fixes: sandbox dates, dynamic lookups, Admin filter (26 CSV rows marked Fixed)
 
 ### tests/Feature/BranchTests/Unit/Repositories/ControllerTailsTest.php
