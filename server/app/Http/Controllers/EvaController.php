@@ -52,6 +52,10 @@ class EvaController extends Controller
             $data['created_at'] = Carbon::now();
             $data['updated_at'] = Carbon::now();
 
+            if (!$user_eva) {
+                return response()->json(['message' => 'No pending EVA survey found for this user.', 'status' => 404], 404);
+            }
+
             $eva_update = $user_eva->update($data);
 
             if ($eva_update) {

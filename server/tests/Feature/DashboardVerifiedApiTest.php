@@ -49,7 +49,7 @@ class DashboardVerifiedApiTest extends TestCase
         // GET /api/careers/ is public — requesting without a JWT token returns 200, not 401.
         $response = $this->getJson('/api/careers/', $this->apiKey);
         if ($response->status() === 404) {
-            $this->markTestIncomplete('Cat 4/Route: GET /api/careers/ returns 404 — route does not exist in current environment. Check Modules/Careers/Routes/api.php is loaded.');
+            $this->markTestSkipped('Cat 4/Route: GET /api/careers/ returns 404 — route does not exist in current environment. Check Modules/Careers/Routes/api.php is loaded.');
         }
         $response->assertStatus(200);
     }
@@ -158,7 +158,7 @@ class DashboardVerifiedApiTest extends TestCase
         // KNOWN BUG: BookingController::get_today_leave_list() has an un-removed dd() debug-dump call
         // on line 350 and passes 5 args to EH_SP_Dashboard which expects 7.
         // This route is not safely testable in production.
-        $this->markTestIncomplete(
+        $this->markTestSkipped(
             'Known production bug: BookingController::get_today_leave_list() has a dd() call ' .
             'on line 350 and passes 5 args to EH_SP_Dashboard (expects 7). ' .
             'See BookingController::get_today_leave_list().'
@@ -178,7 +178,7 @@ class DashboardVerifiedApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/careers/', $this->apiKey);
         if ($response->status() === 404) {
-            $this->markTestIncomplete('Cat 4/Route: GET /api/careers/ returns 404 — route does not exist in current environment.');
+            $this->markTestSkipped('Cat 4/Route: GET /api/careers/ returns 404 — route does not exist in current environment.');
         }
         $response->assertStatus(200);
     }
@@ -269,7 +269,7 @@ class DashboardVerifiedApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/eva_survey', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG EVA-01: POST /api/eva_survey returns 500 with empty payload — EvaController::store() crashes on missing required field. Fix: add null guard or try/catch in EvaController::store().');
+            $this->markTestSkipped('APP-BUG EVA-01: POST /api/eva_survey returns 500 with empty payload — EvaController::store() crashes on missing required field. Fix: add null guard or try/catch in EvaController::store().');
         }
         $this->assertNotEquals(500, $response->status());
     }

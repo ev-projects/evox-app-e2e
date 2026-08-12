@@ -54,4 +54,9 @@ class EvoxDepartment extends Model
             'Id'                 // PK on sub_departments
         );
     }
+
+    public function departments_on_schedule_is_active(){
+        $record = DepartmentOnSchedule::where('department_id', $this->id)->first();
+        return $record ? $record->is_active == true : false;
+    }
 }

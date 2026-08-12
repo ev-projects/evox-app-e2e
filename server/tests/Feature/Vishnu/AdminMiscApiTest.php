@@ -101,7 +101,7 @@ class AdminMiscApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/department/999999/switch_active_schedule', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG BUG-DEPT-02: set_active_on_sched() calls DepartmentListResource::collection() on EvoxDepartment records missing required method → BadMethodCallException → 500; fix in DepartmentController::set_active_on_sched().');
+            $this->markTestSkipped('APP-BUG BUG-DEPT-02: set_active_on_sched() calls DepartmentListResource::collection() on EvoxDepartment records missing required method → BadMethodCallException → 500; fix in DepartmentController::set_active_on_sched().');
         }
         $this->assertNotEquals(500, $response->status());
     }
@@ -216,7 +216,7 @@ class AdminMiscApiTest extends TestCase
         // BUG-CL-01: No middleware — this endpoint is intentionally public (security bug)
         $response = $this->getJson('/api/changelogs', $this->apiKey);
         if ($response->status() === 404) {
-            $this->markTestIncomplete('Cat 4/Route: GET /api/changelogs returns 404 — route does not exist in current environment. Check ChangeLogsController routes are loaded.');
+            $this->markTestSkipped('Cat 4/Route: GET /api/changelogs returns 404 — route does not exist in current environment. Check ChangeLogsController routes are loaded.');
         }
         $response->assertStatus(200);
     }
@@ -227,7 +227,7 @@ class AdminMiscApiTest extends TestCase
         // Confirms there is no auth gate at all (BUG-CL-01)
         $response = $this->getJson('/api/changelogs');
         if ($response->status() === 404) {
-            $this->markTestIncomplete('Cat 4/Route: GET /api/changelogs returns 404 — route does not exist in current environment.');
+            $this->markTestSkipped('Cat 4/Route: GET /api/changelogs returns 404 — route does not exist in current environment.');
         }
         $response->assertStatus(200);
     }
@@ -258,7 +258,7 @@ class AdminMiscApiTest extends TestCase
             'log_date'    => '2026-06-16',
         ], $this->apiKey);
         if ($response->status() === 404) {
-            $this->markTestIncomplete('Cat 4/Route: POST /api/changelogs returns 404 — route does not exist in current environment.');
+            $this->markTestSkipped('Cat 4/Route: POST /api/changelogs returns 404 — route does not exist in current environment.');
         }
         $response->assertStatus(200);
         $response->assertJsonStructure(['message', 'content']);
@@ -412,7 +412,7 @@ class AdminMiscApiTest extends TestCase
             ]),
         ], $this->apiKey);
         if ($response->status() === 404) {
-            $this->markTestIncomplete('Cat 4/Route: POST /api/careers/ returns 404 — route does not exist in current environment.');
+            $this->markTestSkipped('Cat 4/Route: POST /api/careers/ returns 404 — route does not exist in current environment.');
         }
         $response->assertStatus(200);
         $response->assertJsonStructure(['message']);
@@ -427,7 +427,7 @@ class AdminMiscApiTest extends TestCase
             'parsedJobs' => json_encode([]),
         ], $this->apiKey);
         if ($response->status() === 404) {
-            $this->markTestIncomplete('Cat 4/Route: POST /api/careers/ returns 404 — route does not exist in current environment.');
+            $this->markTestSkipped('Cat 4/Route: POST /api/careers/ returns 404 — route does not exist in current environment.');
         }
         $response->assertStatus(200);
     }
@@ -437,7 +437,7 @@ class AdminMiscApiTest extends TestCase
     {
         $response = $this->postJson('/api/careers/', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: POST /api/careers/ without parsedJobs — json_decode(null) causes fatal error → 500; add null check before json_decode in CareersController.');
+            $this->markTestSkipped('APP-BUG: POST /api/careers/ without parsedJobs — json_decode(null) causes fatal error → 500; add null check before json_decode in CareersController.');
         }
         $this->assertNotEquals(500, $response->status());
     }
@@ -455,7 +455,7 @@ class AdminMiscApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->deleteJson('/api/DeleteLocationDetails/999999', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG/Dead code: LocationController::DeleteLocationDetails() null-dereferences on non-existent ID → 500; controller decommissioned 2026-06-21.');
+            $this->markTestSkipped('APP-BUG/Dead code: LocationController::DeleteLocationDetails() null-dereferences on non-existent ID → 500; controller decommissioned 2026-06-21.');
         }
         $this->assertNotEquals(500, $response->status());
     }

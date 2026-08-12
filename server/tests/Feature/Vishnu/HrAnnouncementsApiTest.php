@@ -77,7 +77,7 @@ class HrAnnouncementsApiTest extends TestCase
         $this->assertNotEquals(404, $response->status(), 'GET /api/hr/announcements/all must exist.');
         $this->assertNotEquals(500, $response->status());
         if ($response->status() === 400) {
-            $this->markTestIncomplete('APP-BUG HR-01: GET /api/hr/announcements/all returns 400 — App\Modules\Changelogs\Models\ChangeLogs class not found in this environment. HrController::announcements() catches Throwable and returns error_response. Fix: create the ChangeLogs model or update HrController to use the correct model class.');
+            $this->markTestSkipped('APP-BUG HR-01: GET /api/hr/announcements/all returns 400 — App\Modules\Changelogs\Models\ChangeLogs class not found in this environment. HrController::announcements() catches Throwable and returns error_response. Fix: create the ChangeLogs model or update HrController to use the correct model class.');
         }
         $response->assertJsonStructure(['message', 'content']);
     }
@@ -90,7 +90,7 @@ class HrAnnouncementsApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/hr/announcements/999999', $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG HR-01: HrController::getAnnouncement() calls ->toArray() on null for non-existent ID — no null guard → 500. Fix: add null check before ->toArray().');
+            $this->markTestSkipped('APP-BUG HR-01: HrController::getAnnouncement() calls ->toArray() on null for non-existent ID — no null guard → 500. Fix: add null check before ->toArray().');
         }
         $this->assertNotEquals(500, $response->status());
     }
@@ -103,7 +103,7 @@ class HrAnnouncementsApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/hr/announcements', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG HR-02: HrController::store() missing `use Exception;` — namespaced catch catches nothing → 500. Fix: add `use Exception;` or use `catch(\\Exception $e)`.');
+            $this->markTestSkipped('APP-BUG HR-02: HrController::store() missing `use Exception;` — namespaced catch catches nothing → 500. Fix: add `use Exception;` or use `catch(\\Exception $e)`.');
         }
         $this->assertNotEquals(500, $response->status());
     }
@@ -115,7 +115,7 @@ class HrAnnouncementsApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->deleteJson('/api/hr/announcements/999999', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG HR-02: HrController::delete() — null->delete() + namespace catch bug → 500. Fix: null check + `use Exception;`.');
+            $this->markTestSkipped('APP-BUG HR-02: HrController::delete() — null->delete() + namespace catch bug → 500. Fix: null check + `use Exception;`.');
         }
         $this->assertNotEquals(500, $response->status());
     }

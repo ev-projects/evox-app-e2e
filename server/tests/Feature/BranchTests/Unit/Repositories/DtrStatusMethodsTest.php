@@ -56,9 +56,9 @@ class DtrStatusMethodsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /** Sandbox window — far outside any live payroll cutoff. */
-    const SANDBOX_FROM = '1990-06-01';
-    const SANDBOX_TO   = '1990-06-30';
+    /** Sandbox window — far-future so no live DTR or schedule rows exist there. */
+    const SANDBOX_FROM = '2099-06-01';
+    const SANDBOX_TO   = '2099-06-30';
 
     /** A shift that has already happened: 2020-06-15, 08:00 -> 17:00 UTC (dtrs stores epochs). */
     const PAST_START = 1592208000;

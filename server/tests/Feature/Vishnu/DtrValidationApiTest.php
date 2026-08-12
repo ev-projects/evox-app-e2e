@@ -302,7 +302,7 @@ class DtrValidationApiTest extends TestCase
             'user_id'    => $this->user->id,
         ], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: invalid quickpunch value triggers undefined $e in DtrController::quickpunch_multi() else branch causing 500; add $e = null before if/else chain.');
+            $this->markTestSkipped('APP-BUG: invalid quickpunch value triggers undefined $e in DtrController::quickpunch_multi() else branch causing 500; add $e = null before if/else chain.');
         }
         $this->assertNotEquals(500, $response->status());
     }

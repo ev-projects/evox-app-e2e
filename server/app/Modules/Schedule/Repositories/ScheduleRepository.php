@@ -148,7 +148,11 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         try {
 
             $schedule_collection = "something";
-            $schedule_collection = User::find($id)->AllSchedules()->paginate(5);
+            $user = User::find($id);
+            if (!$user) {
+                throw new Exception("User {$id} not found.");
+            }
+            $schedule_collection = $user->AllSchedules()->paginate(5);
 
             log_to_file('info', 'Success', [$schedule_collection]);
             return $schedule_collection;

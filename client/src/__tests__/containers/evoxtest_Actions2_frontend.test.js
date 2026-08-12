@@ -49,7 +49,7 @@ import {
   fetchDepartmentListWithAnnouncements,
   fetchDepartmentHandlersList,
   fetchDepartmentUsersList,
-  fetchEmployeesClientUserLists,
+  // fetchEmployeesClientUserLists removed — CLIENT MODULE REMOVED 2026-08-10
 } from '../../store/actions/lookup/lookupListActions';
 
 import {
@@ -513,20 +513,21 @@ describe('lookupListActions', () => {
     expect(Formatter.alert_error).toHaveBeenCalled();
   });
 
-  test('fetchEmployeesClientUserLists — success dispatches FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS', async () => {
+  // CLIENT MODULE REMOVED 2026-08-10: fetchEmployeesClientUserLists removed from lookupListActions
+  test.skip('fetchEmployeesClientUserLists — success dispatches FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS', async () => {
     API.call.mockResolvedValueOnce({ data: { content: [] } });
     const dispatch = jest.fn();
-    fetchEmployeesClientUserLists(1, 2)(dispatch, jest.fn());
+    // fetchEmployeesClientUserLists(1, 2)(dispatch, jest.fn());
     await flushPromises();
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS' })
     );
   });
 
-  test('fetchEmployeesClientUserLists — error', async () => {
+  test.skip('fetchEmployeesClientUserLists — error (CLIENT MODULE REMOVED 2026-08-10)', async () => {
     API.call.mockRejectedValueOnce({ status: 500 });
     const dispatch = jest.fn();
-    fetchEmployeesClientUserLists(1, 99)(dispatch, jest.fn());
+    // fetchEmployeesClientUserLists(1, 99)(dispatch, jest.fn());
     await flushPromises();
     expect(Formatter.alert_error).toHaveBeenCalled();
   });

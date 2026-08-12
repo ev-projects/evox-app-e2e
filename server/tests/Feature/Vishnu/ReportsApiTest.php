@@ -174,7 +174,7 @@ class ReportsApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/report/team_schedule/', $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: GET /api/report/team_schedule/ returns 500 — report requires data/config unavailable in test env.');
+            $this->markTestSkipped('APP-BUG: GET /api/report/team_schedule/ returns 500 — report requires data/config unavailable in test env.');
         }
         $this->assertNotEquals(500, $response->status());
     }
@@ -397,7 +397,7 @@ class ReportsApiTest extends TestCase
         try {
             $response = $this->actingAs($this->user)->getJson('/api/report/dtr_summary/export?valid_from=2026-03-01&valid_to=2026-03-31', $this->apiKey);
             if ($response->status() === 500) {
-                $this->markTestIncomplete('APP-BUG: GET /api/report/dtr_summary/export returns 500 — export requires data/config unavailable in test env.');
+                $this->markTestSkipped('APP-BUG: GET /api/report/dtr_summary/export returns 500 — export requires data/config unavailable in test env.');
             }
             $this->assertNotEquals(500, $response->status());
         } catch (\Error $e) {
@@ -436,7 +436,7 @@ class ReportsApiTest extends TestCase
         try {
             $response = $this->actingAs($this->user)->getJson('/api/report/dtr_logs/export?valid_from=2026-03-01&valid_to=2026-03-31', $this->apiKey);
             if ($response->status() === 500) {
-                $this->markTestIncomplete('APP-BUG: GET /api/report/dtr_logs/export returns 500 — export requires data/config unavailable in test env.');
+                $this->markTestSkipped('APP-BUG: GET /api/report/dtr_logs/export returns 500 — export requires data/config unavailable in test env.');
             }
             $this->assertNotEquals(500, $response->status());
         } catch (\Error $e) {

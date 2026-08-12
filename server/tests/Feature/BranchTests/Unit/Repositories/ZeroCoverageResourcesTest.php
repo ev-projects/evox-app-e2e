@@ -75,6 +75,7 @@ class ZeroCoverageResourcesTest extends TestCase
     /** @test */
     public function client_resource_maps_department_handlers_and_users()
     {
+        $this->markTestSkipped('CLIENT MODULE REMOVED 2026-08-10: App\Modules\Client\Resources\ClientResource deleted with client module.');
         $client = EvoxDepartment::orderBy('id', 'desc')->first();
         if (!$client) $this->markTestSkipped('no department row in test DB');
 

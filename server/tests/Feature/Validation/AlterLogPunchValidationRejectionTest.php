@@ -25,6 +25,7 @@ namespace Tests\Feature\Validation;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use App\Modules\User\Models\User;
 
 class AlterLogPunchValidationRejectionTest extends TestCase
@@ -100,17 +101,52 @@ class AlterLogPunchValidationRejectionTest extends TestCase
      * AlterLogPunchRepository::store() is called -> no write. */
     public function rejects_on_punch_time_conflict_with_previous_day_history()
     {
-        $u = User::find(4391);
+        // Prefer the verified fixture user (id=4391); fall back to any user with an overnight
+        // punch-history row (end_time crosses midnight into the next calendar day).
+        $u      = User::find(4391);
+        $userId = 4391;
+        $date   = '2026-04-09';        // submission date
+        $start  = '2026-04-09 01:00:00'; // conflicts with user 4391's 2026-04-08 overnight punch-out
+        $end    = '2026-04-09 10:00:00';
+
         if (!$u) {
-            $this->markTestIncomplete('punch-history conflict fixture user (id=4391) not present in test DB');
+            // Dynamic fallback: find a punch-history row where the shift's end_time date is AFTER
+            // the shift's date column (overnight shift that crossed midnight).
+            $overnight = DB::table('dtr_collective_punch_history_new')
+                ->whereNotNull('user_id')
+                ->whereNotNull('date')
+                ->whereNotNull('end_time')
+                ->whereRaw('DATE(end_time) > date') // end_time spills into the next calendar day
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if (!$overnight) {
+                $this->markTestIncomplete(
+                    'punch-history conflict fixture unavailable: user 4391 absent and ' .
+                    'dtr_collective_punch_history_new has no overnight-shift rows (DATE(end_time) > date)'
+                );
+            }
+
+            $u = User::find($overnight->user_id);
+            if (!$u) {
+                $this->markTestIncomplete(
+                    'overnight punch-history owner (id=' . $overnight->user_id . ') not resolvable'
+                );
+            }
+            $userId = $u->id;
+            // Submission date = the day end_time spilled into; start_time is 00:30 of that day,
+            // which is before the overnight punch's end_time (guaranteed by DATE(end_time) > date).
+            $date  = date('Y-m-d', strtotime($overnight->end_time));
+            $start = $date . ' 00:30:00';
+            $end   = $date . ' 09:00:00';
         }
 
         $resp = $this->actingAs($u)->postJson('/api/request/alter_log_punch', [
-            'user_id'   => 4391,
-            'date'      => '2026-04-09',
+            'user_id'   => $userId,
+            'date'      => $date,
             'new_punch' => json_encode([[
-                'start_time'   => '2026-04-09 01:00:00',
-                'end_time'     => '2026-04-09 10:00:00',
+                'start_time'   => $start,
+                'end_time'     => $end,
                 'project_name' => 'EVOX',
                 'remarks'      => 'conflict check',
             ]]),

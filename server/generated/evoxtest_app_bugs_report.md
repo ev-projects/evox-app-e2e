@@ -388,6 +388,21 @@
 
 ---
 
+## FINDING-ANN-DEAD-1 — Dead Code in AnnouncementStrictResource (2026-08-10)
+
+| Field | Value |
+|---|---|
+| **Category** | Dead Code — unreachable branch in application resource |
+| **File** | `app/Modules/Department/Resources/AnnouncementStrictResource.php` |
+| **Line** | 30 |
+| **Status** | Open — no fix required in tests (test marked BY-DESIGN skip) |
+| **Finding** | `AnnouncementStrictResource::toArray()` has the guard `if ($this->created_by != 0)`. The else-arm (`$owner = []`) is dead code: `created_by` is **always** a real `users.id` in production. Every announcement is created by an authenticated user — `created_by=0` cannot occur via any normal app flow. Confirmed by business rule 2026-08-10. |
+| **Impact on Tests** | `AnnouncementStrictResourceTest::test_system_announcement_without_creator_has_empty_owner_block` was testing this dead arm. It has been marked `markTestSkipped('BY-DESIGN: created_by=0 impossible in production')`. |
+| **Recommendation** | The `if ($this->created_by != 0)` guard in `AnnouncementStrictResource.php:30` can be simplified — always populate the `$owner` block and remove the condition. The guard is defensive code left over from an earlier design. This is a low-priority cleanup. |
+| **Affected Tests** | `AnnouncementStrictResourceTest::test_system_announcement_without_creator_has_empty_owner_block` — marked `markTestSkipped` BY-DESIGN |
+
+---
+
 ## Dead Code / To Be Removed (2026-07-30)
 
 Routes and controller methods confirmed unused by any active frontend caller. Tests are guarded with `markTestIncomplete`. Recommend removal in the next cleanup sprint.
@@ -399,3 +414,19 @@ Routes and controller methods confirmed unused by any active frontend caller. Te
 | BUG-064 | `GET /api/changelogs` | `ChangeLogsController` (missing) | Module removed — no controller, no model, no routes | Routes already absent; remove any remaining references |
 | BUG-065 | `GET /api/careers/`, `POST /api/careers/` | `CareersController` (missing) | Module removed — no controller, no routes | Routes already absent; remove any remaining references |
 | BUG-082 | `POST /api/sync_*` (4 routes) | `SyncController` (never implemented) | No `SyncController.php` in codebase; all 4 routes return 404 | Implement or formally remove from roadmap |
+
+
+---
+
+## BUG-089
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Schedule/Http/Requests/ScheduleRequest.php` |
+| **Line** | 42 |
+| **Status** | **RESOLVED 2026-08-11** — user changed `'bool\|in:...'` → `'bool:...'` (pipe to colon). `bool:params` is parsed by Laravel as the `bool` rule with ignored parameters, removing the contradictory `in:` constraint. |
+| **Symptom** | `POST /api/request/change_schedule` always returned 422 UNPROCESSABLE ENTITY — change schedule store never reached the controller body. |
+| **Root Cause** | `ScheduleRequest::rules()` line 42 had: `'schedule_policies.*' => 'bool\|in:'.implode(',', ...)`. This validated each policy VALUE against the list of policy NAME strings (e.g. `allow_undertime,allow_late,...`). Two constraints were contradictory: a boolean value (`false`/`true`/`0`/`1`) fails the `in:` rule; a policy name string fails `bool`. No value could satisfy both. `StoreScheduleRequest` (which inherits `ScheduleRequest`) was auto-validated as a side effect of being type-hinted in `ChangeScheduleRequest::rules(StoreScheduleRequest $request)`, so this 422 fired before the controller body ran. |
+| **Fix Applied** | `'bool\|in:...'` → `'bool:...'` at line 42. Laravel parses `bool:params` as the `bool` rule with parameters, which `bool` ignores. The effective rule is now just `bool`, identical to the per-key rules on lines 43–47. |
+| **Affected Tests** | `ChangeScheduleHappyPathTest::valid_change_schedule_submit_creates_a_pending_row_and_queues_the_notification`, `ChangeScheduleHappyPathTest::supervisor_can_approve_the_pending_change_schedule` — both now implemented (skips removed 2026-08-11). |

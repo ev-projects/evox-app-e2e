@@ -234,7 +234,7 @@ class EmployeeTeamApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/user/999999/teams_handled', $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: GET /api/user/999999/teams_handled returns 500 — no null guard on user lookup.');
+            $this->markTestSkipped('APP-BUG: GET /api/user/999999/teams_handled returns 500 — no null guard on user lookup.');
         }
         $this->assertNotEquals(500, $response->status());
     }
@@ -408,7 +408,7 @@ class EmployeeTeamApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/team/', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: POST /api/team/ with empty payload returns 500 — no FormRequest validation on TeamController.');
+            $this->markTestSkipped('APP-BUG: POST /api/team/ with empty payload returns 500 — no FormRequest validation on TeamController.');
         }
         $this->assertEquals(422, $response->status());
     }
@@ -459,7 +459,7 @@ class EmployeeTeamApiTest extends TestCase
             'team_handlers' => [1],
         ], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: POST /api/team/ with missing team_users returns 500 — no FormRequest validation on TeamController.');
+            $this->markTestSkipped('APP-BUG: POST /api/team/ with missing team_users returns 500 — no FormRequest validation on TeamController.');
         }
         $this->assertEquals(422, $response->status());
     }
@@ -508,7 +508,7 @@ class EmployeeTeamApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/team/1', ['_method' => 'PUT'], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: PUT /api/team/1 with empty payload returns 500 — no FormRequest validation on TeamController update.');
+            $this->markTestSkipped('APP-BUG: PUT /api/team/1 with empty payload returns 500 — no FormRequest validation on TeamController update.');
         }
         $this->assertEquals(422, $response->status());
     }

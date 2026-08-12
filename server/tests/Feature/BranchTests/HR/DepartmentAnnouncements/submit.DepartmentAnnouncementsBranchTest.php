@@ -156,21 +156,27 @@ class DepartmentAnnouncementsSubmitBranchTest extends TestCase
     /** @test */
     public function update__submit__non_admin_no_matching_announcement__error_400()
     {
+        // Require a non-Admin user who has a resolvable EVOX_DEPARTMENT row and an EVOX_LEVELS row.
+        // Admin users short-circuit into the if-arm (success); we need the else-arm (no rights).
         $user = User::where('is_active', 1)
             ->whereNotNull('department_id')
+            ->whereNotNull('LevelId')
             ->whereIn('department_id', function ($q) {
                 $q->select('Id')->from('EVOX_DEPARTMENT');
             })
+            ->whereNotIn('LevelId', function ($q) {
+                $q->select('LevelId')->from('EVOX_LEVELS')
+                  ->where('Name', 'like', '%Admin%');
+            })
             ->first();
         if (is_null($user)) {
-            $this->markTestIncomplete('No active user with an existing EVOX_DEPARTMENT row.');
+            $this->markTestIncomplete(
+                'No active non-Admin user with a resolvable EVOX_DEPARTMENT row and an EVOX_LEVELS row.'
+            );
         }
-        if (is_null($user->level()->first())) {
-            // isLevel("Admin") would fatal (\Error on null->Name) — uncaught 500, not the 400 branch.
-            $this->markTestIncomplete('Fixture user has no EVOX_LEVELS row; isLevel() would fatal.');
-        }
+        // Belt-and-suspenders: verify the resolved user is genuinely non-Admin.
         if ($user->isLevel('Admin')) {
-            $this->markTestIncomplete('Fixture user is Admin; would take the success arm instead of the else arm.');
+            $this->markTestIncomplete('Fixture user resolved as Admin despite filter; cannot reach the 400 else-arm.');
         }
 
         $response = $this->actingAs($user)->postJson(

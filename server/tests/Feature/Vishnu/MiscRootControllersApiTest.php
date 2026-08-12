@@ -103,7 +103,7 @@ class MiscRootControllersApiTest extends TestCase
     {
         $response = $this->getJson('/api/Gettodayleaves', $this->authHeaders());
         if ($response->status() === 400) {
-            $this->markTestIncomplete('DEAD-CODE DASH-01 (BUG-083): GET /api/Gettodayleaves returns 400. Endpoint is dead — dispatch call commented out in SummaryDashbord.js:58. Dashboard data served by get_dashboard_all/1. Route + controller method should be removed.');
+            $this->markTestSkipped('DEAD-CODE DASH-01 (BUG-083): GET /api/Gettodayleaves returns 400. Endpoint is dead — dispatch call commented out in SummaryDashbord.js:58. Dashboard data served by get_dashboard_all/1. Route + controller method should be removed.');
         }
         $this->assertNotEquals(500, $response->status());
         $this->assertArrayHasKey('data', $response->json() ?? []);
@@ -114,7 +114,7 @@ class MiscRootControllersApiTest extends TestCase
     {
         $response = $this->getJson('/api/Gettommorowleaves', $this->authHeaders());
         if ($response->status() === 500) {
-            $this->markTestIncomplete('DEAD-CODE DASH-02 (BUG-084): GET /api/Gettommorowleaves returns 500. Endpoint is dead — no frontend component calls this route. Tomorrow leaves served by get_dashboard_all/1. Route + controller method should be removed.');
+            $this->markTestSkipped('DEAD-CODE DASH-02 (BUG-084): GET /api/Gettommorowleaves returns 500. Endpoint is dead — no frontend component calls this route. Tomorrow leaves served by get_dashboard_all/1. Route + controller method should be removed.');
         }
         $this->assertNotEquals(500, $response->status(),
             'get_tommorow_leave_list must catch DB failures and not throw 500.');
@@ -127,7 +127,7 @@ class MiscRootControllersApiTest extends TestCase
     {
         $response = $this->getJson('/api/Gettommorowleaves', $this->authHeaders());
         if ($response->status() === 500) {
-            $this->markTestIncomplete('DEAD-CODE DASH-02 (BUG-084): GET /api/Gettommorowleaves returns 500 — see test_booking_get_tomorrow_leaves_returns_data_key_not_500.');
+            $this->markTestSkipped('DEAD-CODE DASH-02 (BUG-084): GET /api/Gettommorowleaves returns 500 — see test_booking_get_tomorrow_leaves_returns_data_key_not_500.');
         }
         $this->assertNotEquals(500, $response->status());
         $this->assertIsArray($response->json('data'),
@@ -311,7 +311,7 @@ class MiscRootControllersApiTest extends TestCase
         ], $this->authHeaders());
 
         if ($response->status() === 500) {
-            $this->markTestIncomplete(
+            $this->markTestSkipped(
                 'KNOWN BUG: EvaController::store() calls ->update() on null when no pending ' .
                 'EvaSurvey row exists for the user (eva_year=2025, eva_quarter=3). ' .
                 'Fix: add null check before ->update().'
@@ -412,7 +412,7 @@ class MiscRootControllersApiTest extends TestCase
         $response = $this->postJson('/api/nho_survey', [], $this->authHeaders());
 
         if ($response->status() === 500) {
-            $this->markTestIncomplete('App bug #10: POST /api/nho_survey with empty payload returns 500 — missing validation or try-catch.');
+            $this->markTestSkipped('App bug #10: POST /api/nho_survey with empty payload returns 500 — missing validation or try-catch.');
         }
         $this->assertNotEquals(500, $response->status(),
             'NHO store with empty payload must not crash; any DB error must be caught.');

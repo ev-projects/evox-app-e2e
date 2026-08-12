@@ -155,6 +155,7 @@ class ControllerCatchArmsTest extends TestCase
      */
     public function a_failing_client_assignment_returns_the_error_envelope_and_is_logged_to_cron_errors()
     {
+        $this->markTestSkipped('CLIENT MODULE REMOVED 2026-08-10: App\Modules\Client\Http\Controllers\ClientController deleted with client module.');
         $cronErrors = $this->captureChannel('cron_errors');
 
         // log_to_file() prefixes the entry with the authenticated user id; act as one so the

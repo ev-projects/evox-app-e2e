@@ -187,8 +187,6 @@ jest.mock('../../store/actions/filters/requestListActions', () => ({
     payrollperiod: jest.fn((n) => ({ type: 'STUB_PAYROLL_PERIOD', n })),
 }));
 jest.mock('../../store/actions/admin/assignRoleActions', () => ({
-    fetchUserRolePermission: jest.fn((id) => ({ type: 'STUB_FETCH_ROLE_PERM', id })),
-    assignRolesPermissions:  jest.fn((id, data) => ({ type: 'STUB_ASSIGN_ROLES', id, data })),
     fetchUserFeatures:       jest.fn((id) => ({ type: 'STUB_FETCH_FEATURES', id })),
     assignLevelFeatures:     jest.fn((id, data) => ({ type: 'STUB_ASSIGN_FEATURES', id, data })),
     fetchUserDispute:        jest.fn((...a) => ({ type: 'STUB_FETCH_USER_DISPUTE', a })),
@@ -383,22 +381,14 @@ describe('DisputeForm — what connect() hands the screen on every mount', () =>
         ]);
     });
 
-    test('_FINDING_DSP_MAP_1 mapDispatchToProps builds five bound creators on every mount and the screen calls none of them', () => {
-        // connect() runs this factory on every mount of the live route, so the SHAPE it produces
-        // is real app behaviour and is asserted. The five closures it returns are NOT invoked
-        // here: nothing in DisputeForm's JSX or handlers reads props.getDisputeReport,
-        // props.fetchUserRolePermission, props.fetchUserFeatures, props.assignRolesPermissions or
-        // props.assignLevelFeatures (grep the file — there is no `props.` reference to any of
-        // them); every one of those actions is dispatched through useDispatch instead. Calling
-        // them from a test would execute code no user can reach and buy coverage for dead weight.
-        // The defect is that they exist at all, and the key set is what evidences it.
+    test('_FINDING_DSP_MAP_1 mapDispatchToProps exposes only getDisputeReport after dead-action cleanup', () => {
+        // Dead actions (fetchUserRolePermission, assignRolesPermissions, fetchUserFeatures,
+        // assignLevelFeatures) were removed from mapDispatchToProps on 2026-08-11 as part of
+        // the Assign Roles/Permissions feature removal. Only getDisputeReport remains.
         const d = jest.fn();
         const bound = DisputeForm.mapDispatchToProps(d);
 
-        expect(Object.keys(bound).sort()).toEqual([
-            'assignLevelFeatures', 'assignRolesPermissions', 'fetchUserFeatures',
-            'fetchUserRolePermission', 'getDisputeReport',
-        ]);
+        expect(Object.keys(bound).sort()).toEqual(['getDisputeReport']);
         expect(Object.values(bound).every((v) => typeof v === 'function')).toBe(true);
         // building the props dispatches nothing on its own
         expect(d).not.toHaveBeenCalled();

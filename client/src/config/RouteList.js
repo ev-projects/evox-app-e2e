@@ -53,8 +53,7 @@ import AssignEmployeeSupervisors from "../container/Admin/AssignEmployeeSupervis
 import AssignSubDepartment from "../container/Admin/AssignSubDepartment";
 import SyncBhrLeaves from "../container/Admin/SyncBhrLeaves"; 
 import SyncUTCAdjustment from "../container/Admin/SyncUTCAdjustment";
-import SyncUserUpdates from "../container/Admin/SyncUserUpdates"; 
-import AssignRolesPermissions from "../container/Admin/AssignRolesPermissions";
+import SyncUserUpdates from "../container/Admin/SyncUserUpdates";  
 import AssignFeature from "../container/Admin/AssignFeature";
 import AdminAnnouncementsList from "../container/Admin/AdminAnnouncementsList";
 import JobInformation from "../container/Profile/JobInformation";
@@ -76,7 +75,6 @@ import TimeOff from "../container/Profile/TimeOff";
 import Profile from "../container/Profile";
 import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
 import HRTeamAttendanceSummary from "../container/Report/HRTeamAttendanceSummary";
-import AssignEmployeesClient from "../container/Admin/AssignEmployeesClient";
 import ChangeLogs from "../container/Admin/ChangeLogs";
 import DepartmentList from "../container/Admin/DepartmentList";
 import DepartmentAnnouncementsList from "../container/DepartmentAnnouncements/DepartmentAnnouncementsList";
@@ -404,12 +402,6 @@ const RoutesList = (props) => {
           role={['admin']} permission={['assign_department_handlers']} />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.assign_employees_client}>
-          <AssignEmployeesClient  
-          level={["Admin"]} 
-          role={['admin']} permission={['assign_employees_client']} />
-        </ProtectedRoute>
-
         <ProtectedRoute exact path={global.links.assign_employee_supervisors}>
           <AssignEmployeeSupervisors  
           level={["Admin"]} 
@@ -444,12 +436,6 @@ const RoutesList = (props) => {
           <SyncUserUpdates  
           level={["Admin"]} 
           role={['admin']} permission={['sync_bhr_user_updates']} />
-        </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.assign_role_permission}>
-          <AssignRolesPermissions  
-          level={["Admin"]} 
-          role={['admin']} permission={['assign_role_permission']} />
         </ProtectedRoute>
 
         <ProtectedRoute exact path={global.links.assign_feature}>

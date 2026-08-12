@@ -1245,7 +1245,7 @@ describe('lookupListReducers', () => {
     expect(result.department_users).toEqual([{ id: 3 }]);
   });
 
-  test('FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS sets employees_client_users', () => {
+  test.skip('FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS sets employees_client_users — CLIENT MODULE REMOVED 2026-08-10: reducer case deleted with client module', () => {
     const result = lookupListReducers(undefined, { type: 'FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS', list: [{ id: 4 }] });
     expect(result.employees_client_users).toEqual([{ id: 4 }]);
   });

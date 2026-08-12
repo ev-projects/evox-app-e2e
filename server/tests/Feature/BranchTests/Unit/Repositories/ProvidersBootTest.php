@@ -323,8 +323,9 @@ class ProvidersBootTest extends TestCase
      */
     public function broadcast_provider_boot_publishes_the_auth_route_and_the_private_user_channel()
     {
+        $this->artisan('route:clear'); // ensure no cached route file blocks Broadcast::routes()
         if ($this->app->routesAreCached()) {
-            $this->markTestSkipped('Route cache is warm; Broadcast::routes() short-circuits.');
+            $this->markTestSkipped('Route cache could not be cleared; Broadcast::routes() would short-circuit.');
         }
 
         // Pin the broadcaster so the assertion does not depend on the machine's BROADCAST_DRIVER.

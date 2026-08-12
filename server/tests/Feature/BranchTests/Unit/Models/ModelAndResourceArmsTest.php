@@ -205,6 +205,7 @@ class ModelAndResourceArmsTest extends TestCase
      */
     public function department_user_handlers_merges_in_the_handlers_of_every_team_under_the_department()
     {
+        $this->markTestSkipped('CLIENT MODULE REMOVED 2026-08-10: App\Modules\Client\Models\Client deleted with client module.');
         if (!Schema::hasTable('department_handlers') || !Schema::hasTable('team_handlers')) {
             $this->markTestSkipped('handler pivot tables missing from this dump');
         }

@@ -35,22 +35,6 @@ class AdminUsersApiTest extends TestCase
     }
 
     /** @test */
-    public function test_post_assign_roles_permissions_without_token_returns_401()
-    {
-        $response = $this->postJson('/api/user/1/assign_roles_permissions/', [], $this->apiKey);
-        $response->assertStatus(401);
-        $this->assertEquals('token_absent', $response->json('error.content.code'));
-    }
-
-    /** @test */
-    public function test_get_user_role_permission_without_token_returns_401()
-    {
-        $response = $this->getJson('/api/user/1/role_permission', $this->apiKey);
-        $response->assertStatus(401);
-        $this->assertEquals('token_absent', $response->json('error.content.code'));
-    }
-
-    /** @test */
     public function test_get_user_search_without_token_returns_401()
     {
         $response = $this->getJson('/api/user/search-user/test', $this->apiKey);
@@ -294,59 +278,6 @@ class AdminUsersApiTest extends TestCase
     }
 
     // =========================================================
-    // Pattern A — Assign Roles/Permissions: POST /user/{id}/assign_roles_permissions/
-    // =========================================================
-
-    /** @test */
-    public function test_post_assign_roles_permissions_empty_payload_returns_200_or_422()
-    {
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->postJson('/api/user/' . $this->user->id . '/assign_roles_permissions/', [], $this->apiKey);
-        if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: POST /api/user/{id}/assign_roles_permissions/ with empty payload returns 500 — unhandled exception in role sync; add null guard before role assignment loop.');
-        }
-        $this->assertNotEquals(500, $response->status());
-    }
-
-    /** @test */
-    public function test_post_assign_roles_permissions_nonexistent_role_returns_422()
-    {
-        $this->withoutMiddleware();
-        $payload = ['roles' => ['nonexistent_role_xyz']];
-        $response = $this->actingAs($this->user)->postJson(
-            '/api/user/' . $this->user->id . '/assign_roles_permissions/',
-            $payload,
-            $this->apiKey
-        );
-        $this->assertEquals(422, $response->status());
-    }
-
-    /** @test */
-    public function test_post_assign_roles_permissions_nonexistent_permission_returns_422()
-    {
-        $this->withoutMiddleware();
-        $payload = ['permissions' => ['nonexistent_permission_xyz']];
-        $response = $this->actingAs($this->user)->postJson(
-            '/api/user/' . $this->user->id . '/assign_roles_permissions/',
-            $payload,
-            $this->apiKey
-        );
-        $this->assertEquals(422, $response->status());
-    }
-
-    /** @test */
-    public function test_post_assign_roles_permissions_null_id_does_not_500()
-    {
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->postJson(
-            '/api/user/999999/assign_roles_permissions/',
-            ['roles' => [], 'permissions' => []],
-            $this->apiKey
-        );
-        $this->assertNotEquals(500, $response->status());
-    }
-
-    // =========================================================
     // Pattern A — Assign Level Features: POST /user/{id}/assign_level_features/
     // =========================================================
 
@@ -546,7 +477,7 @@ class AdminUsersApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/department/assign_handlers/999999', ['user_id' => []], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: POST /api/department/assign_handlers/999999 returns 500 — no null guard on department lookup in DepartmentController::assign_handlers().');
+            $this->markTestSkipped('APP-BUG: POST /api/department/assign_handlers/999999 returns 500 — no null guard on department lookup in DepartmentController::assign_handlers().');
         }
         $this->assertNotEquals(500, $response->status());
     }

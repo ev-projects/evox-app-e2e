@@ -67,7 +67,7 @@ class DtrRepositoryGuardPathsTest extends TestCase
     private function schedule(?string $validTo): Schedule
     {
         $s = new Schedule();
-        $s->valid_from = '1990-06-01';
+        $s->valid_from = '2099-06-01'; // far-future: no live DTRs exist here
         $s->valid_to   = $validTo;
         return $s;
     }
@@ -81,17 +81,17 @@ class DtrRepositoryGuardPathsTest extends TestCase
         // not part-way through updating somebody else's attendance.
         $this->expectException(ModelNotFoundException::class);
 
-        $this->repo->remove_schedule_to_dtr($orphanId, $this->schedule('1990-06-30'));
+        $this->repo->remove_schedule_to_dtr($orphanId, $this->schedule('2099-06-30'));
     }
 
     /** @test */
     public function a_user_id_and_a_user_model_are_accepted_interchangeably()
     {
-        $user = $this->userWithNoDtrsIn('1990-06-01', '1990-06-30');
+        $user = $this->userWithNoDtrsIn('2099-06-01', '2099-06-30');
         if (!$user) $this->markTestSkipped('every active user holds a DTR in the probe window');
 
-        $byId    = $this->repo->remove_schedule_to_dtr($user->id, $this->schedule('1990-06-30'));
-        $byModel = $this->repo->remove_schedule_to_dtr($user, $this->schedule('1990-06-30'));
+        $byId    = $this->repo->remove_schedule_to_dtr($user->id, $this->schedule('2099-06-30'));
+        $byModel = $this->repo->remove_schedule_to_dtr($user, $this->schedule('2099-06-30'));
 
         // the polymorphic argument is the method's first branch; both forms must reach the same place
         foreach ([$byId, $byModel] as $result) {
@@ -104,12 +104,12 @@ class DtrRepositoryGuardPathsTest extends TestCase
     /** @test */
     public function a_window_containing_no_dtrs_completes_cleanly_and_updates_nothing()
     {
-        $user = $this->userWithNoDtrsIn('1990-06-01', '1990-06-30');
+        $user = $this->userWithNoDtrsIn('2099-06-01', '2099-06-30');
         if (!$user) $this->markTestSkipped('every active user holds a DTR in the probe window');
 
         $before = DB::table('dtrs')->where('user_id', $user->id)->count();
 
-        $result = $this->repo->remove_schedule_to_dtr($user, $this->schedule('1990-06-30'));
+        $result = $this->repo->remove_schedule_to_dtr($user, $this->schedule('2099-06-30'));
 
         $this->assertSame([], $result['updated'], 'nothing to update means an empty updated list');
         $this->assertSame([], $result['not_updated']);
@@ -126,10 +126,10 @@ class DtrRepositoryGuardPathsTest extends TestCase
      */
     public function an_open_ended_schedule_selects_a_different_window_than_a_closed_one()
     {
-        $user = $this->userWithNoDtrsIn('1990-06-01', '1990-06-30');
+        $user = $this->userWithNoDtrsIn('2099-06-01', '2099-06-30');
         if (!$user) $this->markTestSkipped('every active user holds a DTR in the probe window');
 
-        $closed = $this->repo->remove_schedule_to_dtr($user, $this->schedule('1990-06-30'));
+        $closed = $this->repo->remove_schedule_to_dtr($user, $this->schedule('2099-06-30'));
         $open   = $this->repo->remove_schedule_to_dtr($user, $this->schedule(null));
 
         // Both arms are exercised; on a user with no rows in either window both come back empty,

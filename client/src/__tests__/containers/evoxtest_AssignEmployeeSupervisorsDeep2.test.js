@@ -36,9 +36,8 @@ jest.mock('../../store/actions/lookup/lookupListActions', () => ({
     fetchUserList: jest.fn(), fetchDepartmentList: jest.fn(), fetchDepartmentUsersList: jest.fn(),
 }), { virtual: true });
 jest.mock('../../store/actions/admin/assignRoleActions', () => ({
-    assignEmployeeSupervisorsActions: jest.fn(), fetchUserRolePermission: jest.fn(),
-    assignRolesPermissions: jest.fn(), fetchUserFeatures: jest.fn(), assignLevelFeatures: jest.fn(),
-    fetchUserDispute: jest.fn(),
+    assignEmployeeSupervisorsActions: jest.fn(), fetchUserFeatures: jest.fn(),
+    assignLevelFeatures: jest.fn(), fetchUserDispute: jest.fn(),
 }), { virtual: true });
 jest.mock('../../store/actions/redirectActions', () => ({ setRedirect: jest.fn() }));
 

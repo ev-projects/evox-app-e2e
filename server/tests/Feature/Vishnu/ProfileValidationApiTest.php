@@ -449,7 +449,7 @@ class ProfileValidationApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/user/999999/schedule_history', $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: GET /api/user/999999/schedule_history returns 500 — ProfileController::schedule_history() calls find(999999)->schedule_history without null guard.');
+            $this->markTestSkipped('APP-BUG: GET /api/user/999999/schedule_history returns 500 — ProfileController::schedule_history() calls find(999999)->schedule_history without null guard.');
         }
         $this->assertNotEquals(500, $response->status());
     }

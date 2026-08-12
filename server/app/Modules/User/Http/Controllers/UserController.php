@@ -15,8 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Jobs\AssignAllUserToAdminJob;
+use Maatwebsite\Excel\Facades\Excel; 
 use App\Modules\Payroll\Models\Holiday;
 use Spatie\Permission\Models\Permission;
 use App\Modules\User\Resources\RoleResource;
@@ -49,8 +48,7 @@ use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
 use App\Modules\Schedule\Resources\ScheduleResourceCollection;
-use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
-use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
+use App\Modules\User\Http\Requests\AssignUserEmployeesRequest; 
 
 class UserController extends Controller
 {
@@ -529,36 +527,7 @@ class UserController extends Controller
     
     }
 
-    /**
-     * Returns the Temporary Schedules of the User by the User ID
-     * @param string $user_id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function assign_roles_permissions( AssignUserRolePermissionRequest $request, $id ){   
-        try {
-            log_activity( trans('messages.user_assign_roles_permissions_attempt') );
-            
-            $this->validate(new Request([
-                'id' => $id
-            ]), [
-                'id' => 'int'
-            ]);
-
-            AssignAllUserToAdminJob::dispatch( $id ,$request->get('roles') ?? [] )->delay(Carbon::now()->addSeconds(2));
-
-            $this->user->assign_roles_to_user( $id , $request->get('roles') ?? [] );
-
-            $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions') ?? [], $request->get('roles') ?? []);
-
-            
-            return success_response(
-                trans('messages.user_assign_roles_permissions_success'), 
-                new UserProfileResource( $user )
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
+     
 
     public function assign_level_features( Request $request, $id ){   
         try {
@@ -840,23 +809,7 @@ class UserController extends Controller
         }
     }
 
-    # This function returns user role
-    public function get_user_role_permission( $user_id ){   
-        try {
-            $user = User::find($user_id);
-            log_activity( trans('messages.list_role_attempt') );
-                    return success_response(
-                        trans('messages.list_role_success'),  
-                        [ 
-                            'roles' => $user->roles->pluck('name'),
-                            'permissions' => $user->permissions->pluck('name'),
-                        ]
-                    );
-
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
+     
 
       # This function returns user role
       public function get_user_sub_department_handled( $user_id ){   

@@ -46,6 +46,12 @@ class ClientAndDepartmentModelsTest extends TestCase
     /** An id that cannot exist, used to drive every "row not found" arm. */
     const MISSING_ID = 999999999;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->markTestSkipped('CLIENT MODULE REMOVED 2026-08-10: App\Modules\Client deleted. These tests have no runnable subject.');
+    }
+
     /**
      * A department id that is actually referenced by a user row — the only key for which the
      * Client/Department relations can return anything.

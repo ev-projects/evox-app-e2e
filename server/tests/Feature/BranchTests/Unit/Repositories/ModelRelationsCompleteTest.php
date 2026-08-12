@@ -128,7 +128,8 @@ class ModelRelationsCompleteTest extends TestCase
         $cutoffs = (new PayrollCutoffRepository())->all();
         $this->assertNotNull($cutoffs);
 
-        $clients = (new ClientRepository())->all();
-        $this->assertNotNull($clients);
+        // CLIENT MODULE REMOVED 2026-08-10: ClientRepository deleted with client module — line commented out
+        // $clients = (new ClientRepository())->all();
+        // $this->assertNotNull($clients);
     }
 }

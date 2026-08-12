@@ -30,11 +30,15 @@ class HrController extends Controller
     // get announcement
     public function getAnnouncement($id)
     {
-        $announcement = ChangeLogs::find($id)->toArray();
+        $announcement = ChangeLogs::find($id);
+        
+        if(!$announcement){
+         return error_response(trans('messges.error_default'), new \Exception("Announcement is not found"),404);
+        }
 
         return success_response(
             trans('messages.fetch_hr_announcement_success'), 
-            new Collection($announcement)
+            new Collection($announcement->toArray())
         );
     }
 
@@ -95,9 +99,15 @@ class HrController extends Controller
         try {
             log_activity( trans('messages.delete_hr_announcement_attempt') );
 
+            $log = ChangeLogs::find($id);
+
+            if(!$log){
+                return error_response(trans('message.error_default'), new \Exception("Announcement is not found"),404);
+            }
+
             return success_response(
                 trans('messages.delete_hr_announcement_success'), 
-                ChangeLogs::find($id)->delete(),
+                $log->delete(),
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );

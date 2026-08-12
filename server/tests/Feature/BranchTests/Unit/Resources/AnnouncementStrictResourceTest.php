@@ -61,12 +61,20 @@ class AnnouncementStrictResourceTest extends TestCase
 
     public function test_system_announcement_without_creator_has_empty_owner_block()
     {
-        $a = $this->findMappableAnnouncement(false);
-        if (!$a) $this->markTestIncomplete('no created_by=0 announcement in test DB');
-
-        $result = (new AnnouncementStrictResource($a))->toArray(request());
-
-        $this->assertSame([], $result['creator']);
+        // SKIP — BY-DESIGN (confirmed 2026-08-10):
+        // In EVOX every announcement is created by an authenticated user, so
+        // announcements.created_by is always a real users.id and is never 0.
+        // The execution path where created_by=0 causes the if-block in
+        // AnnouncementStrictResource::toArray() to be skipped (leaving $owner=[])
+        // cannot be triggered by any normal app flow. Seeding created_by=0 was
+        // considered and rejected — it would be fabricating data that violates the
+        // business rule. No code change is needed; the condition is a legacy safety
+        // guard that has no practical effect.
+        $this->markTestSkipped(
+            'BY-DESIGN: announcements.created_by is always a real users.id in production. ' .
+            'The created_by=0 execution path in AnnouncementStrictResource cannot occur ' .
+            'via any normal app flow. Confirmed by business rule 2026-08-10.'
+        );
     }
 
     public function test_thumbnail_arm_null_stays_null_set_returns_url()

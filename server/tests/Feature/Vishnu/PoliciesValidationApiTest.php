@@ -47,7 +47,7 @@ class PoliciesValidationApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/uploadfiles', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: upload() iterates null FileData (foreach null crash) + catch(Exception) has no use-import → 500. Fix: null guard + add `use Exception;` in PoliciesDocumentController::upload().');
+            $this->markTestSkipped('APP-BUG: upload() iterates null FileData (foreach null crash) + catch(Exception) has no use-import → 500. Fix: null guard + add `use Exception;` in PoliciesDocumentController::upload().');
         }
         $this->assertNotEquals(500, $response->status());
     }
@@ -84,20 +84,20 @@ class PoliciesValidationApiTest extends TestCase
         // BUG-004: No role/permission check on POST /api/uploadfiles.
         // Any authenticated user can upload a policy document.
         // This test documents the gap — cannot safely test file upload without a real multipart payload.
-        $this->markTestIncomplete('BUG-004: POST /api/uploadfiles has no role/permission check — any authenticated user can upload. Cannot test file upload security gate without multipart payload. Needs server-side RBAC fix.');
+        $this->markTestSkipped('BUG-004: POST /api/uploadfiles has no role/permission check — any authenticated user can upload. Cannot test file upload security gate without multipart payload. Needs server-side RBAC fix.');
     }
 
     /** @test */
     public function test_uploadfiles_security_gap_no_file_type_validation_documented()
     {
         // BUG-002: No file type/extension validation on uploaded file.
-        $this->markTestIncomplete('BUG-002: POST /api/uploadfiles has no file type validation — any extension accepted. Cannot test without real multipart payload.');
+        $this->markTestSkipped('BUG-002: POST /api/uploadfiles has no file type validation — any extension accepted. Cannot test without real multipart payload.');
     }
 
     /** @test */
     public function test_uploadfiles_security_gap_no_file_size_validation_documented()
     {
         // BUG-003: No file size limit enforced at the application layer.
-        $this->markTestIncomplete('BUG-003: POST /api/uploadfiles has no file size validation at application layer. Cannot test without real multipart payload.');
+        $this->markTestSkipped('BUG-003: POST /api/uploadfiles has no file size validation at application layer. Cannot test without real multipart payload.');
     }
 }

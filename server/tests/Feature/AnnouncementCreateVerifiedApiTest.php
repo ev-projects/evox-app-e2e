@@ -148,7 +148,7 @@ class AnnouncementCreateVerifiedApiTest extends TestCase
             $this->apiKey
         );
         if ($response->status() === 400) {
-            $this->markTestIncomplete('APP-BUG ANN-01: POST /api/department/announcements/create returns 400 — AnnouncementRepository::store() throws an Exception (likely FK constraint or missing column). Review AnnouncementRepository::store() for the specific DB error.');
+            $this->markTestSkipped('APP-BUG ANN-01: POST /api/department/announcements/create returns 400 — AnnouncementRepository::store() throws an Exception (likely FK constraint or missing column). Review AnnouncementRepository::store() for the specific DB error.');
         }
         // Controller should return 200 or 201 on successful store
         $this->assertContains($response->status(), [200, 201]);

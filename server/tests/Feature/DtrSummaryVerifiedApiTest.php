@@ -80,13 +80,10 @@ class DtrSummaryVerifiedApiTest extends TestCase
     public function test_new_dtr_summary_report_returns_200_with_valid_date_range()
     {
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->getJson(
-            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}",
+        $response = $this->actingAs($this->user, 'api')->getJson(
+            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}&is_active=1",
             $this->apiKey
         );
-        if ($response->status() === 400) {
-            $this->markTestIncomplete('APP-BUG DTR-01: EH_SP_DTR_Summary_Report fails for Gary Aure (sub-dept 403) with valid date range — SP returns error → controller catches and returns 400. Fix: diagnose SP parameter mismatch or data issue in ReportController::new_dtr_summary_report().');
-        }
         $response->assertStatus(200);
     }
 
@@ -95,13 +92,10 @@ class DtrSummaryVerifiedApiTest extends TestCase
     {
         // Developer confirmed: Department dropdown exists — passes department_id param.
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->getJson(
-            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}&department_id=403",
+        $response = $this->actingAs($this->user, 'api')->getJson(
+            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}&department_id=403&is_active=1",
             $this->apiKey
         );
-        if ($response->status() === 400) {
-            $this->markTestIncomplete('APP-BUG DTR-01: EH_SP_DTR_Summary_Report fails even with department_id=403 — SP returns error → 400. Fix needed in SP or controller.');
-        }
         $this->assertNotEquals(500, $response->status());
         $response->assertStatus(200);
     }
@@ -111,13 +105,10 @@ class DtrSummaryVerifiedApiTest extends TestCase
     {
         // Developer confirmed: Name search text input exists — passes name param.
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->getJson(
-            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}&name=Glenn",
+        $response = $this->actingAs($this->user, 'api')->getJson(
+            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}&name=Glenn&is_active=1",
             $this->apiKey
         );
-        if ($response->status() === 400) {
-            $this->markTestIncomplete('APP-BUG DTR-01: EH_SP_DTR_Summary_Report fails with name filter — SP returns error → 400.');
-        }
         $this->assertNotEquals(500, $response->status());
         $response->assertStatus(200);
     }
@@ -127,13 +118,10 @@ class DtrSummaryVerifiedApiTest extends TestCase
     {
         // Combined: department + name + date range — all confirmed filter controls.
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->getJson(
-            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}&department_id=403&name=Glenn",
+        $response = $this->actingAs($this->user, 'api')->getJson(
+            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}&department_id=403&name=Glenn&is_active=1",
             $this->apiKey
         );
-        if ($response->status() === 400) {
-            $this->markTestIncomplete('APP-BUG DTR-01: EH_SP_DTR_Summary_Report fails with combined filters — SP returns error → 400.');
-        }
         $this->assertNotEquals(500, $response->status());
         $response->assertStatus(200);
     }
@@ -141,11 +129,11 @@ class DtrSummaryVerifiedApiTest extends TestCase
     /** @test */
     public function test_new_dtr_summary_report_with_no_date_params_does_not_500()
     {
-        // Missing valid_from / valid_to — controller passes null to SP; should return
-        // a handled 200 with empty data, not a 500.
+        // Missing valid_from / valid_to — controller passes null to SP; the is_active ?? 1
+        // default in the controller prevents the SP from crashing on null is_active.
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->getJson(
-            '/api/report/dtr_summary/new_team',
+        $response = $this->actingAs($this->user, 'api')->getJson(
+            '/api/report/dtr_summary/new_team?is_active=1',
             $this->apiKey
         );
         $this->assertNotEquals(500, $response->status());
@@ -155,13 +143,10 @@ class DtrSummaryVerifiedApiTest extends TestCase
     public function test_new_dtr_summary_report_response_is_json()
     {
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->getJson(
-            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}",
+        $response = $this->actingAs($this->user, 'api')->getJson(
+            "/api/report/dtr_summary/new_team?valid_from={$this->validFrom}&valid_to={$this->validTo}&is_active=1",
             $this->apiKey
         );
-        if ($response->status() === 400) {
-            $this->markTestIncomplete('APP-BUG DTR-01: EH_SP_DTR_Summary_Report returns error → controller returns 400. Fix needed before JSON structure can be verified.');
-        }
         $response->assertStatus(200);
         $this->assertNotNull($response->json());
     }

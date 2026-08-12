@@ -101,48 +101,48 @@ class SyncApiTest extends TestCase
     /** @test */
     public function test_sync_users_hris_without_api_key_returns_401()
     {
-        $this->markTestIncomplete('BUG-082: /api/sync_users_hris route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('BUG-082: /api/sync_users_hris route not implemented — SyncController.php does not exist in this branch.');
     }
 
     /** @test */
     public function test_sync_users_hris_with_api_key_missing_body_returns_not_500()
     {
-        $this->markTestIncomplete('BUG-082: /api/sync_users_hris route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('BUG-082: /api/sync_users_hris route not implemented — SyncController.php does not exist in this branch.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_without_api_key_returns_401()
     {
-        $this->markTestIncomplete('BUG-082: /api/sync_timeoff_allocation route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation route not implemented — SyncController.php does not exist in this branch.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_with_api_key_is_reachable()
     {
-        $this->markTestIncomplete('BUG-082: /api/sync_timeoff_allocation route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation route not implemented — SyncController.php does not exist in this branch.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_new_without_api_key_returns_401()
     {
-        $this->markTestIncomplete('BUG-082: /api/sync_timeoff_allocation_new route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation_new route not implemented — SyncController.php does not exist in this branch.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_new_with_api_key_is_reachable()
     {
-        $this->markTestIncomplete('BUG-082: /api/sync_timeoff_allocation_new route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation_new route not implemented — SyncController.php does not exist in this branch.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_fail_sync_without_api_key_returns_401()
     {
-        $this->markTestIncomplete('BUG-082: /api/sync_timeoff_allocation_fail_sync route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation_fail_sync route not implemented — SyncController.php does not exist in this branch.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_fail_sync_with_api_key_is_reachable()
     {
-        $this->markTestIncomplete('BUG-082: /api/sync_timeoff_allocation_fail_sync route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation_fail_sync route not implemented — SyncController.php does not exist in this branch.');
     }
 }

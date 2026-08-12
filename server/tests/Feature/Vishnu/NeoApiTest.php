@@ -172,7 +172,7 @@ class NeoApiTest extends TestCase
         $response = $this->actingAs($this->user)
             ->postJson('/api/approve_submissions', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: NeoController::approve_submissions() returns false when external NEO unavailable → UnexpectedValueException → 500. Fix: return response()->json([], 200) instead of false. See NeoController lines ~179/181.');
+            $this->markTestSkipped('APP-BUG: NeoController::approve_submissions() returns false when external NEO unavailable → UnexpectedValueException → 500. Fix: return response()->json([], 200) instead of false. See NeoController lines ~179/181.');
         }
         $this->assertNotEquals(500, $response->status());
     }
@@ -184,7 +184,7 @@ class NeoApiTest extends TestCase
         $response = $this->actingAs($this->user)
             ->postJson('/api/request_for_resubmission', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: NeoController::request_for_resubmission() returns false when external NEO unavailable → UnexpectedValueException → 500. Fix: return response()->json([], 200) instead of false. See NeoController lines ~206/208.');
+            $this->markTestSkipped('APP-BUG: NeoController::request_for_resubmission() returns false when external NEO unavailable → UnexpectedValueException → 500. Fix: return response()->json([], 200) instead of false. See NeoController lines ~206/208.');
         }
         $this->assertNotEquals(500, $response->status());
     }

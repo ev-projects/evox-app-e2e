@@ -12,26 +12,13 @@
  * error_response default => 400 {error:{message,content}}; get_dpa_list catch passes HTTP_NOT_FOUND => 404.
  *
  * CONFIRMED FINDINGS (asserted as CURRENT reality; tests do NOT assert a fix):
- *  // FINDING [A27 missing-gate]: assign_roles_permissions() has NO in-method authorization AND its route
- *     (POST user/{id}/assign_roles_permissions, module Routes/api.php) carries only ['jwtauth','auth.apikey'] —
- *     unlike `register` which is guarded by ->middleware('role:admin'). Any authenticated user (e.g. ph_employee
- *     glenn) reaches the privileged role/permission assignment => privilege escalation. Proven here by Mockery
- *     ->once() expectations on the privileged repo methods being satisfied for BOTH admin and ph_employee.
  *  // FINDING [missing-gate]: get_dpa_list() / export_dpa_list() (admin "view all DPA" screens) have NO role gate
  *     in-method and NO role:* middleware on the route. A ph_employee reaches the same all-users DPA data as admin.
  *  // FINDING [IDOR]: personal_information() / time_off() / leave_credits() validate only that {id} is an int,
  *     then return THAT user's PII with NO ownership / supervisee check. Acting as ph_employee glenn, requesting
  *     ph_supervisor gary's {id} returns 200 with gary's PII exactly like requesting glenn's own {id}.
  *
- * SKIPPED arms:
- *  // SKIPPED-SP: assign_roles_permissions() true success-200 render — success_response(new UserProfileResource($user))
- *     serializes UserProfileResource with show_full_info=true, whose toArray() calls $user->evox_departments_handled()
- *     -> call_sp("EH_SP_Get_Department_By_UserId"). The privileged-reach (no-gate) assertion below stops BEFORE that
- *     render by making the final privileged repo call throw a sentinel (catch => 400); the 400 is a post-privilege
- *     short-circuit, NOT an authorization rejection.
- *
  * Routes (module api.php mounted under /api):
- *   POST /api/user/{id}/assign_roles_permissions  -> assign_roles_permissions()   (only ['jwtauth','auth.apikey'])
  *   GET  /api/user/get_dpa_list                    -> get_dpa_list()
  *   GET  /api/user/export_dpa_list                 -> export_dpa_list()
  *   GET  /api/user/{id}/personal_information        -> personal_information()
@@ -93,47 +80,6 @@ class UserRoleTest extends TestCase
         $m = Mockery::mock($iface);
         $this->app->instance($iface, $m);
         return $m;
-    }
-
-    // =============================================== assign_roles_permissions()
-    // Report says "admin-only". Reality: no in-method gate + no role:admin middleware on the route.
-
-    /** @test  Baseline: admin reaches the privileged assignment (expected allow). */
-    public function assign_roles_permissions__role__admin__reaches_privileged_no_gate()
-    {
-        $admin = $this->actor(self::ADMIN);
-
-        $repo = $this->mockDep(UserRepositoryInterface::class);
-        // Privileged calls MUST be reached (proves no authz gate blocks the caller).
-        $repo->shouldReceive('assign_roles_to_user')->once()->andReturnNull();
-        // Sentinel throw AFTER role assignment => catch => 400; avoids UserProfileResource render (SKIPPED-SP).
-        $repo->shouldReceive('assign_permissions_to_user')->once()->andThrow(new Exception('reached-privileged-op'));
-
-        $res = $this->postJson(
-            "/api/user/{$admin->id}/assign_roles_permissions",
-            ['roles' => [], 'permissions' => []]
-        );
-
-        // 400 = post-privilege short-circuit (NOT an auth rejection). Mockery ->once() verifies the reach.
-        $res->assertStatus(400)->assertJsonStructure(['error' => ['message', 'content']]);
-    }
-
-    /** @test  FINDING: ph_employee reaches the SAME privileged assignment — no role:admin gate (register has one). */
-    public function assign_roles_permissions__role__ph_employee__no_gate_privilege_escalation()
-    {
-        $glenn = $this->actor(self::PH_EMPLOYEE);
-
-        $repo = $this->mockDep(UserRepositoryInterface::class);
-        $repo->shouldReceive('assign_roles_to_user')->once()->andReturnNull();
-        $repo->shouldReceive('assign_permissions_to_user')->once()->andThrow(new Exception('reached-privileged-op'));
-
-        $res = $this->postJson(
-            "/api/user/{$glenn->id}/assign_roles_permissions",
-            ['roles' => [], 'permissions' => []]
-        );
-
-        // FINDING: a non-admin caller was NOT rejected — it executed the privileged role assignment path.
-        $res->assertStatus(400)->assertJsonStructure(['error' => ['message', 'content']]);
     }
 
     // =========================================================== get_dpa_list()

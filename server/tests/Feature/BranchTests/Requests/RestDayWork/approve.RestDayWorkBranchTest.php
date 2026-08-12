@@ -33,6 +33,10 @@ class RestDayWorkApproveBranchTest extends TestCase
 
     /** @var User */
     private $user;
+    /** @var User */
+    private $supervisor;
+    /** @var int */
+    private $employeeId;
 
     protected function setUp(): void
     {
@@ -42,6 +46,12 @@ class RestDayWorkApproveBranchTest extends TestCase
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         if (!$this->user) $this->markTestIncomplete('no user in test DB');
+        // Supervisor used for approve() gate bypass (auth user ≠ payload user_id).
+        $this->supervisor = User::where('email', 'gary.aure@eastvantage.com')->first()
+            ?? User::find(1698);
+        $this->employeeId = User::where('email', 'glenn.macasarte@eastvantage.com')->value('id')
+            ?? 1593;
+        if (!$this->supervisor) $this->markTestIncomplete('supervisor (gary.aure) not in DB');
     }
 
     protected function tearDown(): void
@@ -102,17 +112,37 @@ class RestDayWorkApproveBranchTest extends TestCase
     /** @test */
     public function approve__approve__validity_not_two_success__ok_200()
     {
-        // Self-approval gate added to RestDayWorkController::approve() at controller level.
-        // Payload user_id=$this->user->id matches the authenticated user → controller returns 403.
-        // Redesign needed: actingAs supervisor, payload user_id = employee.
-        $this->markTestIncomplete('Cat 5: Self-approval gate in RestDayWorkController::approve() blocks (payload user_id == auth user). Redesign with supervisor actingAs + employee user_id.');
+        [$rdw, $dtr, $email] = $this->mockAllDeps();
+        $rdw->shouldReceive('approve')->once()->andReturn($this->restDayWorkModel());
+        $dtr->shouldReceive('apply_rest_day_work_to_dtr')->once()->andReturnNull();
+
+        // Far-past date → request_validity_checker() short-circuits to false (>30 days old) without SP.
+        $payload = array_merge($this->payload(), [
+            'user_id' => $this->employeeId,
+            'date'    => '2015-06-15',
+        ]);
+
+        $res = $this->actingAs($this->supervisor)
+                    ->putJson('/api/request/rest_day_work/approve/999999', $payload);
+
+        $res->assertStatus(200)->assertJsonStructure(['message', 'content']);
     }
 
     /** @test */
     public function approve__approve__exception__error_404()
     {
-        // Self-approval gate blocks before mock can throw — same redesign needed.
-        $this->markTestIncomplete('Cat 5: Self-approval gate blocks before repo mock is reached. Redesign with supervisor actingAs.');
+        [$rdw, $dtr, $email] = $this->mockAllDeps();
+        $rdw->shouldReceive('approve')->once()->andThrow(new Exception('boom'));
+
+        $payload = array_merge($this->payload(), [
+            'user_id' => $this->employeeId,
+            'date'    => '2015-06-15',
+        ]);
+
+        $res = $this->actingAs($this->supervisor)
+                    ->putJson('/api/request/rest_day_work/approve/999999', $payload);
+
+        $res->assertStatus(404)->assertJsonStructure(['error' => ['message', 'content']]);
     }
 
     // ================================================================== decline()

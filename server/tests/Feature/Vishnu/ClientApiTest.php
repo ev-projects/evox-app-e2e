@@ -29,6 +29,7 @@ class ClientApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->markTestSkipped('CLIENT MODULE REMOVED 2026-08-10: App\Modules\Client deleted. These tests have no runnable subject.');
 
         $this->apiKey = [
             'X-Authorization' => env(

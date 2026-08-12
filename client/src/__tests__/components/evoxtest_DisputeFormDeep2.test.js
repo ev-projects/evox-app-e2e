@@ -51,7 +51,6 @@ jest.mock('../../store/actions/filters/requestListActions', () => ({
     payrollperiod: jest.fn((n) => ({ type: 'STUB_PAYROLL_PERIOD', n })),
 }));
 jest.mock('../../store/actions/admin/assignRoleActions', () => ({
-    fetchUserRolePermission: jest.fn(), assignRolesPermissions: jest.fn(),
     fetchUserFeatures: jest.fn(), assignLevelFeatures: jest.fn(),
     fetchUserDispute: jest.fn((...a) => ({ type: 'STUB_FETCH_USER_DISPUTE', a })),
 }));

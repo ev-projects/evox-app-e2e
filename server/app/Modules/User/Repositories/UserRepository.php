@@ -1020,73 +1020,8 @@ class UserRepository implements UserRepositoryInterface{
 
     }
 
-    /**
-     *  Responsible for assigning Roles for the user.
-     * @param $id
-     * @return User $user
-     */
-    public function assign_roles_to_user( $id , array $roles_array){
-        try {
-
-            if( is_under_supervisee( $id ) ) {
-
-                $user =  User::findOrFail( $id );
-
-                if(in_array('admin', $roles_array)){
-                    if(!in_array('supervisor', $roles_array)){
-                     array_push($roles_array,"supervisor");
-                    }
-                 }
-
-                $user->syncRoles( $roles_array );
-            }
-
-            log_to_file('info', 'Success', [$id, $roles_array], 'assign');
-            return $user;
-        } catch (Exception $e) {
-            throw $e;
-        }
-    }
-
-
-
-
-    /**
-     *  Responsible for assigning Permissions for the user.
-     * @param $id
-     * @return User $user
-     */
-    public function assign_permissions_to_user( $id, array $permissions_array , array $roles_array ){
-        try {
-
-            if( is_under_supervisee( $id ) ) {
-
-                $user =  User::findOrFail( $id );
-
-                $permissions_list_supervisor = Role::findByName('supervisor')->permissions->pluck('name')->toArray();
-
-                if(in_array('admin', $roles_array)){
-                        $permissions_array = array_merge($permissions_array,$permissions_list_supervisor);
-                        $permissions_array = array_unique($permissions_array);
-                 }
-
-                if(in_array('admin', $roles_array)){
-                    if(!in_array('supervisor', $roles_array)){
-                        $permissions_array = array_merge($permissions_array,$permissions_list_supervisor);
-                        $permissions_array = array_unique($permissions_array);
-                    }
-                 }
-
-
-                $user->syncPermissions( $permissions_array );
-            }
-
-            log_to_file('info', 'Success', [$id, $permissions_array], 'assign');
-            return $user;
-        } catch (Exception $e) {
-            throw $e;
-        }
-    }
+   
+     
         /**
      *  Responsible for assigning Features for the user.
      * @param $id
@@ -1205,58 +1140,6 @@ class UserRepository implements UserRepositoryInterface{
     }
 
 
-    /**
-     *  Responsible for assigned special conditions if user was assigned as admin
-     * @param $id
-     * @param array $request
-     */
-    public function adminRoleConditions($user_id, array $request){
-        try {
-            
-            $user =  User::findOrFail( $user_id );
-
-            // check if there is a role called admin 1st
-            foreach($request as $key => $role){
-                if($role == 'admin'){
-                    $department_col = Department::all()->pluck('id')->toArray();
-
-
-                    // User became a supervisor for each department
-                    foreach($department_col as $department_id){
-                        $department = Department::find($department_id);
-                        $dep_array = $department->department_supervisors()->get()->pluck('id')->toArray();
-                        $department->department_supervisors()->sync(  array_merge($dep_array, [$user->id]));
-
-
-                        $user_array = $department->users()
-                        ->orderBy('first_name', 'asc')
-                        ->orderBy('last_name', 'asc')
-                        ->get()->pluck('id')->toArray();
-                        
-                        // user become supervisee for each employee
-                        if( is_valid( $department->id ) ){
-
-                            if( is_valid(  $user_array) ) {
-                            $user->supervisee()->detach( Department::find($department->id)->users()->get() );
-                            $user->supervisee()->syncWithoutDetaching(   $user_array);
-                            }
-                           
-                            
-                        }
-                        else {
-
-                            $user->supervisee()->syncWithoutDetaching( $user_array);
-                        }
-                    }
-
-                }
-            }
-        } catch (Exception $e) {
-            log_error($e);
-            throw $e;
-        }
-    }
-    
     ###############################################################################################
     ##################################### Protected functions #####################################
     ###############################################################################################

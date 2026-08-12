@@ -49,25 +49,39 @@ class RestDayWorkBusinessRuleRejectionTest extends TestCase
     /** @test — controller rejects a restday request whose DTR shows an actual workday (is_rest_day=0) */
     public function rejects_restday_request_when_dtr_shows_a_workday()
     {
-        // Known fixture on the dump: user_id=1, date=2019-01-01, dtrs.is_rest_day=0. Confirmed no
-        // pre-existing rest_day_works row for that (user,date), so the FormRequest unique rule
-        // passes and this reaches RestDayWorkController@store's cross-check, which returns
-        // error_response(...) (default HTTP 400, NOT 422 — a controller-layer reject, not a
-        // FormRequest one) BEFORE ->store() is ever called.
-        $dtrUser = User::find(1);
-        if (!$dtrUser) $this->markTestIncomplete('DTR fixture user (id=1) not present in test DB');
+        // Dynamic lookup: find any workday DTR (is_rest_day=0) that has no existing rest_day_work
+        // for that (user_id, date), so the FormRequest unique rule passes and the controller's own
+        // cross-check fires — returning 400 (not 422) BEFORE ::store() is ever called.
+        $existingDtr = DB::table('dtrs')
+            ->where('is_rest_day', 0)
+            ->whereNotNull('user_id')
+            ->whereNotNull('date')
+            ->whereNotExists(function ($q) {
+                $q->select(DB::raw(1))->from('rest_day_works')
+                  ->whereRaw('rest_day_works.user_id = dtrs.user_id')
+                  ->whereRaw('rest_day_works.date = dtrs.date')
+                  ->whereNull('rest_day_works.deleted_at');
+            })
+            ->orderBy('id', 'desc')
+            ->first();
 
-        $existingDtr = DB::table('dtrs')->where('user_id', 1)->where('date', '2019-01-01')
-                          ->where('is_rest_day', 0)->first();
-        if (!$existingDtr) $this->markTestIncomplete('expected workday DTR fixture row not present');
+        if (!$existingDtr) {
+            $this->markTestIncomplete(
+                'no workday DTR available without a rest_day_work collision — ' .
+                'every workday DTR already has a rest_day_work row (or no DTRs exist)'
+            );
+        }
 
-        $collision = DB::table('rest_day_works')->where('user_id', 1)->where('date', '2019-01-01')
-                        ->whereNull('deleted_at')->first();
-        if ($collision) $this->markTestIncomplete('a rest_day_work already exists for the fixture date; would hit the unique rule instead of the DTR cross-check');
+        $dtrUser = User::find($existingDtr->user_id);
+        if (!$dtrUser) {
+            $this->markTestIncomplete(
+                'workday DTR owner (id=' . $existingDtr->user_id . ') not resolvable from users table'
+            );
+        }
 
         $resp = $this->actingAs($dtrUser)->postJson('/api/request/rest_day_work', [
-            'user_id'    => 1,
-            'date'       => '2019-01-01',
+            'user_id'    => $dtrUser->id,
+            'date'       => $existingDtr->date,
             'start_time' => '09:00',
             'end_time'   => '18:00',
             'break_time' => '01:00',

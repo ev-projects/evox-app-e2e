@@ -53,6 +53,9 @@ class COEController extends Controller
         try {
             if (!empty($request->employee_id)) {
                 $user = User::find($request->employee_id);
+                if (!$user) {
+                    return error_response('Employee not found.', [], JsonResponse::HTTP_NOT_FOUND);
+                }
             } else {
                 $user = auth()->user();
             }

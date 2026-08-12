@@ -116,7 +116,9 @@ class AnnouncementController extends Controller
                                     ];
                                     $response =  call_sp("EH_SP_Dashboard", $parameter);
 
-                                    $check_all = (array_filter($response[1], function($object) use ($called_announcement) { return $object->id == $called_announcement->id; }));
+                                    $check_all = $called_announcement
+                                        ? array_filter($response[1], function($object) use ($called_announcement) { return $object->id == $called_announcement->id; })
+                                        : [];
                                     if(count($check_all) > 0){
                                         return success_response(
                                             trans('messages.create_department_announcement_success'), 

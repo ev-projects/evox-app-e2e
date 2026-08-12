@@ -57,10 +57,18 @@ class OvertimeSubmitBusinessNegativeTest extends TestCase
      */
     public function submit_for_a_date_far_older_than_30_days_is_not_rejected_server_side()
     {
-        $farPast = now()->subDays(400)->toDateString();
-        // Skip if that (user,date) already exists so the unique rule doesn't mask the point.
-        if (DB::table('overtimes')->where('user_id', $this->employee->id)->where('date', $farPast)->exists()) {
-            $this->markTestIncomplete('collision on far-past date');
+        // Walk backwards from 400 days to find a date that has no existing overtime row for
+        // this employee, so the unique constraint doesn't fire and mask the point of the test.
+        $farPast = null;
+        for ($daysBack = 400; $daysBack <= 800; $daysBack++) {
+            $candidate = now()->subDays($daysBack)->toDateString();
+            if (!DB::table('overtimes')->where('user_id', $this->employee->id)->where('date', $candidate)->exists()) {
+                $farPast = $candidate;
+                break;
+            }
+        }
+        if (!$farPast) {
+            $this->markTestIncomplete('no collision-free far-past date found for employee in 400–800 day window');
         }
         $resp = $this->submit(['date' => $farPast]);
         // Not blocked by any 30-day/period rule at the store layer.
@@ -78,9 +86,17 @@ class OvertimeSubmitBusinessNegativeTest extends TestCase
     {
         $other = User::where('is_active', 1)->where('id', '!=', $this->employee->id)->first();
         if (!$other) $this->markTestIncomplete('no other user');
-        $date = now()->subDays(370)->toDateString();
-        if (DB::table('overtimes')->where('user_id', $other->id)->where('date', $date)->exists()) {
-            $this->markTestIncomplete('collision');
+        // Walk backwards from 370 days to find a collision-free date for $other.
+        $date = null;
+        for ($daysBack = 370; $daysBack <= 770; $daysBack++) {
+            $candidate = now()->subDays($daysBack)->toDateString();
+            if (!DB::table('overtimes')->where('user_id', $other->id)->where('date', $candidate)->exists()) {
+                $date = $candidate;
+                break;
+            }
+        }
+        if (!$date) {
+            $this->markTestIncomplete('no collision-free far-past date found for other user in 370–770 day window');
         }
         // Authenticated as glenn, but user_id points at someone else.
         $resp = $this->actingAs($this->employee)->postJson('/api/request/overtime', [

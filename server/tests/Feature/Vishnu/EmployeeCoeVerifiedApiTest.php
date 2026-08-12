@@ -209,7 +209,7 @@ class EmployeeCoeVerifiedApiTest extends TestCase
             'employee_id'      => $nonExistentUserId,
         ], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG B-4: COEController::create() calls User::find() with no null check — non-existent employee_id returns 500. Fix: add null guard. See employee-coe.registry.md.');
+            $this->markTestSkipped('APP-BUG B-4: COEController::create() calls User::find() with no null check — non-existent employee_id returns 500. Fix: add null guard. See employee-coe.registry.md.');
         }
         $this->assertNotEquals(200, $response->status(), 'Non-existent employee_id must not produce 200 success.');
     }

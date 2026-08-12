@@ -98,13 +98,14 @@ class ControllerTailsTest extends TestCase
      */
     public function dtr_incomplete_logs_returns_empty_when_no_payroll_cutoff_spans_today()
     {
-        Carbon::setTestNow(Carbon::create(1990, 6, 15, 9, 0, 0));
+        // Use year 1800 — predates any payroll system and guaranteed to have no cutoff row.
+        Carbon::setTestNow(Carbon::create(1800, 6, 15, 9, 0, 0));
 
         // sanity: the fixture really has no cutoff around the travelled date (bounded, indexed)
-        $spanning = PayrollCutoff::where('start_date', '<=', '1990-06-15')
-            ->where('end_date', '>=', '1990-06-15')->first();
+        $spanning = PayrollCutoff::where('start_date', '<=', '1800-06-15')
+            ->where('end_date', '>=', '1800-06-15')->first();
         if ($spanning) {
-            $this->markTestSkipped('test DB unexpectedly has a 1990 payroll cutoff');
+            $this->markTestSkipped('test DB unexpectedly has an 1800 payroll cutoff');
         }
 
         $res = $this->actingAs($this->user)->getJson('/api/dtr/incomplete_logs');

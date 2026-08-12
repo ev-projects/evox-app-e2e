@@ -775,7 +775,7 @@ class ReportController extends Controller
             if($request->sup_id){
                 $user_sup_id = $request->sup_id;
             }
-            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
+            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active ?? 1, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
             $user_dtr = $result_sets[1];
             $report = [];
             foreach($user_dtr as $dtr) {
@@ -833,7 +833,7 @@ class ReportController extends Controller
             if($request->sup_id){
                 $user_sup_id = $request->sup_id;
             }
-            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
+            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active ?? 1, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
             $user_dtr = $result_sets[1];
             $report = [];
             foreach($user_dtr as $dtr) {

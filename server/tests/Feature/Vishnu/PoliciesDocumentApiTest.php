@@ -144,7 +144,7 @@ class PoliciesDocumentApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/uploadfiles', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: PoliciesDocumentController::upload() iterates null when no FileData provided + catch(Exception) not imported → 500. Fix: add null guard before foreach + add `use Exception;` import.');
+            $this->markTestSkipped('APP-BUG: PoliciesDocumentController::upload() iterates null when no FileData provided + catch(Exception) not imported → 500. Fix: add null guard before foreach + add `use Exception;` import.');
         }
         $this->assertNotEquals(500, $response->status());
     }

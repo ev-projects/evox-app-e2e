@@ -39,7 +39,7 @@ class ScheduleRequest extends FormRequest
             'valid_from'                                => 'required_if:source_type,temporary|required_if:source_type,change_schedule|required_if:source_type,default|required_if:source_type,empty|date_format:Y-m-d',
             'valid_to'                                  => 'required_if:source_type,temporary|required_if:source_type,change_schedule|date_format:Y-m-d',
             'work_days'                                 => 'array',            
-            'schedule_policies.*'                       => 'bool|in:'.implode(',', array_merge(get_constant('SCHEDULE_POLICIES'), get_constant('SCHEDULE_HOLIDAY_POLICIES'))),
+            'schedule_policies.*'                       => 'bool:'.implode(',', array_merge(get_constant('SCHEDULE_POLICIES'), get_constant('SCHEDULE_HOLIDAY_POLICIES'))),
             'schedule_policies.allow_undertime'         => 'bool',
             'schedule_policies.allow_late'              => 'bool',
             'schedule_policies.allow_night_diff'        => 'bool',

@@ -14,8 +14,8 @@
  *   pending()/cancel() take no dtr path and return 200 normally.
  *
  * Routes (module prefix request/overtime, mounted under /api) — all catch arms use HTTP_NOT_FOUND 404:
- *   PUT /api/request/overtime/approve/{id} -> approve() success arm 500 (null-DTR TypeError), catch=404
- *   PUT /api/request/overtime/decline/{id} -> decline() success arm 500 (null-DTR TypeError), catch=404
+ *   PUT /api/request/overtime/approve/{id} -> approve() success arm 200 (null-DTR guard present), catch=404
+ *   PUT /api/request/overtime/decline/{id} -> decline() success arm 200 (null-DTR guard present), catch=404
  *   PUT /api/request/overtime/pending/{id} -> pending() success=200, catch=404
  *   PUT /api/request/overtime/cancel/{id}  -> cancel()  success=200, catch=404
  */
@@ -41,6 +41,10 @@ class OvertimeApproveBranchTest extends TestCase
 
     /** @var User */
     private $user;
+    /** @var User */
+    private $supervisor;
+    /** @var int */
+    private $employeeId;
 
     protected function setUp(): void
     {
@@ -51,6 +55,12 @@ class OvertimeApproveBranchTest extends TestCase
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         if (!$this->user) $this->markTestIncomplete('no user in test DB');
         $this->actingAs($this->user);
+        // Supervisor used for approve() gate bypass (auth user ≠ payload user_id).
+        $this->supervisor = User::where('email', 'gary.aure@eastvantage.com')->first()
+            ?? User::find(1698);
+        $this->employeeId = User::where('email', 'glenn.macasarte@eastvantage.com')->value('id')
+            ?? 1593;
+        if (!$this->supervisor) $this->markTestIncomplete('supervisor (gary.aure) not in DB');
     }
 
     protected function tearDown(): void
@@ -93,24 +103,37 @@ class OvertimeApproveBranchTest extends TestCase
     }
 
     // -------------------------------------------------------------- approve()
-    // else arm: request_validity != 2 -> repo->approve -> (null-DTR TypeError) -> uncaught 500
+    // else arm: request_validity != 2 -> repo->approve -> dtr null-guard (if $dtr) -> 200
+    // Note: null-DTR guard is present in OvertimeController::approve() — no TypeError crash.
     /** @test */
-    public function approve__approve__valid__uncaught_500()
+    public function approve__approve__success__ok_200()
     {
-        // Self-approval gate added to OvertimeController::approve() at controller level (not middleware).
-        // The test user (first active user) is the owner of overtime/1, so the controller returns 403
-        // before reaching the repository. The mock is never called.
-        // withoutMiddleware() does NOT bypass the controller-level check.
-        // TODO: redesign test to act as a supervisor approving an employee's overtime to reach this branch.
-        $this->markTestIncomplete('Cat 5: Self-approval gate in OvertimeController::approve() returns 403 before repo mock is called. Test must be redesigned to use supervisor actingAs + employee user_id payload to reach the approve() branch.');
+        $overtime = $this->mockDep(OvertimeRepositoryInterface::class);
+        $overtime->shouldReceive('approve')->once()->andReturn($this->makeOvertime());
+        $dtr = $this->mockDep(DtrRepositoryInterface::class);
+        $dtr->shouldReceive('compute_payroll_items')->zeroOrMoreTimes()->andReturnNull();
+
+        $payload = $this->validPayload(['user_id' => $this->employeeId]);
+
+        $res = $this->actingAs($this->supervisor)
+                    ->putJson('/api/request/overtime/approve/1', $payload);
+
+        $res->assertStatus(200);
     }
 
     // catch arm: repo->approve throws -> error_response HTTP_NOT_FOUND 404
     /** @test */
     public function approve__approve__exception__error_404()
     {
-        // Self-approval gate returns 403 before the mock can throw — same redesign needed as success arm.
-        $this->markTestIncomplete('Cat 5: Self-approval gate blocks before repo mock is reached. Redesign with supervisor actingAs.');
+        $overtime = $this->mockDep(OvertimeRepositoryInterface::class);
+        $overtime->shouldReceive('approve')->once()->andThrow(new Exception('boom'));
+
+        $payload = $this->validPayload(['user_id' => $this->employeeId]);
+
+        $res = $this->actingAs($this->supervisor)
+                    ->putJson('/api/request/overtime/approve/1', $payload);
+
+        $res->assertStatus(404)->assertJsonStructure(['error' => ['message', 'content']]);
     }
 
     // -------------------------------------------------------------- decline()

@@ -138,7 +138,7 @@ class PayrollCutoffValidationApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/payroll/cutoff/', ['name' => 'Test', 'start_date' => '2031-05-01'], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: POST /api/payroll/cutoff/ without end_date returns 500 — date arithmetic on null crashes before FormRequest validation; add null guard in PayrollCutoffController::store().');
+            $this->markTestSkipped('APP-BUG: POST /api/payroll/cutoff/ without end_date returns 500 — date arithmetic on null crashes before FormRequest validation; add null guard in PayrollCutoffController::store().');
         }
         $this->assertNotEquals(500, $response->status());
     }
