@@ -5,6 +5,89 @@
 
 ---
 
+## BUG-122 ✅ FIXED — App code updated 2026-08-14
+
+### OpsScheduleController::store() replace-image arm uses undefined $new_ops_sched
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Opsschedule/Http/Controllers/OpsScheduleController.php` |
+| **Method** | `store()` |
+| **Symptom** | When a department already has an image record, the second (replace) image upload returns HTTP 400 instead of 201. In PHPUnit, `E_NOTICE: Undefined variable: new_ops_sched` is promoted to a `PHPUnit\Framework\Error\Notice` (extends `Exception`) which is caught by `catch(Exception $e)` → `error_response()` → 400. In production PHP (default config), this only triggers a notice and returns 201 — so the bug is silent in production but fatal in tests. |
+| **Root Cause** | `store()` has two branches: the "new" branch assigns `$new_ops_sched = OpsSchedule::create(...)` and the "replace" branch assigns only `$upd_ops_sched = $check_sched->update(...)`. Both branches call `DB::commit()`, then execution falls through to a shared `return success_response(..., $new_ops_sched, ...)`. In the replace branch `$new_ops_sched` is never assigned. |
+| **Likely Fix** | In the replace branch, add `$new_ops_sched = $check_sched;` before `DB::commit()`. Alternatively, move the `return success_response()` call inside each branch (new and replace) with the correct variable. |
+| **Fix applied** | `app/Modules/Opsschedule/Http/Controllers/OpsScheduleController.php` replace arm: removed unused `$upd_ops_sched =` assignment, added `$new_ops_sched = $check_sched;` after `update()` call. |
+| **Affected Tests** | `OpsScheduleControllerBranchTest::store_image_creates_then_replaces_for_same_department` — skip now removable (re-enable after next run confirms 201). Tests `get_list_formats_form_and_image_rows_with_and_without_filter` and `get_groups_departments_by_image_or_form_and_chunks_in_two` reverted to hardcoded `OPS_DEPTS[1]` is no longer needed — the `imageDept()` helper remains as a safety net against future pre-existing data. |
+
+---
+
+## BUG-121 — RegisteredUserEmail / ForgotPasswordRequestEmail missing BCC in build()
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **Files** | `app/Modules/Email/Mail/RegisteredUserEmail.php`, `app/Modules/Email/Mail/ForgotPasswordRequestEmail.php` |
+| **Symptom** | `$built->bcc` is empty after `build()` — registration and forgot-password emails never BCC the monitoring inbox on any environment. Every other Mailable (OvertimeRequestEmail, AlterLogRequestEmail, all dispute and supervisor-reminder emails) includes `$this->bcc(get_constant(...))` inside `build()`. |
+| **Root Cause** | `RegisteredUserEmail::build()` and `ForgotPasswordRequestEmail::build()` were written without the `App::environment('production') / bcc()` block that all other Mailables have. |
+| **Likely Fix** | Add the same pattern to both `build()` methods: `if (App::environment('production')) { $this->bcc(get_constant('BCC_EMAIL_ADDRESS')); } else { $this->bcc(get_constant('BCC_EMAIL_ADDRESS_FOR_NON_PROD')); }` |
+| **Affected Tests** | `MailablesBuildTest::registration_and_forgot_password_emails_build_with_the_temp_password` — skipped `[CAT-4]` 2026-08-14 |
+
+---
+
+## BUG-120 — UserRepository methods deleted (adminRoleConditions, assign_permissions_to_user)
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code (methods removed with Client module) |
+| **File** | `app/Modules/User/Repositories/UserRepository.php` |
+| **Methods** | `adminRoleConditions()`, `assign_permissions_to_user()` |
+| **Symptom** | Tests calling these methods throw `BadMethodCallException: Call to undefined method`. Both were deleted as part of the Client module removal on 2026-08-10. |
+| **Affected Tests** | `RepositoryCrudFinishTest::admin_role_conditions_touches_nothing_when_no_admin_role_is_requested`, `::admin_role_conditions_ignores_an_empty_role_list`, `::admin_role_conditions_rethrows_when_the_user_no_longer_exists`, `::assigning_permissions_to_an_unknown_user_is_rethrown_to_the_caller` — all skipped `[CAT-4]` 2026-08-14 |
+
+---
+
+## BUG-119 — App\Jobs\AssignAllUserToAdminJob class deleted
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code (class removed with Client module) |
+| **File** | `app/Jobs/AssignAllUserToAdminJob.php` (deleted 2026-08-10) |
+| **Symptom** | `Class 'App\Jobs\AssignAllUserToAdminJob' not found` — three test methods that test this Job's constructor, error path, and ModelNotFoundException path all throw at class resolution. |
+| **Affected Tests** | `ExportAndServiceArmsTest::the_admin_assignment_job_hands_the_captured_id_and_roles_to_the_repository`, `::a_failing_admin_assignment_is_logged_and_rethrown_so_the_queue_records_a_failure`, `::an_admin_assignment_for_a_deleted_employee_surfaces_as_a_model_not_found_failure` — all skipped `[CAT-4]` 2026-08-14 |
+
+---
+
+## BUG-118 — PermissionMiddleware uses Spatie getDirectPermissions() (removed from User model)
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Http/Middleware/PermissionMiddleware.php` |
+| **Line** | (handle method) |
+| **Symptom** | `BadMethodCallException: Call to undefined method App\Modules\User\Models\User::getDirectPermissions()` — `User` model no longer implements the Spatie `HasPermissions` trait. Any route protected by `PermissionMiddleware` is currently unreachable. |
+| **Root Cause** | Spatie `HasRoles`/`HasPermissions` traits removed from `User` model but `PermissionMiddleware::handle()` still calls `$request->user()->getDirectPermissions()->contains('name', $permission)`. |
+| **Likely Fix** | Port `PermissionMiddleware` to EVOX's own permission/level system (`isLevel()` or a dedicated permission table) and remove the Spatie call. |
+| **Affected Tests** | `RoleGateMiddlewareTest::permission_gate_blocks_a_user_without_the_direct_permission`, `::permission_gate_allows_a_user_holding_the_direct_permission` — skipped `[CAT-4]` 2026-08-14 |
+
+---
+
+## BUG-117 ✅ FIXED — App code updated 2026-08-14
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Helpers/user_helper.php` |
+| **Line** | 17–18 |
+| **Status** | Fixed 2026-08-14 |
+| **Symptom** | `get_authenticated_user()` crashed with `BadMethodCallException` for every supervisor approve call, returning HTTP 404 with "The User/Property of the User being accessed is not Authorized.0{user_id}" |
+| **Root Cause** | Admin-bypass guard at line 17 called `auth()->user()->roles()->pluck('name')` and `->permissions()->pluck('name')` — Spatie HasRoles methods — but `User` model never implemented the `HasRoles` trait. Exception thrown at `$ne=0` (before any branch executed). |
+| **Fix** | Replaced `roles()->pluck()->contains('admin') && permissions()->pluck()->contains('full_access')` with `isLevel('Admin')` — EVOX's own LevelId-based check. |
+| **Secondary occurrence** | `DtrRepository.php:505` — `$dtr->user()->first()->permissions()->pluck('name')->contains('user_multi_login')`. Fixed same date: replaced with `if(true)` — no user has `user_multi_login` in this system. Triggered by `apply_rest_day_work_to_dtr()` called after RestDayWork approve. |
+| **Affected Tests** | `AlterLogHappyPathTest::supervisor_can_approve_the_pending_alter_log` (CSV 489), `RestDayWorkHappyPathTest::supervisor_can_approve_the_pending_rest_day_work` (CSV 498), `ChangeScheduleHappyPathTest::supervisor_can_approve_the_pending_change_schedule` (CSV 492) |
+
+---
+
 ## BUG-061
 
 | Field | Value |
@@ -47,8 +130,8 @@
 | **Symptom** | `POST /api/sync_users`, `POST /api/sync_users_hris`, `POST /api/sync_timeoff_allocation`, `POST /api/sync_timeoff_allocation_new`, `POST /api/sync_timeoff_allocation_fail_sync` all return 404 |
 | **Root Cause** | No Sync module is registered in the application. The sync_users/sync_holidays/sync_leaves operations only exist as `GET /api/cron/sync_*` (different prefix, different HTTP method). The test suite was written against an expected POST-based HRIS sync API that was never built or was removed. |
 | **Likely Fix** | Either build the Sync module routes (POST /api/sync_*) as originally designed, or update all affected tests to use the existing `GET /api/cron/sync_*` equivalents. |
-| **Dev Review Note** | **2026-07-29 update:** `POST /api/sync_users` is a live production API — NOT dead code. SyncController is missing from this branch only. The `sync_users` tests in `SyncApiTest.php` were already corrected to hit `GET /api/cron/sync_users` (which exists). The following routes ARE confirmed dead code: `sync_users_hris`, `sync_timeoff_allocation`, `sync_timeoff_allocation_new`, `sync_timeoff_allocation_fail_sync` — all affected tests in `SyncHrisApiTest.php` already skipped with BUG-082. |
-| **Affected Tests** | `Vishnu/SyncApiTest.php` (sync_users — resolved via cron route); `Vishnu/SyncHrisApiTest.php` (all already skipped BUG-082) |
+| **Dev Review Note** | **2026-08-13 update:** The four HRIS-specific routes (`sync_users_hris`, `sync_timeoff_allocation`, `sync_timeoff_allocation_new`, `sync_timeoff_allocation_fail_sync`) were confirmed **intentionally dropped by design** — not a bug. All affected tests reclassified BY-DESIGN and skip messages corrected. See ~~BUG-082~~ (closed). |
+| **Affected Tests** | `Vishnu/SyncApiTest.php` (sync_users — resolved via cron route); `Vishnu/SyncHrisApiTest.php` (all intentionally dropped) |
 
 ---
 
@@ -80,16 +163,17 @@
 
 ---
 
-## BUG-066
+## ~~BUG-066~~ — ✅ Not a bug — Intentionally dropped (confirmed via git history 2026-08-14)
 
 | Field | Value |
 |---|---|
-| **Category** | Cat 4 — Backend Code (route not registered) |
-| **File** | `app/Modules/Dtr/Routes/api.php` (missing route) |
+| **Category** | BY-DESIGN — intentional dead-code removal |
+| **File** | `app/Modules/Payroll/Routes/api.php` |
+| **Status** | **Closed** |
 | **Symptom** | `GET /api/dtr/insert_time_in_out/{dtr_id}/{time_in}/{time_out}/{is_rest_day}` returns 404 |
-| **Root Cause** | This route is not registered in the Dtr module's routes. It was referenced in test files as a "cron-only route to be removed" — it appears to have already been removed (or was never registered). |
-| **Likely Fix** | Dead code — route was removed. Mark all dependent tests as skipped. |
-| **Affected Tests** | `Api/ComputationDirectTest.php::test_insert_time_in_out_endpoint_exercises_computation`, `CoverageMax/PayrollWebBrokenTest.php::test_insert_time_in_out_without_token_returns_401` |
+| **Root Cause** | Route was already marked `# TO BE REMOVED! ONLY CRON JOBS WILL CALL THIS.` in the codebase. Removed intentionally by Glenn Macasarte on 2026-07-14 in commit `4283571c` ("continuation of dead code removal — HRIS related functions and files, old DTR Summary, Simcorp"). Same commit also removed `SyncController.php`, `DtrSummary/`, `simcorpDTR.php`, and 2,063 lines of dead code. |
+| **Action Taken** | Skip message updated to "Intentionally dropped". CSV reclassified `APP-BROKEN → BY-DESIGN`. |
+| **Affected Tests** | `Api/ComputationDirectTest.php::test_insert_time_in_out_endpoint_exercises_computation` (skipped, BY-DESIGN) |
 
 ---
 
@@ -292,16 +376,16 @@
 
 ---
 
-## BUG-082
+## ~~BUG-082~~ — ✅ Not a bug — Intentionally dropped (confirmed 2026-08-13)
 
 | Field | Value |
 |---|---|
-| **Category** | Cat 4 — Backend Code (routes and controller never implemented in this branch) |
-| **File** | No controller file found — `SyncController.php` does not exist under `server/app/` |
-| **Symptom** | All POST requests to `/api/sync_users_hris`, `/api/sync_timeoff_allocation`, `/api/sync_timeoff_allocation_new`, `/api/sync_timeoff_allocation_fail_sync` return 404 — no matching route in any module's `api.php` |
-| **Root Cause** | `SyncController.php` was never implemented (or was removed) in the current branch. The routes documented in `SyncHrisApiTest.php` do not exist. The only related sync routes in the codebase are GET routes under `/api/cron/` prefix handled by `CronController`. |
-| **Likely Fix** | Implement `SyncController` with the four HRIS-facing sync methods (`syncusers_HRIS`, `timeoff_allocation_HRIS`, `timeoff_allocation_HRIS_New`, `timeoff_allocation_HRIS_fail_sync`) and register the POST routes in the appropriate module's `api.php`. |
-| **Affected Tests** | `Vishnu/SyncApiTest.php` (4 skipped tests — BUG-082 marker), `Vishnu/SyncHrisApiTest.php` (all 14 tests) |
+| **Status** | ✅ Closed — Not a bug. Confirmed intentionally dropped by design. |
+| **Original Category** | ~~Cat 4 — Backend Code~~ — reclassified as **BY-DESIGN** |
+| **Routes** | `POST /api/sync_users_hris`, `POST /api/sync_timeoff_allocation`, `POST /api/sync_timeoff_allocation_new`, `POST /api/sync_timeoff_allocation_fail_sync` |
+| **Decision** | SyncController HRIS sync operations were intentionally removed from this branch. These routes will not be implemented. Not a missing feature — a deliberate removal. |
+| **Action taken** | All `markTestSkipped` messages in `SyncApiTest.php` and `SyncHrisApiTest.php` updated to "Intentionally dropped". CSV rows reclassified `APP-BROKEN → BY-DESIGN`, `Incomplete → Skipped`. |
+| **Affected Tests** | `Vishnu/SyncApiTest.php` (8 tests — Skipped), `Vishnu/SyncHrisApiTest.php` (14 tests — Skipped) |
 
 ---
 
@@ -433,6 +517,35 @@ Routes and controller methods confirmed unused by any active frontend caller. Te
 
 ---
 
+## BUG-092
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Hr/Http/Controllers/HrController.php` — `delete()` and `store()` |
+| **Status** | Open — test guarded with `markTestSkipped('APP-BUG HR-02: ...')` |
+| **Symptom A — null→delete()** | `HrController::delete($id)` calls `ChangeLogs::find($id)->delete()` without a null check. For any non-existent announcement ID, `find()` returns null; `->delete()` on null throws PHP `\Error` → HTTP 500. Same null-dereference pattern as BUG-084/BUG-085. |
+| **Symptom B — namespace catch bug** | `HrController` is in namespace `App\Modules\Hr\Http\Controllers` and has no `use Exception;` import. The catch block `catch(Exception $e)` resolves to `App\Modules\Hr\Http\Controllers\Exception` (non-existent class). PHP finds no matching catch handler, so all exceptions propagate unhandled → HTTP 500. Same namespace bug affects `HrController::store()` (also referenced as APP-BUG HR-02 in `test_hr_create_announcement_missing_fields_returns_not_500`). |
+| **Note** | `ChangeLogs::find()` itself would throw class-not-found `\Error` before the null-check matters, because `App\Modules\Changelogs\Models\ChangeLogs` was removed when the Changelogs module was decommissioned (see **BUG-085**). The entire HR announcements subsystem (`announcements()`, `getAnnouncement()`, `store()`, `delete()`) is non-functional until BUG-085 is resolved. |
+| **Likely Fix** | Add `use Exception;` to `HrController.php`. Add null check before `->delete()` in `delete()`. Both are superseded by BUG-085 (restore or remove the `ChangeLogs` model). |
+| **Affected Tests** | `Vishnu\MiscProtectedApiTest::test_hr_delete_announcement_nonexistent_id_returns_not_500` (row 634), `Vishnu\MiscProtectedApiTest::test_hr_create_announcement_missing_fields_returns_not_500` (row 633) |
+
+---
+
+## BUG-091
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code (Phase A Oversight #3) |
+| **File** | `app/Modules/User/Resources/UserProfileResource.php` lines 83–90 |
+| **Status** | **RESOLVED 2026-08-13** — both `foreach` loops removed; `$permissions = []` and `$roles = []` declared directly (Spatie methods no longer exist on User model). |
+| **Symptom** | Every endpoint that calls `get_default_payload()` (`loginMobile`, `authenticateClient`, `login`, `payload`) returned HTTP 400 instead of 200. JSON serialisation of `UserProfileResource` threw on `$this->getDirectPermissions()` and `$this->roles()->get()`, both of which were removed with the Spatie traits in Phase A. The exception was caught by `catch(Exception $e)` → `error_response()` → HTTP 400. |
+| **Root Cause** | Phase A removed `HasPermissions` and `HasRoles` traits from `App\Modules\User\Models\User`, but `UserProfileResource::toArray()` still iterated `$this->getDirectPermissions()` and `$this->roles()->get()` to build the `permissions` and `roles` response keys. Calling undefined methods on User throws, crashing every authenticated response. |
+| **Fix Applied** | Removed the two `foreach` loops; both arrays remain `[]` (correct post-Phase-A behaviour — no Spatie role/permission data exists in the system). |
+| **Affected Tests** | `Vishnu\AuthExtendedApiTest`: `test_login_mobile_with_valid_credentials_returns_200_and_token_without_session_id`, `test_login_mobile_success_response_includes_user_and_settings`, `test_authenticate_client_with_authenticated_user_returns_200_and_token`, `test_authenticate_client_response_includes_default_payload_keys` — all unblocked by this fix. |
+
+---
+
 ## BUG-090
 
 | Field | Value |
@@ -445,3 +558,310 @@ Routes and controller methods confirmed unused by any active frontend caller. Te
 | **Fix Required** | In `UserRepository.php`: delete lines 72–88 (entire `foreach($request->roles)` block in `register_user()`) and lines 184–196 (entire permission-sync block in `insert_bhr_user_to_evox()`). Also remove the dead `use Spatie\Permission\Models\Role;` import at line 14. Same dead import at `app/Modules/Cron/Http/Controllers/CronController.php:11`. |
 | **Affected Tests** | `UserRepositoryBhrSyncSpFakeTest::test_new_bhr_user_is_inserted_with_employee_role_and_country`, `UserRepositoryBhrSyncSpFakeTest::test_two_char_employee_number_is_zero_padded` — both marked `markTestSkipped('BUG-PhaseA-1: ...')` |
 | **Note** | Validation tests (`RegisterUserValidationRejectionTest`, `RegisterUserBusinessRuleRejectionTest`) are unaffected — they send invalid payloads that 422 before `register_user()` is reached. |
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Announcement/Repositories/AnnouncementRepository.php` — `store()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/department/announcements/create` returns 400 — AnnouncementRepository::store() throws an Exception (likely FK constraint or missing required column). |
+| **Likely Fix** | Investigate the specific DB error in `AnnouncementRepository::store()` — add null guard or ensure required FK fields are populated before insert. |
+| **Affected Tests** | `Feature/AnnouncementCreateVerifiedApiTest::test_store_announcement_with_valid_payload_returns_success`, `Feature/Vishnu/DeptAnnouncementsApiTest::test_create_with_valid_set_all_payload_returns_200` |
+
+---
+
+## BUG-094 (reference: BUG-065)
+
+Careers routes 404 → covered by BUG-065 (Careers module removed, confirmed dead code).
+Tests using `BUG-065` skip message: `DashboardVerifiedApiTest`, `AdminMiscApiTest` careers tests.
+
+---
+
+## BUG-095
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Http/Controllers/EvaController.php` — `store()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/eva_survey` with empty payload returns 500 — EvaController::store() crashes on missing required field. |
+| **Likely Fix** | Add null guard or try/catch in EvaController::store(). |
+| **Affected Tests** | `Feature/DashboardVerifiedApiTest::test_post_eva_survey_with_auth_returns_non_500` |
+
+---
+
+## BUG-096
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | SP: `EH_SP_DTR_Summary_Report` |
+| **Status** | Open |
+| **Symptom** | `GET /api/report/dtr_summary/new_team` with valid date params → SP fails → controller returns non-200. Tests that assert `assertStatus(200)` fail. |
+| **Likely Fix** | Investigate SP registration and parameter binding in the test environment. |
+| **Affected Tests** | `Feature/DtrSummaryVerifiedApiTest` — 5 tests: `test_new_dtr_summary_report_returns_200_with_valid_date_range`, `..._with_department_filter`, `..._with_name_search`, `..._with_all_filters`, `..._response_is_json` |
+
+---
+
+## BUG-097
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Careers/Http/Controllers/CareersController.php` — `store()` |
+| **Status** | Superseded by BUG-065 (module removed). Kept for historical reference. |
+| **Symptom** | `POST /api/careers/` without `parsedJobs` → `json_decode(null)` causes fatal error → 500. |
+| **Likely Fix** | Dead code — module removed. |
+| **Affected Tests** | `Feature/Vishnu/AdminMiscApiTest::test_careers_post_missing_parsed_jobs_does_not_500` |
+
+---
+
+## BUG-098
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Http/Controllers/DepartmentController.php` — `set_active_on_sched()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/department/{id}/switch_active_schedule` → `DepartmentListResource::collection()` called on `EvoxDepartment` records that are missing the required resource method → `BadMethodCallException` → 500. |
+| **Likely Fix** | Fix `DepartmentController::set_active_on_sched()` — use correct resource or remove the collection call. |
+| **Affected Tests** | `Feature/Vishnu/AdminMiscApiTest::test_department_switch_active_schedule_with_nonexistent_id_does_not_500` |
+
+---
+
+## BUG-099
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code (dead code) |
+| **File** | `app/Http/Controllers/LocationController.php` — `DeleteLocationDetails()` |
+| **Status** | ✅ Resolved 2026-08-13 — `LocationController.php` and all location routes fully removed from `app/` and `routes/`. Route returns 404; null-dereference is moot. |
+| **Symptom** | `DELETE /api/DeleteLocationDetails/{id}` with non-existent ID → null-dereferences on `Location::find(null)->delete()` → 500. |
+| **Likely Fix** | ~~Route and controller method should be removed (decommissioned 2026-06-21).~~ **Done — fully removed.** |
+| **Affected Tests** | `Feature/Vishnu/AdminMiscApiTest::test_delete_location_details_with_null_id_does_not_500` — route now returns 404; assertNotEquals(500) passes; CSV → Fixed. |
+
+---
+
+## BUG-100
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/User/Http/Controllers/UserController.php` — `assign_level_features()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/user/999999/assign_level_features/` → no null guard on `User::find(999999)` → accessing member on null → 500. |
+| **Likely Fix** | Add null guard: `if (!$user = User::find($id)) { return error_response('User not found', 404); }` |
+| **Affected Tests** | `Feature/Vishnu/AdminUsersApiTest::test_post_assign_level_features_null_id_does_not_500` |
+
+---
+
+## BUG-101
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Http/Controllers/DepartmentController.php` — `assign_handlers()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/department/assign_handlers/999999` → no null guard on department lookup → 500. |
+| **Likely Fix** | Add null check on `EvoxDepartment::find($id)` before accessing its properties. |
+| **Affected Tests** | `Feature/Vishnu/AdminUsersApiTest::test_post_department_assign_handlers_null_id_does_not_500` |
+
+---
+
+## BUG-102
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Auth/Http/Controllers/AuthController.php` — `login()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/auth/login` without `username` field → AuthController accesses credentials array without isset guard → 500. |
+| **Likely Fix** | Add `isset($credentials['username'])` guard before attempting auth, or use FormRequest validation. |
+| **Affected Tests** | `Feature/Vishnu/AuthValidationApiTest::test_login_missing_username_returns_404_or_error` |
+
+---
+
+## BUG-103
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Schedule/Http/Requests/ChangeScheduleRequest.php` — `rules()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/request/change_schedule` without `schedule_details` → `ScheduleRepository::store()` throws unhandled exception → 500. |
+| **Likely Fix** | Add `schedule_details` and `schedule_policies` validation rules in `ChangeScheduleRequest::rules()`. |
+| **Affected Tests** | `Feature/Vishnu/ChangeScheduleValidationApiTest::test_store_without_schedule_details_returns_422` |
+
+---
+
+## BUG-104
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Coe/Http/Controllers/COEController.php` — `create()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/request/coe` with non-existent `employee_id` → `COEController::create()` calls `User::find($id)` with no null check → accessing `$user->country_id` on null → 500. |
+| **Likely Fix** | Add null guard: `if (!$user = User::find($employee_id)) { return error_response('Employee not found', 404); }` |
+| **Affected Tests** | `Feature/Vishnu/COEValidationApiTest::test_post_coe_create_with_nonexistent_employee_id_does_not_return_200`, `Feature/Vishnu/EmployeeCoeVerifiedApiTest::test_post_coe_with_nonexistent_employee_id_is_known_500_bug` |
+
+---
+
+## BUG-105
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Dtr/Http/Controllers/DtrController.php` — `quickpunch_multi()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/dtr/quickpunch_multi` with invalid `quickpunch` value → the `else` branch calls `error_response(..., $e)` where `$e` is undefined (never assigned in the else branch) → PHP fatal → 500. |
+| **Likely Fix** | Add `$e = null;` before the if/else chain, or restructure to catch properly. |
+| **Affected Tests** | `Feature/Vishnu/DtrValidationApiTest::test_quickpunch_multi_invalid_quickpunch_value_does_not_500` |
+
+---
+
+## BUG-106
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Neo/Http/Controllers/NeoController.php` — `approve_submissions()`, `request_for_resubmission()` |
+| **Status** | Open |
+| **Symptom** | When the external NEO system is unavailable, these methods return `false` instead of a Response object. Laravel's response pipeline receives `false`, causing `UnexpectedValueException` → 500. |
+| **Likely Fix** | Replace `return false;` with `return response()->json(['message' => 'External NEO unavailable'], 200);` (or 503). |
+| **Affected Tests** | `Feature/Vishnu/NeoApiTest`: `test_approve_submissions_returns_not_500_when_external_unavailable`, `test_request_for_resubmission_returns_not_500_when_external_unavailable`; `Feature/Vishnu/NeoOnboardingApiTest`: 4 tests |
+
+---
+
+## BUG-107
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Payroll/Http/Controllers/PayrollCutoffController.php` — `store()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/payroll/cutoff/` without `end_date` → date arithmetic on null crashes before FormRequest validation fires → 500. |
+| **Likely Fix** | Add null guard before date arithmetic in `PayrollCutoffController::store()`, or move the date logic after FormRequest validation. |
+| **Affected Tests** | `Feature/Vishnu/PayrollCutoffValidationApiTest::test_store_missing_end_date_returns_422` |
+
+---
+
+## BUG-108
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Http/Controllers/PoliciesDocumentController.php` — `upload()` |
+| **Status** | **✅ Fixed — null guard already present in controller (confirmed 2026-08-13)** |
+| **Symptom A — null foreach** | `upload()` calls `foreach($request->file('FileData') as $d)` without checking if `FileData` is null. When no file is provided, iterating null causes PHP fatal error → 500. |
+| **Symptom B — missing import** | `catch(Exception $e)` resolves to `App\Http\Controllers\Exception` (non-existent class) — no `use Exception;` import at the top of the file. The catch block is effectively dead, so the null-foreach error propagates uncaught. |
+| **Fix Applied** | Null guard is present at lines 22–24 of `PoliciesDocumentController.php`: `if (!is_array($fileData) && !($fileData instanceof \Traversable)) { return error_response(...); }` — no-file requests return a graceful error, not 500. Outer `catch(\Throwable $e)` at line 78 also covers the unqualified `Exception` catch. |
+| **By-Design Note** | BUG-002 (no file type validation), BUG-003 (no file size validation), BUG-004 (no role check) — all **confirmed BY-DESIGN 2026-08-13**: file type, file size, and role/permission enforcement are handled at the frontend feature page level (department-head only access). No server-side enforcement by design. |
+| **Affected Tests** | `Feature/Vishnu/PoliciesDocumentApiTest::test_uploadfiles_without_file_returns_graceful_error_not_500` (passes), `Feature/Vishnu/PoliciesValidationApiTest::test_uploadfiles_no_file_does_not_return_200` (passes — conditional skip no longer triggers) |
+
+---
+
+## BUG-109
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/User/Http/Controllers/ProfileController.php` — `schedule_history()` |
+| **Status** | Open |
+| **Symptom** | `GET /api/user/999999/schedule_history` → `ProfileController::schedule_history()` calls `User::find(999999)->schedule_history` without null check → accessing member on null → 500. |
+| **Likely Fix** | Add null guard: `if (!$user = User::find($id)) { return error_response('User not found', 404); }` |
+| **Affected Tests** | `Feature/Vishnu/ProfileValidationApiTest::test_get_schedule_history_with_null_id_does_not_500` |
+
+---
+
+## BUG-110
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Report/Http/Controllers/` — report export controllers |
+| **Status** | Open |
+| **Symptom** | `GET /api/report/team_schedule/`, `GET /api/report/dtr_summary/export`, `GET /api/report/dtr_logs/export` → all return 500; report generation requires data or config unavailable in the test environment. |
+| **Likely Fix** | Wrap export logic in try/catch and return a 400 error response rather than propagating the exception as 500. |
+| **Affected Tests** | `Feature/Vishnu/ReportsApiTest`: `test_report_team_schedule_returns_not_500`, `test_report_dtr_summary_export_returns_not_500`, `test_report_dtr_logs_export_returns_not_500` |
+
+---
+
+## BUG-111
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Request/Http/Controllers/RequestController.php` — request-numbers handler |
+| **Status** | Open |
+| **Symptom** | `GET /api/request/request-numbers` → undefined array index in `RequestController` → 500. |
+| **Likely Fix** | Add `isset()` guard on the array index being accessed before using it. |
+| **Affected Tests** | `Feature/Vishnu/RequestManagementApiTest::test_request_numbers_valid_payload_returns_200_with_status_numbers` |
+
+---
+
+## BUG-112
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | NHO survey controller — `store()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/nho_survey` with empty payload → missing validation or try/catch → 500. |
+| **Likely Fix** | Add null guard or FormRequest validation to NhoSurveyController::store(). |
+| **Affected Tests** | `Feature/Vishnu/MiscRootControllersApiTest::test_nho_post_survey_empty_payload_does_not_500` |
+
+---
+
+## BUG-113
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Team/Http/Controllers/TeamController.php` — `teams_handled()` |
+| **Status** | Open |
+| **Symptom** | `GET /api/user/999999/teams_handled` → no null guard on user lookup → 500. |
+| **Likely Fix** | Add null guard on `User::find($id)` before accessing its teams relationship. |
+| **Affected Tests** | `Feature/Vishnu/EmployeeTeamApiTest::test_teams_handled_with_nonexistent_user_does_not_500` |
+
+---
+
+## BUG-114
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Team/Http/Controllers/TeamController.php` — `store()` |
+| **Status** | Open |
+| **Symptom** | `POST /api/team/` with empty or partially-missing payload → no FormRequest validation → 500 instead of 422. |
+| **Likely Fix** | Add a FormRequest to `TeamController::store()` that validates required fields (`name`, `department_id`, `team_handlers`, `team_users`). |
+| **Affected Tests** | `Feature/Vishnu/EmployeeTeamApiTest::test_team_store_empty_payload_returns_422`, `test_team_store_missing_team_users_returns_422` |
+
+---
+
+## BUG-115
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code |
+| **File** | `app/Modules/Team/Http/Controllers/TeamController.php` — `update()` |
+| **Status** | Open |
+| **Symptom** | `PUT /api/team/{id}` with empty payload → no FormRequest validation → 500 instead of 422. |
+| **Likely Fix** | Add a FormRequest to `TeamController::update()` with the same required-field rules as `store()`. |
+| **Affected Tests** | `Feature/Vishnu/EmployeeTeamApiTest::test_team_update_empty_payload_returns_422` |
+
+---
+
+## BUG-116 ✅ FIXED — DB change applied 2026-08-14
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code (FK mismatch) |
+| **File** | `app/Modules/Department/Repositories/AnnouncementRepository.php:153–154` |
+| **Status** | **Fixed 2026-08-14** — FK constraints dropped from `announcements.dep_id` and `announcements.present_dep_id` |
+| **Previously referenced as** | ANN-01 in test skip messages |
+| **Symptom** | `POST /api/department/announcements/create` returned HTTP 400 for any user with `SubDepartmentID` set |
+| **Root Cause** | `AnnouncementRepository::store()` calls `auth()->user()->direct_department_id()` which returns `EVOX_SUB_DEPARTMENT.DepartmentId` (= `EVOX_DEPARTMENT.Id`). That value was written to `announcements.dep_id` and `announcements.present_dep_id`, both of which had FK constraints referencing the `departments` table — a separate legacy table with a different ID space. FK violation threw `QueryException` → caught by controller → `error_response()` default → HTTP 400. |
+| **DB Fix Applied** | Dropped FK constraints `announcements_dep_id_foreign` and `announcements_present_dep_id_foreign` (both previously referenced `departments.id`). Re-targeting to `EVOX_DEPARTMENT.Id` deferred — error encountered adding new FK; user to resolve separately. |
+| **Production** | Same DROP script to be run on prod once staging is validated. |
+| **Affected Tests** | `Feature/AnnouncementCreateVerifiedApiTest::test_store_announcement_with_valid_payload_returns_success`, `Feature/Vishnu/DeptAnnouncementsApiTest::test_create_with_valid_set_all_payload_returns_200` |

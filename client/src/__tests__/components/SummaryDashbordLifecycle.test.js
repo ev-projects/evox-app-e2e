@@ -110,8 +110,7 @@ jest.mock('../../services/API', () => ({ call: jest.fn() }));
 jest.mock('../../store/actions/filters/requestListActions', () => ({
     fetchStatusNumbers_dashboard:   jest.fn(),
     myfetchStatusNumbers_dashboard: jest.fn(),
-    get_today_leaves:               jest.fn(),
-    get_tommrow_leaves:             jest.fn(),
+    // get_today_leaves + get_tommrow_leaves removed 2026-08-14 — superseded by getDashboardOverall(1)
     get_dashboard_holiday:          jest.fn(),
     eventclick:  jest.fn((t) => ({ type: 'STUB_EVENT_CLICK_MINE', requesttype: t })),
     eventclick1: jest.fn((t) => ({ type: 'STUB_EVENT_CLICK_TEAM', requesttype: t })),
@@ -199,22 +198,20 @@ describe('Summary Dashboard - page lifecycle', () => {
         expect(mockDispatch).toHaveBeenCalledWith({ type: 'STUB_DASHBOARD_OVERALL', page_type: 1 });
     });
 
-    test('the_mount_effect_fires_exactly_one_dispatch_because_the_five_other_dashboard_fetches_are_commented_out_FINDING_SD_EFFECT_1', async () => {
+    test('the_mount_effect_fires_exactly_one_dispatch_because_the_other_dashboard_fetches_are_commented_out_FINDING_SD_EFFECT_1', async () => {
         const {
-            get_today_leaves, get_tommrow_leaves, get_dashboard_holiday,
+            get_dashboard_holiday,
             fetchStatusNumbers_dashboard, myfetchStatusNumbers_dashboard,
         } = require('../../store/actions/filters/requestListActions');
 
         renderScreen();
         await flush();
 
-        // FINDING SD-EFFECT-1 (characterised): the effect body still imports and still holds
-        // dead calls to all five of these. They ship in the bundle and never run, and so do
-        // the 13 useState counters (altercount, overtimecount, ... taskcompletestatus1) that
-        // only those calls would ever have set.
+        // FINDING SD-EFFECT-1 (characterised): getDashboardOverall(1) is the only active dispatch.
+        // get_today_leaves + get_tommrow_leaves removed 2026-08-14 (superseded by getDashboardOverall).
+        // get_dashboard_holiday, fetchStatusNumbers_dashboard, myfetchStatusNumbers_dashboard remain
+        // commented out in SummaryDashbord.js and never run.
         expect(mockDispatch).toHaveBeenCalledTimes(1);
-        expect(get_today_leaves).not.toHaveBeenCalled();
-        expect(get_tommrow_leaves).not.toHaveBeenCalled();
         expect(get_dashboard_holiday).not.toHaveBeenCalled();
         expect(fetchStatusNumbers_dashboard).not.toHaveBeenCalled();
         expect(myfetchStatusNumbers_dashboard).not.toHaveBeenCalled();

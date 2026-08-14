@@ -250,71 +250,11 @@ describe('GenerateDate component', () => {
 });
 
 // ===========================================================================
-// 3. CHANGE LOGS
+// 3. CHANGE LOGS — FEATURE RETIRED 2026-08-13
 // ===========================================================================
-describe('ChangeLogs component', () => {
-    const clProps = {
-        ...baseProps,
-        addChangeLogs: jest.fn(),
-        setRedirect:   jest.fn(),
-        constant:      { categories: ['Announcements', 'Updates', 'Release Notes'] },
-        // Note: mapStateToProps reads from state.restDayWork (copy-paste bug BUG-CL-05)
-        instance:           {},
-        isInstanceLoaded:   true,
-    };
-
-    beforeEach(() => jest.clearAllMocks());
-
-    test('renders without crashing', () => {
-        expect(() => wrap(<ChangeLogs {...clProps} />)).not.toThrow();
-    });
-
-    test('renders Title label', () => {
-        const { getByText } = wrap(<ChangeLogs {...clProps} />);
-        expect(getByText(/Title/i)).toBeInTheDocument();
-    });
-
-    test('renders Category label', () => {
-        const { getByText } = wrap(<ChangeLogs {...clProps} />);
-        expect(getByText(/Category/i)).toBeInTheDocument();
-    });
-
-    test('renders Date label', () => {
-        const { getAllByText } = wrap(<ChangeLogs {...clProps} />);
-        // "Date:" label appears in the form; use getAllByText to avoid ambiguity with
-        // multiple "date"-containing elements (e.g. option labels, input names)
-        const dateEls = getAllByText(/Date/i);
-        expect(dateEls.length).toBeGreaterThanOrEqual(1);
-    });
-
-    test('renders title input', () => {
-        const { container } = wrap(<ChangeLogs {...clProps} />);
-        expect(container.querySelector('input[name="title"]')).toBeInTheDocument();
-    });
-
-    test('renders category select', () => {
-        const { container } = wrap(<ChangeLogs {...clProps} />);
-        expect(container.querySelector('select[name="category"]')).toBeInTheDocument();
-    });
-
-    test('renders log_date date input', () => {
-        const { container } = wrap(<ChangeLogs {...clProps} />);
-        expect(container.querySelector('input[name="log_date"]')).toBeInTheDocument();
-    });
-
-    test('does not crash with empty instance', () => {
-        expect(() =>
-            wrap(<ChangeLogs {...clProps} instance={{}} />)
-        ).not.toThrow();
-    });
-
-    test('does not crash with undefined instance (falls back to empty object)', () => {
-        // BUG-CL-06: ChangeLogs accesses this.props.instance.log_date without a null guard,
-        // so passing instance=undefined crashes. Pass {} as the safe fallback instead.
-        expect(() =>
-            wrap(<ChangeLogs {...clProps} instance={{}} />)
-        ).not.toThrow();
-    });
+describe.skip('ChangeLogs component (retired — Admin/ChangeLogs removed 2026-08-13)', () => {
+    // All tests skipped. container/Admin/ChangeLogs deleted; Changelogs module removed
+    // by Glenn Macasarte commits dea17bdf + 6c38ae92 (2026-07-13/16).
 });
 
 // ===========================================================================

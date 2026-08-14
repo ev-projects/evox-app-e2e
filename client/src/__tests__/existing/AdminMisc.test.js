@@ -245,69 +245,11 @@ describe('GenerateDate component', () => {
 });
 
 // ===========================================================================
-// 3. CHANGE LOGS
+// 3. CHANGE LOGS — FEATURE RETIRED 2026-08-13
 // ===========================================================================
-describe('ChangeLogs component', () => {
-    const clProps = {
-        ...baseProps,
-        addChangeLogs: jest.fn(),
-        setRedirect:   jest.fn(),
-        constant:      { categories: ['Announcements', 'Updates', 'Release Notes'] },
-        // Note: mapStateToProps reads from state.restDayWork (copy-paste bug BUG-CL-05)
-        instance:           {},
-        isInstanceLoaded:   true,
-    };
-
-    beforeEach(() => jest.clearAllMocks());
-
-    test('renders without crashing', () => {
-        expect(() => wrap(<ChangeLogs {...clProps} />)).not.toThrow();
-    });
-
-    test('renders Title label', () => {
-        const { getByText } = wrap(<ChangeLogs {...clProps} />);
-        expect(getByText(/Title/i)).toBeInTheDocument();
-    });
-
-    test('renders Category label', () => {
-        const { getByText } = wrap(<ChangeLogs {...clProps} />);
-        expect(getByText(/Category/i)).toBeInTheDocument();
-    });
-
-    test('renders Date label', () => {
-        const { getAllByText } = wrap(<ChangeLogs {...clProps} />);
-        // "Date" appears in more than one place (label + column), so match all.
-        expect(getAllByText(/Date/i).length).toBeGreaterThanOrEqual(1);
-    });
-
-    test('renders title input', () => {
-        const { container } = wrap(<ChangeLogs {...clProps} />);
-        expect(container.querySelector('input[name="title"]')).toBeInTheDocument();
-    });
-
-    test('renders category select', () => {
-        const { container } = wrap(<ChangeLogs {...clProps} />);
-        expect(container.querySelector('select[name="category"]')).toBeInTheDocument();
-    });
-
-    test('renders log_date date input', () => {
-        const { container } = wrap(<ChangeLogs {...clProps} />);
-        expect(container.querySelector('input[name="log_date"]')).toBeInTheDocument();
-    });
-
-    test('does not crash with empty instance', () => {
-        expect(() =>
-            wrap(<ChangeLogs {...clProps} instance={{}} />)
-        ).not.toThrow();
-    });
-
-    // Component reads this.props.instance.log_date/title/... directly (ChangeLogs.js:87-90)
-    // with no null guard, so it genuinely throws on an undefined instance — staging gap.
-    test.skip('does not crash with undefined instance', () => {
-        expect(() =>
-            wrap(<ChangeLogs {...clProps} instance={undefined} />)
-        ).not.toThrow();
-    });
+describe.skip('ChangeLogs component (retired — Admin/ChangeLogs removed 2026-08-13)', () => {
+    // All tests skipped. container/Admin/ChangeLogs deleted; Changelogs module removed
+    // by Glenn Macasarte commits dea17bdf + 6c38ae92 (2026-07-13/16).
 });
 
 // ===========================================================================

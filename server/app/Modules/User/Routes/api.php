@@ -150,10 +150,7 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     
     Route::group(['prefix' => 'profile', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
         
-        # Gets the User List of Specific Role
-        Route::post('/', 'ProfileController@store');
-
-        # Gets the User List of Specific Role
+        # ProfileController@store removed 2026-08-13 — store() was never implemented (dead code, Client role decommissioned)
         Route::put('/', 'ProfileController@update');
     
     

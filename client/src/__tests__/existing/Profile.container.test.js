@@ -170,7 +170,6 @@ const defaultProps = {
     setDateList:               jest.fn(),
     setWeekList:               jest.fn(),
     setScope:                  jest.fn(),
-    updateUserProfile:         jest.fn(),
     changePassword:            jest.fn(),
 };
 

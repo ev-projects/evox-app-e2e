@@ -101,37 +101,24 @@ class MiscRootControllersApiTest extends TestCase
     /** @test */
     public function test_booking_get_today_leaves_returns_data_key_not_500()
     {
-        $response = $this->getJson('/api/Gettodayleaves', $this->authHeaders());
-        if ($response->status() === 400) {
-            $this->markTestSkipped('DEAD-CODE DASH-01 (BUG-083): GET /api/Gettodayleaves returns 400. Endpoint is dead — dispatch call commented out in SummaryDashbord.js:58. Dashboard data served by get_dashboard_all/1. Route + controller method should be removed.');
-        }
-        $this->assertNotEquals(500, $response->status());
-        $this->assertArrayHasKey('data', $response->json() ?? []);
+        // Intentionally dropped 2026-08-14: GET /api/Gettodayleaves removed.
+        // Today's leave data is now served by GET /api/get_dashboard_all/1 via EH_SP_Dashboard (page_type=1).
+        $this->markTestSkipped('Intentionally dropped: GET /api/Gettodayleaves route removed 2026-08-14 — superseded by get_dashboard_all/1.');
     }
 
     /** @test */
     public function test_booking_get_tomorrow_leaves_returns_data_key_not_500()
     {
-        $response = $this->getJson('/api/Gettommorowleaves', $this->authHeaders());
-        if ($response->status() === 500) {
-            $this->markTestSkipped('DEAD-CODE DASH-02 (BUG-084): GET /api/Gettommorowleaves returns 500. Endpoint is dead — no frontend component calls this route. Tomorrow leaves served by get_dashboard_all/1. Route + controller method should be removed.');
-        }
-        $this->assertNotEquals(500, $response->status(),
-            'get_tommorow_leave_list must catch DB failures and not throw 500.');
-        $this->assertArrayHasKey('data', $response->json() ?? [],
-            'get_tommorow_leave_list must return a data key.');
+        // Intentionally dropped 2026-08-14: GET /api/Gettommorowleaves removed.
+        // Tomorrow's leave data is now served by GET /api/get_dashboard_all/1 via EH_SP_Dashboard (page_type=1).
+        $this->markTestSkipped('Intentionally dropped: GET /api/Gettommorowleaves route removed 2026-08-14 — superseded by get_dashboard_all/1.');
     }
 
     /** @test */
     public function test_booking_get_tomorrow_leaves_data_is_array()
     {
-        $response = $this->getJson('/api/Gettommorowleaves', $this->authHeaders());
-        if ($response->status() === 500) {
-            $this->markTestSkipped('DEAD-CODE DASH-02 (BUG-084): GET /api/Gettommorowleaves returns 500 — see test_booking_get_tomorrow_leaves_returns_data_key_not_500.');
-        }
-        $this->assertNotEquals(500, $response->status());
-        $this->assertIsArray($response->json('data'),
-            'data key must be an array (empty if no leaves tomorrow).');
+        // Intentionally dropped 2026-08-14: GET /api/Gettommorowleaves removed.
+        $this->markTestSkipped('Intentionally dropped: GET /api/Gettommorowleaves route removed 2026-08-14 — superseded by get_dashboard_all/1.');
     }
 
     /** @test */

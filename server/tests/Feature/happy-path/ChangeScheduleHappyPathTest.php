@@ -138,13 +138,13 @@ class ChangeScheduleHappyPathTest extends TestCase
             );
         }
 
-        $csId = $storeResponse->json('data.id');
-        $this->assertNotNull($csId, 'Created CS id missing from store response');
+        // success_response() wraps content as {"message":...,"content":{...}} — key is 'content', not 'data'.
+        $csId = $storeResponse->json('content.id');
+        $this->assertNotNull($csId, 'Created CS id missing from store response (expected content.id)');
 
         // Approve as supervisor.
-        // approve() calls ChangeScheduleRepository::update() (which checks get_authenticated_user
-        // on the CS owner — fails for supervisor, returns null silently), then always calls
-        // $change_schedule->approve() to set status='approved'.
+        // BUG-117 fixed 2026-08-14: approve() → update() → get_authenticated_user() now uses
+        // isLevel('Admin') instead of broken roles()/permissions(); supervisor now uses users_handled().
         // apply_schedule_to_dtr() runs over future DTRs — empty set, no crash.
         $approvePayload = array_merge($this->schedulePayload, [
             'approver_note' => 'HAPPY-PATH-AUTOTEST approved.',

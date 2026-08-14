@@ -10,10 +10,10 @@
  *   GET /api/cron/sync_holidays — middleware: jwtauth, auth.apikey
  *   GET /api/cron/sync_leaves   — middleware: jwtauth, auth.apikey
  *
- * Routes that do NOT exist (SyncController.php not implemented in this branch):
+ * Intentionally dropped (confirmed 2026-08-13):
  *   /api/sync_users_hris, /api/sync_timeoff_allocation,
  *   /api/sync_timeoff_allocation_new, /api/sync_timeoff_allocation_fail_sync
- *   → BUG-082: SyncController never implemented; tests skipped.
+ *   SyncController HRIS sync operations were removed by design from this branch.
  *
  * Controller-logic tests for the 3 existing cron routes are already covered
  * by tests/Feature/Api/CronApiTest.php (with correct BHR IoC mock).
@@ -93,56 +93,55 @@ class SyncApiTest extends TestCase
         $this->markTestIncomplete('Controller-logic coverage for /api/cron/sync_leaves is in CronApiTest.php (with BHR IoC mock).');
     }
 
-    // ─── BUG-082 — SyncController not implemented ────────────────────────────
-    // The following routes do not exist in any module's api.php in this branch.
-    // SyncController.php was not found under server/app/.
-    // Tests are skipped pending route implementation by the dev team.
+    // ─── Intentionally dropped — SyncController HRIS sync operations ─────────
+    // The following routes were removed by design from this branch (confirmed 2026-08-13).
+    // Tests remain as placeholders; activate if routes are reinstated.
 
     /** @test */
     public function test_sync_users_hris_without_api_key_returns_401()
     {
-        $this->markTestSkipped('BUG-082: /api/sync_users_hris route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_users_hris — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_users_hris_with_api_key_missing_body_returns_not_500()
     {
-        $this->markTestSkipped('BUG-082: /api/sync_users_hris route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_users_hris — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_without_api_key_returns_401()
     {
-        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_with_api_key_is_reachable()
     {
-        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_new_without_api_key_returns_401()
     {
-        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation_new route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_new — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_new_with_api_key_is_reachable()
     {
-        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation_new route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_new — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_fail_sync_without_api_key_returns_401()
     {
-        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation_fail_sync route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_fail_sync — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_fail_sync_with_api_key_is_reachable()
     {
-        $this->markTestSkipped('BUG-082: /api/sync_timeoff_allocation_fail_sync route not implemented — SyncController.php does not exist in this branch.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_fail_sync — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 }

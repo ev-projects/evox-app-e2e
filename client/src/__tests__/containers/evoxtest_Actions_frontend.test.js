@@ -130,7 +130,6 @@ import {
   setScope,
   setWeekList,
   fetchProfile,
-  updateUserProfile,
   fetchPersonalInformation,
   fetchJobInformation,
   fetchLeaveCredits,
@@ -160,7 +159,6 @@ import {
   getRecentPunches,
   getRecentPunches2,
   clearRecentPunches2,
-  getChangeLogs,
   clearRecentDtrInstance,
   getMyNotifications,
 } from '../../store/actions/dashboard/dashboardActions';
@@ -169,8 +167,6 @@ import {
   fetchStatusNumbers,
   fetchRequestListDisputes,
   myfetchStatusNumbers_dashboard,
-  get_today_leaves,
-  get_tommrow_leaves,
   get_dashboard_holiday,
   fetchStatusNumbers_dashboard,
   bulkRequest,
@@ -1377,21 +1373,6 @@ describe('profileActions', () => {
     expect(Formatter.alert_error).toHaveBeenCalled();
   });
 
-  test('updateUserProfile — success dispatches alert_success', async () => {
-    const dispatch = jest.fn();
-    updateUserProfile(1, { name: 'Bob' })(dispatch, jest.fn());
-    await flushPromises();
-    expect(dispatch).toHaveBeenCalledWith({ type: 'ALERT_SUCCESS' });
-  });
-
-  test('updateUserProfile — error', async () => {
-    API.call.mockRejectedValueOnce({ status: 422 });
-    const dispatch = jest.fn();
-    updateUserProfile(1, {})(dispatch, jest.fn());
-    await flushPromises();
-    expect(Formatter.alert_error).toHaveBeenCalled();
-  });
-
   test('fetchPersonalInformation — success dispatches FETCH_PERSONAL_INFORMATION', async () => {
     API.call.mockResolvedValueOnce({ data: { content: {} } });
     const dispatch = jest.fn();
@@ -1902,23 +1883,7 @@ describe('dashboardActions', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: 'CLEAR_SINGLE_PUNCH_SUCCESS' });
   });
 
-  test('getChangeLogs — success dispatches FETCH_CHANGE_LOGS', async () => {
-    API.call.mockResolvedValueOnce({ data: { content: [] } });
-    const dispatch = jest.fn();
-    getChangeLogs()(dispatch, jest.fn());
-    await flushPromises();
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'FETCH_CHANGE_LOGS' })
-    );
-  });
-
-  test('getChangeLogs — error', async () => {
-    API.call.mockRejectedValueOnce({ status: 500 });
-    const dispatch = jest.fn();
-    getChangeLogs()(dispatch, jest.fn());
-    await flushPromises();
-    expect(Formatter.alert_error).toHaveBeenCalled();
-  });
+  // getChangeLogs removed 2026-08-13 — Changelogs module retired; getChangeLogs deleted from dashboardActions
 
   test('clearRecentDtrInstance dispatches CLEAR_RECENT_DTR_INSTANCE', () => {
     const dispatch = jest.fn();
@@ -2074,44 +2039,7 @@ describe('requestListActions', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  test('get_today_leaves — success dispatches TODAY_LEAVES', async () => {
-    API.call.mockResolvedValueOnce({ data: { data: [{ id: 1 }] } });
-    const setLeaves = jest.fn();
-    const dispatch = jest.fn();
-    get_today_leaves(setLeaves)(dispatch, jest.fn());
-    await flushPromises();
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'TODAY_LEAVES' })
-    );
-    expect(setLeaves).toHaveBeenCalledWith([{ id: 1 }]);
-  });
-
-  test('get_today_leaves — error', async () => {
-    API.call.mockRejectedValueOnce({ status: 500 });
-    const dispatch = jest.fn();
-    get_today_leaves(jest.fn())(dispatch, jest.fn());
-    await flushPromises();
-    expect(Formatter.alert_error).toHaveBeenCalled();
-  });
-
-  test('get_tommrow_leaves — success dispatches TOMMOROW_LEAVES', async () => {
-    API.call.mockResolvedValueOnce({ data: { data: [] } });
-    const dispatch = jest.fn();
-    const setter = jest.fn();
-    get_tommrow_leaves(setter)(dispatch, jest.fn());
-    await flushPromises();
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'TOMMOROW_LEAVES' })
-    );
-  });
-
-  test('get_tommrow_leaves — error', async () => {
-    API.call.mockRejectedValueOnce({ status: 500 });
-    const dispatch = jest.fn();
-    get_tommrow_leaves(jest.fn())(dispatch, jest.fn());
-    await flushPromises();
-    expect(Formatter.alert_error).toHaveBeenCalled();
-  });
+  // get_today_leaves + get_tommrow_leaves tests removed 2026-08-14 — actions superseded by getDashboardOverall(1)
 
   test('get_dashboard_holiday — success dispatches DASHBOARD_HOLIDAY', async () => {
     API.call.mockResolvedValueOnce({ data: { holidays: [] } });

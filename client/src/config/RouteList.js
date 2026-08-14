@@ -75,17 +75,11 @@ import TimeOff from "../container/Profile/TimeOff";
 import Profile from "../container/Profile";
 import TeamAttendanceSummary from "../container/Report/TeamAttendanceSummary/TeamAttendanceSummary";
 import HRTeamAttendanceSummary from "../container/Report/HRTeamAttendanceSummary";
-import ChangeLogs from "../container/Admin/ChangeLogs";
 import DepartmentList from "../container/Admin/DepartmentList";
 import DepartmentAnnouncementsList from "../container/DepartmentAnnouncements/DepartmentAnnouncementsList";
 import DepartmentAnnouncementsForm from "../container/DepartmentAnnouncements/DepartmentAnnouncementsForm";
 import AnnouncementsPage from "../container/DepartmentAnnouncements/AnnouncementsPage";
 
-import HrAnnouncements from "../container/Hr/Announcements";
-import PostHrAnnouncements from "../container/Hr/PostAnnouncements";
-
-import HrAnnouncementsForm from "../container/Hr/HrAnnouncementsForm";
-import HrAnnouncementsList from "../container/Hr/HrAnnouncementsList";
 import MyTeamAllRequest from "../container/MyTeam/MyTeamRequests/MyTeamAllRequest";
 import MyOverallRequest from "../container/MyOverallRequest/MyOverallRequest";
 import OverallRequest from "../container/MyTeam/OverallRequest";
@@ -461,12 +455,6 @@ const RoutesList = (props) => {
           role={['admin']}  />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.manage_change_logs}>
-          <ChangeLogs  
-          level={["Admin"]} 
-          role={['admin']}  />
-        </ProtectedRoute>
-          
         <ProtectedRoute exact path={global.links.department_list}>
           <DepartmentList  
           level={["Admin"]} 
@@ -487,18 +475,6 @@ const RoutesList = (props) => {
         <ProtectedRoute exact path={global.links.ops_schedule_list}>
           <OpsScheduleList />
         </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.manage_hr_announcements}>
-          <HrAnnouncementsList  
-          level={["HR"]} 
-          role={['hr']} />
-        </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
-          <HrAnnouncementsForm  
-          feature = {['manage_announcement']} 
-          role={['hr']} permission={['manage_hr_announcements']}/>
-        </ProtectedRoute> 
 
         <ProtectedRoute exact path={global.links.admin_import_careers}>
           <JobOpeningsUpdate  

@@ -260,13 +260,20 @@ class UserEndpointsTest extends TestCase
     /** @test */
     public function test_list_via_role_returns_not_500()
     {
-        // BLOCKER (schema drift): role/{role}/users calls the EH_SP_Employee_List stored
-        // procedure via call_sp() (raw PDO). This test DB lacks that SP / the EVOX_LEVELS
-        // table, and the raw-PDO failure corrupts the surrounding DatabaseTransactions
-        // transaction — aborting the whole PHPUnit run, not just this test. Auth coverage
-        // is retained by test_list_via_role_without_token_returns_401; the controller body
-        // can only be exercised on a DB that has the stored procedures loaded.
-        $this->markTestIncomplete('role/{role}/users depends on stored procedures absent from the test DB.');
+        $this->requireUser();
+        $this->withoutMiddleware();
+
+        // supervisor branch — Eloquent only, no SP call
+        $response = $this->actingAs($this->user)->getJson('/api/role/supervisor/users', $this->apiKey);
+        $this->assertNotEquals(500, $response->status());
+
+        // SP branch — EH_SP_Employee_List is confirmed present in the test DB.
+        // Validation: role must exist in roles table. If none found, validation → 400 (not 500).
+        $roleName = DB::table('roles')->value('name');
+        if ($roleName) {
+            $response2 = $this->actingAs($this->user)->getJson("/api/role/{$roleName}/users", $this->apiKey);
+            $this->assertNotEquals(500, $response2->status());
+        }
     }
 
     /** @test */

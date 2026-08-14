@@ -63,13 +63,19 @@ class MailDeliveryLiveTest extends TestCase
     {
         parent::setUp();
 
-        if (getenv('MAIL_LIVE_TEST') !== '1' && env('MAIL_LIVE_TEST') !== '1') {
-            $this->markTestSkipped(
-                'live mail delivery is opt-in — run with MAIL_LIVE_TEST=1 to actually send'
-            );
-        }
-        if (app()->environment('production')) {
+        $liveMode = getenv('MAIL_LIVE_TEST') === '1' || env('MAIL_LIVE_TEST') === '1';
+
+        if ($liveMode && app()->environment('production')) {
+            // Only guard applies in live mode + production: never send real mail there.
             $this->markTestSkipped('refusing to send test mail from a production environment');
+        }
+
+        if (!$liveMode) {
+            // Non-live path: fake the mailer so Mail::send() is intercepted without SMTP.
+            // Templates still render fully via the manual ->build() call in sendTagged() —
+            // missing-variable errors are still caught. Mail::fake() does NOT call build()
+            // a second time (unlike the log driver), so subject/recipient overrides stick.
+            Mail::fake();
         }
 
         $this->to = getenv('MAIL_LIVE_TEST_TO') ?: (env('MAIL_LIVE_TEST_TO') ?: self::DEFAULT_TO);

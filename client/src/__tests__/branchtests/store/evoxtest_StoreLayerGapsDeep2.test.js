@@ -24,6 +24,16 @@ jest.mock('../../../services/Formatter', () => ({
 }));
 jest.mock('react-promise-tracker', () => ({ trackPromise: (p) => p }));
 
+// store/actions/announcement/hrAnnouncementActions.js deleted 2026-08-13 — Hr module retired.
+// jest.mock with a factory satisfies the static import below even without the file on disk.
+jest.mock('../../../store/actions/announcement/hrAnnouncementActions', () => ({
+    createHrAnnouncement: jest.fn(), updateHrAnnouncement: jest.fn(),
+    fetchHrAnnouncement: jest.fn(), fetchHrAnnouncementStrict: jest.fn(),
+    fetchHrAnnouncementList: jest.fn(), fetchDashboardAnnouncementList: jest.fn(),
+    fetchHrHandleAnnouncementList: jest.fn(), deleteHrAnnouncement: jest.fn(),
+    clearHrAnnouncementInstance: jest.fn(),
+}));
+
 import API from '../../../services/API';
 import Formatter from '../../../services/Formatter';
 import {
@@ -53,7 +63,8 @@ beforeEach(() => {
     API.export.mockImplementation(() => Promise.resolve({ data: 'csv-bytes' }));
 });
 
-describe('hrAnnouncementActions — every thunk, success and error arms', () => {
+// HR Announcements feature retired 2026-08-13. hrAnnouncementActions.js deleted.
+describe.skip('hrAnnouncementActions — every thunk, success and error arms — RETIRED', () => {
     test('create posts multipart (note the verbatim trailing-space URL) then redirects', async () => {
         const dispatch = await runThunk(createHrAnnouncement(new FormData()));
         const req = API.call.mock.calls[0][0];

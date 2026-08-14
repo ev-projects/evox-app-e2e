@@ -147,10 +147,8 @@ class AnnouncementCreateVerifiedApiTest extends TestCase
             ],
             $this->apiKey
         );
-        if ($response->status() === 400) {
-            $this->markTestSkipped('APP-BUG ANN-01: POST /api/department/announcements/create returns 400 — AnnouncementRepository::store() throws an Exception (likely FK constraint or missing column). Review AnnouncementRepository::store() for the specific DB error.');
-        }
         // Controller should return 200 or 201 on successful store
+        // BUG-116 fixed 2026-08-14: FK on dep_id/present_dep_id was wrong table (departments vs EVOX_DEPARTMENT) — FK removed.
         $this->assertContains($response->status(), [200, 201]);
     }
 

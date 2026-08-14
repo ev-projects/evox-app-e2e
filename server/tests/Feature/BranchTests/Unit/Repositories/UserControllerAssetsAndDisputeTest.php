@@ -113,9 +113,10 @@ class UserControllerAssetsAndDisputeTest extends TestCase
     {
         CallSpFake::fake('EV_SP_Payroll_Dispute', [[]]);
 
-        $before = \DB::table('activity_log')->count();
+        // log_activity() writes to the evox_logs connection, not the default MySQL connection.
+        $before = \DB::connection('evox_logs')->table('activity_log')->count();
         $this->controller->get_user_by_string_dispute();
-        $after = \DB::table('activity_log')->count();
+        $after = \DB::connection('evox_logs')->table('activity_log')->count();
 
         $this->assertSame($before + 1, $after, 'listing employees for dispute is an audited action');
     }
@@ -250,7 +251,14 @@ class UserControllerAssetsAndDisputeTest extends TestCase
      */
     public function my_assets_page_load_crashes_instead_of_erroring_gracefully_when_the_session_expired_FINDING_UA_AUTH_1()
     {
-        \Auth::logout();
+        // Auth::logout() throws JWTException in test context (JWT guard needs a real token to
+        // invalidate; $this->be() sets the user without a token). Clear the guard cache via
+        // reflection instead — the next auth()->user() resolves a fresh guard with no user/token.
+        // forgetGuards() was added in Laravel 8+; this is Laravel 5.7.
+        $authManager = $this->app['auth'];
+        $guardsProperty = (new \ReflectionClass($authManager))->getProperty('guards');
+        $guardsProperty->setAccessible(true);
+        $guardsProperty->setValue($authManager, []);
 
         $this->expectException(\Throwable::class);
         $this->app->make(UserController::class)->getUserAssets();

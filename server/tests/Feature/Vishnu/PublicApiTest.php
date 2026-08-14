@@ -82,25 +82,25 @@ class PublicApiTest extends TestCase
     /** @test */
     public function test_get_changelogs_is_publicly_accessible_without_jwt()
     {
-        $this->markTestSkipped('BUG-064: Changelogs module removed — confirmed dead code (2026-07-30).');
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     /** @test */
     public function test_get_changelogs_returns_200_with_message_and_content()
     {
-        $this->markTestSkipped('BUG-064: Changelogs module removed — confirmed dead code (2026-07-30).');
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     /** @test */
     public function test_get_changelogs_content_is_array()
     {
-        $this->markTestSkipped('BUG-064: Changelogs module removed — confirmed dead code (2026-07-30).');
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     /** @test */
     public function test_get_changelogs_items_have_expected_shape_when_present()
     {
-        $this->markTestSkipped('BUG-064: Changelogs module removed — confirmed dead code (2026-07-30).');
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     // ─── Changelogs: POST /api/changelogs ─────────────────────────────────────
@@ -108,18 +108,18 @@ class PublicApiTest extends TestCase
     /** @test */
     public function test_post_changelogs_with_auth_creates_changelog_and_returns_200()
     {
-        $this->markTestSkipped('BUG-064: Changelogs module removed — confirmed dead code (2026-07-30).');
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     /** @test */
     public function test_post_changelogs_without_auth_does_not_return_404()
     {
-        $this->markTestSkipped('BUG-064: Changelogs module removed — confirmed dead code (2026-07-30).');
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     /** @test */
     public function test_post_changelogs_with_auth_is_reachable_and_not_404()
     {
-        $this->markTestSkipped('BUG-064: Changelogs module removed — confirmed dead code (2026-07-30).');
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 }

@@ -188,6 +188,6 @@ class ComputationDirectTest extends TestCase
     /** @test */
     public function test_insert_time_in_out_endpoint_exercises_computation()
     {
-        $this->markTestSkipped('BUG-066: GET /api/dtr/insert_time_in_out route does not exist — removed from DTR module routes.');
+        $this->markTestSkipped('Intentionally dropped: GET /api/dtr/insert_time_in_out — removed as dead code by Glenn Macasarte 2026-07-14 (commit 4283571c, was cron-only route marked "TO BE REMOVED").');
     }
 }

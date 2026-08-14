@@ -34,8 +34,6 @@ jest.mock('../../components/Dashboard/DashboardAnnouncementsList', () =>
     () => <div data-testid="announcements">Announcements</div>);
 jest.mock('../../components/Dashboard/JobOpenings', () =>
     () => <div data-testid="jobs">JobOpenings</div>);
-jest.mock('../../components/Dashboard/ChangeLogs', () =>
-    () => <div data-testid="updates">ChangeLogs</div>);
 jest.mock('../../components/PoliciesDocument/PoliciesDocumentDownload', () =>
     () => <div data-testid="policies">Policies</div>);
 

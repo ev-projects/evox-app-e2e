@@ -73,10 +73,11 @@ class ApprovalTraitCompleteTest extends TestCase
             ->orderBy('id', 'desc')
             ->first();
 
+        // Spatie User::roles() removed — whereNotIn('LevelId', $headLevelIds) already excludes
+        // Admin/DivisionHead/DepartmentHead users; no separate Spatie role filter needed.
         $this->employee = User::whereNotIn('LevelId', $headLevelIds)
             ->whereNotNull('LevelId')
             ->whereHas('level')
-            ->whereDoesntHave('roles', function ($q) { $q->where('name', 'admin'); })
             ->where('is_active', 1)
             ->orderBy('id', 'desc')
             ->first();

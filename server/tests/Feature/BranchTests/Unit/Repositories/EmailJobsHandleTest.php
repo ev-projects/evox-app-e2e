@@ -67,6 +67,22 @@ class EmailJobsHandleTest extends TestCase
         $this->be($this->user);
     }
 
+    /**
+     * Find any active user who resolves a direct supervisor.
+     * Dispute jobs send directly to the user's supervisor (not via a request model),
+     * so we probe users rather than request rows.
+     */
+    private function supervisedUser(): ?User
+    {
+        foreach (User::whereNotNull('email')->where('is_active', 1)
+                      ->orderBy('id', 'desc')->limit(200)->get() as $u) {
+            try {
+                if ($u->direct_supervisor()) return $u;
+            } catch (\Throwable $e) { /* try the next user */ }
+        }
+        return null;
+    }
+
     /** A request row whose owner resolves a direct supervisor (needed for the send arm). */
     private function withSupervisor($modelClass)
     {
@@ -130,7 +146,7 @@ class EmailJobsHandleTest extends TestCase
         // holding thousands of qualifying rows, so the test marked itself incomplete and covered
         // NOTHING - which is why several classes with working tests reported 0% coverage.
         // Still bounded and indexed; no whole-table scan.
-        foreach (Overtime::whereHas('user')->orderBy('id')->limit(400)->get() as $row) {
+        foreach (Overtime::whereHas('user')->orderBy('id', 'desc')->limit(400)->get() as $row) {
             $owner = $row->user()->first();
             if (!$owner) continue;
             try {
@@ -148,8 +164,17 @@ class EmailJobsHandleTest extends TestCase
     /** @test */
     public function dispute_jobs_send_from_an_array_payload()
     {
+        // Dispute jobs look up user_id → direct_supervisor() and gate on is_valid(). Using
+        // $this->user directly failed when that user has no supervisor (setUp picks the last
+        // active user with email, not necessarily one with a supervisor). Probe for a user
+        // who has a supervisor so the is_valid() branch is always exercised.
+        $sender = $this->supervisedUser();
+        if (!$sender) {
+            $this->markTestSkipped('no active user with a direct supervisor — dispute send arm not reachable');
+        }
+
         $payload = [
-            'user_id' => $this->user->id, 'date' => '2026-07-10',
+            'user_id' => $sender->id, 'date' => '2026-07-10',
             'employee_note' => 'note', 'approver_note' => 'note',
             'amount' => 1, 'type' => 'overtime',
             'current_time_in' => 28800, 'current_time_out' => 61200,

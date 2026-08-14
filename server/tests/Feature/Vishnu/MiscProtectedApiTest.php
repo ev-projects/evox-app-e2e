@@ -124,73 +124,64 @@ class MiscProtectedApiTest extends TestCase
         $this->markTestSkipped('LocationController decommissioned 2026-06-21 — Known production bug: DeleteLocationDetails() calls ->delete() on null for non-existent ID → PHP \\Error → 500.');
     }
 
-    // ═══ HR CONTROLLER ═══════════════════════════════════════════════════════
+    // ═══ HR CONTROLLER — MODULE DELETED 2026-08-13 ═══════════════════════════
+    // app/Modules/Hr/ deleted entirely. Routes unregistered → all return 404.
+    // Middleware never fires (no route → no middleware chain) → auth tests also expect 404.
 
     /** @test */
-    public function test_hr_announcements_all_without_token_returns_401()
+    public function test_hr_announcements_all_without_token_returns_404()
     {
+        // Route gone — unregistered routes return 404 before middleware fires.
         $response = $this->getJson('/api/hr/announcements/all', $this->apiKey);
-        $response->assertStatus(401);
-        $this->assertEquals('token_absent', $response->json('error.content.code'));
+        $response->assertStatus(404);
     }
 
     /** @test */
-    public function test_hr_announcements_all_returns_200_and_success_envelope()
+    public function test_hr_announcements_all_returns_404_module_deleted()
     {
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/hr/announcements/all', $this->apiKey);
-        $this->assertNotEquals(404, $response->status());
-        $this->assertNotEquals(500, $response->status());
-        $this->markTestSkipped('APP-BUG HR-01: GET /api/hr/announcements/all returns 400 — App\Modules\Changelogs\Models\ChangeLogs class not found. See HrAnnouncementsApiTest for details.');
-        $response->assertJsonStructure(['message', 'content']);
+        $response->assertStatus(404);
     }
 
     /** @test */
-    public function test_hr_get_single_announcement_with_nonexistent_id_returns_not_500()
+    public function test_hr_get_single_announcement_returns_404_module_deleted()
     {
-        // PRODUCTION BUG: HrController::getAnnouncement($id) does
-        // ChangeLogs::find($id)->toArray() with NO null check and NO try-catch.
-        // When the ID doesn't exist, find() returns null and ->toArray() throws PHP \Error → HTTP 500.
-        // Fix: add null check or wrap in try-catch.
-        // Route existence + auth are verified by test_hr_announcements_all_without_token_returns_401 (Pattern B).
-        $this->markTestSkipped('APP-BUG HR-01: HrController::getAnnouncement() calls ->toArray() on null for non-existent ID — no null guard → PHP \\Error → 500. See HrController::getAnnouncement().');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->getJson('/api/hr/announcements/999999999');
+        $response->assertStatus(404);
     }
 
     /** @test */
-    public function test_hr_create_announcement_without_token_returns_401()
+    public function test_hr_create_announcement_without_token_returns_404()
     {
+        // Route gone — 404 before middleware fires.
         $response = $this->postJson('/api/hr/announcements', [], $this->apiKey);
-        $response->assertStatus(401);
-        $this->assertEquals('token_absent', $response->json('error.content.code'));
+        $response->assertStatus(404);
     }
 
     /** @test */
-    public function test_hr_create_announcement_missing_fields_returns_not_500()
+    public function test_hr_create_announcement_returns_404_module_deleted()
     {
-        // PRODUCTION BUG: HrController has no `use Exception;` import. In the namespaced class
-        // App\Modules\Hr\Http\Controllers, catch(Exception $e) resolves to
-        // App\Modules\Hr\Http\Controllers\Exception (non-existent). PHP catches nothing →
-        // all exceptions from store() (e.g. DB constraint violations) propagate → HTTP 500.
-        // Fix: add `use Exception;` (or use `catch(\Exception $e)`) in HrController.
-        $this->markTestSkipped('APP-BUG HR-02: HrController::store() missing `use Exception;` — namespaced catch catches nothing → 500. See HrController::store().');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->postJson('/api/hr/announcements', []);
+        $response->assertStatus(404);
     }
 
     /** @test */
-    public function test_hr_delete_announcement_without_token_returns_401()
+    public function test_hr_delete_announcement_without_token_returns_404()
     {
+        // Route gone — 404 before middleware fires.
         $response = $this->deleteJson('/api/hr/announcements/1', [], $this->apiKey);
-        $response->assertStatus(401);
+        $response->assertStatus(404);
     }
 
     /** @test */
-    public function test_hr_delete_announcement_nonexistent_id_returns_not_500()
+    public function test_hr_delete_announcement_returns_404_module_deleted()
     {
-        // PRODUCTION BUG: HrController::delete($id) does ChangeLogs::find($id)->delete()
-        // without a null check — same null->delete() pattern as RoomController.
-        // Additionally, the catch(Exception $e) has the namespace bug (see store() skip above),
-        // so even if a \RuntimeException were thrown it wouldn't be caught.
-        // Fix: null check before ->delete() + add `use Exception;` to HrController.
-        $this->markTestSkipped('APP-BUG HR-02: HrController::delete() — null->delete() + namespace catch bug → 500. See HrController::delete() and HrController imports.');
+        $this->withoutMiddleware();
+        $response = $this->actingAs($this->user)->deleteJson('/api/hr/announcements/999999999');
+        $response->assertStatus(404);
     }
 
     // ═══ PROFILE CONTROLLER ══════════════════════════════════════════════════
@@ -198,9 +189,10 @@ class MiscProtectedApiTest extends TestCase
     /** @test */
     public function test_post_profile_without_token_returns_401()
     {
+        // Route removed 2026-08-13: POST /api/user/{id}/profile no longer exists.
+        // ProfileController@store was never implemented. Laravel returns 404 before any middleware runs.
         $response = $this->postJson("/api/user/{$this->user->id}/profile", [], $this->apiKey);
-        $response->assertStatus(401);
-        $this->assertEquals('token_absent', $response->json('error.content.code'));
+        $response->assertStatus(404);
     }
 
     /** @test */
@@ -214,12 +206,9 @@ class MiscProtectedApiTest extends TestCase
     /** @test */
     public function test_post_profile_route_exists_and_does_not_500()
     {
-        // PRODUCTION BUG: POST /api/user/{id}/profile returns HTTP 500.
-        // Route exists (404 check passed) but the handler crashes — likely a Form Request
-        // validation class or repository injection failing when middleware is bypassed,
-        // or an empty/unimplemented controller method.
-        // Route existence + auth are verified by test_post_profile_without_token_returns_401 (Pattern B).
-        $this->markTestSkipped('Known production bug: POST /api/user/{id}/profile returns 500 — likely Form Request or constructor injection failing under withoutMiddleware. See ProfileController or routes/api.php.');
+        // Route removed 2026-08-13: POST /api/user/{id}/profile no longer registered.
+        // ProfileController@store() was never implemented; route was dead code (Client role decommissioned).
+        $this->markTestSkipped('Route removed 2026-08-13: POST /api/user/{id}/profile no longer exists — ProfileController@store() was never implemented and the route was dead code.');
     }
 
     /** @test */

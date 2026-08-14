@@ -37,7 +37,6 @@ import {
   Badge,
 } from "react-bootstrap";
 import PageLoading from "../../../container/PageLoading/PageLoading";
-import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 import SummaryDashbord from "../../Summary/SummaryDashbord";
 import Authenticator from "../../../services/Authenticator";
 import Engagement from "../Engagement/Engagement";
@@ -149,14 +148,6 @@ class DashboardTabs extends Component {
           >
             {this.state.policies_shown && (<PoliciesDocumentDownload />)}
           </Tab>
-          {/* <Tab
-            eventKey="evox-updates"
-            title="EVOX Updates"
-            tabClassName="newfeature3"
-          >
-            {this.state.updates_shown && (<ChangeLogs />)}
-          </Tab> */}
-
           {/* <Tab eventKey="contact" title="Contact" disabled>
                 
               </Tab> */}

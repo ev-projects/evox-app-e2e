@@ -7,10 +7,12 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\Payroll\Models\DtrPolicy;
 use App\Modules\Payroll\Repositories\BiometricsRepository;
+use App\Modules\Payroll\Repositories\BiometricsRepositoryInterface;
 use App\Modules\Schedule\Models\SchedulePolicy;
 use App\Modules\User\Models\UtcTimelog;
 use App\Modules\User\Models\User;
 use App\Modules\User\Repositories\UtcTimeLogRepository;
+use Tests\Feature\Api\evoxtest_BiometricsRepositoryMock;
 
 /**
  * The remaining 0%-coverage models and repositories from the 03-Aug gap analysis:
@@ -32,6 +34,17 @@ class ZeroCoverageModelsReposTest extends TestCase
         $user = User::where('is_active', 1)->whereNotNull('country_id')
             ->orderBy('id', 'desc')->first();
         if ($user) $this->be($user);
+
+        // When the SQL Server PDO driver is absent, bind a lightweight mock so the
+        // biometrics_repository_applies_the_user_collection_filter test can still
+        // exercise the filter path without a live MSSQL connection.
+        // The unfiltered-window test already has its own skip guard and is unaffected.
+        if (!extension_loaded('pdo_sqlsrv') && !extension_loaded('pdo_dblib')) {
+            $this->app->bind(
+                BiometricsRepositoryInterface::class,
+                fn () => new evoxtest_BiometricsRepositoryMock()
+            );
+        }
     }
 
     // ------------------------------------------------------------------- UtcTimelog
@@ -98,7 +111,9 @@ class ZeroCoverageModelsReposTest extends TestCase
             );
         }
 
-        $repo = new BiometricsRepository();
+        // Resolve via IoC: real BiometricsRepository when MSSQL driver is present,
+        // evoxtest_BiometricsRepositoryMock (bound in setUp) when it is absent.
+        $repo = $this->app->make(BiometricsRepositoryInterface::class);
         // deliberately tiny window — the biometrics table is large
         $start = '2026-07-01 00:00:00';
         $end   = '2026-07-01 00:01:00';
@@ -122,7 +137,8 @@ class ZeroCoverageModelsReposTest extends TestCase
         $collection = new Collection();
         $collection->push($user);
 
-        $repo = new BiometricsRepository();
+        // Resolve via IoC: real BiometricsRepository (MSSQL) or mock (no driver) — see setUp().
+        $repo   = $this->app->make(BiometricsRepositoryInterface::class);
         $result = $repo->get_biometrics('2026-07-01 00:00:00', '2026-07-01 00:01:00', $collection);
 
         // the emp_num -> biometrics-userid mapping arm ran; window keeps the result tiny

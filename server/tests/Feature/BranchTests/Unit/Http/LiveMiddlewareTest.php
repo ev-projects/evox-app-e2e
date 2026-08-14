@@ -59,9 +59,11 @@ class LiveMiddlewareTest extends TestCase
     /** @test */
     public function a_user_holding_the_required_role_is_passed_through_to_the_route()
     {
+        // EnsureUserHasRole::handle() calls $user->isLevel($role), NOT Spatie's hasRole().
+        // Spatie HasRoles was removed; the middleware checks the EVOX LevelId-based isLevel().
         $user = new class {
             public $askedFor = null;
-            public function hasRole($role) { $this->askedFor = $role; return true; }
+            public function isLevel($role) { $this->askedFor = $role; return true; }
         };
         $reached = false;
 
@@ -76,8 +78,9 @@ class LiveMiddlewareTest extends TestCase
     /** @test */
     public function a_user_without_the_required_role_is_stopped_before_the_route_runs()
     {
+        // EnsureUserHasRole::handle() calls $user->isLevel($role), NOT Spatie's hasRole().
         $user = new class {
-            public function hasRole($role) { return false; }
+            public function isLevel($role) { return false; }
         };
         $reached = false;
 

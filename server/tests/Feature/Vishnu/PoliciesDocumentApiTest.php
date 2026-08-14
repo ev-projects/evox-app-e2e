@@ -141,11 +141,10 @@ class PoliciesDocumentApiTest extends TestCase
     /** @test */
     public function test_uploadfiles_without_file_returns_graceful_error_not_500()
     {
+        // Null guard present in PoliciesDocumentController::upload() at lines 22-24 (BUG-108 resolved).
+        // No-file request returns a graceful error response — not 500. assertNotEquals(500) passes.
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/uploadfiles', [], $this->apiKey);
-        if ($response->status() === 500) {
-            $this->markTestSkipped('APP-BUG: PoliciesDocumentController::upload() iterates null when no FileData provided + catch(Exception) not imported → 500. Fix: add null guard before foreach + add `use Exception;` import.');
-        }
         $this->assertNotEquals(500, $response->status());
     }
 

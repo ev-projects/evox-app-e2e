@@ -45,13 +45,9 @@ class DashboardVerifiedApiTest extends TestCase
     /** @test */
     public function test_get_careers_is_publicly_accessible_without_auth(): void
     {
-        // [CODE REVIEW 2026-07-07] Careers route has NO auth middleware (Modules/Careers/Routes/api.php line 16).
-        // GET /api/careers/ is public — requesting without a JWT token returns 200, not 401.
-        $response = $this->getJson('/api/careers/', $this->apiKey);
-        if ($response->status() === 404) {
-            $this->markTestSkipped('Cat 4/Route: GET /api/careers/ returns 404 — route does not exist in current environment. Check Modules/Careers/Routes/api.php is loaded.');
-        }
-        $response->assertStatus(200);
+        // Dead code removal: Careers module removed (BUG-065, confirmed dead code).
+        // GET /api/careers/ returns 404 — route is gone.
+        $this->markTestSkipped('Intentionally dropped: Careers module removed as dead code. GET /api/careers/ returns 404. (confirmed BUG-065)');
     }
 
     /** @test */
@@ -174,13 +170,9 @@ class DashboardVerifiedApiTest extends TestCase
     /** @test */
     public function test_get_careers_returns_200(): void
     {
-        // [DEVELOPER VETTING] Job Opening tab click → GET /api/careers/ (result not used; TapTalent iframe renders the listing)
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->getJson('/api/careers/', $this->apiKey);
-        if ($response->status() === 404) {
-            $this->markTestSkipped('Cat 4/Route: GET /api/careers/ returns 404 — route does not exist in current environment.');
-        }
-        $response->assertStatus(200);
+        // Dead code removal: Careers module removed (BUG-065, confirmed dead code).
+        // GET /api/careers/ returns 404 — route is gone.
+        $this->markTestSkipped('Intentionally dropped: Careers module removed as dead code. GET /api/careers/ returns 404. (confirmed BUG-065)');
     }
 
     // =========================================================================

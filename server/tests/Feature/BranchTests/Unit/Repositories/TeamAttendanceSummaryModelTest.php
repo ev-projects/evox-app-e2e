@@ -63,7 +63,13 @@ class TeamAttendanceSummaryModelTest extends TestCase
             $this->assertArrayHasKey('total_count', $result[$bucket]);
             $this->assertArrayHasKey('total_percentage', $result[$bucket]);
             $this->assertArrayHasKey('target_percentage', $result[$bucket]);
-            $this->assertIsArray($result[$bucket]['users']);
+            // get_summary() wraps non-empty user arrays in TeamAttendanceSummaryResource before
+            // returning; empty collections stay as plain arrays. Accept either.
+            $users = $result[$bucket]['users'];
+            $this->assertTrue(
+                is_array($users) || $users instanceof \Illuminate\Http\Resources\Json\JsonResource,
+                "bucket '$bucket' users must be an array or JsonResource"
+            );
         }
     }
 
@@ -158,7 +164,13 @@ class TeamAttendanceSummaryModelTest extends TestCase
         $second = $this->summary->get_summary($this->one(), $start, $end);
 
         $this->assertSame($first['total_headcount'], $second['total_headcount']);   // no doubling
-        $this->assertSame(count($first['dtr_collection']), count($second['dtr_collection']));
+        // get_summary() wraps dtr_collection in TeamAttendanceSummaryResource (non-Countable)
+        // before returning. Use the pre-computed scalar count that the model stores at wrap-time.
+        $this->assertSame(
+            $first['total_list_count_dtr'] ?? 0,
+            $second['total_list_count_dtr'] ?? 0,
+            'successive calls must not accumulate dtr rows'
+        );
     }
 
     /** @test */

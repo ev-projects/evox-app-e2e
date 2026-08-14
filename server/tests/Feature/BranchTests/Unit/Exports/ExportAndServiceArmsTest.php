@@ -505,6 +505,10 @@ class ExportAndServiceArmsTest extends TestCase
      */
     public function the_admin_assignment_job_hands_the_captured_id_and_roles_to_the_repository()
     {
+        $this->markTestSkipped(
+            '[CAT-4] App\Jobs\AssignAllUserToAdminJob class deleted (Client module removal 2026-08-10). ' .
+            'Re-enable if the job is restored. Ref: Client module removal tracked in session 2026-08-10.'
+        );
         $repo = Mockery::mock(UserRepository::class);
         $repo->shouldReceive('adminRoleConditions')
              ->once()
@@ -524,6 +528,10 @@ class ExportAndServiceArmsTest extends TestCase
      */
     public function a_failing_admin_assignment_is_logged_and_rethrown_so_the_queue_records_a_failure()
     {
+        $this->markTestSkipped(
+            '[CAT-4] App\Jobs\AssignAllUserToAdminJob class deleted (Client module removal 2026-08-10). ' .
+            'Re-enable if the job is restored.'
+        );
         $boom = new \Exception('Department supervisor sync failed');
 
         $repo = Mockery::mock(UserRepository::class);
@@ -554,6 +562,10 @@ class ExportAndServiceArmsTest extends TestCase
      */
     public function an_admin_assignment_for_a_deleted_employee_surfaces_as_a_model_not_found_failure()
     {
+        $this->markTestSkipped(
+            '[CAT-4] App\Jobs\AssignAllUserToAdminJob class deleted (Client module removal 2026-08-10). ' .
+            'Re-enable if the job is restored.'
+        );
         $job = new AssignAllUserToAdminJob(-999999, []);
         $caught = null;
 

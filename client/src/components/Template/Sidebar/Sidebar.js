@@ -1079,17 +1079,6 @@ const Sidebar = (props) => {
                       <li className="nav-item">
                         <Link
                           className="nav-link"
-                          to={global.links.manage_change_logs}
-                        >
-                          <i className="nav-icon fa fa-folder-open nav-icon" />
-                          <p style={{ fontSize: 13 }}>EVOX Updates</p>
-                        </Link>
-                      </li>
-                    )}
-                    {Authenticator.scanLevel("Admin") && (
-                      <li className="nav-item">
-                        <Link
-                          className="nav-link"
                           to={global.links.department_list}
                         >
                           <i className="nav-icon fa fa-bars nav-icon" />

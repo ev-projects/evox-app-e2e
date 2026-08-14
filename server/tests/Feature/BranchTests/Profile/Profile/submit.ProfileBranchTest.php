@@ -10,12 +10,11 @@
  * {error:{message,content}}; UpdateUserProfileRequest::failedValidation passes HTTP 422.
  *
  * Routes (module api.php mounted under /api):
- *   POST /api/user/{id}/profile  -> ProfileController@store   (method does NOT exist — see FINDING)
+ *   POST /api/user/{id}/profile  -> REMOVED 2026-08-13 (ProfileController@store was never implemented)
  *   PUT  /api/user/{id}/profile  -> ProfileController@update
  *
- * FINDING: store() — the POST route points at ProfileController@store, but ProfileController has NO
- *   store() method (only update()). Dispatching the route hits the base Controller::__call, throwing
- *   BadMethodCallException, which the exception handler renders as HTTP 500. Asserted as reality below.
+ * CHANGE 2026-08-13: POST route removed as dead code. ProfileController@store() was never implemented;
+ *   the route was unreachable (Save button gated behind decommissioned Client role). POST now returns 404.
  *
  * SKIPPED arms:
  *   // SKIPPED-SP: update() SUCCESS arm returns new UserProfileResource($this->profile->update(...)),
@@ -83,15 +82,15 @@ class ProfileSubmitBranchTest extends TestCase
         ];
     }
 
-    // ============================================================ store()  (FINDING)
-    // FINDING: ProfileController has no store() method; the POST route resolves to base
-    // Controller::__call -> BadMethodCallException -> rendered as HTTP 500. Assert reality.
+    // ============================================================ store()  (ROUTE REMOVED 2026-08-13)
+    // POST route removed: ProfileController@store() was never implemented. Dead code cleanup 2026-08-13.
+    // Laravel returns 404 for unregistered routes — no middleware, no controller.
     /** @test */
     public function store__submit__method_does_not_exist__error_500()
     {
         $res = $this->postJson("/api/user/{$this->user->id}/profile", $this->validProfilePayload());
 
-        $res->assertStatus(500); // FINDING: ProfileController@store references a non-existent method
+        $res->assertStatus(404); // Route removed 2026-08-13 — was 500 (store() never existed)
     }
 
     // ================================================================== update()

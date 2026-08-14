@@ -96,13 +96,10 @@ class AdminMiscApiTest extends TestCase
     /** @test */
     public function test_department_switch_active_schedule_with_nonexistent_id_does_not_500()
     {
-        // NOTE: BUG-DEPT-02 — set_active_on_sched() calls DepartmentListResource on EvoxDepartment
-        // collection causing a BadMethodCallException. Skip if the known bug produces a 500.
+        // BUG-DEPT-02 fixed 2026-08-14: null guard added in DepartmentController::set_active_on_sched()
+        // — non-existent ID now returns 404 instead of PHP \Error → 500.
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/department/999999/switch_active_schedule', [], $this->apiKey);
-        if ($response->status() === 500) {
-            $this->markTestSkipped('APP-BUG BUG-DEPT-02: set_active_on_sched() calls DepartmentListResource::collection() on EvoxDepartment records missing required method → BadMethodCallException → 500; fix in DepartmentController::set_active_on_sched().');
-        }
         $this->assertNotEquals(500, $response->status());
     }
 
@@ -213,23 +210,13 @@ class AdminMiscApiTest extends TestCase
     /** @test */
     public function test_changelogs_get_is_publicly_accessible_returns_200()
     {
-        // BUG-CL-01: No middleware — this endpoint is intentionally public (security bug)
-        $response = $this->getJson('/api/changelogs', $this->apiKey);
-        if ($response->status() === 404) {
-            $this->markTestSkipped('Cat 4/Route: GET /api/changelogs returns 404 — route does not exist in current environment. Check ChangeLogsController routes are loaded.');
-        }
-        $response->assertStatus(200);
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 by Glenn Macasarte (ref BUG-064). GET /api/changelogs — route removed, returns 404.');
     }
 
     /** @test */
     public function test_changelogs_get_without_api_key_still_returns_200()
     {
-        // Confirms there is no auth gate at all (BUG-CL-01)
-        $response = $this->getJson('/api/changelogs');
-        if ($response->status() === 404) {
-            $this->markTestSkipped('Cat 4/Route: GET /api/changelogs returns 404 — route does not exist in current environment.');
-        }
-        $response->assertStatus(200);
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     // =========================================================================
@@ -239,43 +226,19 @@ class AdminMiscApiTest extends TestCase
     /** @test */
     public function test_changelogs_post_is_publicly_accessible_no_validation()
     {
-        // BUG-CL-01 + BUG-CL-03: No middleware and no server-side validation
-        // Empty body is accepted and may insert a null record
-        $response = $this->postJson('/api/changelogs', [], $this->apiKey);
-        // Should not be 401 (no auth) or 422 (no validation)
-        $this->assertNotEquals(401, $response->status());
-        $this->assertNotEquals(422, $response->status());
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     /** @test */
     public function test_changelogs_post_valid_payload_returns_200()
     {
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->postJson('/api/changelogs', [
-            'title'       => 'Test Changelog Entry',
-            'category'    => 'Updates',
-            'description' => '<p>Test description</p>',
-            'log_date'    => '2026-06-16',
-        ], $this->apiKey);
-        if ($response->status() === 404) {
-            $this->markTestSkipped('Cat 4/Route: POST /api/changelogs returns 404 — route does not exist in current environment.');
-        }
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['message', 'content']);
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     /** @test */
     public function test_changelogs_post_missing_title_does_not_validate_server_side()
     {
-        // BUG-CL-03: store() has no Form Request class; no server-side validation
-        // Missing title will be stored as null — this documents the gap, not desired behavior
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->postJson('/api/changelogs', [
-            'category' => 'Announcements',
-            'log_date' => '2026-06-16',
-        ], $this->apiKey);
-        // Does NOT return 422 because there is no validation — documents the bug
-        $this->assertNotEquals(422, $response->status());
+        $this->markTestSkipped('[BY-DESIGN] Changelogs module retired 2026-08-13 (ref BUG-064). Route returns 404 — skip is permanent.');
     }
 
     // =========================================================================
@@ -405,40 +368,25 @@ class AdminMiscApiTest extends TestCase
     /** @test */
     public function test_careers_post_valid_parsed_jobs_returns_200()
     {
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->postJson('/api/careers/', [
-            'parsedJobs' => json_encode([
-                ['Software Engineer', 'https://careers.eastvantage.com/1', 'Engineering', 'PHL'],
-            ]),
-        ], $this->apiKey);
-        if ($response->status() === 404) {
-            $this->markTestSkipped('Cat 4/Route: POST /api/careers/ returns 404 — route does not exist in current environment.');
-        }
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['message']);
+        // Dead code removal: Careers module removed (BUG-065, confirmed dead code).
+        // POST /api/careers/ returns 404 — route is gone.
+        $this->markTestSkipped('Intentionally dropped: Careers module removed as dead code. POST /api/careers/ returns 404. (confirmed BUG-065)');
     }
 
     /** @test */
     public function test_careers_post_empty_parsed_jobs_truncates_and_returns_200()
     {
-        // BUG-JOB-02: Truncates all jobs even with empty payload — data loss risk
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->postJson('/api/careers/', [
-            'parsedJobs' => json_encode([]),
-        ], $this->apiKey);
-        if ($response->status() === 404) {
-            $this->markTestSkipped('Cat 4/Route: POST /api/careers/ returns 404 — route does not exist in current environment.');
-        }
-        $response->assertStatus(200);
+        // Dead code removal: Careers module removed (BUG-065, confirmed dead code).
+        // POST /api/careers/ returns 404 — route is gone.
+        $this->markTestSkipped('Intentionally dropped: Careers module removed as dead code. POST /api/careers/ returns 404. (confirmed BUG-065)');
     }
 
     /** @test */
     public function test_careers_post_missing_parsed_jobs_does_not_500()
     {
+        // Dead code removal: Careers module removed (BUG-065, confirmed dead code).
+        // POST /api/careers/ returns 404 — route is gone. assertNotEquals(500) passes.
         $response = $this->postJson('/api/careers/', [], $this->apiKey);
-        if ($response->status() === 500) {
-            $this->markTestSkipped('APP-BUG: POST /api/careers/ without parsedJobs — json_decode(null) causes fatal error → 500; add null check before json_decode in CareersController.');
-        }
         $this->assertNotEquals(500, $response->status());
     }
 
@@ -449,14 +397,11 @@ class AdminMiscApiTest extends TestCase
     /** @test */
     public function test_delete_location_details_with_null_id_does_not_500()
     {
-        // PRODUCTION BUG: GET /api/DeleteLocationDetails/999999 triggers
-        // location::find(null)->delete() — PHP fatal error.
-        // See LocationController::DeleteLocationDetails()
+        // Dead code removal: LocationController decommissioned 2026-06-21.
+        // DELETE /api/DeleteLocationDetails/999999 returns 404 — route is gone.
+        // The original null-dereference bug is moot. assertNotEquals(500) passes.
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->deleteJson('/api/DeleteLocationDetails/999999', [], $this->apiKey);
-        if ($response->status() === 500) {
-            $this->markTestSkipped('APP-BUG/Dead code: LocationController::DeleteLocationDetails() null-dereferences on non-existent ID → 500; controller decommissioned 2026-06-21.');
-        }
         $this->assertNotEquals(500, $response->status());
     }
 }

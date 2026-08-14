@@ -78,20 +78,10 @@ class UserProfileResource extends JsonResource
             );
         if( $this->show_full_info ) {
 
-            // Create Resource for Permissions
+            // Permissions — always empty; Spatie HasPermissions trait removed from User in Phase A.
             $permissions = [];
-            foreach( $this->getDirectPermissions() as $permission){
-                array_push( $permissions, $permission->name );
-            }
-
-            // Create Resource for Roles
+            // Roles — always empty; Spatie HasRoles trait removed from User in Phase A.
             $roles = [];
-            foreach( $this->roles()->get()  as $role){
-                array_push( $roles, $role->name );
-            }
-
-
-            
              $evox_departments_handled = [];
              $evox_departments_handled=  $this->evox_departments_handled();
 

@@ -160,9 +160,13 @@ class OpsScheduleController extends Controller
                     $imageName = time() . '.' . $request->image->extension();
                     $path = 'public/opsschedules/' . $check_sched->id . '/';
                     $request->image->storeAs($path, $imageName);
-                    $upd_ops_sched = $check_sched->update([
+                    $check_sched->update([
                         'path' => $path . $imageName,
                     ]);
+                    // BUG-122 FIX: $new_ops_sched was never assigned in this branch, causing
+                    // an E_NOTICE (undefined variable) that PHPUnit promotes to an exception
+                    // caught by catch(Exception $e) → 400 instead of 201.
+                    $new_ops_sched = $check_sched;
                 }
                 DB::commit();
             } elseif ($request->type === 'form') {

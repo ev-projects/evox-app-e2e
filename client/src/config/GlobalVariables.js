@@ -87,8 +87,6 @@
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
     assign_feature          :  "/app/admin/AssignFeature/",
     register_user                   :  "/app/admin/RegisterUser/",
-    manage_change_logs              :  "/app/admin/ManageChangeLogs/",
-
     department_list                 :  "/app/admin/DepartmentList/",
     admin_announcement_list         :  "/app/admin/AnnouncementList/",
     admin_import_careers            :  "/app/admin/CareersImport/",
@@ -98,9 +96,7 @@
     kpi_upload                      :  "/app/performance/KpiUpload",
     generate_date                   :  "/app/admin/GenerateDate/",
 
-    // HR Links
-    manage_hr_announcements         : "/app/hr/ManageHrAnnouncements/",
-    post_hr_announcements           : "/app/hr/PostHrAnnouncements/",
+    // HR Links — manage_hr_announcements and post_hr_announcements removed 2026-08-13 (feature retired)
 
     meeting_calander                :  "/app/calander/",
     room_master                     :  "/app/createroom/",

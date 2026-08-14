@@ -159,55 +159,7 @@ export const myfetchStatusNumbers_dashboard = (
 };
 
 
-//  fetch the Today Leaves List For Dashborad
-export const get_today_leaves = (
-  setTodayleaves
-) => {
-return (dispatch, getState) => {
-  var dispatch_commands;
-  dispatch_commands = "FETCH_MY_REQUEST_STATUS_NUMBERS";
-
-  API.call({
-    method: "get",
-    url: "/Gettodayleaves",
-  })
-    .then((result) => {
-      setTodayleaves(result.data.data);
-      dispatch({
-        type: "TODAY_LEAVES",
-        todayleaves: result.data.data,
-      });
-    })
-    .catch((e) => {
-      dispatch(Formatter.alert_error(e));
-    });
-};
-};
-
-//  fetch the Tommorow Leave List
-export const get_tommrow_leaves = (
-  setTommrowleaves
-) => {
-return (dispatch, getState) => {
-  var dispatch_commands;
-  dispatch_commands = "FETCH_MY_REQUEST_STATUS_NUMBERS";
-
-  API.call({
-    method: "get",
-    url: "/Gettommorowleaves",
-  })
-    .then((result) => {
-      setTommrowleaves(result.data.data);
-      dispatch({
-        type: "TOMMOROW_LEAVES",
-        tommorowleaves: result.data.data,
-      });
-    })
-    .catch((e) => {
-      dispatch(Formatter.alert_error(e));
-    });
-};
-};
+// get_today_leaves + get_tommrow_leaves removed 2026-08-14 — superseded by getDashboardOverall(1) in dashboardActions.js
 
 //  fetch the Holidays
 export const get_dashboard_holiday = (

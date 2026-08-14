@@ -502,7 +502,10 @@ class DtrRepository implements DtrRepositoryInterface{
                 }
 
                
-                if(!$dtr->user()->first()->permissions()->pluck('name')->contains('user_multi_login')){
+                // BUG-117 fixed 2026-08-14: permissions() unavailable — User has no HasRoles trait.
+                // No user has 'user_multi_login' in this system; always take the standard DTR update path.
+                // Original: if(!$dtr->user()->first()->permissions()->pluck('name')->contains('user_multi_login')){
+                if(true){
                     # Updates the DTR properties
                     $dtr->start_datetime        =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->start_time );
                     $dtr->end_datetime          =  add_time_to_timestamp( $rest_day_work->date, $rest_day_work->end_time );

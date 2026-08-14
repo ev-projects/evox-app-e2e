@@ -364,31 +364,18 @@ class ControllerTailsTest extends TestCase
     // =====================================================================================
 
     /**
-     * CATCH ARM + CHARACTERIZATION — FINDING HR-CHANGELOGS-MISSING.
+     * HR ANNOUNCEMENTS — MODULE DELETED 2026-08-13.
      *
-     * HrController imports App\Modules\Changelogs\Models\ChangeLogs, but no such class exists
-     * anywhere under app/ (and it is not in the composer classmap). Every announcements endpoint
-     * therefore fails at its very first statement. announcements() wraps that in catch(\Throwable),
-     * so the user sees the handled 400 envelope and the HR announcements list is permanently
-     * empty; the sibling methods (getAnnouncement/store/update/delete) have no such wrapper and
-     * fail harder.
-     *
-     * Consequence for coverage: the success arm of announcements() is UNREACHABLE in this
-     * codebase — it cannot be driven without restoring the missing model. This test pins the
-     * current behaviour instead.
+     * app/Modules/Hr/ deleted entirely (user approval 2026-08-13).
+     * Routes are no longer registered → Laravel returns 404 {"message":"Not Found"}.
+     * No EVOX error envelope — asserting status only.
      *
      * @test
      */
-    public function hr_announcements_returns_handled_error_because_changelogs_model_is_missing_FINDING_HR_CHANGELOGS_MISSING()
+    public function hr_announcements_module_deleted_returns_404()
     {
-        $this->assertFalse(class_exists('App\\Modules\\Changelogs\\Models\\ChangeLogs'),
-            'the model HrController depends on is absent from the codebase');
-
         $res = $this->actingAs($this->user)->getJson('/api/hr/announcements/all');
-
-        $res->assertStatus(400)->assertJsonStructure(['error' => ['message', 'content']]);
-        $this->assertNotFalse(strpos((string) $res->json('error.content'), 'ChangeLogs'),
-            'the handled error names the missing class');
+        $res->assertStatus(404);
     }
 
     // =====================================================================================

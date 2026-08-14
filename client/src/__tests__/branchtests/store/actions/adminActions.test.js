@@ -39,7 +39,7 @@ import {
 import { assignDepartmentHandlers } from '../../../../store/actions/admin/assignDepartmentHandlersActions';
 import { assignEmployeeSupervisorsActions } from '../../../../store/actions/admin/assignEmployeeSupervisorsActions';
 // CLIENT MODULE REMOVED 2026-08-10: assignEmployeesClientActions deleted — import removed to avoid MODULE_NOT_FOUND crash
-import { addChangeLogs } from '../../../../store/actions/admin/changeLogsActions';
+// changeLogsActions removed 2026-08-13 — Changelogs module retired
 import {
     fetchDepartmentList,
     deleteDepartment,
@@ -205,19 +205,8 @@ describe.skip('admin/assignEmployeesClient — CLIENT MODULE REMOVED 2026-08-10'
     });
 });
 
-describe('admin/addChangeLogs', () => {
-    it('dispatches SET_REDIRECT to dashboard on success', async () => {
-        API.call.mockResolvedValue(okResult({}));
-        const dispatch = await run(addChangeLogs({ note: 'x' }));
-        expect(API.call).toHaveBeenCalledWith(expect.objectContaining({ url: '/changelogs' }));
-        const redirect = dispatch.mock.calls.find((c) => c[0].type === 'SET_REDIRECT');
-        expect(redirect[0].link).toBe('/dashboard');
-    });
-    it('dispatches alert_error on failure', async () => {
-        API.call.mockRejectedValue(new Error('boom'));
-        const dispatch = await run(addChangeLogs({}));
-        expect(typesOf(dispatch)).toContain('SHOW_ALERT_ERROR');
-    });
+describe.skip('admin/addChangeLogs (retired — Changelogs module removed 2026-08-13)', () => {
+    // changeLogsActions.js deleted; /changelogs API routes removed.
 });
 
 describe('admin/departmentListActions', () => {

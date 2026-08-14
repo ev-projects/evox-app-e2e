@@ -104,6 +104,9 @@ class DepartmentController extends Controller
     public function set_active_on_sched(Request $request, $id){
         try {
             $department = Department::find($id);
+            if (!$department) {
+                return error_response(trans('messages.error_default'), [], JsonResponse::HTTP_NOT_FOUND);
+            }
             $department_has_set = $department->departments_on_schedule()->first();
             
             if( $department_has_set){

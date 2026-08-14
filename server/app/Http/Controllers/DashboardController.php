@@ -127,63 +127,7 @@ class DashboardController extends Controller
         }
      }
 
-    public function get_today_leave_list(){
-        try {
-            $page_type = 3;
-            $user = Auth::user();
-            $response =  call_sp("EH_SP_Dashboard", [   $user->LevelId, 
-                                                $user->id ,  
-                                                null,// $user->department_id,
-                                                $user->country_id,
-                                                $page_type
-                                            ]
-
-                                            );
-            $user_list = auth()->user()->users_handled();
-
-            $booking = DB::table('leaves')
-                ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
-                ->join('dtrs', 'dtrs.id', '=', 'leaves.dtr_id')
-                ->join('users','users.id', '=', 'dtrs.user_id')
-                ->whereIn('users.id', $user_list->pluck('id')->toArray())
-                ->where('leaves.status','=','approved')
-                ->where('leaves.amount','>','0')
-                ->where('users.is_active','=','1')
-                ->where('dtrs.date','=',DB::raw("DATE_FORMAT(NOW(),'%Y-%m-%d')"))->get();
-
-            return [
-                'data' => $booking,
-            ];
-        } catch (Exception $e) {
-            return error_response(trans('messages.error_default'), $e);
-        }
-    }
-
-    public function get_tommorow_leave_list(){
-        
-        try {
-
-         $user_list = auth()->user()->users_handled();
-
-         $booking = DB::table('leaves')
-         ->select('users.id',DB::raw("CONCAT(IF(users.first_name IS NOT NULL,users.first_name,''),' ',IF(users.middle_name IS NOT NULL,users.middle_name,''),' ',IF(users.last_name IS NOT NULL,users.last_name,'')) AS user_name"),'leaves.type')
-         ->join('dtrs', 'dtrs.id', '=', 'leaves.dtr_id')
-         ->join('users','users.id', '=', 'dtrs.user_id')
-         ->whereIn('users.id', $user_list->pluck('id')->toArray())
-         ->where('leaves.status','=','approved')
-         ->where('leaves.amount','>','0')
-         ->where('users.is_active','=','1')
-         ->where('dtrs.date','=',DB::raw("DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY),'%Y-%m-%d')"))->get();
-         return [
-            'data' => $booking,
-            
-        ];
-     } catch (Exception $e) {
-         return error_response(trans('messages.error_default'), $e);
-     }
-
-
-
-
-     }
+    // get_today_leave_list() and get_tommorow_leave_list() removed 2026-08-14.
+    // Today/tomorrow leave data is served by get_dashboard_all(1) via EH_SP_Dashboard page_type=1.
+    // The old methods used a dead SP call ($response was never read) + direct SQL on leaves table.
 }

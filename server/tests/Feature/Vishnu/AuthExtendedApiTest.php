@@ -23,6 +23,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Modules\User\Models\User;
 use App\Modules\User\Models\LoginLog;
+use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 
 class AuthExtendedApiTest extends TestCase
 {
@@ -44,6 +45,13 @@ class AuthExtendedApiTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // AuthController injects BhrRepositoryInterface (get_user, get_profile_picture in
+        // get_default_payload). Bind the IoC mock so loginMobile / authenticateClient do not
+        // make live BHR API calls during tests.
+        $this->app->bind(BhrRepositoryInterface::class, function () {
+            return new \Tests\Feature\Api\evoxtest_BhrMock();
+        });
 
         $email = env('E2E_USER_EMPLOYEE_PHILIPPINES');
         if (!$email) {
